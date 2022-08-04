@@ -19,13 +19,14 @@ Changes to the original firmware (based on 2022-01 version):
 - uses time zones, automatic DST
 - fixed "month-off-by-one" bug, and others
 - More stable WiFi connections at startup
+- Configurable WiFi connection timeouts and retries
 - etc
 
 Short summary:
 - Default IP is 192.168.4.1, access point name "TCD-AP".
 - In the network config portal, first configure your Wifi.
-- After saving the settings, the device reboots and tries to connect to your configured WiFi network. If you entered wrong data, or the network is not available, this can take a while. You can shorten the retry period by changing the parameters in tc_wifi.cpp.
-- Then re-open the config portal (first you need to find out about the IP address, of course) and configure other settings, eg NTP server and time zone. A list of valid times zones is accessible by a link on the settings page.
+- After saving the settings, the device reboots and tries to connect to your configured WiFi network. If you entered wrong data, or the network is not available, this can take a while. 
+- Then re-open the config portal (first you need to find out about the IP address, of course) and configure other settings, eg WiFi connection timeout, WiFi connection retries, NTP server and time zone. A list of valid times zones is accessible by a link on the settings page.
 
 Time travel
 
