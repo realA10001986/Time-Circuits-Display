@@ -26,7 +26,7 @@
 
 //#define TC_DBG         // more debug output on Serial
 
-//#define TWPRIVATE       // A10001986's private customizations
+#define TWPRIVATE       // A10001986's private customizations
 
 
 #endif
