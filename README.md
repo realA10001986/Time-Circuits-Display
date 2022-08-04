@@ -41,12 +41,15 @@ Note: A "press" is shorter than 2 seconds, a "hold" is 2 seconds or longer.
 Data entry is done via the keypad's number keys.
 
 The menu is involked by holding the ENTER button.
+
 First step is to choose a menu item. The available "items" are
    - enter custom dates/times for the three displays
    - select the autoInterval ("PRE-SET")
    - select the brightness for the three displays ("BRI-GHT")
    - quit the menu ("END")
+ 
  Pressing ENTER cycles through the list, holding ENTER selects an item, ie a mode.
+ 
  If mode is "enter custom dates/times":
      - the field to enter data into is shown (exclusively), with its current value
      - 2 or 4 digits can be entered, or ENTER can be pressed, upon which the next field is activated.
@@ -58,6 +61,7 @@ First step is to choose a menu item. The available "items" are
      - If you entered a custom date/time into the "present" time display, this time is then
        used as actual the present time, and continues to run like a clock. (As opposed to the 
        "destination" and "last departure" times, which are stale.)
+ 
  If mode is "select AutoInterval" (display shows "INT")
      - Press ENTER to cycle through the possible autoInverval settings.
      - Hold ENTER for 2 seconds to select the shown value and exit the menu ("SAVE" is displayed briefly)
@@ -65,10 +69,12 @@ First step is to choose a menu item. The available "items" are
        (CUS-TOM is displayed as a reminder)
      - Non-zero values make the clock cycle through a number of pre-programmed times, your
        custom times are ignored. The value means "minutes" (hence "MIN-UTES").               
+ 
  If mode is "select brightness" (display shows "LVL")
      - Press ENTER to cycle through the possible levels (1-5)
      - Hold ENTER to use current value and jump to next display
      - After the third display, "SAVE" is displayed briefly and the menu is left automatically.
+ 
  If mode is "END"
      - Hold ENTER to quit the menu
 
