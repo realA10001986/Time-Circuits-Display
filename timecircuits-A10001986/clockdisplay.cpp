@@ -258,10 +258,10 @@ bool clockDisplay::load()
         
         for(i = 0; i < 10; i++) {
             loadBuf[i] = EEPROM.read(_saveAddress + i);
-            if(i < 9) sum += loadBuf[i];
-        }
+            if(i < 9) sum += loadBuf[i];           
+        }        
 
-        if(sum & 0xff == loadBuf[9]) {
+        if((sum & 0xff) == loadBuf[9]) {
 
             if (!isRTC()) {  
               
