@@ -22,15 +22,15 @@ Changes to the original firmware (based on 2022-01 version):
 - Configurable WiFi connection timeouts and retries
 - etc
 
-Short summary:
-- Default IP is 192.168.4.1, access point name "TCD-AP".
-- In the network config portal, first configure your Wifi.
-- After saving the settings, the device reboots and tries to connect to your configured WiFi network. If you entered wrong data, or the network is not available, this can take a while. 
-- Then re-open the config portal (first you need to find out about the IP address, of course) and configure other settings, eg WiFi connection timeout, WiFi connection retries, NTP server and time zone. A list of valid times zones is accessible by a link on the settings page.
+Short summary of first steps:
+- As long as the device is unconfigured (or later for some reason fails to connect to a configured network), it starts in "access point" mode, ie it creates an access point named "TCD-AP". The default IP in access point mode is 192.168.4.1. 
+- Go to http://192.168.4.1 to enter the config portal, the go to the "WiFi" page and configure your Wifi network.
+- After saving the settings, the device reboots and tries to connect to your configured WiFi network. If you entered wrong data, or the network is unavailable, this can take a while, and the device finally again starts in access point mode ("TCD-AP").
+- Then re-open the config portal (if the connection was successful, first you need to find out about the IP address, of course; otherwise connect to the "TCP-AP" again) and configure other settings on the "Setup" page, eg WiFi connection timeout, WiFi connection retries, NTP server and time zone. A list of valid times zones is accessible by a link on the settings page.
 
 Time travel
 
-To travel in time, first enter a date on the keypad: mmddyyyy or mmddyyyyhhmm, then press ENTER. The date is then shown on the "destination time" display. Hold "0" on the keypad for 2 seconds, and the actual travel will take place. The old present time is now in the "departed" time, the destination time is now "present" time, and continues to run like a normal clock.
+To travel through time, first enter a date on the keypad: mmddyyyy or mmddyyyyhhmm, then press ENTER. While typing, there is no visual feedback, but the date is then shown on the "destination time" display after pressing ENTER. Hold "0" on the keypad for 2 seconds, and the actual travel will take place. The old present time is now in the "departed" time, the destination time is now "present" time, and continues to run like a normal clock.
 
 To return to actual present time, hold "9" for 2 seconds. NTP time will be updated, and put into "present" time.
 
