@@ -12,3 +12,14 @@ https://github.com/CircuitSetup/Time-Circuits-Display/blob/master/README.md
 
 The Destination Time can be entered via keypad, and the Present Time can keep time via NTP. There is also a time travel mode, which moves the Destination Time to Present Time, and Present Time to Last Time Departed. The startup, keypad dial sounds, and time travel sounds are played using I2S." 
 
+Changes to the original firmware (based on 2022-01 version):
+- Return from Time Travel (hold "9" for 2 seconds)
+- "present time" is a clock (not stale) after time travel
+- Keypad menu for adjusting various settings
+- uses time zones, automatic DST
+- fixed "month-off-by-one" bug, and others
+- More stable WiFi connections at startup
+- etc
+
+
+
