@@ -42,39 +42,33 @@ Data entry is done via the keypad's number keys.
 
 The menu is involked by holding the ENTER button.
 
-First step is to choose a menu item. The available "items" are
-   - enter custom dates/times for the three displays
-   - select the autoInterval ("PRE-SET")
-   - select the brightness for the three displays ("BRI-GHT")
-   - quit the menu ("END")
+First step is to choose a menu item. The available "items" are   
+- enter custom dates/times for the three displays
+- select the autoInterval ("PRE-SET")
+- select the brightness for the three displays ("BRI-GHT")
+- quit the menu ("END")
  
- Pressing ENTER cycles through the list, holding ENTER selects an item, ie a mode.
+Pressing ENTER cycles through the list, holding ENTER selects an item, ie a mode.
  
- If mode is "enter custom dates/times":
-     - the field to enter data into is shown (exclusively), with its current value
-     - 2 or 4 digits can be entered, or ENTER can be pressed, upon which the next field is activated.
-       (Note that the month needs to be entered numerically, and the hour needs to be entered in 24
-       hour mode.)
-     - After entering data into all fields, the data is saved and the menu is left automatically.
-     - Note that after entering dates/times into the "destination" or "last departure" displays,
-       autoInterval is set to 0 and your entered date/time(s) are shown permanently (see below).
-     - If you entered a custom date/time into the "present" time display, this time is then
-       used as actual the present time, and continues to run like a clock. (As opposed to the 
-       "destination" and "last departure" times, which are stale.)
+If mode is "enter custom dates/times":
+- the field to enter data into is shown (exclusively), with its current value
+- 2 or 4 digits can be entered, or ENTER can be pressed, upon which the next field is activated. (Note that the month needs to be entered numerically, and the hour needs to be entered in 24 hour mode.)
+- After entering data into all fields, the data is saved and the menu is left automatically.
+- Note that after entering dates/times into the "destination" or "last departure" displays, autoInterval is set to 0 and your entered date/time(s) are shown permanently (see below).
+- If you entered a custom date/time into the "present" time display, this time is then used as actual the present time, and continues to run like a clock. (As opposed to the "destination" and "last departure" times, which are stale.)
  
- If mode is "select AutoInterval" (display shows "INT")
-     - Press ENTER to cycle through the possible autoInverval settings.
-     - Hold ENTER for 2 seconds to select the shown value and exit the menu ("SAVE" is displayed briefly)
-     - 0 makes your custom "destination" and "last departure" times to be shown permanently.
-       (CUS-TOM is displayed as a reminder)
-     - Non-zero values make the clock cycle through a number of pre-programmed times, your
-       custom times are ignored. The value means "minutes" (hence "MIN-UTES").               
+If mode is "select AutoInterval" (display shows "INT")
+- Press ENTER to cycle through the possible autoInverval settings.
+- Hold ENTER to select the shown value and exit the menu ("SAVE" is displayed briefly)
+- 0 makes your custom "destination" and "last departure" times to be shown permanently. (CUS-TOM is displayed as a reminder)
+- Non-zero values make the clock cycle through a number of pre-programmed times, your custom times are ignored. The value means "minutes" (hence "MIN-UTES").               
  
- If mode is "select brightness" (display shows "LVL")
-     - Press ENTER to cycle through the possible levels (1-5)
-     - Hold ENTER to use current value and jump to next display
-     - After the third display, "SAVE" is displayed briefly and the menu is left automatically.
+If mode is "select brightness" (display shows "LVL")
+- Press ENTER to cycle through the possible levels (1-5)
+- Hold ENTER to use current value and jump to next display
+- After the third display, "SAVE" is displayed briefly and the menu is left automatically.
  
  If mode is "END"
-     - Hold ENTER to quit the menu
+ - Hold ENTER to quit the menu
+ 
 
