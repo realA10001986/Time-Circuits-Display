@@ -91,9 +91,11 @@ class clockDisplay {
     void showOnlyHour(int hourNum);
     void showOnlyMinute(int minuteNum);
     void showOnlyYear(int yearNum);
-    void showOnlySave();
-    void showOnlyUtes();
+
     void showOnlySettingVal(const char* setting, int8_t val = -1, bool clear = false);
+    void showOnlySave();
+    void showOnlyUtes();    
+    void showOnlyHalfIP(int a, int b, bool clear = false);
 
     void setDateTime(DateTime dt);  // Set object date & time using a DateTime
     void setFromStruct(dateStruct* s);
@@ -130,6 +132,7 @@ class clockDisplay {
     uint16_t getLEDAlphaChar(char value);
 
     uint16_t makeNum(uint8_t num);
+    uint16_t makeNumN0(uint8_t num);
     uint16_t makeAlpha(uint8_t value);
 
     void clearDisplay();                    // clears display RAM

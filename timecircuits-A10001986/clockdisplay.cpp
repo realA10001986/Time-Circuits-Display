@@ -57,7 +57,8 @@ uint16_t clockDisplay::getLEDAlphaChar(char value)
     }
 }
 
-// Make a number from the array and place it in the buffer at pos
+// Make a 2 digit number from the array and place it in the buffer at pos
+// (makes leading 0s)
 uint16_t clockDisplay::makeNum(uint8_t num) 
 {
     // Each position holds two digits, high byte is 1's, low byte is 10's
@@ -65,6 +66,21 @@ uint16_t clockDisplay::makeNum(uint8_t num)
     
     segments = getLED7SegChar(num % 10) << 8;        // Place 1's in upper byte
     segments = segments | getLED7SegChar(num / 10);  // 10's in lower byte
+    
+    return segments;
+}
+
+// Make a 2 digit number from the array and place it in the buffer at pos
+// (no leading 0s)
+uint16_t clockDisplay::makeNumN0(uint8_t num) 
+{
+    // Each position holds two digits, high byte is 1's, low byte is 10's
+    uint16_t segments;
+    
+    segments = getLED7SegChar(num % 10) << 8;        // Place 1's in upper byte
+    if(num / 10) {
+        segments = segments | getLED7SegChar(num / 10);  // 10's in lower byte
+    }
     
     return segments;
 }
@@ -253,64 +269,72 @@ bool clockDisplay::load()
     uint8_t loadBuf[10];
     uint16_t sum = 0;
     int i;
+    bool valid = true;
 
-    if(_saveAddress >= 0) {
+    if(_saveAddress < 0) 
+        return false;
         
-        for(i = 0; i < 10; i++) {
-            loadBuf[i] = EEPROM.read(_saveAddress + i);
-            if(i < 9) sum += loadBuf[i];           
-        }        
+    for(i = 0; i < 10; i++) {
+        loadBuf[i] = EEPROM.read(_saveAddress + i);
+        if(i < 9) sum += loadBuf[i];                 
+    }        
+      
+    if(!isRTC()) {  
+      
+        // Non-RTC: Load saved time
+        // 16bit sum cannot be zero; if it is, the data
+        // is clear, which means it is invalid.
 
-        if((sum & 0xff) == loadBuf[9]) {
+        if( (sum != 0) && ((sum & 0xff) == loadBuf[9])) { 
+                                   
+            #ifdef TC_DBG  
+            Serial.println("Clockdisplay: Loading non-RTC settings from EEPROM");
+            #endif
+            
+            setYearOffset((loadBuf[3] << 8) | loadBuf[2]);
+            setYear((loadBuf[1] << 8) | loadBuf[0]);
+            setMonth(loadBuf[4]);
+            setDay(loadBuf[5]);
+            setHour(loadBuf[6]);
+            setMinute(loadBuf[7]);
 
-            if (!isRTC()) {  
-              
-                // non-RTC, load saved time
-                #ifdef TC_DBG  
-                Serial.println("Clockdisplay: Loading non-RTC settings from EEPROM");
-                #endif
-                
-                setYearOffset((loadBuf[3] << 8) | loadBuf[2]);
-                setYear((loadBuf[1] << 8) | loadBuf[0]);
-                setMonth(loadBuf[4]);
-                setDay(loadBuf[5]);
-                setHour(loadBuf[6]);
-                setMinute(loadBuf[7]);
-
-                // Reinstate _brightness to keep old behavior
-                if (_saveAddress == DEST_TIME_PREF) { 
-                    setBrightness((int)atoi(settings.destTimeBright));  
-                } else if (_saveAddress == DEPT_TIME_PREF) {
-                    setBrightness((int)atoi(settings.lastTimeBright));
-                }
-                return true;
-                
-            } else {
-              
-                // RTC, time not saved/loaded, only other settings
-
-                // Reinstate _brightness to keep old behavior
-                setBrightness((int)atoi(settings.presTimeBright));      
-                
+            // Reinstate _brightness to keep old behavior
+            if (_saveAddress == DEST_TIME_PREF) { 
+                setBrightness((int)atoi(settings.destTimeBright));  
+            } else if (_saveAddress == DEPT_TIME_PREF) {
+                setBrightness((int)atoi(settings.lastTimeBright));
             }
-          
-        } else {
-
-            Serial.println("Clockdisplay: Bad EEPROM checksum");
-
-            // FIXME - what now?
-
-            return false;
-          
-        }      
+            
+            return true;
+            
+        } 
 
     } else {
-      
-        return false; 
-        
-    }
 
-    return true;
+        // RTC: time data not saved/loaded, only other settings
+        // zero sum is possible
+
+        // Reinstate _brightness to keep old behavior
+        setBrightness((int)atoi(settings.presTimeBright));
+
+        // We do not use the EEPROM data for RTC display
+        // For future use.
+
+        //if((sum & 0xff) == loadBuf[9]) {
+
+            return true;     
+            
+        //}
+
+    }
+     
+    Serial.println("Clockdisplay: Invalid EEPROM data");
+
+    // Do NOT clear EEPROM if data is invalid.
+    // All 0s are as bad, wait for EEPROM to be
+    // written by application on purpose
+        
+    return false;
 }
 
 // Show the buffer
@@ -612,6 +636,27 @@ void clockDisplay::showOnlyMinute(int minuteNum)
     clearDisplay();
     
     directCol(7, makeNum(minuteNum));
+}
+
+// clears the display RAM and only shows the provided 2 numbers (parts of IP)
+void clockDisplay::showOnlyHalfIP(int a, int b, bool clear) 
+{
+    char buf[6];
+    int c = 0;
+    
+    if(clear)
+          clearDisplay();
+  
+    sprintf(buf, "%d", a);
+    while(c < 3 && buf[c]) {
+          directCol(c, makeAlpha(buf[c]));
+          c++;
+    }
+
+    if(b > 100) {
+        directCol(4, makeNumN0(b / 100));
+    }
+    directCol(5, ((b / 100) ? makeNum(b % 100) : makeNumN0(b % 100)));      
 }
 
 // write directly to a column with supplied segments
