@@ -40,7 +40,8 @@
 #define MODE_DEPT 2
 #define MODE_AINT 3
 #define MODE_BRI  4
-#define MODE_END  5
+#define MODE_NET  5
+#define MODE_END  6
 #define MODE_MIN  MODE_DEST
 #define MODE_MAX  MODE_END
 
@@ -62,6 +63,7 @@ void saveAutoInterval();
 extern void putAutoInt(int position);
 void doSetAutoInterval();
 void doSetBrightness(clockDisplay* displaySet);
+void doShowNetInfo();
 void waitForEnterRelease();
 void prepareInput(uint16_t& number);
 

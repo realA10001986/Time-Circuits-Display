@@ -166,11 +166,12 @@ void time_setup()
     // Load destination time (and set to default if invalid)
     if(!destinationTime.load()) {
         validLoad = false;  
+        destinationTime.setYearOffset(0);
 #ifndef TWPRIVATE
         // 10/26/1985 1:21
         destinationTime.setMonth(10);
         destinationTime.setDay(26);
-        destinationTime.setYear(1985);
+        destinationTime.setYear(1985);        
         destinationTime.setHour(1);
         destinationTime.setMinute(21);        
 #else                    
@@ -179,7 +180,7 @@ void time_setup()
         destinationTime.setYear(1985);
         destinationTime.setHour(20);
         destinationTime.setMinute(11);
-#endif                
+#endif                        
         destinationTime.setBrightness((int)atoi(settings.destTimeBright));
         destinationTime.save();
     }
@@ -187,6 +188,7 @@ void time_setup()
     // Load departed time (and set to default if invalid)
     if(!departedTime.load()) {
         validLoad = false; 
+        departedTime.setYearOffset(0);
 #ifndef TWPRIVATE
         // 10/26/1985 1:20
         departedTime.setMonth(10);
@@ -200,7 +202,7 @@ void time_setup()
         departedTime.setYear(1985);
         departedTime.setHour(20);
         departedTime.setMinute(10);
-#endif
+#endif        
         departedTime.setBrightness((int)atoi(settings.lastTimeBright));
         departedTime.save();
     }

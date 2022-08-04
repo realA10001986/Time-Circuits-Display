@@ -33,6 +33,7 @@
  *    - enter custom dates/times for the three displays
  *    - select the autoInterval ("PRE-SET")
  *    - select the brightness for the three displays ("BRI-GHT")
+ *    - view network data, ie IP address ("NET-WRK")
  *    - quit the menu ("END")
  *  Pressing ENTER cycles through the list, holding ENTER selects an item, ie a mode.
  *  If mode is "enter custom dates/times":
@@ -57,7 +58,11 @@
  *      - Press ENTER to cycle through the possible levels (1-5)
  *      - Hold ENTER for 2 seconds to use current value and jump to next display
  *      - After the third display, "SAVE" is displayed briefly and the menu is left automatically.
- *  If mode is "end"
+ *  If mode is "NETWRK"
+ *      - the bottom two displays show the current IP address of the device. If this is 192.168.4.1,
+ *        the device very likely could not connect to your WiFi network and runs in AP mode ("TCD-AP")
+ *      - Hold ENTER to quit the menu
+ *  If mode is "END"
  *      - Hold ENTER to quit the menu
  */
 
@@ -248,8 +253,19 @@ void enter_menu() {
             waitForEnterRelease();
             
         }  
+
+    } else if(displayNum == MODE_AINT) {  // Select autoInterval
+
+        allOff();
+        waitForEnterRelease();
+
+        // Set autoInterval              
+        doSetAutoInterval();
         
-    } else if(displayNum == 4) {    // Adjust brightness
+        allOff();
+        waitForEnterRelease();  
+        
+    } else if(displayNum == MODE_BRI) {    // Adjust brightness
 
         allOff();
         waitForEnterRelease();
@@ -262,17 +278,17 @@ void enter_menu() {
         allOff();
         waitForEnterRelease();  
         
-        
-    } else if(displayNum == 3) {  // Select autoInterval
+    } else if(displayNum == MODE_NET) {    // Show network info
 
         allOff();
         waitForEnterRelease();
 
-        // Set autoInterval              
-        doSetAutoInterval();
+        // Show net info              
+        doShowNetInfo();
         
         allOff();
         waitForEnterRelease();  
+    
         
     } else {                      // END: Bail out
       
@@ -405,6 +421,14 @@ void displayHighlight(int& number)
         case MODE_BRI:  // Brightness
             destinationTime.showOnlySettingVal("BRI", -1, true);  // display BRIGHT, no numbers, clear rest of screen
             presentTime.showOnlySettingVal("GHT", -1, true);  
+            destinationTime.on();
+            presentTime.on();            
+            departedTime.off();
+            displaySet = NULL;
+            break;
+        case MODE_NET:  // Network info
+            destinationTime.showOnlySettingVal("NET", -1, true);  // display NETWRK, no numbers, clear rest of screen
+            presentTime.showOnlySettingVal("WRK", -1, true);  
             destinationTime.on();
             presentTime.on();            
             departedTime.off();
@@ -768,6 +792,65 @@ void doSetBrightness(clockDisplay* displaySet) {
     }
 
     waitForEnterRelease();
+}
+
+/*
+ * Show network info
+ * 
+ */
+void doShowNetInfo() 
+{
+    uint8_t a, b, c, d;
+    //int mymode;
+    bool netDone = false;
+    
+    #ifdef TC_DBG
+    Serial.println("doShowNetInfo() involked");
+    #endif
+
+    //mymode = wifi_getmode();
+    
+    wifi_getIP(a, b, c, d);
+
+    destinationTime.showOnlySettingVal("IP", a, true);
+    destinationTime.on();
+
+    presentTime.showOnlyHalfIP(a, b, true);
+    presentTime.on();
+
+    departedTime.showOnlyHalfIP(c, d, true);
+    departedTime.on();
+    
+    isEnterKeyHeld = false;
+
+    timeout = 0;  // reset timeout
+
+    // Wait for enter
+    while(!checkTimeOut() && !netDone) {
+      
+        // If pressed
+        if(digitalRead(ENTER_BUTTON)) {
+          
+            // wait for release
+            while(!checkTimeOut() && digitalRead(ENTER_BUTTON)) {
+                // If hold threshold is passed, bail out
+                myloop();
+                if(isEnterKeyHeld) {
+                    isEnterKeyHeld = false; 
+                    netDone = true;                 
+                    break;              
+                }
+                delay(10); 
+            }
+            
+        } else {
+  
+            myloop();
+            delay(100);
+            
+        }
+          
+    }
 }
 
 // Show all, month after a short delay
