@@ -94,7 +94,7 @@ How to select the autoInterval:
 - Non-zero values make the clock cycle through a number of pre-programmed times, your custom times are ignored. The value means "minutes" (hence "MIN-UTES") between changes.              
 - Hold ENTER to select the value shown and exit the menu ("SAVE" is displayed briefly)
  
-How to adjust the display brightness (display shows "LVL"):
+How to adjust the display brightness:
 - Hold ENTER to invoke main menu
 - Press ENTER until "BRI-GHT" is shown
 - Hold ENTER, the displays show all elements, the top-most display says "LVL"
@@ -108,7 +108,8 @@ How to find out the IP address:
 - Hold ENTER, the displays shows the IP address
 - Hold ENTER to leave the menu
  
- If mode is "END"
+ How to leave the menu:
+ - While the menu is active, press ENTER until "END" is displayed.
  - Hold ENTER to leave the menu
  
 
