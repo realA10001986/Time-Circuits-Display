@@ -18,17 +18,19 @@ Changes to the original firmware (based on 2022-01 version):
 - Keypad menu for adjusting various settings
 - uses time zones, automatic DST
 - fixed "month-off-by-one" bug, and others
-- More stable WiFi connections at startup
-- Configurable WiFi connection timeouts and retries
-- Alarm function
-- Network keypad menu to show the current IP address
+- more stable WiFi connections at startup
+- configurable WiFi connection timeouts and retries
+- alarm function
+- network keypad menu to show the current IP address
+- 24-hour clock mode for non-Americans ;)
 - etc
 
 Short summary of first steps:
 - As long as the device is unconfigured (or later for some reason fails to connect to a configured network), it starts in "access point" mode, ie it creates an access point named "TCD-AP". The default IP in access point mode is 192.168.4.1. 
 - Go to http://192.168.4.1 to enter the config portal, the go to the "WiFi" page and configure your Wifi network.
-- After saving the settings, the device reboots and tries to connect to your configured WiFi network. If you entered wrong data, or the network is unavailable, this can take a while, and the device finally again starts in access point mode ("TCD-AP").
+- After saving the settings, the device reboots and tries to connect to your configured WiFi network. If you entered wrong data, or the network is unavailable, this can take a while, the device finally again starts in access point mode ("TCD-AP").
 - Then re-open the config portal (if the connection was successful, first you need to find out about the IP address, of course; you can do this through the keypad menu, see below) and configure other settings on the "Setup" page, eg WiFi connection timeout, WiFi connection retries, NTP server and time zone. A list of valid times zones is accessible by a link on the settings page.
+- There are two ways of configuring the clock: Through the aforementioned config portal (ie the network), or the keypad menu, as described further below. Not all settings, however, are configurable in both.
 
 Time travel
 
@@ -57,16 +59,16 @@ Pressing ENTER cycles through the list, holding ENTER selects an item, ie a mode
  
 If mode is "enter custom dates/times":
 - the field to enter data into is shown (exclusively), with its current value
-- 2 or 4 digits can be entered, or ENTER can be pressed, upon which the next field is activated. (Note that the month needs to be entered numerically, and the hour needs to be entered in 24 hour mode.)
+- 2 or 4 digits can be entered, or ENTER can be pressed, upon which the next field is activated. (Note that the month needs to be entered numerically, and the hour needs to be entered in 24 hour mode, regardless of 12-hour or 24-hour mode as per the config portal setting)
 - After entering data into all fields, the data is saved and the menu is left automatically.
 - Note that after entering dates/times into the "destination" or "last departure" displays, autoInterval is set to 0 and your entered date/time(s) are shown permanently (see below).
-- If you entered a custom date/time into the "present" time display, this time is then used as actual the present time, and continues to run like a clock. (As opposed to the "destination" and "last departure" times, which are stale.)
+- If you entered a custom date/time into the "present" time display, this time is then used as actual the present time, and continues to run like a clock. (As opposed to the "destination" and "last departure" times, which are stale.) Also, the present time is not stored. When the clock is powered down, the present time will return to the actual present time upon power up.
 
 If the mode is setting up the alarm:
 - Press ENTER to toggle the alarm on and off, hold ENTER to proceed
 - Then enter the hour and minutes. This works as described above.
 - The menu is left automatically after entering the minute.
-Note that the alarm is recurring, ie it repears every day at the programmed time. It must be switched off in the keypad menu.
+Note that the alarm is recurring, ie it rings every day at the programmed time. It must be switched off in the keypad menu.
  
 If mode is "select AutoInterval" (display shows "INT"):
 - Press ENTER to cycle through the possible autoInverval settings.
