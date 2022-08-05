@@ -38,6 +38,9 @@
  *    - quit the menu ("END")
  *  Pressing ENTER cycles through the list, holding ENTER selects an item, ie a mode.
  *  If mode is to enter custom dates/times:
+ *      - Note that the pre-set will be the previous date/time stored in the EEPROM,
+ *        not the date/time that was shown before entering the menu if autoInterval
+ *        was non-zero.
  *      - the field to enter data into is shown (exclusively)
  *      - data entry works as follows: 
  *        ) a pre-set is shown in the field
@@ -47,7 +50,7 @@
  *        ) if you enter less than the maximum digits, you can press ENTER to proceed
  *          to the next field.
  *        Note that the month needs to be entered numerically, and the hour needs to be entered in 24
- *        hour mode, which is then internally converted to 12 hour mode.
+ *        hour mode, which is then shown in 12 hour mode (if this mode is active).
  *      - After entering data into all fields, the data is saved and the menu is left automatically.
  *      - Note that after entering dates/times into the "destination" or "last departure" displays,
  *        autoInterval is set to 0 and your entered date/time(s) are shown permanently (see below).
@@ -79,7 +82,6 @@
  *  If mode is "END"
  *      - Hold ENTER to quit the menu
  */
-
 
 #include "tc_menus.h"
 
@@ -122,7 +124,10 @@ void enter_menu() {
     // start with destination time in main menu
     displayNum = MODE_DEST;     
 
-    // Load the times
+    // Load the times from EEPROM
+    // This means that when the user activates the menu while 
+    // autoInterval was > 0, there will be different times
+    // shown in the menu than were outside the menu    
     destinationTime.load();     
     departedTime.load();
 
@@ -169,6 +174,9 @@ void enter_menu() {
         } else {
           
             // non RTC, get the time info from the object
+            // Remember: These are the ones saved in the EEPROM
+            // NOT the ones that were possibly shown on the 
+            // display while autoInterval was > 0.
             yearSet = displaySet->getYear();
             monthSet = displaySet->getMonth();
             daySet = displaySet->getDay();
@@ -247,7 +255,9 @@ void enter_menu() {
                 
             } else {                 
 
-                // Not rtc, setting a static display, turn off autoInverval
+                // Non-RTC: Setting a static display, turn off autoInverval
+
+                displaySet->setYearOffset(0);
                 
                 autoInterval = 0;    
                 saveAutoInterval();  
