@@ -17,12 +17,12 @@ The Destination Time can be entered via keypad, and the Present Time can keep ti
 - "Present time" is a clock (not stale) after time travel
 - Keypad menu for adjusting various settings
 - Support for time zones and automatic DST
-- Fixed "month-off-by-one" bug, and others
 - More stable WiFi connections at startup
-- configurable WiFi connection timeouts and retries
+- Configurable WiFi connection timeouts and retries
 - Alarm function
 - Network keypad menu to show the current IP address
 - 24-hour clock mode for non-Americans ;)
+- Fixed "month-off-by-one" bug, and others
 - etc
 
 **Short summary of first steps:**
