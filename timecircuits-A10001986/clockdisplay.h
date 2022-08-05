@@ -34,14 +34,9 @@
 
 #define DS3231_I2CADDR 0x68
 
-//define IS_ACAR_DISPLAY // uncomment to the month output to 2 numbers, per the original A Car display
-
-// We use 1(padded to 8) + 10*3 bytes of EEPROM space at 0x0. 
-// Belongs in tc_time.h, but...
-//#define AUTOINTERVAL_PREF 0x00  // autoInterval save location (1 byte)
-#define   DEST_TIME_PREF 0x08     // (10 bytes), was 0x10 (8 bytes)
-#define   PRES_TIME_PREF 0x12     // (10 bytes), was 0x18 (8 bytes)
-#define   DEPT_TIME_PREF 0x1c     // (10 bytes), was 0x20 (8 bytes) 
+// Uncomment if  month is 2 digits, as per the original A Car display.
+// Support is incomplete, as menu system expects month to be literal.
+//define IS_ACAR_DISPLAY 
  
 struct dateStruct {
     uint16_t year;
@@ -61,6 +56,9 @@ class clockDisplay {
     void clear();
     uint8_t setBrightness(uint8_t level);
     uint8_t getBrightness();
+
+    void set1224(bool hours24);
+    bool get1224();
     
     void setMonth(int monthNum);
     void setDay(int dayNum);
@@ -85,6 +83,7 @@ class clockDisplay {
 
     void AM();
     void PM();
+    void AMPMoff();
 
     void showOnlyMonth(int monthNum);  // Show only the supplied month, do not modify object's month
     void showOnlyDay(int dayNum);
@@ -115,18 +114,19 @@ class clockDisplay {
    private:
     uint8_t _address;
     int _saveAddress;
-    uint16_t _displayBuffer[8];  // Segments to make current time.
+    uint16_t _displayBuffer[8]; // Segments to make current time.
 
-    uint16_t _year = 2021;     // keep track of these
-    int16_t  _yearoffset = 0;  // Offset for faking years < 2000 or > 2159
+    uint16_t _year = 2021;      // keep track of these
+    int16_t  _yearoffset = 0;   // Offset for faking years < 2000 or > 2159
     
     uint8_t _month = 1;
     uint8_t _day = 1;
     uint8_t _hour = 0;
     uint8_t _minute = 0;
-    bool _colon = false;  // should colon be on?
-    bool _rtc = false;    // will this be displaying real time
-    uint8_t _brightness = 15;
+    bool _colon = false;        // should colon be on?
+    bool _rtc = false;          // will this be displaying real time
+    uint8_t _brightness = 15;   // display brightness
+    bool _mode24 = false;       // true = 24 hour mode, false 12 hour mode
 
     uint8_t getLED7SegChar(uint8_t value);
     uint16_t getLEDAlphaChar(char value);
@@ -136,10 +136,14 @@ class clockDisplay {
     uint16_t makeAlpha(uint8_t value);
 
     void clearDisplay();                    // clears display RAM
+    void showInt(bool animate = false); 
     void directCol(int col, int segments);  // directly writes column RAM
+
+    void directAMPM(int val1, int val2);
     void directAM();
     void directPM();
-
+    void directAMPMoff();
+    
     byte decToBcd(byte val);
 };
 

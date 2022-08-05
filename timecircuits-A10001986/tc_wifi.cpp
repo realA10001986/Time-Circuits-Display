@@ -36,6 +36,7 @@ WiFiManagerParameter custom_lastTimeBright("lt_bright", "Last Time Departed Brig
 //WiFiManagerParameter custom_beepSound;
 WiFiManagerParameter custom_wifiConTimeout("wificon", "WiFi Connection Timeout in seconds (1-15)", settings.wifiConTimeout, 3);
 WiFiManagerParameter custom_wifiConRetries("wifiret", "WiFi Connection Retries (1-15)", settings.wifiConRetries, 3);
+WiFiManagerParameter custom_mode24("md24", "Enable 24-hour clock mode: (0=12hr, 1=24hr)", settings.mode24, 2);
 
 bool shouldSaveConfig = false;
 
@@ -89,22 +90,14 @@ void wifi_setup()
     wm.addParameter(&custom_wifiConRetries);
     wm.addParameter(&custom_ntpServer);
     wm.addParameter(&custom_timeZone);
+    wm.addParameter(&custom_mode24);
     wm.addParameter(&custom_autoRotateTimes);
     wm.addParameter(&custom_destTimeBright);
     wm.addParameter(&custom_presTimeBright);
     wm.addParameter(&custom_lastTimeBright);
  //   wm.addParameter(&custom_beepSound);
 
-    //make sure the settings form has the correct values
-    custom_wifiConTimeout.setValue(settings.wifiConTimeout, 3);
-    custom_wifiConRetries.setValue(settings.wifiConRetries, 3);
-    custom_ntpServer.setValue(settings.ntpServer, 63);
-    custom_timeZone.setValue(settings.timeZone, 63);
-    custom_autoRotateTimes.setValue(settings.autoRotateTimes, 3);
-    custom_destTimeBright.setValue(settings.destTimeBright, 3);
-    custom_presTimeBright.setValue(settings.presTimeBright, 3);
-    custom_lastTimeBright.setValue(settings.lastTimeBright, 3);
- //   custom_beepSound.setValue(settings.beepSound, 3);
+    updateConfigPortalValues();
 
     // Automatically connect using saved credentials if they exist
     // If connection fails it starts an access point with the specified name
@@ -145,6 +138,7 @@ void wifi_loop()
         //strcpy(settings.beepSound, getParam("custom_beepSound"));
         strcpy(settings.wifiConRetries, custom_wifiConRetries.getValue()); 
         strcpy(settings.wifiConTimeout, custom_wifiConTimeout.getValue()); 
+        strcpy(settings.mode24, custom_mode24.getValue()); 
 
         write_settings();        
 
@@ -173,6 +167,22 @@ void saveParamsCallback()
     wm.stopConfigPortal();
 }
 
+void updateConfigPortalValues()
+{
+    // Make sure the settings form has the correct values
+    custom_wifiConTimeout.setValue(settings.wifiConTimeout, 3);
+    custom_wifiConRetries.setValue(settings.wifiConRetries, 3);
+    custom_ntpServer.setValue(settings.ntpServer, 63);
+    custom_timeZone.setValue(settings.timeZone, 63);
+    custom_mode24.setValue(settings.mode24, 2);
+    custom_autoRotateTimes.setValue(settings.autoRotateTimes, 3);
+    custom_destTimeBright.setValue(settings.destTimeBright, 3);
+    custom_presTimeBright.setValue(settings.presTimeBright, 3);
+    custom_lastTimeBright.setValue(settings.lastTimeBright, 3);
+    //custom_beepSound.setValue(settings.beepSound, 3);
+}
+
+/*
 int wifi_getmode()
 {
   WiFiMode_t mymode = WiFi.getMode();
@@ -186,6 +196,7 @@ int wifi_getmode()
    
   return 0;  
 }
+*/
 
 bool wifi_getIP(uint8_t& a, uint8_t& b, uint8_t& c, uint8_t& d)
 {

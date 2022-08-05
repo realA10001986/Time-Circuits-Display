@@ -61,8 +61,9 @@ uint16_t clockDisplay::getLEDAlphaChar(char value)
 // (makes leading 0s)
 uint16_t clockDisplay::makeNum(uint8_t num) 
 {
+    uint16_t segments = 0;
+
     // Each position holds two digits, high byte is 1's, low byte is 10's
-    uint16_t segments;
     
     segments = getLED7SegChar(num % 10) << 8;        // Place 1's in upper byte
     segments = segments | getLED7SegChar(num / 10);  // 10's in lower byte
@@ -73,9 +74,10 @@ uint16_t clockDisplay::makeNum(uint8_t num)
 // Make a 2 digit number from the array and place it in the buffer at pos
 // (no leading 0s)
 uint16_t clockDisplay::makeNumN0(uint8_t num) 
-{
+{    
+    uint16_t segments = 0;
+
     // Each position holds two digits, high byte is 1's, low byte is 10's
-    uint16_t segments;
     
     segments = getLED7SegChar(num % 10) << 8;        // Place 1's in upper byte
     if(num / 10) {
@@ -217,7 +219,7 @@ bool clockDisplay::save()
         savBuf[5] = _day;
         savBuf[6] = _hour;
         savBuf[7] = _minute;
-        savBuf[8] = 0;        // _brightness;    // now in settings
+        savBuf[8] = 0;        // was _brightness, now in settings
 
         for(i = 0; i < 9; i++) {
             sum += savBuf[i];
@@ -237,17 +239,11 @@ bool clockDisplay::save()
         #endif
 
         // We now clear the entire space, since time is not saved,
-        // and _brightness is now part of settings (config file)        
+        // and _brightness is now part of settings (config file) 
+               
         for(i = 0; i < 10; i++) {
             EEPROM.write(_saveAddress + i, 0);  
-        }
-
-        // Obsolete, _brightness is saved, but never actually used
-        //EEPROM.write(_saveAddress + 8, _brightness);
-        //sum = sum + _brightness;
-
-        //sum &= 0xff;  
-        //EEPROM.write(_saveAddress + 9, sum);
+        }        
         
         EEPROM.commit();
         
@@ -269,7 +265,6 @@ bool clockDisplay::load()
     uint8_t loadBuf[10];
     uint16_t sum = 0;
     int i;
-    bool valid = true;
 
     if(_saveAddress < 0) 
         return false;
@@ -337,46 +332,50 @@ bool clockDisplay::load()
     return false;
 }
 
-// Show the buffer
-void clockDisplay::show() 
+// Show the buffer 
+void clockDisplay::showInt(bool animate) 
 {
-    (_hour < 12) ? AM() : PM();
+    int i = 0;    
+
+    if(animate) off();
+
+    if(!_mode24) {
+        (_hour < 12) ? AM() : PM();
+    } else {    
+        AMPMoff();
+    }
 
     (_colon) ? colonOn() : colonOff();
 
     Wire.beginTransmission(_address);
     Wire.write(0x00);  // start at address 0x0
 
-    for(int i = 0; i < 8; i++) {
+    if(animate) {
+        Wire.write(0x00);  //blank month, first 3 16 bit locations
+        Wire.write(0x00);
+        i = 2;
+    }
+    
+    for(; i < 8; i++) {
         Wire.write(_displayBuffer[i] & 0xFF);
         Wire.write(_displayBuffer[i] >> 8);
     }
+    
     Wire.endTransmission();
+
+    if(animate) on();
+}
+
+// Show the buffer 
+void clockDisplay::show() 
+{
+    showInt(false);
 }
 
 // Show all but month
 void clockDisplay::showAnimate1() 
-{
-    off();
-
-    (_hour < 12) ? AM() : PM();
-
-    (_colon) ? colonOn() : colonOff();
-
-    Wire.beginTransmission(_address);
-    Wire.write(0x00);  // start at address 0x0
-
-    for(int i = 0; i < 8; i++) {
-        if(i > 2) {
-            Wire.write(_displayBuffer[i] & 0xFF);
-            Wire.write(_displayBuffer[i] >> 8);
-        } else {
-            Wire.write(0x00);  //blank month, first 3 16 bit locations
-            Wire.write(0x00);
-        }
-    }
-    Wire.endTransmission();
-    on();
+{    
+    showInt(true);
 }
 
 // Show month, assumes showAnimate1() was already called
@@ -478,17 +477,25 @@ void clockDisplay::setHour(uint16_t hourNum)
 
     _hour = hourNum;
 
-    // Show it as 12 hour time
-    // AM/PM will be set on show() to avoid being overwritten
-    if(hourNum == 0) {
-        _displayBuffer[6] = makeNum(12);
-    } else if(hourNum > 12) {
-        // pm
-        _displayBuffer[6] = makeNum(hourNum - 12);
-    } else if(hourNum <= 12) {
-        // am
-        _displayBuffer[6] = makeNum(hourNum);
+    if(!_mode24) {
+      
+        if(hourNum == 0) {
+            _displayBuffer[6] = makeNum(12);
+        } else if(hourNum > 12) {
+            // pm
+            _displayBuffer[6] = makeNum(hourNum - 12);
+        } else if(hourNum <= 12) {
+            // am
+            _displayBuffer[6] = makeNum(hourNum);
+        }
+        
+    } else {
+      
+        _displayBuffer[6] = makeNum(hourNum);      
+        
     }
+
+    // AM/PM will be set on show() to avoid being overwritten
 }
 
 // Place LED pattern in minute position in buffer, which is 7
@@ -511,28 +518,29 @@ void clockDisplay::setMinute(int minNum)
 
 void clockDisplay::AM() 
 {
-    _displayBuffer[3] = _displayBuffer[3] | 0x0080;
-    _displayBuffer[3] = _displayBuffer[3] & 0x7FFF;
-    return;
+    _displayBuffer[3] |= 0x0080;
+    _displayBuffer[3] &= 0x7FFF;
 }
 
 void clockDisplay::PM() 
 {
-    _displayBuffer[3] = _displayBuffer[3] | 0x8000;
-    _displayBuffer[3] = _displayBuffer[3] & 0xFF7F;
-    return;
+    _displayBuffer[3] |= 0x8000;
+    _displayBuffer[3] &= 0xFF7F;   
+}
+
+void clockDisplay::AMPMoff() 
+{
+    _displayBuffer[3] &= 0x7F7F;
 }
 
 void clockDisplay::colonOn() 
 {
-    _displayBuffer[4] = _displayBuffer[4] | 0x8080;
-    return;
+    _displayBuffer[4] |= 0x8080;    
 }
 
 void clockDisplay::colonOff() 
 {
-    _displayBuffer[4] = _displayBuffer[4] & 0x7F7F;
-    return;
+    _displayBuffer[4] &= 0x7F7F;    
 }
 
 // clears the display RAM and only shows the provided month
@@ -545,11 +553,15 @@ void clockDisplay::showOnlyMonth(int monthNum)
         if(monthNum < 1) monthNum = 1;
         if(monthNum > 12) monthNum = 12;
     }
-
+    
+#ifdef IS_ACAR_DISPLAY    
+    directCol(0, makeNum(monthNum));
+#else
     monthNum--;
     directCol(0, makeAlpha(months[monthNum][0]));
     directCol(1, makeAlpha(months[monthNum][1]));
     directCol(2, makeAlpha(months[monthNum][2]));
+#endif    
 }
 
 // clears the display RAM and only shows the word save
@@ -596,6 +608,7 @@ void clockDisplay::showOnlySettingVal(const char* setting, int8_t val, bool clea
 void clockDisplay::showOnlyDay(int dayNum) 
 {    
     clearDisplay();
+    
     directCol(3, makeNum(dayNum));
 }
 
@@ -613,21 +626,29 @@ void clockDisplay::showOnlyHour(int hourNum)
 {
     clearDisplay();
 
-    if(hourNum == 0) {
-        directCol(6, makeNum(12));
-        directAM();
-    }
-
-    else if(hourNum > 12) {
-        // pm
-        directCol(6, makeNum(hourNum - 12));
-    } else {
-        // am
+    if(!_mode24) {
+      
+        if(hourNum == 0) {
+            directCol(6, makeNum(12));
+            directAM();
+        } else if(hourNum > 12) {
+            // pm
+            directCol(6, makeNum(hourNum - 12));
+        } else {
+            // am
+            directCol(6, makeNum(hourNum));
+            directAM();
+        }
+    
+        (hourNum > 11) ? directPM() : directAM();
+        
+    }  else {
+      
         directCol(6, makeNum(hourNum));
-        directAM();
+        
+        directAMPMoff();
+      
     }
-
-    (hourNum > 11) ? directPM() : directAM();    
 }
 
 // clears the display RAM and only shows the provided minute
@@ -676,24 +697,46 @@ void clockDisplay::directCol(int col, int segments)
     Wire.endTransmission();
 }
 
+void clockDisplay::directAMPM(int val1, int val2) 
+{
+    Wire.beginTransmission(_address);
+    Wire.write(0x6);  // 2 bytes per col * position, day is at pos
+    // leave buffer intact, direclty write to display
+    Wire.write(val1 & 0xff);
+    Wire.write(val2 & 0xff);
+    Wire.endTransmission();
+}
+    
 void clockDisplay::directAM() 
 {
+    directAMPM(0x80, 0x00);
+
+    /*
     Wire.beginTransmission(_address);
     Wire.write(0x6);  // 2 bytes per col * position, day is at pos
     // leave buffer intact, direclty write to display
     Wire.write(0x80);
     Wire.write(0x0);
     Wire.endTransmission();
+    */
 }
 
 void clockDisplay::directPM() 
 {
+    directAMPM(0x00, 0x80);
+    /*
     Wire.beginTransmission(_address);
     Wire.write(0x6);  // 2 bytes per col * position, day is at pos
     // leave buffer intact, direclty write to display
     Wire.write(0x0);
     Wire.write(0x80);
     Wire.endTransmission();
+    */
+}
+
+void clockDisplay::directAMPMoff() 
+{
+    directAMPM(0x00, 0x00);
 }
 
 // Set the displayed time with supplied DateTime object
@@ -793,3 +836,14 @@ bool clockDisplay::isRTC()
 {    
     return _rtc;
 }
+
+void clockDisplay::set1224(bool hours24)
+{
+    _mode24 = hours24 ? true : false;
+}
+
+bool clockDisplay::get1224(void)
+{
+    return _mode24;
+}
+    

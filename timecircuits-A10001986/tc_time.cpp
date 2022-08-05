@@ -21,6 +21,20 @@
  * 
  */
 
+
+/* Time travel:
+ *  
+ * Time travel works as follows:
+ * First, enter a date and a time through the keypad, either mmddyyyy or mmddyyyyhhmm, then
+ * press ENTER. Note that there is no visual feed back, like in the movie.
+ * If the date or time is invalid, the sound will hint you to this.
+ * To activate the time travel function, then hold "0" on the keypad for 2 seconds. A sound
+ * will activate, and you will travel in time: The destination time is now present time, and
+ * your old present time is not stored in the last departure time.
+ * 
+ * To return to actual present time, hold "9" for 2 seconds.
+ */
+
 // not yet supported by esp32 1.0.x
 //#include "esp_sntp.h" 
 
@@ -28,6 +42,7 @@
 
 bool autoTrack = false;
 bool autoReadjust = false;
+bool alarmDone = false;
 int8_t minPrev;  // track previous minute
 
 bool x;  // for tracking second change
@@ -147,6 +162,12 @@ void time_setup()
     destinationTime.begin();
     departedTime.begin();
 
+    // initialize clock mode: 12 hour vs 24 hour
+    bool mymode24 = (int)atoi(settings.mode24) ? true : false;
+    presentTime.set1224(mymode24);
+    destinationTime.set1224(mymode24);
+    departedTime.set1224(mymode24);
+
     // configure presentTime as a display that will hold real time
     presentTime.setRTC(true);  
 
@@ -222,6 +243,10 @@ void time_setup()
         //EEPROM.write(AUTOINTERVAL_PREF, 1);  // default to first option
         //EEPROM.commit();
     }
+
+    // load alarm from EEPROM
+    // Don't care if data invalid, alarm off in that case
+    loadAlarm();
 
     // if non zero autoInterval -> use auto times, load the first one
     if(autoTimeIntervals[autoInterval]) {                    
@@ -360,6 +385,19 @@ void time_loop()
                 autoReadjust = false;
             }
 
+            // Handle alarm
+
+            if(alarmOnOff) {
+                if((alarmHour == dt.hour()) && (alarmMinute == dt.minute()) ) {
+                    if(!alarmDone) {
+                        alarmDone = true;
+                        play_alarm();
+                    }
+                } else {
+                    alarmDone = false;
+                } 
+            }
+
             // Handle autoInterval (aka autoTrack):
             
             // Do this on previous minute:59
@@ -464,7 +502,7 @@ void timeTravel()
     timetravelNow = millis();
     timeTraveled = true;
     beepOn = false;
-    play_file("/timetravel.mp3", getVolume());
+    play_file("/timetravel.mp3", getVolume(), 0);
     allOff();
 
     // Copy present time to last time departed
@@ -536,7 +574,7 @@ void resetPresentTime()
   
     if(presentTimeBogus) {
         presentTimeBogus = false;
-        play_file("/timetravel.mp3", getVolume());
+        play_file("/timetravel.mp3", getVolume(), 0);
     }
   
     allOff();

@@ -47,16 +47,12 @@
 #define PRES_TIME_ADDR 0x72
 #define DEPT_TIME_ADDR 0x74
 
-// EEPROM map
-// We use 1(padded to 8) + 10*3 bytes of EEPROM space at 0x0. Let's hope no one is using this already.
-// Defined in clockdisplay.h
-//#define DEST_TIME_PREF    ... 
-//#define PRES_TIME_PREF    ...
-//#define DEPT_TIME_PREF    ...
-#define   AUTOINTERVAL_PREF 0x00  // autoInterval save location (1 byte)
-
 extern uint8_t        autoInterval;
 extern const uint8_t  autoTimeIntervals[5];
+
+extern bool           alarmOnOff;
+extern uint8_t        alarmHour;
+extern uint8_t        alarmMinute;
 
 extern clockDisplay destinationTime;
 extern clockDisplay presentTime;

@@ -52,6 +52,7 @@ struct Settings {
     //char beepSound[3] = "0";
     char wifiConRetries[4] = "3";   // Default: 3 retries
     char wifiConTimeout[4] = "7";   // Default: 7 seconds time-out
+    char mode24[4] = "0";           // Default: 0 = 12-hour-mode
 };
 
 extern struct Settings settings;
