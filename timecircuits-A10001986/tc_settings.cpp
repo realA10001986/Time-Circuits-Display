@@ -101,10 +101,15 @@ void settings_setup()
           if(json["wifiConTimeout"]) {
               strcpy(settings.wifiConTimeout, json["wifiConTimeout"]);
           } else writedefault = true;
+          if(json["mode24"]) {
+              strcpy(settings.mode24, json["mode24"]);
+          } else writedefault = true;
           
         } else {
           
-          Serial.println("settings_setup: Failed to load json config");
+          Serial.println("settings_setup: Failed to parse json config");
+
+          writedefault = true;
           
         }
         
@@ -156,6 +161,7 @@ void write_settings()
   //json["beepSound"] = settings.beepSound;
   json["wifiConRetries"] = settings.wifiConRetries;
   json["wifiConTimeout"] = settings.wifiConTimeout;
+  json["mode24"] = settings.mode24;
 
   File configFile = SPIFFS.open("/config.json", FILE_WRITE);
 

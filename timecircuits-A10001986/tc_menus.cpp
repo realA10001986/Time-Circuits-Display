@@ -31,23 +31,37 @@
  * The menu is involked by holding the ENTER button.
  * First step is to choose a menu item. The available "items" are
  *    - enter custom dates/times for the three displays
+ *    - set the alarm ("ALA-RM")
  *    - select the autoInterval ("PRE-SET")
  *    - select the brightness for the three displays ("BRI-GHT")
  *    - view network data, ie IP address ("NET-WRK")
  *    - quit the menu ("END")
  *  Pressing ENTER cycles through the list, holding ENTER selects an item, ie a mode.
- *  If mode is "enter custom dates/times":
+ *  If mode is to enter custom dates/times:
  *      - the field to enter data into is shown (exclusively)
- *      - 2 or 4 digits can be entered, or ENTER can be pressed, upon which the next field is activated.
- *        (Note that the month needs to be entered numerically, and the hour needs to be entered in 24
- *        hour mode, which is then internally converted to 12 hour mode.)
+ *      - data entry works as follows: 
+ *        ) a pre-set is shown in the field
+ *        ) if you want to keep this pre-set, press ENTER to proceed to next field.
+ *        ) if you enter a digit, the pre-set is overwritten
+ *        ) if you enter 2 (for year: 4) digits, the menu proceeds to the next field
+ *        ) if you enter less than the maximum digits, you can press ENTER to proceed
+ *          to the next field.
+ *        Note that the month needs to be entered numerically, and the hour needs to be entered in 24
+ *        hour mode, which is then internally converted to 12 hour mode.
  *      - After entering data into all fields, the data is saved and the menu is left automatically.
  *      - Note that after entering dates/times into the "destination" or "last departure" displays,
  *        autoInterval is set to 0 and your entered date/time(s) are shown permanently (see below).
  *      - If you entered a custom date/time into the "present" time display, this time is then
  *        used as actual the present time, and continues to run like a clock. (As opposed to the 
  *        "destination" and "last departure" times, which are stale.)
- *  If mode is "select AutoInterval" (display shows "INT")
+ *  If mode is to set the alarm:
+ *      - First option is "on" of "off". Press ENTER to toggle, hold ENTER to proceed.
+ *      - Next, enter the hour in 24-hour-format. This works in the same way as described above.
+ *      - Next, enter the minute.
+ *      - "SAVE" is shown briefly, the alarm is saved.
+ *      Note that the alarm is a recurring alarm; it will sound every day at the programmed time,
+ *      unless switched off through the menu.
+ *  If mode is to select the AutoInterval" (display shows "INT")
  *      - Press ENTER to cycle through the possible autoInverval settings.
  *      - Hold ENTER for 2 seconds to select the shown value and exit the menu ("SAVE" is displayed briefly)
  *      - 0 makes your custom "destination" and "last departure" times to be shown permanently.
@@ -77,6 +91,10 @@ bool isSetUpdate = false;
 bool isYearUpdate = false;
 
 clockDisplay* displaySet;  // the current display
+
+bool    alarmOnOff = false;
+uint8_t alarmHour = 0;
+uint8_t alarmMinute = 0;
 
 /*
  * menu_setup()
@@ -254,6 +272,17 @@ void enter_menu() {
             
         }  
 
+    } else if(displayNum == MODE_ALRM) {
+
+        allOff();
+        waitForEnterRelease();
+
+        // Set alarm              
+        doSetAlarm();
+
+        allOff();
+        waitForEnterRelease(); 
+
     } else if(displayNum == MODE_AINT) {  // Select autoInterval
 
         allOff();
@@ -410,8 +439,16 @@ void displayHighlight(int& number)
             departedTime.show();
             displaySet = &departedTime;
             break;
-        case MODE_AINT:  // auto enable
-            destinationTime.showOnlySettingVal("PRE", -1, true);  // display PRESET, no numbers, clear rest of screen
+        case MODE_ALRM:   // Alarm
+            destinationTime.showOnlySettingVal("ALA", -1, true);  // display ALA-RM, no numbers, clear rest of screen
+            presentTime.showOnlySettingVal("RM", -1, true);  
+            destinationTime.on();
+            presentTime.on();            
+            departedTime.off();
+            displaySet = &destinationTime;
+            break;
+        case MODE_AINT:  // autoInterval
+            destinationTime.showOnlySettingVal("PRE", -1, true);  // display PRE-SET, no numbers, clear rest of screen
             presentTime.showOnlySettingVal("SET", -1, true);  
             destinationTime.on();
             presentTime.on();            
@@ -419,7 +456,7 @@ void displayHighlight(int& number)
             displaySet = NULL;
             break;
         case MODE_BRI:  // Brightness
-            destinationTime.showOnlySettingVal("BRI", -1, true);  // display BRIGHT, no numbers, clear rest of screen
+            destinationTime.showOnlySettingVal("BRI", -1, true);  // display BRI-GHT, no numbers, clear rest of screen
             presentTime.showOnlySettingVal("GHT", -1, true);  
             destinationTime.on();
             presentTime.on();            
@@ -427,7 +464,7 @@ void displayHighlight(int& number)
             displaySet = NULL;
             break;
         case MODE_NET:  // Network info
-            destinationTime.showOnlySettingVal("NET", -1, true);  // display NETWRK, no numbers, clear rest of screen
+            destinationTime.showOnlySettingVal("NET", -1, true);  // display NET-WRK, no numbers, clear rest of screen
             presentTime.showOnlySettingVal("WRK", -1, true);  
             destinationTime.on();
             presentTime.on();            
@@ -435,7 +472,7 @@ void displayHighlight(int& number)
             displaySet = NULL;
             break;
         case MODE_END:  // end
-            destinationTime.showOnlySettingVal("END", -1, true);  // display end, no numbers, clear rest of screen
+            destinationTime.showOnlySettingVal("END", -1, true);  // display END, no numbers, clear rest of screen
             destinationTime.on();
             destinationTime.setColon(false);            
             presentTime.off();
@@ -588,6 +625,154 @@ void setField(uint16_t& number, uint8_t field, int year = 0, int month = 0)
 }  
 
 /* 
+ *  Load the Alarm time and settings from the EEPROM
+ *  
+ */
+bool loadAlarm() 
+{
+    #ifdef TC_DBG
+    Serial.println("Load Alarm");
+    #endif
+
+    uint8_t loadBuf[4];    // on/off, hour, minute, checksum
+    uint16_t sum = 0;
+    int i;    
+        
+    for(i = 0; i < 4; i++) {
+        loadBuf[i] = EEPROM.read(ALARM_PREF + i);
+        if(i < 3) sum += (loadBuf[i] ^ 0x55);
+    }
+
+    if( ((sum & 0xff) != loadBuf[3])  ||
+        (loadBuf[1] > 23)             ||
+        (loadBuf[2] > 59) ) {
+          
+        Serial.println("loadAlarm: Invalid alarm data");
+
+        alarmOnOff = false;
+        alarmHour = alarmMinute = 0;
+    
+        return false;
+    }        
+
+    alarmOnOff = loadBuf[0] ? true : false;
+    alarmHour = loadBuf[1];
+    alarmMinute = loadBuf[2];
+
+    return true;
+}
+
+void saveAlarm() 
+{
+    #ifdef TC_DBG
+    Serial.println("Save Alarm");
+    #endif
+
+    uint8_t savBuf[4];    // on/off, hour, minute, checksum
+    uint16_t sum = 0;
+    int i;    
+
+    savBuf[0] = alarmOnOff ? 1 : 0;
+    savBuf[1] = alarmHour;
+    savBuf[2] = alarmMinute;
+        
+    for(i = 0; i < 3; i++) {
+        EEPROM.write(ALARM_PREF + i, savBuf[i]);
+        sum += (savBuf[i] ^ 0x55);
+    }
+    EEPROM.write(ALARM_PREF + 3, (sum & 0xff));
+    EEPROM.commit();
+}    
+
+// Set Alarm            
+void doSetAlarm() 
+{
+    bool alarmDone = false;
+    
+    uint16_t newAlarmHour = alarmHour;
+    uint16_t newAlarmMinute = alarmMinute;
+    
+    #ifdef TC_DBG
+    Serial.println("doSetAlarm() involked");
+    #endif
+
+    // On/Off
+    
+    displaySet->showOnlySettingVal(alarmOnOff ? "ON" : "OFF", -1, true);
+    displaySet->on();
+    
+    isEnterKeyHeld = false;
+
+    timeout = 0;  // reset timeout
+
+    // Wait for enter
+    while(!checkTimeOut() && !alarmDone) {
+      
+      // If pressed
+      if(digitalRead(ENTER_BUTTON)) {
+        
+          // wait for release
+          while(!checkTimeOut() && digitalRead(ENTER_BUTTON)) {
+              // If hold threshold is passed, return false */
+              myloop();
+              if(isEnterKeyHeld) {
+                  isEnterKeyHeld = false;
+                  alarmDone = true;
+                  break;              
+              }
+              delay(10); 
+          }
+
+          if(!checkTimeOut() && !alarmDone) {
+              
+              timeout = 0;  // button pressed, reset timeout
+
+              alarmOnOff = !alarmOnOff;       
+              
+              displaySet->showOnlySettingVal(alarmOnOff ? "ON" : "OFF", -1, true);
+              
+          }
+          
+      } else {
+
+          myloop();
+          delay(100);
+          
+      }
+          
+    }
+
+    if(checkTimeOut()) {
+        return;  
+    }
+
+    // Get hour
+    setUpdate(newAlarmHour, FIELD_HOUR);
+    prepareInput(newAlarmHour);
+    waitForEnterRelease();       
+    setField(newAlarmHour, FIELD_HOUR, 0, 0);  
+
+    // Get minute
+    setUpdate(newAlarmMinute, FIELD_MINUTE);
+    prepareInput(newAlarmMinute);
+    waitForEnterRelease();       
+    setField(newAlarmMinute, FIELD_MINUTE, 0, 0);  
+
+    // Do nothing if there was a timeout waiting for button presses                                                  
+    if(!checkTimeOut()) {
+    
+        displaySet->showOnlySave();
+
+        alarmHour = newAlarmHour;
+        alarmMinute = newAlarmMinute;
+
+        // Save it
+        saveAlarm();
+        
+        mydelay(1000);
+    }
+}
+/* 
  *  Load the autoInterval from Settings in memory (config file is not reloaded)
  *  
  *  Note: The autoInterval is no longer saved to the EEPROM.
@@ -708,6 +893,7 @@ void doSetAutoInterval()
 
         // Save it
         saveAutoInterval();
+        updateConfigPortalValues();
         
         mydelay(1000);
                 
@@ -783,12 +969,13 @@ void doSetBrightness(clockDisplay* displaySet) {
         mydelay(1000);        
         
         allLampTest();  // turn on all the segments
-
+        
         // Convert bri values to strings, write to settings, write settings file
         sprintf(settings.destTimeBright, "%d", destinationTime.getBrightness());           
         sprintf(settings.presTimeBright, "%d", presentTime.getBrightness());
-        sprintf(settings.lastTimeBright, "%d", departedTime.getBrightness());        
+        sprintf(settings.lastTimeBright, "%d", departedTime.getBrightness());               
         write_settings();
+        updateConfigPortalValues();
     }
 
     waitForEnterRelease();

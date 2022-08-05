@@ -250,11 +250,11 @@ void keypad_loop()
             
             Serial.println(F("keypad_loop: Date is too long or too short"));
                         
-            play_file("/baddate.mp3", getVolume());   
+            play_file("/baddate.mp3", getVolume(), 0);   
                  
         } else {
         
-            play_file("/enter.mp3", getVolume());
+            play_file("/enter.mp3", getVolume(), 0);
 
             #ifdef TC_DBG
             Serial.print(F("date entered: ["));

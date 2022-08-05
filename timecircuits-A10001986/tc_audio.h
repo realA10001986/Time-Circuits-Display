@@ -57,8 +57,9 @@
 extern void audio_setup();
 extern void play_keypad_sound(char key);
 extern void play_startup();
+extern void play_alarm();
 extern void audio_loop();
-extern void play_file(const char *audio_file, double volume = 0.1, int channel = 0, bool firstStart = false);
+extern void play_file(char *audio_file, double volume = 0.1, int channel = 0);
 extern double getVolume();
 extern bool beepOn;
 

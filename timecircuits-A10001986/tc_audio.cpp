@@ -29,10 +29,6 @@ AudioGeneratorMP3 *beep;
 AudioFileSourceSPIFFS *mySPIFFS0;
 AudioFileSourceSPIFFS *mySPIFFS1;
 
-/*
-AudioGeneratorWAV *wav = new AudioGeneratorWAV();
-AudioFileSourceFunction *genFile;
-*/
 AudioFileSourceSPIFFS *file[2];
 AudioOutputI2S *out;
 AudioOutputMixer *mixer;
@@ -77,68 +73,68 @@ void audio_setup()
     out = new AudioOutputI2S(0, 0, 32, 0);
     out->SetOutputModeMono(true);
     out->SetPinout(I2S_BCLK, I2S_LRCLK, I2S_DIN);
+    
     mixer = new AudioOutputMixer(8, out);
-    mp3 = new AudioGeneratorMP3();
+
+    mp3  = new AudioGeneratorMP3();
     beep = new AudioGeneratorMP3();
+    mySPIFFS0 = new AudioFileSourceSPIFFS();
+    mySPIFFS1 = new AudioFileSourceSPIFFS();
+    stub[0] = mixer->NewInput();
+    stub[1] = mixer->NewInput();
+   
 }
 
 void play_startup() 
 {
-    play_file("/startup.mp3", getVolume(), 0, true);
+    play_file("/startup.mp3", getVolume(), 0);
+}
+
+void play_alarm() 
+{
+#ifndef TWPRIVATE
+    play_file("/alarm.mp3", getVolume(), 0);
+#else    
+    play_file("/alarm2.mp3", getVolume(), 0);
+#endif    
 }
 
 void play_keypad_sound(char key) 
 {
+    char buf[16] = "/Dtmf-0.mp3\0";
+    
     if(key) {
         beepOn = false;
-        switch(key) {
-          case '0': play_file("/Dtmf-0.mp3", getVolume(), 0, false); break;
-          case '1': play_file("/Dtmf-1.mp3", getVolume(), 0, false); break;
-          case '2': play_file("/Dtmf-2.mp3", getVolume(), 0, false); break;
-          case '3': play_file("/Dtmf-3.mp3", getVolume(), 0, false); break;
-          case '4': play_file("/Dtmf-4.mp3", getVolume(), 0, false); break;
-          case '5': play_file("/Dtmf-5.mp3", getVolume(), 0, false); break;
-          case '6': play_file("/Dtmf-6.mp3", getVolume(), 0, false); break;
-          case '7': play_file("/Dtmf-7.mp3", getVolume(), 0, false); break;
-          case '8': play_file("/Dtmf-8.mp3", getVolume(), 0, false); break;
-          case '9': play_file("/Dtmf-9.mp3", getVolume(), 0, false); break;
-        }
+        buf[6] = key;
+        play_file(buf, getVolume(), 0);
     }
 }
 
 /*
  * audio_loop()
+ * 
  */
 void audio_loop() 
 {
-    if (mp3->isRunning()) {
-        if (!mp3->loop()) {
+    if(mp3->isRunning()) {
+        if(!mp3->loop()) {
             mp3->stop();
             stub[0]->stop();
             stub[0]->flush();
             out->flush();
         }
     }
-    if (beep->isRunning()) {
-        if (!beep->loop()) {
+    if(beep->isRunning()) {
+        if(!beep->loop()) {
             beep->stop();
             stub[1]->stop();
             stub[1]->flush();
             out->flush();
         }
     }
-    /*
-    if (wav->isRunning()) {
-        if (!wav->loop()) {
-            wav->stop();
-            out->flush();
-            //delete genFile;
-        }
-    }
-    */
 }
 
-void play_file(const char *audio_file, double volume, int channel, bool firstStart) 
+void play_file(char *audio_file, double volume, int channel) 
 {
     if(audioMute) return;
 
@@ -151,27 +147,18 @@ void play_file(const char *audio_file, double volume, int channel, bool firstSta
     Serial.println(volume);
     #endif
 
-    if(!firstStart) {
-        firstStart = false;
-        if(mp3->isRunning()) {          
-            mp3->stop();
-            stub[0]->stop();
-            stub[0]->flush();
-            out->flush();          
-        }
-        if(beep->isRunning()) {          
-            beep->stop();
-            stub[1]->stop();
-            stub[1]->flush();
-            out->flush();
-        }
-    } else {
-        mp3 = new AudioGeneratorMP3();
-        beep = new AudioGeneratorMP3();
-        mySPIFFS0 = new AudioFileSourceSPIFFS();
-        mySPIFFS1 = new AudioFileSourceSPIFFS();
-        stub[0] = mixer->NewInput();
-        stub[1] = mixer->NewInput();
+    // If something is currently on, kill it
+    if(mp3->isRunning()) {          
+        mp3->stop();
+        stub[0]->stop();
+        stub[0]->flush();
+        out->flush();          
+    }
+    if(beep->isRunning()) {          
+        beep->stop();
+        stub[1]->stop();
+        stub[1]->flush();
+        out->flush();
     }
 
     stub[channel]->SetGain(volume);
@@ -179,8 +166,7 @@ void play_file(const char *audio_file, double volume, int channel, bool firstSta
     if(channel == 0) {        
         mySPIFFS0->open(audio_file);  
         mp3->begin(mySPIFFS0, stub[0]);
-    } else {
-        //beep = new AudioGeneratorMP3();
+    } else {        
         mySPIFFS1->open(audio_file);
         beep->begin(mySPIFFS1, stub[1]);
     }
@@ -190,6 +176,7 @@ void play_file(const char *audio_file, double volume, int channel, bool firstSta
 double getVolume() 
 {
     double vol_val = analogRead(VOLUME);
+    
     vol_val = vol_val * 1/4095;
 
     return vol_val;
