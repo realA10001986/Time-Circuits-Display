@@ -20,13 +20,15 @@ Changes to the original firmware (based on 2022-01 version):
 - fixed "month-off-by-one" bug, and others
 - More stable WiFi connections at startup
 - Configurable WiFi connection timeouts and retries
+- Alarm function
+- Network keypad menu to show the current IP address
 - etc
 
 Short summary of first steps:
 - As long as the device is unconfigured (or later for some reason fails to connect to a configured network), it starts in "access point" mode, ie it creates an access point named "TCD-AP". The default IP in access point mode is 192.168.4.1. 
 - Go to http://192.168.4.1 to enter the config portal, the go to the "WiFi" page and configure your Wifi network.
 - After saving the settings, the device reboots and tries to connect to your configured WiFi network. If you entered wrong data, or the network is unavailable, this can take a while, and the device finally again starts in access point mode ("TCD-AP").
-- Then re-open the config portal (if the connection was successful, first you need to find out about the IP address, of course; otherwise connect to the "TCP-AP" again) and configure other settings on the "Setup" page, eg WiFi connection timeout, WiFi connection retries, NTP server and time zone. A list of valid times zones is accessible by a link on the settings page.
+- Then re-open the config portal (if the connection was successful, first you need to find out about the IP address, of course; you can do this through the keypad menu, see below) and configure other settings on the "Setup" page, eg WiFi connection timeout, WiFi connection retries, NTP server and time zone. A list of valid times zones is accessible by a link on the settings page.
 
 Time travel
 
@@ -45,8 +47,10 @@ The menu is involked by holding the ENTER button.
 
 First step is to choose a menu item. The available "items" are   
 - enter custom dates/times for the three displays
+- set an alarm ("ALA-RM")
 - select the autoInterval ("PRE-SET")
 - select the brightness for the three displays ("BRI-GHT")
+- show the current IP address ("NET-WRK")
 - quit the menu ("END")
  
 Pressing ENTER cycles through the list, holding ENTER selects an item, ie a mode.
@@ -57,19 +61,28 @@ If mode is "enter custom dates/times":
 - After entering data into all fields, the data is saved and the menu is left automatically.
 - Note that after entering dates/times into the "destination" or "last departure" displays, autoInterval is set to 0 and your entered date/time(s) are shown permanently (see below).
 - If you entered a custom date/time into the "present" time display, this time is then used as actual the present time, and continues to run like a clock. (As opposed to the "destination" and "last departure" times, which are stale.)
+
+If the mode is setting up the alarm:
+- Press ENTER to toggle the alarm on and off, hold ENTER to proceed
+- Then enter the hour and minutes. This works as described above.
+- The menu is left automatically after entering the minute.
+Note that the alarm is recurring, ie it repears every day at the programmed time. It must be switched off in the keypad menu.
  
-If mode is "select AutoInterval" (display shows "INT")
+If mode is "select AutoInterval" (display shows "INT"):
 - Press ENTER to cycle through the possible autoInverval settings.
 - Hold ENTER to select the shown value and exit the menu ("SAVE" is displayed briefly)
 - 0 makes your custom "destination" and "last departure" times to be shown permanently. (CUS-TOM is displayed as a reminder)
 - Non-zero values make the clock cycle through a number of pre-programmed times, your custom times are ignored. The value means "minutes" (hence "MIN-UTES").               
  
-If mode is "select brightness" (display shows "LVL")
+If mode is "select brightness" (display shows "LVL"):
 - Press ENTER to cycle through the possible levels (1-5)
 - Hold ENTER to use current value and jump to next display
 - After the third display, "SAVE" is displayed briefly and the menu is left automatically.
  
+If the mode is to show the IP:
+- Hold ENTER to leave the menu
+ 
  If mode is "END"
- - Hold ENTER to quit the menu
+ - Hold ENTER to leave the menu
  
 
