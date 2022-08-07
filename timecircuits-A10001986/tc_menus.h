@@ -62,6 +62,8 @@ void setField(uint16_t& number, uint8_t field, int year, int month);
 bool loadAlarm();
 void saveAlarm();
 void doSetAlarm();
+extern void alarmOff();
+extern bool alarmOn();
 bool loadAutoInterval();
 void saveAutoInterval();
 extern void putAutoInt(int position);
@@ -70,6 +72,7 @@ void doSetBrightness(clockDisplay* displaySet);
 void doShowNetInfo();
 void waitForEnterRelease();
 void prepareInput(uint16_t& number);
+void waitAudioDone();
 
 extern void animate();
 extern void allLampTest();

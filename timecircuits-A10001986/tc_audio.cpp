@@ -181,3 +181,9 @@ double getVolume()
 
     return vol_val;
 }
+
+bool checkAudioDone()
+{
+    if( (mp3->isRunning()) || (beep->isRunning()) ) return false;
+    return true;
+}

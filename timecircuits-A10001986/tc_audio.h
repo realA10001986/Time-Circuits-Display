@@ -61,6 +61,7 @@ extern void play_alarm();
 extern void audio_loop();
 extern void play_file(char *audio_file, double volume = 0.1, int channel = 0);
 extern double getVolume();
+extern bool checkAudioDone();
 extern bool beepOn;
 
 extern bool audioMute;

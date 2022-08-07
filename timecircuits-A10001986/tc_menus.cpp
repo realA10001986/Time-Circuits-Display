@@ -95,8 +95,8 @@ bool isYearUpdate = false;
 clockDisplay* displaySet;  // the current display
 
 bool    alarmOnOff = false;
-uint8_t alarmHour = 0;
-uint8_t alarmMinute = 0;
+uint8_t alarmHour = 255;
+uint8_t alarmMinute = 255;
 
 /*
  * menu_setup()
@@ -653,14 +653,12 @@ bool loadAlarm()
         if(i < 3) sum += (loadBuf[i] ^ 0x55);
     }
 
-    if( ((sum & 0xff) != loadBuf[3])  ||
-        (loadBuf[1] > 23)             ||
-        (loadBuf[2] > 59) ) {
+    if((sum & 0xff) != loadBuf[3]) {
           
         Serial.println("loadAlarm: Invalid alarm data");
 
         alarmOnOff = false;
-        alarmHour = alarmMinute = 0;
+        alarmHour = alarmMinute = 255;    // means "unset"
     
         return false;
     }        
@@ -690,17 +688,37 @@ void saveAlarm()
         EEPROM.write(ALARM_PREF + i, savBuf[i]);
         sum += (savBuf[i] ^ 0x55);
     }
-    EEPROM.write(ALARM_PREF + 3, (sum & 0xff));
+    EEPROM.write(ALARM_PREF + 3, (sum & 0xff));   
+    
     EEPROM.commit();
 }    
+
+void alarmOff()
+{
+    alarmOnOff = false;
+    saveAlarm();
+}
+
+bool alarmOn()
+{
+    if(alarmHour <= 23 && alarmMinute <= 59) {
+        alarmOnOff = true;
+        saveAlarm();       
+    } else {
+        return false;
+    }
+
+    return true;
+}
 
 // Set Alarm            
 void doSetAlarm() 
 {
     bool alarmDone = false;
-    
-    uint16_t newAlarmHour = alarmHour;
-    uint16_t newAlarmMinute = alarmMinute;
+
+    bool newAlarmOnOff = alarmOnOff;
+    uint16_t newAlarmHour = (alarmHour <= 23) ? alarmHour : 0;
+    uint16_t newAlarmMinute = (alarmMinute <= 59) ? alarmMinute : 0;
     
     #ifdef TC_DBG
     Serial.println("doSetAlarm() involked");
@@ -708,7 +726,7 @@ void doSetAlarm()
 
     // On/Off
     
-    displaySet->showOnlySettingVal(alarmOnOff ? "ON" : "OFF", -1, true);
+    displaySet->showOnlySettingVal(newAlarmOnOff ? "ON" : "OFF", -1, true);
     displaySet->on();
     
     isEnterKeyHeld = false;
@@ -737,9 +755,9 @@ void doSetAlarm()
               
               timeout = 0;  // button pressed, reset timeout
 
-              alarmOnOff = !alarmOnOff;       
+              newAlarmOnOff = !newAlarmOnOff;       
               
-              displaySet->showOnlySettingVal(alarmOnOff ? "ON" : "OFF", -1, true);
+              displaySet->showOnlySettingVal(newAlarmOnOff ? "ON" : "OFF", -1, true);
               
           }
           
@@ -773,6 +791,9 @@ void doSetAlarm()
     
         displaySet->showOnlySave();
 
+        waitAudioDone();
+
+        alarmOnOff = newAlarmOnOff;
         alarmHour = newAlarmHour;
         alarmMinute = newAlarmMinute;
 
@@ -1098,6 +1119,16 @@ void waitForEnterRelease()
     isEnterKeyHeld = false;
     isEnterKeyDouble = false;
     return;
+}
+
+void waitAudioDone()
+{
+  int timeout = 100;
+  
+  while(checkAudioDone() && timeout--) {       
+       myloop();
+       delay(20);
+  }
 }
 
 /*

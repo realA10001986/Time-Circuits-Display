@@ -37,6 +37,8 @@
 // Uncomment if  month is 2 digits, as per the original A Car display.
 // Support is incomplete, as menu system expects month to be literal.
 //define IS_ACAR_DISPLAY 
+
+extern bool alarmOnOff;
  
 struct dateStruct {
     uint16_t year;
