@@ -40,10 +40,10 @@
 
 #include "tc_time.h"
 
-bool autoTrack = false;
+bool autoIntDone = false;
 bool autoReadjust = false;
 bool alarmDone = false;
-int8_t minPrev;  // track previous minute
+int8_t minNext;  
 
 bool x;  // for tracking second change
 bool y;  
@@ -103,16 +103,16 @@ dateStruct departedTimes[8] = {
     {1985, 10, 26, 11, 35},
     {1985, 10, 27,  2, 42},
     {1955, 11, 12, 21, 44},
-    {1955, 11, 13, 12, 0}};
+    {1955, 11, 13, 12,  0}};
 #else  
-    {1977,  1,  6, 17, 28},       // TW private
+    {2017,  7, 11, 10, 11},       // TW private
     {1988,  6,  3, 15, 30},    
     {1943,  3, 15,  7, 47},     
     {2016,  6, 22, 16, 11},    
     {1982,  5, 15,  9, 41},     
     {1943, 11, 25, 11, 11},   
     {1970,  5, 26,  8, 22},     
-    {1977,  1,  4, 16, 34}};    
+    {2021,  5,  5, 10,  9}};    
 #endif    
 
 int8_t autoTime = 0;  // selects the above array time
@@ -239,14 +239,8 @@ void time_setup()
         presentTime.save();
     }
 
-    // load autoInterval (from settings, not EEPROM)
-    if(!loadAutoInterval()) {  
-        // Obsolete; is part of settings now, EEPROM not used.        
-        //validLoad = false;
-        //Serial.println("time_setup: Bad autointerval");
-        //EEPROM.write(AUTOINTERVAL_PREF, 1);  // default to first option
-        //EEPROM.commit();
-    }
+    // load autoInterval from settings (not EEPROM)
+    loadAutoInterval();
 
     // load alarm from EEPROM
     // Don't care if data invalid, alarm is off in that case
@@ -294,7 +288,7 @@ void time_loop()
     }
 
     // Turn display on after startup delay
-    if(startup && (millis() >= (startupNow + startupDelay))) {        
+    if(startup && (millis() > (startupNow + startupDelay))) {        
         animate();
         startup = false;
         #ifdef TC_DBG
@@ -303,10 +297,10 @@ void time_loop()
     }
 
     // Turn display back on after time traveling
-    if((millis() > timetravelNow + 1500) && timeTraveled) {
+    if(timeTraveled && (millis() > (timetravelNow + 1500))) {                
+        animate();
         timeTraveled = false;
         beepOn = true;
-        animate();
         #ifdef TC_DBG
         Serial.println("time_loop: Display on after time travel");
         #endif
@@ -402,30 +396,27 @@ void time_loop()
                 } 
             }
 
-            // Handle autoInterval (aka autoTrack):
+            // Handle autoInterval:
             
             // Do this on previous minute:59
-            if(dt.minute() == 59) {
-                minPrev = 0;
-            } else {
-                minPrev = dt.minute() + 1;
-            }
+            minNext = (dt.minute() == 59) ? 0 : dt.minute() + 1;
             
             // Only do this on second 59, check if it's time to do so
-            if(dt.second() == 59 && autoTimeIntervals[autoInterval] &&
-                      (minPrev % autoTimeIntervals[autoInterval] == 0)) {
+            if(dt.second() == 59 && 
+               autoTimeIntervals[autoInterval] &&
+               (minNext % autoTimeIntervals[autoInterval] == 0)) {
                 
-                if(!autoTrack) {
+                if(!autoIntDone) {
 
                     #ifdef TC_DBG
                     Serial.println("time_loop: autoInterval");
                     #endif                  
                     
-                    autoTrack = true;     // Already did this, don't repeat
+                    autoIntDone = true;     // Already did this, don't repeat
                     
-                    // do auto times
+                    // cycle through pre-programmed times
                     autoTime++;
-                    if(autoTime > 4) {    // currently have 5 pre-programmed times
+                    if(autoTime > 7) {    // currently have 8 pre-programmed times
                         autoTime = 0;
                     }
 
@@ -463,7 +454,7 @@ void time_loop()
                 
             } else {
                 
-                autoTrack = false;
+                autoIntDone = false;
             
             }                       
 
@@ -484,7 +475,7 @@ void time_loop()
         x = y;                        
     }
 
-    if(startup == false) {
+    if(!startup) {
         presentTime.show();  // update display with object's time
         destinationTime.show();       
         departedTime.show();
@@ -577,7 +568,9 @@ void resetPresentTime()
     departedTime.save();
     
     presentTime.setYearOffset(0);
-  
+
+    timetravelNow = millis();
+    timeTraveled = true; 
     if(presentTimeBogus) {
         presentTimeBogus = false;
         play_file("/timetravel.mp3", getVolume(), 0);
@@ -588,9 +581,6 @@ void resetPresentTime()
     presentTime.setRTC(true);
   
     getNTPTime(); 
-  
-    timetravelNow = millis();
-    timeTraveled = true; 
 }
 
 // choose your time zone from this list
@@ -627,7 +617,7 @@ bool getNTPTime()
                 } else {
                     ntpRetries++;
                 }
-                delay(800);
+                mydelay(800);
             }
             
         } else {
