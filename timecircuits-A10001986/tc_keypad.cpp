@@ -122,6 +122,19 @@ void keypadEvent(KeypadEvent key)
                 doKey = false;
                 resetPresentTime();                
             }
+            if(key == '1') {    // "1" held down -> turn alarm on
+                doKey = false;
+                if(alarmOn()) {          
+                    play_file("/alarmon.mp3", getVolume(), 0);      
+                } else {
+                    play_file("/baddate.mp3", getVolume(), 0); 
+                }
+            }
+            if(key == '2') {    // "2" held down -> turn alarm off
+                doKey = false;
+                alarmOff();                
+                play_file("/alarmoff.mp3", getVolume(), 0);
+            }
             break;
         case RELEASED:
             if(doKey && key != '#' && key != '*') {
@@ -143,21 +156,11 @@ void keypadEvent(KeypadEvent key)
 
 void enterKeyPressed() 
 {
-    /*
-    Serial.println("Enter Key Pressed");
-    Serial.print("menuFlag: ");
-    Serial.println(menuFlag);
-    */
     isEnterKeyPressed = true;
 }
 
 void enterKeyHeld() 
 {
-    /*
-    Serial.println("Enter Key held");
-    Serial.print("menuFlag: ");
-    Serial.println(menuFlag);
-    */
     isEnterKeyHeld = true;
 }
 
@@ -174,15 +177,13 @@ void recordKey(char key)
     dateBuffer[dateIndex++] = key;
     dateBuffer[dateIndex] = '\0'; 
     if (dateIndex >= maxDateLength) dateIndex = maxDateLength - 1;  // don't overflow, will overwrite end of date next time
-    //Serial.println(dateIndex);
 }
 
 void recordSetTimeKey(char key) 
 {
     timeBuffer[timeIndex++] = key;  
     timeBuffer[timeIndex] = '\0';      
-    if(timeIndex == 2) timeIndex = 0;    
-    //Serial.println(timeIndex);
+    if(timeIndex == 2) timeIndex = 0;       
 }
 
 void recordSetYearKey(char key) 
@@ -190,7 +191,6 @@ void recordSetYearKey(char key)
     timeBuffer[yearIndex++] = key;
     timeBuffer[yearIndex] = '\0';    
     if(yearIndex == 4) yearIndex = 0;   
-    //Serial.println(yearIndex); 
 }
 
 void resetTimebufIndices() 

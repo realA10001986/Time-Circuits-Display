@@ -51,7 +51,11 @@ bool y;
 bool startup = false;
 bool startupSound = false;
 long startupNow = 0;
-int  startupDelay = 1700; // the time between startup sound being played and the display coming on
+#ifndef TWPRIVATE
+int  startupDelay = 1000; // the time between startup sound being played and the display coming on
+#else
+int  startupDelay = 1000; // the time between startup sound being played and the display coming on
+#endif
 
 struct tm _timeinfo;  //for NTP
 RTC_DS3231 rtc;       //for RTC IC
@@ -245,7 +249,7 @@ void time_setup()
     }
 
     // load alarm from EEPROM
-    // Don't care if data invalid, alarm off in that case
+    // Don't care if data invalid, alarm is off in that case
     loadAlarm();
 
     // if non zero autoInterval -> use auto times, load the first one
@@ -284,13 +288,13 @@ void time_setup()
 void time_loop() 
 {
     if(startupSound) {
+        startupNow = millis();
         play_startup();
         startupSound = false;
     }
 
     // Turn display on after startup delay
-    if(startup && (millis() >= (startupNow + startupDelay))) {
-        startupNow += startupDelay;
+    if(startup && (millis() >= (startupNow + startupDelay))) {        
         animate();
         startup = false;
         #ifdef TC_DBG
@@ -438,9 +442,11 @@ void time_loop()
                     // Blank on second 59, display when new minute begins
                     while(digitalRead(SECONDS_IN) == 0) {  // wait for the complete of this half second
                                                            // Wait for this half second to end
+                        myloop();
                     }
                     while(digitalRead(SECONDS_IN) == 1) {  // second on next low
                                                            // Wait for the other half to end
+                        myloop();                    
                     }
 
                     #ifdef TC_DBG

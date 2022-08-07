@@ -514,6 +514,11 @@ void clockDisplay::setMinute(int minNum)
     } else if(minNum >= 60) {
         _displayBuffer[7] = makeNum(0);
     }
+
+    if(isRTC()) {
+       if(alarmOnOff) 
+          _displayBuffer[7] |= 0x8000;
+    }
 }
 
 void clockDisplay::AM() 
