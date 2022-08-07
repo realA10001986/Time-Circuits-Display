@@ -82,8 +82,11 @@ How to set up the alarm:
 - Hold ENTER
 - Press ENTER to toggle the alarm on and off, hold ENTER to proceed
 - Then enter the hour and minutes. This works as described above.
-- The menu is left automatically after entering the minute.
-Note that the alarm is recurring, ie it rings every day at the programmed time. It must be switched off in the keypad menu.
+- The menu is left automatically after entering the minute. "SAVE" is displayed briefly.
+
+Note that the alarm is recurring, ie it rings every day at the programmed time, unless disabled.
+
+If the alarm is set and enabled, the dot in the present time's minute field is lit. Under normal operation (ie outside of the menu), holding "1" enables the alarm, holding "2" disables it. 
  
 How to select the autoInterval:
 - Hold ENTER to invoke main menu
