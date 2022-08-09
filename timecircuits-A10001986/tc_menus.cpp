@@ -85,9 +85,9 @@
 
 #include "tc_menus.h"
 
-int displayNum;                                           // selected display
-uint8_t autoInterval = 1;                                 // array element of autoTimeIntervals[], set's time between automatically displayed times
-const uint8_t autoTimeIntervals[5] = {0, 5, 15, 30, 60};  // time options, first must be 0, this is the off option.
+int displayNum;                                               // selected display
+uint8_t autoInterval = 1;                                     // array element of autoTimeIntervals[], set's time between automatically displayed times
+const uint8_t autoTimeIntervals[6] = {0, 5, 15, 30, 45, 60};  // time options, first must be 0, this is the off option.
 
 bool isSetUpdate = false;
 bool isYearUpdate = false;
@@ -838,7 +838,7 @@ void doSetAutoInterval()
               timeout = 0;  // button pressed, reset timeout
 
               autoInterval++;       
-              if(autoInterval > 4)
+              if(autoInterval > 5)
                   autoInterval = 0;
 
               destinationTime.showOnlySettingVal("INT", autoTimeIntervals[autoInterval], true);
