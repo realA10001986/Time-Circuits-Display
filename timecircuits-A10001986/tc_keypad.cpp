@@ -78,7 +78,7 @@ void keypad_setup()
     
     keypad.setHoldTime(ENTER_HOLD_TIME);  // 3 sec hold time
 
-    keypad.setDebounceTime(100);          // debounce time
+    keypad.setDebounceTime(80);          // debounce time
 
     // Setup pins for white LED and Enter key
     pinMode(WHITE_LED, OUTPUT);
@@ -114,7 +114,7 @@ void keypadEvent(KeypadEvent key)
     switch(keypad.getState()) {
         case PRESSED:
             if(key != '#' && key != '*') {
-                play_keypad_sound(key);
+                play_keypad_sound(key, presentTime.getNightMode());
             }
             doKey = true;            
             break;        
@@ -130,21 +130,21 @@ void keypadEvent(KeypadEvent key)
             if(key == '1') {    // "1" held down -> turn alarm on
                 doKey = false;
                 if(alarmOn()) {          
-                    play_file("/alarmon.mp3", getVolume(), 0);      
+                    play_file("/alarmon.mp3", getVolumeNM(presentTime.getNightMode()), 0);      
                 } else {
-                    play_file("/baddate.mp3", getVolume(), 0); 
+                    play_file("/baddate.mp3", getVolumeNM(presentTime.getNightMode()), 0); 
                 }
             }
             if(key == '2') {    // "2" held down -> turn alarm off
                 doKey = false;
                 alarmOff();                
-                play_file("/alarmoff.mp3", getVolume(), 0);
+                play_file("/alarmoff.mp3", getVolumeNM(presentTime.getNightMode()), 0);
             }
             if(key == '4') {    // "4" held down -> nightmode on
                 doKey = false;
                 nightModeOn();
                 #ifndef TWPRIVATE
-                play_file("/nmon.mp3", getVolume(), 0); 
+                play_file("/nmon.mp3", getVolume(), 0);   
                 #else                       
                 play_file("/nmon2.mp3", getVolume(), 0);                      
                 #endif
@@ -273,11 +273,11 @@ void keypad_loop()
             
             Serial.println(F("keypad_loop: Date is too long or too short"));
                         
-            play_file("/baddate.mp3", getVolume(), 0);   
+            play_file("/baddate.mp3", getVolumeNM(presentTime.getNightMode()), 0);   
                  
         } else {
         
-            play_file("/enter.mp3", getVolume(), 0);
+            play_file("/enter.mp3", getVolumeNM(presentTime.getNightMode()), 0);
 
             #ifdef TC_DBG
             Serial.print(F("date entered: ["));

@@ -175,7 +175,7 @@ void time_setup()
         // Lost power and battery didn't keep time, so set current time to compile time
         rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
         
-        Serial.println("time_setup: RTC Lost Power - setting compile time");
+        Serial.println("time_setup: RTC lost power - setting compile time. Change battery!");
 
         rtcbad = true;
     
@@ -217,7 +217,7 @@ void time_setup()
     if(!presentTimeBogus && getNTPTime()) {
 
         #ifdef TC_DBG
-        Serial.print("time_setup: RTC set with NTP: ");
+        Serial.print("time_setup: RTC set through NTP from ");
         Serial.println(settings.ntpServer);
         #endif
         
@@ -315,7 +315,7 @@ void time_loop()
     
     if(startupSound) {
         startupNow = millis();
-        play_startup();
+        play_startup(false);    // NM not persistent (yet?), so play at full volume.
         startupSound = false;
     }
 
@@ -398,7 +398,9 @@ void time_loop()
               dbgLastMin = dt.minute();
               Serial.print(dbgLastMin);
               Serial.print(".");
-              Serial.println(dt.second());
+              Serial.print(dt.second());
+              Serial.print(" ");
+              Serial.println(rtc.getTemperature());
             }
             #endif
             
@@ -516,7 +518,6 @@ void time_loop()
         }
     }
 
-    
 }
 
 
@@ -536,7 +537,7 @@ void timeTravel()
     timetravelNow = millis();
     timeTraveled = true;
     beepOn = false;
-    play_file("/timetravel.mp3", getVolume(), 0);
+    play_file("/timetravel.mp3", getVolumeNM(presentTime.getNightMode()), 0);
     
     allOff();
 
@@ -628,7 +629,7 @@ void resetPresentTime()
     timeTraveled = true; 
     if(presentTimeBogus) {
         presentTimeBogus = false;
-        play_file("/timetravel.mp3", getVolume(), 0);
+        play_file("/timetravel.mp3", getVolumeNM(presentTime.getNightMode()), 0);
     }
   
     allOff();
@@ -804,7 +805,7 @@ DateTime myrtcnow()
             dt.minute() < 0 || dt.minute() > 59) &&
             retries < 30 ) {
 
-            delay(50);
+            delay((retries < 5) ? 50 : 100);
             dt = rtc.now(); 
             retries++;
     }

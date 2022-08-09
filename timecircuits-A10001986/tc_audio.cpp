@@ -85,11 +85,13 @@ void audio_setup()
    
 }
 
-void play_startup() 
+void play_startup(bool nm) 
 {
-    play_file("/startup.mp3", getVolume(), 0);
+    play_file("/startup.mp3", getVolumeNM(nm), 0);
 }
 
+// Play alarm sound
+// always at normal volume, not nm-reduced
 void play_alarm() 
 {
 #ifndef TWPRIVATE
@@ -99,14 +101,14 @@ void play_alarm()
 #endif    
 }
 
-void play_keypad_sound(char key) 
+void play_keypad_sound(char key, bool nm) 
 {
     char buf[16] = "/Dtmf-0.mp3\0";
     
     if(key) {
         beepOn = false;
         buf[6] = key;
-        play_file(buf, getVolume(), 0);
+        play_file(buf, getVolumeNM(nm), 0);
     }
 }
 
@@ -179,6 +181,13 @@ double getVolume()
     
     vol_val = vol_val * 1/4095;
 
+    return vol_val;
+}
+
+double getVolumeNM(bool nm) 
+{
+    double vol_val = getVolume();
+    if(nm) return vol_val * 0.3;
     return vol_val;
 }
 

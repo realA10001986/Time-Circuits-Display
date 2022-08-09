@@ -55,12 +55,13 @@
 #define VOLUME 32
 
 extern void audio_setup();
-extern void play_keypad_sound(char key);
-extern void play_startup();
+extern void play_keypad_sound(char key, bool nm);
+extern void play_startup(bool nm);
 extern void play_alarm();
 extern void audio_loop();
 extern void play_file(char *audio_file, double volume = 0.1, int channel = 0);
 extern double getVolume();
+extern double getVolumeNM(bool nm);
 extern bool checkAudioDone();
 extern bool beepOn;
 

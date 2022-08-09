@@ -364,9 +364,8 @@ void enter_menu()
     presentTime.setDateTime(myrtcnow()); // Set the current time in the display, 2+ seconds gone
     
     // all displays on and show
-    animate();  // show all with month showing last
-                // then = millis(); // start count to prevent double animate if it's been too long
-
+    animate();  
+                
     myloop();
     
     waitForEnterRelease();
@@ -469,8 +468,8 @@ void displayHighlight(int& number)
             displaySet = &destinationTime;
             break;
         case MODE_AINT:  // autoInterval
-            destinationTime.showOnlySettingVal("PRE", -1, true);  // display PRE-SET, no numbers, clear rest of screen
-            presentTime.showOnlySettingVal("SET", -1, true);  
+            destinationTime.showOnlySettingVal("ROT", -1, true);  // display ROT-INT, no numbers, clear rest of screen
+            presentTime.showOnlySettingVal("INT", -1, true);  
             destinationTime.on();
             presentTime.on();            
             departedTime.off();
