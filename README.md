@@ -38,7 +38,7 @@ The Destination Time can be entered via keypad, and the Present Time can keep ti
 
 *Present time* basically shows the actual present time, as received from the network.
 
-*Destination time* and *Departure time* are stale. You can have the clock either show your favorite times here (which need to be set up through the keypad menu), or cycle through a list of pre-programmed times, which cannot be changed. 
+*Destination time* and *Last departure time* are stale. You can have the clock either show your favorite times here (which need to be set up through the keypad menu), or cycle through a list of pre-programmed times, which cannot be changed. 
 
 The mode of operation is chosen by setting "autoInterval" in the config portal (via network) or the keypad menu. If this autoInterval is 0, your times are permanently shown. If autoInverval is non-zero, the clock will cycle through named list with changes every "autoInterval" minutes.
 
