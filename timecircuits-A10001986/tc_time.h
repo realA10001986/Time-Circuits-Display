@@ -48,7 +48,7 @@
 #define DEPT_TIME_ADDR 0x74
 
 extern uint8_t        autoInterval;
-extern const uint8_t  autoTimeIntervals[5];
+extern const uint8_t  autoTimeIntervals[6];
 
 extern bool           alarmOnOff;
 extern uint8_t        alarmHour;

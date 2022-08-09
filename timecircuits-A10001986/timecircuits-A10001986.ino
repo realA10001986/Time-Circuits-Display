@@ -25,6 +25,8 @@
  *  
  *  2022/08/10 (A10001986)
  *    - Nightmode now also reduced volume of sound (except alarm)
+ *    - Fix autoInterval array size
+ *    - Minor cleanups
  *    
  *  2022/08/09 (A10001986)
  *    - Fix "animation" (ie. month displayed a tad delayed)

@@ -33,10 +33,10 @@ WiFiManagerParameter custom_ntpServer("ntp_server", "NTP Server (eg. 'pool.ntp.o
 WiFiManagerParameter custom_timeZone("time_zone", "Timezone (<a href='https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv' target=_blank>Posix</a>, eg. 'CST6CDT,M3.2.0,M11.1.0')", settings.timeZone, 63);
 WiFiManagerParameter custom_mode24("md24", "Enable 24-hour clock mode: (0=12hr, 1=24hr)", settings.mode24, 2);
 WiFiManagerParameter custom_ttrp("ttrp", "Make time travels persistent: (0=no, 1=yes)", settings.timesPers, 2);
-WiFiManagerParameter custom_autoRotateTimes("rotate_times", "Time-rotation interval (0=off, 1-5=5-60min)",settings.autoRotateTimes, 3);
-WiFiManagerParameter custom_destTimeBright("dt_bright", "Destination Time Brightness (1-15)", settings.destTimeBright, 3);
-WiFiManagerParameter custom_presTimeBright("pt_bright", "Present Time Brightness (1-15)", settings.presTimeBright, 3);
-WiFiManagerParameter custom_lastTimeBright("lt_bright", "Last Time Departed Brightness (1-15)", settings.lastTimeBright, 3);
+WiFiManagerParameter custom_autoRotateTimes("rotate_times", "Time-rotation interval (0=off, 1-5=every 5th/15th/30th/45th/60th minute)",settings.autoRotateTimes, 3);
+WiFiManagerParameter custom_destTimeBright("dt_bright", "Destination Time display brightness (1-15)", settings.destTimeBright, 3);
+WiFiManagerParameter custom_presTimeBright("pt_bright", "Present Time display brightness (1-15)", settings.presTimeBright, 3);
+WiFiManagerParameter custom_lastTimeBright("lt_bright", "Last Time Departed display brightness (1-15)", settings.lastTimeBright, 3);
 //WiFiManagerParameter custom_beepSound;
 
 bool shouldSaveConfig = false;
