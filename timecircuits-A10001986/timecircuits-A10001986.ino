@@ -21,6 +21,40 @@
  * 
  */
 
+/* Changelog 
+ *  
+ *  2022/08/09 (A10001986)
+ *    - Fix "animation" (ie. month displayed a tad delayed)
+ *    - Added night mode; enabled by holding "4", disabled by holding "5"
+ *    - Fix for flakey i2c connection to RTC (check data and retry)
+ *      Sometimes the RTC chip loses sync and no longer responds, this
+ *      happens rarely and is still under investigation.
+ *    - Quick alarm enable/disable: Hold "1" to enable, "2" to disable
+ *    - If alarm is enabled, the dot in present time's minute field is lit
+ *    - Selectable "persistent" time travel mode (WiFi Setup page):
+ *        If enabled, time travel is persistent, which means all times
+ *        changed during a time travel are saved to EEPROM, overwriting 
+ *        user programmed times. In persistent mode, the fake present time  
+ *        also continues to run during power loss, and is NOT reset to 
+ *        actual present time upon restart.
+ *        If disabled, user programmed times are never overwritten, and
+ *        time travels are not persistent. Present time will be reset
+ *        to actual present time after power loss.
+ *    - Alarm data is now saved to file system, no longer to EEPROM
+ *      (reduces wear on flash memory)
+ *  2022/08/03-06 (A10001986)
+ *    - Alarm function added
+ *    - 24-hour mode added for non-Americans (though not authentic at all)
+ *    - Keypad menu item to show IP address added
+ *    - Configurable WiFi connection timeouts and retries
+ *    - Keypad menu re-done
+ *    - "Present time" is a clock (not stale) after time travel
+ *    - Return from Time Travel (hold "9" for 2 seconds)
+ *    - Support for time zones and automatic DST
+ *    - More stable sound playback
+ *    - various bug fixes
+ */
+
 #include <Arduino.h>
 #include "clockdisplay.h"
 #include "tc_audio.h"

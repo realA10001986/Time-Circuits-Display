@@ -73,6 +73,7 @@ extern bool checkTimeOut();
 extern void RTCClockOutEnable();
 extern bool isLeapYear(int year);
 extern int  daysInMonth(int month, int year);
+extern DateTime myrtcnow();
 
 // Our generic timeout when waiting for buttons, in seconds. max 255.
 #define maxTime 240            

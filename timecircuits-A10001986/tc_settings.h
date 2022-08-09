@@ -28,10 +28,23 @@
 #include <FS.h>
 #include <SPIFFS.h>
 
+#include <EEPROM.h>
+
 #include "tc_global.h"
 
 extern void settings_setup();
 extern void write_settings();
+
+extern bool loadAlarm();
+extern void saveAlarm();
+bool loadAlarmEEPROM();
+void saveAlarmEEPROM();
+
+extern bool    alarmOnOff;
+extern uint8_t alarmHour;
+extern uint8_t alarmMinute;
+
+extern bool    timetravelPersistent;
 
 //default settings - change settings in the web interface 192.168.4.1
 
@@ -53,6 +66,11 @@ struct Settings {
     char wifiConRetries[4] = "3";   // Default: 3 retries
     char wifiConTimeout[4] = "7";   // Default: 7 seconds time-out
     char mode24[4] = "0";           // Default: 0 = 12-hour-mode
+#ifndef TWPRIVATE    
+    char timesPers[4] = "1";        // Default: TimeTravel persistent (like before) 
+#else
+    char timesPers[4] = "0";        // My default: TimeTravel not persistent
+#endif
 };
 
 extern struct Settings settings;

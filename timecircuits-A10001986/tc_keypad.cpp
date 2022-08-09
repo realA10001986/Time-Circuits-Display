@@ -74,9 +74,11 @@ void keypad_setup()
 {
     keypad.begin(makeKeymap(keys));
     
-    keypad.addEventListener(keypadEvent);  // add an event listener for this keypad
+    keypad.addEventListener(keypadEvent); // add an event listener for this keypad
     
-    keypad.setHoldTime(ENTER_HOLD_TIME);   // 3 sec hold time
+    keypad.setHoldTime(ENTER_HOLD_TIME);  // 3 sec hold time
+
+    keypad.setDebounceTime(100);          // debounce time
 
     // Setup pins for white LED and Enter key
     pinMode(WHITE_LED, OUTPUT);
@@ -93,6 +95,9 @@ void keypad_setup()
     enterKey.setClickTicks(ENTER_DOUBLE_TIME);
     enterKey.setDebounceTicks(ENTER_DEBOUNCE);
 
+    dateBuffer[0] = '\0';
+    timeBuffer[0] = '\0';
+  
     #ifdef TC_DBG
     Serial.println("keypad_setup: Setup Complete");
     #endif
@@ -106,7 +111,7 @@ char get_key()
 // handle different cases for keypresses
 void keypadEvent(KeypadEvent key) 
 {
-    switch (keypad.getState()) {
+    switch(keypad.getState()) {
         case PRESSED:
             if(key != '#' && key != '*') {
                 play_keypad_sound(key);
@@ -134,6 +139,24 @@ void keypadEvent(KeypadEvent key)
                 doKey = false;
                 alarmOff();                
                 play_file("/alarmoff.mp3", getVolume(), 0);
+            }
+            if(key == '4') {    // "4" held down -> nightmode on
+                doKey = false;
+                nightModeOn();
+                #ifndef TWPRIVATE
+                play_file("/nmon.mp3", getVolume(), 0); 
+                #else                       
+                play_file("/nmon2.mp3", getVolume(), 0);                      
+                #endif
+            }
+            if(key == '5') {    // "5" held down -> nightmode off
+                doKey = false;
+                nightModeOff(); 
+                #ifndef TWPRIVATE
+                play_file("/nmoff.mp3", getVolume(), 0);
+                #else            
+                play_file("/nmoff2.mp3", getVolume(), 0);
+                #endif
             }
             break;
         case RELEASED:
@@ -282,17 +305,23 @@ void keypad_loop()
                 _setDay = daysInMonth(_setMonth, _setYear); //set to max day in that month
             }
 
-            // year: all allowed that can be entered with 4 digits
+            // year: all 4-digit-numbers allowed 
 
             // hour and min are checked in clockdisplay
 
-            // Copy date to destination time and save()
+            // Copy date to destination time
             destinationTime.setMonth(_setMonth);
             destinationTime.setDay(_setDay);
             destinationTime.setYear(_setYear);
             destinationTime.setHour(_setHour);
             destinationTime.setMinute(_setMin);
-            destinationTime.save();           
+
+            // We only save the new time to the EEPROM if user wants persistence.
+            // Might not be preferred; first, this messes with the user's custom
+            // times. Secondly, it wears the flash memory.
+            if(timetravelPersistent) {
+                destinationTime.save();      
+            }     
         }
 
         // Prepare for next input
@@ -314,4 +343,22 @@ void keypad_loop()
         enterWasPressed = false;          // reset flag
         
     }
+}
+
+/*
+ * Night mode
+ * 
+ */
+void nightModeOn() 
+{
+    destinationTime.setNightMode(true);
+    presentTime.setNightMode(true);
+    departedTime.setNightMode(true);
+}
+
+void nightModeOff()
+{
+    destinationTime.setNightMode(false);
+    presentTime.setNightMode(false);
+    departedTime.setNightMode(false);
 }

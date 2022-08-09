@@ -39,6 +39,7 @@
 //define IS_ACAR_DISPLAY 
 
 extern bool alarmOnOff;
+extern bool presentTimeBogus;
  
 struct dateStruct {
     uint16_t year;
@@ -61,6 +62,9 @@ class clockDisplay {
 
     void set1224(bool hours24);
     bool get1224();
+
+    void setNightMode(bool mode);
+    bool getNightMode();
     
     void setMonth(int monthNum);
     void setDay(int dayNum);
@@ -129,6 +133,8 @@ class clockDisplay {
     bool _rtc = false;          // will this be displaying real time
     uint8_t _brightness = 15;   // display brightness
     bool _mode24 = false;       // true = 24 hour mode, false 12 hour mode
+    bool _nightmode = false;    // true = dest/dept times off
+    int _oldnm = -1;
 
     uint8_t getLED7SegChar(uint8_t value);
     uint16_t getLEDAlphaChar(char value);

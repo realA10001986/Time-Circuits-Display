@@ -195,6 +195,9 @@ uint8_t clockDisplay::getBrightness()
 /* 
  * Save date/time and other settings to EEPROM 
  * Only non-RTC displays save their time.
+ * We stick with the EEPROM here because the times
+ * probably won't be changed that often to cause
+ * a problem with flash wear.
  * 
  */
 bool clockDisplay::save() 
@@ -232,20 +235,26 @@ bool clockDisplay::save()
         
     } else if(isRTC() && _saveAddress >= 0) {
 
-        // RTC: do not save time
+        // RTC: Save yearoffs, bogus (time comes from battery-backed RTC)
+
+        uint8_t savBuf[10];
 
         #ifdef TC_DBG  
         Serial.println("Clockdisplay: Saving RTC settings to EEPROM");
         #endif
-
-        // We now clear the entire space, since time is not saved,
-        // and _brightness is now part of settings (config file) 
-               
-        for(i = 0; i < 10; i++) {
-            EEPROM.write(_saveAddress + i, 0);  
-        }        
+                
+        savBuf[0] = presentTimeBogus ? 1 : 0;        
+        savBuf[1] = _yearoffset & 0xff;
+        savBuf[2] = (_yearoffset >> 8) & 0xff;
+        for(i = 0; i < 3; i++) {
+            sum += savBuf[i] ^ 0x55;
+            EEPROM.write(_saveAddress + i, savBuf[i]);
+        }
+        
+        EEPROM.write(_saveAddress + 3, sum & 0xff);        
         
         EEPROM.commit();
+        
         
     } else {
       
@@ -269,12 +278,12 @@ bool clockDisplay::load()
     if(_saveAddress < 0) 
         return false;
         
-    for(i = 0; i < 10; i++) {
-        loadBuf[i] = EEPROM.read(_saveAddress + i);
-        if(i < 9) sum += loadBuf[i];                 
-    }        
-      
     if(!isRTC()) {  
+
+        for(i = 0; i < 10; i++) {
+            loadBuf[i] = EEPROM.read(_saveAddress + i);
+            if(i < 9) sum += loadBuf[i];                 
+        }    
       
         // Non-RTC: Load saved time
         // 16bit sum cannot be zero; if it is, the data
@@ -306,21 +315,35 @@ bool clockDisplay::load()
 
     } else {
 
-        // RTC: time data not saved/loaded, only other settings
-        // zero sum is possible
+        // RTC: only "bogus" flag and yearoffs is saved
+        
+        for(i = 0; i < 4; i++) {
+            loadBuf[i] = EEPROM.read(_saveAddress + i);
+            if(i < 3) sum += loadBuf[i] ^ 0x55;                 
+        }    
+
+        if((sum & 0xff) == loadBuf[3]) { 
+
+              presentTimeBogus = loadBuf[0] ? true : false;
+              setYearOffset((loadBuf[2] << 8) | loadBuf[1]);  
+
+              #ifdef TC_DBG  
+              Serial.println("Clockdisplay: Loading RTC settings from EEPROM");
+              #endif
+                     
+        } else {
+
+              presentTimeBogus = false;
+              setYearOffset(0);
+
+              Serial.println("Clockdisplay: Invalid presetTime EEPROM data");
+              
+        }
 
         // Reinstate _brightness to keep old behavior
-        setBrightness((int)atoi(settings.presTimeBright));
+        setBrightness((int)atoi(settings.presTimeBright));        
 
-        // We do not use the EEPROM data for RTC display
-        // For future use.
-
-        //if((sum & 0xff) == loadBuf[9]) {
-
-            return true;     
-            
-        //}
-
+        return true;             
     }
      
     Serial.println("Clockdisplay: Invalid EEPROM data");
@@ -335,7 +358,25 @@ bool clockDisplay::load()
 // Show the buffer 
 void clockDisplay::showInt(bool animate) 
 {
-    int i = 0;    
+    int i = 0; 
+
+    if(_nightmode) {        
+        if(!isRTC()) {    
+            off();   
+            _oldnm = 1;         
+            return;
+        } else {          
+            if(_oldnm < 1) { 
+                setBrightness(0); 
+            }
+            _oldnm = 1;
+        }
+    } else if(isRTC()) {
+        if(_oldnm > 0) {
+            setBrightness((int)atoi(settings.presTimeBright));             
+        }
+        _oldnm = 0;
+    }
 
     if(animate) off();
 
@@ -353,7 +394,11 @@ void clockDisplay::showInt(bool animate)
     if(animate) {
         Wire.write(0x00);  //blank month, first 3 16 bit locations
         Wire.write(0x00);
-        i = 2;
+        Wire.write(0x00);
+        Wire.write(0x00); 
+        Wire.write(0x00);
+        Wire.write(0x00);
+        i = 3;
     }
     
     for(; i < 8; i++) {
@@ -363,7 +408,9 @@ void clockDisplay::showInt(bool animate)
     
     Wire.endTransmission();
 
-    if(animate) on();
+    if(animate || (!isRTC() && (_oldnm > 0)) ) on();
+    
+    if(!isRTC()) _oldnm = 0;
 }
 
 // Show the buffer 
@@ -381,9 +428,13 @@ void clockDisplay::showAnimate1()
 // Show month, assumes showAnimate1() was already called
 void clockDisplay::showAnimate2() 
 {
+    if(_nightmode && !isRTC()) {
+        return;
+    }
+    
     Wire.beginTransmission(_address);
     Wire.write(0x00);  // start at address 0x0
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 8; i++) {
         Wire.write(_displayBuffer[i] & 0xFF);
         Wire.write(_displayBuffer[i] >> 8);
     }
@@ -747,7 +798,7 @@ void clockDisplay::directAMPMoff()
 // Set the displayed time with supplied DateTime object
 void clockDisplay::setDateTime(DateTime dt) 
 {
-    // ATTN: DateTime implemention does not work for years < 2000!
+    // ATTN: DateTime implemention does not work for years < 2000!    
     
     setMonth(dt.month());
     setDay(dt.day());
@@ -850,5 +901,15 @@ void clockDisplay::set1224(bool hours24)
 bool clockDisplay::get1224(void)
 {
     return _mode24;
+}
+
+void clockDisplay::setNightMode(bool mymode)
+{
+    _nightmode = mymode ? true : false;
+}
+
+bool clockDisplay::getNightMode(void)
+{
+    return _nightmode;
 }
     

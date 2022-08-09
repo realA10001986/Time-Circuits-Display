@@ -104,6 +104,9 @@ void settings_setup()
           if(json["mode24"]) {
               strcpy(settings.mode24, json["mode24"]);
           } else writedefault = true;
+          if(json["timeTrPers"]) {
+              strcpy(settings.timesPers, json["timeTrPers"]);
+          } else writedefault = true;
           
         } else {
           
@@ -141,37 +144,208 @@ void settings_setup()
 
 void write_settings() 
 {
-  StaticJsonDocument<1024> json;
+    StaticJsonDocument<1024> json;
+  
+    if(!haveFS) {
+      Serial.println("write_settings: Cannot write settings, FS not mounted");
+      return;
+    } 
+  
+    #ifdef TC_DBG
+    Serial.println("write_settings: Writing config file");
+    #endif
+    
+    json["ntpServer"] = settings.ntpServer;
+    json["timeZone"] = settings.timeZone;
+    json["autoRotateTimes"] = settings.autoRotateTimes;
+    json["destTimeBright"] = settings.destTimeBright;
+    json["presTimeBright"] = settings.presTimeBright;
+    json["lastTimeBright"] = settings.lastTimeBright;
+    //json["beepSound"] = settings.beepSound;
+    json["wifiConRetries"] = settings.wifiConRetries;
+    json["wifiConTimeout"] = settings.wifiConTimeout;
+    json["mode24"] = settings.mode24;
+    json["timeTrPers"] = settings.timesPers;
+  
+    File configFile = SPIFFS.open("/config.json", FILE_WRITE);
+  
+    #ifdef TC_DBG
+    serializeJson(json, Serial);
+    Serial.println("\n");
+    #endif
+    
+    serializeJson(json, configFile);
+  
+    configFile.close(); 
+  
+}
 
-  if(!haveFS) {
-    Serial.println("write_settings: Cannot write settings, FS not mounted");
+/* 
+ *  Load the Alarm time and settings from alarmconfig
+ *  
+ */
+
+bool loadAlarm()
+{
+    bool writedefault = false;
+    
+    if(!haveFS) {
+      
+        Serial.println("loadAlarm(): FS not mounted, using EEPROM");
+        
+        return loadAlarmEEPROM();
+        
+    } 
+
+    if(SPIFFS.exists("/alarmconfig.json")) {
+      
+      //file exists, load and parse it     
+      File configFile = SPIFFS.open("/alarmconfig.json", "r");
+      
+      if (configFile) {
+
+        #ifdef TC_DBG
+        Serial.println("loadAlarm: Opened alarmconfig file");
+        #endif
+
+        StaticJsonDocument<1024> json;
+        DeserializationError error = deserializeJson(json, configFile);
+
+        #ifdef TC_DBG
+        serializeJson(json, Serial);
+        #endif
+        
+        if (!error) {
+
+          #ifdef TC_DBG
+          Serial.println("\nloadAlarm: Parsed json");
+          #endif
+          
+          if(json["alarmonoff"]) {
+              alarmOnOff = (atoi(json["alarmonoff"]) != 0) ? true : false;              
+          } else writedefault = true;          
+          if(json["alarmhour"]) {
+              alarmHour = atoi(json["alarmhour"]);              
+          } else writedefault = true;
+          if(json["alarmmin"]) {
+              alarmMinute = atoi(json["alarmmin"]); 
+          } else writedefault = true;                    
+          
+        } else {
+          
+          Serial.println("loadAlarm: Failed to parse json config");
+
+          writedefault = true;
+          
+        }
+        
+        configFile.close();
+      }
+      
+    } else {
+
+      writedefault = true;
+      
+    }
+
+    if(writedefault) {
+      
+      // alarmconfig file does not exist or is incomplete - create one 
+      
+      Serial.println("loadAlarm: Alarm settings missing or incomplete; writing new config file");
+      
+      saveAlarm();
+      
+    }    
+}
+
+bool loadAlarmEEPROM() 
+{
+    #ifdef TC_DBG
+    Serial.println("Load Alarm EEPROM");
+    #endif
+
+    uint8_t loadBuf[4];    // on/off, hour, minute, checksum
+    uint16_t sum = 0;
+    int i;    
+        
+    for(i = 0; i < 4; i++) {
+        loadBuf[i] = EEPROM.read(ALARM_PREF + i);
+        if(i < 3) sum += (loadBuf[i] ^ 0x55);
+    }
+
+    if((sum & 0xff) != loadBuf[3]) {
+          
+        Serial.println("loadAlarm: Invalid alarm data in EEPROM");
+
+        alarmOnOff = false;
+        alarmHour = alarmMinute = 255;    // means "unset"
+    
+        return false;
+    }        
+
+    alarmOnOff = loadBuf[0] ? true : false;
+    alarmHour = loadBuf[1];
+    alarmMinute = loadBuf[2];
+
+    return true;
+}
+
+void saveAlarm() 
+{
+    StaticJsonDocument<1024> json;
+    char hourBuf[8];
+    char minBuf[8];
+
+    #ifdef TC_DBG
+    Serial.println("Save Alarm");
+    #endif
+
+    if(!haveFS) {
+        Serial.println("saveAlarm(): FS not mounted, using EEPROM");
+        
+        saveAlarmEEPROM();
+        
+        return;        
+    } 
+  
+    json["alarmonoff"] = alarmOnOff ? "1" : "0";
+
+    sprintf(hourBuf, "%d", alarmHour);
+    sprintf(minBuf, "%d", alarmMinute);
+    
+    json["alarmhour"] = hourBuf;
+    json["alarmmin"] = minBuf;
+
+    File configFile = SPIFFS.open("/alarmconfig.json", FILE_WRITE);
+  
+    #ifdef TC_DBG
+    serializeJson(json, Serial);
+    Serial.println("\n");
+    #endif
+    
+    serializeJson(json, configFile);
+  
+    configFile.close(); 
+}    
+
+void saveAlarmEEPROM()
+{
+    uint8_t savBuf[4];    // on/off, hour, minute, checksum
+    uint16_t sum = 0;
+    int i;    
+
+    savBuf[0] = alarmOnOff ? 1 : 0;
+    savBuf[1] = alarmHour;
+    savBuf[2] = alarmMinute;
+        
+    for(i = 0; i < 3; i++) {
+        EEPROM.write(ALARM_PREF + i, savBuf[i]);
+        sum += (savBuf[i] ^ 0x55);
+    }
+    EEPROM.write(ALARM_PREF + 3, (sum & 0xff));   
+    
+    EEPROM.commit();
+    
     return;
-  } 
-
-  #ifdef TC_DBG
-  Serial.println("write_settings: Writing config file");
-  #endif
-  
-  json["ntpServer"] = settings.ntpServer;
-  json["timeZone"] = settings.timeZone;
-  json["autoRotateTimes"] = settings.autoRotateTimes;
-  json["destTimeBright"] = settings.destTimeBright;
-  json["presTimeBright"] = settings.presTimeBright;
-  json["lastTimeBright"] = settings.lastTimeBright;
-  //json["beepSound"] = settings.beepSound;
-  json["wifiConRetries"] = settings.wifiConRetries;
-  json["wifiConTimeout"] = settings.wifiConTimeout;
-  json["mode24"] = settings.mode24;
-
-  File configFile = SPIFFS.open("/config.json", FILE_WRITE);
-
-  #ifdef TC_DBG
-  serializeJson(json, Serial);
-  Serial.println("\n");
-  #endif
-  
-  serializeJson(json, configFile);
-
-  configFile.close(); 
-  
 }
