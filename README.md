@@ -38,7 +38,7 @@ The Destination Time can be entered via keypad, and the Present Time can keep ti
 
 *Present time* basically shows the actual present time, as received from the network.
 
-*Destination time* and *Last departure time* are stale. You can have the clock either show your favorite times here (which need to be set up through the keypad menu), or cycle through a list of pre-programmed times, which cannot be changed. 
+*Destination time* and *Last time departed* are stale. You can have the clock either show your favorite times here (which need to be set up through the keypad menu), or cycle through a list of pre-programmed times, which cannot be changed. 
 
 The mode of operation is chosen by setting "autoInterval" in the config portal (via network) or the keypad menu. If this autoInterval is 0, your times are permanently shown. If autoInverval is non-zero, the clock will cycle through named list with changes every "autoInterval" minutes.
 
@@ -46,9 +46,11 @@ The mode of operation is chosen by setting "autoInterval" in the config portal (
 
 To travel through time, hold "0" for 2 seconds. The destination time, as shown in the red display, will be your new present time, the old "present time" will be the "last time departed". Note that the new "present" time will continue to run like a normal clock.
 
-Before holding "0", you can also first quickly set a new destination time by entering a date on the keypad: mmddyyyy or mmddyyyyhhmm, then press ENTER. While typing, there is no visual feedback, but the date is then shown on the "destination time" display after pressing ENTER. 
+Before holding "0", you can also first quickly set a new destination time by entering a date on the keypad: mmddyyyy or mmddyyyyhhmm, then press ENTER. While typing, there is no visual feedback, but the date is then shown on the "destination time" display after pressing ENTER. (If autoInterval is non-zero, your entered time will, however, be overwritten when the interval is elapsed.)
 
 To return to actual present time, hold "9" for 2 seconds.
+
+Regardless of your autoInterval setting, the "last time departed" setting will be updated in the course of a time travel event. In case autoInterval is 0, the "last time departed" will only ever change in case of another trip through time. If autoInverval is non-zero, "last time departed" will resume cycling through the pre-programmed list after the time defined by the interval (ie 5-60 minutes).
 
 Beware that the alarm function is based on whatever your current "present" time is. The alarm will sound when "present time"'s hour and minute matches the alarm time, regardless if this time is actual present time, or "fake".
 
