@@ -20,6 +20,7 @@ The Destination Time can be entered via keypad, and the Present Time can keep ti
 - More stable WiFi connections at startup
 - Configurable WiFi connection timeouts and retries
 - Alarm function
+- Night mode (displays off or dimmed)
 - Network keypad menu to show the current IP address
 - 24-hour clock mode for non-Americans ;)
 - Fixed "month-off-by-one" bug, and others
@@ -43,9 +44,17 @@ The mode of operation is chosen by setting "autoInterval" in the config portal (
 
 **Time travel**
 
-To travel through time, first enter a date on the keypad: mmddyyyy or mmddyyyyhhmm, then press ENTER. While typing, there is no visual feedback, but the date is then shown on the "destination time" display after pressing ENTER. Hold "0" on the keypad for 2 seconds, and the actual travel will take place. The old present time is now in the "departed" time, the destination time is now "present" time, and continues to run like a normal clock.
+To travel through time, hold "0" for 2 seconds. The destination time, as shown in the red display, will be your new present time, the old "present time" will be the "last time departed". Note that the new "present" time will continue to run like a normal clock.
+
+Before holding "0", you can also first quickly set a new destination time by entering a date on the keypad: mmddyyyy or mmddyyyyhhmm, then press ENTER. While typing, there is no visual feedback, but the date is then shown on the "destination time" display after pressing ENTER. 
 
 To return to actual present time, hold "9" for 2 seconds.
+
+Beware that the alarm function is based on whatever your current "present" time is. The alarm will sound when "present time"'s hour and minute matches the alarm time, regardless if this time is actual present time, or "fake".
+
+**Night mode**
+
+Night mode will switch off the destination and last time departed displays, and dim the present time display to a minimum. Holding "4" enables night mode, holding "5" disables it. 
 
 **The keypad menu**
  
@@ -84,9 +93,11 @@ How to set up the alarm:
 - Then enter the hour and minutes. This works as described above.
 - The menu is left automatically after entering the minute. "SAVE" is displayed briefly.
 
-Note that the alarm is recurring, ie it rings every day at the programmed time, unless disabled.
+Under normal operation (ie outside of the menu), holding "1" enables the alarm, holding "2" disables it. 
 
-If the alarm is set and enabled, the dot in the present time's minute field is lit. Under normal operation (ie outside of the menu), holding "1" enables the alarm, holding "2" disables it. 
+Note that the alarm is recurring, ie it rings every day at the programmed time, unless disabled. Also note, as mentioned, that the alarm is relative to your "present" time, whether it is actual time, or some "fake" time after a time travel.
+
+If the alarm is set and enabled, the dot in the present time's minute field is lit. 
  
 How to select the autoInterval:
 - Hold ENTER to invoke main menu
