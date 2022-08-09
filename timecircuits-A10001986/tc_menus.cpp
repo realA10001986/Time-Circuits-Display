@@ -110,8 +110,12 @@ void menu_setup() {
  * enter_menu() - the real thing
  * 
  */
-void enter_menu() {
-
+void enter_menu() 
+{
+    bool desNM = destinationTime.getNightMode();
+    bool preNM = presentTime.getNightMode();
+    bool depNM = departedTime.getNightMode();
+    
     #ifdef TC_DBG
     Serial.println("Menu: enter_menu() invoked");
     #endif
@@ -121,10 +125,14 @@ void enter_menu() {
     
     menuFlag = false;
 
+    destinationTime.setNightMode(false);
+    presentTime.setNightMode(false);
+    departedTime.setNightMode(false);
+    
     // start with destination time in main menu
     displayNum = MODE_DEST;     
 
-    // Load the times from EEPROM
+    // Load the custom times from EEPROM
     // This means that when the user activates the menu while 
     // autoInterval was > 0, there will be different times
     // shown in the menu than were outside the menu    
@@ -164,7 +172,7 @@ void enter_menu() {
         if(displaySet->isRTC()) {  
           
             // This is the RTC, get the current time, corrected by yearOffset         
-            DateTime currentTime = rtc.now();
+            DateTime currentTime = myrtcnow(); 
             yearSet = currentTime.year() - displaySet->getYearOffset();            
             monthSet = currentTime.month();
             daySet = currentTime.day();
@@ -336,8 +344,7 @@ void enter_menu() {
         
     }
     
-    // Return dest/dept displays to where they should be
-    // Menu system wipes out auto times
+    // Return dest/dept displays to where they should be    
     if(autoTimeIntervals[autoInterval] == 0) {
         destinationTime.load();
         departedTime.load();
@@ -354,7 +361,7 @@ void enter_menu() {
     #ifdef TC_DBG
     Serial.println("Menu: Update Present Time");
     #endif
-    presentTime.setDateTime(rtc.now());  // Set the current time in the display, 2+ seconds gone
+    presentTime.setDateTime(myrtcnow()); // Set the current time in the display, 2+ seconds gone
     
     // all displays on and show
     animate();  // show all with month showing last
@@ -363,6 +370,10 @@ void enter_menu() {
     myloop();
     
     waitForEnterRelease();
+
+    destinationTime.setNightMode(desNM);
+    presentTime.setNightMode(preNM);
+    departedTime.setNightMode(depNM);
 
     #ifdef TC_DBG
     Serial.println("Menu: Exiting....");
@@ -588,7 +599,7 @@ void setField(uint16_t& number, uint8_t field, int year = 0, int month = 0)
     while( !checkTimeOut() && !digitalRead(ENTER_BUTTON) &&     
               ( (!someupddone && number == prevNum) || strlen(timeBuffer) < numChars) ) {
         
-        get_key();      // Why???
+        get_key();      // We're outside our main loop, so poll here
 
         /* Using strlen here means that we always need to start a new number at timebuffer[0]. 
          * This is therefore NOT a ringbuffer!
@@ -633,65 +644,6 @@ void setField(uint16_t& number, uint8_t field, int year = 0, int month = 0)
     Serial.println(number);
     #endif
 }  
-
-/* 
- *  Load the Alarm time and settings from the EEPROM
- *  
- */
-bool loadAlarm() 
-{
-    #ifdef TC_DBG
-    Serial.println("Load Alarm");
-    #endif
-
-    uint8_t loadBuf[4];    // on/off, hour, minute, checksum
-    uint16_t sum = 0;
-    int i;    
-        
-    for(i = 0; i < 4; i++) {
-        loadBuf[i] = EEPROM.read(ALARM_PREF + i);
-        if(i < 3) sum += (loadBuf[i] ^ 0x55);
-    }
-
-    if((sum & 0xff) != loadBuf[3]) {
-          
-        Serial.println("loadAlarm: Invalid alarm data");
-
-        alarmOnOff = false;
-        alarmHour = alarmMinute = 255;    // means "unset"
-    
-        return false;
-    }        
-
-    alarmOnOff = loadBuf[0] ? true : false;
-    alarmHour = loadBuf[1];
-    alarmMinute = loadBuf[2];
-
-    return true;
-}
-
-void saveAlarm() 
-{
-    #ifdef TC_DBG
-    Serial.println("Save Alarm");
-    #endif
-
-    uint8_t savBuf[4];    // on/off, hour, minute, checksum
-    uint16_t sum = 0;
-    int i;    
-
-    savBuf[0] = alarmOnOff ? 1 : 0;
-    savBuf[1] = alarmHour;
-    savBuf[2] = alarmMinute;
-        
-    for(i = 0; i < 3; i++) {
-        EEPROM.write(ALARM_PREF + i, savBuf[i]);
-        sum += (savBuf[i] ^ 0x55);
-    }
-    EEPROM.write(ALARM_PREF + 3, (sum & 0xff));   
-    
-    EEPROM.commit();
-}    
 
 void alarmOff()
 {
@@ -827,7 +779,6 @@ bool loadAutoInterval()
 /* 
  *  Save the autoInterval 
  *  
- *  Note: The autoInterval is no longer saved to the EEPROM.
  *  It is written to the config file, which is updated accordingly.
  */
 void saveAutoInterval() 
@@ -835,10 +786,6 @@ void saveAutoInterval()
     // Convert 'autoInterval' to string, write to settings, write settings file
     sprintf(settings.autoRotateTimes, "%d", autoInterval);   
     write_settings();
-    
-    // Obsolete    
-    //EEPROM.write(AUTOINTERVAL_PREF, autoInterval);
-    //EEPROM.commit();
 }
 
 /*
@@ -947,7 +894,7 @@ void doSetBrightness(clockDisplay* displaySet) {
     allLampTest();  
 
     // Display "LVL"
-    displaySet->showOnlySettingVal("LVL", displaySet->getBrightness() / 3, false);
+    displaySet->showOnlySettingVal("LVL", displaySet->getBrightness(), false);
   
     isEnterKeyHeld = false;
 
@@ -975,10 +922,10 @@ void doSetBrightness(clockDisplay* displaySet) {
               
               timeout = 0;  // button pressed, reset timeout
 
-              number = number + 3;
-              if(number > 15) number = 3;
+              number++;
+              if(number > 15) number = 0;
               displaySet->setBrightness(number);
-              displaySet->showOnlySettingVal("LVL", number / 3, false);
+              displaySet->showOnlySettingVal("LVL", number, false);
               
           }
           

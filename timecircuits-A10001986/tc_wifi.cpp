@@ -37,6 +37,7 @@ WiFiManagerParameter custom_lastTimeBright("lt_bright", "Last Time Departed Brig
 WiFiManagerParameter custom_wifiConTimeout("wificon", "WiFi Connection Timeout in seconds (1-15)", settings.wifiConTimeout, 3);
 WiFiManagerParameter custom_wifiConRetries("wifiret", "WiFi Connection Retries (1-15)", settings.wifiConRetries, 3);
 WiFiManagerParameter custom_mode24("md24", "Enable 24-hour clock mode: (0=12hr, 1=24hr)", settings.mode24, 2);
+WiFiManagerParameter custom_ttrp("ttrp", "Make time travels persistent: (0=no, 1=yes)", settings.timesPers, 2);
 
 bool shouldSaveConfig = false;
 
@@ -49,6 +50,10 @@ void wifi_setup()
     int temp;
     
     WiFi.mode(WIFI_STA);  // explicitly set mode, esp defaults to STA_AP
+    
+    #ifndef TC_DBG
+    wm.setDebugOutput(false);
+    #endif
 
     //wm.setCountry("");                  // was US; not needed at all
     wm.setParamsPage(true);
@@ -56,7 +61,7 @@ void wifi_setup()
     wm.setConfigPortalBlocking(false);
     wm.setSaveConfigCallback(saveConfigCallback);
     wm.setSaveParamsCallback(saveParamsCallback);
-    wm.setHostname("TCD-Settings");
+    wm.setHostname("TimeCircuits");
 
     temp = (int)atoi(settings.wifiConTimeout);
     if(temp < 0) temp = 0;
@@ -91,6 +96,7 @@ void wifi_setup()
     wm.addParameter(&custom_ntpServer);
     wm.addParameter(&custom_timeZone);
     wm.addParameter(&custom_mode24);
+    wm.addParameter(&custom_ttrp);
     wm.addParameter(&custom_autoRotateTimes);
     wm.addParameter(&custom_destTimeBright);
     wm.addParameter(&custom_presTimeBright);
@@ -139,6 +145,7 @@ void wifi_loop()
         strcpy(settings.wifiConRetries, custom_wifiConRetries.getValue()); 
         strcpy(settings.wifiConTimeout, custom_wifiConTimeout.getValue()); 
         strcpy(settings.mode24, custom_mode24.getValue()); 
+        strcpy(settings.timesPers, custom_ttrp.getValue()); 
 
         write_settings();        
 
@@ -175,6 +182,7 @@ void updateConfigPortalValues()
     custom_ntpServer.setValue(settings.ntpServer, 63);
     custom_timeZone.setValue(settings.timeZone, 63);
     custom_mode24.setValue(settings.mode24, 2);
+    custom_ttrp.setValue(settings.timesPers, 2);
     custom_autoRotateTimes.setValue(settings.autoRotateTimes, 3);
     custom_destTimeBright.setValue(settings.destTimeBright, 3);
     custom_presTimeBright.setValue(settings.presTimeBright, 3);

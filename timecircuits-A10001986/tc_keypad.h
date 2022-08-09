@@ -55,6 +55,9 @@ extern void recordSetYearKey(char key);
 extern void recordSetMonthKey(char key);
 extern void resetTimebufIndices();
 
+void nightModeOn();
+void nightModeOff();
+
 extern char timeBuffer[]; 
 extern char yearBuffer[]; 
 extern char monthBuffer[];

@@ -30,9 +30,9 @@
 // We use 1(padded to 8) + 10*3 + 4 bytes of EEPROM space at 0x0. 
 #define AUTOINTERVAL_PREF 0x00    // autoInterval save location   (1 byte, padded 8; unused)
 #define DEST_TIME_PREF    0x08    // destination time prefs       (10 bytes)
-#define PRES_TIME_PREF    0x12    // present time prefs           (10 bytes)
+#define PRES_TIME_PREF    0x12    // present time prefs           (10 bytes; unused)
 #define DEPT_TIME_PREF    0x1c    // departure time prefs         (10 bytes)
-#define ALARM_PREF        0x26    // alarm prefs                  (4 bytes)
+#define ALARM_PREF        0x26    // alarm prefs                  (4 bytes; only used if fs unavailable)
 
 //#define TWPRIVATE       // A10001986's private customizations
 
