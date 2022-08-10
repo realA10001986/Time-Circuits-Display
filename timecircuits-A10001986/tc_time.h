@@ -29,6 +29,9 @@
 #include <WiFi.h>
 #include <Wire.h>
 #include <EEPROM.h>
+#ifdef FAKE_POWER_ON
+#include <OneButton.h>
+#endif
 
 #include "tc_global.h"
 #include "clockdisplay.h"
@@ -74,11 +77,17 @@ extern void RTCClockOutEnable();
 extern bool isLeapYear(int year);
 extern int  daysInMonth(int month, int year);
 extern DateTime myrtcnow();
+#ifdef FAKE_POWER_ON
+void fpbKeyPressed();   
+#endif
 
 // Our generic timeout when waiting for buttons, in seconds. max 255.
 #define maxTime 240            
 extern uint8_t timeout;
 
 extern bool presentTimeBogus;
+#ifdef FAKE_POWER_ON
+extern bool waitForFakePowerButton;
+#endif
 
 #endif

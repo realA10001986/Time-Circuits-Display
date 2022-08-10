@@ -85,9 +85,11 @@
 
 #include "tc_menus.h"
 
-int displayNum;                                               // selected display
-uint8_t autoInterval = 1;                                     // array element of autoTimeIntervals[], set's time between automatically displayed times
-const uint8_t autoTimeIntervals[6] = {0, 5, 15, 30, 45, 60};  // time options, first must be 0, this is the off option.
+int displayNum;                                               
+
+// array element of autoTimeIntervals[], set's time between automatically displayed times
+uint8_t autoInterval = 1;                                     
+const uint8_t autoTimeIntervals[6] = {0, 5, 15, 30, 45, 60};  // first must be 0 (=off)
 
 bool isSetUpdate = false;
 bool isYearUpdate = false;
@@ -364,8 +366,17 @@ void enter_menu()
     presentTime.setDateTime(myrtcnow()); // Set the current time in the display, 2+ seconds gone
     
     // all displays on and show
-    animate();  
-                
+
+    #ifdef FAKE_POWER_ON
+    if(!waitForFakePowerButton) {
+    #endif  
+    
+        animate(); 
+        
+    #ifdef FAKE_POWER_ON     
+    }
+    #endif
+                    
     myloop();
     
     waitForEnterRelease();

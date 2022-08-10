@@ -37,6 +37,9 @@ WiFiManagerParameter custom_autoRotateTimes("rotate_times", "Time-rotation inter
 WiFiManagerParameter custom_destTimeBright("dt_bright", "Destination Time display brightness (1-15)", settings.destTimeBright, 3);
 WiFiManagerParameter custom_presTimeBright("pt_bright", "Present Time display brightness (1-15)", settings.presTimeBright, 3);
 WiFiManagerParameter custom_lastTimeBright("lt_bright", "Last Time Departed display brightness (1-15)", settings.lastTimeBright, 3);
+#ifdef FAKE_POWER_ON
+WiFiManagerParameter custom_fakePwrOn("fpo", "Enable 'fake power on' (0=no, 1=yes)", settings.fakePwrOn, 3);
+#endif
 //WiFiManagerParameter custom_beepSound;
 
 bool shouldSaveConfig = false;
@@ -101,6 +104,9 @@ void wifi_setup()
     wm.addParameter(&custom_destTimeBright);
     wm.addParameter(&custom_presTimeBright);
     wm.addParameter(&custom_lastTimeBright);
+    #ifdef FAKE_POWER_ON    
+    wm.addParameter(&custom_fakePwrOn);
+    #endif    
  //   wm.addParameter(&custom_beepSound);
 
     updateConfigPortalValues();
@@ -146,6 +152,9 @@ void wifi_loop()
         strcpy(settings.wifiConTimeout, custom_wifiConTimeout.getValue()); 
         strcpy(settings.mode24, custom_mode24.getValue()); 
         strcpy(settings.timesPers, custom_ttrp.getValue()); 
+        #ifdef FAKE_POWER_ON      
+        strcpy(settings.fakePwrOn, custom_fakePwrOn.getValue()); 
+        #endif        
 
         write_settings();        
 
@@ -187,6 +196,9 @@ void updateConfigPortalValues()
     custom_destTimeBright.setValue(settings.destTimeBright, 3);
     custom_presTimeBright.setValue(settings.presTimeBright, 3);
     custom_lastTimeBright.setValue(settings.lastTimeBright, 3);
+    #ifdef FAKE_POWER_ON 
+    custom_fakePwrOn.setValue(settings.fakePwrOn, 2);
+    #endif    
     //custom_beepSound.setValue(settings.beepSound, 3);
 }
 

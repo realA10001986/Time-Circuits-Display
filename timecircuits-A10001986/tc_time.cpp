@@ -138,6 +138,16 @@ int8_t autoTime = 0;  // selects the above array time
 
 const uint8_t monthDays[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
+#ifdef FAKE_POWER_ON
+OneButton fakePowerOnKey = OneButton(FAKE_POWER_BUTTON,
+    true,    // Button is active LOW
+    true     // Enable internal pull-up resistor
+);
+bool isFPBKeyPressed = false;
+bool waitForFakePowerButton = false;
+int  fpbTimeOut = 2000;
+#endif
+
 /*
  * time_setup()
  * 
@@ -149,6 +159,17 @@ void time_setup()
     
     pinMode(SECONDS_IN, INPUT_PULLDOWN);  // for monitoring seconds (disabled ATM)
     pinMode(STATUS_LED, OUTPUT);          // Status LED
+
+    #ifdef FAKE_POWER_ON
+    waitForFakePowerButton = ((int)atoi(settings.fakePwrOn) > 0) ? true : false;
+    
+    if(waitForFakePowerButton) {                        
+        fakePowerOnKey.setClickTicks(200);    // millisec after single click is assumed (default 400)
+        fakePowerOnKey.setPressTicks(2000);   // millisec after press is assumed (default 800)        
+        fakePowerOnKey.setDebounceTicks(50);  // millisec after safe click is assumed (default 50)
+        fakePowerOnKey.attachClick(fpbKeyPressed);
+    }
+    #endif
 
     EEPROM.begin(512);
     
@@ -299,8 +320,21 @@ void time_setup()
     
     presentTime.setDateTime(myrtcnow());   
 
-    startup = true;
-    startupSound = true;
+    #ifdef FAKE_POWER_ON    
+    if(waitForFakePowerButton) { 
+        digitalWrite(WHITE_LED, HIGH);  
+        delay(500);
+        digitalWrite(WHITE_LED, LOW);                   
+    } else {
+    #endif
+        
+        startup = true;
+        startupSound = true;   
+         
+    #ifdef FAKE_POWER_ON
+    }
+    #endif
+    
 }
 
 /*
@@ -311,6 +345,16 @@ void time_loop()
 {              
     #ifdef TC_DBG
     int dbgLastMin;
+    #endif
+
+    #ifdef FAKE_POWER_ON
+    if(waitForFakePowerButton) { 
+        fakePowerOnKey.tick();
+        if(!isFPBKeyPressed) return;
+        waitForFakePowerButton = false;
+        startup = true;
+        startupSound = true;
+    }
     #endif
     
     if(startupSound) {
@@ -818,4 +862,10 @@ DateTime myrtcnow()
 
     return dt;
 }    
-    
+
+#ifdef FAKE_POWER_ON
+void fpbKeyPressed() 
+{
+    isFPBKeyPressed = true;
+}    
+#endif

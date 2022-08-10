@@ -71,6 +71,9 @@ struct Settings {
 #else
     char timesPers[4] = "0";        // My default: TimeTravel not persistent
 #endif
+#ifdef FAKE_POWER_ON 
+    char fakePwrOn[4] = "0";       
+#endif
 };
 
 extern struct Settings settings;
