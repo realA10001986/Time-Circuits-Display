@@ -24,10 +24,14 @@
 /* Changelog 
  *  
  *  2022/08/10 (A10001986)
+ *    - Added "fake power on" facility. Device will boot, setup 
+ *      WiFi, sync time with NTP, but not start displays until
+ *      an active-low button is pressed (connected to io13 or 
+ *      io14, see tc-global.h)
+ *  2022/08/10 (A10001986)
  *    - Nightmode now also reduced volume of sound (except alarm)
  *    - Fix autoInterval array size
  *    - Minor cleanups
- *    
  *  2022/08/09 (A10001986)
  *    - Fix "animation" (ie. month displayed a tad delayed)
  *    - Added night mode; enabled by holding "4", disabled by holding "5"

@@ -107,6 +107,11 @@ void settings_setup()
           if(json["timeTrPers"]) {
               strcpy(settings.timesPers, json["timeTrPers"]);
           } else writedefault = true;
+          #ifdef FAKE_POWER_ON
+          if(json["fakePwrOn"]) {
+              strcpy(settings.fakePwrOn, json["fakePwrOn"]);
+          } else writedefault = true;
+          #endif
           
         } else {
           
@@ -166,6 +171,9 @@ void write_settings()
     json["wifiConTimeout"] = settings.wifiConTimeout;
     json["mode24"] = settings.mode24;
     json["timeTrPers"] = settings.timesPers;
+    #ifdef FAKE_POWER_ON    
+    json["fakePwrOn"] = settings.fakePwrOn;    
+    #endif
   
     File configFile = SPIFFS.open("/config.json", FILE_WRITE);
   

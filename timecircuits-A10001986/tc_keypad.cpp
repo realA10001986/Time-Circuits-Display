@@ -87,13 +87,11 @@ void keypad_setup()
     pinMode(ENTER_BUTTON, INPUT_PULLDOWN);
     digitalWrite(ENTER_BUTTON, LOW);
 
-    enterKey.attachClick(enterKeyPressed);
-    //enterKey.attachDuringLongPress(enterKeyHeld); // FIXME - we do not need repeated events as long as the button is held,
-    enterKey.attachLongPressStart(enterKeyHeld);    // FIXME - we only need info when the button is held long enough
-    //enterKey.attachDoubleClick(enterKeyDouble);
-    enterKey.setPressTicks(ENTER_HOLD_TIME);
     enterKey.setClickTicks(ENTER_DOUBLE_TIME);
+    enterKey.setPressTicks(ENTER_HOLD_TIME);
     enterKey.setDebounceTicks(ENTER_DEBOUNCE);
+    enterKey.attachClick(enterKeyPressed);    
+    enterKey.attachLongPressStart(enterKeyHeld);    // we only need info when the button is held long enough
 
     dateBuffer[0] = '\0';
     timeBuffer[0] = '\0';
