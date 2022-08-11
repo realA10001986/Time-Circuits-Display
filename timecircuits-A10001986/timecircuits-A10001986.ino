@@ -23,6 +23,11 @@
 
 /* Changelog 
  *  
+ *  2022/08/11 (A10001986)
+ *    - Import Keypad_I2C into the project in order to fix the
+ *      "ghost" key presses issue by reducing i2c traffic and
+ *      validating the port status data by reading the value
+ *      twice.
  *  2022/08/10 (A10001986)
  *    - Added "fake power on" facility. Device will boot, setup 
  *      WiFi, sync time with NTP, but not start displays until
