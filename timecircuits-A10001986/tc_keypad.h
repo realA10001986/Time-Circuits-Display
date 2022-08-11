@@ -26,15 +26,16 @@
 
 #include <Arduino.h>
 #include <Keypad.h>
-#include <Keypad_I2C.h>
 #include <OneButton.h>
+#include <Wire.h>
 
 #include "tc_global.h"
+#include "tc_keypadi2c.h"
 #include "tc_menus.h"
 #include "tc_audio.h"
 #include "tc_time.h"
 
-//#define GTE_KEYPAD //uncomment if using real GTE/TRW keypad control board
+//#define GTE_KEYPAD // uncomment if using real GTE/TRW keypad control board
 
 #define KEYPAD_ADDR 0x20
 #define WHITE_LED 17            // GPIO that white led is connected to
@@ -69,6 +70,7 @@ void enterkeytick();
 extern bool isEnterKeyPressed;
 extern bool isEnterKeyHeld;
 extern bool isEnterKeyDouble;
+
 extern void keypad_loop();
 
 extern char key;
