@@ -24,11 +24,17 @@
 #include "tc_settings.h"
 
 /*
+ * Mount SPIFF, und SD (if available)
+ * 
  * Read configuration from JSON config file
  * If config file not found, create one with default settings
  */
 
+/* If SPIFFS is mounted */
 bool haveFS = false;
+
+/* If a SD card is found */
+bool haveSD = false;
 
 /*
  * settings_setup()
@@ -36,115 +42,154 @@ bool haveFS = false;
  */
 void settings_setup() 
 {
-  bool writedefault = false;
-
-  #ifdef TC_DBG
-  Serial.println("settings_setup: Mounting FS...");
-  #endif
-
-  if(SPIFFS.begin()) {
-
+    bool writedefault = false;
+  
     #ifdef TC_DBG
-    Serial.println("settings_setup: Mounted file system");
+    Serial.println("settings_setup: Mounting SD...");
     #endif
+  
+    // set up SD card
+    SPI.begin(SPI_SCK, SPI_MISO, SPI_MOSI);
+    //SPI.setFrequency(1000000);
+
+    haveSD = false;
     
-    haveFS = true;
-    
-    if(SPIFFS.exists("/config.json")) {
-      
-      //file exists, load and parse it     
-      File configFile = SPIFFS.open("/config.json", "r");
-      
-      if (configFile) {
+    if (!SD.begin(SD_CS)) {
 
         #ifdef TC_DBG
-        Serial.println("settings_setup: Opened config file");
+        Serial.println("No SD card found");
         #endif
-
-        StaticJsonDocument<1024> json;
-        DeserializationError error = deserializeJson(json, configFile);
-
+    
+    } else {
+      
         #ifdef TC_DBG
-        serializeJson(json, Serial);
+        Serial.println("SD card initialized");
         #endif
+
+        uint8_t cardType = SD.cardType();
+        if(cardType == CARD_NONE) {
+          
+            Serial.println("No SD card inserted");
         
-        if (!error) {
-
-          #ifdef TC_DBG
-          Serial.println("\nsettings_setup: Parsed json");
-          #endif
-          
-          if(json["ntpServer"]) {
-              strcpy(settings.ntpServer, json["ntpServer"]);
-          } else writedefault = true;          
-          if(json["timeZone"]) {
-              strcpy(settings.timeZone, json["timeZone"]);
-          } else writedefault = true;
-          if(json["autoRotateTimes"]) {
-              strcpy(settings.autoRotateTimes, json["autoRotateTimes"]);
-          } else writedefault = true;
-          if(json["destTimeBright"]) {
-              strcpy(settings.destTimeBright, json["destTimeBright"]);
-          } else writedefault = true;
-          if(json["presTimeBright"]) {
-              strcpy(settings.presTimeBright, json["presTimeBright"]);
-          } else writedefault = true;
-          if(json["lastTimeBright"]) {
-              strcpy(settings.lastTimeBright, json["lastTimeBright"]);
-          } else writedefault = true;
-          //if(json["beepSound"]) {
-          //  strcpy(settings.beepSound, json["beepSound"]);
-          //} else writedefault = true;
-          if(json["wifiConRetries"]) {
-              strcpy(settings.wifiConRetries, json["wifiConRetries"]);
-          } else writedefault = true;
-          if(json["wifiConTimeout"]) {
-              strcpy(settings.wifiConTimeout, json["wifiConTimeout"]);
-          } else writedefault = true;
-          if(json["mode24"]) {
-              strcpy(settings.mode24, json["mode24"]);
-          } else writedefault = true;
-          if(json["timeTrPers"]) {
-              strcpy(settings.timesPers, json["timeTrPers"]);
-          } else writedefault = true;
-          #ifdef FAKE_POWER_ON
-          if(json["fakePwrOn"]) {
-              strcpy(settings.fakePwrOn, json["fakePwrOn"]);
-          } else writedefault = true;
-          #endif
-          
         } else {
           
-          Serial.println("settings_setup: Failed to parse json config");
+            #ifdef TC_DBG
+            Serial.print("SD card type ");
+            Serial.println(cardType, DEC);
+            #endif
+            
+            haveSD = true;
+            
+        }
+    }
 
-          writedefault = true;
+    #ifdef TC_DBG
+    Serial.println("settings_setup: Mounting SPIFFS...");
+    #endif
+
+    if(SPIFFS.begin()) {
+  
+      #ifdef TC_DBG
+      Serial.println("settings_setup: Mounted SPIFFS");
+      #endif
+      
+      haveFS = true;
+      
+      if(SPIFFS.exists("/config.json")) {
+        
+        //file exists, load and parse it     
+        File configFile = SPIFFS.open("/config.json", "r");
+        
+        if (configFile) {
+  
+          #ifdef TC_DBG
+          Serial.println("settings_setup: Opened config file");
+          #endif
+  
+          StaticJsonDocument<1024> json;
+          DeserializationError error = deserializeJson(json, configFile);
+  
+          #ifdef TC_DBG
+          serializeJson(json, Serial);
+          #endif
           
+          if (!error) {
+  
+            #ifdef TC_DBG
+            Serial.println("\nsettings_setup: Parsed json");
+            #endif
+            
+            if(json["ntpServer"]) {
+                strcpy(settings.ntpServer, json["ntpServer"]);
+            } else writedefault = true;          
+            if(json["timeZone"]) {
+                strcpy(settings.timeZone, json["timeZone"]);
+            } else writedefault = true;
+            if(json["autoRotateTimes"]) {
+                strcpy(settings.autoRotateTimes, json["autoRotateTimes"]);
+            } else writedefault = true;
+            if(json["destTimeBright"]) {
+                strcpy(settings.destTimeBright, json["destTimeBright"]);
+            } else writedefault = true;
+            if(json["presTimeBright"]) {
+                strcpy(settings.presTimeBright, json["presTimeBright"]);
+            } else writedefault = true;
+            if(json["lastTimeBright"]) {
+                strcpy(settings.lastTimeBright, json["lastTimeBright"]);
+            } else writedefault = true;
+            //if(json["beepSound"]) {
+            //  strcpy(settings.beepSound, json["beepSound"]);
+            //} else writedefault = true;
+            if(json["wifiConRetries"]) {
+                strcpy(settings.wifiConRetries, json["wifiConRetries"]);
+            } else writedefault = true;
+            if(json["wifiConTimeout"]) {
+                strcpy(settings.wifiConTimeout, json["wifiConTimeout"]);
+            } else writedefault = true;
+            if(json["mode24"]) {
+                strcpy(settings.mode24, json["mode24"]);
+            } else writedefault = true;
+            if(json["timeTrPers"]) {
+                strcpy(settings.timesPers, json["timeTrPers"]);
+            } else writedefault = true;
+            #ifdef FAKE_POWER_ON
+            if(json["fakePwrOn"]) {
+                strcpy(settings.fakePwrOn, json["fakePwrOn"]);
+            } else writedefault = true;
+            #endif
+            
+          } else {
+            
+            Serial.println("settings_setup: Failed to parse json config");
+  
+            writedefault = true;
+            
+          }
+          
+          configFile.close();
         }
         
-        configFile.close();
+      } else {
+  
+        writedefault = true;
+        
+      }
+  
+      if(writedefault) {
+        
+        // config file does not exist or is incomplete - create one 
+        
+        Serial.println("settings_setup: Settings missing or incomplete; writing new config file");
+        
+        write_settings();
+        
       }
       
     } else {
-
-      writedefault = true;
       
-    }
-
-    if(writedefault) {
-      
-      // config file does not exist or is incomplete - create one 
-      
-      Serial.println("settings_setup: Settings missing or incomplete; writing new config file");
-      
-      write_settings();
-      
-    }
+      Serial.println("settings_setup: Failed to mount FS");
     
-  } else {
-    
-    Serial.println("settings_setup: Failed to mount FS");
-  
-  }
+    }
 }
 
 void write_settings() 

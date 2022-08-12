@@ -29,7 +29,8 @@ AudioGeneratorMP3 *beep;
 AudioFileSourceSPIFFS *mySPIFFS0;
 AudioFileSourceSPIFFS *mySPIFFS1;
 
-AudioFileSourceSPIFFS *file[2];
+AudioFileSourceSD *mySD0;
+
 AudioOutputI2S *out;
 AudioOutputMixer *mixer;
 AudioOutputMixerStub *stub[2];
@@ -43,31 +44,6 @@ bool audioMute = false;
  */
 void audio_setup() 
 {
-    // for SD card
-    pinMode(SD_CS, OUTPUT);
-    digitalWrite(SD_CS, HIGH);
-    pinMode(SPI_SCK, INPUT_PULLUP);
-    pinMode(SPI_MISO, INPUT_PULLUP);
-    pinMode(SPI_MOSI, INPUT_PULLUP);
-
-    //pinMode(VOLUME, INPUT);
-
-    // set up SD card
-    SPI.begin(SPI_SCK, SPI_MISO, SPI_MOSI);
-    SPI.setFrequency(1000000);
-    
-    //delay(1000);
-    
-    /*
-    if (!SD.begin(SD_CS)) {
-        Serial.println("Error talking to SD card!");
-    } else {
-        Serial.println("SD card initialized");
-    }
-    */
-   
-    SPIFFS.begin();
-
     audioLogger = &Serial;
 
     out = new AudioOutputI2S(0, 0, 32, 0);
@@ -78,8 +54,14 @@ void audio_setup()
 
     mp3  = new AudioGeneratorMP3();
     beep = new AudioGeneratorMP3();
+    
     mySPIFFS0 = new AudioFileSourceSPIFFS();
     mySPIFFS1 = new AudioFileSourceSPIFFS();
+
+    if(haveSD) {
+        mySD0 = new AudioFileSourceSD();
+    }
+    
     stub[0] = mixer->NewInput();
     stub[1] = mixer->NewInput();
    
@@ -165,9 +147,15 @@ void play_file(char *audio_file, double volume, int channel)
 
     stub[channel]->SetGain(volume);
 
-    if(channel == 0) {        
-        mySPIFFS0->open(audio_file);  
-        mp3->begin(mySPIFFS0, stub[0]);
+    if(channel == 0) { 
+        if(haveSD && mySD0->open(audio_file)) {           
+            mp3->begin(mySD0, stub[0]);
+            Serial.println("Playing from SD");
+        } else {
+            mySPIFFS0->open(audio_file);  
+            mp3->begin(mySPIFFS0, stub[0]);
+            Serial.println("Playing from SPIFFS");
+        }
     } else {        
         mySPIFFS1->open(audio_file);
         beep->begin(mySPIFFS1, stub[1]);

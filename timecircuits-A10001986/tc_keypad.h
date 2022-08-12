@@ -27,7 +27,6 @@
 #include <Arduino.h>
 #include <Keypad.h>
 #include <OneButton.h>
-#include <Wire.h>
 
 #include "tc_global.h"
 #include "tc_keypadi2c.h"

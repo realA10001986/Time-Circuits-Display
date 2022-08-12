@@ -44,8 +44,8 @@
 #include "Keypad.h"
 #include "Wire.h"
 
-#define	PCF8574	1	// PCF8574 I/O expander device is 1 byte wide
-#define PCF8575 2	// PCF8575 I/O expander device is 2 bytes wide
+#define PCF8574 1 // PCF8574 I/O expander device is 1 byte wide
+#define PCF8575 2 // PCF8575 I/O expander device is 2 bytes wide
 
 class Keypad_I2C : public Keypad {
 public:
@@ -85,10 +85,10 @@ private:
     byte i2caddr;
     // I2C port expander device width in bytes (1 for 8574, 2 for 8575)
     byte i2cwidth;
-	  // I2C pin_write state persistant storage
-	  // least significant byte is used for 8-bit port expanders
-	  word pinState;
-	  TwoWire *_wire;  
+    // I2C pin_write state persistant storage
+    // least significant byte is used for 8-bit port expanders
+    word pinState;
+    TwoWire *_wire;  
 
     word pinValBuf;
     int count = 0;
