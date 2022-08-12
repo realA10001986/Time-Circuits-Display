@@ -150,7 +150,7 @@ How to find out the IP address:
 
 **SD card**
 
-The audio files are normally part of the sketch (stored in SPIFFS), but can be substituted by files on a FAT32-formatted SD card. The files need to be put in the root directoy of the card, by in mp3 format (128kbps recommended) and named as follows:
+The audio files are normally part of the sketch (stored in SPIFFS), but can be substituted by files on a FAT32-formatted SD card. The files need to be put in the root directoy of the card, be in mp3 format (128kbps recommended) and named as follows:
 - "enter.mp3". Played when a date was entered and ENTER was pressed
 - "baddate.mp3". Played when a bad (too short or too long) date was entered and ENTER was pressed
 - "timetravel.mp3". Played when a time travel takes place.
