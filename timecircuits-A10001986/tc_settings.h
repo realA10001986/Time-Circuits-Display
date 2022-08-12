@@ -48,8 +48,6 @@ extern void saveAlarm();
 bool loadAlarmEEPROM();
 void saveAlarmEEPROM();
 
-void listDir(fs::FS &fs, const char * dirname, uint8_t levels);
-
 extern bool    alarmOnOff;
 extern uint8_t alarmHour;
 extern uint8_t alarmMinute;
