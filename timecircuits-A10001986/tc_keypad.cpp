@@ -38,9 +38,6 @@ byte rowPins[4] = {1, 6, 5, 3}; // connect to the row pinouts of the keypad  2+6
 byte colPins[3] = {2, 0, 4};    // connect to the column pinouts of the keypad  4+1+16 = 0x15  OUTPUT
 #endif
 
-byte rowMask = 0;       // input
-byte colMask = 0;       // output
-
 Keypad_I2C keypad(makeKeymap(keys), rowPins, colPins, 4, 3, KEYPAD_ADDR, PCF8574);
 
 bool isEnterKeyPressed = false;
@@ -76,16 +73,16 @@ OneButton enterKey = OneButton(ENTER_BUTTON,
  */
 void keypad_setup() 
 {
-    colMask = (1 << colPins[0]) | (1 << colPins[1]) | (1 << colPins[2]);
-    rowMask = (1 << rowPins[0]) | (1 << rowPins[1]) | (1 << rowPins[2]) | (1 << rowPins[3]);
-    
+    byte rowMask = (1 << rowPins[0]) | (1 << rowPins[1]) | (1 << rowPins[2]) | (1 << rowPins[3]); // input
+    byte colMask = (1 << colPins[0]) | (1 << colPins[1]) | (1 << colPins[2]);                     // output
+
     keypad.begin(makeKeymap(keys));
     
-    keypad.addEventListener(keypadEvent); // add an event listener for this keypad
+    keypad.addEventListener(keypadEvent);
     
-    keypad.setHoldTime(ENTER_HOLD_TIME);  // 3 sec hold time
+    keypad.setHoldTime(ENTER_HOLD_TIME); 
 
-    keypad.setDebounceTime(80);          // debounce time
+    keypad.setDebounceTime(80);
 
     keypad.colMask = colMask;
     keypad.rowMask = rowMask;
@@ -111,6 +108,11 @@ void keypad_setup()
     #endif
 }
 
+/*
+ * get_key()
+ * 
+ * Do not use keypad.getKey() directly!
+ */
 char get_key() 
 {    
     char key;    
@@ -122,7 +124,9 @@ char get_key()
     return key;
 }
 
-// handle different cases for keypresses
+/* 
+ *  The keypad event handler
+ */
 void keypadEvent(KeypadEvent key) 
 {
     switch(keypad.getState()) {
@@ -200,14 +204,6 @@ void enterKeyHeld()
 {
     isEnterKeyHeld = true;
 }
-
-/*
-void enterKeyDouble() 
-{
-    //Serial.println("Enter Key double click");
-    isEnterKeyDouble = true;
-}
-*/
 
 void recordKey(char key) 
 {

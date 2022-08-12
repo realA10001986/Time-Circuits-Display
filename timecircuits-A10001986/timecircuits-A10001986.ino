@@ -23,10 +23,25 @@
 
 /* Changelog 
  *  
+ *  2022/08/12 (A10001986)
+ *    - A-Car display support enhanced (untested)
+ *    - Added SD support. Audio files will be played from SD, if
+ *      an SD is found. Files need to reside in the root folder of
+ *      a FAT-formatted SD and be named 
+ *      - "startup.mp3": The startup sound
+ *      - "enter.mp3": The sound played when a date was entered
+ *      - "baddate.mp3": If a bad date was entered
+ *      - "timetravel.mp3": A time travel was triggered
+ *      - "alarm.mp3": The alarm sound
+ *      - "nmon.mp3": Night mode is enabled
+ *      - "nmoff.mp3": Night mode is disabled*      
+ *      - "alarmon.mp3": The alarm was enabled
+ *      - "alarmoff.mp3": The alarm was disabled      
+ *      Mp3 files with 128kpbs or below recommended. 
  *  2022/08/11 (A10001986)
- *    - Import Keypad_I2C into the project in order to fix the
- *      "ghost" key presses issue by reducing i2c traffic and
- *      validating the port status data by reading the value
+ *    - Integrate a modified Keypad_I2C into the project in order 
+ *      to fix the "ghost" key presses issue by reducing i2c traffic 
+ *      and validating the port status data by reading the value
  *      twice.
  *  2022/08/10 (A10001986)
  *    - Added "fake power on" facility. Device will boot, setup 
@@ -80,11 +95,10 @@
 
 void setup() 
 {
-    Serial.begin(115200);
-    //delay(1000);  // wait for console opening
+    Serial.begin(115200);    
 
     Wire.begin();
-    //scan();
+    // scan();
     Serial.println();
 
     settings_setup();
@@ -106,7 +120,7 @@ void loop()
     audio_loop();
 }
 
-//for testing I2C connections and addresses
+// For testing I2C connections and addresses
 /*
 void scan() 
 {

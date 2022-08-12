@@ -32,12 +32,12 @@
  * First step is to choose a menu item. The available "items" are
  *    - enter custom dates/times for the three displays
  *    - set the alarm ("ALA-RM")
- *    - select the autoInterval ("PRE-SET")
+ *    - select the Time-Rotation Interval ("ROT-INT")
  *    - select the brightness for the three displays ("BRI-GHT")
  *    - view network data, ie IP address ("NET-WRK")
  *    - quit the menu ("END")
  *  Pressing ENTER cycles through the list, holding ENTER selects an item, ie a mode.
- *  If mode is to enter custom dates/times:
+ *  How to to enter custom dates/times:
  *      - Note that the pre-set will be the previous date/time stored in the EEPROM,
  *        not the date/time that was shown before entering the menu if autoInterval
  *        was non-zero.
@@ -57,29 +57,29 @@
  *      - If you entered a custom date/time into the "present" time display, this time is then
  *        used as actual the present time, and continues to run like a clock. (As opposed to the 
  *        "destination" and "last departure" times, which are stale.)
- *  If mode is to set the alarm:
+ *  How to set the alarm:
  *      - First option is "on" of "off". Press ENTER to toggle, hold ENTER to proceed.
  *      - Next, enter the hour in 24-hour-format. This works in the same way as described above.
  *      - Next, enter the minute.
  *      - "SAVE" is shown briefly, the alarm is saved.
  *      Note that the alarm is a recurring alarm; it will sound every day at the programmed time,
  *      unless switched off through the menu.
- *  If mode is to select the AutoInterval" (display shows "INT")
+ *  How to select the Time Rotation Interval (display shows "INT")
  *      - Press ENTER to cycle through the possible autoInverval settings.
  *      - Hold ENTER for 2 seconds to select the shown value and exit the menu ("SAVE" is displayed briefly)
  *      - 0 makes your custom "destination" and "last departure" times to be shown permanently.
  *        (CUS-TOM is displayed as a reminder)
  *      - Non-zero values make the clock cycle through a number of pre-programmed times, your
  *        custom times are ignored. The value means "minutes" (hence "MIN-UTES")               
- *  If mode is "select brightness" (display shows "LVL")
+ *  How to select display brightness (display shows "LVL")
  *      - Press ENTER to cycle through the possible levels (1-5)
  *      - Hold ENTER for 2 seconds to use current value and jump to next display
  *      - After the third display, "SAVE" is displayed briefly and the menu is left automatically.
- *  If mode is "NETWRK"
+ *  How to display the current IP address ("NETWRK")
  *      - the bottom two displays show the current IP address of the device. If this is 192.168.4.1,
  *        the device very likely could not connect to your WiFi network and runs in AP mode ("TCD-AP")
  *      - Hold ENTER to quit the menu
- *  If mode is "END"
+ *  How to quit the menu ("END")
  *      - Hold ENTER to quit the menu
  */
 
@@ -314,7 +314,7 @@ void enter_menu()
         allOff();
         waitForEnterRelease();  
         
-    } else if(displayNum == MODE_BRI) {    // Adjust brightness
+    } else if(displayNum == MODE_BRI) {   // Adjust brightness
 
         allOff();
         waitForEnterRelease();
@@ -327,7 +327,7 @@ void enter_menu()
         allOff();
         waitForEnterRelease();  
         
-    } else if(displayNum == MODE_NET) {    // Show network info
+    } else if(displayNum == MODE_NET) {   // Show network info
 
         allOff();
         waitForEnterRelease();
@@ -338,8 +338,7 @@ void enter_menu()
         allOff();
         waitForEnterRelease();  
     
-        
-    } else {                      // END: Bail out
+    } else {                              // END: Bail out
       
         allOff();
         waitForEnterRelease();  
@@ -471,39 +470,64 @@ void displayHighlight(int& number)
             displaySet = &departedTime;
             break;
         case MODE_ALRM:   // Alarm
+            #ifdef IS_ACAR_DISPLAY
+            destinationTime.showOnlySettingVal("AL", -1, true);  
+            presentTime.showOnlySettingVal("RM", -1, true);  
+            #else
             destinationTime.showOnlySettingVal("ALA", -1, true);  // display ALA-RM, no numbers, clear rest of screen
             presentTime.showOnlySettingVal("RM", -1, true);  
+            #endif
             destinationTime.on();
             presentTime.on();            
             departedTime.off();
             displaySet = &destinationTime;
             break;
         case MODE_AINT:  // autoInterval
+            #ifdef IS_ACAR_DISPLAY
+            destinationTime.showOnlySettingVal("IN", -1, true);
+            presentTime.showOnlySettingVal("T", -1, true); 
+            #else
             destinationTime.showOnlySettingVal("ROT", -1, true);  // display ROT-INT, no numbers, clear rest of screen
             presentTime.showOnlySettingVal("INT", -1, true);  
+            #endif
             destinationTime.on();
             presentTime.on();            
             departedTime.off();
             displaySet = NULL;
             break;
         case MODE_BRI:  // Brightness
+            #ifdef IS_ACAR_DISPLAY
+            destinationTime.showOnlySettingVal("BR", -1, true); 
+            presentTime.showOnlySettingVal("I", -1, true); 
+            #else
             destinationTime.showOnlySettingVal("BRI", -1, true);  // display BRI-GHT, no numbers, clear rest of screen
             presentTime.showOnlySettingVal("GHT", -1, true);  
+            #endif
             destinationTime.on();
             presentTime.on();            
             departedTime.off();
             displaySet = NULL;
             break;
         case MODE_NET:  // Network info
+            #ifdef IS_ACAR_DISPLAY
+            destinationTime.showOnlySettingVal("IP", -1, true); 
+            destinationTime.on(); 
+            presentTime.off(); 
+            #else
             destinationTime.showOnlySettingVal("NET", -1, true);  // display NET-WRK, no numbers, clear rest of screen
             presentTime.showOnlySettingVal("WRK", -1, true);  
             destinationTime.on();
-            presentTime.on();            
+            presentTime.on();    
+            #endif                    
             departedTime.off();
             displaySet = NULL;
             break;
         case MODE_END:  // end
+            #ifdef IS_ACAR_DISPLAY
+            destinationTime.showOnlySettingVal("EN", -1, true);
+            #else
             destinationTime.showOnlySettingVal("END", -1, true);  // display END, no numbers, clear rest of screen
+            #endif
             destinationTime.on();
             destinationTime.setColon(false);            
             presentTime.off();
@@ -629,9 +653,7 @@ void setField(uint16_t& number, uint8_t field, int year = 0, int month = 0)
 
         myloop();    
         delay(50);
-                    
-        //Serial.print("Setfield: setNum: ");
-        //Serial.println(setNum);                 
+                                   
     }
 
     // Force keypad to send keys somewhere else but our buffer
@@ -687,8 +709,11 @@ void doSetAlarm()
     #endif
 
     // On/Off
-    
+    #ifdef IS_ACAR_DISPLAY
+    displaySet->showOnlySettingVal(newAlarmOnOff ? "ON" : "OF", -1, true);
+    #else
     displaySet->showOnlySettingVal(newAlarmOnOff ? "ON" : "OFF", -1, true);
+    #endif
     displaySet->on();
     
     isEnterKeyHeld = false;
@@ -718,8 +743,12 @@ void doSetAlarm()
               timeout = 0;  // button pressed, reset timeout
 
               newAlarmOnOff = !newAlarmOnOff;       
-              
+
+              #ifdef IS_ACAR_DISPLAY
+              displaySet->showOnlySettingVal(newAlarmOnOff ? "ON" : "OF", -1, true);
+              #else
               displaySet->showOnlySettingVal(newAlarmOnOff ? "ON" : "OFF", -1, true);
+              #endif
               
           }
           
@@ -777,7 +806,7 @@ bool loadAutoInterval()
     Serial.println("Load Auto Interval");
     #endif
     
-    autoInterval = (uint8_t)atoi(settings.autoRotateTimes);   //EEPROM.read(AUTOINTERVAL_PREF);
+    autoInterval = (uint8_t)atoi(settings.autoRotateTimes);
     if(autoInterval > 5) {
         autoInterval = 1;  
         Serial.println("loadAutoInterval: Bad autoInterval, resetting to 1");
@@ -808,18 +837,32 @@ void doSetAutoInterval()
     #ifdef TC_DBG
     Serial.println("doSetAutoInterval() involked");
     #endif
-    
+
+    #ifdef IS_ACAR_DISPLAY
+    destinationTime.showOnlySettingVal("IN", autoTimeIntervals[autoInterval], true);
+    #else
     destinationTime.showOnlySettingVal("INT", autoTimeIntervals[autoInterval], true);
+    #endif
     destinationTime.on();
 
     presentTime.on();
     departedTime.on();
     if(autoTimeIntervals[autoInterval] == 0) {
+        #ifdef IS_ACAR_DISPLAY
+        presentTime.showOnlySettingVal("CU", -1, true);    // Custom times to be shown
+        departedTime.showOnlySettingVal("ST", -1, true);  
+        #else
         presentTime.showOnlySettingVal("CUS", -1, true);    // Custom times to be shown
         departedTime.showOnlySettingVal("TOM", -1, true);   
+        #endif
     } else {       
+        #ifdef IS_ACAR_DISPLAY
+        presentTime.showOnlySettingVal("MI", -1, true);
+        departedTime.showOnlySettingVal("", -1, true);
+        #else
         presentTime.showOnlySettingVal("MIN", -1, true);    // Times cycled in xx minutes
-        departedTime.showOnlyUtes();        
+        departedTime.showOnlyUtes();
+        #endif        
     }
 
     isEnterKeyHeld = false;
@@ -852,14 +895,28 @@ void doSetAutoInterval()
               if(autoInterval > 5)
                   autoInterval = 0;
 
+              #ifdef IS_ACAR_DISPLAY
+              destinationTime.showOnlySettingVal("IN", autoTimeIntervals[autoInterval], true);
+              #else
               destinationTime.showOnlySettingVal("INT", autoTimeIntervals[autoInterval], true);
+              #endif
 
               if(autoTimeIntervals[autoInterval] == 0) {
+                  #ifdef IS_ACAR_DISPLAY
+                  presentTime.showOnlySettingVal("CU", -1, true); 
+                  departedTime.showOnlySettingVal("ST", -1, true);  
+                  #else
                   presentTime.showOnlySettingVal("CUS", -1, true);
                   departedTime.showOnlySettingVal("TOM", -1, true);                  
+                  #endif
               } else {                  
+                  #ifdef IS_ACAR_DISPLAY
+                  presentTime.showOnlySettingVal("MI", -1, true);
+                  departedTime.showOnlySettingVal("", -1, true);
+                  #else
                   presentTime.showOnlySettingVal("MIN", -1, true);
                   departedTime.showOnlyUtes();  
+                  #endif
               }
           }
           
@@ -904,7 +961,11 @@ void doSetBrightness(clockDisplay* displaySet) {
     allLampTest();  
 
     // Display "LVL"
+    #ifdef IS_ACAR_DISPLAY
+    displaySet->showOnlySettingVal("LV", displaySet->getBrightness(), false);
+    #else
     displaySet->showOnlySettingVal("LVL", displaySet->getBrightness(), false);
+    #endif
   
     isEnterKeyHeld = false;
 
@@ -935,7 +996,11 @@ void doSetBrightness(clockDisplay* displaySet) {
               number++;
               if(number > 15) number = 0;
               displaySet->setBrightness(number);
+              #ifdef IS_ACAR_DISPLAY
+              displaySet->showOnlySettingVal("LV", number, false);
+              #else
               displaySet->showOnlySettingVal("LVL", number, false);
+              #endif
               
           }
           
@@ -987,7 +1052,11 @@ void doShowNetInfo()
     
     wifi_getIP(a, b, c, d);
 
+    #ifdef IS_ACAR_DISPLAY
     destinationTime.showOnlySettingVal("IP", a, true);
+    #else
+    destinationTime.showOnlySettingVal("IP", a, true);
+    #endif
     destinationTime.on();
 
     presentTime.showOnlyHalfIP(a, b, true);

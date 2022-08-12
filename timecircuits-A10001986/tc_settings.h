@@ -25,12 +25,20 @@
 #define _TC_SETTINGS_H
 
 #include <ArduinoJson.h>  // https://github.com/bblanchon/ArduinoJson
+#include <SD.h>
+#include <SPI.h>
 #include <FS.h>
 #include <SPIFFS.h>
 
 #include <EEPROM.h>
 
 #include "tc_global.h"
+
+// SD Card
+#define SD_CS     5
+#define SPI_MOSI  23
+#define SPI_MISO  19
+#define SPI_SCK   18
 
 extern void settings_setup();
 extern void write_settings();
@@ -40,11 +48,16 @@ extern void saveAlarm();
 bool loadAlarmEEPROM();
 void saveAlarmEEPROM();
 
+void listDir(fs::FS &fs, const char * dirname, uint8_t levels);
+
 extern bool    alarmOnOff;
 extern uint8_t alarmHour;
 extern uint8_t alarmMinute;
 
 extern bool    timetravelPersistent;
+
+extern bool    haveSD;
+
 
 //default settings - change settings in the web interface 192.168.4.1
 

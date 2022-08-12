@@ -34,9 +34,33 @@
 
 #define DS3231_I2CADDR 0x68
 
-// Uncomment if  month is 2 digits, as per the original A Car display.
-// Support is incomplete, as menu system expects month to be literal.
-//define IS_ACAR_DISPLAY 
+#ifdef IS_ACAR_DISPLAY      // A-Car ---------------------------
+#define CD_MONTH_POS  0
+#define CD_DAY_POS    3
+#define CD_YEAR_POS   4
+#define CD_HOUR_POS   6
+#define CD_MIN_POS    7
+  
+#define CD_AMPM_POS   CD_DAY_POS
+#define CD_COLON_POS  CD_YEAR_POS
+
+#define CD_MONTH_SIZE 2
+
+#define CD_BUF_SIZE   8   // words (16bit)
+#else                       // ---------------------------------
+#define CD_MONTH_POS  0
+#define CD_DAY_POS    3
+#define CD_YEAR_POS   4
+#define CD_HOUR_POS   6
+#define CD_MIN_POS    7
+
+#define CD_AMPM_POS   CD_DAY_POS
+#define CD_COLON_POS  CD_YEAR_POS
+
+#define CD_MONTH_SIZE 3
+
+#define CD_BUF_SIZE   8   // words (16bit)
+#endif                      // ---------------------------------
 
 extern bool alarmOnOff;
 extern bool presentTimeBogus;
