@@ -82,7 +82,7 @@ void keypad_setup()
     
     keypad.setHoldTime(ENTER_HOLD_TIME); 
 
-    keypad.setDebounceTime(80);
+    keypad.setDebounceTime(20);
 
     keypad.colMask = colMask;
     keypad.rowMask = rowMask;
