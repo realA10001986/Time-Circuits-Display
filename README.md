@@ -41,13 +41,13 @@ The Destination Time can be entered via keypad, and the Present Time can keep ti
 
 *Destination time* and *Last time departed* are stale. You can have the clock either show your favorite times here (which need to be set up through the keypad menu), or cycle through a list of pre-programmed times, which cannot be changed. 
 
-The mode of operation is chosen by setting the "Time-rotation Interval" in the config portal (via network) or the keypad menu. If this interval is 0, your times are permanently shown. If the inverval is non-zero, the device will cycle through named list every 5th, 15th, 30th or 60th minute.
+The mode of operation is chosen by setting the "Time-rotation Interval" in the config portal (via network) or the keypad menu. If this interval is 0, your times are permanently shown. If the interval is non-zero, the device will cycle through named list every 5th, 15th, 30th, 45th or 60th minute.
 
 **Time travel**
 
 To travel through time, hold "0" for 2 seconds. The destination time, as shown in the red display, will be your new present time, the old "present time" will be the "last time departed". Note that the new "present" time will continue to run like a normal clock.
 
-Before holding "0", you can also first quickly set a new destination time by entering a date on the keypad: mmddyyyy or mmddyyyyhhmm, then press ENTER. While typing, there is no visual feedback, but the date is then shown on the "destination time" display after pressing ENTER. (If the Time-rotation Interval is non-zero, your entered time will, however, be overwritten at the next 5th/15th/30th/60th minute and the next pre-programmed time will be put in place.)
+Before holding "0", you can also first quickly set a new destination time by entering a date on the keypad: mmddyyyy or mmddyyyyhhmm, then press ENTER. While typing, there is no visual feedback, but the date is then shown on the "destination time" display after pressing ENTER. (If the Time-rotation Interval is non-zero, your entered time will, however, be overwritten at the next 5th/15th/30th/45th/60th minute and the next pre-programmed time will be put in place.)
 
 To travel back to actual present time, hold "9" for 2 seconds.
 
