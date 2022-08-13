@@ -34,8 +34,8 @@
 
 #define DS3231_I2CADDR 0x68
 
-#ifdef IS_ACAR_DISPLAY      // A-Car ---------------------------
-#define CD_MONTH_POS  0
+#ifdef IS_ACAR_DISPLAY      // A-Car (2-digit-month) ---------------------
+#define CD_MONTH_POS  0     //      possibly needs to be adapted
 #define CD_DAY_POS    3
 #define CD_YEAR_POS   4
 #define CD_HOUR_POS   6
@@ -46,8 +46,8 @@
 
 #define CD_MONTH_SIZE 2
 
-#define CD_BUF_SIZE   8   // words (16bit)
-#else                       // ---------------------------------
+#define CD_BUF_SIZE   8     //      in words (16bit)
+#else                       // All others (3-char month) -----------------
 #define CD_MONTH_POS  0
 #define CD_DAY_POS    3
 #define CD_YEAR_POS   4
@@ -59,8 +59,8 @@
 
 #define CD_MONTH_SIZE 3
 
-#define CD_BUF_SIZE   8   // words (16bit)
-#endif                      // ---------------------------------
+#define CD_BUF_SIZE   8     //      in words (16bit)
+#endif                      // -------------------------------------------
 
 extern bool alarmOnOff;
 extern bool presentTimeBogus;
@@ -130,14 +130,13 @@ class clockDisplay {
     void setFromStruct(dateStruct* s);
     void setDS3232time(byte second, byte minute, byte hour, byte dayOfWeek, byte dayOfMonth, byte month, byte year);
 
-    //DateTime getDateTime();  // Return object's date & time as a DateTime
-
     void show();
     void showAnimate1();
     void showAnimate2();
 
     bool save();
     bool load();
+    int16_t loadYOffs();
     bool resetClocks();
     bool isPrefData(const char* key);
 

@@ -90,7 +90,7 @@ void play_keypad_sound(char key, bool nm)
     if(key) {
         beepOn = false;
         buf[6] = key;
-        play_file(buf, getVolumeNM(nm), 0);
+        play_file(buf, getVolumeNM(nm) * 0.8, 0);
     }
 }
 
@@ -175,7 +175,17 @@ double getVolume()
 double getVolumeNM(bool nm) 
 {
     double vol_val = getVolume();
-    if(nm) return vol_val * 0.3;
+
+    // If user muted, return
+    if(vol_val == 0.0) return vol_val;
+
+    // Reduce volume in night mode
+    if(nm) {
+        vol_val = vol_val * 0.3;
+        // Do not totally mute in night mode
+        if(vol_val < 0.03) vol_val = 0.03;
+    }
+
     return vol_val;
 }
 

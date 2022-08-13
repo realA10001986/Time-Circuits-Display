@@ -50,7 +50,7 @@ bool y;
 
 bool startup = false;
 bool startupSound = false;
-long startupNow = 0;
+unsigned long startupNow = 0;
 #ifndef TWPRIVATE
 int  startupDelay = 1000; // the time between startup sound being played and the display coming on
 #else
@@ -60,7 +60,7 @@ int  startupDelay = 1000; // the time between startup sound being played and the
 struct tm _timeinfo;  //for NTP
 RTC_DS3231 rtc;       //for RTC IC
 
-long timetravelNow = 0;
+unsigned long timetravelNow = 0;
 bool timeTraveled = false;
 bool presentTimeBogus = false;
 
@@ -81,7 +81,6 @@ bool timetravelPersistent = true;
 #else
 bool timetravelPersistent = false;
 #endif
-
 
 uint8_t timeout = 0;  // for tracking idle time in menus, reset to 0 on each button press
 
@@ -241,6 +240,11 @@ void time_setup()
         Serial.print("time_setup: RTC set through NTP from ");
         Serial.println(settings.ntpServer);
         #endif
+
+        // Save YearOffs to EEPROM if change is detected
+        if(presentTime.getYearOffset() != presentTime.loadYOffs()) {
+            presentTime.save();
+        } 
         
     }
 
@@ -364,7 +368,7 @@ void time_loop()
     }
 
     // Turn display on after startup delay
-    if(startup && (millis() > (startupNow + startupDelay))) {        
+    if(startup && (millis() - startupNow >= startupDelay)) {        
         animate();
         startup = false;
         #ifdef TC_DBG
@@ -373,7 +377,7 @@ void time_loop()
     }
 
     // Turn display back on after time traveling
-    if(timeTraveled && (millis() > (timetravelNow + 1500))) {                
+    if(timeTraveled && (millis() - timetravelNow >= 1500)) {                
         animate();
         timeTraveled = false;
         beepOn = true;
@@ -399,6 +403,9 @@ void time_loop()
             if(presentTime.isRTC()) {  // only set real time if present time is RTC  
         
                 if(presentTimeBogus && dt.year() - presentTime.getYearOffset() > 9999) {  
+
+                    // Roll-over only if in bogus time, otherwise it will be detected
+                    // by NTP adjustment.
                 
                     Serial.println("Rollover 9999->0 detected, adjusting RTC and yearOffset");
                 
@@ -456,6 +463,10 @@ void time_loop()
                         Serial.println("time_loop: RTC re-adjusted using NTP");                    
                         #endif
                         autoReadjust = true;
+                        // Save YearOffs to EEPROM if change is detected
+                        if(presentTime.getYearOffset() != presentTime.loadYOffs()) {
+                            presentTime.save();
+                        } 
                     } else {                          
                         Serial.println("time_loop: RTC re-adjustment via NTP failed");
                     }
@@ -651,7 +662,16 @@ void timeTravel()
  * (aka "return from time travel")
  */
 void resetPresentTime() 
-{
+{    
+    timetravelNow = millis();
+    timeTraveled = true; 
+    if(presentTimeBogus) {
+        presentTimeBogus = false;
+        play_file("/timetravel.mp3", getVolumeNM(presentTime.getNightMode()), 0);
+    }
+  
+    allOff();
+    
     // Copy "present" time to last time departed
     departedTime.setMonth(presentTime.getMonth());
     departedTime.setDay(presentTime.getDay());
@@ -666,26 +686,17 @@ void resetPresentTime()
     if(timetravelPersistent) {
         departedTime.save();
     }
-    
-    presentTime.setYearOffset(0);
-
-    timetravelNow = millis();
-    timeTraveled = true; 
-    if(presentTimeBogus) {
-        presentTimeBogus = false;
-        play_file("/timetravel.mp3", getVolumeNM(presentTime.getNightMode()), 0);
-    }
-  
-    allOff();
   
     presentTime.setRTC(true);
 
-    // Save presentTime settings (yearoffs, bogus) if to be persistent
-    if(timetravelPersistent) {
-        presentTime.save();
-    }
-  
+    // Update RTC with NTP and update YearOffs if neccessary
     getNTPTime(); 
+
+    // Save presentTime settings (yearoffs, bogus) if to be persistent
+    // or if saved yearOffs is different to new one
+    if(timetravelPersistent || (presentTime.getYearOffset() != presentTime.loadYOffs())) {
+        presentTime.save();
+    } 
 }
 
 // choose your time zone from this list
@@ -704,13 +715,24 @@ void resetPresentTime()
  */
 bool getNTPTime() 
 {  
+    uint16_t newYear;
+    int16_t  newYOffs = 0;
+    
     if(WiFi.status() == WL_CONNECTED) { 
       
         // if connected to wifi, get NTP time and set RTC
         
         configTime(0, 0, settings.ntpServer);
+        
         setenv("TZ", settings.timeZone, 1);   // Set environment variable with time zone
         tzset();
+
+        if(strlen(settings.ntpServer) == 0) {
+            #ifdef TC_DBG            
+            Serial.println("getNTPTime: NTP skipped, server not defined");
+            #endif
+            return false;
+        }
 
         int ntpRetries = 0;
         if(!getLocalTime(&_timeinfo)) {
@@ -722,36 +744,43 @@ bool getNTPTime()
                 } else {
                     ntpRetries++;
                 }
-                mydelay(800);
+                mydelay((ntpRetries >= 3) ? 300 : 50);
             }
             
-        } else {
+        } 
 
-            // Don't waste any time here...
+        // Don't waste any time here...
 
-            // Timeinfo:  Years since 1900
-            // RTC:       0-99, 0 being 2000 
-            //            (important for leap year compensation, which only works from 2000-2099, not 2100 on, 
-            //            century bit has not influence on leap year comp., is buggy)          
-                                                                
-            presentTime.setDS3232time(_timeinfo.tm_sec, 
-                                      _timeinfo.tm_min,
-                                      _timeinfo.tm_hour, 
-                                      _timeinfo.tm_wday + 1,  // We use Su=1...Sa=7 on HW-RTC, tm uses 0-6 (days since Sunday)
-                                      _timeinfo.tm_mday,
-                                      _timeinfo.tm_mon + 1,   // Month needs to be 1-12, timeinfo uses 0-11
-                                      _timeinfo.tm_year + 1900 - 2000); 
-                                      
-            #ifdef TC_DBG            
-            Serial.print("getNTPTime: Result from NTP update: ");
-            Serial.println(&_timeinfo, "%A, %B %d %Y %H:%M:%S");            
-            Serial.println("getNTPTime: Time successfully set with NTP");
-            #endif
-            
-            return true;
-            
+        // Timeinfo:  Years since 1900
+        // RTC:       0-99, 0 being 2000 
+        //            (important for leap year compensation, which only works from 2000-2099, not 2100 on, 
+        //            century bit has not influence on leap year comp., is buggy)   
+
+        newYear = _timeinfo.tm_year + 1900; 
+                       
+        while(newYear > 2050) {
+            newYear -= 28;
+            newYOffs -= 28;
         }
+
+        presentTime.setYearOffset(newYOffs);
+                                                            
+        presentTime.setDS3232time(_timeinfo.tm_sec, 
+                                  _timeinfo.tm_min,
+                                  _timeinfo.tm_hour, 
+                                  _timeinfo.tm_wday + 1,  // We use Su=1...Sa=7 on HW-RTC, tm uses 0-6 (days since Sunday)
+                                  _timeinfo.tm_mday,
+                                  _timeinfo.tm_mon + 1,   // Month needs to be 1-12, timeinfo uses 0-11
+                                  newYear - 2000); 
+                                  
+        #ifdef TC_DBG            
+        Serial.print("getNTPTime: Result from NTP update: ");
+        Serial.println(&_timeinfo, "%A, %B %d %Y %H:%M:%S");            
+        Serial.println("getNTPTime: Time successfully set with NTP");
+        #endif
         
+        return true;
+            
     } else {
       
         Serial.println("getNTPTime: Time NOT set with NTP, WiFi not connected");

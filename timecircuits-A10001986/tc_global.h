@@ -24,7 +24,7 @@
 #ifndef _TC_GLOBAL_H
 #define _TC_GLOBAL_H
 
-//#define TC_DBG         // more debug output on Serial
+//#define TC_DBG              // more debug output on Serial
 
 // Fake Power On:
 // Attach an active-low button to io13 or io14; firmware will start network and 
@@ -33,6 +33,14 @@
 // powered on.
 #define FAKE_POWER_ON         // Wait for button press on io13/io14 before starting displays
 #define FAKE_POWER_BUTTON 13  // GPIO that fake power button is connected to; 13 or 14
+
+// External time travel
+// If the defined pin goes low a time travel is triggered (eg when 88mph is reached)
+// ATTN: We only simulate re-entry, ie the part of time travel that takes
+// place in the new time. So the external time travel should be initiated when
+// the present-time part of time travel is over.
+#define EXTERNAL_TIMETRAVEL         // Initiate time travel is pin is activated
+#define EXTERNAL_TIMETRAVEL_PIN 14  // GPIO that is polled (13 or 14, see fake power)
 
 // Uncomment if month is 2 digits (7-seg), as in the original A-Car display.
 //#define IS_ACAR_DISPLAY 

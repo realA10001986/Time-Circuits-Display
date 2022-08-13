@@ -42,19 +42,19 @@ Keypad_I2C keypad(makeKeymap(keys), rowPins, colPins, 4, 3, KEYPAD_ADDR, PCF8574
 
 bool isEnterKeyPressed = false;
 bool isEnterKeyHeld = false;
-bool isEnterKeyDouble = false;
 bool enterWasPressed = false;
 
-bool menuFlag = false;
+#ifdef EXTERNAL_TIMETRAVEL
+bool isEttKeyPressed = false;
+#endif
 
-int enterVal = 0;
-long timeNow = 0;
+unsigned long timeNow = 0;
 
 const int maxDateLength = 12;  //month, day, year, hour, min
 const int minDateLength = 8;   //month, day, year
 
 char dateBuffer[maxDateLength + 2];
-char timeBuffer[8]; // 4 characters to accomodate date and time settings
+char timeBuffer[8]; // 4 characters to accommodate date and time settings
 
 int dateIndex = 0;
 int timeIndex = 0;
@@ -66,6 +66,13 @@ OneButton enterKey = OneButton(ENTER_BUTTON,
     false,    // Button is active HIGH
     false     // Disable internal pull-up resistor
 );
+
+#ifdef EXTERNAL_TIMETRAVEL
+OneButton ettKey = OneButton(EXTERNAL_TIMETRAVEL_PIN,
+    true,     // Button is active LOW
+    true      // Enable internal pull-up resistor
+);
+#endif
 
 /*
  * keypad_setup()
@@ -87,18 +94,23 @@ void keypad_setup()
     keypad.colMask = colMask;
     keypad.rowMask = rowMask;
 
-    // Setup pins for white LED and Enter key
+    // Setup pin for white LED
     pinMode(WHITE_LED, OUTPUT);
     digitalWrite(WHITE_LED, LOW);  
-    
-    pinMode(ENTER_BUTTON, INPUT_PULLDOWN);
-    digitalWrite(ENTER_BUTTON, LOW);
 
-    enterKey.setClickTicks(ENTER_DOUBLE_TIME);
+    // Setup Enter button
+    enterKey.setClickTicks(ENTER_CLICK_TIME);
     enterKey.setPressTicks(ENTER_HOLD_TIME);
     enterKey.setDebounceTicks(ENTER_DEBOUNCE);
     enterKey.attachClick(enterKeyPressed);    
     enterKey.attachLongPressStart(enterKeyHeld);    // we only need info when the button is held long enough
+
+#ifdef EXTERNAL_TIMETRAVEL
+    // Setup External time travel 
+    ettKey.setClickTicks(ETT_CLICK_TIME);    
+    ettKey.setDebounceTicks(ETT_DEBOUNCE);
+    ettKey.attachClick(ettKeyPressed);    
+#endif
 
     dateBuffer[0] = '\0';
     timeBuffer[0] = '\0';
@@ -205,6 +217,13 @@ void enterKeyHeld()
     isEnterKeyHeld = true;
 }
 
+#ifdef EXTERNAL_TIMETRAVEL
+void ettKeyPressed() 
+{
+    isEttKeyPressed = true;
+}
+#endif
+
 void recordKey(char key) 
 {
     dateBuffer[dateIndex++] = key;
@@ -234,7 +253,11 @@ void resetTimebufIndices()
 
 void enterkeytick() 
 {
-    enterKey.tick();  // manages the enter key (updates flags)
+    enterKey.tick();  // manages the enter button (updates flags)
+    
+#ifdef EXTERNAL_TIMETRAVEL
+    ettKey.tick();    // manages the extern time travel button (updates flags)
+#endif         
 }
 
 /*
@@ -245,28 +268,37 @@ void keypad_loop()
 {   
     enterkeytick();
 
+#ifdef EXTERNAL_TIMETRAVEL
+    if(isEttKeyPressed) {
+        timeTravel();
+        isEttKeyPressed = false;     
+    }
+#endif    
+
     // if enter key is held go into keypad menu
-    if(isEnterKeyHeld && !menuFlag) { 
+    if(isEnterKeyHeld) { 
              
         isEnterKeyHeld = false;     
         isEnterKeyPressed = false;
         
-        menuFlag = true;
-        
         timeIndex = yearIndex = 0;
         timeBuffer[0] = '\0';
         
-        //audioMute = true;
         enter_menu();     // enter menu mode; in tc_menu.cpp
-        //audioMute = false;
         
         isEnterKeyHeld = false;     
         isEnterKeyPressed = false;   
         
+        #ifdef EXTERNAL_TIMETRAVEL
+        // No external tt while in menu mode,
+        // so reset flag upon menu exit
+        isEttKeyPressed = false;     
+        #endif 
+        
     }
 
     // if enter key is merely pressed, copy dateBuffer to destination time (if valid)
-    if(isEnterKeyPressed && !menuFlag) {
+    if(isEnterKeyPressed) {
       
         isEnterKeyPressed = false; 
         enterWasPressed = true;
@@ -342,7 +374,7 @@ void keypad_loop()
     // Turn everything back on after entering date
     // (might happen in next iteration of loop)
     
-    if(enterWasPressed && (millis() > timeNow + ENTER_DELAY)) {
+    if(enterWasPressed && (millis() - timeNow > ENTER_DELAY)) {
       
         destinationTime.showAnimate1();   // Show all but month
         delay(80);                        // Wait 80ms

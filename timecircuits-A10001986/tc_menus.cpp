@@ -124,8 +124,6 @@ void enter_menu()
     
     isEnterKeyHeld = false;     
     isEnterKeyPressed = false; 
-    
-    menuFlag = false;
 
     destinationTime.setNightMode(false);
     presentTime.setNightMode(false);
@@ -152,12 +150,15 @@ void enter_menu()
     // Wait for ENTER to cycle through main menu (displays and modes), 
     // HOLDing ENTER selects current menu "item"
     // (Also sets displaySet to selected display)    
-    displaySelect(displayNum);        
+    displaySelect(displayNum);  
+
+    if(checkTimeOut()) 
+        goto quitMenu;
 
     #ifdef TC_DBG
     Serial.println("Menu: Display/mode selected");    
     #endif
-    
+
     if(displayNum <= MODE_DEPT) {  
 
         // Enter display times
@@ -202,14 +203,20 @@ void enter_menu()
         setUpdate(yearSet, FIELD_YEAR);  
         prepareInput(yearSet);
         waitForEnterRelease();      
-        setField(yearSet, FIELD_YEAR, 0, 0);         
+        setField(yearSet, FIELD_YEAR, 0, 0);
         isYearUpdate = false;
-
+        
+        if(checkTimeOut()) 
+            goto quitMenu;         
+        
         // Get month
         setUpdate(monthSet, FIELD_MONTH);
         prepareInput(monthSet);
         waitForEnterRelease();
-        setField(monthSet, FIELD_MONTH, 0, 0);          
+        setField(monthSet, FIELD_MONTH, 0, 0); 
+
+        if(checkTimeOut()) 
+            goto quitMenu;
 
         // Get day
         setUpdate(daySet, FIELD_DAY);
@@ -217,11 +224,17 @@ void enter_menu()
         waitForEnterRelease();        
         setField(daySet, FIELD_DAY, yearSet, monthSet);  // this depends on the month and year        
 
+        if(checkTimeOut()) 
+            goto quitMenu;
+            
         // Get hour
         setUpdate(hourSet, FIELD_HOUR);
         prepareInput(hourSet);
         waitForEnterRelease();       
-        setField(hourSet, FIELD_HOUR, 0, 0);       
+        setField(hourSet, FIELD_HOUR, 0, 0); 
+
+        if(checkTimeOut()) 
+            goto quitMenu;
 
         // Get minute
         setUpdate(minSet, FIELD_MINUTE);
@@ -259,7 +272,9 @@ void enter_menu()
                 }
     
                 displaySet->setYearOffset(tyroffs);
-                presentTimeBogus = true;  // Avoid overwriting this time by NTP time in loop
+
+                // Avoid overwriting this time by NTP time in loop
+                presentTimeBogus = true;  
     
                 rtc.adjust(DateTime(tyr, monthSet, daySet, hourSet, minSet, 0));
                 
@@ -276,6 +291,8 @@ void enter_menu()
 
             // Show a save message for a brief moment
             displaySet->showOnlySave();  
+
+            waitAudioDone();
             
             // update the object
             displaySet->setMonth(monthSet);
@@ -283,7 +300,9 @@ void enter_menu()
             displaySet->setYear(yearSet);
             displaySet->setHour(hourSet);
             displaySet->setMinute(minSet);
-            displaySet->save();  // save to eeprom
+            
+            // save to eeprom (regardless of persistence mode)
+            displaySet->save();  
             
             mydelay(1000);
 
@@ -344,6 +363,10 @@ void enter_menu()
         waitForEnterRelease();  
         
     }
+
+quitMenu:
+
+    isSetUpdate = false;
     
     // Return dest/dept displays to where they should be    
     if(autoTimeIntervals[autoInterval] == 0) {
@@ -364,17 +387,9 @@ void enter_menu()
     #endif
     presentTime.setDateTime(myrtcnow()); // Set the current time in the display, 2+ seconds gone
     
-    // all displays on and show
-
-    #ifdef FAKE_POWER_ON
-    if(!waitForFakePowerButton) {
-    #endif  
+    // all displays on and show  
     
-        animate(); 
-        
-    #ifdef FAKE_POWER_ON     
-    }
-    #endif
+    animate(); 
                     
     myloop();
     
@@ -391,7 +406,7 @@ void enter_menu()
 
 /* 
  *  Cycle through main menu:
- *  Select display to update or mode (bri, autoInt, End)
+ *  Select display to update or mode (alarm, rot-Int, bri, ...)
  *  
  */
 void displaySelect(int& number) 
@@ -652,12 +667,15 @@ void setField(uint16_t& number, uint8_t field, int year = 0, int month = 0)
         } 
 
         myloop();    
-        delay(50);
+        delay(10);
                                    
     }
 
     // Force keypad to send keys somewhere else but our buffer
     isSetUpdate = false; 
+
+    if(checkTimeOut())
+        return;
     
     numVal = 0;
     for(i = 0; i < strlen(timeBuffer); i++) {
@@ -755,7 +773,7 @@ void doSetAlarm()
       } else {
 
           myloop();
-          delay(100);
+          delay(50);
           
       }
           
@@ -769,7 +787,11 @@ void doSetAlarm()
     setUpdate(newAlarmHour, FIELD_HOUR);
     prepareInput(newAlarmHour);
     waitForEnterRelease();       
-    setField(newAlarmHour, FIELD_HOUR, 0, 0);  
+    setField(newAlarmHour, FIELD_HOUR, 0, 0); 
+
+    if(checkTimeOut()) {
+        return;  
+    }
 
     // Get minute
     setUpdate(newAlarmMinute, FIELD_MINUTE);
@@ -923,7 +945,7 @@ void doSetAutoInterval()
       } else {
 
           myloop();
-          delay(100);
+          delay(50);
           
       }
           
@@ -1007,7 +1029,7 @@ void doSetBrightness(clockDisplay* displaySet) {
       } else {
         
           myloop();
-          delay(100);
+          delay(50);
           
       }
           
@@ -1090,7 +1112,7 @@ void doShowNetInfo()
         } else {
   
             myloop();
-            delay(100);
+            delay(50);
             
         }
           
@@ -1139,19 +1161,17 @@ void waitForEnterRelease()
     
     while(digitalRead(ENTER_BUTTON)) {
         myloop();        
-        delay(100);   // wait for release
+        delay(50);  
     }
     isEnterKeyPressed = false;
     isEnterKeyHeld = false;
-    isEnterKeyDouble = false;
-    return;
 }
 
 void waitAudioDone()
 {
   int timeout = 100;
   
-  while(checkAudioDone() && timeout--) {       
+  while(!checkAudioDone() && timeout--) {       
        myloop();
        delay(20);
   }
@@ -1163,12 +1183,11 @@ void waitAudioDone()
  */
 void mydelay(int mydel) 
 {  
-    while(mydel >= 150) {
-        delay(100);
-        mydel -= 120;
+    unsigned long startNow = millis();
+    while(millis() - startNow < mydel) {
+        delay(20);
         myloop();
-    }  
-    delay(mydel);   
+    }     
 }
 
 /*
@@ -1177,9 +1196,7 @@ void mydelay(int mydel)
  */
 void myloop() 
 {
-    //keypadLoop();   No, interferes with our menu
-    enterkeytick();    
-    //time_loop();    No, interferes with our menu
+    enterkeytick();       
     wifi_loop();
     audio_loop();     
 }
