@@ -35,11 +35,12 @@
 #include "tc_global.h"
 #include "tc_keypad.h"
 
-//I2S audio
+// I2S audio pins
 #define I2S_BCLK  26
 #define I2S_LRCLK 25
 #define I2S_DIN   33
 
+// analog input pin
 #define VOLUME    32
 
 extern void audio_setup();

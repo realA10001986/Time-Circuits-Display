@@ -23,6 +23,18 @@
 
 /* Changelog 
  *  
+ *  2022/08/13 (A10001986)
+ *    - External time travel trigger: Connect active-low switch to
+ *      io14 (see tc_global.h). Upon activation, a time travel is
+ *      triggered. Note that the device only simulates the re-entry 
+ *      part of a time travel so the trigger should be timed accordingly.
+ *    - Fix millis() roll-over errors
+ *    - All new sounds. The volume of the various sound effects has been
+ *      normalized, and the sound quality has been digitally enhanced.
+ *    - Make keypad more responsive
+ *    - Fix garbled keypad sounds in menu
+ *    - Fix timeout logic errors in menu
+ *    - Make RTC usable for eternity (by means of yearOffs)
  *  2022/08/12 (A10001986)
  *    - A-Car display support enhanced (untested)
  *    - Added SD support. Audio files will be played from SD, if
@@ -46,8 +58,8 @@
  *  2022/08/10 (A10001986)
  *    - Added "fake power on" facility. Device will boot, setup 
  *      WiFi, sync time with NTP, but not start displays until
- *      an active-low button is pressed (connected to io13 or 
- *      io14, see tc-global.h)
+ *      an active-low button is pressed (connected to io13, see 
+ *      tc_global.h)
  *  2022/08/10 (A10001986)
  *    - Nightmode now also reduced volume of sound (except alarm)
  *    - Fix autoInterval array size
