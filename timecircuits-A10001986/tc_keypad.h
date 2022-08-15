@@ -47,7 +47,8 @@
 #define ENTER_DELAY 400         // when enter button is pressed, turn off display for this many ms
 
 #define ETT_DEBOUNCE 50         // external time travel button debounce time in ms
-#define ETT_CLICK_TIME 200      // external time travel button will register a click 
+#define ETT_CLICK_TIME 250      // external time travel button will register a click (unused)
+#define ETT_HOLD_TIME 200       // external time travel button will register a press (that's the one)
 
 void keypadEvent(KeypadEvent key);
 extern void keypad_setup();

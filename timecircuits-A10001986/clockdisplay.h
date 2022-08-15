@@ -63,7 +63,12 @@
 #endif                      // -------------------------------------------
 
 extern bool alarmOnOff;
-extern bool presentTimeBogus;
+
+extern uint64_t timeDifference;
+extern bool     timeDiffUp;
+
+extern uint64_t dateToMins(int year, int month, int day, int hour, int minute);
+extern void minsToDate(uint64_t total, int& year, int& month, int& day, int& hour, int& minute);
  
 struct dateStruct {
     uint16_t year;
@@ -124,10 +129,12 @@ class clockDisplay {
     void showOnlySettingVal(const char* setting, int8_t val = -1, bool clear = false);
     void showOnlySave();
     void showOnlyUtes();    
+    void showOnlyRTC();
     void showOnlyHalfIP(int a, int b, bool clear = false);
 
-    void setDateTime(DateTime dt);  // Set object date & time using a DateTime
-    void setFromStruct(dateStruct* s);
+    void setDateTime(DateTime dt);      // Set object date & time using a DateTime ignoring timeDiff
+    void setDateTimeDiff(DateTime dt);  // Set object date & time using a DateTime plus/minus timeDiff
+    void setFromStruct(dateStruct* s);  // Set object date & time from struct; never use this with RTC
     void setDS3232time(byte second, byte minute, byte hour, byte dayOfWeek, byte dayOfMonth, byte month, byte year);
 
     void show();
@@ -135,6 +142,7 @@ class clockDisplay {
     void showAnimate2();
 
     bool save();
+    bool saveYOffs();
     bool load();
     int16_t loadYOffs();
     bool resetClocks();

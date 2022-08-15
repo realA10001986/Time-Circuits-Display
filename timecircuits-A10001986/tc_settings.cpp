@@ -157,6 +157,9 @@ void settings_setup()
                 strcpy(settings.fakePwrOn, json["fakePwrOn"]);
             } else writedefault = true;
             #endif
+            if(json["alarmRTC"]) {
+                strcpy(settings.alarmRTC, json["alarmRTC"]);
+            } else writedefault = true;
             
           } else {
             
@@ -219,6 +222,7 @@ void write_settings()
     #ifdef FAKE_POWER_ON    
     json["fakePwrOn"] = settings.fakePwrOn;    
     #endif
+    json["alarmRTC"] = settings.alarmRTC;
   
     File configFile = SPIFFS.open("/config.json", FILE_WRITE);
   

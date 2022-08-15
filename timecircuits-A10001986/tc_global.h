@@ -24,15 +24,16 @@
 #ifndef _TC_GLOBAL_H
 #define _TC_GLOBAL_H
 
-//#define TC_DBG              // more debug output on Serial
+//#define TC_DBG              // debug output on Serial
 
 // Fake Power On:
-// Attach an active-low button to io13 or io14; firmware will start network and 
-// sync time, but not enable displays until the button is pressed.
+// Attach an active-low switch to io13 or io14; firmware will start network and 
+// sync time, but not enable displays until the switch is activated.
 // The white led will flash for 0.5 seconds when the unit is ready to be "fake"
-// powered on.
+// powered on. De-activating the switch "fake" powers down the device (ie the
+// displays are switched off, and no keypad input is accepted)
 #define FAKE_POWER_ON         // Wait for button press on io13/io14 before starting displays
-#define FAKE_POWER_BUTTON 13  // GPIO that fake power button is connected to; 13 or 14
+#define FAKE_POWER_BUTTON 13  // GPIO that fake power switch is connected to; 13 or 14
 
 // External time travel
 // If the defined pin goes low a time travel is triggered (eg when 88mph is reached)

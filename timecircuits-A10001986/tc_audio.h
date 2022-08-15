@@ -52,6 +52,7 @@ extern void play_file(char *audio_file, double volume = 0.1, int channel = 0);
 extern double getVolume();
 extern double getVolumeNM(bool nm);
 extern bool checkAudioDone();
+extern void stopAudio();
 extern bool beepOn;
 
 extern bool audioMute;

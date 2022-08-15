@@ -25,6 +25,7 @@
 #define _TC_TIME_H
 
 #include <Arduino.h>
+#include <time.h>
 #include <RTClib.h>
 #include <WiFi.h>
 #include <Wire.h>
@@ -77,15 +78,24 @@ extern void RTCClockOutEnable();
 extern bool isLeapYear(int year);
 extern int  daysInMonth(int month, int year);
 extern DateTime myrtcnow();
+
+extern uint64_t dateToMins(int year, int month, int day, int hour, int minute);
+extern void minsToDate(uint64_t total, int& year, int& month, int& day, int& hour, int& minute);
+
 #ifdef FAKE_POWER_ON
-void fpbKeyPressed();   
+void fpbKeyPressed(); 
+void fpbKeyLongPressStop();  
 #endif
+
+extern bool FPBUnitIsOn;
 
 // Our generic timeout when waiting for buttons, in seconds. max 255.
 #define maxTime 240            
 extern uint8_t timeout;
 
-extern bool presentTimeBogus;
+extern uint64_t timeDifference;
+extern bool     timeDiffUp;
+
 #ifdef FAKE_POWER_ON
 extern bool waitForFakePowerButton;
 #endif

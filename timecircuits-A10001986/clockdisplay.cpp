@@ -238,30 +238,78 @@ bool clockDisplay::save()
         
     } else if(isRTC() && _saveAddress >= 0) {
 
-        // RTC: Save yearoffs, bogus (time comes from battery-backed RTC)
+        // RTC: Save yearoffs, timeDiff (time comes from battery-backed RTC)
 
         #ifdef TC_DBG  
         Serial.println("Clockdisplay: Saving RTC settings to EEPROM");
         #endif
                 
-        savBuf[0] = presentTimeBogus ? 1 : 0;        
+        savBuf[0] = 0; // unused
         savBuf[1] = _yearoffset & 0xff;
         savBuf[2] = (_yearoffset >> 8) & 0xff;
-        for(i = 0; i < 3; i++) {
+
+        savBuf[3] = (timeDifference >> 32) & 0xff;
+        savBuf[4] = (timeDifference >> 24) & 0xff;
+        savBuf[5] = (timeDifference >> 16) & 0xff;
+        savBuf[6] = (timeDifference >>  8) & 0xff;
+        savBuf[7] =  timeDifference        & 0xff;
+
+        savBuf[8] = timeDiffUp ? 1 : 0;                                             
+        
+        for(i = 0; i < 9; i++) {
             sum += savBuf[i] ^ 0x55;
-            EEPROM.write(_saveAddress + i, savBuf[i]);
+            EEPROM.write(_saveAddress + i, savBuf[i]);            
         }
         
-        EEPROM.write(_saveAddress + 3, sum & 0xff);        
+        EEPROM.write(_saveAddress + 9, sum & 0xff);        
         
         EEPROM.commit();
-        
-        
+                
     } else {
       
         return false;
         
     }
+
+    return true;
+}
+
+// Save YOffs and clear timeDifference in EEPROM
+bool clockDisplay::saveYOffs() 
+{    
+    uint8_t savBuf[10];
+    uint16_t sum = 0; 
+    int i;
+
+    if(!isRTC() || _saveAddress < 0)
+        return false;
+
+    // RTC: Save yearoffs; zero timeDifference
+
+    #ifdef TC_DBG  
+    Serial.println("Clockdisplay: Saving RTC/YOffs setting to EEPROM");
+    #endif
+                
+    savBuf[0] = 0;        
+    savBuf[1] = _yearoffset & 0xff;
+    savBuf[2] = (_yearoffset >> 8) & 0xff;
+
+    savBuf[3] = 0;
+    savBuf[4] = 0;
+    savBuf[5] = 0;
+    savBuf[6] = 0;
+    savBuf[7] = 0;
+
+    savBuf[8] = 0;                                             
+    
+    for(i = 0; i < 9; i++) {
+        sum += savBuf[i] ^ 0x55;
+        EEPROM.write(_saveAddress + i, savBuf[i]);
+    }
+    
+    EEPROM.write(_saveAddress + 9, sum & 0xff);        
+    
+    EEPROM.commit();    
 
     return true;
 }
@@ -316,28 +364,36 @@ bool clockDisplay::load()
 
     } else {
 
-        // RTC: only "bogus" flag and yearoffs is saved
+        // RTC: yearoffs & timeDiff is saved
         
-        for(i = 0; i < 4; i++) {
+        for(i = 0; i < 10; i++) {
             loadBuf[i] = EEPROM.read(_saveAddress + i);
-            if(i < 3) sum += loadBuf[i] ^ 0x55;                 
+            if(i < 9) sum += loadBuf[i] ^ 0x55;                    
         }    
 
-        if((sum & 0xff) == loadBuf[3]) { 
+        if((sum & 0xff) == loadBuf[9]) { 
+              
+              setYearOffset((loadBuf[2] << 8) | loadBuf[1]); 
 
-              presentTimeBogus = loadBuf[0] ? true : false;
-              setYearOffset((loadBuf[2] << 8) | loadBuf[1]);  
+              timeDifference = (loadBuf[3] << 32) |
+                               (loadBuf[4] << 24) |
+                               (loadBuf[5] << 16) |
+                               (loadBuf[6] <<  8) |
+                                loadBuf[7];
+                                
+              timeDiffUp = loadBuf[8] ? true : false;
 
               #ifdef TC_DBG  
-              Serial.println("Clockdisplay: Loading RTC settings from EEPROM");
+              Serial.print("Clockdisplay: Loading RTC settings from EEPROM");
               #endif
                      
         } else {
 
-              presentTimeBogus = false;
               setYearOffset(0);
 
-              Serial.println("Clockdisplay: Invalid presetTime EEPROM data");
+              timeDifference = 0;
+
+              Serial.println("Clockdisplay: Invalid RTC EEPROM data");
               
         }
 
@@ -357,6 +413,7 @@ bool clockDisplay::load()
 }
 
 // Only load yearOffset from EEPROM
+// !!! Does NOT SET yearOffs, just returns it !!!
 int16_t clockDisplay::loadYOffs() 
 {
     uint8_t loadBuf[10];
@@ -364,16 +421,14 @@ int16_t clockDisplay::loadYOffs()
     int i;
 
     if(_saveAddress < 0 || !isRTC()) 
-        return -1;
-        
-    // RTC: only "bogus" flag and yearoffs is saved
+        return -1;    
     
-    for(i = 0; i < 4; i++) {
+    for(i = 0; i < 10; i++) {
         loadBuf[i] = EEPROM.read(_saveAddress + i);
-        if(i < 3) sum += loadBuf[i] ^ 0x55;                 
+        if(i < 9) sum += loadBuf[i] ^ 0x55;                 
     }    
 
-    if((sum & 0xff) == loadBuf[3]) { 
+    if((sum & 0xff) == loadBuf[9]) { 
                 
           return ((loadBuf[2] << 8) | loadBuf[1]);  
                  
@@ -383,7 +438,6 @@ int16_t clockDisplay::loadYOffs()
           
     }         
 }
-
 
 // Show the buffer 
 void clockDisplay::showInt(bool animate) 
@@ -474,8 +528,8 @@ void clockDisplay::setMonth(int monthNum)
 {
     if(monthNum < 1 || monthNum > 12) {        
         Serial.print("Clockdisplay: setMonth: Bad month: "); 
-        Serial.println(monthNum, DEC);
-        monthNum = 12;                   
+        Serial.println(monthNum, DEC); 
+        monthNum = (monthNum > 12) ? 12 : 1;                   
     } 
   
     _month = monthNum;
@@ -510,14 +564,16 @@ void clockDisplay::setDay(int dayNum)
 // Place LED pattern in year position in buffer
 void clockDisplay::setYear(uint16_t yearNum) 
 {
-    if(yearNum > 9999) {        
+    if(yearNum < 1) { // || yearNum > 9999) {        
         Serial.print("Clockdisplay: setYear: Bad year: ");
         Serial.println(yearNum, DEC);
-        yearNum = 9999;        
+        yearNum = (yearNum > 9999) ? 9999 : 1;        
     }
     
     _year = yearNum;
     yearNum -= _yearoffset;
+
+    if(yearNum > 10000) yearNum -= 10000;
     
     _displayBuffer[CD_YEAR_POS]     = makeNum(yearNum / 100);
     _displayBuffer[CD_YEAR_POS + 1] = makeNum(yearNum % 100);
@@ -527,14 +583,16 @@ void clockDisplay::setYear(uint16_t yearNum)
 // useful for setting the year to the present time
 void clockDisplay::setYearDirect(uint16_t yearNum) 
 {
-    if(yearNum > 9999) {                
+    if(yearNum < 1) { //|| yearNum > 9999) {                
         Serial.print("Clockdisplay: setYearDirect: Bad year: ");
         Serial.println(yearNum, DEC);
-        yearNum = 9999;
+        yearNum = (yearNum > 9999) ? 9999 : 1;
     } 
     
     _year = yearNum;
     yearNum -= _yearoffset;
+
+    if(yearNum > 10000) yearNum -= 10000;
     
     directCol(CD_YEAR_POS,     makeNum(yearNum / 100));
     directCol(CD_YEAR_POS + 1, makeNum(yearNum % 100));
@@ -583,7 +641,7 @@ void clockDisplay::setMinute(int minNum)
     if(minNum < 0 || minNum > 59) {
         Serial.print("Clockdisplay: setMinute: Bad Minute: ");
         Serial.println(minNum, DEC);
-        minNum = 0;  
+        minNum = (minNum > 59) ? 59 : 0;
     }
     
     _minute = minNum;
@@ -634,8 +692,7 @@ void clockDisplay::showOnlyMonth(int monthNum)
     
     if(monthNum < 1 || monthNum > 12) {
         Serial.println("Clockdisplay: showOnlyMonth: Bad month");
-        if(monthNum < 1) monthNum = 1;
-        if(monthNum > 12) monthNum = 12;
+        monthNum = (monthNum > 12) ? 12 : 1;
     }
     
 #ifdef IS_ACAR_DISPLAY    
@@ -654,13 +711,15 @@ void clockDisplay::showOnlySave()
     clearDisplay();
     
 #ifdef IS_ACAR_DISPLAY
-    directCol(CD_MONTH_POS,     numDigs[28]);
-    directCol(CD_MONTH_POS + 1, numDigs[31]);
+    directCol(CD_MONTH_POS,     numDigs['S' - 'A' + 10]);
+    directCol(CD_MONTH_POS + 1, numDigs['A' - 'A' + 10]);
+    directCol(CD_DAY_POS,       numDigs['V' - 'A' + 10] | 
+                               (numDigs['E' - 'A' + 10] << 8));
 #else
     directCol(CD_MONTH_POS,     makeAlpha('S'));
     directCol(CD_MONTH_POS + 1, makeAlpha('A'));
     directCol(CD_MONTH_POS + 2, makeAlpha('V'));
-    directCol(CD_DAY_POS,       numDigs[14]);    // 14 is 'E'
+    directCol(CD_DAY_POS,         numDigs['E' - 'A' + 10]);
 #endif    
 }
 
@@ -670,13 +729,31 @@ void clockDisplay::showOnlyUtes()
     clearDisplay();
 
 #ifdef IS_ACAR_DISPLAY
-    directCol(CD_MONTH_POS,     numDigs[28]);
-    directCol(CD_MONTH_POS + 1, numDigs[31]);
+    directCol(CD_MONTH_POS,     numDigs['U' - 'A' + 10]);
+    directCol(CD_MONTH_POS + 1, numDigs['T' - 'A' + 10]);
+    directCol(CD_DAY_POS,       numDigs['E' - 'A' + 10] | 
+                               (numDigs['S' - 'A' + 10] << 8));
 #else
     directCol(CD_MONTH_POS,     makeAlpha('U'));
     directCol(CD_MONTH_POS + 1, makeAlpha('T'));
     directCol(CD_MONTH_POS + 2, makeAlpha('E'));
-    directCol(CD_DAY_POS,       numDigs[28]);    // 28 is 'S'
+    directCol(CD_DAY_POS,         numDigs['S' - 'A' + 10]);
+#endif    
+}
+
+// clears the display RAM and only shows the word "RTC"
+void clockDisplay::showOnlyRTC() 
+{
+    clearDisplay();
+
+#ifdef IS_ACAR_DISPLAY
+    directCol(CD_MONTH_POS,     numDigs['R' - 'A' + 10]);
+    directCol(CD_MONTH_POS + 1, numDigs['T' - 'A' + 10]);
+    directCol(CD_DAY_POS,       numDigs['C' - 'A' + 10]);
+#else
+    directCol(CD_MONTH_POS,     makeAlpha('R'));
+    directCol(CD_MONTH_POS + 1, makeAlpha('T'));
+    directCol(CD_MONTH_POS + 2, makeAlpha('C'));
 #endif    
 }
 
@@ -689,11 +766,20 @@ void clockDisplay::showOnlyHalfIP(int a, int b, bool clear)
     if(clear)
           clearDisplay();
   
+#ifdef IS_ACAR_DISPLAY
+    if(a >= 100) {
+        directCol(CD_MONTH_POS, makeNum(a / 10));
+        directCol(CD_DAY_POS, numDigs[(a % 10)]);
+    } else {
+        directCol(CD_MONTH_POS, makeNum(a));
+    }
+#else    
     sprintf(buf, "%d", a);
     while(c < CD_MONTH_SIZE && buf[c]) {
-          directCol(c, makeAlpha(buf[c]));
-          c++;
+        directCol(c, makeAlpha(buf[c]));
+        c++;
     }
+#endif    
 
     if(b >= 100) {
         directCol(CD_YEAR_POS, makeNumN0(b / 100));
@@ -739,6 +825,8 @@ void clockDisplay::showOnlyDay(int dayNum)
 void clockDisplay::showOnlyYear(int yearNum) 
 {    
     clearDisplay();
+
+    if(yearNum > 10000) yearNum -= 10000;
 
     directCol(CD_YEAR_POS,     makeNum(yearNum / 100));
     directCol(CD_YEAR_POS + 1, makeNum(yearNum % 100));
@@ -817,7 +905,7 @@ void clockDisplay::directAMPMoff()
     directAMPM(0x00, 0x00);
 }
 
-// Set the displayed time with supplied DateTime object
+// Set the displayed time with supplied DateTime object, ignores timeDifference
 void clockDisplay::setDateTime(DateTime dt) 
 {
     // ATTN: DateTime implemention does not work for years < 2000!    
@@ -827,6 +915,37 @@ void clockDisplay::setDateTime(DateTime dt)
     setYear(dt.year());
     setHour(dt.hour());
     setMinute(dt.minute());
+}
+
+// Set the displayed time with supplied DateTime object with timeDifference
+void clockDisplay::setDateTimeDiff(DateTime dt) 
+{
+    uint64_t rtcTime;
+    int year, month, day, hour, minute;
+
+    if(!timeDifference) {
+        setDateTime(dt);
+        return;
+    }
+
+    rtcTime = dateToMins(dt.year() - _yearoffset, dt.month(), dt.day(), dt.hour(), dt.minute());
+
+    if(timeDiffUp) {
+        rtcTime += timeDifference;
+        // Don't care about 9999-10000 roll-over
+        // So we display 0000 for 10000+
+        // So be it.        
+    } else {
+        rtcTime -= timeDifference;
+    }
+
+    minsToDate(rtcTime, year, month, day, hour, minute); 
+    
+    setMonth(month);
+    setDay(day);
+    setYear(year + _yearoffset);
+    setHour(hour);
+    setMinute(minute);
 }
 
 void clockDisplay::setDS3232time(byte second, byte minute, byte hour, byte dayOfWeek, byte dayOfMonth, byte month, byte year) 
@@ -849,9 +968,13 @@ byte clockDisplay::decToBcd(byte val)
     return ((val / 10 * 16) + (val % 10));
 }
 
-// Set YEAR, MONTH, DAY, HOUR, MIN from array, 
+// Set YEAR, MONTH, DAY, HOUR, MIN from structure 
+// Never use for RTC!
 void clockDisplay::setFromStruct(dateStruct* s) 
 {    
+    if(isRTC()) {
+        Serial.println("Clockdisplay: Internal error; setFromStruct() called for RTC");
+    }
     setYear(s->year);
     setMonth(s->month);
     setDay(s->day);
