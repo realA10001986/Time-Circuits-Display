@@ -107,9 +107,10 @@ void keypad_setup()
 
 #ifdef EXTERNAL_TIMETRAVEL
     // Setup External time travel 
-    ettKey.setClickTicks(ETT_CLICK_TIME);    
+    ettKey.setClickTicks(ETT_CLICK_TIME);   
+    ettKey.setPressTicks(ETT_HOLD_TIME); 
     ettKey.setDebounceTicks(ETT_DEBOUNCE);
-    ettKey.attachClick(ettKeyPressed);    
+    ettKey.attachLongPressStart(ettKeyPressed);    
 #endif
 
     dateBuffer[0] = '\0';
@@ -141,6 +142,8 @@ char get_key()
  */
 void keypadEvent(KeypadEvent key) 
 {
+    if(!FPBUnitIsOn) return;
+    
     switch(keypad.getState()) {
         case PRESSED:
             if(key != '#' && key != '*') {
@@ -153,7 +156,7 @@ void keypadEvent(KeypadEvent key)
                 doKey = false;
                 timeTravel();                
             }
-            if(key == '9') {    // "9" held down -> return from time travel
+            if(key == '9') {    // "9" held down -> return from time travel                
                 doKey = false;
                 resetPresentTime();                
             }
@@ -173,20 +176,12 @@ void keypadEvent(KeypadEvent key)
             if(key == '4') {    // "4" held down -> nightmode on
                 doKey = false;
                 nightModeOn();
-                #ifndef TWPRIVATE
-                play_file("/nmon.mp3", getVolume(), 0);   
-                #else                       
-                play_file("/nmon2.mp3", getVolume(), 0);                      
-                #endif
+                play_file("/nmon.mp3", getVolume(), 0);                   
             }
             if(key == '5') {    // "5" held down -> nightmode off
                 doKey = false;
                 nightModeOff(); 
-                #ifndef TWPRIVATE
-                play_file("/nmoff.mp3", getVolume(), 0);
-                #else            
-                play_file("/nmoff2.mp3", getVolume(), 0);
-                #endif
+                play_file("/nmoff.mp3", getVolume(), 0);                
             }
             break;
         case RELEASED:
@@ -268,6 +263,8 @@ void keypad_loop()
 {   
     enterkeytick();
 
+    if(!FPBUnitIsOn) return;
+
 #ifdef EXTERNAL_TIMETRAVEL
     if(isEttKeyPressed) {
         timeTravel();
@@ -347,7 +344,8 @@ void keypad_loop()
                 _setDay = daysInMonth(_setMonth, _setYear); //set to max day in that month
             }
 
-            // year: all 4-digit-numbers allowed 
+            // year: 1-9999 allowed 
+            if(_setYear < 1)    _setYear = 1;
 
             // hour and min are checked in clockdisplay
 

@@ -1,7 +1,7 @@
 /*
 ||
 || @file Keypad_I2C.h
-|| @version 3.0tc - Time Circuits Special Edition (A10001986)
+|| @version 3.0tc - Time Circuits Special Edition by A10001986
 || @version 3.0 - multiple WireX support
 || @version 2.0 - PCF8575 support added by Paul Williamson
 || @author G. D. (Joe) Young, ptw

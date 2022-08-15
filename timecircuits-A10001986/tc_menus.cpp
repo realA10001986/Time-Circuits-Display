@@ -37,10 +37,11 @@
  *    - view network data, ie IP address ("NET-WRK")
  *    - quit the menu ("END")
  *  Pressing ENTER cycles through the list, holding ENTER selects an item, ie a mode.
- *  How to to enter custom dates/times:
- *      - Note that the pre-set will be the previous date/time stored in the EEPROM,
- *        not the date/time that was shown before entering the menu if autoInterval
- *        was non-zero.
+ *  How to to enter custom dates/times or set the RTC (real time clock):
+ *      - Note that the pre-set for destination and last time departed will be the previous 
+ *        date/time stored in the EEPROM, not the date/time that was shown before entering 
+ *        the menu. The pre-set for the present time display is the time stored in the RTC 
+ *        (real time clock).
  *      - the field to enter data into is shown (exclusively)
  *      - data entry works as follows: 
  *        ) a pre-set is shown in the field
@@ -52,11 +53,15 @@
  *        Note that the month needs to be entered numerically, and the hour needs to be entered in 24
  *        hour mode, which is then shown in 12 hour mode (if this mode is active).
  *      - After entering data into all fields, the data is saved and the menu is left automatically.
- *      - Note that after entering dates/times into the "destination" or "last departure" displays,
- *        autoInterval is set to 0 and your entered date/time(s) are shown permanently (see below).
- *      - If you entered a custom date/time into the "present" time display, this time is then
- *        used as actual the present time, and continues to run like a clock. (As opposed to the 
- *        "destination" and "last departure" times, which are stale.)
+ *      - Note that after entering dates/times into the "destination" or "last time departed" displays,
+ *        the time-rotation interval is set to 0 and your entered date/time(s) are shown permanently 
+ *        (see below).
+ *      - If you entered a date/time into the "present" time display, this time is then stored to
+ *        the RTC and used as actual the present time, and continues to run like a clock. (As opposed 
+ *        to the "destination" and "last departure" times, which are stale.) If you don't have NTP
+ *        (network time) available, this is the way to set the clock to actual present time. If the 
+ *        clock is connected to the the network, your entered time will eventually be overwritten
+ *        by the time received over the network.
  *  How to set the alarm:
  *      - First option is "on" of "off". Press ENTER to toggle, hold ENTER to proceed.
  *      - Next, enter the hour in 24-hour-format. This works in the same way as described above.
@@ -64,10 +69,13 @@
  *      - "SAVE" is shown briefly, the alarm is saved.
  *      Note that the alarm is a recurring alarm; it will sound every day at the programmed time,
  *      unless switched off through the menu.
+ *      The alarm base is configurable in the WiFi-accessible Setup page. It can either be RTC
+ *      (ie the actual present time), or "present time", ie whatever is currently displayed in 
+ *      present time. 
  *  How to select the Time Rotation Interval (display shows "INT")
- *      - Press ENTER to cycle through the possible autoInverval settings.
+ *      - Press ENTER to cycle through the possible settings.
  *      - Hold ENTER for 2 seconds to select the shown value and exit the menu ("SAVE" is displayed briefly)
- *      - 0 makes your custom "destination" and "last departure" times to be shown permanently.
+ *      - 0 makes your custom "destination" and "last time departed" times to be shown permanently.
  *        (CUS-TOM is displayed as a reminder)
  *      - Non-zero values make the clock cycle through a number of pre-programmed times, your
  *        custom times are ignored. The value means "minutes" (hence "MIN-UTES")               
@@ -138,6 +146,9 @@ void enter_menu()
     // shown in the menu than were outside the menu    
     destinationTime.load();     
     departedTime.load();
+
+    // Load the RTC time into present time
+    presentTime.setDateTime(myrtcnow());     
 
     // Highlight current display
     displayHighlight(displayNum);
@@ -271,12 +282,14 @@ void enter_menu()
                     }
                 }
     
-                displaySet->setYearOffset(tyroffs);
-
-                // Avoid overwriting this time by NTP time in loop
-                presentTimeBogus = true;  
+                displaySet->setYearOffset(tyroffs); 
     
                 rtc.adjust(DateTime(tyr, monthSet, daySet, hourSet, minSet, 0));
+
+                // Resetting the RTC invalidates our timeDifference, ie
+                // fake present time. Make the user return to present
+                // time after setting the RTC
+                timeDifference = 0;
                 
             } else {                 
 
@@ -385,7 +398,7 @@ quitMenu:
     #ifdef TC_DBG
     Serial.println("Menu: Update Present Time");
     #endif
-    presentTime.setDateTime(myrtcnow()); // Set the current time in the display, 2+ seconds gone
+    presentTime.setDateTimeDiff(myrtcnow()); // Set the current time in the display, 2+ seconds gone
     
     // all displays on and show  
     
@@ -468,8 +481,9 @@ void displayHighlight(int& number)
             departedTime.off();
             displaySet = &destinationTime;
             break;
-        case MODE_PRES:  // Present Time
-            destinationTime.off();
+        case MODE_PRES:  // Present Time (RTC)
+            destinationTime.showOnlyRTC();
+            destinationTime.on();
             presentTime.on();
             presentTime.setColon(false);
             presentTime.show();
@@ -625,7 +639,7 @@ void setField(uint16_t& number, uint8_t field, int year = 0, int month = 0)
             break;
         case FIELD_YEAR:
             upperLimit = 9999;
-            lowerLimit = 0;           
+            lowerLimit = 1;           
             numChars = 4;
             break;
         case FIELD_HOUR: 

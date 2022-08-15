@@ -76,11 +76,7 @@ void play_startup(bool nm)
 // always at normal volume, not nm-reduced
 void play_alarm() 
 {
-#ifndef TWPRIVATE
-    play_file("/alarm.mp3", getVolume(), 0);
-#else    
-    play_file("/alarm2.mp3", getVolume(), 0);
-#endif    
+    play_file("/alarm.mp3", getVolume(), 0);    
 }
 
 void play_keypad_sound(char key, bool nm) 
@@ -193,4 +189,20 @@ bool checkAudioDone()
 {
     if( (mp3->isRunning()) || (beep->isRunning()) ) return false;
     return true;
+}
+
+void stopAudio()
+{
+    if(mp3->isRunning()) {          
+        mp3->stop();
+        stub[0]->stop();
+        stub[0]->flush();
+        out->flush();          
+    }
+    if(beep->isRunning()) {          
+        beep->stop();
+        stub[1]->stop();
+        stub[1]->flush();
+        out->flush();
+    }
 }

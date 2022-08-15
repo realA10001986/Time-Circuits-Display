@@ -23,11 +23,24 @@
 
 /* Changelog 
  *  
+ *  2022/08/15 (A10001986)
+ *    - Time logic re-written. RTC now always keeps real actual present
+ *      time, all fake times are calculated off the RTC time. 
+ *      This makes the device independent of NTP; the RTC can be manually 
+ *      set through the keypad menu ("RTC" is now displayed to remind the 
+ *      user that he is actually setting the *real* time clock).
+ *    - Alarm base can now be selected between RTC (ie actual present
+ *      time, what is stored in the RTC), or "present time" (ie fake
+ *      present time).
  *  2022/08/13 (A10001986)
- *    - External time travel trigger: Connect active-low switch to
- *      io14 (see tc_global.h). Upon activation, a time travel is
- *      triggered. Note that the device only simulates the re-entry 
- *      part of a time travel so the trigger should be timed accordingly.
+ *    - Changed "fake power" logic : This is no longer a "button" to  
+ *      only power on, but a switch. The unit can now be "fake" powered 
+ *      and "fake" powered off. 
+ *    - External time travel trigger: Connect active-low button to
+ *      io14 (see tc_global.h). Upon activation (press for 200ms), a time
+ *       travel is triggered. Note that the device only simulates the 
+ *      re-entry part of a time travel so the trigger should be timed 
+ *      accordingly.
  *    - Fix millis() roll-over errors
  *    - All new sounds. The volume of the various sound effects has been
  *      normalized, and the sound quality has been digitally enhanced.
