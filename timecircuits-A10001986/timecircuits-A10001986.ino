@@ -32,6 +32,9 @@
  *    - Alarm base can now be selected between RTC (ie actual present
  *      time, what is stored in the RTC), or "present time" (ie fake
  *      present time).
+ *    - Fix fake power off if time rotation interval is non-zero
+ *    - Correct some inconsistency in my assumptions on A-car display
+ *      handling
  *  2022/08/13 (A10001986)
  *    - Changed "fake power" logic : This is no longer a "button" to  
  *      only power on, but a switch. The unit can now be "fake" powered 
