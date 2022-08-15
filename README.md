@@ -13,15 +13,16 @@ https://github.com/CircuitSetup/Time-Circuits-Display/blob/master/README.md
 The Destination Time can be entered via keypad, and the Present Time can keep time via NTP. There is also a time travel mode, which moves the Destination Time to Present Time, and Present Time to Last Time Departed. The startup, keypad dial sounds, and time travel sounds are played using I2S." 
 
 **Changes to the original firmware (based on 2022-01 version):**
-- Return from Time Travel (hold "9" for 2 seconds)
-- "Present time" is a clock (not stale) after time travel
-- Keypad menu for adjusting various settings
-- Support for time zones and automatic DST
-- More stable WiFi connections at startup
-- Configurable WiFi connection timeouts and retries
+- Time keeping via NTP or stand-alone
+- "Present time" is always a clock (not stale), even after time travel
+- Support for time zones and automatic DST (in NTP-mode)
 - Alarm function
 - SD card support for custom audio files
 - Night mode (displays off or dimmed)
+- Return from Time Travel (hold "9" for 2 seconds)
+- Keypad menu for adjusting various settings
+- More stable WiFi connections at startup
+- Configurable WiFi connection timeouts and retries
 - Network keypad menu to show the current IP address
 - 24-hour clock mode for non-Americans ;)
 - Fixed "month-off-by-one" bug, and others
@@ -37,32 +38,32 @@ The Destination Time can be entered via keypad, and the Present Time can keep ti
 
 **Operation basics**
 
-*Present time* is a clock and, normally, shows the actual present time, as received from the network.
+*Present time* is a clock and, normally, shows the actual present time, as received from the network or set up through the keypad menu.
 
-*Destination time* and *Last time departed* are stale. You can have the clock either show your favorite times here (which need to be set up through the keypad menu), or cycle through a list of pre-programmed times, which cannot be changed. 
+*Destination time* and *Last time departed* are stale. These, by default, work like in the movie: Upon a time travel, "present time" becomes "last time departed", and "destination time" becomes "present time". 
 
-The mode of operation is chosen by setting the "Time-rotation Interval" in the config portal (via network) or the keypad menu. If this interval is 0, your times are permanently shown. If the interval is non-zero, the device will cycle through named list every 5th, 15th, 30th, 45th or 60th minute.
+There is also a "decorative" mode where the device cycles through a list of pre-programmed times, which cannot be changed. 
+
+The mode of operation is chosen by setting the "Time-rotation Interval" in the config portal (via network) or the keypad menu. If this interval is 0, the device works like in the movie. If the interval is non-zero, the device will cycle through named list every 5th, 15th, 30th, 45th or 60th minute, and thereby change the displays, regardless of times displayed as a result from a time travel.
 
 **Time travel**
 
 To travel through time, hold "0" for 2 seconds. The destination time, as shown in the red display, will be your new present time, the old "present time" will be the "last time departed". Note that the new "present" time will continue to run like a normal clock.
 
-Before holding "0", you can also first quickly set a new destination time by entering a date on the keypad: mmddyyyy or mmddyyyyhhmm, then press ENTER. While typing, there is no visual feedback, but the date is then shown on the "destination time" display after pressing ENTER. (If the Time-rotation Interval is non-zero, your entered time will, however, be overwritten at the next 5th/15th/30th/45th/60th minute and the next pre-programmed time will be put in place.)
+Before holding "0", you can also first quickly set a new destination time by entering a date on the keypad: mmddyyyy or mmddyyyyhhmm, then press ENTER. While typing, there is no visual feedback, but the date is then shown on the "destination time" display after pressing ENTER. 
 
 To travel back to actual present time, hold "9" for 2 seconds.
 
-Regardless of your Time-rotation Interval setting, the *last time departed* display will be updated in the course of a time travel event. In case the Time-rotation Interval is 0, the *last time departed* will only ever change in case of another trip through time. If the Time-rotation Interval is non-zero, "last time departed" will resume cycling through the pre-programmed list at the next 5th/15th/30th/60th minute and the next pre-programmed time will be put in place.
-
-Beware that the alarm function is based on whatever your current "present" time is. The alarm will sound when the displayed "present time"'s hour and minute match the alarm time, be it actual present time or "fake".
+Beware that the alarm function, by default, is based on the real actual present time, not the time displayed. This can be configured in the config portal.
 
 **Persistent / Non-persistent time travels**
 
-On the network-accessible settings page, there is a menu item named "Make time travels persistent". The default is yes.
+On the config portal, there is a menu item named "Make time travels persistent". The default is yes.
 
 If time travels are persistent
 - a user-programmed *destination time* is always stored in flash memory, and retrieved from there after a power-loss. It can be programmed through the keypad menu, or ahead of a time travel by typing mmddyyyy/mmddyyyyhhmm plus ENTER. In both cases, the time is stored in flash memory.
 - *last time departed* as displayed at any given point is always stored in flash memory, and retrieved from there after a power-loss.
-- *present time*, whether actual present time or "fake" after time travelling, will continue to run while the device is not powered, as long as its battery lasts, and displayed on power-up.
+- *present time*, be it actual present time or "fake" after time travelling, will continue to run while the device is not powered, as long as its battery lasts, and displayed on power-up.
 
 If time travels are non-persistent
 - a user-programmed *destination time* is only stored to flash memory when programmed through the keypad menu, but not if entered ahead of a time travel (ie outside of the keypad menu, just by typing mmddyyyy/mmddyyyyhhtt plus ENTER). Upon power-up, the time stored in flash memory is displayed.
@@ -72,6 +73,8 @@ If time travels are non-persistent
 If you want your clock to display exactly the same after a power loss, choose persistent. 
 
 If you want to display your favorite *destination time* and *last time departed* upon power-up, and not have time travels overwrite them in flash memory, choose "non-persistent", and program your times through the keypad menu (and set the Time-rotation Interval to 0). Those times will never be overwritten in flash memory by later time travels. Note, however, that the times displayed might actually change due to time travels.
+
+Note that a non-zero Time-rotation Interval will force the device to cycle through the list of pre-programmed times, regardless of your time travel persistence setting. 
 
 **Night mode**
 
@@ -103,8 +106,8 @@ How to enter custom dates/times:
 - The field to enter data into is shown (exclusively), pre-set with its current value
 - Data entry works as follows: If you want to keep the currently shown pre-set, press ENTER to proceed to next field. Otherwise press a digit on the keypad; the pre-set is then overwritten by the value entered. 2 or 4 digits can be entered, upon which the current value is stored and the next field is activated. You can also enter less than 2/4 digits and press ENTER when done with the field. Note that the month needs to be entered numerically (1-12), and the hour needs to be entered in 24 hour mode, regardless of 12-hour or 24-hour mode as per the config portal setting.
 - After entering data into all fields, the data is saved and the menu is left automatically.
-- Note that after entering dates/times into the *destination time* or *last time departed* displays, the Time-rotation Interval is set to 0 and your entered date/time(s) are shown permanently (see below, section "How to select the Time-rotation Interval").
-- If you entered a custom date/time into the *present time* display, this time is then used as a starting point, and continues to run like a clock. (As opposed to the "destination" and "last time departed" times, which are stale.) 
+- Note that when entering dates/times into the *destination time* or *last time departed* displays, the Time-rotation Interval is set to 0 and your entered date/time(s) are shown permanently (see below, section "How to select the Time-rotation Interval").
+- By entering a date/time into the *present time* display, the RTC (real time clock) of the device is adjusted, which is useful if you can't use NTP for time keeping. 
 
 How to set up the alarm:
 - Hold ENTER to invoke main menu
@@ -116,7 +119,7 @@ How to set up the alarm:
 
 Under normal operation (ie outside of the menu), holding "1" enables the alarm, holding "2" disables it. 
 
-Note that the alarm is recurring, ie it rings every day at the programmed time, unless disabled. Also note, as mentioned, that the alarm is relative to your *present time*, whether it is actual time, or some "fake" time after a time travel.
+Note that the alarm is recurring, ie it rings every day at the programmed time, unless disabled. Also note, as mentioned, that the alarm is relative to your actual *present time*, not the time displayed (eg after a time travel). It can, however, be configured to be based on the time displayed, in the config portal.
 
 If the alarm is set and enabled, the dot in the present time's minute field is lit. 
  
