@@ -23,6 +23,11 @@
 
 /* Changelog 
  *  
+ *  2022/08/16 (A10001986)
+ *    - Show "BATT" during booting if RTC battery is depleted and needs to be 
+ *      changed
+ *    - Pause autoInterval-cycling when user entered a valid destination time
+ *      and/or initiated a time travel
  *  2022/08/15 (A10001986)
  *    - Time logic re-written. RTC now always keeps real actual present
  *      time, all fake times are calculated off the RTC time. 

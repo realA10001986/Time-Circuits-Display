@@ -56,6 +56,10 @@ int  startupDelay = 1000; // the time between startup sound being played and the
 int  startupDelay = 1000; // the time between startup sound being played and the display coming on
 #endif
 
+unsigned long pauseNow;                 // Pause autoInterval if user played with time travel
+unsigned long pauseDelay = 30*60*1000;  // Pause for 30 minutes
+bool autoPaused = false;
+
 struct tm _timeinfo;  //for NTP
 RTC_DS3231 rtc;       //for RTC IC
 
@@ -67,7 +71,7 @@ bool     timeDiffUp = false;  // true = add difference, false = subtract differe
 
 // Persistent time travels:
 // This controls the app's behavior as regards saving times to the EEPROM.
-// If this is true, a times are saved to the EEPROM, whenever
+// If this is true, times are saved to the EEPROM, whenever
 //  - the user enters a destination time for time travel and presses ENTER
 //  - the user activates time travel (hold "0") 
 //  - the user returns from a time travel (hold "9")
@@ -315,6 +319,13 @@ void time_setup()
         presentTime.showOnlySettingVal("SET", -1, true);
         #endif
         delay(1000);
+        allOff();
+    }
+
+    // Show "BATT" message if RTC battery is depleted
+    if(rtcbad) {      
+        destinationTime.showOnlyBatt();                
+        delay(3000);
         allOff();
     }
 
@@ -605,14 +616,17 @@ void time_loop()
             
             // Only do this on second 59, check if it's time to do so
             if(dt.second() == 59 && 
+               (!autoPaused || (millis() - pauseNow >= pauseDelay)) &&
                autoTimeIntervals[autoInterval] &&
                (minNext % autoTimeIntervals[autoInterval] == 0)) {
-                
+
                 if(!autoIntDone) {
 
                     #ifdef TC_DBG
                     Serial.println("time_loop: autoInterval");
-                    #endif                  
+                    #endif             
+
+                    autoPaused = false;
                     
                     autoIntDone = true;     // Already did this, don't repeat
                     
@@ -711,7 +725,7 @@ void time_loop()
 }
 
 
-/* Time Travel: User entered a destination time.
+/* Time Travel: 
  *  
  *  -) copy present time into departed time (where it freezes)
  *  -) copy destination time to present time (where it continues to run as a clock)
@@ -775,6 +789,8 @@ void timeTravel()
         presentTime.save();       
     }
 
+    pauseAuto(30);
+
     #ifdef TC_DBG
     Serial.println("timeTravel: Success, good luck!");
     #endif
@@ -816,6 +832,21 @@ void resetPresentTime()
     if(timetravelPersistent) {
         presentTime.save();
     } 
+}
+
+// Pause autoInverval-updating for theDelay minutes
+void pauseAuto(uint16_t theDelay)
+{
+    if(autoTimeIntervals[autoInterval]) {
+          pauseDelay = (unsigned long)theDelay * 60 * 1000;
+          autoPaused = true;
+          pauseNow = millis();
+          #ifdef TC_DBG
+          Serial.print("pauseAuto: autoInterval paused for ");
+          Serial.print(theDelay, DEC);
+          Serial.println(" minutes");
+          #endif
+    }
 }
 
 // choose your time zone from this list

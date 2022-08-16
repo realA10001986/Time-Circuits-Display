@@ -559,6 +559,23 @@ void clockDisplay::showOnlyReset()
 }
 #endif
 
+void clockDisplay::showOnlyBatt()
+{
+    clearDisplay();
+    
+#ifdef IS_ACAR_DISPLAY
+    directCol(CD_MONTH_POS,     numDigs['B' - 'A' + 10] |
+                               (numDigs['A' - 'A' + 10] << 8));
+    directCol(CD_DAY_POS,       numDigs['T' - 'A' + 10] | 
+                               (numDigs['T' - 'A' + 10] << 8));   
+#else
+    directCol(CD_MONTH_POS,     makeAlpha('B'));
+    directCol(CD_MONTH_POS + 1, makeAlpha('A'));
+    directCol(CD_MONTH_POS + 2, makeAlpha('T'));
+    directCol(CD_DAY_POS,         numDigs['T' - 'A' + 10]);
+#endif
+}
+
 // clears the display RAM and only shows the provided 2 numbers (parts of IP)
 void clockDisplay::showOnlyHalfIP(int a, int b, bool clear) 
 {
