@@ -231,9 +231,12 @@ void write_settings()
     Serial.println("\n");
     #endif
     
-    serializeJson(json, configFile);
-  
-    configFile.close(); 
+    if(configFile) {
+        serializeJson(json, configFile);
+        configFile.close(); 
+    } else {
+        Serial.println("write_settings: Failed to open file for writing");
+    }
 }
 
 /* 
@@ -260,7 +263,7 @@ bool loadAlarm()
       //file exists, load and parse it     
       File configFile = SPIFFS.open("/alarmconfig.json", "r");
       
-      if (configFile) {
+      if(configFile) {
 
         #ifdef TC_DBG
         Serial.println("loadAlarm: Opened alarmconfig file");
@@ -382,10 +385,19 @@ void saveAlarm()
     serializeJson(json, Serial);
     Serial.println(" ");
     #endif
-    
-    serializeJson(json, configFile);
-  
-    configFile.close(); 
+
+    if(configFile) {
+        #ifdef TC_DBG
+        Serial.println("saveAlarm: Before serializeJson");
+        #endif
+        serializeJson(json, configFile);
+        #ifdef TC_DBG
+        Serial.println("saveAlarm: After serializeJson");
+        #endif
+        configFile.close(); 
+    } else {
+        Serial.println("saveAlarm: Failed to open file for writing");
+    }
 }    
 
 void saveAlarmEEPROM()
