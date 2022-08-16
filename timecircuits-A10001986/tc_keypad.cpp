@@ -362,6 +362,9 @@ void keypad_loop()
             if(timetravelPersistent) {
                 destinationTime.save();      
             }     
+
+            // Pause autoInterval-cycling if user entered a valid date
+            pauseAuto(10);
         }
 
         // Prepare for next input

@@ -113,7 +113,7 @@ void settings_setup()
           serializeJson(json, Serial);
           #endif
           
-          if (!error) {
+          if(!error) {
   
             #ifdef TC_DBG
             Serial.println("\nsettings_setup: Parsed json");
@@ -234,7 +234,6 @@ void write_settings()
     serializeJson(json, configFile);
   
     configFile.close(); 
-  
 }
 
 /* 
@@ -245,6 +244,8 @@ void write_settings()
 bool loadAlarm()
 {
     bool writedefault = false;
+
+    //SPIFFS.remove("/alarmconfig.json");  /// QQQ TEST
     
     if(!haveFS) {
       
@@ -272,7 +273,7 @@ bool loadAlarm()
         serializeJson(json, Serial);
         #endif
         
-        if (!error) {
+        if(!error) {
 
           #ifdef TC_DBG
           Serial.println("\nloadAlarm: Parsed json");
@@ -350,10 +351,11 @@ bool loadAlarmEEPROM()
 
 void saveAlarm() 
 {
-    StaticJsonDocument<1024> json;
     char hourBuf[8];
     char minBuf[8];
-
+    
+    StaticJsonDocument<1024> json;
+    
     #ifdef TC_DBG
     Serial.println("Save Alarm");
     #endif
@@ -366,19 +368,19 @@ void saveAlarm()
         return;        
     } 
   
-    json["alarmonoff"] = alarmOnOff ? "1" : "0";
+    json["alarmonoff"] = (char *)(alarmOnOff ? "1" : "0");
 
     sprintf(hourBuf, "%d", alarmHour);
     sprintf(minBuf, "%d", alarmMinute);
     
-    json["alarmhour"] = hourBuf;
-    json["alarmmin"] = minBuf;
+    json["alarmhour"] = (char *)hourBuf;
+    json["alarmmin"] = (char *)minBuf;
 
     File configFile = SPIFFS.open("/alarmconfig.json", FILE_WRITE);
   
     #ifdef TC_DBG
     serializeJson(json, Serial);
-    Serial.println("\n");
+    Serial.println(" ");
     #endif
     
     serializeJson(json, configFile);
