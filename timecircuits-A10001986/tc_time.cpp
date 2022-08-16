@@ -789,7 +789,7 @@ void timeTravel()
         presentTime.save();       
     }
 
-    pauseAuto(30);
+    pauseAuto();
 
     #ifdef TC_DBG
     Serial.println("timeTravel: Success, good luck!");
@@ -835,16 +835,16 @@ void resetPresentTime()
 }
 
 // Pause autoInverval-updating for theDelay minutes
-void pauseAuto(uint16_t theDelay)
+// Subsequent calls re-start the pause; therefore, it
+// is not advised to use different pause durations
+void pauseAuto(void)
 {
     if(autoTimeIntervals[autoInterval]) {
-          pauseDelay = (unsigned long)theDelay * 60 * 1000;
+          pauseDelay = 30 * 60 * 1000;
           autoPaused = true;
           pauseNow = millis();
           #ifdef TC_DBG
-          Serial.print("pauseAuto: autoInterval paused for ");
-          Serial.print(theDelay, DEC);
-          Serial.println(" minutes");
+          Serial.println("pauseAuto: autoInterval paused for 30 minutes");          
           #endif
     }
 }
