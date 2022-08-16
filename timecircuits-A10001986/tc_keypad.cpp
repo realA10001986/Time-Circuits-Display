@@ -364,7 +364,7 @@ void keypad_loop()
             }     
 
             // Pause autoInterval-cycling if user entered a valid date
-            pauseAuto(10);
+            pauseAuto();
         }
 
         // Prepare for next input
