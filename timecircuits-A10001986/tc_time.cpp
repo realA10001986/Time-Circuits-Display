@@ -397,7 +397,7 @@ void time_loop()
     }
     #endif
 
-    // Initiate startup delay, playe startup sound
+    // Initiate startup delay, play startup sound
     if(startupSound) {
         startupNow = millis();
         play_startup(presentTime.getNightMode());
@@ -672,39 +672,6 @@ void time_loop()
             
             }                      
 
-/*
-            // Test
-            for(int cc = 999; cc < 10000; cc += 1000) {
-              int myy = cc, mym = 2, myd = 19, myh = 0, mymi = 21;
-              int myy2, mym2, myd2, myh2, mymi2;
-              unsigned long t1, t2;
-              uint64_t mytotal;
-              
-              t1 = millis();
-              
-              mytotal = dateToMins(myy, mym, myd, myh, mymi);
-              minsToDate(mytotal, myy2, mym2, myd2, myh2, mymi2);
-              t2 = millis();
-              
-              Serial.print(mytotal, DEC);
-              Serial.print(" ");
-              Serial.print(myy2, DEC);
-              Serial.print(" ");
-              Serial.print(mym2, DEC);
-              Serial.print(" ");
-              Serial.print(myd2, DEC);
-              Serial.print(" ");
-              Serial.print(myh2, DEC);
-              Serial.print(" ");
-              Serial.println(mymi2, DEC);
-  
-              //Serial.print(" millis: ");
-              //Serial.println(t2 - t1, DEC);
-            }
-
-            // TEST END
-*/           
-
         } else {  
           
             destinationTime.setColon(false);
@@ -789,6 +756,7 @@ void timeTravel()
         presentTime.save();       
     }
 
+    // Pause autoInterval-cycling so user can play undisturbed
     pauseAuto();
 
     #ifdef TC_DBG

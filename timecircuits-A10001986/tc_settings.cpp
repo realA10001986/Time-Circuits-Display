@@ -331,6 +331,8 @@ bool loadAlarm()
         saveAlarm();
       
     }    
+
+    return true;
 }
 
 bool loadAlarmEEPROM() 
@@ -399,24 +401,12 @@ void saveAlarm()
     Serial.println(" ");
     #endif
 
-    if(configFile) {
-        #ifdef TC_DBG
-        Serial.println("saveAlarm: Before serializeJson");
-        #endif
-        serializeJson(json, configFile);
-        #ifdef TC_DBG
-        Serial.println("saveAlarm: After serializeJson");
-        #endif
-        configFile.close(); 
-        #ifdef TC_DBG
-        Serial.println("saveAlarm: After file.close");
-        #endif
+    if(configFile) {        
+        serializeJson(json, configFile);        
+        configFile.close();         
     } else {
         Serial.println("saveAlarm: Failed to open alarm settings file for writing");
     }
-    #ifdef TC_DBG
-    Serial.println("saveAlarm: returning");
-    #endif
 }    
 
 void saveAlarmEEPROM()
@@ -436,6 +426,4 @@ void saveAlarmEEPROM()
     EEPROM.write(ALARM_PREF + 3, (sum & 0xff));   
     
     EEPROM.commit();
-    
-    return;
 }
