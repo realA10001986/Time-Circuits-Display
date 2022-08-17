@@ -110,12 +110,13 @@ void settings_setup()
         
                 #ifdef TC_DBG
                 serializeJson(json, Serial);
+                Serial.println(" ");
                 #endif
                 
                 if(!error) {
         
                     #ifdef TC_DBG
-                    Serial.println("\nsettings_setup: Parsed json");
+                    Serial.println("settings_setup: Parsed json");
                     #endif
                     
                     if(json["ntpServer"]) {
@@ -227,7 +228,7 @@ void write_settings()
   
     #ifdef TC_DBG
     serializeJson(json, Serial);
-    Serial.println("\n");
+    Serial.println(" ");
     #endif
     
     if(configFile) {
@@ -246,8 +247,6 @@ void write_settings()
 bool loadAlarm()
 {
     bool writedefault = false;
-
-    //SPIFFS.remove("/alarmconfig.json");  /// QQQ TEST
     
     if(!haveFS) {
       
@@ -272,12 +271,13 @@ bool loadAlarm()
 
             #ifdef TC_DBG
             serializeJson(json, Serial);
+            Serial.println(" ");
             #endif
             
             if(!error) {
 
                 #ifdef TC_DBG
-                Serial.println("\nloadAlarm: Parsed json");
+                Serial.println("loadAlarm: Parsed json");
                 #endif
                 
                 if(json["alarmonoff"]) {
