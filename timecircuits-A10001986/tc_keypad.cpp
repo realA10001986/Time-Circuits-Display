@@ -103,7 +103,7 @@ void keypad_setup()
     enterKey.setPressTicks(ENTER_HOLD_TIME);
     enterKey.setDebounceTicks(ENTER_DEBOUNCE);
     enterKey.attachClick(enterKeyPressed);    
-    enterKey.attachLongPressStart(enterKeyHeld);    // we only need info when the button is held long enough
+    enterKey.attachLongPressStart(enterKeyHeld);
 
 #ifdef EXTERNAL_TIMETRAVEL
     // Setup External time travel button
@@ -363,7 +363,7 @@ void keypad_loop()
                 destinationTime.save();      
             }     
 
-            // Pause autoInterval-cycling if user entered a valid date
+            // Pause autoInterval-cycling so user can play undisturbed
             pauseAuto();
         }
 

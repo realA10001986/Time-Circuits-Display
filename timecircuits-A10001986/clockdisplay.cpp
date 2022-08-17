@@ -828,7 +828,7 @@ bool clockDisplay::load()
               timeDiffUp = loadBuf[8] ? true : false;
 
               #ifdef TC_DBG  
-              Serial.print("Clockdisplay: Loading RTC settings from EEPROM");
+              Serial.println("Clockdisplay: Loading RTC settings from EEPROM");
               #endif
                      
         } else {
@@ -876,11 +876,9 @@ int16_t clockDisplay::loadYOffs()
                 
           return ((loadBuf[2] << 8) | loadBuf[1]);  
                  
-    } else {
+    } 
 
-          return -1;
-          
-    }         
+    return -1;        
 }
 
 // Write time to RTC chip
@@ -911,7 +909,7 @@ uint8_t clockDisplay::getLED7SegChar(uint8_t value)
     } else if(value <= 9) {
         return numDigs[value];
     }
-    return 0x0;   // blank on invalid
+    return 0;   // blank on invalid
 }
 
 // Returns bit pattern for provided character for display on alphanumeric 14 segment display

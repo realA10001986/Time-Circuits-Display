@@ -23,6 +23,8 @@
 
 /* Changelog 
  *  
+ *  2022/08/17 (A10001986)
+ *    - Fix missing return value in loadAlarm
  *  2022/08/16 (A10001986)
  *    - Show "BATT" during booting if RTC battery is depleted and needs to be 
  *      changed
