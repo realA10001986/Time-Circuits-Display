@@ -44,7 +44,7 @@ bool autoReadjust = false;
 bool alarmDone = false;
 int8_t minNext;  
 
-bool x;  // for tracking second change
+bool x;  // for tracking second changes
 bool y;  
 
 bool startup = false;
