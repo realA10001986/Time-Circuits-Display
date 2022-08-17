@@ -24,7 +24,7 @@
 #ifndef _TC_GLOBAL_H
 #define _TC_GLOBAL_H
 
-#define TC_DBG              // debug output on Serial
+//#define TC_DBG              // debug output on Serial
 
 // Fake Power On:
 // Attach an active-low switch to io13 or io14; firmware will start network and 
@@ -55,6 +55,6 @@
 #define ALARM_PREF        0x26    // alarm prefs                  (4 bytes; only used if fs unavailable)
 
 
-#define TWPRIVATE       // A10001986's private customizations
+//#define TWPRIVATE       // A10001986's private customizations
 
 #endif
