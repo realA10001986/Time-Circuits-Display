@@ -263,7 +263,10 @@ void keypad_loop()
 {   
     enterkeytick();
 
-    if(!FPBUnitIsOn) return;
+    if(!FPBUnitIsOn) {
+        isEttKeyPressed = false; 
+        return;
+    }
 
 #ifdef EXTERNAL_TIMETRAVEL
     if(isEttKeyPressed) {
