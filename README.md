@@ -32,9 +32,10 @@ The Destination Time can be entered via keypad, and the Present Time can keep ti
 - As long as the device is unconfigured or later for some reason fails to connect to a configured network, it starts in "access point" mode, i.e. it creates an access point named "TCD-AP". The default IP in access point mode is 192.168.4.1. 
 - Go to http://192.168.4.1 to enter the config portal, the go to the "WiFi Setup" page and configure your Wifi network.
 - After saving the settings, the device reboots and tries to connect to your configured WiFi network. If it fails to connect to your network, the device will again start in access point mode ("TCD-AP").
-- Next, find out about the IP address assigned to the clock. Hold ENTER on the keypad for 2 seconds, then press ENTER until "NET-WRK" is shown, then hold ENTER for 2 seconds. The clock will then show the current IP address.
-- Then re-open the config portal using your IP address, and configure other settings on the "Setup" page, eg WiFi connection timeout, WiFi connection retries, NTP server and time zone. A list of valid times zones is accessible by a link on the settings page.
-- There are two ways of configuring the clock: Through the aforementioned config portal (ie the network), or the keypad menu, as described further below. Not all settings, however, are configurable in both.
+- Next, find out about the IP address assigned to the device. Hold ENTER on the keypad for 2 seconds, then press ENTER until "NET-WRK" is shown, then hold ENTER for 2 seconds. The device will then show its current IP address.
+- Then re-open the config portal using this IP address, and configure other settings on the "Setup" page, eg WiFi connection timeout, WiFi connection retries, NTP server and time zone. A list of valid times zones is accessible by a link on the settings page.
+- There are two ways of configuring the device: Through the aforementioned config portal (ie the network), or the keypad menu, as described further below. Not all settings, however, are configurable in both.
+- If you don't have WiFi access, you can set the time through the keypad menu, see below.
 
 **Operation basics**
 
@@ -42,9 +43,7 @@ The Destination Time can be entered via keypad, and the Present Time can keep ti
 
 *Destination time* and *Last time departed* are stale. These, by default, work like in the movie: Upon a time travel, "present time" becomes "last time departed", and "destination time" becomes "present time". 
 
-There is also a "decorative" mode where the device cycles through a list of pre-programmed times, which cannot be changed. 
-
-The mode of operation is chosen by setting the "Time-rotation Interval" in the config portal (via network) or the keypad menu. If this interval is 0, the device works like in the movie. If the interval is non-zero, the device will cycle through named list every 5th, 15th, 30th, 45th or 60th minute, and thereby change the displays, regardless of times displayed as a result from a time travel.
+There is also a "decorative" mode where the device cycles through a list of pre-programmed times, which cannot be changed. This mode is chosen by setting the "Time-rotation Interval" in the config portal (via network) or the keypad menu to a non-zero value. The device will then cycle through named list every 5th, 15th, 30th, 45th or 60th minute, and thereby change the displays, regardless of times displayed as a result from a time travel. Set the interval to 0 to disable this "decorative" mode.
 
 **Time travel**
 
@@ -61,20 +60,20 @@ Beware that the alarm function, by default, is based on the real actual present 
 On the config portal, there is a menu item named "Make time travels persistent". The default is yes.
 
 If time travels are persistent
-- a user-programmed *destination time* is always stored in flash memory, and retrieved from there after a power-loss. It can be programmed through the keypad menu, or ahead of a time travel by typing mmddyyyy/mmddyyyyhhmm plus ENTER. In both cases, the time is stored in flash memory.
-- *last time departed* as displayed at any given point is always stored in flash memory, and retrieved from there after a power-loss.
+- a user-programmed *destination time* is always stored in flash memory, and retrieved from there after a power-loss. It can be programmed through the keypad menu, or ahead of a time travel by typing mmddyyyy/mmddyyyyhhmm plus ENTER. In both cases, the time is stored in flash memory and retrieved upon power-on.
+- *last time departed* as displayed at any given point is always stored in flash memory, and retrieved upon power-on.
 - *present time*, be it actual present time or "fake" after time travelling, will continue to run while the device is not powered, as long as its battery lasts, and displayed on power-up.
 
 If time travels are non-persistent
-- a user-programmed *destination time* is only stored to flash memory when programmed through the keypad menu, but not if entered ahead of a time travel (ie outside of the keypad menu, just by typing mmddyyyy/mmddyyyyhhtt plus ENTER). Upon power-up, the time stored in flash memory is displayed.
-- user-programmed *last time departed*s is only stored to flash memory when programmed through the keypad menu, but not if the result of a time travel. Upon power-up, the time stored in flash memory is displayed.
+- a user-programmed *destination time* is only stored to flash memory when programmed through the keypad menu, but not if entered ahead of a time travel (ie outside of the keypad menu, just by typing mmddyyyy/mmddyyyyhhtt plus ENTER).
+- user-programmed *last time departed*s is only stored to flash memory when programmed through the keypad menu, but not if the result of a time travel.
 - *present time* is always reset to actual present time upon power-up.
 
-If you want your clock to display exactly the same after a power loss, choose persistent. 
+If you want your device to display exactly the same after a power loss, choose persistent (and set the Time-rotation Interval to 0). 
 
 If you want to display your favorite *destination time* and *last time departed* upon power-up, and not have time travels overwrite them in flash memory, choose "non-persistent", and program your times through the keypad menu (and set the Time-rotation Interval to 0). Those times will never be overwritten in flash memory by later time travels. Note, however, that the times displayed might actually change due to time travels.
 
-Note that a non-zero Time-rotation Interval will force the device to cycle through the list of pre-programmed times, regardless of your time travel persistence setting. 
+Note that a non-zero Time-rotation Interval will force the device to cycle through the list of pre-programmed times, regardless of your time travel persistence setting. This cycling will, however, paused for 30 minutes if entered a new destination time and/or travelled in time.
 
 **Night mode**
 
@@ -107,7 +106,7 @@ How to enter custom dates/times:
 - Data entry works as follows: If you want to keep the currently shown pre-set, press ENTER to proceed to next field. Otherwise press a digit on the keypad; the pre-set is then overwritten by the value entered. 2 or 4 digits can be entered, upon which the current value is stored and the next field is activated. You can also enter less than 2/4 digits and press ENTER when done with the field. Note that the month needs to be entered numerically (1-12), and the hour needs to be entered in 24 hour mode, regardless of 12-hour or 24-hour mode as per the config portal setting.
 - After entering data into all fields, the data is saved and the menu is left automatically.
 - Note that when entering dates/times into the *destination time* or *last time departed* displays, the Time-rotation Interval is set to 0 and your entered date/time(s) are shown permanently (see below, section "How to select the Time-rotation Interval").
-- By entering a date/time into the *present time* display, the RTC (real time clock) of the device is adjusted, which is useful if you can't use NTP for time keeping. 
+- By entering a date/time into the *present time* display, the RTC (real time clock) of the device is adjusted, which is useful if you can't use NTP for time keeping. The time you entered will be overwritten if/when the device has access to network time via NTP.
 
 How to set up the alarm:
 - Hold ENTER to invoke main menu
