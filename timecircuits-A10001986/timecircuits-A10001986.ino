@@ -21,6 +21,41 @@
  * 
  */
 
+/*
+ * I recommend the Arduino IDE 1.8, simply because it supports the "ESP32 Sketch 
+ * data upload" extension, which is needed for uploading the sound files. This, 
+ * for whatever reason, is no longer supported in 2.0 as of 2.0.0.rc9.
+ * 
+ * Needs ESP32 Arduino framework: https://github.com/espressif/arduino-esp32
+ *  - In Arduino, go to File > Preferences
+ *  - Add the URL https://dl.espressif.com/dl/package_esp32_dev_index.json 
+ *    to Additional Boards Manager URLs
+ *  - Go to Tools > Board > Boards Manager, then search for ESP32, and install the 
+ *    latest version by Espressif Systems
+ *  - The board settings can all be left on their default setting
+ *    (Upload speed 921600, CPU 240Mhz, Flash 80Mhz, QIO, Size 4MB, Partition scheme
+ *    "Default 4MB with spiffs", Debug level "none", PSRAM disabled)
+ *
+ * Library dependencies:
+ * - OneButton: https://github.com/mathertel/OneButton
+ *   (Tested with 2.0.4)
+ * - ESP8266Audio: https://github.com/earlephilhower/ESP8266Audio
+ *   (1.9.7 did not compile here, 1.9.5 is fine)
+ * - RTClib (Adafruit): https://github.com/adafruit/RTClib
+ *   (Tested with 2.1.1)
+ * - WifiManager (tzapu, tablatronix; v0.16 and later) https://github.com/tzapu/WiFiManager
+ *   (Tested with 2.1.12beta)
+ * - Keypad ("by Community; Mark Stanley, Alexander Brevig): https://github.com/Chris--A/Keypad
+ *   (Tested with 3.1.1)
+ * 
+ * This program is not C++11 fit. If you are using PlatformIO, please use an older c++ standard.
+ * 
+ * Detailed installation and compilation instructions are here:
+ * https://github.com/CircuitSetup/Time-Circuits-Display/wiki/Programming-the-ESP32-Module
+ * See here for info on the data uploader (for sound files): 
+ * https://randomnerdtutorials.com/install-esp32-filesystem-uploader-arduino-ide/
+ */
+
 /* Changelog 
  *  
  *  2022/08/17 (A10001986)
