@@ -380,7 +380,7 @@ void time_loop()
                 if(!FPBUnitIsOn) {                                 
                     startup = true;
                     startupSound = true;
-                    FPBUnitIsOn = true;
+                    FPBUnitIsOn = true;                    
                 }
             } else {
                 if(FPBUnitIsOn) {       
