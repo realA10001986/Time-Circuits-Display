@@ -28,10 +28,13 @@
  * 
  * Needs ESP32 Arduino framework: https://github.com/espressif/arduino-esp32
  *  - In Arduino, go to File > Preferences
- *  - Add the URL https://dl.espressif.com/dl/package_esp32_dev_index.json 
+ *  - Add the URL
+ *    https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
  *    to Additional Boards Manager URLs
  *  - Go to Tools > Board > Boards Manager, then search for ESP32, and install the 
  *    latest version by Espressif Systems
+ *  - Detailed instructions:
+ *    https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html
  *  - The board settings can all be left on their default setting
  *    (Upload speed 921600, CPU 240Mhz, Flash 80Mhz, QIO, Size 4MB, Partition scheme
  *    "Default 4MB with spiffs", Debug level "none", PSRAM disabled)
@@ -40,15 +43,16 @@
  * - OneButton: https://github.com/mathertel/OneButton
  *   (Tested with 2.0.4)
  * - ESP8266Audio: https://github.com/earlephilhower/ESP8266Audio
- *   (1.9.7 did not compile here, 1.9.5 is fine)
+ *   (1.9.7 and later for esp-arduino 2.x; 1.9.5 for 1.x)
  * - RTClib (Adafruit): https://github.com/adafruit/RTClib
  *   (Tested with 2.1.1)
- * - WifiManager (tzapu, tablatronix; v0.16 and later) https://github.com/tzapu/WiFiManager
+ * - WifiManager (tablatronix, tzapu; v0.16 and later) https://github.com/tzapu/WiFiManager
  *   (Tested with 2.1.12beta)
  * - Keypad ("by Community; Mark Stanley, Alexander Brevig): https://github.com/Chris--A/Keypad
  *   (Tested with 3.1.1)
  * 
- * This program is not C++11 fit. If you are using PlatformIO, please use an older c++ standard.
+ * This program needs "-std=gnu++11". If you are using PlatformIO, please check 
+ * this. 
  * 
  * Detailed installation and compilation instructions are here:
  * https://github.com/CircuitSetup/Time-Circuits-Display/wiki/Programming-the-ESP32-Module
