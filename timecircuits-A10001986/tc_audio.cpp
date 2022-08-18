@@ -26,8 +26,12 @@
 #include "tc_audio.h"
 
 // Use the mixer, or do not use the mixer.
-// We don't for now, no need for the overhead.
-//#define TC_USE_MIXER
+// Since we don't use mixing, it could be
+// turned off, but the sounds and anims
+// are synced to the timing with the mixer. 
+// Also, it seems to provide some add'l 
+// buffering which is handy.
+#define TC_USE_MIXER
 
 // Initialize ESP32 Audio Library classes
 AudioGeneratorMP3 *mp3;
@@ -90,7 +94,6 @@ void audio_setup()
     stub[0] = mixer->NewInput();    
     //stub[1] = mixer->NewInput();
     #endif
-   
 }
 
 // Play startup sound
