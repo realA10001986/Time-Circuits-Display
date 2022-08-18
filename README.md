@@ -1,7 +1,7 @@
 # Time-Circuits-Display-A10001986
 Alternative firmware for ESP32-based Time-Circuits-Display
 
-This is a fork of the firmware for [this](https://circuitsetup.us/product/complete-time-circuits-display-kit/) wonderful piece of hardware:
+This is a fork of a previous version of the firmware for [this](https://circuitsetup.us/product/complete-time-circuits-display-kit/) wonderful piece of hardware:
 
 https://github.com/CircuitSetup/Time-Circuits-Display/blob/master/README.md
 
@@ -27,6 +27,8 @@ The Destination Time can be entered via keypad, and the Present Time can keep ti
 - 24-hour clock mode for non-Americans ;)
 - Fixed "month-off-by-one" bug, and others
 - etc
+
+**Update:** The nice folks over at circuitsetup.us have taken over this software its in entirety, apart from some sounds, of which they say the like theirs better. As long as I am working on this project, the version here is probably further ahead in development; this might change in the future, when this project eventually no longer is a priority for me.
 
 **Short summary of first steps:**
 - As long as the device is unconfigured or later for some reason fails to connect to a configured network, it starts in "access point" mode, i.e. it creates an access point named "TCD-AP". The default IP in access point mode is 192.168.4.1. 
@@ -162,3 +164,13 @@ The audio files are normally part of the sketch (stored in SPIFFS), but can be s
 - "nmon.mp3". Played when enabling night mode by holding "4"
 - "nmoff.mp3". Played when disabling night might by holding "5"
 - "startup.mp3". Played when the clock is connected to power and finished booting
+
+If a file is not found on the SD card, the default file from SPIFFS (flash) will be played.
+
+The files "nmon2.mp3", "nmoff2.mp3", "alarm2.mp3" are the versions I prefer, but they are to be considered somewhat "inofficial" ;) In order to use them, they need to be renamed to "nmon.mp3", "nmoff.mp3" and "alarm.mp3" respectively.
+
+**Custom Sounds**
+
+If the SD card holds a file named "hour.mp3", this file will be played every hour, on the hour.
+
+If the SD card holds files named "key3.mp3" and/or "key6.mp3", these files will be played if you hold the "3"/"6" key for 2 seconds. 
