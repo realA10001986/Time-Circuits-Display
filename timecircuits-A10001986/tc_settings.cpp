@@ -1,10 +1,12 @@
 /*
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
- * Code adapted from Marmoset Electronics 
+ * 
+ * Code based on Marmoset Electronics 
  * https://www.marmosetelectronics.com/time-circuits-clock
  * by John Monaco
- * Enhanced/modified in 2022 by Thomas Winischhofer (A10001986)
+ *
+ * Enhanced/modified/written in 2022 by Thomas Winischhofer (A10001986)
  * -------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +52,6 @@ void settings_setup()
   
     // set up SD card
     SPI.begin(SPI_SCK, SPI_MISO, SPI_MOSI);
-    //SPI.setFrequency(1000000);
 
     haveSD = false;
     
@@ -283,26 +284,17 @@ bool loadAlarm()
                 if(json["alarmonoff"]) {
                     alarmOnOff = (atoi(json["alarmonoff"]) != 0) ? true : false;              
                 } else {
-                    writedefault = true;  
-                    #ifdef TC_DBG
-                    Serial.println("loadAlarm: alarmonoff missing");
-                    #endif        
+                    writedefault = true;                            
                 }
                 if(json["alarmhour"]) {
                     alarmHour = atoi(json["alarmhour"]);              
                 } else {
-                    writedefault = true;
-                    #ifdef TC_DBG
-                    Serial.println("loadAlarm: alarmhour missing");
-                    #endif  
+                    writedefault = true;                    
                 }
                 if(json["alarmmin"]) {
                     alarmMinute = atoi(json["alarmmin"]); 
                 } else {
-                    writedefault = true;
-                    #ifdef TC_DBG
-                    Serial.println("loadAlarm: alarmmin missing");
-                    #endif                     
+                    writedefault = true;                                        
                 }
               
             } else {
