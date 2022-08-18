@@ -1,10 +1,12 @@
 /*
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
- * Code adapted from Marmoset Electronics 
+ * 
+ * Code based on Marmoset Electronics 
  * https://www.marmosetelectronics.com/time-circuits-clock
  * by John Monaco
- * Enhanced/modified in 2022 by Thomas Winischhofer (A10001986)
+ *
+ * Enhanced/modified/written in 2022 by Thomas Winischhofer (A10001986)
  * -------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +44,7 @@
 bool autoIntDone = false;
 bool autoReadjust = false;
 bool alarmDone = false;
+bool hourlySoundDone = false;
 int8_t minNext;  
 
 bool x;  // for tracking second changes
@@ -216,7 +219,7 @@ void time_setup()
         // Lost power and battery didn't keep time, so set current time to compile time
         rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
         
-        Serial.println("time_setup: RTC lost power, setting compile time. Change battery!");
+        Serial.println("time_setup: RTC lost power, setting default time. Change battery!");
 
         rtcbad = true;
     
@@ -400,7 +403,7 @@ void time_loop()
     // Initiate startup delay, play startup sound
     if(startupSound) {
         startupNow = millis();
-        play_startup(presentTime.getNightMode());
+        play_startup();
         startupSound = false;
     }
 
@@ -592,6 +595,20 @@ void time_loop()
               Serial.println(rtc.getTemperature());
             }
             #endif
+
+            // Sound to play hourly (if available)
+
+            if(presentTime.getMinute() == 0) { 
+                if(presentTime.getNightMode()) {
+                    hourlySoundDone = true;
+                }                                
+                if(!hourlySoundDone) {                  
+                    play_file("/hour.mp3", 1.0, false, 0); 
+                    hourlySoundDone = true;
+                }            
+            } else {
+                hourlySoundDone = false;
+            }
             
             // Handle alarm
 
@@ -607,7 +624,7 @@ void time_loop()
                 } else {
                     alarmDone = false;
                 } 
-            }
+            }                      
 
             // Handle autoInterval
             
@@ -708,7 +725,7 @@ void timeTravel()
     timetravelNow = millis();
     timeTraveled = true;
     beepOn = false;
-    play_file("/timetravel.mp3", getVolumeNM(presentTime.getNightMode()), 0);
+    play_file("/timetravel.mp3", 1.0, true, 0);
     
     allOff();
 
@@ -773,7 +790,7 @@ void resetPresentTime()
     timetravelNow = millis();
     timeTraveled = true; 
     if(timeDifference) {
-        play_file("/timetravel.mp3", getVolumeNM(presentTime.getNightMode()), 0);
+        play_file("/timetravel.mp3", 1.0, true, 0);
     }
   
     allOff();
@@ -815,6 +832,14 @@ void pauseAuto(void)
           Serial.println("pauseAuto: autoInterval paused for 30 minutes");          
           #endif
     }
+}
+
+bool checkIfAutoPaused() 
+{
+    if(!autoPaused || (millis() - pauseNow >= pauseDelay)) {
+        return false;
+    }
+    return true;
 }
 
 // choose your time zone from this list
@@ -940,11 +965,11 @@ void RTCClockOutEnable()
 
     Wire.requestFrom(DS3231_I2CADDR, 1);
     readValue = Wire.read();
-    readValue = readValue & B11100011;  
     // enable squarewave and set to 1Hz,
     // Bit 2 INTCN - 0 enables OSC
     // Bit 3 and 4 - 0 0 sets 1Hz
-
+    readValue = readValue & B11100011;  
+    
     Wire.beginTransmission(DS3231_I2CADDR);
     Wire.write((byte)0x0E);  // select control register
     Wire.write(readValue);
