@@ -52,6 +52,14 @@ bool audioMute = false;
 double curVolFact[2] = { 1.0, 1.0 };
 bool   curChkNM[2]   = { true, true };
 
+int sampleCnt = 0;
+
+#define VOL_SMOOTH_SIZE 8
+int rawVol[VOL_SMOOTH_SIZE] = {  };
+int rawVolIdx = 0;
+int anaReadCount = 0;
+double prev_vol = 10.0;
+
 /*
  * audio_setup()
  */
@@ -124,11 +132,15 @@ void audio_loop()
             //out->flush();
             #endif
         } else {
-          #ifdef TC_USE_MIXER
-          stub[0]->SetGain(getVolume(0));
-          #else
-          out->SetGain(getVolume(0));
-          #endif
+            sampleCnt++;
+            if(sampleCnt > 1) {
+                #ifdef TC_USE_MIXER
+                stub[0]->SetGain(getVolume(0));
+                #else
+                out->SetGain(getVolume(0));
+                #endif
+                sampleCnt = 0;
+            }
         }
     }
     /*
@@ -207,12 +219,37 @@ void play_file(const char *audio_file, double volumeFactor, bool checkNightMode,
     //}
 }
 
-// returns value for volume based on the position of the pot
+// Returns value for volume based on the position of the pot
+// Since the values vary very much we do some noise reduction
 double getRawVolume() 
 {
-    double vol_val = analogRead(VOLUME);
+    double vol_val; 
+    unsigned long avg = 0;
     
-    vol_val = vol_val * 1/4095;
+    rawVol[rawVolIdx] = analogRead(VOLUME);
+
+    if(anaReadCount > 1) {
+        avg = 0;
+        for(int i = rawVolIdx; i > rawVolIdx - anaReadCount; i--) {
+            avg += rawVol[i & (VOL_SMOOTH_SIZE-1)];            
+        }
+        avg /= anaReadCount;  
+        if(anaReadCount < VOL_SMOOTH_SIZE) anaReadCount++;    
+    } else {
+        anaReadCount++;
+        avg = rawVol[rawVolIdx];
+    }
+
+    rawVolIdx++;
+    rawVolIdx &= (VOL_SMOOTH_SIZE-1);
+    
+    vol_val = (double)avg / 4095.0;
+    
+    if(fabs(vol_val - prev_vol) <= 0.015) {
+        vol_val = prev_vol;
+    } else { 
+        prev_vol = vol_val;
+    }
 
     return vol_val;
 }
