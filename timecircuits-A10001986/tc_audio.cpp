@@ -26,11 +26,11 @@
 #include "tc_audio.h"
 
 // Use the mixer, or do not use the mixer.
-// Since we don't use mixing, it could be turned off, but the sounds and anims
-// are synced to the timing with the mixer. 
-// Also, it seems the raw i2s output sometimes grables output at the end of
-// a sound.
-#define TC_USE_MIXER
+// Since we don't use mixing, turn it off.
+// With the current versions of the audio library,
+// turning it on might cause a static after stopping
+// sound play back.
+//#define TC_USE_MIXER
 
 // Initialize ESP32 Audio Library classes
 AudioGeneratorMP3 *mp3;
@@ -74,7 +74,7 @@ void audio_setup()
 
     out = new AudioOutputI2S(0, 0, 32, 0);
     out->SetOutputModeMono(true);
-    out->SetPinout(I2S_BCLK, I2S_LRCLK, I2S_DIN);
+    out->SetPinout(I2S_BCLK_PIN, I2S_LRCLK_PIN, I2S_DIN_PIN);
 
     #ifdef TC_USE_MIXER
     mixer = new AudioOutputMixer(8, out); 
@@ -178,8 +178,8 @@ void play_file(const char *audio_file, double volumeFactor, bool checkNightMode,
         #ifdef TC_USE_MIXER
         stub[0]->stop();        
         //stub[0]->flush();
-        #endif
-        //out->flush();          
+        //out->flush();
+        #endif                  
     }
 
     /*
@@ -230,7 +230,7 @@ double getRawVolume()
     double vol_val; 
     unsigned long avg = 0;
     
-    rawVol[rawVolIdx] = analogRead(VOLUME);
+    rawVol[rawVolIdx] = analogRead(VOLUME_PIN);
 
     if(anaReadCount > 1) {
         avg = 0;
@@ -292,8 +292,8 @@ void stopAudio()
         #ifdef TC_USE_MIXER
         stub[0]->stop();
         //stub[0]->flush();
-        #endif 
         //out->flush();                 
+        #endif         
     }
     /*
     if(beep->isRunning()) {          

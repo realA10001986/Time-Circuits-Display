@@ -45,15 +45,11 @@
 #include "time.h"
 #include "tc_settings.h"
 
-#define SECONDS_IN 15       // SQW Monitor 1Hz from the DS3231
-
-#define STATUS_LED 2        // Status LED (on ESP)
-
 #define DEST_TIME_ADDR 0x71 // i2C address of displays
 #define PRES_TIME_ADDR 0x72
 #define DEPT_TIME_ADDR 0x74
 
-// The time between startup sound being played and the display coming on
+// The time between sound being started and the display coming on
 // Must be sync'd to the sound file used! (startup.mp3/timetravel.mp3)
 #ifndef TWPRIVATE
 #define STARTUP_DELAY 1050

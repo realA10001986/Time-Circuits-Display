@@ -307,7 +307,7 @@ void enter_menu()
             }
 
             // Show a save message for a brief moment
-            displaySet->showOnlySave();  
+            displaySet->showOnlyText("SAVE");  
 
             waitAudioDone();
             
@@ -434,10 +434,10 @@ void menuSelect(int& number)
     while(!checkTimeOut()) {
       
       // If pressed
-      if(digitalRead(ENTER_BUTTON)) {
+      if(digitalRead(ENTER_BUTTON_PIN)) {
         
           // wait for release
-          while(!checkTimeOut() && digitalRead(ENTER_BUTTON)) {
+          while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
               
               myloop();
 
@@ -486,7 +486,7 @@ void menuShow(int& number)
             displaySet = &destinationTime;
             break;
         case MODE_PRES:  // Present Time (RTC)
-            destinationTime.showOnlyRTC();
+            destinationTime.showOnlyText("RTC");
             destinationTime.on();
             presentTime.on();
             presentTime.setColon(false);
@@ -504,63 +504,59 @@ void menuShow(int& number)
             break;
         case MODE_ALRM:   // Alarm
             #ifdef IS_ACAR_DISPLAY
-            destinationTime.showOnlySettingVal("AL", -1, true);  
-            presentTime.showOnlySettingVal("RM", -1, true);  
+            destinationTime.showOnlyText("ALARM");  
+            presentTime.off();
             #else
-            destinationTime.showOnlySettingVal("ALA", -1, true);  // display ALA-RM, no numbers, clear rest of screen
-            presentTime.showOnlySettingVal("RM", -1, true);  
+            destinationTime.showOnlyText("ALA");  // display ALA-RM, no numbers, clear rest of screen
+            presentTime.showOnlyText("RM");  
+            presentTime.on(); 
             #endif
-            destinationTime.on();
-            presentTime.on();            
+            destinationTime.on();                       
             departedTime.off();
             displaySet = &destinationTime;
             break;
         case MODE_AINT:  // autoInterval
             #ifdef IS_ACAR_DISPLAY
-            destinationTime.showOnlySettingVal("IN", -1, true);
-            presentTime.showOnlySettingVal("T", -1, true); 
+            destinationTime.showOnlyText("ROT INT", -1, true);
+            presentTime.off();
             #else
-            destinationTime.showOnlySettingVal("ROT", -1, true);  // display ROT-INT, no numbers, clear rest of screen
-            presentTime.showOnlySettingVal("INT", -1, true);  
+            destinationTime.showOnlyText("ROT");  // display ROT-INT, clear rest of screen
+            presentTime.showOnlyText("INT"); 
+            presentTime.on(); 
             #endif
-            destinationTime.on();
-            presentTime.on();            
+            destinationTime.on();                        
             departedTime.off();
             displaySet = NULL;
             break;
         case MODE_BRI:  // Brightness
             #ifdef IS_ACAR_DISPLAY
-            destinationTime.showOnlySettingVal("BR", -1, true); 
-            presentTime.showOnlySettingVal("I", -1, true); 
+            destinationTime.showOnlyText("BRIGHT"); 
+            presentTime.off(); 
             #else
-            destinationTime.showOnlySettingVal("BRI", -1, true);  // display BRI-GHT, no numbers, clear rest of screen
-            presentTime.showOnlySettingVal("GHT", -1, true);  
+            destinationTime.showOnlyText("BRI");  // display BRI-GHT, clear rest of screen
+            presentTime.showOnlyText("GHT");  
+            presentTime.on(); 
             #endif
-            destinationTime.on();
-            presentTime.on();            
+            destinationTime.on();                       
             departedTime.off();
             displaySet = NULL;
             break;
         case MODE_NET:  // Network info
             #ifdef IS_ACAR_DISPLAY
-            destinationTime.showOnlySettingVal("IP", -1, true); 
+            destinationTime.showOnlyText("NETWORK"); 
             destinationTime.on(); 
             presentTime.off(); 
             #else
-            destinationTime.showOnlySettingVal("NET", -1, true);  // display NET-WRK, no numbers, clear rest of screen
-            presentTime.showOnlySettingVal("WRK", -1, true);  
+            destinationTime.showOnlyText("NET");  // display NET-WRK, clear rest of screen
+            presentTime.showOnlyText("WRK");  
             destinationTime.on();
             presentTime.on();    
             #endif                    
             departedTime.off();
             displaySet = NULL;
             break;
-        case MODE_END:  // end
-            #ifdef IS_ACAR_DISPLAY
-            destinationTime.showOnlySettingVal("EN", -1, true);
-            #else
-            destinationTime.showOnlySettingVal("END", -1, true);  // display END, no numbers, clear rest of screen
-            #endif
+        case MODE_END:  // end            
+            destinationTime.showOnlyText("END");  // display END, clear rest of screen
             destinationTime.on();
             destinationTime.setColon(false);            
             presentTime.off();
@@ -663,7 +659,7 @@ void setField(uint16_t& number, uint8_t field, int year = 0, int month = 0)
     // Force keypad to send keys to our buffer
     isSetUpdate = true; 
     
-    while( !checkTimeOut() && !digitalRead(ENTER_BUTTON) &&     
+    while( !checkTimeOut() && !digitalRead(ENTER_BUTTON_PIN) &&     
               ( (!someupddone && number == prevNum) || strlen(timeBuffer) < numChars) ) {
         
         get_key();      // We're outside our main loop, so poll here
@@ -760,10 +756,10 @@ void doSetAlarm()
     while(!checkTimeOut() && !alarmDone) {
       
       // If pressed
-      if(digitalRead(ENTER_BUTTON)) {
+      if(digitalRead(ENTER_BUTTON_PIN)) {
         
           // wait for release
-          while(!checkTimeOut() && digitalRead(ENTER_BUTTON)) {
+          while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
               // If hold threshold is passed, return false */
               myloop();
               if(isEnterKeyHeld) {
@@ -780,12 +776,8 @@ void doSetAlarm()
 
               newAlarmOnOff = !newAlarmOnOff;       
 
-              #ifdef IS_ACAR_DISPLAY
-              displaySet->showOnlySettingVal(newAlarmOnOff ? "ON" : "OF", -1, true);
-              #else
-              displaySet->showOnlySettingVal(newAlarmOnOff ? "ON" : "OFF", -1, true);
-              #endif
-              
+              displaySet->showOnlyText(newAlarmOnOff ? "ON" : "OFF");
+                            
           }
           
       } else {
@@ -820,7 +812,7 @@ void doSetAlarm()
     // Do nothing if there was a timeout waiting for button presses                                                  
     if(!checkTimeOut()) {
     
-        displaySet->showOnlySave();
+        displaySet->showOnlyText("SAVE");
 
         waitAudioDone();
 
@@ -886,23 +878,13 @@ void doSetAutoInterval()
     destinationTime.on();
 
     presentTime.on();
-    departedTime.on();
     if(autoTimeIntervals[autoInterval] == 0) {
-        #ifdef IS_ACAR_DISPLAY
-        presentTime.showOnlySettingVal("CU", -1, true);    // Custom times to be shown
-        departedTime.showOnlySettingVal("ST", -1, true);  
-        #else
-        presentTime.showOnlySettingVal("CUS", -1, true);    // Custom times to be shown
-        departedTime.showOnlySettingVal("TOM", -1, true);   
-        #endif
+        presentTime.showOnlyText("OFF");
+        departedTime.off();        
     } else {       
-        #ifdef IS_ACAR_DISPLAY
-        presentTime.showOnlyMin();
-        departedTime.showOnlyUtes();
-        #else
-        presentTime.showOnlySettingVal("MIN", -1, true);    // Times cycled in xx minutes
-        departedTime.showOnlyUtes();
-        #endif        
+        presentTime.showOnlyText("MIN");    // Times cycled in xx minutes
+        departedTime.showOnlyText("UTES");
+        departedTime.on();            
     }
 
     isEnterKeyHeld = false;
@@ -913,10 +895,10 @@ void doSetAutoInterval()
     while(!checkTimeOut() && !autoDone) {
       
       // If pressed
-      if(digitalRead(ENTER_BUTTON)) {
+      if(digitalRead(ENTER_BUTTON_PIN)) {
         
           // wait for release
-          while(!checkTimeOut() && digitalRead(ENTER_BUTTON)) {
+          while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
               // If hold threshold is passed, return false */
               myloop();
               if(isEnterKeyHeld) {
@@ -941,22 +923,13 @@ void doSetAutoInterval()
               destinationTime.showOnlySettingVal("INT", autoTimeIntervals[autoInterval], true);
               #endif
 
-              if(autoTimeIntervals[autoInterval] == 0) {
-                  #ifdef IS_ACAR_DISPLAY
-                  presentTime.showOnlySettingVal("CU", -1, true); 
-                  departedTime.showOnlySettingVal("ST", -1, true);  
-                  #else
-                  presentTime.showOnlySettingVal("CUS", -1, true);
-                  departedTime.showOnlySettingVal("TOM", -1, true);                  
-                  #endif
+              if(autoTimeIntervals[autoInterval] == 0) {                  
+                  presentTime.showOnlyText("OFF");
+                  departedTime.off();  
               } else {                  
-                  #ifdef IS_ACAR_DISPLAY
-                  presentTime.showOnlyMin();
-                  departedTime.showOnlyUtes();
-                  #else
-                  presentTime.showOnlySettingVal("MIN", -1, true);
-                  departedTime.showOnlyUtes();  
-                  #endif
+                  presentTime.showOnlyText("MIN");    
+                  departedTime.showOnlyText("UTES");
+                  departedTime.on();
               }
           }
           
@@ -974,7 +947,7 @@ void doSetAutoInterval()
         presentTime.off();
         departedTime.off();
 
-        destinationTime.showOnlySave();
+        destinationTime.showOnlyText("SAVE");
 
         // Save it
         saveAutoInterval();
@@ -1014,48 +987,48 @@ void doSetBrightness(clockDisplay* displaySet) {
     // Wait for enter
     while(!checkTimeOut() && !briDone) {     
       
-      // If pressed
-      if(digitalRead(ENTER_BUTTON)) {
-        
-          // wait for release
-          while(!checkTimeOut() && digitalRead(ENTER_BUTTON)) {
-              // If hold threshold is passed, return false */
-              myloop();
-              if(isEnterKeyHeld) {
-                  isEnterKeyHeld = false;
-                  briDone = true;
-                  break;              
-              }
-              delay(10); 
-          }
-
-          if(!checkTimeOut() && !briDone) {
-              
-              timeout = 0;  // button pressed, reset timeout
-
-              number++;
-              if(number > 15) number = 0;
-              displaySet->setBrightness(number);
-              #ifdef IS_ACAR_DISPLAY
-              displaySet->showOnlySettingVal("LV", number, false);
-              #else
-              displaySet->showOnlySettingVal("LVL", number, false);
-              #endif
-              
-          }
+        // If pressed
+        if(digitalRead(ENTER_BUTTON_PIN)) {
           
-      } else {
-        
-          myloop();
-          delay(50);
+            // wait for release
+            while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
+                // If hold threshold is passed, return false */
+                myloop();
+                if(isEnterKeyHeld) {
+                    isEnterKeyHeld = false;
+                    briDone = true;
+                    break;              
+                }
+                delay(10); 
+            }
+  
+            if(!checkTimeOut() && !briDone) {
+                
+                timeout = 0;  // button pressed, reset timeout
+  
+                number++;
+                if(number > 15) number = 0;
+                displaySet->setBrightness(number);
+                #ifdef IS_ACAR_DISPLAY
+                displaySet->showOnlySettingVal("LV", number, false);
+                #else
+                displaySet->showOnlySettingVal("LVL", number, false);
+                #endif
+                
+            }
+            
+        } else {
           
-      }
+            myloop();
+            delay(50);
+            
+        }
           
     }
 
     if(!checkTimeOut()) {  // only if there wasn't a timeout 
                 
-        displaySet->showOnlySave();
+        displaySet->showOnlyText("SAVE");
 
         displaySet->save();
         
@@ -1081,22 +1054,16 @@ void doSetBrightness(clockDisplay* displaySet) {
 void doShowNetInfo() 
 {
     uint8_t a, b, c, d;
-    //int mymode;
+    int number = 0;
     bool netDone = false;
     
     #ifdef TC_DBG
     Serial.println("doShowNetInfo() involked");
     #endif
-
-    //mymode = wifi_getmode();
     
     wifi_getIP(a, b, c, d);
 
-    #ifdef IS_ACAR_DISPLAY
-    destinationTime.showOnlySettingVal("IP", a, true);
-    #else
-    destinationTime.showOnlySettingVal("IP", a, true);
-    #endif
+    destinationTime.showOnlyText("IP");    
     destinationTime.on();
 
     presentTime.showOnlyHalfIP(a, b, true);
@@ -1113,10 +1080,10 @@ void doShowNetInfo()
     while(!checkTimeOut() && !netDone) {
       
         // If pressed
-        if(digitalRead(ENTER_BUTTON)) {
+        if(digitalRead(ENTER_BUTTON_PIN)) {
           
             // wait for release
-            while(!checkTimeOut() && digitalRead(ENTER_BUTTON)) {
+            while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
                 // If hold threshold is passed, bail out
                 myloop();
                 if(isEnterKeyHeld) {
@@ -1125,6 +1092,59 @@ void doShowNetInfo()
                     break;              
                 }
                 delay(10); 
+            }
+
+            if(!checkTimeOut() && !netDone) {
+              
+                timeout = 0;  // button pressed, reset timeout
+
+                number++;
+                if(number > 1) number = 0;
+                switch(number) {
+                case 0:
+                    wifi_getIP(a, b, c, d);
+                    destinationTime.showOnlyText("IP");                    
+                    destinationTime.on();                
+                    presentTime.showOnlyHalfIP(a, b, true);
+                    presentTime.on();                
+                    departedTime.showOnlyHalfIP(c, d, true);
+                    departedTime.on();
+                    break;
+                case 1:
+                    destinationTime.showOnlyText("WIFI");
+                    destinationTime.on();  
+                    switch(wifi_getmode()) {    
+                    case WL_IDLE_STATUS:
+                        presentTime.showOnlyText("IDLE");
+                        departedTime.off();
+                        break;
+                    case WL_CONNECTED: 
+                        presentTime.showOnlyText("CONNECTED");
+                        departedTime.off();         
+                        break;          
+                    case WL_CONNECT_FAILED:
+                        presentTime.showOnlyText("CONNECT");
+                        departedTime.showOnlyText("FAILED");
+                        departedTime.on();  
+                        break;
+                    case WL_CONNECTION_LOST:
+                        presentTime.showOnlyText("CONNECTION");
+                        departedTime.showOnlyText("LOST");
+                        departedTime.on();  
+                        break;
+                    case WL_DISCONNECTED:
+                        presentTime.showOnlyText("CONNECTION");
+                        departedTime.showOnlyText("LOST");
+                        departedTime.on();   
+                        break;
+                    default:
+                        presentTime.showOnlyText("UNKNOWN");
+                        departedTime.off();   
+                    }
+                    presentTime.on(); 
+                    break;              
+                }
+                
             }
             
         } else {
@@ -1143,7 +1163,7 @@ void animate()
     destinationTime.showAnimate1();
     presentTime.showAnimate1();
     departedTime.showAnimate1();
-    mysdelay(80); //delay(80);
+    mysdelay(80); 
     destinationTime.showAnimate2();
     presentTime.showAnimate2();
     departedTime.showAnimate2();
@@ -1174,7 +1194,7 @@ void allOff()
  */
 void waitForEnterRelease() 
 {    
-    while(digitalRead(ENTER_BUTTON)) {
+    while(digitalRead(ENTER_BUTTON_PIN)) {
         myloop();        
         delay(10);  
     }

@@ -69,7 +69,7 @@ bool doKey = false;
 
 unsigned long enterDelay = 0;
 
-OneButton enterKey = OneButton(ENTER_BUTTON,
+OneButton enterKey = OneButton(ENTER_BUTTON_PIN,
     false,    // Button is active HIGH
     false     // Disable internal pull-up resistor
 );
@@ -102,8 +102,8 @@ void keypad_setup()
     keypad.rowMask = rowMask;
 
     // Setup pin for white LED
-    pinMode(WHITE_LED, OUTPUT);
-    digitalWrite(WHITE_LED, LOW);  
+    pinMode(WHITE_LED_PIN, OUTPUT);
+    digitalWrite(WHITE_LED_PIN, LOW);  
 
     // Setup Enter button
     enterKey.setClickTicks(ENTER_CLICK_TIME);
@@ -328,7 +328,7 @@ void keypad_loop()
         enterWasPressed = true;
 
         // Turn on white LED
-        digitalWrite(WHITE_LED, HIGH); 
+        digitalWrite(WHITE_LED_PIN, HIGH); 
 
         // Turn off destination time only
         destinationTime.off(); 
@@ -422,7 +422,7 @@ void keypad_loop()
         mysdelay(80);                     // Wait 80ms
         destinationTime.showAnimate2();   // turn on month
         
-        digitalWrite(WHITE_LED, LOW);     // turn off white LED
+        digitalWrite(WHITE_LED_PIN, LOW);     // turn off white LED
         
         enterWasPressed = false;          // reset flag
         
