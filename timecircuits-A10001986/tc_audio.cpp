@@ -26,11 +26,10 @@
 #include "tc_audio.h"
 
 // Use the mixer, or do not use the mixer.
-// Since we don't use mixing, it could be
-// turned off, but the sounds and anims
+// Since we don't use mixing, it could be turned off, but the sounds and anims
 // are synced to the timing with the mixer. 
-// Also, it seems to provide some add'l 
-// buffering which is handy.
+// Also, it seems the raw i2s output sometimes grables output at the end of
+// a sound.
 #define TC_USE_MIXER
 
 // Initialize ESP32 Audio Library classes
@@ -70,6 +69,8 @@ double prev_vol = 10.0;
 void audio_setup() 
 {
     audioLogger = &Serial;
+
+    analogSetWidth(9);
 
     out = new AudioOutputI2S(0, 0, 32, 0);
     out->SetOutputModeMono(true);
@@ -246,13 +247,15 @@ double getRawVolume()
     rawVolIdx++;
     rawVolIdx &= (VOL_SMOOTH_SIZE-1);
     
-    vol_val = (double)avg / 4095.0;
+    vol_val = (double)avg / 511.0; 
     
     if(fabs(vol_val - prev_vol) <= 0.015) {
         vol_val = prev_vol;
     } else { 
         prev_vol = vol_val;
     }
+
+    if(vol_val < 0.02) vol_val = 0.0;    
 
     return vol_val;
 }

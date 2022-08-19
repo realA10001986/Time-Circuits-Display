@@ -52,6 +52,8 @@ bool isEttKeyPressed = false;
 
 unsigned long timeNow = 0;
 
+unsigned long lastKeyPressed = 0;
+
 #define DATELEN_ALL   12   // month, day, year, hour, min
 #define DATELEN_DATE   8   // month, day, year
 #define DATELEN_TIME   4   // hour, minute
@@ -64,6 +66,8 @@ int timeIndex = 0;
 int yearIndex = 0;
 
 bool doKey = false;
+
+unsigned long enterDelay = 0;
 
 OneButton enterKey = OneButton(ENTER_BUTTON,
     false,    // Button is active HIGH
@@ -235,6 +239,7 @@ void recordKey(char key)
     dateBuffer[dateIndex++] = key;
     dateBuffer[dateIndex] = '\0'; 
     if(dateIndex >= DATELEN_ALL) dateIndex = DATELEN_ALL - 1;  // don't overflow, will overwrite end of date next time
+    lastKeyPressed = millis();
 }
 
 void recordSetTimeKey(char key) 
@@ -273,6 +278,12 @@ void enterkeytick()
 void keypad_loop() 
 {   
     enterkeytick();
+
+    // Discard keypad input after 5 minutes of inactivity
+    if(millis() - lastKeyPressed >= 5*60*1000) {
+        dateBuffer[0] = '\0'; 
+        dateIndex = 0;
+    }
 
     if(!FPBUnitIsOn) {
         isEttKeyPressed = false; 
@@ -330,7 +341,8 @@ void keypad_loop()
             
             Serial.println(F("keypad_loop: Date is too long or too short"));
                         
-            play_file("/baddate.mp3", 1.0, true, 0);   
+            play_file("/baddate.mp3", 1.0, true, 0); 
+            enterDelay = BADDATE_DELAY;  
                  
         } else {
           
@@ -338,6 +350,7 @@ void keypad_loop()
             int _setHour = -1, _setMin = -1;            
         
             play_file("/enter.mp3", 1.0, true, 0);
+            enterDelay = ENTER_DELAY;  
 
             #ifdef TC_DBG
             Serial.print(F("date entered: ["));
@@ -403,10 +416,10 @@ void keypad_loop()
     // Turn everything back on after entering date
     // (might happen in next iteration of loop)
     
-    if(enterWasPressed && (millis() - timeNow > ENTER_DELAY)) {
+    if(enterWasPressed && (millis() - timeNow > enterDelay)) {
       
         destinationTime.showAnimate1();   // Show all but month
-        delay(80);                        // Wait 80ms
+        mysdelay(80);                     // Wait 80ms
         destinationTime.showAnimate2();   // turn on month
         
         digitalWrite(WHITE_LED, LOW);     // turn off white LED

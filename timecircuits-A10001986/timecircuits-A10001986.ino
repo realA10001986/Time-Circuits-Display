@@ -64,6 +64,10 @@
 
 /* Changelog 
  *  
+ *  2022/08/19 (A10001986)
+ *    - audio cleanup
+ *    - clean up sound/animation delay definitions
+ *    - audio: vol knob delivers inconsistent values, do some "noise reduction"
  *  2022/08/18 (A10001986)
  *    - Destination time/date can now be entered in mmddyyyy, mmddyyyyhhmm or hhmm
  *      format.

@@ -53,11 +53,6 @@ bool y;
 bool startup = false;
 bool startupSound = false;
 unsigned long startupNow = 0;
-#ifndef TWPRIVATE
-int  startupDelay = 1000; // the time between startup sound being played and the display coming on
-#else
-int  startupDelay = 1000; // the time between startup sound being played and the display coming on
-#endif
 
 unsigned long pauseNow;                 // Pause autoInterval if user played with time travel
 unsigned long pauseDelay = 30*60*1000;  // Pause for 30 minutes
@@ -405,19 +400,20 @@ void time_loop()
         startupNow = millis();
         play_startup();
         startupSound = false;
+        hourlySoundDone = true; // Don't let the startup be interrupted
     }
 
     // Turn display on after startup delay
-    if(startup && (millis() - startupNow >= startupDelay)) {        
+    if(startup && (millis() - startupNow >= STARTUP_DELAY)) {        
         animate();
-        startup = false;
+        startup = false;        
         #ifdef TC_DBG
         Serial.println("time_loop: Startup animate triggered");
         #endif
     }
 
     // Turn display back on after time traveling
-    if(timeTraveled && (millis() - timetravelNow >= 1500)) {                
+    if(timeTraveled && (millis() - timetravelNow >= TIMETRAVEL_DELAY)) {                
         animate();
         timeTraveled = false;
         beepOn = true;
@@ -599,7 +595,7 @@ void time_loop()
             // Sound to play hourly (if available)
 
             if(presentTime.getMinute() == 0) { 
-                if(presentTime.getNightMode()) {
+                if(presentTime.getNightMode() || !FPBUnitIsOn) {
                     hourlySoundDone = true;
                 }                                
                 if(!hourlySoundDone) {                  
@@ -776,6 +772,9 @@ void timeTravel()
     // Pause autoInterval-cycling so user can play undisturbed
     pauseAuto();
 
+    // Don't let the sound be interrupted
+    hourlySoundDone = true; 
+
     #ifdef TC_DBG
     Serial.println("timeTravel: Success, good luck!");
     #endif
@@ -791,6 +790,8 @@ void resetPresentTime()
     timeTraveled = true; 
     if(timeDifference) {
         play_file("/timetravel.mp3", 1.0, true, 0);
+        // Don't let the sound be interrupted
+        hourlySoundDone = true;
     }
   
     allOff();
