@@ -51,11 +51,11 @@ void settings_setup()
     #endif
   
     // set up SD card
-    SPI.begin(SPI_SCK, SPI_MISO, SPI_MOSI);
+    SPI.begin(SPI_SCK_PIN, SPI_MISO_PIN, SPI_MOSI_PIN);
 
     haveSD = false;
     
-    if (!SD.begin(SD_CS)) {
+    if (!SD.begin(SD_CS_PIN)) {
 
         #ifdef TC_DBG
         Serial.println("No SD card found");
@@ -137,10 +137,7 @@ void settings_setup()
                     } else writedefault = true;
                     if(json["lastTimeBright"]) {
                         strcpy(settings.lastTimeBright, json["lastTimeBright"]);
-                    } else writedefault = true;
-                    //if(json["beepSound"]) {
-                    //  strcpy(settings.beepSound, json["beepSound"]);
-                    //} else writedefault = true;
+                    } else writedefault = true;                    
                     if(json["wifiConRetries"]) {
                         strcpy(settings.wifiConRetries, json["wifiConRetries"]);
                     } else writedefault = true;
@@ -161,6 +158,9 @@ void settings_setup()
                     if(json["alarmRTC"]) {
                         strcpy(settings.alarmRTC, json["alarmRTC"]);
                     } else writedefault = true;
+                    //if(json["beepSound"]) {
+                    //  strcpy(settings.beepSound, json["beepSound"]);
+                    //} else writedefault = true;
                   
                 } else {
                   
@@ -214,8 +214,7 @@ void write_settings()
     json["autoRotateTimes"] = settings.autoRotateTimes;
     json["destTimeBright"] = settings.destTimeBright;
     json["presTimeBright"] = settings.presTimeBright;
-    json["lastTimeBright"] = settings.lastTimeBright;
-    //json["beepSound"] = settings.beepSound;
+    json["lastTimeBright"] = settings.lastTimeBright;    
     json["wifiConRetries"] = settings.wifiConRetries;
     json["wifiConTimeout"] = settings.wifiConTimeout;
     json["mode24"] = settings.mode24;
@@ -224,6 +223,7 @@ void write_settings()
     json["fakePwrOn"] = settings.fakePwrOn;    
     #endif
     json["alarmRTC"] = settings.alarmRTC;
+    //json["beepSound"] = settings.beepSound;
   
     File configFile = SPIFFS.open("/config.json", FILE_WRITE);
   

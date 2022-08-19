@@ -28,14 +28,34 @@
 
 //#define TC_DBG              // debug output on Serial
 
+// GPIO pins
+
+#define STATUS_LED_PIN     2      // Status LED (on ESP)
+#define SECONDS_IN_PIN    15      // SQW Monitor 1Hz from the DS3231
+#define ENTER_BUTTON_PIN  16      // GPIO that enter key is connected to
+#define WHITE_LED_PIN     17      // GPIO that white led is connected to
+
+// I2S audio pins
+#define I2S_BCLK_PIN      26
+#define I2S_LRCLK_PIN     25
+#define I2S_DIN_PIN       33
+
+// SD Card pins
+#define SD_CS_PIN          5
+#define SPI_MOSI_PIN      23
+#define SPI_MISO_PIN      19
+#define SPI_SCK_PIN       18
+
+#define VOLUME_PIN        32      // analog input pin
+
 // Fake Power On:
 // Attach an active-low switch to io13 or io14; firmware will start network and 
 // sync time, but not enable displays until the switch is activated.
 // The white led will flash for 0.5 seconds when the unit is ready to be "fake"
 // powered on. De-activating the switch "fake" powers down the device (ie the
 // displays are switched off, and no keypad input is accepted)
-#define FAKE_POWER_ON         // Wait for button press on io13/io14 before starting displays
-#define FAKE_POWER_BUTTON 13  // GPIO that fake power switch is connected to; 13 or 14
+#define FAKE_POWER_ON             // Wait for button press on io13/io14 before starting displays
+#define FAKE_POWER_BUTTON_PIN 13  // GPIO that fake power switch is connected to; 13 or 14
 
 // External time travel
 // If the defined pin goes low a time travel is triggered (eg when 88mph is reached)

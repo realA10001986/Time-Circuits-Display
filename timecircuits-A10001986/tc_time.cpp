@@ -138,7 +138,7 @@ int8_t autoTime = 0;  // selects the above array time
 const uint8_t monthDays[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 #ifdef FAKE_POWER_ON
-OneButton fakePowerOnKey = OneButton(FAKE_POWER_BUTTON,
+OneButton fakePowerOnKey = OneButton(FAKE_POWER_BUTTON_PIN,
     true,    // Button is active LOW
     true     // Enable internal pull-up resistor
 );
@@ -173,9 +173,9 @@ void time_setup()
     bool validLoad = true;
     bool rtcbad = false;
     
-    pinMode(SECONDS_IN, INPUT_PULLDOWN);  // for monitoring seconds 
+    pinMode(SECONDS_IN_PIN, INPUT_PULLDOWN);  // for monitoring seconds 
     
-    pinMode(STATUS_LED, OUTPUT);          // Status LED
+    pinMode(STATUS_LED_PIN, OUTPUT);          // Status LED
 
     #ifdef FAKE_POWER_ON
     waitForFakePowerButton = ((int)atoi(settings.fakePwrOn) > 0) ? true : false;
@@ -197,13 +197,13 @@ void time_setup()
         Serial.println("time_setup: Couldn't find RTC. Panic!");
         
         // Setup pins for white LED
-        pinMode(WHITE_LED, OUTPUT);
+        pinMode(WHITE_LED_PIN, OUTPUT);
 
         // Blink forever
         while (1) {
-            digitalWrite(WHITE_LED, HIGH);  
+            digitalWrite(WHITE_LED_PIN, HIGH);  
             delay(1000);
-            digitalWrite(WHITE_LED, LOW);  
+            digitalWrite(WHITE_LED_PIN, LOW);  
             delay(1000);          
         }           
         
@@ -308,21 +308,16 @@ void time_setup()
         #endif
     }
 
-    // Show "RE-SET" message if data loaded was invalid somehow
+    // Show "RESET" message if data loaded was invalid somehow
     if(!validLoad) {      
-        #ifdef IS_ACAR_DISPLAY
-        destinationTime.showOnlyReset();        
-        #else    
-        destinationTime.showOnlySettingVal("RE", -1, true);
-        presentTime.showOnlySettingVal("SET", -1, true);
-        #endif
+        destinationTime.showOnlyText("RESET");         
         delay(1000);
         allOff();
     }
 
     // Show "BATT" message if RTC battery is depleted
     if(rtcbad) {      
-        destinationTime.showOnlyBatt();                
+        destinationTime.showOnlyText("BATT");
         delay(3000);
         allOff();
     }
@@ -332,9 +327,9 @@ void time_setup()
 
 #ifdef FAKE_POWER_ON    
     if(waitForFakePowerButton) { 
-        digitalWrite(WHITE_LED, HIGH);  
+        digitalWrite(WHITE_LED_PIN, HIGH);  
         delay(500);
-        digitalWrite(WHITE_LED, LOW); 
+        digitalWrite(WHITE_LED_PIN, LOW); 
         isFPBKeyChange = false; 
         FPBUnitIsOn = false; 
            
@@ -422,7 +417,7 @@ void time_loop()
         #endif
     }
 
-    y = digitalRead(SECONDS_IN);
+    y = digitalRead(SECONDS_IN_PIN);
     if(y != x) {      // different on half second
         if(y == 0) {  // flash colon on half seconds, lit on start of second
 
@@ -660,11 +655,11 @@ void time_loop()
                     allOff();
 
                     // Blank on second 59, display when new minute begins
-                    while(digitalRead(SECONDS_IN) == 0) {  // wait for the complete of this half second
+                    while(digitalRead(SECONDS_IN_PIN) == 0) {  // wait for the complete of this half second
                                                            // Wait for this half second to end
                         myloop();
                     }
-                    while(digitalRead(SECONDS_IN) == 1) {  // second on next low
+                    while(digitalRead(SECONDS_IN_PIN) == 1) {  // second on next low
                                                            // Wait for the other half to end
                         myloop();                    
                     }
@@ -940,7 +935,7 @@ bool getNTPTime()
  */
 bool checkTimeOut() 
 {    
-    y = digitalRead(SECONDS_IN);
+    y = digitalRead(SECONDS_IN_PIN);
     if(x != y) {
         x = y;        
         if(y == 0) {
