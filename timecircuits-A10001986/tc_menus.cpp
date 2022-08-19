@@ -1143,7 +1143,7 @@ void animate()
     destinationTime.showAnimate1();
     presentTime.showAnimate1();
     departedTime.showAnimate1();
-    delay(80);
+    mysdelay(80); //delay(80);
     destinationTime.showAnimate2();
     presentTime.showAnimate2();
     departedTime.showAnimate2();
@@ -1174,12 +1174,9 @@ void allOff()
  */
 void waitForEnterRelease() 
 {    
-    // Would be nice to activate eg the green LED here
-    // to signal the user to release the button....
-    
     while(digitalRead(ENTER_BUTTON)) {
         myloop();        
-        delay(50);  
+        delay(10);  
     }
     isEnterKeyPressed = false;
     isEnterKeyHeld = false;
@@ -1191,7 +1188,7 @@ void waitAudioDone()
   
   while(!checkAudioDone() && timeout--) {       
        myloop();
-       delay(20);
+       delay(10);
   }
 }
 
@@ -1204,6 +1201,15 @@ void mydelay(int mydel)
     unsigned long startNow = millis();
     while(millis() - startNow < mydel) {
         delay(20);
+        myloop();
+    }     
+}
+
+void mysdelay(int mydel) 
+{  
+    unsigned long startNow = millis();
+    while(millis() - startNow < mydel) {
+        delay(5);
         myloop();
     }     
 }

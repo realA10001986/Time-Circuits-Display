@@ -91,7 +91,8 @@ int Keypad_I2C::pin_read(byte pinNum)
                 pinVal = _wire->read();
                 if(i2cwidth > 1) {
                     pinVal |= (_wire->read() << 8);
-                } 
+                }
+                delay(5); 
                 _wire->requestFrom((int)i2caddr, (int)i2cwidth);
                 pinVal2 = _wire->read();
                 if(i2cwidth > 1) {
@@ -114,6 +115,7 @@ int Keypad_I2C::pin_read(byte pinNum)
             if(i2cwidth > 1) {
                 pinVal |= _wire->read() << 8;
             } 
+            delay(5);
             _wire->requestFrom((int)i2caddr, (int)i2cwidth);
             pinVal2 = _wire->read();
             if(i2cwidth > 1) {

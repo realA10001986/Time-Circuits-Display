@@ -53,6 +53,15 @@
 #define PRES_TIME_ADDR 0x72
 #define DEPT_TIME_ADDR 0x74
 
+// The time between startup sound being played and the display coming on
+// Must be sync'd to the sound file used! (startup.mp3/timetravel.mp3)
+#ifndef TWPRIVATE
+#define STARTUP_DELAY 1050
+#else
+#define STARTUP_DELAY 900 
+#endif
+#define TIMETRAVEL_DELAY 1500
+
 extern uint8_t        autoInterval;
 extern const uint8_t  autoTimeIntervals[6];
 
