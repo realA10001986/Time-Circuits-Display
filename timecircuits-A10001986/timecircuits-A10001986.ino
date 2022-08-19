@@ -65,6 +65,7 @@
 /* Changelog 
  *  
  *  2022/08/19 (A10001986)
+ *    - Network keypad menu: Add WiFi status information
  *    - audio: disable mixer, might cause static after stopping sound playback
  *    - audio cleanup
  *    - clean up sound/animation delay definitions
