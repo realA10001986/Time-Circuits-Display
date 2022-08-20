@@ -344,6 +344,8 @@ void time_setup()
         destinationTime.setBrightness(15);
         presentTime.setBrightness(0);
         departedTime.setBrightness(0);
+        presentTime.off();
+        departedTime.off();
         destinationTime.showOnlyText(t1);
         presentTime.showOnlyText(t2);
         departedTime.showOnlyText(t3);
@@ -358,7 +360,7 @@ void time_setup()
         for(int i = 0; i <= 15; i++) {
             presentTime.setBrightness(i);
             departedTime.setBrightness(i);
-            delay(50);
+            delay(100);
         }
         delay(3000);
         allOff();
