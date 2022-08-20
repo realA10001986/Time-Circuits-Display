@@ -402,7 +402,9 @@ quitMenu:
     #ifdef TC_DBG
     Serial.println("Menu: Update Present Time");
     #endif
-    presentTime.setDateTimeDiff(myrtcnow()); // Set the current time in the display, 2+ seconds gone
+
+    // Set the current time in the display, 2+ seconds gone
+    presentTime.setDateTimeDiff(myrtcnow()); 
     
     // all displays on and show  
     
@@ -1133,9 +1135,8 @@ void doShowNetInfo()
                         departedTime.on();  
                         break;
                     case WL_DISCONNECTED:
-                        presentTime.showOnlyText("CONNECTION");
-                        departedTime.showOnlyText("LOST");
-                        departedTime.on();   
+                        presentTime.showOnlyText("DISCONNECTED");
+                        departedTime.off();  
                         break;
                     default:
                         presentTime.showOnlyText("UNKNOWN");

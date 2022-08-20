@@ -323,7 +323,40 @@ void time_setup()
     }
 
     // Load the time for initial animation show
-    presentTime.setDateTimeDiff(myrtcnow());   
+    presentTime.setDateTimeDiff(myrtcnow()); 
+
+    if((int)atoi(settings.playIntro)) {
+        const char *t1 = "             BACK";
+        const char *t2 = "TO";
+        const char *t3 = "THE FUTURE";  
+        int oldBriDest = destinationTime.getBrightness();
+        int oldBriPres = presentTime.getBrightness();
+        int oldBriDep = departedTime.getBrightness();
+        destinationTime.setBrightness(15);
+        presentTime.setBrightness(0);
+        departedTime.setBrightness(0);
+        destinationTime.showOnlyText(t1);
+        presentTime.showOnlyText(t2);
+        departedTime.showOnlyText(t3);
+        destinationTime.on();
+        for(int i = 0; i < 14; i++) {
+           delay(50);
+           destinationTime.showOnlyText(&t1[i]);
+        }
+        delay(80);                                
+        presentTime.on();
+        departedTime.on();
+        for(int i = 0; i <= 15; i++) {
+            presentTime.setBrightness(i);
+            departedTime.setBrightness(i);
+            delay(50);
+        }
+        delay(3000);
+        allOff();
+        destinationTime.setBrightness(oldBriDest);
+        presentTime.setBrightness(oldBriPres);
+        departedTime.setBrightness(oldBriDep);
+    }
 
 #ifdef FAKE_POWER_ON    
     if(waitForFakePowerButton) { 
