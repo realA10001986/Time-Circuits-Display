@@ -32,8 +32,8 @@
  * will activate, and you will travel in time: The "destination time" is now "present time", 
  * and your old present time is now stored in the "last time departured".
  * In order to select a new destination time, enter a date and a time through the keypad, 
- * either mmddyyyy or mmddyyyyhhmm, then press ENTER. Note that there is no visual feed 
- * back, like in the movie.
+ * either mmddyyyy, mmddyyyyhhmm or hhmm, then press ENTER. Note that there is no visual  
+ * feed back while typing, like in the movie.
  * If the date or time is invalid, the sound will hint you to this.
  * 
  * To return to actual present time, hold "9" for 2 seconds.
@@ -163,6 +163,18 @@ const uint32_t hours1kYears[] =
                   0,  525074400/60, 1050674400/60, 1576274400/60, 2101874400/60, 
       2627474400/60, 3153074400/60, 3678674400/60, 4204274400/60, 4729874400/60 
 };
+
+/*
+ * time_boot()
+ * 
+ */
+void time_boot() 
+{
+    // Start the displays early to clear them
+    presentTime.begin();
+    destinationTime.begin();
+    departedTime.begin();
+}
 
 /*
  * time_setup()
@@ -322,9 +334,6 @@ void time_setup()
         allOff();
     }
 
-    // Load the time for initial animation show
-    presentTime.setDateTimeDiff(myrtcnow()); 
-
     if((int)atoi(settings.playIntro)) {
         const char *t1 = "             BACK";
         const char *t2 = "TO";
@@ -357,6 +366,9 @@ void time_setup()
         presentTime.setBrightness(oldBriPres);
         departedTime.setBrightness(oldBriDep);
     }
+
+    // Load the time for initial animation show
+    presentTime.setDateTimeDiff(myrtcnow()); 
 
 #ifdef FAKE_POWER_ON    
     if(waitForFakePowerButton) { 

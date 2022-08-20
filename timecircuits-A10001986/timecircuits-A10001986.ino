@@ -65,8 +65,10 @@
 /* Changelog 
  *  
  *  2022/08/20 (A10001986)
- *    - Add a little intro display upon power on (not "fake" power on)
- *    - Fix copy/paste error in WiFi menu display
+ *    - Add a little intro display upon power on; not played at "fake" power on.
+ *    - Fix copy/paste error in WiFi menu display; add remaining WiFi stati.
+ *    - Fix compilation for A-Car display
+ *    - Displays off during boot 
  *  2022/08/19 (A10001986)
  *    - Network keypad menu: Add WiFi status information
  *    - audio: disable mixer, might cause static after stopping sound playback
@@ -201,6 +203,7 @@ void setup()
     // scan();
     Serial.println();
 
+    time_boot();
     settings_setup();
     wifi_setup();
     audio_setup();
