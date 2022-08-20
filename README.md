@@ -51,7 +51,7 @@ There is also a "decorative" mode where the device cycles through a list of pre-
 
 To travel through time, hold "0" for 2 seconds. The destination time, as shown in the red display, will be your new present time, the old "present time" will be the "last time departed". Note that the new "present" time will continue to run like a normal clock.
 
-Before holding "0", you can also first quickly set a new destination time by entering a date on the keypad: mmddyyyy or mmddyyyyhhmm, then press ENTER. While typing, there is no visual feedback, but the date is then shown on the "destination time" display after pressing ENTER. 
+Before holding "0", you can also first quickly set a new destination time by entering a date on the keypad: mmddyyyy, mmddyyyyhhmm or hhmm, then press ENTER. While typing, there is no visual feedback, but the date is then shown on the "destination time" display after pressing ENTER. 
 
 To travel back to actual present time, hold "9" for 2 seconds.
 
@@ -62,12 +62,12 @@ Beware that the alarm function, by default, is based on the real actual present 
 On the config portal, there is a menu item named "Make time travels persistent". The default is yes.
 
 If time travels are persistent
-- a user-programmed *destination time* is always stored in flash memory, and retrieved from there after a power-loss. It can be programmed through the keypad menu, or ahead of a time travel by typing mmddyyyy/mmddyyyyhhmm plus ENTER. In both cases, the time is stored in flash memory and retrieved upon power-on.
+- a user-programmed *destination time* is always stored in flash memory, and retrieved from there after a power-loss. It can be programmed through the keypad menu, or ahead of a time travel by typing mmddyyyy/mmddyyyyhhmm/hhmm plus ENTER. In both cases, the time is stored in flash memory and retrieved upon power-on.
 - *last time departed* as displayed at any given point is always stored in flash memory, and retrieved upon power-on.
 - *present time*, be it actual present time or "fake" after time travelling, will continue to run while the device is not powered, as long as its battery lasts, and displayed on power-up.
 
 If time travels are non-persistent
-- a user-programmed *destination time* is only stored to flash memory when programmed through the keypad menu, but not if entered ahead of a time travel (ie outside of the keypad menu, just by typing mmddyyyy/mmddyyyyhhtt plus ENTER).
+- a user-programmed *destination time* is only stored to flash memory when programmed through the keypad menu, but not if entered ahead of a time travel (ie outside of the keypad menu, just by typing mmddyyyy/mmddyyyyhhmm/hhmm plus ENTER).
 - user-programmed *last time departed*s is only stored to flash memory when programmed through the keypad menu, but not if the result of a time travel.
 - *present time* is always reset to actual present time upon power-up.
 
@@ -129,7 +129,7 @@ How to select the Time-rotation Interval:
 - Press ENTER until "ROT-INT" is shown
 - Hold ENTER, "INT" is displayed
 - Press ENTER to cycle through the possible Time-rotation Interval values.
-- A value of 0 makes the device show your custom "destination" and "last departure" times permanently (CUS-TOM is displayed as a reminder).
+- A value of 0 disables automatic time cycling ("OFF").
 - Non-zero values make the device cycle through a number of pre-programmed times, your custom times are ignored. The value means "minutes" (hence "MIN-UTES") between changes.              
 - Hold ENTER to select the value shown and exit the menu ("SAVE" is displayed briefly)
  
@@ -141,10 +141,11 @@ How to adjust the display brightness:
 - Hold ENTER to use current value and proceed to next display
 - After the third display, "SAVE" is displayed briefly and the menu is left automatically.
  
-How to find out the IP address:
+How to find out the IP address and WiFi status:
 - Hold ENTER to invoke main menu
 - Press ENTER until "NET-WRK" is shown
 - Hold ENTER, the displays shows the IP address
+- Press ENTER to view the WiFi status
 - Hold ENTER to leave the menu
  
  How to leave the menu:
@@ -171,6 +172,6 @@ The files "nmon2.mp3", "nmoff2.mp3", "alarm2.mp3" are the versions I prefer, but
 
 **Custom Sounds**
 
-If the SD card holds a file named "hour.mp3", this file will be played every hour, on the hour.
+If the SD card holds a file named "hour.mp3", this file will be played every hour, on the hour. This feature is disabled in night mode.
 
 If the SD card holds files named "key3.mp3" and/or "key6.mp3", these files will be played if you hold the "3"/"6" key for 2 seconds. 
