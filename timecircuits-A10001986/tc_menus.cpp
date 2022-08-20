@@ -374,7 +374,7 @@ void enter_menu()
         allOff();
         waitForEnterRelease();  
     
-    } else {                              // END: Bail out
+    } else {                              // VERSION, END: Bail out
       
         allOff();
         waitForEnterRelease();  
@@ -555,6 +555,19 @@ void menuShow(int& number)
             presentTime.on();    
             #endif                    
             departedTime.off();
+            displaySet = NULL;
+            break;
+        case MODE_VER:  // Version info
+            destinationTime.showOnlyText("VERSION");             
+            destinationTime.on();
+            presentTime.showOnlyText(TC_VERSION);  
+            presentTime.on();
+            #ifdef TC_VERSION_EXTRA
+            departedTime.showOnlyText(TC_VERSION_EXTRA); 
+            departedTime.on();
+            #else
+            departedTime.off();
+            #endif
             displaySet = NULL;
             break;
         case MODE_END:  // end            

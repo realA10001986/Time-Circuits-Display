@@ -864,6 +864,8 @@ uint8_t clockDisplay::getLED7AlphaChar(uint8_t value)
 {    
     if(value == ' ' || value == 0) {
         return 0;
+    } else if(value >= '0' && value <= '9') {
+        return numDigs[value - 48];        
     } else {
         return numDigs[value - 'A' + 10];
     }   
@@ -875,6 +877,8 @@ uint16_t clockDisplay::getLEDAlphaChar(char value)
 #ifdef IS_ACAR_DISPLAY
     if(value == ' ' || value == 0) {
         return 0;
+    } else if(value >= '0' && value <= '9') {
+        return numDigs[value - 48];    
     } else {
         return numDigs[value - 'A' + 10];
     }

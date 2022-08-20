@@ -66,6 +66,7 @@
  *  
  *  2022/08/20 (A10001986)
  *    - Add a little intro display upon power on; not played at "fake" power on.
+ *    - Add menu item to show software version
  *    - Fix copy/paste error in WiFi menu display; add remaining WiFi stati.
  *    - Fix compilation for A-Car display
  *    - Displays off during boot 
