@@ -75,6 +75,7 @@ extern dateStruct destinationTimes[8];
 extern dateStruct departedTimes[8];
 extern int8_t     autoTime;
 
+extern void time_boot();
 extern void time_setup();
 extern void time_loop();
 extern void timeTravel();

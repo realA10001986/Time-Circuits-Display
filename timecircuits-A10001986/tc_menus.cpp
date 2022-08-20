@@ -519,7 +519,7 @@ void menuShow(int& number)
             break;
         case MODE_AINT:  // autoInterval
             #ifdef IS_ACAR_DISPLAY
-            destinationTime.showOnlyText("ROT INT", -1, true);
+            destinationTime.showOnlyText("ROT INT");
             presentTime.off();
             #else
             destinationTime.showOnlyText("ROT");  // display ROT-INT, clear rest of screen
@@ -1119,6 +1119,16 @@ void doShowNetInfo()
                     case WL_IDLE_STATUS:
                         presentTime.showOnlyText("IDLE");
                         departedTime.off();
+                        break;
+                    case WL_SCAN_COMPLETED:
+                        presentTime.showOnlyText("SCAN");
+                        departedTime.showOnlyText("COMPLETE");
+                        departedTime.on();  
+                        break;
+                    case WL_NO_SSID_AVAIL:
+                        presentTime.showOnlyText("SSID NOT");
+                        departedTime.showOnlyText("AVAILABLE");
+                        departedTime.on();  
                         break;
                     case WL_CONNECTED: 
                         presentTime.showOnlyText("CONNECTED");
