@@ -71,6 +71,7 @@ struct Settings {
     char fakePwrOn[4]       = "0";       
 #endif
     char alarmRTC[4]        = "1";    // Default: Alarm is RTC-based (otherwise presentTime-based = 0)
+    char playIntro[4]       = "1";
     //char beepSound[3]     = "0";
 };
 

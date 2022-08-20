@@ -64,6 +64,9 @@
 
 /* Changelog 
  *  
+ *  2022/08/20 (A10001986)
+ *    - Add a little intro display upon power on (not "fake" power on)
+ *    - Fix copy/paste error in WiFi menu display
  *  2022/08/19 (A10001986)
  *    - Network keypad menu: Add WiFi status information
  *    - audio: disable mixer, might cause static after stopping sound playback

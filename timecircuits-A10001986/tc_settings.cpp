@@ -158,6 +158,9 @@ void settings_setup()
                     if(json["alarmRTC"]) {
                         strcpy(settings.alarmRTC, json["alarmRTC"]);
                     } else writedefault = true;
+                    if(json["playIntro"]) {
+                        strcpy(settings.playIntro, json["playIntro"]);
+                    } //else writedefault = true;
                     //if(json["beepSound"]) {
                     //  strcpy(settings.beepSound, json["beepSound"]);
                     //} else writedefault = true;
@@ -223,6 +226,7 @@ void write_settings()
     json["fakePwrOn"] = settings.fakePwrOn;    
     #endif
     json["alarmRTC"] = settings.alarmRTC;
+    json["playIntro"] = settings.playIntro;
     //json["beepSound"] = settings.beepSound;
   
     File configFile = SPIFFS.open("/config.json", FILE_WRITE);
