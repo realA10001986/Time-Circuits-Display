@@ -26,6 +26,21 @@
 #ifndef _TC_GLOBAL_H
 #define _TC_GLOBAL_H
 
+// Uncomment if month is 2 digits (7-seg), as in the original A-Car display.
+//#define IS_ACAR_DISPLAY 
+
+//#define TWPRIVATE       // A10001986's private customizations
+
+#ifndef IS_ACAR_DISPLAY
+#define TC_VERSION "AUG202022"
+#ifdef TWPRIVATE
+#define TC_VERSION_EXTRA "A10001986"
+#endif
+#else
+#define TC_VERSION "08202022"
+#define TC_VERSION_EXTRA "A CAR"
+#endif
+
 //#define TC_DBG              // debug output on Serial
 
 // GPIO pins
@@ -65,9 +80,6 @@
 #define EXTERNAL_TIMETRAVEL         // Initiate time travel is pin is activated
 #define EXTERNAL_TIMETRAVEL_PIN 14  // GPIO that is polled (13 or 14, see fake power)
 
-// Uncomment if month is 2 digits (7-seg), as in the original A-Car display.
-//#define IS_ACAR_DISPLAY 
-
 // EEPROM map
 // We use 1(padded to 8) + 10*3 + 4 bytes of EEPROM space at 0x0. 
 #define AUTOINTERVAL_PREF 0x00    // autoInterval save location   (1 byte, padded 8; unused)
@@ -75,8 +87,5 @@
 #define PRES_TIME_PREF    0x12    // present time prefs           (10 bytes)
 #define DEPT_TIME_PREF    0x1c    // departure time prefs         (10 bytes)
 #define ALARM_PREF        0x26    // alarm prefs                  (4 bytes; only used if fs unavailable)
-
-
-//#define TWPRIVATE       // A10001986's private customizations
 
 #endif

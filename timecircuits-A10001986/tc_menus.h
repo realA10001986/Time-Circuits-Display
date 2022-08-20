@@ -44,7 +44,8 @@
 #define MODE_AINT 4
 #define MODE_BRI  5
 #define MODE_NET  6
-#define MODE_END  7
+#define MODE_VER  7
+#define MODE_END  8
 #define MODE_MIN  MODE_DEST
 #define MODE_MAX  MODE_END
 

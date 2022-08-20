@@ -354,7 +354,7 @@ void time_setup()
            delay(50);
            destinationTime.showOnlyText(&t1[i]);
         }
-        delay(80);                                
+        delay(500);                                
         presentTime.on();
         departedTime.on();
         for(int i = 0; i <= 15; i++) {
