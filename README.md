@@ -91,7 +91,8 @@ Data entry is done by pressing the keypad's number keys.
 The menu is involked by holding the ENTER button.
 
 First step is to choose a menu item. The available "items" are   
-- enter custom dates/times for the three displays,
+- enter dates/times for the three displays,
+- set the audio volume (VOL-UME),
 - set an alarm ("ALA-RM"),
 - select the Time-rotation Interval ("ROT-INT"),
 - select the brightness for the three displays ("BRI-GHT"),
@@ -107,8 +108,19 @@ How to enter custom dates/times:
 - The field to enter data into is shown (exclusively), pre-set with its current value
 - Data entry works as follows: If you want to keep the currently shown pre-set, press ENTER to proceed to next field. Otherwise press a digit on the keypad; the pre-set is then overwritten by the value entered. 2 or 4 digits can be entered, upon which the current value is stored and the next field is activated. You can also enter less than 2/4 digits and press ENTER when done with the field. Note that the month needs to be entered numerically (1-12), and the hour needs to be entered in 24 hour mode, regardless of 12-hour or 24-hour mode as per the config portal setting.
 - After entering data into all fields, the data is saved and the menu is left automatically.
-- Note that when entering dates/times into the *destination time* or *last time departed* displays, the Time-rotation Interval is set to 0 and your entered date/time(s) are shown permanently (see below, section "How to select the Time-rotation Interval").
+- Note that when entering dates/times into the *destination time* or *last time departed* displays, the Time-rotation Interval is automatically set to 0. Your entered date/time(s) are shown until overwritten by time travels (see below, section "How to select the Time-rotation Interval").
 - By entering a date/time into the *present time* display, the RTC (real time clock) of the device is adjusted, which is useful if you can't use NTP for time keeping. The time you entered will be overwritten if/when the device has access to network time via NTP.
+
+How to set the audio volume:
+
+Basically, and by default, the device uses the hardware volume know to determine the desired volume. You can change this to a software setting as follows:
+- Hold ENTER to invoke main menu
+- Press ENTER until "VOL-UME" is shown
+- Hold ENTER
+- Press ENTER to toggle between "HW" (volume knob) or "SW" (software)
+- Hold ENTER to proceed
+- If you chose "SW", you can now select the desired level by pressing ENTER repeatedly. There are 16 levels available.
+- Hold ENTER to save and quit the menu
 
 How to set up the alarm:
 - Hold ENTER to invoke main menu
