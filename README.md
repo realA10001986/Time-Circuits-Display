@@ -113,7 +113,7 @@ How to enter custom dates/times:
 
 How to set the audio volume:
 
-Basically, and by default, the device uses the hardware volume know to determine the desired volume. You can change this to a software setting as follows:
+Basically, and by default, the device uses the hardware volume knob to determine the desired volume. You can change this to a software setting as follows:
 - Hold ENTER to invoke main menu
 - Press ENTER until "VOL-UME" is shown
 - Hold ENTER
