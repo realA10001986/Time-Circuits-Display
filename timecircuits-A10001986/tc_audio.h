@@ -53,4 +53,6 @@ extern bool beepOn;
 
 extern bool audioMute;
 
+extern uint8_t curVolume;
+
 #endif

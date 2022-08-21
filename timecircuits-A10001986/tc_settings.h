@@ -38,7 +38,7 @@
 
 extern void settings_setup();
 extern void write_settings();
-
+bool checkValidNumParm(char *text, int lowerLim, int upperLim, int setDefault);
 extern bool loadAlarm();
 extern void saveAlarm();
 bool loadAlarmEEPROM();
@@ -55,6 +55,8 @@ extern bool    haveSD;
 // Default settings - change settings in the web interface 192.168.4.1
 
 // For list of time zones, see https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv
+
+// If numerical defaults are changed, those also need to be changed in settings.cpp
 
 struct Settings {
     char ntpServer[64]      = "pool.ntp.org";

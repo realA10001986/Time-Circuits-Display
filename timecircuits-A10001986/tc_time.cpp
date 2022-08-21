@@ -200,8 +200,6 @@ void time_setup()
         fakePowerOnKey.attachLongPressStop(fpbKeyLongPressStop);
     }
     #endif
-
-    EEPROM.begin(512);
     
     // RTC setup
     if(!rtc.begin()) {
@@ -862,7 +860,7 @@ void resetPresentTime()
     } 
 }
 
-// Pause autoInverval-updating for theDelay minutes
+// Pause autoInverval-updating for 30 minutes
 // Subsequent calls re-start the pause; therefore, it
 // is not advised to use different pause durations
 void pauseAuto(void)
@@ -915,7 +913,7 @@ bool getNTPTime()
 
         if(strlen(settings.ntpServer) == 0) {
             #ifdef TC_DBG            
-            Serial.println("getNTPTime: NTP skipped, server name not defined");
+            Serial.println("getNTPTime: NTP skipped, no server configured");
             #endif
             return false;
         }
@@ -1063,7 +1061,7 @@ DateTime myrtcnow()
             dt.minute() < 0 || dt.minute() > 59) &&
             retries < 30 ) {
 
-            delay((retries < 5) ? 50 : 100);
+            mydelay((retries < 5) ? 50 : 100);
             dt = rtc.now(); 
             retries++;
     }

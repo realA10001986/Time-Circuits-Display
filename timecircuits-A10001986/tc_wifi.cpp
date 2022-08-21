@@ -29,8 +29,9 @@ Settings settings;
 
 WiFiManager wm;
 
+WiFiManagerParameter custom_headline("<h2>TimeCircuits Setup</h2>");
 WiFiManagerParameter custom_wifiConTimeout("wificon", "WiFi Connection Timeout in seconds (1-15)", settings.wifiConTimeout, 3);
-WiFiManagerParameter custom_wifiConRetries("wifiret", "WiFi Connection Retries (1-15)", settings.wifiConRetries, 3);
+WiFiManagerParameter custom_wifiConRetries("wifiret", "WiFi Connection attempts (1-15)", settings.wifiConRetries, 3);
 WiFiManagerParameter custom_ntpServer("ntp_server", "NTP Server (eg. 'pool.ntp.org'; empty to disable NTP)", settings.ntpServer, 63);
 WiFiManagerParameter custom_timeZone("time_zone", "Timezone (<a href='https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv' target=_blank>Posix</a>, eg. 'CST6CDT,M3.2.0,M11.1.0')", settings.timeZone, 63);
 WiFiManagerParameter custom_mode24("md24", "Enable 24-hour clock mode: (0=12hr, 1=24hr)", settings.mode24, 2);
@@ -61,8 +62,7 @@ void wifi_setup()
     #ifndef TC_DBG
     wm.setDebugOutput(false);
     #endif
-
-    //wm.setCountry("");                  // was US; not needed at all
+    
     wm.setParamsPage(true);
     wm.setBreakAfterConfig(true);
     wm.setConfigPortalBlocking(false);
@@ -71,12 +71,12 @@ void wifi_setup()
     wm.setHostname("TimeCircuits");
 
     temp = (int)atoi(settings.wifiConTimeout);
-    if(temp < 0) temp = 0;
+    if(temp < 1) temp = 1;    // Do not allow 0, might make it hang 
     if(temp > 15) temp = 15;
     wm.setConnectTimeout(temp);
     
     temp = (int)atoi(settings.wifiConRetries);
-    if(temp < 0) temp = 0;
+    if(temp < 1) temp = 1;
     if(temp > 15) temp = 15;
     wm.setConnectRetries(temp);           
                
@@ -86,6 +86,7 @@ void wifi_setup()
     std::vector<const char*> menu = {"wifi", "info", "param", "sep", "restart", "exit", "update"};
     wm.setMenu(menu);
 
+    wm.addParameter(&custom_headline);
     wm.addParameter(&custom_wifiConTimeout);
     wm.addParameter(&custom_wifiConRetries);
     wm.addParameter(&custom_ntpServer);
@@ -109,7 +110,7 @@ void wifi_setup()
     // If connection fails it starts an access point with the specified name
     if(wm.autoConnect("TCD-AP")) {
         #ifdef TC_DBG
-        Serial.println("WiFi connected...yeey :)");
+        Serial.println("WiFi connected");
         #endif
         wm.startWebPortal();  //start config portal in STA mode
     } else {
