@@ -32,12 +32,12 @@
 //#define TWPRIVATE       // A10001986's private customizations
 
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION "AUG202022"
+#define TC_VERSION "AUG212022"
 #ifdef TWPRIVATE
 #define TC_VERSION_EXTRA "A10001986"
 #endif
 #else
-#define TC_VERSION "08202022"
+#define TC_VERSION "08212022"
 #define TC_VERSION_EXTRA "A CAR"
 #endif
 
@@ -69,7 +69,7 @@
 // The white led will flash for 0.5 seconds when the unit is ready to be "fake"
 // powered on. De-activating the switch "fake" powers down the device (ie the
 // displays are switched off, and no keypad input is accepted)
-#define FAKE_POWER_ON             // Wait for button press on io13/io14 before starting displays
+#define FAKE_POWER_ON             // Wait for switch on io13/io14 before starting displays
 #define FAKE_POWER_BUTTON_PIN 13  // GPIO that fake power switch is connected to; 13 or 14
 
 // External time travel
@@ -81,8 +81,8 @@
 #define EXTERNAL_TIMETRAVEL_PIN 14  // GPIO that is polled (13 or 14, see fake power)
 
 // EEPROM map
-// We use 1(padded to 8) + 10*3 + 4 bytes of EEPROM space at 0x0. 
-#define AUTOINTERVAL_PREF 0x00    // autoInterval save location   (1 byte, padded 8; unused)
+// We use 2(padded to 8) + 10*3 + 4 bytes of EEPROM space at 0x0. 
+#define SWVOL_PREF        0x00    // volume save location         (2 bytes, padded to 8)
 #define DEST_TIME_PREF    0x08    // destination time prefs       (10 bytes)
 #define PRES_TIME_PREF    0x12    // present time prefs           (10 bytes)
 #define DEPT_TIME_PREF    0x1c    // departure time prefs         (10 bytes)

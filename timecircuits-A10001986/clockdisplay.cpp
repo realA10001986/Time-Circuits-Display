@@ -44,7 +44,7 @@ void clockDisplay::begin()
     Wire.endTransmission();
 
     clear();            // clear buffer
-    setBrightness(15);  // be sure in case coming up for mc reset
+    setBrightness(15);  // setup initial brightness
     clearDisplay();     // clear display RAM
     on();               // turn it on
 }
@@ -96,7 +96,7 @@ void clockDisplay::clear()
 uint8_t clockDisplay::setBrightness(uint8_t level) 
 {
     if(level > 15)
-        return _brightness;
+        level = 15;
 
     Wire.beginTransmission(_address);
     Wire.write(0xE0 | level);  // Dimming command
@@ -347,16 +347,12 @@ void clockDisplay::setMinute(int minNum)
     }
     
     _minute = minNum;
-
-    if(minNum < 60) {
-        _displayBuffer[CD_MIN_POS] = makeNum(minNum);
-    } else if(minNum >= 60) {
-        _displayBuffer[CD_MIN_POS] = makeNum(0);
-    }
+    
+    _displayBuffer[CD_MIN_POS] = makeNum(minNum);
 
     if(isRTC()) {
-       if(alarmOnOff) 
-          _displayBuffer[CD_MIN_POS] |= 0x8000;
+        if(alarmOnOff) 
+            _displayBuffer[CD_MIN_POS] |= 0x8000;
     }
 }
 

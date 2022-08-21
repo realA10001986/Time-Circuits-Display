@@ -45,7 +45,7 @@
  * - OneButton: https://github.com/mathertel/OneButton
  *   (Tested with 2.0.4)
  * - ESP8266Audio: https://github.com/earlephilhower/ESP8266Audio
- *   (1.9.7 and later for esp-arduino 2.x; 1.9.5 for 1.x)
+ *   (1.9.7 and later for esp32-arduino 2.x; 1.9.5 for 1.x)
  * - RTClib (Adafruit): https://github.com/adafruit/RTClib
  *   (Tested with 2.1.1)
  * - WifiManager (tablatronix, tzapu; v0.16 and later) https://github.com/tzapu/WiFiManager
@@ -64,11 +64,15 @@
 
 /* Changelog 
  *  
+ *  2022/08/21 (A10001986)
+ *    - Added software volume: Volume can now be set by the volume knob, or by
+ *      setting a value in the new keymap Volume menu.
+ *    - Value check for settings entered on WiFi setup page
  *  2022/08/20 (A10001986)
- *    - Add a little intro display upon power on; not played at "fake" power on.
- *    - Add menu item to show software version
- *    - Fix copy/paste error in WiFi menu display; add remaining WiFi stati.
- *    - Fix compilation for A-Car display
+ *    - Added a little intro display upon power on; not played at "fake" power on.
+ *    - Added menu item to show software version
+ *    - Fixed copy/paste error in WiFi menu display; add remaining WiFi stati.
+ *    - Fixed compilation for A-Car display
  *    - Displays off during boot 
  *  2022/08/19 (A10001986)
  *    - Network keypad menu: Add WiFi status information
@@ -88,11 +92,11 @@
  *      code dealing with this.
  *    - Volume knob is now polled during play back, allowing changes while sound
  *      is playing
- *    - Fix auto time rotation pause logic at menu return
- *    - [Fix crash when saving settings before WiFi was connected (John)]
+ *    - Fixed auto time rotation pause logic at menu return
+ *    - [Fixed crash when saving settings before WiFi was connected (John)]
  *  2022/08/17 (A10001986)
  *    - Silence compiler warnings
- *    - Fix missing return value in loadAlarm
+ *    - Fixed missing return value in loadAlarm
  *  2022/08/16 (A10001986)
  *    - Show "BATT" during booting if RTC battery is depleted and needs to be 
  *      changed
@@ -107,8 +111,8 @@
  *    - Alarm base can now be selected between RTC (ie actual present
  *      time, what is stored in the RTC), or "present time" (ie fake
  *      present time).
- *    - Fix fake power off if time rotation interval is non-zero
- *    - Correct some inconsistency in my assumptions on A-car display
+ *    - Fixed fake power off if time rotation interval is non-zero
+ *    - Corrected some inconsistency in my assumptions on A-car display
  *      handling
  *  2022/08/13 (A10001986)
  *    - Changed "fake power" logic : This is no longer a "button" to  
@@ -119,13 +123,13 @@
  *       travel is triggered. Note that the device only simulates the 
  *      re-entry part of a time travel so the trigger should be timed 
  *      accordingly.
- *    - Fix millis() roll-over errors
+ *    - Fixed millis() roll-over errors
  *    - All new sounds. The volume of the various sound effects has been
  *      normalized, and the sound quality has been digitally enhanced.
- *    - Make keypad more responsive
- *    - Fix garbled keypad sounds in menu
- *    - Fix timeout logic errors in menu
- *    - Make RTC usable for eternity (by means of yearOffs)
+ *    - Made keypad more responsive
+ *    - Fixed garbled keypad sounds in menu
+ *    - Fixed timeout logic errors in menu
+ *    - Made RTC usable for eternity (by means of yearOffs)
  *  2022/08/12 (A10001986)
  *    - A-Car display support enhanced (untested)
  *    - Added SD support. Audio files will be played from SD, if
@@ -142,7 +146,7 @@
  *      - "alarmoff.mp3": The alarm was disabled      
  *      Mp3 files with 128kpbs or below recommended. 
  *  2022/08/11 (A10001986)
- *    - Integrate a modified Keypad_I2C into the project in order 
+ *    - Integrated a modified Keypad_I2C into the project in order 
  *      to fix the "ghost" key presses issue by reducing i2c traffic 
  *      and validating the port status data by reading the value
  *      twice.
@@ -153,10 +157,10 @@
  *      tc_global.h)
  *  2022/08/10 (A10001986)
  *    - Nightmode now also reduced volume of sound (except alarm)
- *    - Fix autoInterval array size
+ *    - Fixed autoInterval array size
  *    - Minor cleanups
  *  2022/08/09 (A10001986)
- *    - Fix "animation" (ie. month displayed a tad delayed)
+ *    - Fixed "animation" (ie. month displayed a tad delayed)
  *    - Added night mode; enabled by holding "4", disabled by holding "5"
  *    - Fix for flakey i2c connection to RTC (check data and retry)
  *      Sometimes the RTC chip loses sync and no longer responds, this

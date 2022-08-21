@@ -115,7 +115,10 @@ uint8_t alarmMinute = 255;
  * 
  */
 void menu_setup() {
-    /* nada */
+
+    // Load volume settings from EEPROM
+    loadCurVolume();
+    
 }
 
 /*
@@ -326,7 +329,18 @@ void enter_menu()
             allOff();
             waitForEnterRelease();
             
-        }  
+        } 
+
+    } else if(menuItemNum == MODE_VOL) {
+
+        allOff();
+        waitForEnterRelease();
+
+        // Set volume              
+        doSetVolume();
+
+        allOff();
+        waitForEnterRelease(); 
 
     } else if(menuItemNum == MODE_ALRM) {
 
@@ -504,6 +518,19 @@ void menuShow(int& number)
             departedTime.show();
             displaySet = &departedTime;
             break;
+        case MODE_VOL:   // Software volume
+            #ifdef IS_ACAR_DISPLAY
+            destinationTime.showOnlyText("VOLUME");  
+            presentTime.off();
+            #else
+            destinationTime.showOnlyText("VOL");  // display VOLUME
+            presentTime.showOnlyText("UME");  
+            presentTime.on(); 
+            #endif
+            destinationTime.on();                       
+            departedTime.off();
+            displaySet = NULL;
+            break;           
         case MODE_ALRM:   // Alarm
             #ifdef IS_ACAR_DISPLAY
             destinationTime.showOnlyText("ALARM");  
@@ -515,7 +542,7 @@ void menuShow(int& number)
             #endif
             destinationTime.on();                       
             departedTime.off();
-            displaySet = &destinationTime;
+            displaySet = NULL;
             break;
         case MODE_AINT:  // autoInterval
             #ifdef IS_ACAR_DISPLAY
@@ -724,6 +751,201 @@ void setField(uint16_t& number, uint8_t field, int year = 0, int month = 0)
     #endif
 }  
 
+void saveCurVolume()
+{      
+    EEPROM.write(SWVOL_PREF, (uint8_t)curVolume);
+    EEPROM.write(SWVOL_PREF + 1, (uint8_t)((curVolume ^ 0xff) & 0xff));
+    EEPROM.commit();
+}
+
+bool loadCurVolume() 
+{
+    uint8_t loadBuf[2];  
+    
+    loadBuf[0] = EEPROM.read(SWVOL_PREF);
+    loadBuf[1] = EEPROM.read(SWVOL_PREF + 1) ^ 0xff;
+        
+    if(loadBuf[0] != loadBuf[1]) {
+          
+        Serial.println("loadVolume: Invalid volume data in EEPROM");
+
+        curVolume = 255;
+    
+        return false;
+    }        
+
+    curVolume = loadBuf[0];
+    
+    if(curVolume > 15 && curVolume != 255) 
+        curVolume = 255;
+    
+    return true;
+}
+
+void showCurVolHWSW()
+{
+    if(curVolume == 255) {
+        destinationTime.showOnlyText("HW");        
+        presentTime.showOnlyText("VOLUME");
+        departedTime.showOnlyText("KNOB");
+        destinationTime.on();
+        presentTime.on();
+        departedTime.on();
+    } else {
+        destinationTime.showOnlyText("SW");
+        destinationTime.on();
+        presentTime.off();
+        departedTime.off();
+    }
+}
+
+void showCurVol()
+{    
+    #ifdef IS_ACAR_DISPLAY
+    destinationTime.showOnlySettingVal("LV", curVolume, true);
+    #else
+    destinationTime.showOnlySettingVal("LVL", curVolume, true);
+    #endif
+    destinationTime.on();
+    if(curVolume == 0) {
+        presentTime.showOnlyText("MUTE");
+        presentTime.on();
+    } else {
+        presentTime.off();
+    }
+    departedTime.off();
+}
+
+void doSetVolume()
+{
+    bool volDone = false;
+    uint8_t oldVol = curVolume;
+
+    #ifdef TC_DBG
+    Serial.println("doSetVolume() involked");
+    #endif
+
+    showCurVolHWSW();
+
+    isEnterKeyHeld = false;
+
+    timeout = 0;  // reset timeout
+
+    // Wait for enter
+    while(!checkTimeOut() && !volDone) {
+      
+      // If pressed
+      if(digitalRead(ENTER_BUTTON_PIN)) {
+        
+          // wait for release
+          while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
+              // If hold threshold is passed, return false */
+              myloop();
+              if(isEnterKeyHeld) {
+                  isEnterKeyHeld = false;
+                  volDone = true;
+                  break;              
+              }
+              delay(10); 
+          }
+
+          if(!checkTimeOut() && !volDone) {
+              
+              timeout = 0;  // button pressed, reset timeout
+
+              if(curVolume <= 15) 
+                  curVolume = 255;
+              else
+                  curVolume = 0;
+
+              showCurVolHWSW();
+              
+          }
+          
+      } else {
+
+          myloop();
+          delay(50);
+          
+      }
+          
+    }
+
+    if(!checkTimeOut() && curVolume != 255) {
+
+        curVolume = (oldVol == 255) ? 0 : oldVol;
+
+        showCurVol();
+
+        timeout = 0;  // reset timeout
+
+        volDone = false;
+
+        waitForEnterRelease();
+
+        // Wait for enter
+        while(!checkTimeOut() && !volDone) {
+          
+            // If pressed
+            if(digitalRead(ENTER_BUTTON_PIN)) {
+              
+                // wait for release
+                while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
+                    // If hold threshold is passed, return false */
+                    myloop();
+                    if(isEnterKeyHeld) {
+                        isEnterKeyHeld = false;
+                        volDone = true;
+                        break;              
+                    }
+                    delay(10); 
+                }
+      
+                if(!checkTimeOut() && !volDone) {
+                    
+                    timeout = 0;  // button pressed, reset timeout
+      
+                    curVolume++;
+                    if(curVolume == 16) curVolume = 0;
+      
+                    showCurVol();
+                   
+                    //play_file("/timetravel.mp3", 1.0, true, 0);
+                    play_file("/alarm.mp3", 1.0, true, 0);
+                    
+                }
+                
+            } else {
+      
+                myloop();
+                delay(50);
+                
+            }
+        }
+      
+    }
+    
+    presentTime.off();
+    departedTime.off();
+
+    if(!checkTimeOut()) { 
+
+        stopAudio();
+        
+        destinationTime.showOnlyText("SAVE");
+
+        // Save it
+        saveCurVolume();        
+        
+        mydelay(1000);
+              
+    } else {
+
+        oldVol = curVolume;
+      
+    }
+}       
+
 void alarmOff()
 {
     alarmOnOff = false;
@@ -756,11 +978,7 @@ void doSetAlarm()
     #endif
 
     // On/Off
-    #ifdef IS_ACAR_DISPLAY
-    displaySet->showOnlySettingVal(newAlarmOnOff ? "ON" : "OF", -1, true);
-    #else
-    displaySet->showOnlySettingVal(newAlarmOnOff ? "ON" : "OFF", -1, true);
-    #endif
+    displaySet->showOnlyText(newAlarmOnOff ? "ON" : "OFF");
     displaySet->on();
     
     isEnterKeyHeld = false;

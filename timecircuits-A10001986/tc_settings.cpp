@@ -49,6 +49,8 @@ void settings_setup()
     #ifdef TC_DBG
     Serial.println("settings_setup: Mounting SD...");
     #endif
+
+    EEPROM.begin(512);
   
     // set up SD card
     SPI.begin(SPI_SCK_PIN, SPI_MISO_PIN, SPI_MOSI_PIN);
@@ -128,39 +130,50 @@ void settings_setup()
                     } else writedefault = true;
                     if(json["autoRotateTimes"]) {
                         strcpy(settings.autoRotateTimes, json["autoRotateTimes"]);
+                        writedefault |= checkValidNumParm(settings.autoRotateTimes, 0, 5, 0);
                     } else writedefault = true;
                     if(json["destTimeBright"]) {
                         strcpy(settings.destTimeBright, json["destTimeBright"]);
+                        writedefault |= checkValidNumParm(settings.destTimeBright, 0, 15, 15);
                     } else writedefault = true;
                     if(json["presTimeBright"]) {
                         strcpy(settings.presTimeBright, json["presTimeBright"]);
+                        writedefault |= checkValidNumParm(settings.presTimeBright, 0, 15, 15);
                     } else writedefault = true;
                     if(json["lastTimeBright"]) {
                         strcpy(settings.lastTimeBright, json["lastTimeBright"]);
+                        writedefault |= checkValidNumParm(settings.lastTimeBright, 0, 15, 15);
                     } else writedefault = true;                    
                     if(json["wifiConRetries"]) {
                         strcpy(settings.wifiConRetries, json["wifiConRetries"]);
+                        writedefault |= checkValidNumParm(settings.wifiConRetries, 1, 15, 3);
                     } else writedefault = true;
                     if(json["wifiConTimeout"]) {
                         strcpy(settings.wifiConTimeout, json["wifiConTimeout"]);
+                        writedefault |= checkValidNumParm(settings.wifiConTimeout, 1, 15, 7);
                     } else writedefault = true;
                     if(json["mode24"]) {
                         strcpy(settings.mode24, json["mode24"]);
+                        writedefault |= checkValidNumParm(settings.mode24, 0, 1, 0);
                     } else writedefault = true;
                     if(json["timeTrPers"]) {
                         strcpy(settings.timesPers, json["timeTrPers"]);
+                        writedefault |= checkValidNumParm(settings.timesPers, 0, 1, 1);
                     } else writedefault = true;
                     #ifdef FAKE_POWER_ON
                     if(json["fakePwrOn"]) {
                         strcpy(settings.fakePwrOn, json["fakePwrOn"]);
+                        writedefault |= checkValidNumParm(settings.fakePwrOn, 0, 1, 0);
                     } else writedefault = true;
                     #endif
                     if(json["alarmRTC"]) {
                         strcpy(settings.alarmRTC, json["alarmRTC"]);
+                        writedefault |= checkValidNumParm(settings.alarmRTC, 0, 1, 1);
                     } else writedefault = true;
                     if(json["playIntro"]) {
                         strcpy(settings.playIntro, json["playIntro"]);
-                    } //else writedefault = true;
+                        writedefault |= checkValidNumParm(settings.playIntro, 0, 1, 1);
+                    } else writedefault = true;
                     //if(json["beepSound"]) {
                     //  strcpy(settings.beepSound, json["beepSound"]);
                     //} else writedefault = true;
@@ -208,9 +221,9 @@ void write_settings()
         return;
     } 
   
-    #ifdef TC_DBG
+    //#ifdef TC_DBG
     Serial.println("write_settings: Writing config file");
-    #endif
+    //#endif
     
     json["ntpServer"] = settings.ntpServer;
     json["timeZone"] = settings.timeZone;
@@ -244,6 +257,36 @@ void write_settings()
     }
 }
 
+bool checkValidNumParm(char *text, int lowerLim, int upperLim, int setDefault)
+{
+    int i, len = strlen(text);
+
+    if(len == 0) {
+        sprintf(text, "%d", setDefault);
+        return true;
+    }
+
+    for(i = 0; i < len; i++) {
+        if(text[i] < '0' || text[i] > '9') {
+            sprintf(text, "%d", setDefault);
+            return true;
+        }        
+    }
+    
+    i = (int)(atoi(text));
+    
+    if(i < lowerLim) {
+        sprintf(text, "%d", lowerLim);
+        return true;
+    }
+    if(i > upperLim) {
+        sprintf(text, "%d", upperLim);
+        return true;
+    }
+
+    return false;
+}
+    
 /* 
  *  Load the Alarm time and settings from alarmconfig
  *  

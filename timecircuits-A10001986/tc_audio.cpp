@@ -52,6 +52,15 @@ bool beepOn;
 
 bool audioMute = false;
 
+double volTable[16] = {
+    0.00, 0.03, 0.06, 0.10, 
+    0.15, 0.20, 0.25, 0.30,
+    0.35, 0.42, 0.50, 0.60,
+    0.70, 0.80, 0.90, 1.00
+};
+
+uint8_t curVolume = 4;
+
 double curVolFact[2] = { 1.0, 1.0 };
 bool   curChkNM[2]   = { true, true };
 
@@ -70,6 +79,7 @@ void audio_setup()
 {
     audioLogger = &Serial;
 
+    // Set resolution for volume pot to 9 bit
     analogSetWidth(9);
 
     out = new AudioOutputI2S(0, 0, 32, 0);
@@ -224,7 +234,7 @@ void play_file(const char *audio_file, double volumeFactor, bool checkNightMode,
 }
 
 // Returns value for volume based on the position of the pot
-// Since the values vary very much we do some noise reduction
+// Since the values vary we do some noise reduction
 double getRawVolume() 
 {
     double vol_val; 
@@ -262,21 +272,29 @@ double getRawVolume()
 
 double getVolume(int channel) 
 {
-    double vol_val = getRawVolume();
+    double vol_val; 
 
+    if(curVolume == 255) {
+        vol_val = getRawVolume();
+    } else {
+        vol_val = (double)volTable[curVolume];
+    }
+     
     // If user muted, return 0
     if(vol_val == 0.0) return vol_val;
 
     vol_val *= curVolFact[channel];
+    // Do not totally mute
+    if(vol_val < 0.03) vol_val = 0.03;
 
     // Reduce volume in night mode, if requested
     if(curChkNM[channel] && presentTime.getNightMode()) {
         vol_val *= 0.3;
-        // Do not totally mute in night mode
+        // Do not totally mute
         if(vol_val < 0.03) vol_val = 0.03;
     }
 
-    return vol_val;
+    return vol_val;        
 }
 
 bool checkAudioDone()
