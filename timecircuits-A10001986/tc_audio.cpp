@@ -107,19 +107,6 @@ void audio_setup()
     #endif
 }
 
-// Play startup sound
-void play_startup() 
-{
-    play_file("/startup.mp3", 1.0, true, 0);
-}
-
-// Play alarm sound
-// always at normal volume, not nm-reduced
-void play_alarm() 
-{
-    play_file("/alarm.mp3", 1.0, false, 0);    
-}
-
 void play_keypad_sound(char key) 
 {
     char buf[16] = "/Dtmf-0.mp3\0";

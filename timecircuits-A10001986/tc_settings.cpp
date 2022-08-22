@@ -221,9 +221,9 @@ void write_settings()
         return;
     } 
   
-    //#ifdef TC_DBG
+    #ifdef TC_DBG
     Serial.println("write_settings: Writing config file");
-    //#endif
+    #endif
     
     json["ntpServer"] = settings.ntpServer;
     json["timeZone"] = settings.timeZone;

@@ -542,7 +542,7 @@ void menuShow(int& number)
             #endif
             destinationTime.on();                       
             departedTime.off();
-            displaySet = NULL;
+            displaySet = &destinationTime;
             break;
         case MODE_AINT:  // autoInterval
             #ifdef IS_ACAR_DISPLAY
