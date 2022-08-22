@@ -86,6 +86,9 @@ bool     timeDiffUp = false;  // true = add difference, false = subtract differe
 // Also, "false" reduces flash wear considerably.
 bool timetravelPersistent = true;
 
+// Alarm/HourlySound based on RTC (or presentTime's display if false)
+bool alarmRTC = true;
+
 uint8_t timeout = 0;  // for tracking idle time in menus
 
 // The displays
@@ -321,6 +324,8 @@ void time_setup()
         Serial.println("time_setup: autointerval enabled");
         #endif
     }
+
+    alarmRTC = ((int)atoi(settings.alarmRTC) > 0) ? true : false;
 
     // Show "RESET" message if data loaded was invalid somehow
     if(!validLoad) {      
@@ -656,22 +661,20 @@ void time_loop()
             // Logging beacon
             #ifdef TC_DBG
             if((dt.second() == 0) && (dt.minute() != dbgLastMin)) {
-              Serial.print(dt.year());
-              Serial.print("/");
-              Serial.print(dt.month());
-              Serial.print(" ");
-              dbgLastMin = dt.minute();
-              Serial.print(dbgLastMin);
-              Serial.print(".");
-              Serial.print(dt.second());
-              Serial.print(" ");
-              Serial.println(rtc.getTemperature());
+                Serial.print(dt.year());
+                Serial.print("/");
+                Serial.print(dt.month());
+                Serial.print(" ");
+                dbgLastMin = dt.minute();
+                Serial.print(dbgLastMin);
+                Serial.print(".");
+                Serial.print(dt.second());
+                Serial.print(" ");
+                Serial.println(rtc.getTemperature());
             }
             #endif
             
             {
-
-                bool alarmRTC = ((int)atoi(settings.alarmRTC) > 0) ? true : false;
                 int compHour = alarmRTC ? dt.hour()   : presentTime.getHour();
                 int compMin  = alarmRTC ? dt.minute() : presentTime.getMinute();
 
@@ -681,7 +684,12 @@ void time_loop()
                 // displayed on presentTime.
 
                 if(compMin == 0) { 
-                    if(presentTime.getNightMode() || !FPBUnitIsOn || startup || timeTraveled || timeTravelP1) {
+                    if(presentTime.getNightMode() || 
+                       !FPBUnitIsOn || 
+                       startup || 
+                       timeTraveled || 
+                       timeTravelP1 || 
+                       (alarmOnOff && (alarmHour == compHour) && (alarmMinute == compMin))) {
                         hourlySoundDone = true;
                     }                                
                     if(!hourlySoundDone) {                  
@@ -836,10 +844,7 @@ void time_loop()
 void timeTravel(bool makeLong) 
 {
     int tyr = 0;
-    int tyroffs = 0;
-
-#define TRST_TOTAL_DELAY  10
-#define TRST_DELAY_P1         
+    int tyroffs = 0;        
 
     if(makeLong) {
         #ifdef TC_DBG

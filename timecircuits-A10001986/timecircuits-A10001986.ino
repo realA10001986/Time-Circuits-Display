@@ -69,6 +69,8 @@
  *      externally triggered timetravel)
  *    - Hourly sound now respects the "RTC vs presentTime" setting for the alarm
  *    - Fix bug introduced in last update (crash when setting alarm)
+ *    - Audio: Less logging; fix pot resolution for esp32 2.x; reduce "noise
+ *      reduction" to 4 values to make knob react faster
  *  2022/08/21 (A10001986)
  *    - Added software volume: Volume can now be set by the volume knob, or by
  *      setting a value in the new keymap Volume menu.
