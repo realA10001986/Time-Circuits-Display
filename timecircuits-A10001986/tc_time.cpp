@@ -865,9 +865,9 @@ void timeTravel(bool makeLong)
     allOff();
 
     // Copy present time to last time departed
+    departedTime.setYear(presentTime.getYear() - presentTime.getYearOffset());
     departedTime.setMonth(presentTime.getMonth());
     departedTime.setDay(presentTime.getDay());
-    departedTime.setYear(presentTime.getYear() - presentTime.getYearOffset());
     departedTime.setHour(presentTime.getHour());
     departedTime.setMinute(presentTime.getMinute());
     departedTime.setYearOffset(0);
@@ -936,9 +936,9 @@ void resetPresentTime()
     allOff();
     
     // Copy "present" time to last time departed
+    departedTime.setYear(presentTime.getYear() - presentTime.getYearOffset());
     departedTime.setMonth(presentTime.getMonth());
     departedTime.setDay(presentTime.getDay());
-    departedTime.setYear(presentTime.getYear() - presentTime.getYearOffset());
     departedTime.setHour(presentTime.getHour());
     departedTime.setMinute(presentTime.getMinute());
     departedTime.setYearOffset(0);

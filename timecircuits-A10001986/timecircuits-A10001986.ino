@@ -71,6 +71,8 @@
  *    - Fix bug introduced in last update (crash when setting alarm)
  *    - Audio: Less logging; fix pot resolution for esp32 2.x; reduce "noise
  *      reduction" to 4 values to make knob react faster
+ *    - Network info now functional in AP mode
+ *    - Proper check for day validity in clockdisplay
  *  2022/08/21 (A10001986)
  *    - Added software volume: Volume can now be set by the volume knob, or by
  *      setting a value in the new keymap Volume menu.
