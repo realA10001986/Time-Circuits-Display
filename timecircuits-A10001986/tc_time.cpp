@@ -485,9 +485,15 @@ void time_loop()
             Serial.println("long time travel phase 4");
             #endif
             break;
+        case 5:
+            timetravelP1Delay = TT_P1_DELAY_P5;
+            #ifdef TC_DBG
+            Serial.println("long time travel phase 5");
+            #endif
+            break;
         default:
             #ifdef TC_DBG
-            Serial.println("long time travel phase 5 - re-entry");
+            Serial.println("long time travel phase 6 - re-entry");
             #endif
             timeTravelP1 = 0;
             timeTravel(false);
@@ -789,12 +795,25 @@ void time_loop()
         x = y;  
 
         if(timeTravelP1 > 1) {  
-            int ii = 5;        
+            int ii = 5, tt, ob;       
             switch(timeTravelP1) { 
             case 2:
-                /* Nothing, displays off */
+                //while(ii--) {
+                    ((rand() % 10) > 8) ? presentTime.off() : presentTime.on();
+                    ((rand() % 10) > 8) ? destinationTime.off() : destinationTime.on();
+                    ((rand() % 10) > 8) ? departedTime.off() : departedTime.on();
+                //    mysdelay(5);
+                //    presentTime.on();
+                //    destinationTime.on();
+                //    departedTime.on();
+                //}
                 break;
-            case 3:                
+            case 3:
+                presentTime.off();
+                destinationTime.off();
+                departedTime.off();
+                break;
+            case 4:                
                 destinationTime.show();  
                 presentTime.show();                       
                 departedTime.show();
@@ -803,20 +822,30 @@ void time_loop()
                     ((rand() % 10) < 7) ? destinationTime.showOnlyText("MALFUNCTION") : destinationTime.show();
                     presentTime.on();
                     departedTime.on();
-                    ((rand() % 10) < 2) ? departedTime.showOnlyText("KHDW2011GIDUW") : departedTime.show();
-                    mysdelay(10);
+                    ((rand() % 10) < 3) ? departedTime.showOnlyText("KHDW2011GIDUW") : departedTime.show();
+                    mysdelay(5);
                     allOff();
                     mysdelay(10);
                 }
                 break;       
-            case 4:          
-                allLampTest();
-                while(ii--) {      
-                    ((rand() % 10) > 5) ? presentTime.on() : presentTime.off();
-                    ((rand() % 10) < 5) ? destinationTime.on() : destinationTime.off();
-                    ((rand() % 10) > 5) ? departedTime.on() : departedTime.off();
-                    mysdelay(10);
+            case 5:          
+                ob = destinationTime.getBrightness();
+                while(ii--) {   
+                    tt = rand() % 10; 
+                    if(tt < 3)      { presentTime.lampTest(); }
+                    else if(tt < 7) { presentTime.show(); presentTime.on(); }
+                    else            { presentTime.off(); }
+                    tt = (rand() + millis()) % 10;
+                    if(tt < 2)      { destinationTime.lampTest(); }
+                    else if(tt < 6) { destinationTime.show(); destinationTime.on(); }
+                    else            { destinationTime.setBrightness(1+(rand() % 10)); }  
+                    tt = (rand() + millis()) % 10; 
+                    if(tt < 4)      { departedTime.lampTest(); }
+                    else if(tt < 8) { departedTime.showOnlyText("00000000000000"); departedTime.on(); }
+                    else            { departedTime.off(); }
+                    mysdelay(5);
                 }
+                destinationTime.setBrightness(ob);
                 break;
             default:
                 allOff();
