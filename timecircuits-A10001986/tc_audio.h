@@ -41,8 +41,6 @@
 
 extern void audio_setup();
 extern void play_keypad_sound(char key);
-extern void play_startup();
-extern void play_alarm();
 extern void audio_loop();
 extern void play_file(const char *audio_file, double volumeFactor = 1.0, bool checkNightMode = true, int channel = 0);
 extern double getRawVolume();

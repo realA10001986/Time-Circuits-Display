@@ -64,6 +64,11 @@
 
 /* Changelog 
  *  
+ *  2022/08/22 (A10001986)
+ *    - New long time travel sequence (only for keypad-timetravel, not for 
+ *      externally triggered timetravel)
+ *    - Hourly sound now respects the "RTC vs presentTime" setting for the alarm
+ *    - Fix bug introduced in last update (crash when setting alarm)
  *  2022/08/21 (A10001986)
  *    - Added software volume: Volume can now be set by the volume knob, or by
  *      setting a value in the new keymap Volume menu.
@@ -117,10 +122,10 @@
  *  2022/08/13 (A10001986)
  *    - Changed "fake power" logic : This is no longer a "button" to  
  *      only power on, but a switch. The unit can now be "fake" powered 
- *      and "fake" powered off. 
+ *      on and "fake" powered off. 
  *    - External time travel trigger: Connect active-low button to
  *      io14 (see tc_global.h). Upon activation (press for 200ms), a time
- *       travel is triggered. Note that the device only simulates the 
+ *      travel is triggered. Note that the device only simulates the 
  *      re-entry part of a time travel so the trigger should be timed 
  *      accordingly.
  *    - Fixed millis() roll-over errors

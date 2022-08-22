@@ -58,6 +58,12 @@
 #endif
 #define TIMETRAVEL_DELAY 1500
 
+#define TT_P1_DELAY_P1  4500      // Sum of all must be 10000
+#define TT_P1_DELAY_P2  (5800-TT_P1_DELAY_P1)
+#define TT_P1_DELAY_P3  (8000-(TT_P1_DELAY_P2+TT_P1_DELAY_P1))
+#define TT_P1_DELAY_P4  (10000-(TT_P1_DELAY_P3+TT_P1_DELAY_P2+TT_P1_DELAY_P1))
+
+
 extern uint8_t        autoInterval;
 extern const uint8_t  autoTimeIntervals[6];
 
@@ -78,7 +84,7 @@ extern int8_t     autoTime;
 extern void time_boot();
 extern void time_setup();
 extern void time_loop();
-extern void timeTravel();
+extern void timeTravel(bool makeLong);
 extern void resetPresentTime();
 extern void pauseAuto();
 extern bool checkIfAutoPaused();

@@ -64,6 +64,10 @@ RTC_DS3231 rtc;       //for RTC IC
 unsigned long timetravelNow = 0;
 bool timeTraveled = false;
 
+unsigned long timetravelP1Now = 0;
+unsigned long timetravelP1Delay = 0;
+int timeTravelP1 = 0;
+
 uint64_t timeDifference = 0;
 bool     timeDiffUp = false;  // true = add difference, false = subtract difference
 
@@ -417,14 +421,15 @@ void time_loop()
             if(isFPBKeyPressed) {
                 if(!FPBUnitIsOn) {                                 
                     startup = true;
-                    startupSound = true;
+                    startupSound = true;                    
                     FPBUnitIsOn = true;                    
                 }
             } else {
                 if(FPBUnitIsOn) {       
                     startup = false;
                     startupSound = false; 
-                    timeTraveled = false;              
+                    timeTraveled = false;  
+                    timeTravelP1 = 0;            
                     FPBUnitIsOn = false;
                     allOff();
                     stopAudio();
@@ -438,9 +443,8 @@ void time_loop()
     // Initiate startup delay, play startup sound
     if(startupSound) {
         startupNow = millis();
-        play_startup();
-        startupSound = false;
-        hourlySoundDone = true; // Don't let the startup be interrupted
+        play_file("/startup.mp3", 1.0, true, 0);
+        startupSound = false;        
     }
 
     // Turn display on after startup delay
@@ -450,6 +454,39 @@ void time_loop()
         #ifdef TC_DBG
         Serial.println("time_loop: Startup animate triggered");
         #endif
+    }
+
+    // Time travel animation
+    if(timeTravelP1 && (millis() - timetravelP1Now >= timetravelP1Delay)) {  
+        timeTravelP1++;
+        timetravelP1Now = millis();
+        switch(timeTravelP1) {
+        case 2:            
+            allOff();
+            timetravelP1Delay = TT_P1_DELAY_P2;
+            #ifdef TC_DBG
+            Serial.println("long time travel phase 2");
+            #endif
+            break;
+        case 3:
+            timetravelP1Delay = TT_P1_DELAY_P3;
+            #ifdef TC_DBG
+            Serial.println("long time travel phase 3");
+            #endif
+            break;
+        case 4:
+            timetravelP1Delay = TT_P1_DELAY_P4;
+            #ifdef TC_DBG
+            Serial.println("long time travel phase 4");
+            #endif
+            break;
+        default:
+            #ifdef TC_DBG
+            Serial.println("long time travel phase 5 - re-entry");
+            #endif
+            timeTravelP1 = 0;
+            timeTravel(false);
+        }
     }
 
     // Turn display back on after time traveling
@@ -631,37 +668,45 @@ void time_loop()
               Serial.println(rtc.getTemperature());
             }
             #endif
-
-            // Sound to play hourly (if available)
-
-            if(presentTime.getMinute() == 0) { 
-                if(presentTime.getNightMode() || !FPBUnitIsOn) {
-                    hourlySoundDone = true;
-                }                                
-                if(!hourlySoundDone) {                  
-                    play_file("/hour.mp3", 1.0, false, 0); 
-                    hourlySoundDone = true;
-                }            
-            } else {
-                hourlySoundDone = false;
-            }
             
-            // Handle alarm
+            {
 
-            if(alarmOnOff) {
                 bool alarmRTC = ((int)atoi(settings.alarmRTC) > 0) ? true : false;
                 int compHour = alarmRTC ? dt.hour()   : presentTime.getHour();
                 int compMin  = alarmRTC ? dt.minute() : presentTime.getMinute();
-                if((alarmHour == compHour) && (alarmMinute == compMin) ) {
-                    if(!alarmDone) {
-                        alarmDone = true;
-                        play_alarm();
-                    }
-                } else {
-                    alarmDone = false;
-                } 
-            }                      
 
+                // Sound to play hourly (if available)
+                // Follows setting for alarm as regards the options
+                // of "real actual present time" vs whatever is currently
+                // displayed on presentTime.
+
+                if(compMin == 0) { 
+                    if(presentTime.getNightMode() || !FPBUnitIsOn || startup || timeTraveled || timeTravelP1) {
+                        hourlySoundDone = true;
+                    }                                
+                    if(!hourlySoundDone) {                  
+                        play_file("/hour.mp3", 1.0, false, 0); 
+                        hourlySoundDone = true;
+                    }            
+                } else {
+                    hourlySoundDone = false;
+                }
+                
+                // Handle alarm
+    
+                if(alarmOnOff) {
+                    if((alarmHour == compHour) && (alarmMinute == compMin) ) {
+                        if(!alarmDone) {
+                            play_file("/alarm.mp3", 1.0, false, 0); 
+                            alarmDone = true; 
+                        }
+                    } else {
+                        alarmDone = false;
+                    } 
+                }                      
+
+            }
+            
             // Handle autoInterval
             
             // Do this on previous minute:59
@@ -735,7 +780,42 @@ void time_loop()
                                          
         x = y;  
 
-        if(!startup && !timeTraveled && FPBUnitIsOn) {
+        if(timeTravelP1 > 1) {  
+            int ii = 5;        
+            switch(timeTravelP1) { 
+            case 2:
+                /* Nothing, displays off */
+                break;
+            case 3:                
+                destinationTime.show();  
+                presentTime.show();                       
+                departedTime.show();
+                while(ii--) {
+                    destinationTime.on();
+                    ((rand() % 10) < 7) ? destinationTime.showOnlyText("MALFUNCTION") : destinationTime.show();
+                    presentTime.on();
+                    departedTime.on();
+                    ((rand() % 10) < 2) ? departedTime.showOnlyText("KHDW2011GIDUW") : departedTime.show();
+                    mysdelay(10);
+                    allOff();
+                    mysdelay(10);
+                }
+                break;       
+            case 4:          
+                allLampTest();
+                while(ii--) {      
+                    ((rand() % 10) > 5) ? presentTime.on() : presentTime.off();
+                    ((rand() % 10) < 5) ? destinationTime.on() : destinationTime.off();
+                    ((rand() % 10) > 5) ? departedTime.on() : departedTime.off();
+                    mysdelay(10);
+                }
+                break;
+            default:
+                allOff();
+            }
+        }
+
+        if(!startup && !timeTraveled && (timeTravelP1 <= 1) && FPBUnitIsOn) {
             presentTime.show();  
             destinationTime.show();       
             departedTime.show();
@@ -753,10 +833,24 @@ void time_loop()
  *  This is called from tc_keypad.cpp 
  */
 
-void timeTravel() 
+void timeTravel(bool makeLong) 
 {
     int tyr = 0;
     int tyroffs = 0;
+
+#define TRST_TOTAL_DELAY  10
+#define TRST_DELAY_P1         
+
+    if(makeLong) {
+        #ifdef TC_DBG
+        Serial.println("long time travel phase 1");
+        #endif
+        play_file("/travelstart.mp3", 1.0, true, 0);
+        timetravelP1Now = millis();
+        timetravelP1Delay = TT_P1_DELAY_P1;
+        timeTravelP1 = 1;
+        return;
+    }  
         
     timetravelNow = millis();
     timeTraveled = true;

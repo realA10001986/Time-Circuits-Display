@@ -161,7 +161,7 @@ void keypadEvent(KeypadEvent key)
         case HOLD:            
             if(key == '0') {    // "0" held down -> time travel
                 doKey = false;
-                timeTravel();                
+                timeTravel(true);     // make long timeTravel             
             }
             if(key == '9') {    // "9" held down -> return from time travel                
                 doKey = false;
@@ -292,7 +292,7 @@ void keypad_loop()
 
 #ifdef EXTERNAL_TIMETRAVEL
     if(isEttKeyPressed) {
-        timeTravel();
+        timeTravel(false);    // make short time travel
         isEttKeyPressed = false;     
     }
 #endif    
