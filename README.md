@@ -32,11 +32,11 @@ The Destination Time can be entered via keypad, and the Present Time can keep ti
 
 **Short summary of first steps:**
 - As long as the device is unconfigured or later for some reason fails to connect to a configured network, it starts in "access point" mode, i.e. it creates an access point named "TCD-AP". The default IP in access point mode is 192.168.4.1. 
-- Go to http://192.168.4.1 to enter the config portal, the go to the "WiFi Setup" page and configure your Wifi network.
-- After saving the settings, the device reboots and tries to connect to your configured WiFi network. If it fails to connect to your network, the device will again start in access point mode ("TCD-AP").
+- Connect to the AP and go to http://192.168.4.1 in your browser to enter the Config Portal, click on "Configure WiFi" and configure your Wifi network.
+- After saving the WiFi settings, the device reboots and tries to connect to your configured WiFi network. If it fails to connect to your network, the device will again start in access point mode.
 - Next, find out about the IP address assigned to the device. Hold ENTER on the keypad for 2 seconds, then press ENTER until "NET-WRK" is shown, then hold ENTER for 2 seconds. The device will then show its current IP address.
-- Then re-open the config portal using this IP address, and configure other settings on the "Setup" page, eg WiFi connection timeout, WiFi connection retries, NTP server and time zone. A list of valid times zones is accessible by a link on the settings page.
-- There are two ways of configuring the device: Through the aforementioned config portal (ie the network), or the keypad menu, as described further below. Not all settings, however, are configurable in both.
+- Then re-open the config portal in your browser using this IP address, and configure other settings on the "Setup" page, eg WiFi connection timeout, WiFi connection retries, NTP server and time zone. A list of valid times zones is accessible by a link on the settings page.
+- There are two ways of configuring the device: Through the aforementioned Config Portal (ie the network), or the keypad menu, as described further below. Not all settings, however, are configurable in both.
 - If you don't have WiFi access, you can set the time through the keypad menu, see below.
 
 **Operation basics**
@@ -55,11 +55,11 @@ Before holding "0", you can also first quickly set a new destination time by ent
 
 To travel back to actual present time, hold "9" for 2 seconds.
 
-Beware that the alarm function, by default, is based on the real actual present time, not the time displayed. This can be configured in the config portal.
+Beware that the alarm function, by default, is based on the real actual present time, not the time displayed. This can be changed in the Config Portal.
 
 **Persistent / Non-persistent time travels**
 
-On the config portal, there is a menu item named "Make time travels persistent". The default is yes.
+On the Config Portal's "Setup" page, there is a menu item named "Make time travels persistent". The default is yes.
 
 If time travels are persistent
 - a user-programmed *destination time* is always stored in flash memory, and retrieved from there after a power-loss. It can be programmed through the keypad menu, or ahead of a time travel by typing mmddyyyy/mmddyyyyhhmm/hhmm plus ENTER. In both cases, the time is stored in flash memory and retrieved upon power-on.
@@ -96,12 +96,12 @@ First step is to choose a menu item. The available "items" are
 - set an alarm ("ALA-RM"),
 - select the Time-rotation Interval ("ROT-INT"),
 - select the brightness for the three displays ("BRI-GHT"),
-- show the current IP address ("NET-WRK"),
+- show network information ("NET-WRK"),
 - quit the menu ("END").
  
 Pressing ENTER cycles through the list, holding ENTER selects an item, ie a mode.
  
-How to enter custom dates/times:
+How to enter dates/times for the three displays:
 - Hold ENTER to invoke main menu
 - Press ENTER until the desired display is the only one lit
 - Hold ENTER until the display goes off except for the first field to enter data into
@@ -132,7 +132,7 @@ How to set up the alarm:
 
 Under normal operation (ie outside of the menu), holding "1" enables the alarm, holding "2" disables it. 
 
-Note that the alarm is recurring, ie it rings every day at the programmed time, unless disabled. Also note, as mentioned, that the alarm is relative to your actual *present time*, not the time displayed (eg after a time travel). It can, however, be configured to be based on the time displayed, in the config portal.
+Note that the alarm is recurring, ie it rings every day at the programmed time, unless disabled. Also note, as mentioned, that the alarm is by default relative to your actual *present time*, not the time displayed (eg after a time travel). It can, however, be configured to be based on the time displayed, in the Config Portal.
 
 If the alarm is set and enabled, the dot in the present time's minute field is lit. 
  
@@ -142,7 +142,7 @@ How to select the Time-rotation Interval:
 - Hold ENTER, "INT" is displayed
 - Press ENTER to cycle through the possible Time-rotation Interval values.
 - A value of 0 disables automatic time cycling ("OFF").
-- Non-zero values make the device cycle through a number of pre-programmed times, your custom times are ignored. The value means "minutes" (hence "MIN-UTES") between changes.              
+- Non-zero values make the device cycle through a number of pre-programmed times. The value means "minutes" (hence "MIN-UTES") between changes.              
 - Hold ENTER to select the value shown and exit the menu ("SAVE" is displayed briefly)
  
 How to adjust the display brightness:
@@ -170,7 +170,8 @@ How to find out the IP address and WiFi status:
 The audio files are normally part of the sketch (stored in SPIFFS), but can be substituted by files on a FAT32-formatted SD card. The files need to be put in the root directoy of the card, be in mp3 format (128kbps recommended) and named as follows:
 - "enter.mp3". Played when a date was entered and ENTER was pressed
 - "baddate.mp3". Played when a bad (too short or too long) date was entered and ENTER was pressed
-- "timetravel.mp3". Played when a time travel takes place.
+- "travelstart.mp3". Played when a time travel starts.
+- "timetravel.mp3". Played when re-entry of a time travel takes place.
 - "alarm.mp3". Played when the alarm sounds.
 - "alarmon.mp3". Played when enabling the alarm by holding "1"
 - "alarmoff.mp3". Played when disabling the alarm by holding "2"
@@ -180,7 +181,7 @@ The audio files are normally part of the sketch (stored in SPIFFS), but can be s
 
 If a file is not found on the SD card, the default file from SPIFFS (flash) will be played.
 
-The files "nmon2.mp3", "nmoff2.mp3", "alarm2.mp3" are the versions I prefer, but they are to be considered somewhat "inofficial" ;) In order to use them, they need to be renamed to "nmon.mp3", "nmoff.mp3" and "alarm.mp3" respectively.
+The files "nmon2.mp3", "nmoff2.mp3", "alarm2.mp3" in this repository are the versions I prefer, but they are to be considered somewhat "inofficial" ;) In order to use them, they need to be renamed to "nmon.mp3", "nmoff.mp3" and "alarm.mp3" respectively.
 
 **Custom Sounds**
 
