@@ -33,7 +33,7 @@ The Destination Time can be entered via keypad, and the Present Time can keep ti
 **Short summary of first steps:**
 - As long as the device is unconfigured or later for some reason fails to connect to a configured network, it starts in "access point" mode, i.e. it creates an access point named "TCD-AP". The default IP in access point mode is 192.168.4.1. 
 - Connect to the AP and go to http://192.168.4.1 in your browser to enter the Config Portal, click on "Configure WiFi" and configure your Wifi network.
-- After saving the WiFi settings, the device reboots and tries to connect to your configured WiFi network. If it fails to connect to your network, the device will again start in access point mode.
+- After saving the WiFi settings, the device reboots and tries to connect to your configured WiFi network. If it fails to connect to your network, the device will again start in access point mode. Note the devices expects an IP address via DHCP.
 - Next, find out about the IP address assigned to the device. Hold ENTER on the keypad for 2 seconds, then press ENTER until "NET-WRK" is shown, then hold ENTER for 2 seconds. The device will then show its current IP address.
 - Then re-open the config portal in your browser using this IP address, and configure other settings on the "Setup" page, eg WiFi connection timeout, WiFi connection retries, NTP server and time zone. A list of valid times zones is accessible by a link on the settings page.
 - There are two ways of configuring the device: Through the aforementioned Config Portal (ie the network), or the keypad menu, as described further below. Not all settings, however, are configurable in both.
