@@ -816,12 +816,12 @@ void time_loop()
                 while(ii--) {
                     destinationTime.on();
                     ((rand() % 10) < 7) ? destinationTime.showOnlyText("MALFUNCTION") : destinationTime.show();
-                    destinationTime.setBrightness(1+(rand() % 10));
+                    if(ii % 2) destinationTime.setBrightness((1+(rand() % 10)) & 0x0b);
                     presentTime.on();
-                    presentTime.setBrightness(1+(rand() % 10));
+                    if(ii % 2) presentTime.setBrightness((1+(rand() % 10)) & 0x0b);
                     departedTime.on();
                     ((rand() % 10) < 3) ? departedTime.showOnlyText("KHDW2011GIDUW") : departedTime.show();
-                    departedTime.setBrightness(1+(rand() % 10));
+                    if(ii % 2) departedTime.setBrightness((1+(rand() % 10)) & 0x0b);
                     mysdelay(5);
                     allOff();
                     mysdelay(10);
@@ -875,7 +875,10 @@ void time_loop()
 void timeTravel(bool makeLong) 
 {
     int tyr = 0;
-    int tyroffs = 0;        
+    int tyroffs = 0;    
+
+    // Pause autoInterval-cycling so user can play undisturbed
+    pauseAuto();
 
     if(makeLong) {
         #ifdef TC_DBG
@@ -939,12 +942,6 @@ void timeTravel(bool makeLong)
         presentTime.save();       
     }
 
-    // Pause autoInterval-cycling so user can play undisturbed
-    pauseAuto();
-
-    // Don't let the sound be interrupted
-    hourlySoundDone = true; 
-
     #ifdef TC_DBG
     Serial.println(F("timeTravel: Success, good luck!"));
     #endif
@@ -960,8 +957,6 @@ void resetPresentTime()
     timeTraveled = true; 
     if(timeDifference) {
         play_file("/timetravel.mp3", 1.0, true, 0);
-        // Don't let the sound be interrupted
-        hourlySoundDone = true;
     }
   
     allOff();
