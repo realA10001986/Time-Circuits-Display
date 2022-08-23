@@ -64,6 +64,11 @@
 
 /* Changelog 
  *  
+ *  2022/08/23 (A10001986)
+ *    - Allow a static IP (plus gateway, subnet mask, dns) to be configured.
+ *      All four IP address must be valid. IP settings can be reset to DHCP
+ *      by holding down ENTER during power-up until the white LED goes on.
+ *    - F-ified most constant texts (pointless on ESP32, but standard)
  *  2022/08/22 (A10001986)
  *    - New long time travel sequence (only for keypad-timetravel, not for 
  *      externally triggered timetravel)
@@ -241,23 +246,23 @@ void loop()
 /*
 void scan() 
 {
-    Serial.println(" Scanning I2C Addresses");
+    Serial.println(F(" Scanning I2C Addresses"));
     uint8_t cnt = 0;
     for (uint8_t i = 0; i < 128; i++) {
         Wire.beginTransmission(i);
         uint8_t ec = Wire.endTransmission(true);
         if (ec == 0) {
-            if (i < 16) Serial.print('0');
+            if (i < 16) Serial.print(F('0'));
             Serial.print(i, HEX);
             cnt++;
         } else
-            Serial.print("..");
-        Serial.print(' ');
+            Serial.print(F(".."));
+        Serial.print(F(' '));
         if ((i & 0x0f) == 0x0f) Serial.println();
     }
-    Serial.print("Scan Completed, ");
+    Serial.print(F("Scan Completed, "));
     Serial.print(cnt);
-    Serial.println(" I2C Devices found.");
+    Serial.println(F(" I2C Devices found."));
 }
 
 bool i2cReady(uint8_t adr) 

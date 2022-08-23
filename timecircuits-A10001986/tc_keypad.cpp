@@ -124,7 +124,7 @@ void keypad_setup()
     timeBuffer[0] = '\0';
   
     #ifdef TC_DBG
-    Serial.println("keypad_setup: Setup Complete");
+    Serial.println(F("keypad_setup: Setup Complete"));
     #endif
 }
 

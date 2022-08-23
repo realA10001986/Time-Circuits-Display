@@ -211,7 +211,7 @@ void time_setup()
     // RTC setup
     if(!rtc.begin()) {
         
-        Serial.println("time_setup: Couldn't find RTC. Panic!");
+        Serial.println(F("time_setup: Couldn't find RTC. Panic!"));
         
         // Setup pins for white LED
         pinMode(WHITE_LED_PIN, OUTPUT);
@@ -231,7 +231,7 @@ void time_setup()
         // Lost power and battery didn't keep time, so set current time to compile time
         rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
         
-        Serial.println("time_setup: RTC lost power, setting default time. Change battery!");
+        Serial.println(F("time_setup: RTC lost power, setting default time. Change battery!"));
 
         rtcbad = true;
     
@@ -272,7 +272,7 @@ void time_setup()
     if(getNTPTime()) {
 
         #ifdef TC_DBG
-        Serial.print("time_setup: RTC set through NTP from ");
+        Serial.print(F("time_setup: RTC set through NTP from "));
         Serial.println(settings.ntpServer);
         #endif
 
@@ -321,7 +321,7 @@ void time_setup()
         destinationTime.setFromStruct(&destinationTimes[0]); 
         departedTime.setFromStruct(&departedTimes[0]);
         #ifdef TC_DBG
-        Serial.println("time_setup: autointerval enabled");
+        Serial.println(F("time_setup: autointerval enabled"));
         #endif
     }
 
@@ -388,7 +388,7 @@ void time_setup()
         FPBUnitIsOn = false; 
            
         #ifdef TC_DBG
-        Serial.println("time_setup: waiting for fake power on");
+        Serial.println(F("time_setup: waiting for fake power on"));
         #endif             
         
     } else {
@@ -403,7 +403,7 @@ void time_setup()
 #endif
 
     #ifdef TC_DBG
-    Serial.println("time_setup: Done.");
+    Serial.println(F("time_setup: Done."));
     #endif  
     
 }
@@ -457,7 +457,7 @@ void time_loop()
         animate();
         startup = false;        
         #ifdef TC_DBG
-        Serial.println("time_loop: Startup animate triggered");
+        Serial.println(F("time_loop: Startup animate triggered"));
         #endif
     }
 
@@ -470,30 +470,30 @@ void time_loop()
             allOff();
             timetravelP1Delay = TT_P1_DELAY_P2;
             #ifdef TC_DBG
-            Serial.println("long time travel phase 2");
+            Serial.println(F("long time travel phase 2"));
             #endif
             break;
         case 3:
             timetravelP1Delay = TT_P1_DELAY_P3;
             #ifdef TC_DBG
-            Serial.println("long time travel phase 3");
+            Serial.println(F("long time travel phase 3"));
             #endif
             break;
         case 4:
             timetravelP1Delay = TT_P1_DELAY_P4;
             #ifdef TC_DBG
-            Serial.println("long time travel phase 4");
+            Serial.println(F("long time travel phase 4"));
             #endif
             break;
         case 5:
             timetravelP1Delay = TT_P1_DELAY_P5;
             #ifdef TC_DBG
-            Serial.println("long time travel phase 5");
+            Serial.println(F("long time travel phase 5"));
             #endif
             break;
         default:
             #ifdef TC_DBG
-            Serial.println("long time travel phase 6 - re-entry");
+            Serial.println(F("long time travel phase 6 - re-entry"));
             #endif
             timeTravelP1 = 0;
             timeTravel(false);
@@ -504,9 +504,8 @@ void time_loop()
     if(timeTraveled && (millis() - timetravelNow >= TIMETRAVEL_DELAY)) {                
         animate();
         timeTraveled = false;
-        beepOn = true;
         #ifdef TC_DBG
-        Serial.println("time_loop: Display on after time travel");
+        Serial.println(F("time_loop: Display on after time travel"));
         #endif
     }
 
@@ -544,7 +543,7 @@ void time_loop()
                         dt = myrtcnow();                         
                         
                         #ifdef TC_DBG
-                        Serial.println("time_loop: RTC re-adjusted using NTP");                    
+                        Serial.println(F("time_loop: RTC re-adjusted using NTP"));
                         #endif
 
                         if(timeDifference) {
@@ -567,7 +566,7 @@ void time_loop()
                          
                     } else {                          
                         
-                        Serial.println("time_loop: RTC re-adjustment via NTP failed");
+                        Serial.println(F("time_loop: RTC re-adjustment via NTP failed"));
 
                         uint16_t myYear = dt.year();
                         
@@ -626,7 +625,7 @@ void time_loop()
 
                 // RTC(+yearOffs) roll-over
             
-                Serial.println("Rollover 9999->1 detected, adjusting RTC and yearOffset");
+                Serial.println(F("Rollover 9999->1 detected, adjusting RTC and yearOffset"));
 
                 if(timeDifference) {
 
@@ -668,14 +667,14 @@ void time_loop()
             #ifdef TC_DBG
             if((dt.second() == 0) && (dt.minute() != dbgLastMin)) {
                 Serial.print(dt.year());
-                Serial.print("/");
+                Serial.print(F("/"));
                 Serial.print(dt.month());
-                Serial.print(" ");
+                Serial.print(F(" "));
                 dbgLastMin = dt.minute();
                 Serial.print(dbgLastMin);
-                Serial.print(".");
+                Serial.print(F("."));
                 Serial.print(dt.second());
-                Serial.print(" ");
+                Serial.print(F(" "));
                 Serial.println(rtc.getTemperature());
             }
             #endif
@@ -735,7 +734,7 @@ void time_loop()
                 if(!autoIntDone) {
 
                     #ifdef TC_DBG
-                    Serial.println("time_loop: autoInterval");
+                    Serial.println(F("time_loop: autoInterval"));
                     #endif             
 
                     autoPaused = false;
@@ -769,7 +768,7 @@ void time_loop()
                     }
 
                     #ifdef TC_DBG
-                    Serial.println("time_loop: Update Present Time");
+                    Serial.println(F("time_loop: Update Present Time"));
                     #endif
                     
                     dt = myrtcnow();                  // New time by now                         
@@ -877,7 +876,7 @@ void timeTravel(bool makeLong)
 
     if(makeLong) {
         #ifdef TC_DBG
-        Serial.println("long time travel phase 1");
+        Serial.println(F("long time travel phase 1"));
         #endif
         play_file("/travelstart.mp3", 1.0, true, 0);
         timetravelP1Now = millis();
@@ -888,7 +887,7 @@ void timeTravel(bool makeLong)
         
     timetravelNow = millis();
     timeTraveled = true;
-    beepOn = false;
+
     play_file("/timetravel.mp3", 1.0, true, 0);
     
     allOff();
@@ -944,7 +943,7 @@ void timeTravel(bool makeLong)
     hourlySoundDone = true; 
 
     #ifdef TC_DBG
-    Serial.println("timeTravel: Success, good luck!");
+    Serial.println(F("timeTravel: Success, good luck!"));
     #endif
 }
 
@@ -998,7 +997,7 @@ void pauseAuto(void)
           autoPaused = true;
           pauseNow = millis();
           #ifdef TC_DBG
-          Serial.println("pauseAuto: autoInterval paused for 30 minutes");          
+          Serial.println(F("pauseAuto: autoInterval paused for 30 minutes"));
           #endif
     }
 }
@@ -1041,7 +1040,7 @@ bool getNTPTime()
 
         if(strlen(settings.ntpServer) == 0) {
             #ifdef TC_DBG            
-            Serial.println("getNTPTime: NTP skipped, no server configured");
+            Serial.println(F("getNTPTime: NTP skipped, no server configured"));
             #endif
             return false;
         }
@@ -1051,7 +1050,7 @@ bool getNTPTime()
           
             while(!getLocalTime(&_timeinfo)) {
                 if(ntpRetries >= 20) {  
-                    Serial.println("getNTPTime: Couldn't get NTP time");
+                    Serial.println(F("getNTPTime: Couldn't get NTP time"));
                     return false;
                 } else {
                     ntpRetries++;
@@ -1086,16 +1085,16 @@ bool getNTPTime()
                                   newYear - 2000); 
                                   
         #ifdef TC_DBG            
-        Serial.print("getNTPTime: Result from NTP update: ");
+        Serial.print(F("getNTPTime: Result from NTP update: "));
         Serial.println(&_timeinfo, "%A, %B %d %Y %H:%M:%S");            
-        Serial.println("getNTPTime: Time successfully set with NTP");
+        Serial.println(F("getNTPTime: Time successfully set with NTP"));
         #endif
         
         return true;
             
     } else {
       
-        Serial.println("getNTPTime: Time NOT set with NTP, WiFi not connected");
+        Serial.println(F("getNTPTime: Time NOT set with NTP, WiFi not connected"));
         return false;
     
     }
@@ -1195,9 +1194,9 @@ DateTime myrtcnow()
     }
 
     if(retries > 0) {
-        Serial.print("myrtcnow: ");
+        Serial.print(F("myrtcnow: "));
         Serial.print(retries, DEC);
-        Serial.println(" retries needed to read RTC");
+        Serial.println(F(" retries needed to read RTC"));
     }
 
     return dt;

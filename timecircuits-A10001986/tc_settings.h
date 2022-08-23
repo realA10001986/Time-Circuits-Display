@@ -43,6 +43,9 @@ extern bool loadAlarm();
 extern void saveAlarm();
 bool loadAlarmEEPROM();
 void saveAlarmEEPROM();
+extern bool loadIpSettings();
+extern void writeIpSettings();
+extern void deleteIpSettings();
 
 extern bool    alarmOnOff;
 extern uint8_t alarmHour;
@@ -74,9 +77,16 @@ struct Settings {
 #endif
     char alarmRTC[4]        = "1";    // Default: Alarm is RTC-based (otherwise presentTime-based = 0)
     char playIntro[4]       = "1";
-    //char beepSound[3]     = "0";
+};
+
+struct IPSettings {
+    char ip[20]       = "";
+    char gateway[20]  = "";     
+    char netmask[20]  = "";
+    char dns[20]      = "";
 };
 
 extern struct Settings settings;
+extern struct IPSettings ipsettings;
 
 #endif
