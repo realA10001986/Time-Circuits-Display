@@ -53,7 +53,7 @@
 #ifndef TWPRIVATE
 #define ENTER_DELAY   600         
 #else
-#define ENTER_DELAY   400 
+#define ENTER_DELAY   500 
 #endif
 #define BADDATE_DELAY 400
 
