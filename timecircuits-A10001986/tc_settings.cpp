@@ -152,49 +152,49 @@ void settings_setup()
                     } else writedefault = true;
                     if(json["autoRotateTimes"]) {
                         strcpy(settings.autoRotateTimes, json["autoRotateTimes"]);
-                        writedefault |= checkValidNumParm(settings.autoRotateTimes, 0, 5, 0);
+                        writedefault |= checkValidNumParm(settings.autoRotateTimes, 0, 5, DEF_AUTOROTTIMES);
                     } else writedefault = true;
                     if(json["destTimeBright"]) {
                         strcpy(settings.destTimeBright, json["destTimeBright"]);
-                        writedefault |= checkValidNumParm(settings.destTimeBright, 0, 15, 15);
+                        writedefault |= checkValidNumParm(settings.destTimeBright, 0, 15, DEF_BRIGHT_DEST);
                     } else writedefault = true;
                     if(json["presTimeBright"]) {
                         strcpy(settings.presTimeBright, json["presTimeBright"]);
-                        writedefault |= checkValidNumParm(settings.presTimeBright, 0, 15, 15);
+                        writedefault |= checkValidNumParm(settings.presTimeBright, 0, 15, DEF_BRIGHT_PRES);
                     } else writedefault = true;
                     if(json["lastTimeBright"]) {
                         strcpy(settings.lastTimeBright, json["lastTimeBright"]);
-                        writedefault |= checkValidNumParm(settings.lastTimeBright, 0, 15, 15);
+                        writedefault |= checkValidNumParm(settings.lastTimeBright, 0, 15, DEF_BRIGHT_DEPA);
                     } else writedefault = true;                    
                     if(json["wifiConRetries"]) {
                         strcpy(settings.wifiConRetries, json["wifiConRetries"]);
-                        writedefault |= checkValidNumParm(settings.wifiConRetries, 1, 15, 3);
+                        writedefault |= checkValidNumParm(settings.wifiConRetries, 1, 15, DEF_WIFI_RETRY);
                     } else writedefault = true;
                     if(json["wifiConTimeout"]) {
                         strcpy(settings.wifiConTimeout, json["wifiConTimeout"]);
-                        writedefault |= checkValidNumParm(settings.wifiConTimeout, 1, 15, 7);
+                        writedefault |= checkValidNumParm(settings.wifiConTimeout, 1, 15, DEF_WIFI_TIMEOUT);
                     } else writedefault = true;
                     if(json["mode24"]) {
                         strcpy(settings.mode24, json["mode24"]);
-                        writedefault |= checkValidNumParm(settings.mode24, 0, 1, 0);
+                        writedefault |= checkValidNumParm(settings.mode24, 0, 1, DEF_MODE24);
                     } else writedefault = true;
                     if(json["timeTrPers"]) {
                         strcpy(settings.timesPers, json["timeTrPers"]);
-                        writedefault |= checkValidNumParm(settings.timesPers, 0, 1, 1);
+                        writedefault |= checkValidNumParm(settings.timesPers, 0, 1, DEF_TIMES_PERS);
                     } else writedefault = true;
                     #ifdef FAKE_POWER_ON
                     if(json["fakePwrOn"]) {
                         strcpy(settings.fakePwrOn, json["fakePwrOn"]);
-                        writedefault |= checkValidNumParm(settings.fakePwrOn, 0, 1, 0);
+                        writedefault |= checkValidNumParm(settings.fakePwrOn, 0, 1, DEF_FAKE_PWR);
                     } else writedefault = true;
                     #endif
                     if(json["alarmRTC"]) {
                         strcpy(settings.alarmRTC, json["alarmRTC"]);
-                        writedefault |= checkValidNumParm(settings.alarmRTC, 0, 1, 1);
+                        writedefault |= checkValidNumParm(settings.alarmRTC, 0, 1, DEF_ALARM_RTC);
                     } else writedefault = true;
                     if(json["playIntro"]) {
                         strcpy(settings.playIntro, json["playIntro"]);
-                        writedefault |= checkValidNumParm(settings.playIntro, 0, 1, 1);
+                        writedefault |= checkValidNumParm(settings.playIntro, 0, 1, DEF_PLAY_INTRO);
                     } else writedefault = true;
                   
                 } else {

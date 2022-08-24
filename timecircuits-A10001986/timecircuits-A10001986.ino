@@ -66,6 +66,8 @@
  *  
  *  2022/08/24 (A10001986)
  *    - Intro beefed up with sound
+ *    - Do not interrupt time travel by key presses
+ *    - Clean up code for default settings
  *  2022/08/23 (A10001986)
  *    - Allow a static IP (plus gateway, subnet mask, dns) to be configured.
  *      All four IP address must be valid. IP settings can be reset to DHCP
