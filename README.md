@@ -23,7 +23,7 @@ https://github.com/CircuitSetup/Time-Circuits-Display/blob/master/README.md
 - Configurable WiFi connection timeouts and retries
 - Network keypad menu to show the current IP address and WiFi status
 - 24-hour clock mode for non-Americans ;)
-- Optional intro with sound
+- Optional power-up intro with sound
 - Optional sound on the hour
 - Enhanced time travel sequences
 - Optional external "fake" power switch; external time travel trigger
