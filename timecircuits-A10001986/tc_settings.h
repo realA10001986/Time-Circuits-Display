@@ -26,15 +26,19 @@
 #ifndef _TC_SETTINGS_H
 #define _TC_SETTINGS_H
 
+#include "tc_global.h"
+
 #include <ArduinoJson.h>  // https://github.com/bblanchon/ArduinoJson
 #include <SD.h>
 #include <SPI.h>
 #include <FS.h>
+#ifdef USE_SPIFFS
 #include <SPIFFS.h>
-
+#else
+#define SPIFFS LittleFS
+#include <LittleFS.h>
+#endif
 #include <EEPROM.h>
-
-#include "tc_global.h"
 
 extern void settings_setup();
 extern void write_settings();
