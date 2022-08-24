@@ -26,7 +26,7 @@ https://github.com/CircuitSetup/Time-Circuits-Display/blob/master/README.md
 - Optional power-up intro with sound
 - Optional sound on the hour
 - Enhanced time travel sequences
-- Optional external "fake" power switch; external time travel trigger
+- Optional external fake "power switch"; external time travel trigger
 - many bugfixes
 - etc
 
@@ -190,3 +190,9 @@ The files "nmon2.mp3", "nmoff2.mp3", "alarm2.mp3" in this repository are the ver
 If the SD card holds a file named "hour.mp3", this file will be played every hour, on the hour. This feature is disabled in night mode.
 
 If the SD card holds files named "key3.mp3" and/or "key6.mp3", these files will be played if you hold the "3"/"6" key for 2 seconds. 
+
+**External switch and button**
+
+The software supports a switch connected to IO13 (active low) to act as a fake "power switch". If this option is enabled, the device will power-up, initialize everything, but stay quiet and dark. Only when the fake "power switch" is activated, the device will visually "power up". You can also fake "power off" the device using this switch. Fake "off" disables the displays, the audio (except the alarm) and the keypad.
+
+Furthermore, a button switch can be connected to IO14 (active low). This button triggers a re-entry from a time travel and plays the respective sequence. The button must be pressed for 200ms to be recognized.
