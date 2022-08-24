@@ -114,11 +114,11 @@ void wifi_setup()
     wm.addParameter(&custom_destTimeBright);
     wm.addParameter(&custom_presTimeBright);
     wm.addParameter(&custom_lastTimeBright);
+    wm.addParameter(&custom_playIntro);
     #ifdef FAKE_POWER_ON    
     wm.addParameter(&custom_fakePwrOn);
     #endif    
-    wm.addParameter(&custom_playIntro);
-
+    
     updateConfigPortalValues();
 
     // Configure static IP
