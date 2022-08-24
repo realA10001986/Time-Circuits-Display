@@ -76,9 +76,11 @@ void wifi_setup()
     wm.setPreSaveConfigCallback(preSaveConfigCallback);
     wm.setSaveConfigCallback(saveConfigCallback);
     wm.setSaveParamsCallback(saveParamsCallback);
-    wm.setHostname("TimeCircuits");
+    wm.setHostname("TIMECIRCUITS");
 
-    wm.setTitle(F("TimeCircuits"));
+    // Hack version number into WiFiManager main page
+    wm.setCustomHeadElement("<style type='text/css'>H1{margin-top:0px;margin-bottom:0px;text-align:center;}</style>");
+    wm.setTitle(F("TimeCircuits</H1><div style='font-size:8px;margin-left:auto;margin-right:auto;text-align:center;'>Version " TC_VERSION "(" TC_VERSION_EXTRA ")</div><H1 style='font-size=0px;margin:0'>"));
 
     // Static IP info is not saved by WiFiManager,
     // have to do this "manually". Hence ipsettings.

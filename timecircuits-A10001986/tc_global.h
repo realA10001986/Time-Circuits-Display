@@ -33,12 +33,18 @@
 
 #ifndef IS_ACAR_DISPLAY
 #define TC_VERSION "AUG242022"
-#ifdef TWPRIVATE
+#ifndef TWPRIVATE
+#define TC_VERSION_EXTRA "v2.0.0"
+#else
 #define TC_VERSION_EXTRA "A10001986"
 #endif
-#else
+#else   // A-Car
 #define TC_VERSION "08242022"
 #define TC_VERSION_EXTRA "A CAR"
+#endif
+
+#ifndef TC_VERSION_EXTRA
+#define TC_VERSION_EXTRA "vanilla"
 #endif
 
 //#define TC_DBG              // debug output on Serial
