@@ -54,10 +54,11 @@
 #ifndef TWPRIVATE
 #define STARTUP_DELAY 1050
 #else
-#define STARTUP_DELAY 900 
+#define STARTUP_DELAY 900
 #endif
 #define TIMETRAVEL_DELAY 1500
 
+// Time between the phases of (long) time travel
 // Sum of all must be 8000
 #define TT_P1_DELAY_P1  1400                                                                    // Normal
 #define TT_P1_DELAY_P2  (4200-TT_P1_DELAY_P1)                                                   // Light flicker
@@ -104,7 +105,14 @@ void fpbKeyPressed();
 void fpbKeyLongPressStop();  
 #endif
 
+void my2delay(unsigned long mydel);
+void waitAudioDoneIntro();
+
+// These block various events
 extern bool FPBUnitIsOn;
+extern bool startup;
+extern bool timeTraveled;
+extern int  timeTravelP1;
 
 // Our generic timeout when waiting for buttons, in seconds. max 255.
 #define maxTime 240            
