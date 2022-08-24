@@ -107,7 +107,7 @@ clockDisplay departedTime(DEPT_TIME_ADDR, DEPT_TIME_PREF);
 int8_t autoTime = 0;  // Selects from time from array below
 
 #ifndef TWPRIVATE //  ----------------- OFFICIAL
-dateStruct destinationTimes[11] = {
+dateStruct destinationTimes[NUM_AUTOTIMES] = {
     //YEAR, MONTH, DAY, HOUR, MIN 
     {1985, 10, 26,  1, 21},   // Einstein 1:20 -> 1:21
     {1955, 11,  5,  6,  0},   // Marty -> 1955
@@ -129,7 +129,7 @@ dateStruct destinationTimes[11] = {
 //    {1885,  1,  1,  0,  0},
 //    {1885,  9,  2, 12,  0}
 }; 
-dateStruct departedTimes[11] = {
+dateStruct departedTimes[NUM_AUTOTIMES] = {
     {1985, 10, 26,  1, 20},   // Einstein 1:20 -> 1:21
     {1985, 10, 26,  1, 29},   // Marty -> 1955 (time assumed)
     {1955, 11, 12, 22,  4},   // Marty -> 1985
@@ -152,7 +152,7 @@ dateStruct departedTimes[11] = {
 };
 
 #else //  --------------------------- TWPRIVATE
-dateStruct destinationTimes[8] = {
+dateStruct destinationTimes[NUM_AUTOTIMES] = {
     //YEAR, MONTH, DAY, HOUR, MIN
     {1985,  7, 23, 20,  1},       
     {1985, 11, 23, 16, 24},   
@@ -163,7 +163,7 @@ dateStruct destinationTimes[8] = {
     {1987,  5, 26,  0,  0},      
     {1988, 12, 24, 22, 31}
 }; 
-dateStruct departedTimes[8] = {
+dateStruct departedTimes[NUM_AUTOTIMES] = {
     {2017,  7, 11, 10, 11},       
     {1988,  6,  3, 15, 30},    
     {1943,  3, 15,  7, 47},     
