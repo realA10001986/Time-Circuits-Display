@@ -115,7 +115,7 @@ void play_keypad_sound(char key)
     
     if(key) {
         buf[6] = key;
-        play_file(buf, 0.8, true, 0);
+        play_file(buf, 0.6, true, 0);
     }
 }
 

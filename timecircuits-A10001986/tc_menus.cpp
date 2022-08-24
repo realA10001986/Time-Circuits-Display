@@ -1491,7 +1491,7 @@ void waitAudioDone()
  * MyDelay: For delays > 150ms
  * Calls myloop() periodically
  */
-void mydelay(int mydel) 
+void mydelay(unsigned long mydel) 
 {  
     unsigned long startNow = millis();
     while(millis() - startNow < mydel) {
@@ -1500,7 +1500,7 @@ void mydelay(int mydel)
     }     
 }
 
-void mysdelay(int mydel) 
+void mysdelay(unsigned long mydel) 
 {  
     unsigned long startNow = millis();
     while(millis() - startNow < mydel) {

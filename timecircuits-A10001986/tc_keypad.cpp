@@ -149,7 +149,8 @@ char get_key()
  */
 void keypadEvent(KeypadEvent key) 
 {
-    if(!FPBUnitIsOn) return;
+    if(!FPBUnitIsOn || startup || timeTraveled || timeTravelP1) 
+        return;
     
     switch(keypad.getState()) {
         case PRESSED:

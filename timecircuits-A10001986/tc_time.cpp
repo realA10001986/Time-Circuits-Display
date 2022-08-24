@@ -50,24 +50,29 @@ int8_t minNext;
 bool x;  // for tracking second changes
 bool y;  
 
-bool startup = false;
-bool startupSound = false;
-unsigned long startupNow = 0;
+// The startup sequence
+bool startup              = false;
+bool startupSound         = false;
+unsigned long startupNow  = 0;
 
-unsigned long pauseNow;                 // Pause autoInterval if user played with time travel
+// Pause autoInterval if user played with time travel
+unsigned long pauseNow;                 
 unsigned long pauseDelay = 30*60*1000;  // Pause for 30 minutes
-bool autoPaused = false;
+bool          autoPaused = false;
+
+// The timetravel sequence
+unsigned long timetravelP1Now = 0;
+unsigned long timetravelP1Delay = 0;
+int           timeTravelP1 = 0;
+
+// The timetravel re-entry sequence
+unsigned long timetravelNow = 0;
+bool          timeTraveled = false;
 
 struct tm _timeinfo;  //for NTP
 RTC_DS3231 rtc;       //for RTC IC
 
-unsigned long timetravelNow = 0;
-bool timeTraveled = false;
-
-unsigned long timetravelP1Now = 0;
-unsigned long timetravelP1Delay = 0;
-int timeTravelP1 = 0;
-
+// For displaying times off the real time
 uint64_t timeDifference = 0;
 bool     timeDiffUp = false;  // true = add difference, false = subtract difference
 
@@ -89,17 +94,22 @@ bool timetravelPersistent = true;
 // Alarm/HourlySound based on RTC (or presentTime's display if false)
 bool alarmRTC = true;
 
-uint8_t timeout = 0;  // for tracking idle time in menus
+// For tracking idle time in menus
+uint8_t timeout = 0;  
 
-// The displays
+// The display objects
 clockDisplay destinationTime(DEST_TIME_ADDR, DEST_TIME_PREF);
 clockDisplay presentTime(PRES_TIME_ADDR, PRES_TIME_PREF);
 clockDisplay departedTime(DEPT_TIME_ADDR, DEPT_TIME_PREF);
 
-// Automatic times
+// Automatic times ("decorative mode")
+
+int8_t autoTime = 0;  // Selects from time from array below
+
+#ifndef TWPRIVATE //  ----------------- OFFICIAL
+
 dateStruct destinationTimes[8] = {
-    //YEAR, MONTH, DAY, HOUR, MIN
-#ifndef TWPRIVATE    
+    //YEAR, MONTH, DAY, HOUR, MIN    
     {1985, 10, 26,  1, 21},
     {1985, 10, 26,  1, 24},
     {1955, 11,  5,  6,  0},
@@ -107,20 +117,9 @@ dateStruct destinationTimes[8] = {
     {2015, 10, 21, 16, 29},
     {1955, 11, 12,  6,  0},
     {1885,  1,  1,  0,  0},
-    {1885,  9,  2, 12,  0}};
-#else
-    {1985,  7, 23, 20,  1},       // TW private
-    {1985, 11, 23, 16, 24},   
-    {1986,  5, 26, 14, 12},    
-    {1986,  8, 23, 11,  0},     
-    {1986, 12, 24, 21, 22},   
-    {1987,  3, 20, 19, 31},    
-    {1987,  5, 26,  0,  0},      
-    {1988, 12, 24, 22, 31}};  
-#endif    
-
+    {1885,  9,  2, 12,  0}
+}; 
 dateStruct departedTimes[8] = {
-#ifndef TWPRIVATE
     {1985, 10, 26,  1, 20},
     {1955, 11, 12, 22,  4},
     {1985, 10, 26,  1, 34},
@@ -128,21 +127,34 @@ dateStruct departedTimes[8] = {
     {1985, 10, 26, 11, 35},
     {1985, 10, 27,  2, 42},
     {1955, 11, 12, 21, 44},
-    {1955, 11, 13, 12,  0}};
-#else  
-    {2017,  7, 11, 10, 11},       // TW private
+    {1955, 11, 13, 12,  0}
+};
+
+#else //  --------------------------- TWPRIVATE
+
+dateStruct destinationTimes[8] = {
+    //YEAR, MONTH, DAY, HOUR, MIN
+    {1985,  7, 23, 20,  1},       
+    {1985, 11, 23, 16, 24},   
+    {1986,  5, 26, 14, 12},    
+    {1986,  8, 23, 11,  0},     
+    {1986, 12, 24, 21, 22},   
+    {1987,  3, 20, 19, 31},    
+    {1987,  5, 26,  0,  0},      
+    {1988, 12, 24, 22, 31}
+}; 
+dateStruct departedTimes[8] = {
+    {2017,  7, 11, 10, 11},       
     {1988,  6,  3, 15, 30},    
     {1943,  3, 15,  7, 47},     
     {2016,  6, 22, 16, 11},    
     {1982,  5, 15,  9, 41},     
     {1943, 11, 25, 11, 11},   
     {1970,  5, 26,  8, 22},     
-    {2021,  5,  5, 10,  9}};    
-#endif    
+    {2021,  5,  5, 10,  9}
+};    
 
-int8_t autoTime = 0;  // selects the above array time
-
-const uint8_t monthDays[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+#endif  // ------------------------------------
 
 #ifdef FAKE_POWER_ON
 OneButton fakePowerOnKey = OneButton(FAKE_POWER_BUTTON_PIN,
@@ -155,7 +167,10 @@ bool waitForFakePowerButton = false;
 #endif
 bool FPBUnitIsOn = true;
 
-const unsigned short int mon_yday[2][13] =
+const uint8_t monthDays[] = { 
+    31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
+};
+const unsigned int mon_yday[2][13] =
 {
     { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365 }, 
     { 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366 }
@@ -348,6 +363,10 @@ void time_setup()
         int oldBriDest = destinationTime.getBrightness();
         int oldBriPres = presentTime.getBrightness();
         int oldBriDep = departedTime.getBrightness();
+
+        play_file("/intro.mp3", 1.0, true, 0);
+
+        my2delay(1200);
         destinationTime.setBrightness(15);
         presentTime.setBrightness(0);
         departedTime.setBrightness(0);
@@ -358,22 +377,31 @@ void time_setup()
         departedTime.showOnlyText(t3);
         destinationTime.on();
         for(int i = 0; i < 14; i++) {
-           delay(50);
+           my2delay(50);
            destinationTime.showOnlyText(&t1[i]);
         }
-        delay(500);                                
+        my2delay(500);                                
         presentTime.on();
         departedTime.on();
         for(int i = 0; i <= 15; i++) {
             presentTime.setBrightness(i);
             departedTime.setBrightness(i);
-            delay(100);
+            my2delay(100);
         }
-        delay(3000);
+        my2delay(1500);
+        for(int i = 15; i >= 0; i--) {
+            destinationTime.setBrightness(i);
+            presentTime.setBrightness(i);
+            departedTime.setBrightness(i);
+            my2delay(20);
+        }
         allOff();
         destinationTime.setBrightness(oldBriDest);
         presentTime.setBrightness(oldBriPres);
         departedTime.setBrightness(oldBriDep);
+
+        waitAudioDoneIntro();
+        stopAudio();
     }
 
     // Load the time for initial animation show
@@ -1288,3 +1316,23 @@ void fpbKeyLongPressStop()
     isFPBKeyChange = true;
 }    
 #endif
+
+void my2delay(unsigned long mydel) 
+{  
+    unsigned long startNow = millis();
+    while(millis() - startNow < mydel) {
+        delay(5);
+        audio_loop();
+    }     
+}
+
+
+void waitAudioDoneIntro()
+{
+  int timeout = 100;
+  
+  while(!checkAudioDone() && timeout--) {       
+       audio_loop();
+       delay(10);
+  }
+}
