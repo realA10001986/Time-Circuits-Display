@@ -51,10 +51,10 @@
 
 // The time between sound being started and the display coming on
 // Must be sync'd to the sound file used! (startup.mp3/timetravel.mp3)
-#ifndef TWPRIVATE
-#define STARTUP_DELAY 1050
-#else
+#ifdef TWSOUND
 #define STARTUP_DELAY 900
+#else
+#define STARTUP_DELAY 1050
 #endif
 #define TIMETRAVEL_DELAY 1500
 

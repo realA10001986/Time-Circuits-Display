@@ -868,15 +868,19 @@ uint8_t clockDisplay::getLED7AlphaChar(uint8_t value)
         return 0;
     } else if(value >= '0' && value <= '9') {
         return numDigs[value - 48];        
-    } else {
+    } else if(value >= 'A' && value <= 'Z') {
         return numDigs[value - 'A' + 10];
     }   
+
+    return 0;
 }
 
 // Returns bit pattern for provided character for display on alphanumeric 14 segment display
 #ifndef IS_ACAR_DISPLAY
-uint16_t clockDisplay::getLEDAlphaChar(char value) 
-{    
+uint16_t clockDisplay::getLEDAlphaChar(uint8_t value) 
+{
+    if(value > 127) return 0;
+        
     return alphaChars[value];
 }
 #endif
