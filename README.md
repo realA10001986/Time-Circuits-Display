@@ -1,4 +1,4 @@
-# Time-Circuits-Display-A10001986
+# Time-Circuits-Display (A10001986)
 Alternative firmware for ESP32-based Time-Circuits-Display
 
 This is a fork of a previous version of the firmware for [this](https://circuitsetup.us/product/complete-time-circuits-display-kit/) wonderful piece of hardware:
@@ -8,14 +8,12 @@ https://github.com/CircuitSetup/Time-Circuits-Display/blob/master/README.md
 ![TCD Front](https://raw.githubusercontent.com/CircuitSetup/Time-Circuits-Display/master/Images/tcd_front2.jpg)
 
 
-"This Time Circuits Display has been meticulously reproduced to be as accurate as possible to the one seen in the Delorean Time Machine in the Back to the Future movies. The LED displays are custom made to the correct size for CircuitSetup. This includes the month 14 segment/3 character displays being closer together, and both the 7 & 14 segment displays being 0.6" high by 0.35" wide.
-
-The Destination Time can be entered via keypad, and the Present Time can keep time via NTP. There is also a time travel mode, which moves the Destination Time to Present Time, and Present Time to Last Time Departed. The startup, keypad dial sounds, and time travel sounds are played using I2S." 
+"This Time Circuits Display has been meticulously reproduced to be as accurate as possible to the one seen in the Delorean Time Machine in the Back to the Future movies. The LED displays are custom made to the correct size for CircuitSetup. This includes the month 14 segment/3 character displays being closer together, and both the 7 & 14 segment displays being 0.6" high by 0.35" wide." 
 
 **Changes to the original firmware (based on 2022-01 version):**
 - Time keeping via NTP or stand-alone
 - "Present time" is always a clock (not stale), even after time travel
-- Support for time zones and automatic DST (in NTP-mode)
+- Support for time zones and automatic DST (in NTP-mode only)
 - Alarm function
 - SD card support for custom audio files
 - Night mode (displays off or dimmed)
@@ -23,9 +21,13 @@ The Destination Time can be entered via keypad, and the Present Time can keep ti
 - Keypad menu for adjusting various settings
 - More stable WiFi connections at startup
 - Configurable WiFi connection timeouts and retries
-- Network keypad menu to show the current IP address
+- Network keypad menu to show the current IP address and WiFi status
 - 24-hour clock mode for non-Americans ;)
-- Fixed "month-off-by-one" bug, and others
+- Optional intro with sound
+- Optional sound on the hour
+- Enhanced time travel sequences
+- Optional external "fake" power switch; external time travel trigger
+- many bugfixes
 - etc
 
 **Update:** The nice folks over at circuitsetup.us have taken over this software its in entirety, apart from some sounds, of which they say the like theirs better. As long as I am working on this project, the version here is probably further ahead in development; this might change in the future, when this project eventually no longer is a priority for me.
