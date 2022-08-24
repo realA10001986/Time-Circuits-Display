@@ -100,4 +100,7 @@
 #define DEPT_TIME_PREF    0x1c    // departure time prefs         (10 bytes)
 #define ALARM_PREF        0x26    // alarm prefs                  (4 bytes; only used if fs unavailable)
 
+// Use SPIFFS (if defined) or LittleFS (if undefined; esp32-arduino >= 2.x)
+#define USE_SPIFFS
+
 #endif

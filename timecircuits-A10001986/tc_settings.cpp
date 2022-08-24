@@ -26,7 +26,7 @@
 #include "tc_settings.h"
 
 /*
- * Mount SPIFF, und SD (if available)
+ * Mount SPIFFS/LittleFS, und SD (if available)
  * 
  * Read configuration from JSON config file
  * If config file not found, create one with default settings
@@ -37,7 +37,7 @@
  * 
  */
 
-/* If SPIFFS is mounted */
+/* If SPIFFS/LittleFS is mounted */
 bool haveFS = false;
 
 /* If a SD card is found */
@@ -96,15 +96,15 @@ void settings_setup()
     }
 
     #ifdef TC_DBG
-    Serial.println(F("settings_setup: Mounting SPIFFS..."));
+    Serial.println(F("settings_setup: Mounting on-board FS..."));
     #endif
 
     if(SPIFFS.begin()) {
   
         #ifdef TC_DBG
-        Serial.println(F("settings_setup: Mounted SPIFFS"));
+        Serial.println(F("settings_setup: Mounted on-board FS"));
         #endif
-        
+
         haveFS = true;
 
         if(digitalRead(ENTER_BUTTON_PIN)) {
@@ -120,9 +120,9 @@ void settings_setup()
             digitalWrite(WHITE_LED_PIN, LOW);                         
         }
         
-        if(SPIFFS.exists("/config.json")) {
+        if(SPIFFS.exists("/config.json")) {        
              
-            File configFile = SPIFFS.open("/config.json", "r");
+            File configFile = SPIFFS.open("/config.json", "r");            
             
             if(configFile) {
       
@@ -231,7 +231,7 @@ void settings_setup()
       
     } else {
       
-        Serial.println(F("settings_setup: Failed to mount SPIFFS"));
+        Serial.println(F("settings_setup: Failed to mount on-board FS"));
     
     }
 }
@@ -241,7 +241,7 @@ void write_settings()
     StaticJsonDocument<1024> json;
   
     if(!haveFS) {
-        Serial.println(F("write_settings: Cannot write settings, SPIFFS not mounted"));
+        Serial.println(F("write_settings: Cannot write settings, on-board FS not mounted"));
         return;
     } 
   
@@ -265,7 +265,7 @@ void write_settings()
     json["alarmRTC"] = settings.alarmRTC;
     json["playIntro"] = settings.playIntro;
   
-    File configFile = SPIFFS.open("/config.json", FILE_WRITE);
+    File configFile = SPIFFS.open("/config.json", FILE_WRITE);    
   
     #ifdef TC_DBG
     serializeJson(json, Serial);
@@ -321,15 +321,15 @@ bool loadAlarm()
     
     if(!haveFS) {
       
-        Serial.println(F("loadAlarm(): SPIFFS not mounted, using EEPROM"));
+        Serial.println(F("loadAlarm(): on-board FS not mounted, using EEPROM"));
         
         return loadAlarmEEPROM();
         
     } 
 
-    if(SPIFFS.exists("/alarmconfig.json")) {
+    if(SPIFFS.exists("/alarmconfig.json")) {    
       
-        File configFile = SPIFFS.open("/alarmconfig.json", "r");
+        File configFile = SPIFFS.open("/alarmconfig.json", "r");        
         
         if(configFile) {
 
@@ -446,7 +446,7 @@ void saveAlarm()
     #endif
 
     if(!haveFS) {
-        Serial.println(F("saveAlarm(): SPIFFS not mounted, using EEPROM"));
+        Serial.println(F("saveAlarm(): on-board FS not mounted, using EEPROM"));
         
         saveAlarmEEPROM();
         
@@ -461,7 +461,7 @@ void saveAlarm()
     json["alarmhour"] = (char *)hourBuf;
     json["alarmmin"] = (char *)minBuf;
 
-    File configFile = SPIFFS.open("/alarmconfig.json", FILE_WRITE);
+    File configFile = SPIFFS.open("/alarmconfig.json", FILE_WRITE);    
   
     #ifdef TC_DBG
     serializeJson(json, Serial);
@@ -508,9 +508,9 @@ bool loadIpSettings()
         return false;
     }
     
-    if(SPIFFS.exists("/ipconfig.json")) {
+    if(SPIFFS.exists("/ipconfig.json")) {    
              
-        File configFile = SPIFFS.open("/ipconfig.json", "r");
+        File configFile = SPIFFS.open("/ipconfig.json", "r");        
             
         if(configFile) {
   
@@ -584,7 +584,7 @@ void writeIpSettings()
     StaticJsonDocument<1024> json;
   
     if(!haveFS) {
-        Serial.println(F("writeIpSettings: Cannot write ip settings, SPIFFS not mounted"));
+        Serial.println(F("writeIpSettings: Cannot write ip settings, on-board FS not mounted"));
         return;
     } 
   
@@ -597,7 +597,7 @@ void writeIpSettings()
     json["Netmask"] = ipsettings.netmask;
     json["DNS"] = ipsettings.dns;
 
-    File configFile = SPIFFS.open("/ipconfig.json", FILE_WRITE);
+    File configFile = SPIFFS.open("/ipconfig.json", FILE_WRITE);    
   
     #ifdef TC_DBG
     serializeJson(json, Serial);

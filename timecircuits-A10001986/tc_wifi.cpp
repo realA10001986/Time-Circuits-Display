@@ -63,8 +63,9 @@ void wifi_setup()
     #define TC_MENUSIZE (8-2)
     const char* wifiMenu[TC_MENUSIZE] = {"wifi", "info", "param", "sep", "restart", "update"/*, "sep", "exit"*/ };
     // We are running in non-blocking mode, so no point in "exit".
-    
-    WiFi.mode(WIFI_MODE_STA);  // explicitly set mode, esp defaults to STA_AP
+
+    // explicitly set mode, esp allegedly defaults to STA_AP
+    WiFi.mode(WIFI_MODE_STA);  
     
     #ifndef TC_DBG
     wm.setDebugOutput(false);
