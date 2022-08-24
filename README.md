@@ -32,6 +32,15 @@ https://github.com/CircuitSetup/Time-Circuits-Display/blob/master/README.md
 
 **Update:** The nice folks over at circuitsetup.us have taken over this software its in entirety, apart from some sounds, of which they say the like theirs better. As long as I am working on this project, the version here is probably further ahead in development; this might change in the future, when this project eventually no longer is a priority for me.
 
+**Installation**
+
+There are two ways to install this firmware:
+
+1) Using the Arduino IDE 1.8: Download the sketch source code, all required libraries and compile it. Then upload the sketch to the device, and use "Tools"->"ESP32 Sketch Data Upload" to upload the sound files.
+
+2) By uploading the pre-compiled binary, if a previous version of this software was installed on this ESP32:
+Go to the Config Portal, click on "Update" and select the pre-compiled binary file you downloaded from this repository. Then copy all files in the "data" folder to the root folder of a fresh SD card. Insert this card into your device and power up.
+
 **Short summary of first steps:**
 - As long as the device is unconfigured or later for some reason fails to connect to a configured network, it starts in "access point" mode, i.e. it creates an access point named "TCD-AP". The default IP in access point mode is 192.168.4.1. 
 - Connect to the AP and go to http://192.168.4.1 in your browser to enter the Config Portal, click on "Configure WiFi" and configure your Wifi network. Note that the device expects an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). (If the device is inaccessible as a result of wrong static IPs, hold ENTER when powering it up until the white LED lits; the static IP data will be deleted and the device returns to DHCP.)
