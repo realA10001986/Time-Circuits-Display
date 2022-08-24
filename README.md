@@ -36,10 +36,10 @@ https://github.com/CircuitSetup/Time-Circuits-Display/blob/master/README.md
 
 There are two ways to install this firmware:
 
-1) Using the Arduino IDE 1.8: Download the sketch source code, all required libraries and compile it. Then upload the sketch to the device, and use "Tools"->"ESP32 Sketch Data Upload" to upload the sound files.
+1) Using the Arduino IDE 1.8: Download the sketch source code, all required libraries and compile it. Then upload the sketch to the device, and use "Tools"->"ESP32 Sketch Data Upload" to upload the sound files. (Version 2.x of the IDE lacks that data upload menu item; in this case copy all the files in the "data" folder to the root folder of a fresh FAT32 formatted SD card and insert this card into the device.)
 
 2) By uploading the pre-compiled binary, if a previous version of this software was installed on this ESP32:
-Go to the Config Portal, click on "Update" and select the pre-compiled binary file you downloaded from this repository. Then copy all files in the "data" folder to the root folder of a fresh SD card. Insert this card into your device and power up.
+Go to the Config Portal, click on "Update" and select the pre-compiled binary file you downloaded from this repository. Then copy all files in the "data" folder to the root folder of a fresh FAT32 formatted SD card. Insert this card into your device and power up.
 
 **Short summary of first steps:**
 - As long as the device is unconfigured or later for some reason fails to connect to a configured network, it starts in "access point" mode, i.e. it creates an access point named "TCD-AP". The default IP in access point mode is 192.168.4.1. 
