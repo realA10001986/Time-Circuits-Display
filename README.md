@@ -36,19 +36,20 @@ https://github.com/CircuitSetup/Time-Circuits-Display/blob/master/README.md
 
 There are several alternative ways to install this firmware:
 
-1) Using the Arduino IDE 1.8: Download the sketch source code, all required libraries (info in the source code) and compile it. Then upload the sketch to the device. This method is the only one for fresh ESP32 boards.
+1) Using the Arduino IDE: Download the sketch source code, all required libraries (info in the source code) and compile it. Then upload the sketch to the device. Alternatively, you could use PlatformIO. This method is the one for fresh ESP32 boards and/or folks familiar with Arduino programming.
 
-2) If a previous version of this software was installed on your device, you can upload the provided pre-compiled binary: Go to the Config Portal, click on "Update" and select the pre-compiled binary file provided in this repository. 
+2) If a previous version of this software was installed on your device, you can upload the provided pre-compiled binary to update to the current version: Go to the Config Portal, click on "Update" and select the pre-compiled binary file provided in this repository. 
 
 Audio file installation
 
 While the sound files are part of this software, they need to be installed separately.
 
-If you are familiar with the Arduino IDE (1.8), you could use "Tools"->"ESP32 Sketch Data Upload" to upload the sound files. Version 2.x of the IDE lacks that data upload menu item; in this case go the other way:
+If you are familiar with the Arduino IDE (1.8), you could use "Tools"->"ESP32 Sketch Data Upload" to upload the sound files. Version 2.x of the IDE lacks that data upload menu item and/or plug-ins; in this case go the other way:
 
 The other way is to copy all the files in the "data" folder to the root folder of a fresh FAT32 formatted SD card, to insert this card into the device and install them through the keypad menu or the Config portal. If the exact and complete contents of the data folder is found on the SD card during boot, the keypad will have a "INSTALL AUDIO FILES" menu item, and the Config portal will show an "Audio file installation" option at the bottom of the "Setup" page. Write "COPY" into the empty text field, and click on "Save". The device will then copy all the default audio files from the SD to its internal flash file system. The SD can (and should) be removed afterwards.
 
 **Short summary of first steps:**
+
 - As long as the device is unconfigured or later for some reason fails to connect to a configured network, it starts in "access point" mode, i.e. it creates an access point named "TCD-AP". The default IP in access point mode is 192.168.4.1. 
 - Connect to the AP and go to http://192.168.4.1 in your browser to enter the Config Portal, click on "Configure WiFi" and configure your Wifi network. Note that the device expects an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). (If the device is inaccessible as a result of wrong static IPs, hold ENTER when powering it up until the white LED lits; the static IP data will be deleted and the device returns to DHCP.)
 - After saving the WiFi network settings, the device reboots and tries to connect to your configured WiFi network. If it fails to connect to your network, the device will again start in access point mode. 
