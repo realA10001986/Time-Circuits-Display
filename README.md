@@ -34,12 +34,19 @@ https://github.com/CircuitSetup/Time-Circuits-Display/blob/master/README.md
 
 **Installation**
 
-There are two ways to install this firmware:
+There are several alternative ways to install this firmware:
 
-1) Using the Arduino IDE 1.8: Download the sketch source code, all required libraries and compile it. Then upload the sketch to the device, and use "Tools"->"ESP32 Sketch Data Upload" to upload the sound files. (Version 2.x of the IDE lacks that data upload menu item; in this case copy all the files in the "data" folder to the root folder of a fresh FAT32 formatted SD card and insert this card into the device.)
+1) Using the Arduino IDE 1.8: Download the sketch source code, all required libraries (info in the source code) and compile it. Then upload the sketch to the device. This method is the only one for fresh ESP32 boards.
 
-2) By uploading the pre-compiled binary, if a previous version of this software was installed on this ESP32:
-Go to the Config Portal, click on "Update" and select the pre-compiled binary file you downloaded from this repository. Then copy all files in the "data" folder to the root folder of a fresh FAT32 formatted SD card. Insert this card into your device and power up.
+2) If a previous version of this software was installed on your device, you can upload the provided pre-compiled binary: Go to the Config Portal, click on "Update" and select the pre-compiled binary file provided in this repository. 
+
+Audio file installation
+
+While the sound files are part of this software, they need to be installed separately.
+
+If you are familiar with the Arduino IDE (1.8), you could use "Tools"->"ESP32 Sketch Data Upload" to upload the sound files. Version 2.x of the IDE lacks that data upload menu item; in this case go the other way:
+
+The other way is to copy all the files in the "data" folder to the root folder of a fresh FAT32 formatted SD card, to insert this card into the device and install them through the keypad menu or the Config portal. If the exact and complete contents of the data folder is found on the SD card during boot, the keypad will have a "INSTALL AUDIO FILES" menu item, and the Config portal will show an "Audio file installation" option at the bottom of the "Setup" page. Write "COPY" into the empty text field, and click on "Save". The device will then copy all the default audio files from the SD to its internal flash file system. The SD can (and should) be removed afterwards.
 
 **Short summary of first steps:**
 - As long as the device is unconfigured or later for some reason fails to connect to a configured network, it starts in "access point" mode, i.e. it creates an access point named "TCD-AP". The default IP in access point mode is 192.168.4.1. 
@@ -108,6 +115,7 @@ First step is to choose a menu item. The available "items" are
 - select the Time-rotation Interval ("ROT-INT"),
 - select the brightness for the three displays ("BRI-GHT"),
 - show network information ("NET-WRK"),
+- install the default audio files ("INSTALL AUDIO FILES")
 - quit the menu ("END").
  
 Pressing ENTER cycles through the list, holding ENTER selects an item, ie a mode.
@@ -170,6 +178,13 @@ How to find out the IP address and WiFi status:
 - Hold ENTER, the displays shows the IP address
 - Press ENTER to view the WiFi status
 - Hold ENTER to leave the menu
+
+How to install the default audio files:
+- Hold ENTER to invoke main menu
+- Press ENTER until "INSTALL AUDIO FILES" is shown. If this menu does not appear, the SD card isn't configured properly; see the "Audio file installation" section at the top of this document.
+- Hold ENTER to proceed
+- Press ENTER to toggle between "CANCEL" and "COPY"
+- Hold ENTER to proceed. If "COPY" was chosen, the display will guide you through the rest of the process. The menu is quit automatically afterwards.
  
  How to leave the menu:
  - While the menu is active, press ENTER until "END" is displayed.
@@ -178,7 +193,9 @@ How to find out the IP address and WiFi status:
 
 **SD card**
 
-The audio files are normally part of the sketch (stored in SPIFFS), but can be substituted by files on a FAT32-formatted SD card. The files need to be put in the root directoy of the card, be in mp3 format (128kbps recommended) and named as follows:
+The provided audio files are, after proper installation (see "Audio file installation" section at the top of this document), part of the firmware and stored in the device's flash file system. These default sounds can, however, be substituted by files on a FAT32-formatted SD card, and will be played back from the SD card. No installation necessary. 
+
+Your custom replacements need to be put in the root directoy of the card, be in mp3 format (128kbps recommended) and named as follows:
 - "enter.mp3". Played when a date was entered and ENTER was pressed
 - "baddate.mp3". Played when a bad (too short or too long) date was entered and ENTER was pressed
 - "travelstart.mp3". Played when a time travel starts.
@@ -190,11 +207,11 @@ The audio files are normally part of the sketch (stored in SPIFFS), but can be s
 - "nmoff.mp3". Played when disabling night might by holding "5"
 - "startup.mp3". Played when the clock is connected to power and finished booting
 
-If a file is not found on the SD card, the default file from SPIFFS (flash) will be played.
+If a file is not found on the SD card, the default file from the device's flash memory will be played.
 
-The files "nmon2.mp3", "nmoff2.mp3", "alarm2.mp3" in this repository are the versions I prefer, but they are to be considered somewhat "inofficial" ;) In order to use them, they need to be renamed to "nmon.mp3", "nmoff.mp3" and "alarm.mp3" respectively.
+Note that the "Audio file installer" cannot be used to replace default sounds in the device's flash memory. Your custom sounds will be played back from the SD card, which needs to remain in the slot for that matter.
 
-**Custom Sounds**
+**Additional Custom Sounds**
 
 If the SD card holds a file named "hour.mp3", this file will be played every hour, on the hour. This feature is disabled in night mode.
 
