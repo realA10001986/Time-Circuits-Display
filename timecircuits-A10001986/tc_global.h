@@ -36,7 +36,7 @@
 // These must not use any characters other than '0'-'9', 'A'-'Z' or space
 // Max length 12 characters
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION "AUG242022"
+#define TC_VERSION "AUG252022"
 #ifdef TWPRIVATE
 #define TC_VERSION_EXTRA "A10001986P"
 #elif defined(TWSOUND)
@@ -45,7 +45,7 @@
 #define TC_VERSION_EXTRA "OEM V2 0 0"
 #endif
 #else   // A-Car
-#define TC_VERSION "08242022"
+#define TC_VERSION "08252022"
 #define TC_VERSION_EXTRA "A CAR"
 #endif
 
@@ -101,6 +101,8 @@
 #define ALARM_PREF        0x26    // alarm prefs                  (4 bytes; only used if fs unavailable)
 
 // Use SPIFFS (if defined) or LittleFS (if undefined; esp32-arduino >= 2.x)
+// As long as SPIFFS is around, and LittleFS does not support wear levelling,
+// we go with SPIFFS.
 #define USE_SPIFFS
 
 #endif
