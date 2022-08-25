@@ -64,6 +64,15 @@
 
 /* Changelog 
  *  
+ *  2022/08/25 (A10001986)
+ *    - Add default sound file installer. This installer is for people upgrading 
+ *      the software on their clocks. Put the contents of the data folder on a
+ *      FAT formatted SD card, put this card in the slot, reboot the clock,
+ *      and either go to the "INSTALL" menu item in the keypad menu, or to 
+ *      the "Setup" page on the Config Portal. 
+ *      Note that this only works with the original files, not with custom
+ *      audio files. Custom audio files can reside on the SD card for good
+ *      and will be played from there. 
  *  2022/08/24 (A10001986)
  *    - Intro beefed up with sound
  *    - Do not interrupt time travel by key presses
