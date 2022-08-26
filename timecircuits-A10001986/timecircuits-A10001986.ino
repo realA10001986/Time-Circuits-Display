@@ -25,7 +25,7 @@
 
 /*
  * I recommend the Arduino IDE 1.8, simply because it supports the "ESP32 Sketch 
- * data upload" extension, which is needed for uploading the sound files. This, 
+ * data upload" extension, which is useful for uploading the sound files. This, 
  * for whatever reason, is no longer supported in 2.0 as of 2.0.0.rc9.
  * 
  * Needs ESP32 Arduino framework: https://github.com/espressif/arduino-esp32
@@ -60,24 +60,30 @@
  * https://github.com/CircuitSetup/Time-Circuits-Display/wiki/Programming-the-ESP32-Module
  * See here for info on the data uploader (for sound files): 
  * https://randomnerdtutorials.com/install-esp32-filesystem-uploader-arduino-ide/
+ * (The audio files can also be uploaded using an SD card, so the uploader is 
+ * optional. See Changelog entry 2022/08/25 and README.md)
  */
 
 /* Changelog 
  *  
+ *  2022/08/26 (A10001986)
+ *    - Attempt to beautify the Config Portal by using checkboxes instead of
+ *      text input for boolean options
  *  2022/08/25 (A10001986)
- *    - Add default sound file installer. This installer is for people upgrading 
- *      the software on their clocks. Put the contents of the data folder on a
+ *    - Add default sound file installer. This installer is for initial installation  
+ *      or upgrade of the software. Put the contents of the data folder on a
  *      FAT formatted SD card, put this card in the slot, reboot the clock,
- *      and either go to the "INSTALL" menu item in the keypad menu, or to 
- *      the "Setup" page on the Config Portal. 
- *      Note that this only works with the original files, not with custom
- *      audio files. Custom audio files can reside on the SD card for good
- *      and will be played from there. 
+ *      and either go to the "INSTALL AUDIO FILES" menu item in the keypad menu,  
+ *      or to the "Setup" page on the Config Portal (see bottom). 
+ *      Note that this only installs the original default files. It is not meant 
+ *      for custom audio files substituting the default files. Custom audio files 
+ *      reside on the SD card and will be played back from there. 
  *  2022/08/24 (A10001986)
  *    - Intro beefed up with sound
  *    - Do not interrupt time travel by key presses
  *    - Clean up code for default settings
- *    - Prepare for LittleFS
+ *    - Prepare for LittleFS; switch not done yet. I prefer SPIFFS as long as it's
+ *      around, and LittleFS doesn't support wear leveling.
  *    - AutoTimes sync'd with movies
  *  2022/08/23 (A10001986)
  *    - Allow a static IP (plus gateway, subnet mask, dns) to be configured.
@@ -163,16 +169,7 @@
  *    - A-Car display support enhanced (untested)
  *    - Added SD support. Audio files will be played from SD, if
  *      an SD is found. Files need to reside in the root folder of
- *      a FAT-formatted SD and be named 
- *      - "startup.mp3": The startup sound
- *      - "enter.mp3": The sound played when a date was entered
- *      - "baddate.mp3": If a bad date was entered
- *      - "timetravel.mp3": A time travel was triggered
- *      - "alarm.mp3": The alarm sound
- *      - "nmon.mp3": Night mode is enabled
- *      - "nmoff.mp3": Night mode is disabled*      
- *      - "alarmon.mp3": The alarm was enabled
- *      - "alarmoff.mp3": The alarm was disabled      
+ *      a FAT-formatted SD.   
  *      Mp3 files with 128kpbs or below recommended. 
  *  2022/08/11 (A10001986)
  *    - Integrated a modified Keypad_I2C into the project in order 
