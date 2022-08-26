@@ -78,7 +78,7 @@ Beware that the alarm function, by default, is based on the real actual present 
 
 **Persistent / Non-persistent time travels**
 
-On the Config Portal's "Setup" page, there is a menu item named "Make time travels persistent". The default is yes.
+On the Config Portal's "Setup" page, there is a option item named "Make time travels persistent". The default is yes.
 
 If time travels are persistent
 - a user-programmed *destination time* is always stored in flash memory, and retrieved from there after a power-loss. It can be programmed through the keypad menu, or ahead of a time travel by typing mmddyyyy/mmddyyyyhhmm/hhmm plus ENTER. In both cases, the time is stored in flash memory and retrieved upon power-on.
@@ -87,7 +87,7 @@ If time travels are persistent
 
 If time travels are non-persistent
 - a user-programmed *destination time* is only stored to flash memory when programmed through the keypad menu, but not if entered ahead of a time travel (ie outside of the keypad menu, just by typing mmddyyyy/mmddyyyyhhmm/hhmm plus ENTER).
-- user-programmed *last time departed*s is only stored to flash memory when programmed through the keypad menu, but not if the result of a time travel.
+- a user-programmed *last time departed* is only stored to flash memory when programmed through the keypad menu, but not if the result of a time travel.
 - *present time* is always reset to actual present time upon power-up.
 
 If you want your device to display exactly the same after a power loss, choose persistent (and set the Time-rotation Interval to 0). 
@@ -126,7 +126,7 @@ How to enter dates/times for the three displays:
 - Press ENTER until the desired display is the only one lit
 - Hold ENTER until the display goes off except for the first field to enter data into
 - The field to enter data into is shown (exclusively), pre-set with its current value
-- Data entry works as follows: If you want to keep the currently shown pre-set, press ENTER to proceed to next field. Otherwise press a digit on the keypad; the pre-set is then overwritten by the value entered. 2 or 4 digits can be entered, upon which the current value is stored and the next field is activated. You can also enter less than 2/4 digits and press ENTER when done with the field. Note that the month needs to be entered numerically (1-12), and the hour needs to be entered in 24 hour mode, regardless of 12-hour or 24-hour mode as per the config portal setting.
+- Data entry works as follows: If you want to keep the currently shown pre-set, press ENTER to proceed to next field. Otherwise press a digit on the keypad; the pre-set is then overwritten by the value entered. 2 digits can be entered (4 for years), upon which the current value is stored and the next field is activated. You can also enter less than 2/4 digits and press ENTER when done with the field. Note that the month needs to be entered numerically (1-12), and the hour needs to be entered in 24 hour mode, regardless of 12-hour or 24-hour mode as per the Config Portal setting.
 - After entering data into all fields, the data is saved and the menu is left automatically.
 - Note that when entering dates/times into the *destination time* or *last time departed* displays, the Time-rotation Interval is automatically set to 0. Your entered date/time(s) are shown until overwritten by time travels (see below, section "How to select the Time-rotation Interval").
 - By entering a date/time into the *present time* display, the RTC (real time clock) of the device is adjusted, which is useful if you can't use NTP for time keeping. The time you entered will be overwritten if/when the device has access to network time via NTP.
