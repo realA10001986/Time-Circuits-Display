@@ -104,7 +104,7 @@ Night mode will switch off the *destination time* and *last time departed* displ
  
 The menu is controlled by "pressing" or "holding" the ENTER key on the keypad.
 
-Note: A "press" is shorter than 2 seconds, a "hold" is 2 seconds or longer.
+A "press" is shorter than 2 seconds, a "hold" is 2 seconds or longer.
 Data entry is done by pressing the keypad's number keys.
 
 The menu is involked by holding the ENTER button.
