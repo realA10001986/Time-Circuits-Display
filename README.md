@@ -10,23 +10,27 @@ https://github.com/CircuitSetup/Time-Circuits-Display/blob/master/README.md
 
 "This Time Circuits Display has been meticulously reproduced to be as accurate as possible to the one seen in the Delorean Time Machine in the Back to the Future movies. The LED displays are custom made to the correct size for CircuitSetup. This includes the month 14 segment/3 character displays being closer together, and both the 7 & 14 segment displays being 0.6" high by 0.35" wide." 
 
-**Changes to the original firmware (based on 2022-01 version):**
-- Time keeping via NTP or stand-alone
+During August of 2022, I have re-written almost the entire code. New features and changes include
+- Time keeping via NTP (network time) or stand-alone
 - "Present time" is always a clock (not stale), even after time travel
+- Correct clocking for years 1-9999, including leap years
 - Support for time zones and automatic DST (in NTP-mode only)
+- Option to make time travels persistent over reboots
+- Movie-accurate time travel times in "decorative mode" (automatic time cycling).
 - Alarm function
 - SD card support for custom audio files
 - Night mode (displays off or dimmed)
-- Return from Time Travel (hold "9" for 2 seconds)
-- Keypad menu for adjusting various settings
+- "Return from Time Travel" (hold "9" for 2 seconds)
+- Keypad menu for adjusting various settings and viewing IP address and WiFi status
+- Enhanced Config Portal for setup
 - More stable WiFi connections at startup
 - Configurable WiFi connection timeouts and retries
-- Network keypad menu to show the current IP address and WiFi status
 - 24-hour clock mode for non-Americans ;)
 - Optional power-up intro with sound
 - Optional sound on the hour
-- Enhanced time travel sequences
+- Enhanced time travel sequence
 - Optional external fake "power switch"; external time travel trigger
+- OTA-updates and built-in installer for default audio files
 - many bugfixes
 - etc
 
@@ -199,6 +203,7 @@ The provided audio files are, after proper installation (see "Audio file install
 Your custom replacements need to be put in the root directoy of the card, be in mp3 format (128kbps recommended) and named as follows:
 - "enter.mp3". Played when a date was entered and ENTER was pressed
 - "baddate.mp3". Played when a bad (too short or too long) date was entered and ENTER was pressed
+- "intro.mp3": Played during the power-up intro
 - "travelstart.mp3". Played when a time travel starts.
 - "timetravel.mp3". Played when re-entry of a time travel takes place.
 - "alarm.mp3". Played when the alarm sounds.
@@ -206,11 +211,14 @@ Your custom replacements need to be put in the root directoy of the card, be in 
 - "alarmoff.mp3". Played when disabling the alarm by holding "2"
 - "nmon.mp3". Played when enabling night mode by holding "4"
 - "nmoff.mp3". Played when disabling night might by holding "5"
+- "shutdown.mp3". Played when the device is fake "powered down" using an external switch (see below)
 - "startup.mp3". Played when the clock is connected to power and finished booting
 
 If a file is not found on the SD card, the default file from the device's flash memory will be played.
 
-Note that the "Audio file installer" cannot be used to replace default sounds in the device's flash memory. Your custom sounds will be played back from the SD card, which needs to remain in the slot for that matter.
+Several sounds are time-sync'd to display action, such as "intro", "enter", "baddate", "startup", "timetravel", "travelstart". If you substitute those with custom files on the SD card, synchronicity will naturally be lost.
+
+Note that the "Audio file installer" cannot be used to replace default sounds in the device's flash memory with custom sounds. Your custom sounds will be played back from the SD card, which needs to remain in the slot for that matter.
 
 **Additional Custom Sounds**
 
