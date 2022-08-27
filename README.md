@@ -117,9 +117,9 @@ First step is to choose a menu item. The available "items" are
 - enter dates/times for the three displays,
 - set the audio volume (VOL-UME),
 - set an alarm ("ALA-RM"),
-- select the Time-rotation Interval ("ROT-INT"),
-- select the brightness for the three displays ("BRI-GHT"),
-- show network information ("NET-WRK"),
+- select the Time-rotation Interval ("TIME-ROTATION-INT"),
+- select the brightness for the three displays ("BRIGHTNESS"),
+- show network information ("NET-WORK"),
 - install the default audio files ("INSTALL AUDIO FILES")
 - quit the menu ("END").
  
@@ -162,7 +162,7 @@ If the alarm is set and enabled, the dot in the present time's minute field is l
  
 How to select the Time-rotation Interval:
 - Hold ENTER to invoke main menu
-- Press ENTER until "ROT-INT" is shown
+- Press ENTER until "TIME-ROTATION-INTERVAL" is shown
 - Hold ENTER, "INT" is displayed
 - Press ENTER to cycle through the possible Time-rotation Interval values.
 - A value of 0 disables automatic time cycling ("OFF").
@@ -171,7 +171,7 @@ How to select the Time-rotation Interval:
  
 How to adjust the display brightness:
 - Hold ENTER to invoke main menu
-- Press ENTER until "BRI-GHT" is shown
+- Press ENTER until "BRIGHTNESS" is shown
 - Hold ENTER, the displays show all elements, the top-most display says "LVL"
 - Press ENTER to cycle through the possible levels (1-5)
 - Hold ENTER to use current value and proceed to next display
@@ -179,7 +179,7 @@ How to adjust the display brightness:
  
 How to find out the IP address and WiFi status:
 - Hold ENTER to invoke main menu
-- Press ENTER until "NET-WRK" is shown
+- Press ENTER until "NET-WORK" is shown
 - Hold ENTER, the displays shows the IP address
 - Press ENTER to view the WiFi status
 - Hold ENTER to leave the menu
