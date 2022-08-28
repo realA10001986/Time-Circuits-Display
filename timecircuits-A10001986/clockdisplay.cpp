@@ -862,9 +862,7 @@ uint8_t clockDisplay::getLED7NumChar(uint8_t value)
 // Returns bit pattern for provided character for display on 7 segment display
 uint8_t clockDisplay::getLED7AlphaChar(uint8_t value) 
 {    
-    if(value == ' ' || value == 0) {
-        return 0;
-    } else if(value >= '0' && value <= '9') {
+    if(value >= '0' && value <= '9') {
         return numDigs[value - 48];        
     } else if(value >= 'A' && value <= 'Z') {
         return numDigs[value - 'A' + 10];
@@ -987,8 +985,8 @@ void clockDisplay::showInt(bool animate)
     Wire.write(0x00);  // start at address 0x0
 
     if(animate) {
-        for(int c = 0; c < CD_MONTH_SIZE; c++) {
-            Wire.write(0x00);  //blank month
+        for(i = 0; i < CD_MONTH_SIZE; i++) {
+            Wire.write(0x00);  // blank month
             Wire.write(0x00);
         }        
         i = CD_DAY_POS;
@@ -1036,7 +1034,7 @@ void clockDisplay::AMPMoff()
 void clockDisplay::directAMPM(int val1, int val2) 
 {
     Wire.beginTransmission(_address);
-    Wire.write(CD_DAY_POS * 2);    
+    Wire.write(CD_AMPM_POS * 2);    
     Wire.write(val1 & 0xff);
     Wire.write(val2 & 0xff);
     Wire.endTransmission();

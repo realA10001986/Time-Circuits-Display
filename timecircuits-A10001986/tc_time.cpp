@@ -478,6 +478,7 @@ void time_loop()
                     timeTraveled = false;  
                     timeTravelP1 = 0;            
                     FPBUnitIsOn = false;
+                    cancelEnterAnim();
                     play_file("/shutdown.mp3", 1.0, true, 0);  
                     mydelay(130);                  
                     allOff();
@@ -502,7 +503,7 @@ void time_loop()
         animate();
         startup = false;        
         #ifdef TC_DBG
-        Serial.println(F("time_loop: Startup animate triggered"));
+        Serial.println(F("time_loop: Startup animation triggered"));
         #endif
     }
 
@@ -912,7 +913,9 @@ void time_loop()
 void timeTravel(bool makeLong) 
 {
     int tyr = 0;
-    int tyroffs = 0;    
+    int tyroffs = 0;  
+
+    cancelEnterAnim();
 
     // Pause autoInterval-cycling so user can play undisturbed
     pauseAuto();
@@ -995,6 +998,8 @@ void resetPresentTime()
     if(timeDifference) {
         play_file("/timetravel.mp3", 1.0, true, 0);
     }
+
+    cancelEnterAnim();
   
     allOff();
     

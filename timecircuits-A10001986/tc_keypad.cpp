@@ -285,18 +285,23 @@ void keypad_loop()
         dateIndex = 0;
     }
 
-    // Bail out if sequence played or device fake "off"
+    // Bail out if sequence played or device is fake-"off"
     if(!FPBUnitIsOn || startup || timeTraveled || timeTravelP1) {
-        isEttKeyPressed = false; 
+
         isEnterKeyHeld = false;     
         isEnterKeyPressed = false;
+        #ifdef EXTERNAL_TIMETRAVEL
+        isEttKeyPressed = false; 
+        #endif
+        
         return;
+        
     }
 
 #ifdef EXTERNAL_TIMETRAVEL
     if(isEttKeyPressed) {
-        timeTravel(false);    // make short time travel
-        isEttKeyPressed = false;     
+        timeTravel(false);   // make short time travel (reentry)
+        isEttKeyPressed = false;
     }
 #endif    
 
@@ -305,6 +310,7 @@ void keypad_loop()
              
         isEnterKeyHeld = false;     
         isEnterKeyPressed = false;
+        cancelEnterAnim();
         
         timeIndex = yearIndex = 0;
         timeBuffer[0] = '\0';
@@ -333,7 +339,7 @@ void keypad_loop()
         // Turn on white LED
         digitalWrite(WHITE_LED_PIN, HIGH); 
 
-        // Turn off destination time only
+        // Turn off destination time
         destinationTime.off(); 
                  
         timeNow = millis();        
@@ -425,10 +431,20 @@ void keypad_loop()
         mysdelay(80);                     // Wait 80ms
         destinationTime.showAnimate2();   // turn on month
         
-        digitalWrite(WHITE_LED_PIN, LOW);     // turn off white LED
+        digitalWrite(WHITE_LED_PIN, LOW); // turn off white LED
         
         enterWasPressed = false;          // reset flag
         
+    }
+}
+
+void cancelEnterAnim()
+{
+    if(enterWasPressed) {
+        enterWasPressed = false;
+        digitalWrite(WHITE_LED_PIN, LOW);
+        destinationTime.show();
+        destinationTime.on();
     }
 }
 
