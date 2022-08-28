@@ -65,7 +65,8 @@
 
 /* Changelog 
  *  
- *  2022/08/27-28 (A10001986)
+ *  2022/08/28 (A10001986)
+ *    - Cancel enter-animation correctly when other anim is initiated
  *    - Shutdown sound for fake power off
  *    - Minor tweaks to long time travel display "disruption"
  *    - Timetravel un-interruptible by enter key

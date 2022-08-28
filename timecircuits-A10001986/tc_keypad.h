@@ -63,6 +63,7 @@ extern void recordKey(char key);
 extern void recordSetTimeKey(char key);
 extern void recordSetYearKey(char key);
 extern void resetTimebufIndices();
+extern void cancelEnterAnim();
 
 void nightModeOn();
 void nightModeOff();
