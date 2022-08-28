@@ -1,5 +1,5 @@
 # Time-Circuits-Display (A10001986)
-Alternative firmware for ESP32-based Time-Circuits-Display
+Firmware for ESP32-based Time-Circuits-Display
 
 This is a fork of a previous version of the firmware for [this](https://circuitsetup.us/product/complete-time-circuits-display-kit/) wonderful piece of hardware:
 
