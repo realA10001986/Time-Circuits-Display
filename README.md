@@ -19,7 +19,7 @@ During August of 2022, I have re-written almost the entire code. New features an
 - Movie-accurate time travel times in "decorative mode" (automatic time cycling).
 - Alarm function
 - SD card support for custom audio files
-- Night mode (displays off or dimmed)
+- Night mode (displays off or dimmed; manual or automatic)
 - Enhanced time travel sequence
 - "Return from Time Travel" (hold "9" for 2 seconds)
 - Keypad menu for adjusting various settings and viewing IP address and WiFi status
@@ -29,7 +29,8 @@ During August of 2022, I have re-written almost the entire code. New features an
 - 24-hour clock mode for non-Americans ;)
 - Optional power-up intro with sound
 - Optional sound on the hour
-- Optional external fake "power switch"; external time travel trigger
+- Optional external fake "power switch"
+- Optional externally triggered time travel, with optional delay
 - Built-in installer for default audio files in addition to OTA firmware updates
 - many bugfixes and internal changes
 - etc
