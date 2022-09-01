@@ -51,7 +51,15 @@ While the sound files are part of this software, they need to be installed separ
 
 If you are familiar with the Arduino IDE (1.8), you could use "Tools"->"ESP32 Sketch Data Upload" to upload the sound files. Version 2.x of the IDE lacks that data upload menu item and/or plug-ins; in this case go the other way:
 
-The other way is to copy all the files in the "data" folder to the root folder of a fresh FAT32 formatted SD card, to insert this card into the device and install them through the keypad menu or the Config portal. If the exact and complete contents of the data folder is found on the SD card during boot, the keypad will have a "INSTALL AUDIO FILES" menu item, and the Config portal will show an "Audio file installation" option at the bottom of the "Setup" page. Write "COPY" into the empty text field, and click on "Save". The device will then copy all the default audio files from the SD to its internal flash file system. The SD can (and should) be removed afterwards.
+The other way is as follow:
+- Copy all the files in the "data" folder to the root folder of a FAT32 formatted SD card (it is recommended to format this card before usage, but if it contains extra files, these will be ignored)
+- power down the clock,
+- insert this SD card into the device and 
+- power up the clock.
+ 
+If (and only if) the **exact and complete contents of the data folder** is found on the SD card during boot, the keypad will have an "INSTALL AUDIO FILES" menu item, and the Config portal will show an "Audio file installation" option at the bottom of the "Setup" page. 
+
+If you choose to use the Config Portal, trigger the audio file installation by writing "COPY" into the empty text field, and click on "Save". The device will then copy all the default audio files from the SD to its internal flash file system. The SD can (and should) be removed afterwards. The keypad menu method is described further down in this document.
 
 **Short summary of first steps:**
 
