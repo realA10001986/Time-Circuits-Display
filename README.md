@@ -237,7 +237,9 @@ Note that the "Audio file installer" cannot be used to replace default sounds in
 
 If the SD card holds a file named "hour.mp3", this file will be played every hour, on the hour. This feature is disabled in night mode.
 
-If the SD card holds files named "key3.mp3" and/or "key6.mp3", these files will be played if you hold the "3"/"6" key for 2 seconds. 
+If the SD card holds files named "key3.mp3" and/or "key6.mp3", these files will be played if you hold the "3"/"6" key for 2 seconds.
+
+"hour.mp3", "key3.mp3" and "key6.mp3" are not provided here. You can use any mp3, with 128kpbs or less.
 
 **External switch and button**
 
