@@ -35,7 +35,7 @@ During August of 2022, I have re-written almost the entire code. New features an
 - many bugfixes and internal changes
 - etc
 
-**Update:** The nice folks over at circuitsetup.us have taken over this software its in entirety, apart from some sounds, of which they say the like theirs better. As long as I am working on this project, the version here is probably further ahead in development; this might change in the future, when this project eventually no longer is a priority for me.
+**Update:** The nice folks over at circuitsetup.us have taken over this software its in entirety (as "v2"), apart from some sounds, of which they say the like theirs better. As long as I am working on this project, the version here is probably further ahead in development; this might change in the future, when this project eventually no longer is a priority for me.
 
 **Installation**
 
