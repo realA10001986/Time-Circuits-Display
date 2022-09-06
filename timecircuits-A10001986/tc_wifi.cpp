@@ -518,8 +518,8 @@ void updateConfigPortalValues()
     #endif
     
     // Make sure the settings form has the correct values
-    custom_wifiConTimeout.setValue(settings.wifiConTimeout, 1);
-    custom_wifiConRetries.setValue(settings.wifiConRetries, 1);
+    custom_wifiConTimeout.setValue(settings.wifiConTimeout, 2);
+    custom_wifiConRetries.setValue(settings.wifiConRetries, 2);
     custom_ntpServer.setValue(settings.ntpServer, 63);
     custom_timeZone.setValue(settings.timeZone, 63);
 
@@ -545,10 +545,10 @@ void updateConfigPortalValues()
 
     #else   // For checkbox hack --------------------------
 
-    custom_mode24.setValue(((int)atoi(settings.mode24) > 0) ? makeCheck : "0", 14);
-    custom_alarmRTC.setValue(((int)atoi(settings.alarmRTC) > 0) ? makeCheck : "0", 14);
-    custom_ttrp.setValue(((int)atoi(settings.timesPers) > 0) ? makeCheck : "0", 14);           
-    custom_playIntro.setValue(((int)atoi(settings.playIntro) > 0) ? makeCheck : "0", 14);
+    custom_mode24.setValue(((int)atoi(settings.mode24) > 0) ? makeCheck : "1", 14);
+    custom_alarmRTC.setValue(((int)atoi(settings.alarmRTC) > 0) ? makeCheck : "1", 14);
+    custom_ttrp.setValue(((int)atoi(settings.timesPers) > 0) ? makeCheck : "1", 14);           
+    custom_playIntro.setValue(((int)atoi(settings.playIntro) > 0) ? makeCheck : "1", 14);
 
     strcpy(aintCustHTML, aintCustHTML1);
     strcat(aintCustHTML, settings.autoRotateTimes);
@@ -566,17 +566,17 @@ void updateConfigPortalValues()
     if(t == 5) strcat(aintCustHTML, custHTMLSel);
     strcat(aintCustHTML, aintCustHTML8);
     
-    custom_dtNmOff.setValue(((int)atoi(settings.dtNmOff) > 0) ? makeCheck : "0", 14);
-    custom_ptNmOff.setValue(((int)atoi(settings.ptNmOff) > 0) ? makeCheck : "0", 14);
-    custom_ltNmOff.setValue(((int)atoi(settings.ltNmOff) > 0) ? makeCheck : "0", 14);
+    custom_dtNmOff.setValue(((int)atoi(settings.dtNmOff) > 0) ? makeCheck : "1", 14);
+    custom_ptNmOff.setValue(((int)atoi(settings.ptNmOff) > 0) ? makeCheck : "1", 14);
+    custom_ltNmOff.setValue(((int)atoi(settings.ltNmOff) > 0) ? makeCheck : "1", 14);
     #ifdef FAKE_POWER_ON 
-    custom_fakePwrOn.setValue(((int)atoi(settings.fakePwrOn) > 0) ? makeCheck : "0", 14);
+    custom_fakePwrOn.setValue(((int)atoi(settings.fakePwrOn) > 0) ? makeCheck : "1", 14);
     #endif
     #ifdef EXTERNAL_TIMETRAVEL_IN
-    custom_ettLong.setValue(((int)atoi(settings.ettLong) > 0) ? makeCheck : "0", 14);
+    custom_ettLong.setValue(((int)atoi(settings.ettLong) > 0) ? makeCheck : "1", 14);
     #endif
     #ifdef TC_HAVESPEEDO
-    custom_useSpeedo.setValue(((int)atoi(settings.useSpeedo) > 0) ? makeCheck : "0", 14);    
+    custom_useSpeedo.setValue(((int)atoi(settings.useSpeedo) > 0) ? makeCheck : "1", 14);    
     #endif
 
     #endif // ---------------------------------------------
