@@ -65,6 +65,17 @@
 
 /* Changelog 
  *  
+ *  2022/09/5-6 (A10001986)
+ *    - Format flash file system if mounting fails
+ *    - Reduce WiFi transmit power in AP mode (to avoid power issues with volume
+ *      pot if not at minimum)
+ *    - Nightmode: Displays can be individually configured to be dimmed or 
+ *      switched off in night mode
+ *    - Fix logic screw-up in autoTimes, changed intervals to 5, 10, 15, 30, 60.
+ *    - More Config Portal beauty enhancements
+ *    - Clockdisplay: Remove dependency on settings.h
+ *    - Fix static ip parameter handling (make sure strings are 0-terminated)
+ *    [- I2C-Speedo integration; still inactive]
  *  2022/08/31 (A10001986)
  *    - Add some tool tips to Config Portal
  *  2022/08/30 (A10001986)
