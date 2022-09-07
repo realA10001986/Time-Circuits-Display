@@ -1,7 +1,7 @@
 # Time-Circuits-Display (A10001986)
 Firmware for ESP32-based Time-Circuits-Display
 
-This is a fork of a previous version of the firmware for [this](https://circuitsetup.us/product/complete-time-circuits-display-kit/) wonderful piece of hardware:
+This was a fork of a previous version of the firmware for [this](https://circuitsetup.us/product/complete-time-circuits-display-kit/) wonderful piece of hardware:
 
 https://github.com/CircuitSetup/Time-Circuits-Display/blob/master/README.md
 
@@ -31,11 +31,12 @@ During August of 2022, I have re-written almost the entire code. New features an
 - Optional sound on the hour
 - Optional external fake "power switch"
 - Optional externally triggered time travel, with optional delay
+- Support for optional external i2c display acting as Speedometer, used in time travel sequences
 - Built-in installer for default audio files in addition to OTA firmware updates
 - many bugfixes and internal changes
 - etc
 
-**Update:** The nice folks over at circuitsetup.us have taken over this software its in entirety (as "v2"), apart from some sounds, of which they say the like theirs better. As long as I am working on this project, the version here is probably further ahead in development; this might change in the future, when this project eventually no longer is a priority for me.
+In the meantime, the nice folks over at circuitsetup.us decided to use this software (as "v2") for their Time Circuits Display and merged my code into their repository (apart from some sounds, of which they say the like theirs better). This means that what you see here is probably mostly identical with that circuitsetup.us has, maybe a little further ahead in development, and with some better sounds ;)
 
 **Installation**
 
