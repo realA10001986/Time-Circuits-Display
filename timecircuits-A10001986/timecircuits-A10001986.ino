@@ -66,6 +66,7 @@
 /* Changelog 
  *  
  *  2022/09/5-6 (A10001986)
+ *    - Fix TC settings corruption when changing WiFi settings
  *    - Format flash file system if mounting fails
  *    - Reduce WiFi transmit power in AP mode (to avoid power issues with volume
  *      pot if not at minimum)
