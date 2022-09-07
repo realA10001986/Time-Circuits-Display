@@ -79,7 +79,7 @@ If you want to re-use the SD card for substituting the default sound files, plea
 
 *Destination time* and *Last time departed* are stale. These, by default, work like in the movie: Upon a time travel, "present time" becomes "last time departed", and "destination time" becomes "present time". 
 
-There is also a "decorative" mode where the device cycles through a list of pre-programmed times, which cannot be changed. This mode is chosen by setting the "Time-rotation Interval" in the config portal (via network) or the keypad menu to a non-zero value. The device will then cycle through named list every 5th, 15th, 30th, 45th or 60th minute, and thereby change the displays, regardless of times displayed as a result from a time travel. Set the interval to 0 to disable this "decorative" mode.
+There is also a "decorative" mode where the device cycles through a list of pre-programmed times, which cannot be changed. This mode is chosen by setting the "Time-rotation Interval" in the config portal (via network) or the keypad menu to a non-zero value. The device will then cycle through named list every 5th, 10th, 15th, 30th or 60th minute, and thereby change the displays, regardless of times displayed as a result from a time travel. Set the interval to 0 to disable this "decorative" mode.
 
 **Time travel**
 
