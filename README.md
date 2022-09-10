@@ -118,6 +118,8 @@ Night mode will switch off the *destination time* and *last time departed* displ
 
 In the Config Portal, you can configure automatic night mode. Enter start and end hours, and the device will go into night mode at the defined start hour (xx:00), and return to normal at end hour (yy:00). To disable automatic night mode, set start and end to the same value.
 
+Apart from increasing the displays' lifetime, Night Mode reduces the power consumption of the device from around 4.5W to around 2.5W.
+
 **The keypad menu**
  
 The menu is controlled by "pressing" or "holding" the ENTER key on the keypad.
