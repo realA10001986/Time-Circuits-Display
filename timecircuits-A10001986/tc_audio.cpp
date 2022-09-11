@@ -170,10 +170,12 @@ void play_file(const char *audio_file, double volumeFactor, bool checkNightMode,
     
     if(channel != 0) return;  // For now, only 0 is allowed
 
+    pwrNeedFullNow();
+
     #ifdef TC_DBG
     Serial.print(F("CH:"));
     Serial.print(channel);
-    Serial.print(F("  Playing <"));
+    Serial.print(F("  Playing "));
     Serial.println(audio_file);    
     #endif
 

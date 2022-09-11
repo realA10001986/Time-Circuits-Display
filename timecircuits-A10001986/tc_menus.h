@@ -79,6 +79,7 @@ void doSetBrightness(clockDisplay* displaySet);
 void doShowNetInfo();
 void doCopyAudioFiles();
 void waitForEnterRelease();
+bool checkEnterPress();
 void prepareInput(uint16_t& number);
 void waitAudioDone();
 
@@ -96,7 +97,7 @@ extern bool isYearUpdate;
 extern uint8_t timeout;
 
 extern void mydelay(unsigned long mydel);
-extern void mysdelay(unsigned long mydel);
+extern void myssdelay(unsigned long mydel);
 extern void enterkeytick();
 extern void myloop();
 

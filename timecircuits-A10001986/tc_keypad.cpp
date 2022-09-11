@@ -94,22 +94,27 @@ void keypad_setup()
     byte rowMask = (1 << rowPins[0]) | (1 << rowPins[1]) | (1 << rowPins[2]) | (1 << rowPins[3]); // input
     byte colMask = (1 << colPins[0]) | (1 << colPins[1]) | (1 << colPins[2]);                     // output
 
+    // Set up the keypad
     keypad.begin(makeKeymap(keys));
     
     keypad.addEventListener(keypadEvent);
-    
-    keypad.setHoldTime(ENTER_HOLD_TIME); 
+
+    // Set custom delay function
+    // Called between i2c key scan iterations
+    // (calls audio_loop() while waiting)
+    keypad.setCustomDelayFunc(mykpddelay);
 
     keypad.setDebounceTime(20);
+    keypad.setHoldTime(ENTER_HOLD_TIME); 
 
     keypad.colMask = colMask;
     keypad.rowMask = rowMask;
 
-    // Setup pin for white LED
+    // Set up pin for white LED
     pinMode(WHITE_LED_PIN, OUTPUT);
     digitalWrite(WHITE_LED_PIN, LOW);  
 
-    // Setup Enter button
+    // Set up Enter button
     enterKey.setClickTicks(ENTER_CLICK_TIME);
     enterKey.setPressTicks(ENTER_HOLD_TIME);
     enterKey.setDebounceTicks(ENTER_DEBOUNCE);
@@ -117,7 +122,7 @@ void keypad_setup()
     enterKey.attachLongPressStart(enterKeyHeld);
 
 #ifdef EXTERNAL_TIMETRAVEL_IN
-    // Setup External time travel button
+    // Set up External time travel button
     ettKey.setClickTicks(ETT_CLICK_TIME);   
     ettKey.setPressTicks(ETT_HOLD_TIME); 
     ettKey.setDebounceTicks(ETT_DEBOUNCE);
@@ -160,6 +165,8 @@ void keypadEvent(KeypadEvent key)
 {
     if(!FPBUnitIsOn || startup || timeTraveled || timeTravelP0 || timeTravelP1) 
         return;
+
+    pwrNeedFullNow();
     
     switch(keypad.getState()) {
         case PRESSED:
@@ -208,6 +215,12 @@ void keypadEvent(KeypadEvent key)
                 doKey = false;
                 play_file("/key6.mp3", 1.0, true, 0);                
             }
+            if(key == '7') {    // "7" held down -> re-enable WiFi if in PowerSave mode
+                doKey = false;
+                play_file("/ping.mp3", 1.0, true, 0);
+                waitAudioDone();
+                wifiOn(0, true);    // Enable WiFi even if in AP mode 
+            }
             break;
         case RELEASED:
             if(doKey && key != '#' && key != '*') {
@@ -230,17 +243,20 @@ void keypadEvent(KeypadEvent key)
 void enterKeyPressed() 
 {
     isEnterKeyPressed = true;
+    pwrNeedFullNow();
 }
 
 void enterKeyHeld() 
 {
     isEnterKeyHeld = true;
+    pwrNeedFullNow();
 }
 
 #ifdef EXTERNAL_TIMETRAVEL_IN
 void ettKeyPressed() 
 {
     isEttKeyPressed = true;
+    pwrNeedFullNow();
 }
 #endif
 
@@ -272,7 +288,7 @@ void resetTimebufIndices()
     // Do NOT clear the timeBuffer, might be pre-set
 }
 
-void enterkeytick() 
+void enterkeytick()
 {
     enterKey.tick();  // manages the enter button (updates flags)
     
@@ -547,7 +563,7 @@ void keypad_loop()
         if(!specDisp) {
           
             destinationTime.showAnimate1();   // Show all but month
-            mysdelay(80);                     // Wait 80ms
+            mydelay(80);                      // Wait 80ms
             destinationTime.showAnimate2();   // turn on month
         
             digitalWrite(WHITE_LED_PIN, LOW); // turn off white LED
@@ -580,6 +596,18 @@ void cancelETTAnim()
 }    
 
 /*
+ * Custom delay funktion for key scan in i2ckeypad
+ */
+void mykpddelay(unsigned int mydel)
+{  
+    unsigned long startNow = millis();
+    while(millis() - startNow < mydel) {
+        audio_loop();
+        delay(1);        
+    } 
+}
+
+/*
  * Night mode
  * 
  */
@@ -589,7 +617,7 @@ void nightModeOn()
     presentTime.setNightMode(true);
     departedTime.setNightMode(true);
     #ifdef TC_HAVESPEEDO
-    speedo.setNightMode(true);
+    if(useSpeedo) speedo.setNightMode(true);
     #endif
 }
 
@@ -599,6 +627,6 @@ void nightModeOff()
     presentTime.setNightMode(false);
     departedTime.setNightMode(false);
     #ifdef TC_HAVESPEEDO
-    speedo.setNightMode(false);
+    if(useSpeedo) speedo.setNightMode(false);
     #endif
 }
