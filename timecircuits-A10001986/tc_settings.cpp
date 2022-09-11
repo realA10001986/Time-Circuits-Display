@@ -45,7 +45,7 @@ bool haveSD = false;
 /* If SD contains all default audio files */
 bool allowCPA = false;
 
-#define NUM_AUDIOFILES 16
+#define NUM_AUDIOFILES 17
 const char *audioFiles[NUM_AUDIOFILES] = {
       "/alarm.mp3\0", 
       "/alarmoff.mp3\0", 
@@ -59,6 +59,7 @@ const char *audioFiles[NUM_AUDIOFILES] = {
       "/intro.mp3\0",
       "/nmoff.mp3\0",
       "/nmon.mp3\0",
+      "/ping.mp3\0",
       "/shutdown.mp3",
       "/startup.mp3\0",
       "/timetravel.mp3\0",
@@ -219,6 +220,14 @@ void settings_setup()
                         strcpy(settings.wifiConTimeout, json["wifiConTimeout"]);
                         writedefault |= checkValidNumParm(settings.wifiConTimeout, 1, 15, DEF_WIFI_TIMEOUT);
                     } else writedefault = true;
+                    if(json["wifiOffDelay"]) {
+                        strcpy(settings.wifiOffDelay, json["wifiOffDelay"]);
+                        writedefault |= checkValidNumParm(settings.wifiOffDelay, 0, 99, DEF_WIFI_OFFDELAY);
+                    } else writedefault = true;
+                    if(json["wifiAPOffDelay"]) {
+                        strcpy(settings.wifiAPOffDelay, json["wifiAPOffDelay"]);
+                        writedefault |= checkValidNumParm(settings.wifiAPOffDelay, 0, 99, DEF_WIFI_APOFFDELAY);
+                    } else writedefault = true;
                     if(json["mode24"]) {
                         strcpy(settings.mode24, json["mode24"]);
                         writedefault |= checkValidNumParm(settings.mode24, 0, 1, DEF_MODE24);
@@ -275,6 +284,10 @@ void settings_setup()
                     if(json["useSpeedo"]) {
                         strcpy(settings.useSpeedo, json["useSpeedo"]);
                         writedefault |= checkValidNumParm(settings.useSpeedo, 0, 1, DEF_USE_SPEEDO);
+                    } else writedefault = true;
+                    if(json["speedoType"]) {
+                        strcpy(settings.speedoType, json["speedoType"]);
+                        writedefault |= checkValidNumParm(settings.speedoType, SP_MIN_TYPE, SP_NUM_TYPES-1, DEF_SPEEDO_TYPE);
                     } else writedefault = true;
                     if(json["speedoBright"]) {
                         strcpy(settings.speedoBright, json["speedoBright"]);
@@ -346,6 +359,8 @@ void write_settings()
     json["lastTimeBright"] = settings.lastTimeBright;
     json["wifiConRetries"] = settings.wifiConRetries;
     json["wifiConTimeout"] = settings.wifiConTimeout;
+    json["wifiOffDelay"] = settings.wifiOffDelay;
+    json["wifiAPOffDelay"] = settings.wifiAPOffDelay;
     json["mode24"] = settings.mode24;
     json["timeTrPers"] = settings.timesPers;
     #ifdef FAKE_POWER_ON
@@ -364,6 +379,7 @@ void write_settings()
     #endif
     #ifdef TC_HAVESPEEDO
     json["useSpeedo"] = settings.useSpeedo;
+    json["speedoType"] = settings.speedoType;
     json["speedoBright"] = settings.speedoBright;
     json["speedoFact"] = settings.speedoFact;
     #endif
@@ -568,7 +584,7 @@ bool loadAlarmEEPROM()
     return true;
 }
 
-void saveAlarm() 
+void saveAlarm()
 {
     char hourBuf[8];
     char minBuf[8];
@@ -783,16 +799,16 @@ bool check_if_default_audio_present()
     size_t sizes[10+NUM_AUDIOFILES] = {
 #ifndef TWSOUND
       4178, 4178, 4178, 4178, 4178, 4178, 3760, 3760, 4596, 3760, // DTMF
-      70664, 71500, 60633, 10478,   // alarm, alarmoff, alarmon, baddate
-      15184, 22983, 33364, 51701,   // ee1, ee2, ee3, ee4
-      13374, 125804, 33853, 47228,  // enter, intro, nmoff, nmon
-      3790, 21907, 38899, 135447    // shutdown, startup, timetravel, travelstart
+      70664, 71500, 60633, 10478,           // alarm, alarmoff, alarmon, baddate
+      15184, 22983, 33364, 51701,           // ee1, ee2, ee3, ee4
+      13374, 125804, 33853, 47228,          // enter, intro, nmoff, nmon
+      16747, 3790, 21907, 38899, 135447     // ping, shutdown, startup, timetravel, travelstart
 #else      
       4178, 4178, 4178, 4178, 4178, 4178, 3760, 3760, 4596, 3760, //DTMF
-      70664, 71500, 60633, 10478,   // alarm, alarmoff, alarmon, baddate
-      15184, 22983, 33364, 51701,   // ee1, ee2, ee3, ee4
-      12149, 125804, 33853, 47228,  // enter, intro, nmoff, nmon
-      3790, 18419, 38899, 135447    // shutdown, startup, timetravel, travelstart
+      70664, 71500, 60633, 10478,           // alarm, alarmoff, alarmon, baddate
+      15184, 22983, 33364, 51701,           // ee1, ee2, ee3, ee4
+      12149, 125804, 33853, 47228,          // enter, intro, nmoff, nmon
+      16747, 3790, 18419, 38899, 135447     // ping, shutdown, startup, timetravel, travelstart
 #endif      
     };
     
@@ -935,4 +951,12 @@ bool filecopy(File source, File dest)
     }
 
     return true;   
+}
+
+void formatFlashFS()
+{
+    #ifdef TC_DBG
+    Serial.println(F("Formatting flash FS"));
+    #endif
+    SPIFFS.format();
 }

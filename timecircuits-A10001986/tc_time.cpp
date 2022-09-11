@@ -87,6 +87,10 @@ bool          timeTraveled = false;
 
 int           specDisp = 0;
 
+// CPU power management
+bool          pwrLow = false;
+unsigned long pwrFullNow = 0;
+
 struct tm _timeinfo;  //for NTP
 RTC_DS3231 rtc;       //for RTC IC
 
@@ -240,18 +244,6 @@ const uint8_t tt_p0_delays[88] =
        41,  41,  41,  41,  41,  41,  41,  41                // 80-87  90mph 18.8s   4,1
 };
 
-#if 0
-       200,  10,  8,  20,  19,  19,  19,  18,  18,  18,     // 0 - 9
-       17,  17,  17,  16,  16,  15,  15,  15,  14,  14,     // 10-19
-       14,  13,  13,  12,  12,  12,  12,  12,  12,  12,     // 20-29
-       11,  11,  10,  10,  10,  10,  10,  10,  10,  10,     // 30-39
-       10,  10,  10,  10,  10,  10,  10,  10,  10,  10,     // 40-49
-       10,  10,  10,  10,  10,  10,  10,  10,  10,  10,     // 50-59
-       10,  10,  10,  10,  10,  12,  12,  12,  13,  13,     // 60-69
-       13,  15,  17,  17,  19,  20,  22,  23,  24,  24,     // 70-79
-       25,  26,  27,  29,  32,  36,  40,  45                // 80-87
-#endif
-
 /*
  * time_boot()
  * 
@@ -262,10 +254,6 @@ void time_boot()
     presentTime.begin();
     destinationTime.begin();
     departedTime.begin();
-
-    #ifdef TC_HAVESPEEDO
-    speedo.begin();
-    #endif
 }
 
 /*
@@ -276,6 +264,14 @@ void time_setup()
 {
     bool validLoad = true;
     bool rtcbad = false;
+
+    // Power management: Set CPU speed
+    // to maximum and start timer
+    #ifdef TC_DBG
+    Serial.print("Initial CPU speed is ");
+    Serial.println(getCpuFrequencyMhz(), DEC);
+    #endif
+    pwrNeedFullNow(true);
     
     pinMode(SECONDS_IN_PIN, INPUT_PULLDOWN);  // for monitoring seconds 
     
@@ -430,21 +426,37 @@ void time_setup()
 
     #ifdef TC_HAVESPEEDO    
     useSpeedo = ((int)atoi(settings.useSpeedo) > 0) ? true : false;
-    speedo.setBrightness((int)atoi(settings.speedoBright), true);
-    speedo.setDots(false, true);
-    ttP0TimeFactor = (double)atof(settings.speedoFact);
-    if(ttP0TimeFactor < 0.5) ttP0TimeFactor = 0.5;
-    if(ttP0TimeFactor > 5.0) ttP0TimeFactor = 5.0;
-    
-    for(int i = 1; i < 88; i++) {
-        pointOfP1 += (unsigned long)(((double)(tt_p0_delays[i] * 10)) / ttP0TimeFactor);
+    if(useSpeedo) {
+        speedo.begin((int)atoi(settings.speedoType));
+        
+        speedo.setBrightness((int)atoi(settings.speedoBright), true);
+        speedo.setDot(true);
+
+        // Speed factor for acceleration curve
+        ttP0TimeFactor = (double)atof(settings.speedoFact);
+        if(ttP0TimeFactor < 0.5) ttP0TimeFactor = 0.5;
+        if(ttP0TimeFactor > 5.0) ttP0TimeFactor = 5.0;
+
+        // Calculate start point of P1 sequence
+        for(int i = 1; i < 88; i++) {
+            pointOfP1 += (unsigned long)(((double)(tt_p0_delays[i] * 10)) / ttP0TimeFactor);
+        }
+        pointOfP1 -= TT_P1_POINT88;
+        
+        speedo.off();
+
+        speedo.setSpeed(0);
+        speedo.on();
+        speedo.show();
+        
+        #ifdef TC_DBG
+        speedo.setColon(false);
+        speedo.setText("TSTX");
+        //speedo.showTextDirect("XXXX");
+        speedo.on();
+        speedo.show();
+        #endif
     }
-    pointOfP1 -= 1000;
-    speedo.off();
-    
-    speedo.showOnlyText("TEST");
-    speedo.on();
-    
     #endif
 
     // Show "RESET" message if data loaded was invalid somehow
@@ -580,7 +592,7 @@ void time_loop()
                     mydelay(130);
                     allOff();
                     #ifdef TC_HAVESPEEDO
-                    speedo.off();
+                    if(useSpeedo) speedo.off();
                     #endif
                     waitAudioDone();
                     stopAudio();
@@ -590,6 +602,17 @@ void time_loop()
         }
     }
     #endif
+
+    // Power management: CPU speed
+    // Can only reduce when WiFi is off
+    if(!pwrLow && (wifiIsOff || wifiAPIsOff) && (millis() - pwrFullNow >= 5*60*1000)) {
+        setCpuFrequencyMhz(80);
+        pwrLow = true;
+        #ifdef TC_DBG
+        Serial.print(F("Reduced CPU speed to "));
+        Serial.println(getCpuFrequencyMhz());
+        #endif  
+    }
 
     // Initiate startup delay, play startup sound
     if(startupSound) {
@@ -601,7 +624,10 @@ void time_loop()
     // Turn display on after startup delay
     if(startup && (millis() - startupNow >= STARTUP_DELAY)) {        
         animate();
-        startup = false;        
+        startup = false;
+        #ifdef TC_HAVESPEEDO
+        if(useSpeedo) speedo.off();
+        #endif     
         #ifdef TC_DBG
         Serial.println(F("time_loop: Startup animation triggered"));
         #endif
@@ -613,7 +639,6 @@ void time_loop()
         timeTravelP0Speed++;
         speedo.setSpeed(timeTravelP0Speed);
         speedo.show();
-        //Serial.println(timeTravelP0Speed, DEC);  //
         if(timeTravelP0Speed < 88) {            
             timetravelP0Delay = (unsigned long)(((double)(tt_p0_delays[timeTravelP0Speed] * 10)) / ttP0TimeFactor);
             currTotDur += timetravelP0Delay;
@@ -637,7 +662,6 @@ void time_loop()
             timeTravelP0Speed--;
             speedo.setSpeed(timeTravelP0Speed);
             speedo.show();
-            //Serial.println(timeTravelP0Speed, DEC);  //
             timetravelP0Delay = (timeTravelP0Speed == 0) ? 4000 : 30;
             timetravelP0Now = millis(); 
         }        
@@ -695,7 +719,11 @@ void time_loop()
 
             // Re-adjust time periodically using NTP
             // (Do not interrupt sequences though)
-            if( (dt.second() == 10 && dt.minute() == 1) &&
+            // If Wifi is in power-save, update only
+            // during night hours. (Reason: Re-connect
+            // stalls display for a short while)
+            if( (!wifiIsOff || (dt.hour() <= 6))         &&
+                (dt.second() == 10 && dt.minute() == 1) &&
                 !timeTraveled && !timeTravelP0 && !timeTravelP1 && !timeTravelP2 ) {
               
                 if(!autoReadjust) {     
@@ -916,10 +944,15 @@ void time_loop()
             
             // Do this on previous minute:59
             minNext = (dt.minute() == 59) ? 0 : dt.minute() + 1;
+
+            // End autoPause if run out
+            if(autoPaused && (millis() - pauseNow >= pauseDelay)) {
+                autoPaused = false;
+            }
             
             // Only do this on second 59, check if it's time to do so
-            if(dt.second() == 59 && 
-               (!autoPaused || (millis() - pauseNow >= pauseDelay)) &&
+            if(dt.second() == 59  && 
+               (!autoPaused)      &&
                autoTimeIntervals[autoInterval] &&
                (minNext % autoTimeIntervals[autoInterval] == 0)) {
 
@@ -929,10 +962,8 @@ void time_loop()
                     Serial.println(F("time_loop: autoInterval"));
                     #endif             
 
-                    autoPaused = false;
-                    
                     autoIntDone = true;     // Already did this, don't repeat
-                    
+
                     // cycle through pre-programmed times
                     autoTime++;
                     if(autoTime >= NUM_AUTOTIMES) {
@@ -1007,7 +1038,7 @@ void time_loop()
                     presentTime.setBrightnessDirect((1+(rand() % 10)) & 0x0b);
                     ((rand() % 10) < 3) ? departedTime.showOnlyText(">ACS2011GIDUW") : departedTime.show();
                     departedTime.setBrightnessDirect((1+(rand() % 10)) & 0x07);
-                    mysdelay(20);               
+                    mydelay(20);               
                 }
                 //allOff();
                 break;       
@@ -1027,7 +1058,7 @@ void time_loop()
                     if(tt < 4)      { departedTime.lampTest(); }
                     else if(tt < 8) { departedTime.showOnlyText("00000000000000"); departedTime.on(); }
                     else            { departedTime.off(); }
-                    mysdelay(10);
+                    mydelay(10);
                 }
                 break;
             default:                
@@ -1059,6 +1090,8 @@ void timeTravel(bool makeLong, bool withSpeedo)
 {
     int tyr = 0;
     int tyroffs = 0;  
+
+    pwrNeedFullNow();
 
     cancelEnterAnim();
     cancelETTAnim();
@@ -1162,6 +1195,8 @@ void timeTravel(bool makeLong, bool withSpeedo)
  */
 void resetPresentTime() 
 {    
+    pwrNeedFullNow();
+    
     timetravelNow = millis();
     timeTraveled = true; 
     if(timeDifference) {
@@ -1238,6 +1273,9 @@ bool getNTPTime()
 {  
     uint16_t newYear;
     int16_t  newYOffs = 0;
+
+    pwrNeedFullNow();
+    wifiOn(2*60*1000, false);    // reconnect for only 2 mins, not in AP mode
     
     if(WiFi.status() == WL_CONNECTED) { 
       
@@ -1524,4 +1562,18 @@ void waitAudioDoneIntro()
        audio_loop();
        delay(10);
   }
+}
+
+// Call this to get full CPU speed
+void pwrNeedFullNow(bool force)
+{
+  if(pwrLow || force) {
+      setCpuFrequencyMhz(240);
+      #ifdef TC_DBG            
+      Serial.print("Setting CPU speed to ");
+      Serial.println(getCpuFrequencyMhz());
+      #endif  
+  }
+  pwrFullNow = millis();
+  pwrLow = false;
 }

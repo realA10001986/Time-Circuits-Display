@@ -1,7 +1,7 @@
 /*
 ||
 || @file Keypad_I2C.h
-|| @version 3.0tc - Time Circuits Special Edition by A10001986
+|| @version 3.xtc - Time Circuits Special Edition by A10001986
 || @version 3.0 - multiple WireX support
 || @version 2.0 - PCF8575 support added by Paul Williamson
 || @author G. D. (Joe) Young, ptw
@@ -47,6 +47,8 @@
 #define PCF8574 1 // PCF8574 I/O expander device is 1 byte wide
 #define PCF8575 2 // PCF8575 I/O expander device is 2 bytes wide
 
+void defaultDelay(unsigned int mydelay);
+
 class Keypad_I2C : public Keypad {
 public:
 	Keypad_I2C(char* userKeymap, byte* row, byte* col, byte numRows, byte numCols, byte address,
@@ -63,6 +65,9 @@ public:
    
   	// Wire function
   	void begin(void);
+
+    // Setter for custom delay function
+    void setCustomDelayFunc(void (*myDelay)(unsigned int));
    
   	// Wire functions
   	void pin_mode(byte pinNum, byte mode) {}
@@ -93,14 +98,17 @@ private:
     word pinValBuf;
     int count = 0;
     int rowCnt = 0;
+
+    // Ptr to custom delay function
+    void (*_customDelayFunc)(unsigned int) = NULL; 
 };
 
 #endif
 
 /*
 || @changelog
-|| |
-|| | 3.0tc 2022-08-11 - A10001986; Read twice to catch ghost key presses,and
+|| | 3.01tc 2022-09-22 - A10001986 add custom delay function; read three times.
+|| | 3.0tc 2022-08-11  - A10001986; Read twice to catch ghost key presses,and
 || |                    reduce i2c traffic by buffering row pin status
 || | 3.0 2020-04-06 - Joe Young : support multiple I2C port WireX objects in constructor
 || | 2.0 2013-08-31 - Paul Williamson : Added i2cwidth parameter for PCF8575 support

@@ -36,6 +36,9 @@
 
 extern void wifi_setup();
 extern void wifi_loop();
+void wifiConnect();
+void wifiOff();
+void wifiOn(unsigned long newDelay = 0, bool alsoInAPMode = false);
 
 void saveParamsCallback();
 void saveConfigCallback();
@@ -53,5 +56,9 @@ void ipToString(char *str, IPAddress ip);
 IPAddress stringToIp(char *str);
 
 void getParam(String name, char *destBuf, size_t length);
+
+extern bool wifiIsOff;
+extern bool wifiAPIsOff;
+extern bool wifiInAPMode;
 
 #endif

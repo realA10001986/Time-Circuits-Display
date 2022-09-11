@@ -1,7 +1,7 @@
 /*
 ||
 || @file Keypad_I2C.cpp
-|| @version 3.0tc - Time Circuits Special Edition by A10001986
+|| @version 3.xtc - Time Circuits Special Edition by A10001986
 || @version 3.0 - multiple WireX support
 || @version 2.0 - PCF8575 support added by Paul Williamson
 || @author G. D. (Joe) Young, ptw
@@ -46,6 +46,8 @@ void Keypad_I2C::begin(char *userKeymap)
     Keypad::begin(userKeymap);
 	  port_write(0xffff);			//set to power-up state
 	  pinState = pinState_set();
+
+    _customDelayFunc = defaultDelay;
 }
 
 // Initialize I2C
@@ -53,6 +55,18 @@ void Keypad_I2C::begin(void)
 {
 	  port_write(0xffff);			//set to power-up state
 	  pinState = pinState_set();
+
+    _customDelayFunc = defaultDelay;
+}
+
+void defaultDelay(unsigned int mydelay)
+{
+    delay(mydelay);
+}
+
+void Keypad_I2C::setCustomDelayFunc(void (*myDelay)(unsigned int))
+{
+    _customDelayFunc = myDelay;
 }
 
 void Keypad_I2C::pin_write(byte pinNum, boolean level) 
@@ -78,7 +92,7 @@ void Keypad_I2C::pin_write(byte pinNum, boolean level)
 int Keypad_I2C::pin_read(byte pinNum) 
 {
   	word mask = 1 << pinNum;
-    word pinVal = 1, pinVal2 = 2;
+    word pinVal = 0x1155, pinVal2 = 0x22aa, pinVal3 = 0x33AA;
 
     if(scanKeys) {
 
@@ -86,17 +100,24 @@ int Keypad_I2C::pin_read(byte pinNum)
         // i2c traffic. We only read the value once, and send back
         // the same value rowCnt-1 times afterwards.
         if(count == 0) {
-            while(pinVal != pinVal2) {
+            while(pinVal != pinVal2 || pinVal != pinVal3) {
                 _wire->requestFrom((int)i2caddr, (int)i2cwidth);
                 pinVal = _wire->read();
                 if(i2cwidth > 1) {
                     pinVal |= (_wire->read() << 8);
                 }
-                delay(5); 
+                (*_customDelayFunc)(5);    //delay(5); 
                 _wire->requestFrom((int)i2caddr, (int)i2cwidth);
                 pinVal2 = _wire->read();
                 if(i2cwidth > 1) {
                     pinVal2 |= (_wire->read() << 8);
+                } 
+                if(pinVal != pinVal2) continue; 
+                (*_customDelayFunc)(5);   //delay(5); 
+                _wire->requestFrom((int)i2caddr, (int)i2cwidth);
+                pinVal3 = _wire->read();
+                if(i2cwidth > 1) {
+                    pinVal3 |= (_wire->read() << 8);
                 }                
             }
             pinValBuf = pinVal;
@@ -115,7 +136,7 @@ int Keypad_I2C::pin_read(byte pinNum)
             if(i2cwidth > 1) {
                 pinVal |= _wire->read() << 8;
             } 
-            delay(5);
+            (*_customDelayFunc)(5); //delay(5);
             _wire->requestFrom((int)i2caddr, (int)i2cwidth);
             pinVal2 = _wire->read();
             if(i2cwidth > 1) {
@@ -158,7 +179,7 @@ word Keypad_I2C::pinState_set()
 
 /*
 || @changelog
-|| |
+|| | 3.01tc 2022-09-22 - A10001986 add custom delay function; read three times.
 || | 3.0tc 2022-08-11 - A10001986; Read twice to catch ghost key presses,and
 || |                    reduce i2c traffic by buffering row pin status
 || | 3.0  2020-04-06 - Joe Young : multiple WireX param in constructor

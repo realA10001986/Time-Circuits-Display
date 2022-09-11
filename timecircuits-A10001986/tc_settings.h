@@ -62,6 +62,8 @@ extern void file_copy_progress();
 extern void file_copy_done();
 extern void file_copy_error();
 
+extern void formatFlashFS();
+
 extern bool    alarmOnOff;
 extern uint8_t alarmHour;
 extern uint8_t alarmMinute;
@@ -83,6 +85,8 @@ extern bool    haveSD;
 #define DEF_AUTOROTTIMES    1     // 0-5;  Default: Auto-rotate every 5th minute
 #define DEF_WIFI_RETRY      3     // 1-15; Default: 3 retries
 #define DEF_WIFI_TIMEOUT    7     // 1-15; Default: 7 seconds time-out
+#define DEF_WIFI_OFFDELAY   0     // 0/10-99: Default 0 = Never power down WiFi in STA-mode
+#define DEF_WIFI_APOFFDELAY 0     // 0/10-99: Default 0 = Never power down WiFi in AP-mode
 #define DEF_NTP_SERVER      "pool.ntp.org"
 #define DEF_TIMEZONE        "CST6CDT,M3.2.0,M11.1.0"    // Posix format
 #define DEF_BRIGHT_DEST     15    // 1-15; Default: max brightness
@@ -97,7 +101,8 @@ extern bool    haveSD;
 #define DEF_ETT_DELAY       0     // in ms; Default 0: ETT immediately
 #define DEF_ETT_LONG        0     // 0: Ext. TT short (reentry), 1: long
 #define DEF_USE_SPEEDO      0     // 0: Don't use speedo part of time travel sequence
-#define DEF_SPEEDO_FACT     1.0   // Speedo factor (>1.0 faster, <1.0 slower)
+#define DEF_SPEEDO_TYPE     SP_MIN_TYPE  // Default display type
+#define DEF_SPEEDO_FACT     2.0   // Speedo factor (1.0 actual DeLorean figures; >1.0 faster, <1.0 slower)
 #define DEF_BRIGHT_SPEEDO   15    // Default: Max. brightness
 
 struct Settings {
@@ -108,6 +113,8 @@ struct Settings {
     char autoRotateTimes[4] = MS(DEF_AUTOROTTIMES);
     char wifiConRetries[4]  = MS(DEF_WIFI_RETRY);
     char wifiConTimeout[4]  = MS(DEF_WIFI_TIMEOUT);
+    char wifiOffDelay[4]    = MS(DEF_WIFI_OFFDELAY);
+    char wifiAPOffDelay[4]  = MS(DEF_WIFI_APOFFDELAY);
     char ntpServer[64]      = DEF_NTP_SERVER;
     char timeZone[64]       = DEF_TIMEZONE;
     char destTimeBright[4]  = MS(DEF_BRIGHT_DEST);
@@ -127,10 +134,11 @@ struct Settings {
 #endif
 #ifdef TC_HAVESPEEDO
     char useSpeedo[4]       = MS(DEF_USE_SPEEDO);
+    char speedoType[4]      = MS(DEF_SPEEDO_TYPE);
     char speedoBright[4]    = MS(DEF_BRIGHT_SPEEDO);
     char speedoFact[6]      = MS(DEF_SPEEDO_FACT);
 #endif
-    char copyAudio[6]       = "";   // never loaded or saved!
+    char copyAudio[12]      = "";   // never loaded or saved!
 };
 
 // Maximum delay for incoming tt trigger

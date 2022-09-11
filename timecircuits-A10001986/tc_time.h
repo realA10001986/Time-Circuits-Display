@@ -69,6 +69,8 @@
 #define TT_P1_DELAY_P4  (6800-(TT_P1_DELAY_P3+TT_P1_DELAY_P2+TT_P1_DELAY_P1))                   // Random display I
 #define TT_P1_DELAY_P5  (8000-(TT_P1_DELAY_P4+TT_P1_DELAY_P3+TT_P1_DELAY_P2+TT_P1_DELAY_P1))    // Random display II
 
+#define TT_P1_POINT88   1000    // ms before end of sample when 88mph is reached
+
 extern uint8_t        autoInterval;
 extern const uint8_t  autoTimeIntervals[6];
 
@@ -80,6 +82,7 @@ extern clockDisplay destinationTime;
 extern clockDisplay presentTime;
 extern clockDisplay departedTime;
 #ifdef TC_HAVESPEEDO
+extern bool useSpeedo;
 extern speedDisplay speedo;
 #endif
 
@@ -115,6 +118,8 @@ void fpbKeyLongPressStop();
 
 void my2delay(unsigned long mydel);
 void waitAudioDoneIntro();
+
+extern void pwrNeedFullNow(bool force = false);
 
 // These block various events
 extern bool FPBUnitIsOn;

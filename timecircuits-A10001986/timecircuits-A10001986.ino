@@ -65,7 +65,39 @@
 
 /* Changelog 
  *  
- *  2022/09/5-6 (A10001986)
+ *  2022/09/08-10 (A10001986)
+ *    - Keypadi2c: Custom delay function to support uninterrupted audio during
+ *      key scanning; i2c is now read three times in order to properly
+ *      debounce.
+ *    - Keypad/menu: Properly debounce enter key in menu (where we cannot
+ *      use the keypad lib).
+ *    - Menu: Volume setter now plays demo sound with delay (1s)
+ *    - Added WiFi-off timers for power saving. After a configurable number of
+ *      minutes, WiFi is powered-down. There are separate options for WiFi
+ *      in station mode (ie when connected to a WiFi network), and in AP mode
+ *      (ie when the device acts as an Access Point).
+ *      The timer starts at power-up. To re-connect/re-enable the AP, hold
+ *      '7' on the keypad for 2 seconds. WiFi will be re-enabled for the 
+ *      configured amount of minutes, then powered-down again.
+ *      For NTP re-syncs, the firmware will automatically reconnect for a 
+ *      short period of time.
+ *      Reduces power consumption by 0.2W.
+ *    - Added CPU power save: The device reduces the CPU speed to 80MHz if
+ *      idle and while WiFi is powered-down. (Reducing the CPU speed while
+ *      WiFi is active leads to WiFi errors.)
+ *      Reduces power consumption by 0.1W.
+ *    - Added option to re-format the flash FS in case of FS corruption. 
+ *      In the config portal, write "FORMAT" into the audio file installer
+ *      section instead of "COPY". This forces the flash FS to be formatted,
+ *      all settings files to be rewritten and the audio files (re-)copied
+ *      from SD. Prerequisite: A properly set-up SD card is in the SD card
+ *      slot (ie one that contains all original files from the "data" folder
+ *      of this repository)
+ *  2022/09/07 (A10001986)
+ *    - Speedo module re-written to make speedo type configurable at run-time
+ *    - WiFi Menu: Params over Info
+ *    - time: end autopause regardless of autoInt setting (avoid overflow)
+ *  2022/09/05-06 (A10001986)
  *    - Fix TC settings corruption when changing WiFi settings
  *    - Format flash file system if mounting fails
  *    - Reduce WiFi transmit power in AP mode (to avoid power issues with volume

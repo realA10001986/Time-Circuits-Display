@@ -71,6 +71,7 @@ extern void recordSetYearKey(char key);
 extern void resetTimebufIndices();
 extern void cancelEnterAnim();
 extern void cancelETTAnim();
+void mykpddelay(unsigned int mydel);
 
 void nightModeOn();
 void nightModeOff();

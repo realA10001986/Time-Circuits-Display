@@ -37,9 +37,9 @@
  *     - enter dates/times for the three displays,
  *     - set the audio volume (VOL-UME),
  *     - set an alarm ("ALA-RM"),
- *     - select the Time-rotation Interval ("ROT-INT"),
- *     - select the brightness for the three displays ("BRI-GHT"),
- *     - show network information ("NET-WRK"),
+ *     - select the Time-rotation Interval ("TIME ROTATION INTERVAL"),
+ *     - select the brightness for the three displays ("BRIGHTNESS"),
+ *     - show network information ("NET-WORK"),
  *     - install the default audio files ("INSTALL AUDIO FILES")
  *     - quit the menu ("END").
  * 
@@ -96,7 +96,7 @@
  *     - Hold ENTER
  *     - Press ENTER to toggle the alarm on and off, hold ENTER to proceed
  *     - Then enter the hour and minutes. This works as described above.
- *     - The menu is left automatically after entering the minute. "SAVE" is displayed 
+ *     - The menu is left automatically after entering the minute. "SAVING" is displayed 
  *       briefly.
  *
  *    Under normal operation (ie outside of the menu), holding "1" enables the alarm, 
@@ -113,30 +113,30 @@
  * How to select the Time-rotation Interval:
  *
  *     - Hold ENTER to invoke main menu
- *     - Press ENTER until "ROT-INT" is shown
+ *     - Press ENTER until "TIME ROTATION INTERVAL" is shown
  *     - Hold ENTER, "INT" is displayed
  *     - Press ENTER to cycle through the possible Time-rotation Interval values.
  *
  *       A value of 0 disables automatic time cycling ("OFF").
  *
  *       Non-zero values make the device cycle through a number of pre-programmed times. 
- *       The value means "minutes" (hence "MIN-UTES") between changes.
+ *       The value means "minutes" (hence "MINUTES") between changes.
  *
- *     - Hold ENTER to select the value shown and exit the menu ("SAVE" is displayed briefly)
+ *     - Hold ENTER to select the value shown and exit the menu ("SAVING" is displayed briefly)
  * 
  * How to adjust the display brightness:
  * 
  *     - Hold ENTER to invoke main menu
- *     - Press ENTER until "BRI-GHT" is shown
+ *     - Press ENTER until "BRIGHTNESS" is shown
  *     - Hold ENTER, the displays show all elements, the top-most display says "LVL"
  *     - Press ENTER to cycle through the possible levels (1-5)
  *     - Hold ENTER to use current value and proceed to next display
- *     - After the third display, "SAVE" is displayed briefly and the menu is left automatically.
+ *     - After the third display, "SAVING" is displayed briefly and the menu is left automatically.
  * 
  * How to find out the IP address and WiFi status:
  * 
  *     - Hold ENTER to invoke main menu
- *     - Press ENTER until "NET-WRK" is shown
+ *     - Press ENTER until "NET-WORK" is shown
  *     - Hold ENTER, the displays shows the IP address
  *     - Press ENTER to view the WiFi status
  *     - Hold ENTER to leave the menu
@@ -201,6 +201,8 @@ void enter_menu()
     #ifdef TC_DBG
     Serial.println(F("Menu: enter_menu() invoked"));
     #endif
+
+    pwrNeedFullNow();
     
     isEnterKeyHeld = false;     
     isEnterKeyPressed = false; 
@@ -378,7 +380,7 @@ void enter_menu()
             }
 
             // Show a save message for a brief moment
-            displaySet->showOnlyText("SAVE");  
+            displaySet->showOnlyText("SAVING");  
 
             waitAudioDone();
             
@@ -520,10 +522,12 @@ void menuSelect(int& number)
     while(!checkTimeOut()) {
       
         // If pressed
-        if(digitalRead(ENTER_BUTTON_PIN)) {
+        //if(digitalRead(ENTER_BUTTON_PIN)) {
+        if(checkEnterPress()) {
           
             // wait for release
-            while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
+            //while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
+            while(!checkTimeOut() && checkEnterPress()) {
                 
                 myloop();
   
@@ -775,7 +779,8 @@ void setField(uint16_t& number, uint8_t field, int year = 0, int month = 0)
     // Force keypad to send keys to our buffer
     isSetUpdate = true; 
     
-    while( !checkTimeOut() && !digitalRead(ENTER_BUTTON_PIN) &&     
+    //while( !checkTimeOut() && !digitalRead(ENTER_BUTTON_PIN) &&
+    while( !checkTimeOut() && !checkEnterPress() &&    
               ( (!someupddone && number == prevNum) || strlen(timeBuffer) < numChars) ) {
         
         get_key();      // We're outside our main loop, so poll here
@@ -795,9 +800,8 @@ void setField(uint16_t& number, uint8_t field, int year = 0, int month = 0)
             setUpdate(setNum, field);                   
             prevNum = setNum;            
         } 
-
-        myloop();    
-        delay(10);
+   
+        mydelay(10);
                                    
     }
 
@@ -826,7 +830,7 @@ void setField(uint16_t& number, uint8_t field, int year = 0, int month = 0)
 }  
 
 /* 
- *  Volume 
+ *  Volume ###################################################
  */
 
 void saveCurVolume()
@@ -898,6 +902,8 @@ void doSetVolume()
 {
     bool volDone = false;
     uint8_t oldVol = curVolume;
+    unsigned long playNow;
+    bool triggerPlay = false;
 
     #ifdef TC_DBG
     Serial.println(F("doSetVolume() involked"));
@@ -912,40 +918,41 @@ void doSetVolume()
     // Wait for enter
     while(!checkTimeOut() && !volDone) {
       
-      // If pressed
-      if(digitalRead(ENTER_BUTTON_PIN)) {
-        
-          // wait for release
-          while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
-              // If hold threshold is passed, return false */
-              myloop();
-              if(isEnterKeyHeld) {
-                  isEnterKeyHeld = false;
-                  volDone = true;
-                  break;              
-              }
-              delay(10); 
-          }
-
-          if(!checkTimeOut() && !volDone) {
-              
-              timeout = 0;  // button pressed, reset timeout
-
-              if(curVolume <= 15) 
-                  curVolume = 255;
-              else
-                  curVolume = 0;
-
-              showCurVolHWSW();
-              
-          }
+        // If pressed
+        //if(digitalRead(ENTER_BUTTON_PIN)) {
+        if(checkEnterPress()) {
           
-      } else {
-
-          myloop();
-          delay(50);
-          
-      }
+            // wait for release
+            //while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
+            while(!checkTimeOut() && checkEnterPress()) {
+                // If hold threshold is passed, return false */
+                myloop();
+                if(isEnterKeyHeld) {
+                    isEnterKeyHeld = false;
+                    volDone = true;
+                    break;              
+                }
+                delay(10); 
+            }
+  
+            if(!checkTimeOut() && !volDone) {
+                
+                timeout = 0;  // button pressed, reset timeout
+  
+                if(curVolume <= 15) 
+                    curVolume = 255;
+                else
+                    curVolume = 0;
+  
+                showCurVolHWSW();
+                
+            }
+            
+        } else {
+  
+            mydelay(50);
+            
+        }
           
     }
 
@@ -965,10 +972,12 @@ void doSetVolume()
         while(!checkTimeOut() && !volDone) {
           
             // If pressed
-            if(digitalRead(ENTER_BUTTON_PIN)) {
+            //if(digitalRead(ENTER_BUTTON_PIN)) {
+            if(checkEnterPress()) {
               
                 // wait for release
-                while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
+                //while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
+                while(!checkTimeOut() && checkEnterPress()) {
                     // If hold threshold is passed, return false */
                     myloop();
                     if(isEnterKeyHeld) {
@@ -988,15 +997,21 @@ void doSetVolume()
       
                     showCurVol();
                    
-                    //play_file("/timetravel.mp3", 1.0, true, 0);
-                    play_file("/alarm.mp3", 1.0, true, 0);
+                    playNow = millis();
+                    triggerPlay = true;
+                    stopAudio();
                     
                 }
                 
             } else {
+
+                if(triggerPlay && (millis() - playNow >= 1*1000)) {
+                    //play_file("/timetravel.mp3", 1.0, true, 0);
+                    play_file("/alarm.mp3", 1.0, true, 0);
+                    triggerPlay = false;
+                }
       
-                myloop();
-                delay(50);
+                mydelay(50);
                 
             }
         }
@@ -1010,7 +1025,7 @@ void doSetVolume()
 
         stopAudio();
         
-        destinationTime.showOnlyText("SAVE");
+        destinationTime.showOnlyText("SAVING");
 
         // Save it
         saveCurVolume();        
@@ -1025,7 +1040,7 @@ void doSetVolume()
 }       
 
 /* 
- *  Alarm 
+ *  Alarm ###################################################
  */
 
 void alarmOff()
@@ -1054,7 +1069,7 @@ void doSetAlarm()
     bool newAlarmOnOff = alarmOnOff;
     uint16_t newAlarmHour = (alarmHour <= 23) ? alarmHour : 0;
     uint16_t newAlarmMinute = (alarmMinute <= 59) ? alarmMinute : 0;
-    
+
     #ifdef TC_DBG
     Serial.println(F("doSetAlarm() involked"));
     #endif
@@ -1062,46 +1077,47 @@ void doSetAlarm()
     // On/Off
     displaySet->showOnlyText(newAlarmOnOff ? "ON" : "OFF");
     displaySet->on();
-    
+
     isEnterKeyHeld = false;
 
     timeout = 0;  // reset timeout
 
     // Wait for enter
     while(!checkTimeOut() && !alarmDone) {
-      
-      // If pressed
-      if(digitalRead(ENTER_BUTTON_PIN)) {
-        
-          // wait for release
-          while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
-              // If hold threshold is passed, return false */
-              myloop();
-              if(isEnterKeyHeld) {
-                  isEnterKeyHeld = false;
-                  alarmDone = true;
-                  break;              
-              }
-              delay(10); 
-          }
 
-          if(!checkTimeOut() && !alarmDone) {
-              
-              timeout = 0;  // button pressed, reset timeout
+        // If pressed
+        //if(digitalRead(ENTER_BUTTON_PIN)) {
+        if(checkEnterPress()) {
 
-              newAlarmOnOff = !newAlarmOnOff;       
+            // wait for release
+            //while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
+            while(!checkTimeOut() && checkEnterPress()) {
+                // If hold threshold is passed, return false */
+                myloop();
+                if(isEnterKeyHeld) {
+                    isEnterKeyHeld = false;
+                    alarmDone = true;
+                    break;
+                }
+                delay(10);
+            }
 
-              displaySet->showOnlyText(newAlarmOnOff ? "ON" : "OFF");
-                            
-          }
-          
-      } else {
+            if(!checkTimeOut() && !alarmDone) {
 
-          myloop();
-          delay(50);
-          
-      }
-          
+                timeout = 0;  // button pressed, reset timeout
+
+                newAlarmOnOff = !newAlarmOnOff;       
+
+                displaySet->showOnlyText(newAlarmOnOff ? "ON" : "OFF");
+
+            }
+
+        } else {
+
+            mydelay(50);
+
+        }
+
     }
 
     if(checkTimeOut()) {
@@ -1121,13 +1137,13 @@ void doSetAlarm()
     // Get minute
     setUpdate(newAlarmMinute, FIELD_MINUTE);
     prepareInput(newAlarmMinute);
-    waitForEnterRelease();       
-    setField(newAlarmMinute, FIELD_MINUTE, 0, 0);  
+    waitForEnterRelease();
+    setField(newAlarmMinute, FIELD_MINUTE, 0, 0);
 
     // Do nothing if there was a timeout waiting for button presses                                                  
     if(!checkTimeOut()) {
-    
-        displaySet->showOnlyText("SAVE");
+
+        displaySet->showOnlyText("SAVING");
 
         waitAudioDone();
 
@@ -1137,13 +1153,13 @@ void doSetAlarm()
 
         // Save it
         saveAlarm();
-        
+
         mydelay(1000);
     }
 }
 
 /* 
- *  Time-rotation Interval (aka "autoInterval") 
+ *  Time-rotation Interval (aka "autoInterval") #################
  */
 
 /* 
@@ -1200,12 +1216,10 @@ void doSetAutoInterval()
     presentTime.on();
     if(autoTimeIntervals[autoInterval] == 0) {
         presentTime.showOnlyText("OFF");
-        departedTime.off();        
-    } else {       
-        presentTime.showOnlyText("MIN");    // Times cycled in xx minutes
-        departedTime.showOnlyText("UTES");
-        departedTime.on();            
+    } else {
+        presentTime.showOnlyText("MINUTES");    // Times cycled in xx minutes
     }
+    departedTime.off();
 
     isEnterKeyHeld = false;
 
@@ -1213,73 +1227,72 @@ void doSetAutoInterval()
 
     // Wait for enter
     while(!checkTimeOut() && !autoDone) {
-      
-      // If pressed
-      if(digitalRead(ENTER_BUTTON_PIN)) {
-        
-          // wait for release
-          while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
-              // If hold threshold is passed, return false */
-              myloop();
-              if(isEnterKeyHeld) {
-                  isEnterKeyHeld = false;
-                  autoDone = true;
-                  break;              
-              }
-              delay(10); 
-          }
 
-          if(!checkTimeOut() && !autoDone) {
-              
-              timeout = 0;  // button pressed, reset timeout
+        // If pressed
+        //if(digitalRead(ENTER_BUTTON_PIN)) {
+        if(checkEnterPress()) {
 
-              autoInterval++;       
-              if(autoInterval > 5)
-                  autoInterval = 0;
+            // wait for release
+            //while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
+            while(!checkTimeOut() && checkEnterPress()) {
+                // If hold threshold is passed, return false */
+                myloop();
+                if(isEnterKeyHeld) {
+                    isEnterKeyHeld = false;
+                    autoDone = true;
+                    break;
+                }
+                delay(10);
+            }
 
-              #ifdef IS_ACAR_DISPLAY
-              destinationTime.showOnlySettingVal("IN", autoTimeIntervals[autoInterval], true);
-              #else
-              destinationTime.showOnlySettingVal("INT", autoTimeIntervals[autoInterval], true);
-              #endif
+            if(!checkTimeOut() && !autoDone) {
 
-              if(autoTimeIntervals[autoInterval] == 0) {                  
-                  presentTime.showOnlyText("OFF");
-                  departedTime.off();  
-              } else {                  
-                  presentTime.showOnlyText("MIN");    
-                  departedTime.showOnlyText("UTES");
-                  departedTime.on();
-              }
-          }
-          
-      } else {
+                timeout = 0;  // button pressed, reset timeout
 
-          myloop();
-          delay(50);
-          
-      }
-          
+                autoInterval++;
+                if(autoInterval > 5)
+                    autoInterval = 0;
+
+                #ifdef IS_ACAR_DISPLAY
+                destinationTime.showOnlySettingVal("IN", autoTimeIntervals[autoInterval], true);
+                #else
+                destinationTime.showOnlySettingVal("INT", autoTimeIntervals[autoInterval], true);
+                #endif
+  
+                if(autoTimeIntervals[autoInterval] == 0) {            
+                    presentTime.showOnlyText("OFF");
+                } else {
+                    presentTime.showOnlyText("MINUTES");
+                }
+                departedTime.off();
+            }
+
+        } else {
+
+            mydelay(50);
+
+        }
+
     }
 
     if(!checkTimeOut()) {  // only if there wasn't a timeout
-      
+
         presentTime.off();
         departedTime.off();
 
-        destinationTime.showOnlyText("SAVE");
+        destinationTime.showOnlyText("SAVING");
 
         // Save it
         saveAutoInterval();
         updateConfigPortalValues();
-        
+
         mydelay(1000);
-                
+
     }
 }
 
 /*
- * Brightness
+ * Brightness ###################################################
  */
  
 void doSetBrightness(clockDisplay* displaySet) {
@@ -1300,7 +1313,7 @@ void doSetBrightness(clockDisplay* displaySet) {
     #else
     displaySet->showOnlySettingVal("LVL", displaySet->getBrightness(), false);
     #endif
-  
+
     isEnterKeyHeld = false;
 
     timeout = 0;  // reset timeout
@@ -1309,10 +1322,12 @@ void doSetBrightness(clockDisplay* displaySet) {
     while(!checkTimeOut() && !briDone) {     
       
         // If pressed
-        if(digitalRead(ENTER_BUTTON_PIN)) {
+        //if(digitalRead(ENTER_BUTTON_PIN)) {
+        if(checkEnterPress()) {
           
             // wait for release
-            while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
+            //while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
+            while(!checkTimeOut() && checkEnterPress()) {
                 // If hold threshold is passed, return false */
                 myloop();
                 if(isEnterKeyHeld) {
@@ -1320,13 +1335,13 @@ void doSetBrightness(clockDisplay* displaySet) {
                     briDone = true;
                     break;              
                 }
-                delay(10); 
+                delay(10);
             }
-  
+
             if(!checkTimeOut() && !briDone) {
-                
+
                 timeout = 0;  // button pressed, reset timeout
-  
+
                 number++;
                 if(number > 15) number = 0;
                 displaySet->setBrightness(number);
@@ -1335,32 +1350,31 @@ void doSetBrightness(clockDisplay* displaySet) {
                 #else
                 displaySet->showOnlySettingVal("LVL", number, false);
                 #endif
-                
+
             }
-            
+
         } else {
-          
-            myloop();
-            delay(50);
-            
+
+            mydelay(50);
+
         }
-          
+
     }
 
     if(!checkTimeOut()) {  // only if there wasn't a timeout 
-                
-        displaySet->showOnlyText("SAVE");
+
+        displaySet->showOnlyText("SAVING");
 
         displaySet->save();
-        
-        mydelay(1000);        
-        
+
+        mydelay(1000);
+
         allLampTest();  // turn on all the segments
-        
+
         // Convert bri values to strings, write to settings, write settings file
-        sprintf(settings.destTimeBright, "%d", destinationTime.getBrightness());           
+        sprintf(settings.destTimeBright, "%d", destinationTime.getBrightness());
         sprintf(settings.presTimeBright, "%d", presentTime.getBrightness());
-        sprintf(settings.lastTimeBright, "%d", departedTime.getBrightness());               
+        sprintf(settings.lastTimeBright, "%d", departedTime.getBrightness());
         write_settings();
         updateConfigPortalValues();
     }
@@ -1369,7 +1383,7 @@ void doSetBrightness(clockDisplay* displaySet) {
 }
 
 /*
- * Show network info
+ * Show network info ##################################
  */
  
 void doShowNetInfo() 
@@ -1401,10 +1415,12 @@ void doShowNetInfo()
     while(!checkTimeOut() && !netDone) {
       
         // If pressed
-        if(digitalRead(ENTER_BUTTON_PIN)) {
+        //if(digitalRead(ENTER_BUTTON_PIN)) {
+        if(checkEnterPress()) {
           
             // wait for release
-            while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
+            //while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
+            while(!checkTimeOut() && checkEnterPress()) {
                 // If hold threshold is passed, bail out
                 myloop();
                 if(isEnterKeyHeld) {
@@ -1488,8 +1504,7 @@ void doShowNetInfo()
             
         } else {
   
-            myloop();
-            delay(50);
+            mydelay(50);
             
         }
           
@@ -1497,7 +1512,7 @@ void doShowNetInfo()
 }
 
 /*
- * Install default audio files from SD to flash FS
+ * Install default audio files from SD to flash FS #################
  */
  
 void doCopyAudioFiles()
@@ -1523,10 +1538,12 @@ void doCopyAudioFiles()
     while(!checkTimeOut() && !doCancDone) {
       
       // If pressed
-      if(digitalRead(ENTER_BUTTON_PIN)) {
+      //if(digitalRead(ENTER_BUTTON_PIN)) {
+      if(checkEnterPress()) {
         
           // wait for release
-          while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
+          //while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
+          while(!checkTimeOut() && checkEnterPress()) {
               // If hold threshold is passed, return false */
               myloop();
               if(isEnterKeyHeld) {
@@ -1549,8 +1566,7 @@ void doCopyAudioFiles()
           
       } else {
 
-          myloop();
-          delay(50);
+          mydelay(50);
           
       }
           
@@ -1560,11 +1576,13 @@ void doCopyAudioFiles()
         return;  
     }
 
-    copy_audio_files();            
-    delay(2000);
+    if(!copy_audio_files()) {
+        mydelay(3000);
+    }
+    mydelay(2000);
 }
 
-/* *** Helpers **** */
+/* *** Helpers ################################################### */
 
 // Show all, month after a short delay
 void animate() 
@@ -1572,7 +1590,7 @@ void animate()
     destinationTime.showAnimate1();
     presentTime.showAnimate1();
     departedTime.showAnimate1();
-    mysdelay(80); 
+    mydelay(80); 
     destinationTime.showAnimate2();
     presentTime.showAnimate2();
     departedTime.showAnimate2();
@@ -1624,7 +1642,22 @@ void file_copy_done()
 
 void file_copy_error()
 {
-    departedTime.showOnlyText("ERROR");  
+    departedTime.showOnlyText("ERROR");
+}
+
+/*
+ * Check if ENTER is pressed
+ * (and properly debounce)
+ */
+bool checkEnterPress()
+{
+    if(digitalRead(ENTER_BUTTON_PIN)) {
+        myssdelay(50);
+        if(digitalRead(ENTER_BUTTON_PIN)) return true;
+        return false;
+    }
+    
+    return false;
 }
 
 /* 
@@ -1634,9 +1667,8 @@ void file_copy_error()
  */
 void waitForEnterRelease() 
 {    
-    while(digitalRead(ENTER_BUTTON_PIN)) {
-        myloop();        
-        delay(10);  
+    while(digitalRead(ENTER_BUTTON_PIN)) {       
+        mydelay(10);  
     }
     isEnterKeyPressed = false;
     isEnterKeyHeld = false;
@@ -1644,33 +1676,36 @@ void waitForEnterRelease()
 
 void waitAudioDone()
 {
-  int timeout = 100;
+    int timeout = 200;
   
-  while(!checkAudioDone() && timeout--) {       
-       myloop();
-       delay(10);
-  }
+    while(!checkAudioDone() && timeout--) {       
+        mydelay(10);
+    }
 }
 
 /*
- * MyDelay: For delays > 150ms
+ * MyDelay:
  * Calls myloop() periodically
  */
 void mydelay(unsigned long mydel) 
 {  
     unsigned long startNow = millis();
     while(millis() - startNow < mydel) {
-        delay(20);
         myloop();
+        delay(10);
     }     
 }
 
-void mysdelay(unsigned long mydel) 
+/*
+ * Special case for very short, non-recurring delays
+ * Only calls audio_loop while waiting
+ */
+void myssdelay(unsigned long mydel)
 {  
     unsigned long startNow = millis();
     while(millis() - startNow < mydel) {
-        delay(5);
-        myloop();
+        audio_loop();
+        delay(10);        
     }     
 }
 
@@ -1680,7 +1715,7 @@ void mysdelay(unsigned long mydel)
  */
 void myloop() 
 {
-    enterkeytick();       
+    enterkeytick();
     wifi_loop();
-    audio_loop();     
+    audio_loop();
 }
