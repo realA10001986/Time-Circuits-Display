@@ -65,6 +65,11 @@
 
 /* Changelog 
  *  
+ *  2022/09/12 (A10001986)
+ *    - Fix brightness logic if changed in menu, and night mode activated 
+ *      afterwards.
+ *    - No longer call .save() on display when changing brightness in menu
+ *    - (A10001986 wallclock customization: temperature sensor; inactive)
  *  2022/09/08-10 (A10001986)
  *    - Keypadi2c: Custom delay function to support uninterrupted audio during
  *      key scanning; i2c is now read three times in order to properly

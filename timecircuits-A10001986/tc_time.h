@@ -38,6 +38,9 @@
 #include "clockdisplay.h"
 #ifdef TC_HAVESPEEDO
 #include "speeddisplay.h"
+#ifdef TC_HAVETEMP
+#include "tempsensor.h"
+#endif
 #endif
 #include "tc_keypad.h"
 #include "tc_menus.h"
@@ -51,6 +54,7 @@
 #define DEPT_TIME_ADDR 0x74
 
 #define SPEEDO_ADDR    0x70
+#define TEMP_ADDR      0x18
 
 // The time between sound being started and the display coming on
 // Must be sync'd to the sound file used! (startup.mp3/timetravel.mp3)
@@ -116,10 +120,14 @@ void fpbKeyPressed();
 void fpbKeyLongPressStop();  
 #endif
 
-void my2delay(unsigned long mydel);
+void my2delay(unsigned int mydel);
 void waitAudioDoneIntro();
 
 extern void pwrNeedFullNow(bool force = false);
+
+#ifdef TC_HAVETEMP
+void dispTemperature(bool force = false);
+#endif
 
 // These block various events
 extern bool FPBUnitIsOn;

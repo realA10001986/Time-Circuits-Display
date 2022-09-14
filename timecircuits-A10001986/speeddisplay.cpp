@@ -28,7 +28,7 @@
 
 #include "speeddisplay.h"
 
-const uint16_t font7segGeneric[37] = { 
+const uint16_t font7segGeneric[38] = { 
     S7G_T|S7G_TR|S7G_BR|S7G_B|S7G_BL|S7G_TL,
     S7G_TR|S7G_BR,
     S7G_T|S7G_TR|S7G_B|S7G_BL|S7G_M,
@@ -65,10 +65,11 @@ const uint16_t font7segGeneric[37] = {
     S7G_TR|S7G_BR|S7G_BL|S7G_TL|S7G_M,
     S7G_TR|S7G_BR|S7G_B|S7G_TL|S7G_M,
     S7G_T|S7G_TR|S7G_B|S7G_BL|S7G_M,
-    S7G_DOT
+    S7G_DOT,
+    S7G_M
 };
 
-const uint16_t font14segGeneric[37] = { 
+const uint16_t font14segGeneric[38] = { 
     S14_T|S14_TL|S14_TR|S14_B|S14_BL|S14_BR,
     S14_TR|S14_BR,
     S14_T|S14_TR|S14_ML|S14_MR|S14_B|S14_BL,
@@ -105,10 +106,11 @@ const uint16_t font14segGeneric[37] = {
     S14_TLD|S14_TRD|S14_BLD|S14_BRD,
     S14_TL|S14_TR|S14_ML|S14_MR|S14_B|S14_BR,
     S14_T|S14_TRD|S14_B|S14_BLD,
-    S14_DOT
+    S14_DOT,
+    S14_ML|S14_MR
 };    
 
-const uint16_t font14segGrove[37] = { 
+const uint16_t font14segGrove[38] = { 
     S14GR_T|S14GR_TL|S14GR_TR|S14GR_B|S14GR_BL|S14GR_BR,
     S14GR_TR|S14GR_BR,
     S14GR_T|S14GR_TR|S14GR_ML|S14GR_MR|S14GR_B|S14GR_BL,
@@ -145,10 +147,11 @@ const uint16_t font14segGrove[37] = {
     S14GR_TLD|S14GR_TRD|S14GR_BLD|S14GR_BRD,
     S14GR_TL|S14GR_TR|S14GR_ML|S14GR_MR|S14GR_B|S14GR_BR,
     S14GR_T|S14GR_TRD|S14GR_B|S14GR_BLD,
-    S14GR_DOT
+    S14GR_DOT,
+    S14GR_ML|S14GR_MR
 };    
 
-const uint16_t font144segGrove[37] = { 
+const uint16_t font144segGrove[38] = { 
     S14GR4_T|S14GR4_TL|S14GR4_TR|S14GR4_B|S14GR4_BL|S14GR4_BR,
     S14GR4_TR|S14GR4_BR,
     S14GR4_T|S14GR4_TR|S14GR4_ML|S14GR4_MR|S14GR4_B|S14GR4_BL,
@@ -185,7 +188,8 @@ const uint16_t font144segGrove[37] = {
     S14GR4_TLD|S14GR4_TRD|S14GR4_BLD|S14GR4_BRD,
     S14GR4_TL|S14GR4_TR|S14GR4_ML|S14GR4_MR|S14GR4_B|S14GR4_BR,
     S14GR4_T|S14GR4_TRD|S14GR4_B|S14GR4_BLD,
-    S14GR4_DOT
+    S14GR4_DOT,
+    S14GR4_ML|S14GR4_MR
 };    
 
 struct dispConf displays[SP_NUM_TYPES] = {
@@ -200,7 +204,7 @@ struct dispConf displays[SP_NUM_TYPES] = {
   { false, 3, 4, 0, 0, 4, 0,   5, 0, 0x2080, 8, 4, 0, { 1, 2, 3, 4 }, font144segGrove },  // SP_GROVE_4DIG14 (right)
   { false, 1, 2, 0, 0, 2, 0,   5, 0, 0x2080, 8, 4, 0, { 1, 2, 3, 4 }, font144segGrove },  // SP_GROVE_4DIG14 (left)
 #ifdef TWPRIVATE
-  { false, 2, 3, 0, 0, 3, 0, 255, 0,      0, 8, 2, 0, { 2, 3 },       font14segGeneric }, // TW custom
+  { false, 0, 1, 0, 0, 1, 0, 255, 0,      0, 8, 2, 0, { 0, 1 },       font14segGeneric }, // TW Custom
 #endif  
 // .... for testing only:
 //{ true,  7, 7, 0, 8, 7, 8, 255, 0,      0, 8, 2, 1, { 7 },          font7segGeneric },  // SP_TCD_TEST7
@@ -391,7 +395,9 @@ void speedDisplay::show()
 
 
 // Write given text to buffer
-// (including current colon setting; dots are cleared and ignored)
+// (including current colon setting; if the text contains a dot,
+// the dot between the adjacent letters is lit. dot01 setting is
+// ignored.)
 void speedDisplay::setText(const char *text)
 {
     int idx = 0, pos = 0;
@@ -403,9 +409,17 @@ void speedDisplay::setText(const char *text)
         while(text[idx] && (pos < (_num_digs / (1<<_buf_packed)))) {
             temp = getLEDChar(text[idx]) << _dig10_shift;
             idx++;
+            if(text[idx] == '.') {
+                temp |= (getLEDChar('.') << _dig10_shift);
+                idx++;
+            }
             if(_buf_packed && text[idx]) {
                 temp |= (getLEDChar(text[idx]) << _dig01_shift);
-                idx++;            
+                idx++;
+                if(text[idx] == '.') {
+                    temp |= (getLEDChar('.') << _dig01_shift) ;
+                    idx++;
+                }         
             }
             _displayBuffer[*(_bufPosArr + pos)] = temp;
             pos++;
@@ -414,6 +428,10 @@ void speedDisplay::setText(const char *text)
         while(text[idx] && pos < _num_digs) {
             _displayBuffer[*(_bufPosArr + pos)] = getLEDChar(text[idx]);
             idx++;
+            if(text[idx] == '.') {
+                _displayBuffer[*(_bufPosArr + pos)]  |= getLEDChar('.');
+                idx++;
+            }
             pos++;
         }
     }
@@ -422,7 +440,7 @@ void speedDisplay::setText(const char *text)
 }
 
 // Write given speed to buffer
-// (including current dot01 settings; colon is cleared and ignored)
+// (including current dot01 setting; colon is cleared and ignored)
 void speedDisplay::setSpeed(uint8_t speedNum)
 {
     if(speedNum > 99) {
@@ -436,15 +454,71 @@ void speedDisplay::setSpeed(uint8_t speedNum)
     clear();
 
     _displayBuffer[_speed_pos10] |= (*(_fontXSeg + (speedNum / 10)) << _dig10_shift);
-    _displayBuffer[_speed_pos01] |= (*(_fontXSeg + (speedNum % 10)) << _dig01_shift);    
+    _displayBuffer[_speed_pos01] |= (*(_fontXSeg + (speedNum % 10)) << _dig01_shift);
     if(_dot01) _displayBuffer[_dot_pos01] |= (*(_fontXSeg + 36) << _dot01_shift);    
 }
 
+#ifdef TC_HAVETEMP
+void speedDisplay::setTemperature(double temp)
+{
+    char buf[8];
+    char alignBuf[20];
+    int t, strlenBuf = 0;
+
+    clear();
+
+    switch(_num_digs) {
+    case 2:
+        if(temp <= -10.0) setText("Lo");
+        else if(t >= 100.0) setText("Hi");
+        else if(temp >= 10.0 || temp <= 0.0) {
+            t = (int)((double)round(temp));
+            sprintf(buf, "%d", t);
+            setText(buf);
+        } else {
+            sprintf(buf, "%.1f", temp);
+            setText(buf);
+        } 
+        break;
+    case 3:
+        if(temp <= -100.0) setText("Low");
+        else if(t >= 1000.0) setText("Hi");
+        else if(temp >= 100.0 || temp <= -10.0) {
+            t = (int)((double)round(temp));
+            sprintf(buf, "%d", t);
+            setText(buf);
+        } else {
+            sprintf(buf, "%.1f", temp);
+            setText(buf);
+        } 
+        break;
+    default:
+        sprintf(buf, "%.1f", temp);
+        for(int i = 0; i < strlen(buf); i++) {
+            if(buf[i] != '.') strlenBuf++;
+        }
+        if(strlenBuf < _num_digs) {
+            for(int i = 0; i < 15 && i < (_num_digs - strlenBuf); i++) {
+                alignBuf[i] = ' ';
+                alignBuf[i+1] = 0;
+            }
+            strcat(alignBuf, buf);
+            setText(alignBuf);
+        } else {
+            setText(buf);
+        }
+    }
+}
+#endif
+
+
+// Set/clear dot at speed's 1's position.
 void speedDisplay::setDot(bool dot01)
 {
     _dot01 = dot01;
 }
 
+// Set/clear the colon
 void speedDisplay::setColon(bool colon)
 {
     _colon = colon;
@@ -464,13 +538,18 @@ bool speedDisplay::getDot()
     return _dot01;
 }
 
+// Set/clear the colon
+bool speedDisplay::getColon()
+{
+    return _colon;
+}
 
 // Special purpose -------------------------------------------------------------
 
 
 // clears the display RAM and only shows the given text
 // does not use the buffer, writes directly to display
-// (clears and ignores dot and colon)
+// (clears colon; dots work like the buffer version.)
 void speedDisplay::showTextDirect(const char *text)
 {
     int idx = 0, pos = 0;
@@ -483,9 +562,17 @@ void speedDisplay::showTextDirect(const char *text)
         while(text[idx] && (pos < (_num_digs / (1<<_buf_packed)))) {
             temp = getLEDChar(text[idx]) << _dig10_shift;
             idx++;
+            if(text[idx] == '.') {
+                temp |= (getLEDChar('.') << _dig10_shift);
+                idx++;
+            }
             if(_buf_packed && text[idx]) {
                 temp |= (getLEDChar(text[idx]) << _dig01_shift);
-                idx++;            
+                idx++;
+                if(text[idx] == '.') {
+                    temp |= (getLEDChar('.') << _dig01_shift);
+                    idx++;
+                }          
             }
             directCol(*(_bufPosArr + pos), temp);
             pos++;
@@ -493,6 +580,11 @@ void speedDisplay::showTextDirect(const char *text)
     } else {
         while(text[idx] && pos < _num_digs) {
             tt = getLEDChar(text[idx]);
+            idx++;
+            if(text[idx] == '.') {
+                tt |= getLEDChar('.');
+                idx++;
+            }
             directCol(*(_bufPosArr + pos), tt);
             switch(_dispType) {
             case SP_GROVE_4DIG14:
@@ -501,7 +593,6 @@ void speedDisplay::showTextDirect(const char *text)
                 spec |= ((tt & 0x4) ? 1 << gr4_sh2[pos] : 0);
                 break;            
             }
-            idx++;
             pos++;
         }
         switch(_dispType) {
@@ -546,7 +637,10 @@ uint16_t speedDisplay::getLEDChar(uint8_t value)
         return *(_fontXSeg + (value - 'A' + 10));
     } else if(value >= 'a' && value <= 'z') {
         return *(_fontXSeg + (value - 'a' + 10));
-    }
+    } else if(value == '.') {
+        return *(_fontXSeg + 36);
+    } else if(value == '-')
+        return *(_fontXSeg + 37);        
 
     return 0;
 }

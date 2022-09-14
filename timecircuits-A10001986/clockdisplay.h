@@ -94,7 +94,7 @@ class clockDisplay {
         
         void clear();
         
-        uint8_t setBrightness(uint8_t level);
+        uint8_t setBrightness(uint8_t level, bool setInitial = false);
         uint8_t setBrightnessDirect(uint8_t level);
         uint8_t getBrightness();
     

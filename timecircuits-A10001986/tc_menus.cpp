@@ -441,8 +441,31 @@ void enter_menu()
       
         // Set brightness settings    
         if(!checkTimeOut()) doSetBrightness(&destinationTime);
+        waitForEnterRelease();
         if(!checkTimeOut()) doSetBrightness(&presentTime);
+        waitForEnterRelease();
         if(!checkTimeOut()) doSetBrightness(&departedTime);
+
+        // Now save
+        if(!checkTimeOut()) {           
+
+            presentTime.showOnlyText("SAVING");
+
+            // (Re)Set current brightness as "initial" brightness
+            destinationTime.setBrightness(destinationTime.getBrightness(), true);
+            presentTime.setBrightness(presentTime.getBrightness(), true);
+            departedTime.setBrightness(departedTime.getBrightness(), true);
+
+            mydelay(1000);
+
+            // Convert bri values to strings, write to settings, write settings file
+            sprintf(settings.destTimeBright, "%d", destinationTime.getBrightness());
+            sprintf(settings.presTimeBright, "%d", presentTime.getBrightness());
+            sprintf(settings.lastTimeBright, "%d", departedTime.getBrightness());
+            write_settings();
+            updateConfigPortalValues();  
+              
+        }
         
         allOff();
         waitForEnterRelease();  
@@ -522,11 +545,9 @@ void menuSelect(int& number)
     while(!checkTimeOut()) {
       
         // If pressed
-        //if(digitalRead(ENTER_BUTTON_PIN)) {
         if(checkEnterPress()) {
           
             // wait for release
-            //while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
             while(!checkTimeOut() && checkEnterPress()) {
                 
                 myloop();
@@ -552,8 +573,7 @@ void menuSelect(int& number)
           
         } else {
   
-            myloop();
-            delay(50);
+            mydelay(50);
             
         }
       
@@ -779,7 +799,6 @@ void setField(uint16_t& number, uint8_t field, int year = 0, int month = 0)
     // Force keypad to send keys to our buffer
     isSetUpdate = true; 
     
-    //while( !checkTimeOut() && !digitalRead(ENTER_BUTTON_PIN) &&
     while( !checkTimeOut() && !checkEnterPress() &&    
               ( (!someupddone && number == prevNum) || strlen(timeBuffer) < numChars) ) {
         
@@ -919,11 +938,9 @@ void doSetVolume()
     while(!checkTimeOut() && !volDone) {
       
         // If pressed
-        //if(digitalRead(ENTER_BUTTON_PIN)) {
         if(checkEnterPress()) {
           
             // wait for release
-            //while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
             while(!checkTimeOut() && checkEnterPress()) {
                 // If hold threshold is passed, return false */
                 myloop();
@@ -972,11 +989,9 @@ void doSetVolume()
         while(!checkTimeOut() && !volDone) {
           
             // If pressed
-            //if(digitalRead(ENTER_BUTTON_PIN)) {
             if(checkEnterPress()) {
               
                 // wait for release
-                //while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
                 while(!checkTimeOut() && checkEnterPress()) {
                     // If hold threshold is passed, return false */
                     myloop();
@@ -1006,7 +1021,6 @@ void doSetVolume()
             } else {
 
                 if(triggerPlay && (millis() - playNow >= 1*1000)) {
-                    //play_file("/timetravel.mp3", 1.0, true, 0);
                     play_file("/alarm.mp3", 1.0, true, 0);
                     triggerPlay = false;
                 }
@@ -1086,11 +1100,9 @@ void doSetAlarm()
     while(!checkTimeOut() && !alarmDone) {
 
         // If pressed
-        //if(digitalRead(ENTER_BUTTON_PIN)) {
         if(checkEnterPress()) {
 
             // wait for release
-            //while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
             while(!checkTimeOut() && checkEnterPress()) {
                 // If hold threshold is passed, return false */
                 myloop();
@@ -1229,11 +1241,9 @@ void doSetAutoInterval()
     while(!checkTimeOut() && !autoDone) {
 
         // If pressed
-        //if(digitalRead(ENTER_BUTTON_PIN)) {
         if(checkEnterPress()) {
 
             // wait for release
-            //while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
             while(!checkTimeOut() && checkEnterPress()) {
                 // If hold threshold is passed, return false */
                 myloop();
@@ -1322,11 +1332,9 @@ void doSetBrightness(clockDisplay* displaySet) {
     while(!checkTimeOut() && !briDone) {     
       
         // If pressed
-        //if(digitalRead(ENTER_BUTTON_PIN)) {
         if(checkEnterPress()) {
           
             // wait for release
-            //while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
             while(!checkTimeOut() && checkEnterPress()) {
                 // If hold threshold is passed, return false */
                 myloop();
@@ -1344,7 +1352,9 @@ void doSetBrightness(clockDisplay* displaySet) {
 
                 number++;
                 if(number > 15) number = 0;
+                
                 displaySet->setBrightness(number);
+                
                 #ifdef IS_ACAR_DISPLAY
                 displaySet->showOnlySettingVal("LV", number, false);
                 #else
@@ -1360,26 +1370,8 @@ void doSetBrightness(clockDisplay* displaySet) {
         }
 
     }
-
-    if(!checkTimeOut()) {  // only if there wasn't a timeout 
-
-        displaySet->showOnlyText("SAVING");
-
-        displaySet->save();
-
-        mydelay(1000);
-
-        allLampTest();  // turn on all the segments
-
-        // Convert bri values to strings, write to settings, write settings file
-        sprintf(settings.destTimeBright, "%d", destinationTime.getBrightness());
-        sprintf(settings.presTimeBright, "%d", presentTime.getBrightness());
-        sprintf(settings.lastTimeBright, "%d", departedTime.getBrightness());
-        write_settings();
-        updateConfigPortalValues();
-    }
-
-    waitForEnterRelease();
+    
+    allLampTest();  // turn on all the segments
 }
 
 /*
@@ -1415,11 +1407,9 @@ void doShowNetInfo()
     while(!checkTimeOut() && !netDone) {
       
         // If pressed
-        //if(digitalRead(ENTER_BUTTON_PIN)) {
         if(checkEnterPress()) {
           
             // wait for release
-            //while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
             while(!checkTimeOut() && checkEnterPress()) {
                 // If hold threshold is passed, bail out
                 myloop();
@@ -1538,11 +1528,9 @@ void doCopyAudioFiles()
     while(!checkTimeOut() && !doCancDone) {
       
       // If pressed
-      //if(digitalRead(ENTER_BUTTON_PIN)) {
       if(checkEnterPress()) {
         
           // wait for release
-          //while(!checkTimeOut() && digitalRead(ENTER_BUTTON_PIN)) {
           while(!checkTimeOut() && checkEnterPress()) {
               // If hold threshold is passed, return false */
               myloop();
