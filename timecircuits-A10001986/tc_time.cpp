@@ -76,6 +76,10 @@ unsigned long pointOfP1 = 0;
 unsigned long currTotDur = 0;
 bool          didTriggerP1 = false;
 double        ttP0TimeFactor = 1.0;
+#ifdef TC_HAVETEMP
+bool          useTemp = true;
+unsigned long tempReadNow;
+#endif
 #endif
 unsigned long timetravelP1Now = 0;
 unsigned long timetravelP1Delay = 0;
@@ -126,6 +130,10 @@ clockDisplay departedTime(DEPT_TIME_ADDR, DEPT_TIME_PREF);
 
 #ifdef TC_HAVESPEEDO
 speedDisplay speedo(SPEEDO_ADDR);
+#endif
+#ifdef TC_HAVETEMP
+tempSensor tempSens(TEMP_ADDR);
+bool tempOldNM = false;
 #endif
 
 // Automatic times ("decorative mode")
@@ -451,11 +459,21 @@ void time_setup()
         
         #ifdef TC_DBG
         speedo.setColon(false);
-        speedo.setText("TSTX");
-        //speedo.showTextDirect("XXXX");
+        speedo.setText("HIHI");
+        //speedo.showTextDirect("HIHI");
         speedo.on();
         speedo.show();
         #endif
+    }
+    #endif
+    #ifdef TC_HAVETEMP
+    if(useTemp) {
+        if(tempSens.begin()) {
+            tempSens.setCustomDelayFunc(my2delay);
+            dispTemperature(true);
+        } else {
+            useTemp = false;
+        }
     }
     #endif
 
@@ -626,7 +644,12 @@ void time_loop()
         animate();
         startup = false;
         #ifdef TC_HAVESPEEDO
-        if(useSpeedo) speedo.off();
+        if(useSpeedo) {
+            speedo.off();
+            #ifdef TC_HAVETEMP
+            if(useTemp) dispTemperature(true);
+            #endif
+        }
         #endif     
         #ifdef TC_DBG
         Serial.println(F("time_loop: Startup animation triggered"));
@@ -658,6 +681,11 @@ void time_loop()
         if(timeTravelP0Speed == 0) {
             timeTravelP2 = 0;
             speedo.off();
+            #ifdef TC_HAVETEMP
+            if(useSpeedo && useTemp) {
+                dispTemperature(true);
+            }
+            #endif
         } else {
             timeTravelP0Speed--;
             speedo.setSpeed(timeTravelP0Speed);
@@ -1107,6 +1135,7 @@ void timeTravel(bool makeLong, bool withSpeedo)
         timeTravelP0Speed = 0;
         timetravelP0Delay = tt_p0_delays[timeTravelP0Speed] * 10;
         speedo.setSpeed(timeTravelP0Speed);
+        speedo.setBrightness(255);
         speedo.show();
         speedo.on();
         timetravelP0Now = millis();
@@ -1544,7 +1573,7 @@ void fpbKeyLongPressStop()
 }    
 #endif
 
-void my2delay(unsigned long mydel) 
+void my2delay(unsigned int mydel) 
 {  
     unsigned long startNow = millis();
     while(millis() - startNow < mydel) {
@@ -1577,3 +1606,34 @@ void pwrNeedFullNow(bool force)
   pwrFullNow = millis();
   pwrLow = false;
 }
+
+#ifdef TC_HAVETEMP
+void dispTemperature(bool force)
+{
+    int temp;
+
+    if(!FPBUnitIsOn || startup || timeTraveled || timeTravelP0 || timeTravelP1 || timeTravelP2) 
+        return;
+
+    if(!useSpeedo || !useTemp) 
+        return;
+        
+    if(speedo.getNightMode()) {
+        speedo.off();
+        tempOldNM = true;
+        return;
+    } 
+
+    if(tempOldNM || (force || (millis() - tempReadNow >= 7*60*1000))) {
+        tempOldNM = false;
+        tempSens.on();
+        speedo.setTemperature(tempSens.readTemp());
+        speedo.show();
+        speedo.setBrightnessDirect(3); // after show b/c brightness
+        speedo.on();
+        tempSens.off();
+        tempReadNow = millis();
+    }
+
+}
+#endif

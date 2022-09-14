@@ -49,7 +49,7 @@ char spTyCustHTML[768] = "";
 const char spTyCustHTML1[] = "<div style='margin:0;padding:0;'><label for='speedo_type'>Display type</label><select style='width:auto;margin-left:10px;vertical-align:baseline;' value='";
 const char spTyCustHTML2[] = "' name='speedo_type' id='speedo_type' autocomplete='off' title='Selects type of speedo display'>";
 const char spTyCustHTMLE[] = "</select></div>";
-const char spTyOptP1[] = "<option value='";   // X' XXXX > NAME
+const char spTyOptP1[] = "<option value='";
 const char spTyOptP2[] = "'>";
 const char spTyOptP3[] = "</option>";
 const char *dispTypeNames[SP_NUM_TYPES] = {

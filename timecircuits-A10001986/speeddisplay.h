@@ -46,21 +46,21 @@
 //
 enum dispTypes : int {
     SP_CIRCSETUP,     // Original CircuitSetup.us speedo                        [yet to be designed]
-    SP_ADAF_7x4,      // Adafruit 0.56" 4 digits, 7-segment (7x4) (ADA-878)     [tested]
+    SP_ADAF_7x4,      // Adafruit 0.56" 4 digits, 7-segment (7x4) (ADA-878)
     SP_ADAF_7x4L,     // " " " (left-aligned)
-    SP_ADAF_B7x4,     // Adafruit 1.2" 4 digits, 7-segment (7x4) (ADA-1270)     [untested]
+    SP_ADAF_B7x4,     // Adafruit 1.2" 4 digits, 7-segment (7x4) (ADA-1270)
     SP_ADAF_B7x4L,    // " " " (left-aligned)
-    SP_ADAF_14x4,     // Adafruit 0.56" 4 digits, 14-segment (14x4) (ADA-1911)  [tested]
+    SP_ADAF_14x4,     // Adafruit 0.56" 4 digits, 14-segment (14x4) (ADA-1911)
     SP_ADAF_14x4L,    // " " " (left-aligned)
-    SP_GROVE_2DIG14,  // Grove 0.54" Dual Alphanumeric Display                  [tested]
-    SP_GROVE_4DIG14,  // Grove 0.54" Quad Alphanumeric Display                  [tested]
+    SP_GROVE_2DIG14,  // Grove 0.54" Dual Alphanumeric Display
+    SP_GROVE_4DIG14,  // Grove 0.54" Quad Alphanumeric Display
     SP_GROVE_4DIG14L, // " " " (left aligned)
 #ifdef TWPRIVATE
-    SP_TWCUSTOM,      // Like SP_ADAF_14x4, but with only right hand side tube soldered on
+    SP_TWCUSTOM,      // Like SP_ADAF_14x4, but with only left hand side tube soldered on
 #endif    
 // ----- do not use the two below ----
-    SP_TCD_TEST7,     // TimeCircuits Display 7 (for testing)                   [tested]
-    SP_TCD_TEST14,    // TimeCircuits Display 14 (for testing)                  [tested]
+    SP_TCD_TEST7,     // TimeCircuits Display 7 (for testing)
+    SP_TCD_TEST14,    // TimeCircuits Display 14 (for testing)
     SP_TCD_TEST14L    // " " " (left-aligned)
 };
 
@@ -177,11 +177,15 @@ class speedDisplay {
 
         void setText(const char *text);
         void setSpeed(uint8_t speedNum);
+        #ifdef TC_HAVETEMP
+        void setTemperature(double temp);
+        #endif
         void setDot(bool dot01 = true);
         void setColon(bool colon);
 
         uint8_t getSpeed();
         bool getDot();
+        bool getColon();
         
         void showTextDirect(const char *text);
         void setColonDirect(bool colon);

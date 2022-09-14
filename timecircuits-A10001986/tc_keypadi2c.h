@@ -47,8 +47,6 @@
 #define PCF8574 1 // PCF8574 I/O expander device is 1 byte wide
 #define PCF8575 2 // PCF8575 I/O expander device is 2 bytes wide
 
-void defaultDelay(unsigned int mydelay);
-
 class Keypad_I2C : public Keypad {
 public:
 	Keypad_I2C(char* userKeymap, byte* row, byte* col, byte numRows, byte numCols, byte address,
@@ -86,6 +84,7 @@ public:
     bool scanKeys = false;
 
 private:
+
     // I2C device address
     byte i2caddr;
     // I2C port expander device width in bytes (1 for 8574, 2 for 8575)

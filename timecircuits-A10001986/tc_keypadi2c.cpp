@@ -40,6 +40,8 @@
 
 #include "tc_keypadi2c.h"
 
+static void defaultDelay(unsigned int mydelay);
+
 // Let the user define a keymap - assume the same row/column count as defined in constructor
 void Keypad_I2C::begin(char *userKeymap) 
 {
@@ -57,11 +59,6 @@ void Keypad_I2C::begin(void)
 	  pinState = pinState_set();
 
     _customDelayFunc = defaultDelay;
-}
-
-void defaultDelay(unsigned int mydelay)
-{
-    delay(mydelay);
 }
 
 void Keypad_I2C::setCustomDelayFunc(void (*myDelay)(unsigned int))
@@ -176,6 +173,11 @@ word Keypad_I2C::pinState_set()
    
   	return pinState;
 } 
+
+static void defaultDelay(unsigned int mydelay)
+{
+    delay(mydelay);
+}
 
 /*
 || @changelog

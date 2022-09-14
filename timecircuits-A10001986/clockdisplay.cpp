@@ -91,12 +91,14 @@ void clockDisplay::clear()
 // Set display brightness
 // Valid brighness levels are 0 to 15. Default is 15.
 // 255 sets it to previous level
-uint8_t clockDisplay::setBrightness(uint8_t level) 
+uint8_t clockDisplay::setBrightness(uint8_t level, bool setInitial) 
 {
     if(level == 255)  
         level = _brightness;    // restore to old val 
         
     _brightness = setBrightnessDirect(level);
+
+    if(setInitial) _origBrightness = _brightness;
 
     return _brightness;
 }
