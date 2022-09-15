@@ -249,3 +249,17 @@ If the SD card holds files named "key3.mp3" and/or "key6.mp3", these files will 
 The software supports a switch connected to IO13 (active low) to act as a fake "power switch". If this option is enabled, the device will power-up, initialize everything, but stay quiet and dark. Only when the fake "power switch" is activated, the device will visually "power up". You can also fake "power off" the device using this switch. Fake "off" disables the displays, the audio (except the alarm) and the keypad.
 
 Furthermore, a button switch can be connected to IO14 (active low). This button triggers a re-entry from a time travel and plays the respective sequence. The button must be pressed for 200ms to be recognized.
+
+**External I2C speedometer**
+
+The device supports a speedometer display connected via i2c (address 0x70) as part of the time travel sequence. Unfortunately, CircuitSetup has not yet designed such a speedometer, so you are on your own to build one. The software supports various readily available LED displays from Adafruit and Grove, to be configured in the Config Portal.
+
+Since the I2C bus is already quite long from the control board to the last display, I recommend soldering another JST XH 4pin plug onto the control board (there are two additional i2c break-outs available), and to connect the speedometer there.
+
+** WiFi power saving features**
+
+The Config Portal offers two options for WiFi power saving, one for AP-mode (ie when the device acts as an access point), one for station mode (ie when the device is connected to a WiFi network). Both options do the same: They configure a timer after whose expiry WiFi is switched off; the device is no longer transmitting or receiving data over WiFi. 
+
+The timers can be set to 0 (which disables them; WiFi is never switched off; this is the default), or 10-99 minutes. 
+
+The reason for having two different timers for AP-mode and for station mode is that if the device is used in a car, it might act as an access point, while at home it is most probably connected to a WiFi network as a client. Since in a car, WiFi will most likely not be used on a regular basis, the timer for AP mode can be short (eg 10 minutes), while the timer for station mode can be disabled.
