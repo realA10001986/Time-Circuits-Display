@@ -16,7 +16,7 @@ During August of 2022, I have re-written almost the entire code. New features an
 - Correct clocking for years 1-9999, including leap years
 - Support for time zones and automatic DST (in NTP-mode only)
 - Option to make time travels persistent over reboots
-- Movie-accurate time travel times in "decorative mode" (automatic time cycling).
+- Movie-accurate time travel times in "decorative mode" (automatic time cycling)
 - Alarm function
 - SD card support for custom audio files
 - Night mode (displays off or dimmed; manual or automatic)
@@ -33,10 +33,9 @@ During August of 2022, I have re-written almost the entire code. New features an
 - Optional externally triggered time travel, with optional delay
 - Support for optional external i2c display acting as Speedometer, used in time travel sequences
 - Built-in installer for default audio files in addition to OTA firmware updates
-- many bugfixes and internal changes
 - etc
 
-In the meantime, the nice folks over at circuitsetup.us decided to use this software (as "v2") for their Time Circuits Display and merged my code into their repository (apart from some sounds, of which they say the like theirs better). This means that what you see here is probably mostly identical with that circuitsetup.us has, maybe a little further ahead in development, and with some better sounds ;)
+In the meantime, the nice folks over at circuitsetup.us decided to use this software (as "v2") for their Time Circuits Display and merged my code into their repository (apart from some sounds, of which they say they like theirs better). This means that what you see here is probably mostly identical with that circuitsetup.us has, maybe a little further ahead in development, and with some better sounds ;)
 
 **Installation**
 
