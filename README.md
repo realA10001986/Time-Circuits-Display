@@ -148,7 +148,7 @@ How to enter dates/times for the three displays:
 - Data entry works as follows: If you want to keep the currently shown pre-set, press ENTER to proceed to next field. Otherwise press a digit on the keypad; the pre-set is then overwritten by the value entered. 2 digits can be entered (4 for years), upon which the current value is stored and the next field is activated. You can also enter less than 2/4 digits and press ENTER when done with the field. Note that the month needs to be entered numerically (1-12), and the hour needs to be entered in 24 hour mode, regardless of 12-hour or 24-hour mode as per the Config Portal setting.
 - After entering data into all fields, the data is saved and the menu is left automatically.
 - Note that when entering dates/times into the *destination time* or *last time departed* displays, the Time-rotation Interval is automatically set to 0. Your entered date/time(s) are shown until overwritten by time travels (see below, section "How to select the Time-rotation Interval").
-- By entering a date/time into the *present time* display, the RTC (real time clock) of the device is adjusted, which is useful if you can't use NTP for time keeping. The time you entered will be overwritten if/when the device has access to network time via NTP.
+- By entering a date/time into the *present time* display, the RTC (real time clock) of the device is adjusted, which is useful if you can't use NTP for time keeping. Always set the real actual present time here; if you want to display some other time, use the Time Travel function. Note: The time you entered will be overwritten if/when the device has access to network time via NTP.
 
 How to set the audio volume:
 
@@ -167,7 +167,7 @@ How to set up the alarm:
 - Hold ENTER
 - Press ENTER to toggle the alarm on and off, hold ENTER to proceed
 - Then enter the hour and minutes. This works as described above.
-- The menu is left automatically after entering the minute. "SAVE" is displayed briefly.
+- The menu is left automatically after entering the minute. "SAVING" is displayed briefly.
 
 Under normal operation (ie outside of the menu), holding "1" enables the alarm, holding "2" disables it. 
 
@@ -182,7 +182,7 @@ How to select the Time-rotation Interval:
 - Press ENTER to cycle through the possible Time-rotation Interval values.
 - A value of 0 disables automatic time cycling ("OFF").
 - Non-zero values make the device cycle through a number of pre-programmed times. The value means "minutes" (hence "MIN-UTES") between changes.              
-- Hold ENTER to select the value shown and exit the menu ("SAVE" is displayed briefly)
+- Hold ENTER to select the value shown and exit the menu ("SAVING" is displayed briefly)
  
 How to adjust the display brightness:
 - Hold ENTER to invoke main menu
@@ -190,7 +190,7 @@ How to adjust the display brightness:
 - Hold ENTER, the displays show all elements, the top-most display says "LVL"
 - Press ENTER to cycle through the possible levels (1-5)
 - Hold ENTER to use current value and proceed to next display
-- After the third display, "SAVE" is displayed briefly and the menu is left automatically.
+- After the third display, "SAVING" is displayed briefly and the menu is left automatically.
  
 How to find out the IP address and WiFi status:
 - Hold ENTER to invoke main menu
@@ -245,9 +245,9 @@ If the SD card holds files named "key3.mp3" and/or "key6.mp3", these files will 
 
 **External switch and button**
 
-The software supports a switch connected to IO13 (active low) to act as a fake "power switch". If this option is enabled, the device will power-up, initialize everything, but stay quiet and dark. Only when the fake "power switch" is activated, the device will visually "power up". You can also fake "power off" the device using this switch. Fake "off" disables the displays, the audio (except the alarm) and the keypad.
+The software supports a switch connected to IO13 (active low) to act as a fake "power switch". If this option is enabled, the device will power-up, initialize everything, but stay quiet and dark. Only when the fake "power switch" is activated (IO13 is connected to GND), the device will visually "power up". You can also fake "power off" the device using this switch. Fake "off" disables the displays, the audio (except the alarm) and the keypad.
 
-Furthermore, a button switch can be connected to IO14 (active low). This button triggers a re-entry from a time travel and plays the respective sequence. The button must be pressed for 200ms to be recognized.
+Furthermore, a button switch can be connected to IO14 (active low). This button by default triggers a re-entry from a time travel and plays the respective sequence. The button must be pressed for 200ms to be recognized. There are some config options for this button in the Config Portal.
 
 **External I2C speedometer**
 
