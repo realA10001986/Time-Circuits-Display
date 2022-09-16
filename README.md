@@ -195,7 +195,7 @@ How to adjust the display brightness:
 How to find out the IP address and WiFi status:
 - Hold ENTER to invoke main menu
 - Press ENTER until "NET-WORK" is shown
-- Hold ENTER, the displays shows the IP address
+- Hold ENTER, the displays show the IP address
 - Press ENTER to view the WiFi status
 - Hold ENTER to leave the menu
 
