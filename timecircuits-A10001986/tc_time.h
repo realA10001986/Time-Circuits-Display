@@ -88,6 +88,9 @@ extern clockDisplay departedTime;
 #ifdef TC_HAVESPEEDO
 extern bool useSpeedo;
 extern speedDisplay speedo;
+#ifdef TC_HAVETEMP
+extern bool useTemp;
+#endif
 #endif
 
 extern RTC_DS3231 rtc;

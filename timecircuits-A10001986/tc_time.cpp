@@ -77,8 +77,9 @@ unsigned long currTotDur = 0;
 bool          didTriggerP1 = false;
 double        ttP0TimeFactor = 1.0;
 #ifdef TC_HAVETEMP
-bool          useTemp = true;
+bool          useTemp = false;
 unsigned long tempReadNow;
+int           tempBrightness = DEF_BRIGHT_TEMP;
 #endif
 #endif
 unsigned long timetravelP1Now = 0;
@@ -453,27 +454,32 @@ void time_setup()
         
         speedo.off();
 
-        speedo.setSpeed(0);
-        speedo.on();
-        speedo.show();
-        
-        #ifdef TC_DBG
-        speedo.setColon(false);
-        speedo.setText("HIHI");
-        //speedo.showTextDirect("HIHI");
-        speedo.on();
-        speedo.show();
-        #endif
-    }
-    #endif
-    #ifdef TC_HAVETEMP
-    if(useTemp) {
-        if(tempSens.begin()) {
-            tempSens.setCustomDelayFunc(my2delay);
-            dispTemperature(true);
-        } else {
-            useTemp = false;
+        #ifdef FAKE_POWER_ON
+        if(!waitForFakePowerButton) {
+            speedo.setSpeed(0);
+            speedo.on();
+            speedo.show();
         }
+        #endif
+        
+        #ifdef TC_HAVETEMP
+        useTemp = ((int)atoi(settings.useTemp) > 0) ? true : false;
+        if(useTemp) {
+            if(tempSens.begin()) {
+                tempSens.setCustomDelayFunc(my2delay);
+
+                tempBrightness = (int)atoi(settings.tempBright);;
+                
+                #ifdef FAKE_POWER_ON
+                if(!waitForFakePowerButton) {
+                    dispTemperature(true);
+                }
+                #endif
+            } else {
+                useTemp = false;
+            }
+        }
+        #endif
     }
     #endif
 
@@ -594,6 +600,9 @@ void time_loop()
                     destinationTime.setBrightness(255); // restore brightnesses
                     presentTime.setBrightness(255);     // in case we got switched
                     departedTime.setBrightness(255);    // off during time travel
+                    #ifdef TC_HAVETEMP
+                    dispTemperature(true);
+                    #endif
                 }
             } else {
                 if(FPBUnitIsOn) {       
@@ -647,7 +656,7 @@ void time_loop()
         if(useSpeedo) {
             speedo.off();
             #ifdef TC_HAVETEMP
-            if(useTemp) dispTemperature(true);
+            dispTemperature(true);
             #endif
         }
         #endif     
@@ -682,9 +691,7 @@ void time_loop()
             timeTravelP2 = 0;
             speedo.off();
             #ifdef TC_HAVETEMP
-            if(useSpeedo && useTemp) {
-                dispTemperature(true);
-            }
+            dispTemperature(true);
             #endif
         } else {
             timeTravelP0Speed--;
@@ -694,6 +701,10 @@ void time_loop()
             timetravelP0Now = millis(); 
         }        
     }
+
+    #ifdef TC_HAVETEMP
+    dispTemperature();
+    #endif
     #endif
 
     // Time travel animation, part 1
@@ -1612,24 +1623,24 @@ void dispTemperature(bool force)
 {
     int temp;
 
+    if(!useSpeedo || !useTemp) 
+        return;
+
     if(!FPBUnitIsOn || startup || timeTraveled || timeTravelP0 || timeTravelP1 || timeTravelP2) 
         return;
 
-    if(!useSpeedo || !useTemp) 
-        return;
-        
     if(speedo.getNightMode()) {
         speedo.off();
         tempOldNM = true;
         return;
     } 
 
-    if(tempOldNM || (force || (millis() - tempReadNow >= 7*60*1000))) {
+    if(tempOldNM || (force || (millis() - tempReadNow >= 2*60*1000))) {
         tempOldNM = false;
         tempSens.on();
         speedo.setTemperature(tempSens.readTemp());
         speedo.show();
-        speedo.setBrightnessDirect(3); // after show b/c brightness
+        speedo.setBrightnessDirect(tempBrightness); // after show b/c brightness
         speedo.on();
         tempSens.off();
         tempReadNow = millis();
