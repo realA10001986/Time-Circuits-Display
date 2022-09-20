@@ -65,6 +65,9 @@
 
 /* Changelog 
  *  
+ *  2022/09/20 (A10001986)
+ *    - Minor bug fixes (speedo)
+ *    - [temperature sensor enhanced and fixed; inactive]
  *  2022/09/12 (A10001986)
  *    - Fix brightness logic if changed in menu, and night mode activated 
  *      afterwards.

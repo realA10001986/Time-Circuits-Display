@@ -86,6 +86,9 @@ WiFiManagerParameter custom_fakePwrOn("fpo", "Enable fake power switch (0=no, 1=
 #endif
 #ifdef TC_HAVESPEEDO
 WiFiManagerParameter custom_useSpeedo("uSpe", "Use I2C-speedometer (0=no, 1=yes)", settings.useSpeedo, 1, "autocomplete='off' title='Enable to use a speedo display as part of the time travel sequence'");
+#ifdef TC_HAVETEMP
+WiFiManagerParameter custom_useTemp("uTem", "Use I2C-thermometer (0=no, 1=yes)", settings.useTemp, 1, "autocomplete='off' title='Enable to use a i2c thermometer to display temperature on speedo display while idle'");
+#endif
 #endif
 #else // -------------------- Checkbox hack: --------------
 WiFiManagerParameter custom_ttrp("ttrp", "Make time travels persistent", settings.timesPers, 1, "title='If unchecked, the displays are reset after reboot' type='checkbox' style='margin-top:3px'", WFM_LABEL_AFTER);
@@ -104,6 +107,9 @@ WiFiManagerParameter custom_fakePwrOn("fpo", "Use fake power switch", settings.f
 #endif
 #ifdef TC_HAVESPEEDO
 WiFiManagerParameter custom_useSpeedo("uSpe", "Use I2C-speedometer", settings.useSpeedo, 1, "title='Check to use a speedo display as part of the time travel sequence' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+#ifdef TC_HAVETEMP
+WiFiManagerParameter custom_useTemp("uTem", "Use I2C-thermometer", settings.useTemp, 1, "title='Enable to use a i2c thermometer to display temperature on speedo display while idle' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+#endif
 #endif
 #endif // -------------------------------------------------
 WiFiManagerParameter custom_autoRotateTimes(aintCustHTML);
@@ -124,8 +130,11 @@ WiFiManagerParameter custom_ettDelay("ettDe", "Externally triggered time travel:
 #endif
 #ifdef TC_HAVESPEEDO
 WiFiManagerParameter custom_speedoType(spTyCustHTML);
-WiFiManagerParameter custom_speedoBright("speBri", "<br>Brightness (0-15)", settings.speedoBright, 2, "type='number' min='0' max='15' autocomplete='off'");
+WiFiManagerParameter custom_speedoBright("speBri", "<br>Speedo brightness (0-15)", settings.speedoBright, 2, "type='number' min='0' max='15' autocomplete='off'");
 WiFiManagerParameter custom_speedoFact("speFac", "Speedo sequence speed factor (0.5-5.0)", settings.speedoFact, 3, "type='number' min='0.5' max='5.0' step='0.5' title='1.0 means the sequence is played in real-world DeLorean acceleration time. Higher values make the sequence run faster, lower values slower' autocomplete='off'");
+#ifdef TC_HAVETEMP
+WiFiManagerParameter custom_tempBright("temBri", "<br>Temperature brightness (0-15)", settings.tempBright, 2, "type='number' min='0' max='15' autocomplete='off'");
+#endif
 #endif
 
 WiFiManagerParameter custom_copyAudio("cpAu", "Audio file installation: Write COPY here to copy the original audio files from the SD card to the internal flash file system", settings.copyAudio, 6, "autocomplete='off'");
@@ -247,7 +256,11 @@ void wifi_setup()
     wm.addParameter(&custom_useSpeedo);
     wm.addParameter(&custom_speedoType);
     wm.addParameter(&custom_speedoBright);
-    wm.addParameter(&custom_speedoFact);
+    wm.addParameter(&custom_speedoFact);    
+    #ifdef TC_HAVETEMP
+    wm.addParameter(&custom_useTemp);
+    wm.addParameter(&custom_tempBright);
+    #endif
     wm.addParameter(&custom_sectend);
     #endif
     if(check_allow_CPA()) {
@@ -375,6 +388,9 @@ void wifi_loop()
             }
             strcpy(settings.speedoFact, custom_speedoFact.getValue());
             strcpy(settings.speedoBright, custom_speedoBright.getValue());
+            #ifdef TC_HAVETEMP
+            strcpy(settings.tempBright, custom_tempBright.getValue());
+            #endif
             #endif
             
             #ifdef TC_NOCHECKBOXES // --------- Plain text boxes:
@@ -394,6 +410,9 @@ void wifi_loop()
             #endif
             #ifdef TC_HAVESPEEDO
             strcpy(settings.useSpeedo, custom_useSpeedo.getValue());
+            #ifdef TC_HAVETEMP
+            strcpy(settings.useTemp, custom_useTemp.getValue());
+            #endif
             #endif
             
             #else // -------------------------- Checkboxes: 
@@ -413,6 +432,9 @@ void wifi_loop()
             #endif
             #ifdef TC_HAVESPEEDO
             strcpy(settings.useSpeedo, ((int)atoi(custom_useSpeedo.getValue()) > 0) ? "1" : "0");
+            #ifdef TC_HAVETEMP
+            strcpy(settings.useTemp, ((int)atoi(custom_useTemp.getValue()) > 0) ? "1" : "0");
+            #endif
             #endif
             
             #endif  // -------------------------
@@ -758,6 +780,9 @@ void updateConfigPortalValues()
     #endif
     #ifdef TC_HAVESPEEDO
     custom_useSpeedo.setValue(settings.useSpeedo, 1);
+    #ifdef TC_HAVETEMP
+    custom_useTemo.setValue(settings.useTemp, 1);
+    #endif
     #endif
 
     #else   // For checkbox hack --------------------------
@@ -775,6 +800,12 @@ void updateConfigPortalValues()
     #ifdef EXTERNAL_TIMETRAVEL_IN
     custom_ettLong.setValue(((int)atoi(settings.ettLong) > 0) ? makeCheck : "1", 14);
     #endif
+    #ifdef TC_HAVESPEEDO
+    custom_useSpeedo.setValue(((int)atoi(settings.useSpeedo) > 0) ? makeCheck : "1", 14);
+    #ifdef TC_HAVETEMP
+    custom_useTemp.setValue(((int)atoi(settings.useTemp) > 0) ? makeCheck : "1", 14);
+    #endif
+    #endif
 
     #endif // ---------------------------------------------
 
@@ -786,9 +817,8 @@ void updateConfigPortalValues()
     #ifdef EXTERNAL_TIMETRAVEL_IN
     custom_ettDelay.setValue(settings.ettDelay, 5);
     #endif
+    
     #ifdef TC_HAVESPEEDO
-    custom_useSpeedo.setValue(((int)atoi(settings.useSpeedo) > 0) ? makeCheck : "1", 14);
-
     strcpy(spTyCustHTML, spTyCustHTML1);
     strcat(spTyCustHTML, settings.speedoType);
     strcat(spTyCustHTML, spTyCustHTML2);
@@ -805,6 +835,9 @@ void updateConfigPortalValues()
 
     custom_speedoBright.setValue(settings.speedoBright, 2);
     custom_speedoFact.setValue(settings.speedoFact, 3);
+    #ifdef TC_HAVETEMP
+    custom_tempBright.setValue(settings.tempBright, 2);
+    #endif
     #endif
 
     custom_copyAudio.setValue("", 6);   // Always clear

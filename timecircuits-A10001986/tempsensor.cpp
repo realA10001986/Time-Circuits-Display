@@ -33,7 +33,7 @@ static void defaultDelay(unsigned int mydelay);
 //  1    0.25°C      65 ms
 //  2    0.125°C     130 ms
 //  3    0.0625°C    250 ms
-#define TC_TEMP_RESOLUTION 0
+#define TC_TEMP_RESOLUTION 2
 uint16_t wakeDelay[4] = { 30, 65, 130, 250 };
 
 
@@ -93,6 +93,11 @@ double tempSensor::readTemp(bool celsius)
         if(t & 0x1000) temp = 256.0 - temp;
         if(!celsius) temp = temp * 9.0 / 5.0 + 32.0;
     }
+
+    #ifdef TC_DBG
+    Serial.print("Read temp: ");
+    Serial.println(temp);
+    #endif
 
     return temp;
 }

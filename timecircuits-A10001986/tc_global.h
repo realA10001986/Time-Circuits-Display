@@ -33,7 +33,7 @@
 #define SP_NUM_TYPES    10  // Number of speedo display types supported
 #define SP_MIN_TYPE     1   // Change to 0 when CircuitSetup speedo add-on exists
 
-#define TC_DBG            // debug output on Serial
+//#define TC_DBG            // debug output on Serial
 
 // Use SPIFFS (if defined) or LittleFS (if undefined; esp32-arduino >= 2.x)
 // As long as SPIFFS is around, and LittleFS does not support wear leveling,
@@ -48,10 +48,10 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #ifndef IS_ACAR_DISPLAY
 #define TC_VERSION "V2.0.0"           // 13 chars max
-#define TC_VERSION_EXTRA "SEP142022"  // 13 chars max
+#define TC_VERSION_EXTRA "SEP202022"  // 13 chars max
 #else   // A-Car
 #define TC_VERSION "V2.0.0_A-CAR"     // 12 chars max
-#define TC_VERSION_EXTRA "09142022"   // 12 chars max
+#define TC_VERSION_EXTRA "09202022"   // 12 chars max
 #endif
 
 #ifdef TWPRIVATE

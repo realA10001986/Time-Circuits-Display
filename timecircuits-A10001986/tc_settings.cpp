@@ -297,6 +297,16 @@ void settings_setup()
                         strcpy(settings.speedoFact, json["speedoFact"]);
                         writedefault |= checkValidNumParmF(settings.speedoFact, 0.5, 5.0, DEF_SPEEDO_FACT);
                     } else writedefault = true;
+                    #ifdef TC_HAVETEMP
+                    if(json["useTemp"]) {
+                        strcpy(settings.useTemp, json["useTemp"]);
+                        writedefault |= checkValidNumParm(settings.useTemp, 0, 1, DEF_USE_TEMP);
+                    } else writedefault = true;
+                    if(json["tempBright"]) {
+                        strcpy(settings.tempBright, json["tempBright"]);
+                        writedefault |= checkValidNumParm(settings.tempBright, 0, 15, DEF_BRIGHT_TEMP);
+                    } else writedefault = true;
+                    #endif
                     #endif
                   
                 } else {
@@ -382,6 +392,10 @@ void write_settings()
     json["speedoType"] = settings.speedoType;
     json["speedoBright"] = settings.speedoBright;
     json["speedoFact"] = settings.speedoFact;
+    #ifdef TC_HAVETEMP
+    json["useTemp"] = settings.useTemp;
+    json["tempBright"] = settings.tempBright;
+    #endif
     #endif
   
     File configFile = SPIFFS.open("/config.json", FILE_WRITE);
