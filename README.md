@@ -255,7 +255,7 @@ The device supports a speedometer display connected via i2c (address 0x70) as pa
 
 Since the I2C bus is already quite long from the control board to the last display, I recommend soldering another JST XH 4pin plug onto the control board (there are two additional i2c break-outs available), and to connect the speedometer there.
 
-[![Watch the video](https://img.youtube.com/vi/FRRecGxAONc /maxresdefault.jpg)](https://youtu.be/FRRecGxAONc )
+[![Watch the video](https://img.youtube.com/vi/FRRecGxAONc/maxresdefault.jpg)](https://youtu.be/FRRecGxAONc)
 
 **WiFi power saving features**
 
