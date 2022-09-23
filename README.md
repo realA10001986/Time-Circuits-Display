@@ -255,6 +255,8 @@ The device supports a speedometer display connected via i2c (address 0x70) as pa
 
 Since the I2C bus is already quite long from the control board to the last display, I recommend soldering another JST XH 4pin plug onto the control board (there are two additional i2c break-outs available), and to connect the speedometer there.
 
+https://youtu.be/FRRecGxAONc 
+
 **WiFi power saving features**
 
 The Config Portal offers two options for WiFi power saving, one for AP-mode (ie when the device acts as an access point), one for station mode (ie when the device is connected to a WiFi network). Both options do the same: They configure a timer after whose expiry WiFi is switched off; the device is no longer transmitting or receiving data over WiFi. 
