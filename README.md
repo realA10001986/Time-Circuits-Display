@@ -257,7 +257,7 @@ Since the I2C bus is already quite long from the control board to the last displ
 
 [![Watch the video](https://img.youtube.com/vi/FRRecGxAONc/0.jpg)](https://youtu.be/FRRecGxAONc)
 
-The speedo replica shown in this video was built from a fairly well-designed stand-alone replica purchased on ebay. I removed the Arduino Uno inside and wired the LED segments to an Adafruit i2c backpack (eg ADA 878). The strange look of the LEDs in the video is due to the iPhone camera's limitations; in real life it looks as good as any LED segment display.
+The speedo replica shown in this video is based on a fairly well-designed stand-alone replica purchased on ebay. I removed the Arduino Uno inside and wired the LED segments to an Adafruit i2c backpack (eg ADA 878). The strange look of the LEDs in the video is due to the iPhone camera's limitations; in real life it looks as good as any LED segment display.
 
 **WiFi power saving features**
 
