@@ -56,7 +56,8 @@ enum dispTypes : int {
     SP_GROVE_4DIG14,  // Grove 0.54" Quad Alphanumeric Display
     SP_GROVE_4DIG14L, // " " " (left aligned)
 #ifdef TWPRIVATE
-    SP_TWCUSTOM,      // Like SP_ADAF_14x4, but with only left hand side tube soldered on
+    SP_TWCUSTOM1,     // Like SP_ADAF_14x4, but with only left hand side tube soldered on
+    SP_TWCUSTOM2,     // Like SP_ADAF_7x4L, but only 2 digits
 #endif    
 // ----- do not use the two below ----
     SP_TCD_TEST7,     // TimeCircuits Display 7 (for testing)

@@ -53,8 +53,8 @@
 #define PRES_TIME_ADDR 0x72
 #define DEPT_TIME_ADDR 0x74
 
-#define SPEEDO_ADDR    0x70
-#define TEMP_ADDR      0x18
+#define SPEEDO_ADDR    0x70 // i2C address of speedo display
+#define TEMP_ADDR      0x18 // i2C address of temperature sensor
 
 // The time between sound being started and the display coming on
 // Must be sync'd to the sound file used! (startup.mp3/timetravel.mp3)
@@ -128,8 +128,10 @@ void waitAudioDoneIntro();
 
 extern void pwrNeedFullNow(bool force = false);
 
+#ifdef TC_HAVESPEEDO
 #ifdef TC_HAVETEMP
 void dispTemperature(bool force = false);
+#endif
 #endif
 
 // These block various events
