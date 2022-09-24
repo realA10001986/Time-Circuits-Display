@@ -257,6 +257,8 @@ Since the I2C bus is already quite long from the control board to the last displ
 
 [![Watch the video](https://img.youtube.com/vi/FRRecGxAONc/0.jpg)](https://youtu.be/FRRecGxAONc)
 
+The speedo replica shown in this video was built from a fairly well-designed stand-alone replica purchased on ebay. I removed the Arduino Uno inside and wired the LED segments to an Adafruit i2c backpack (eg ADA 878). The strange look of the LEDs in the video is due to the iPhone camera's limitations; in real life it looks as good as any other LED segment display.
+
 **WiFi power saving features**
 
 The Config Portal offers two options for WiFi power saving, one for AP-mode (ie when the device acts as an access point), one for station mode (ie when the device is connected to a WiFi network). Both options do the same: They configure a timer after whose expiry WiFi is switched off; the device is no longer transmitting or receiving data over WiFi. 
