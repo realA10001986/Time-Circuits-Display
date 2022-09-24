@@ -3,7 +3,7 @@ Firmware for ESP32-based Time-Circuits-Display
 
 This was a fork of a previous version of the firmware for [this](https://circuitsetup.us/product/complete-time-circuits-display-kit/) wonderful piece of hardware:
 
-https://github.com/CircuitSetup/Time-Circuits-Display/blob/master/README.md
+https://circuitsetup.us/product/complete-time-circuits-display-kit/
 
 ![TCD Front](https://raw.githubusercontent.com/CircuitSetup/Time-Circuits-Display/master/Images/tcd_front2.jpg)
 
