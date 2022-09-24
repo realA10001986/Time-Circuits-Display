@@ -65,6 +65,8 @@
 
 /* Changelog 
  *  
+ *  2022/09/23 (A10001986)
+ *    - Minor fixes
  *  2022/09/20 (A10001986)
  *    - Minor bug fixes (speedo)
  *    - [temperature sensor enhanced and fixed; inactive]

@@ -45,7 +45,7 @@ const char aintCustHTML7[] = ">Every 30th minute</option><option value='5'";
 const char aintCustHTML8[] = ">Every 60th minute</option></select></div>";
 
 #ifdef TC_HAVESPEEDO
-char spTyCustHTML[768] = "";
+char spTyCustHTML[1024] = "";
 const char spTyCustHTML1[] = "<div style='margin:0;padding:0;'><label for='speedo_type'>Display type</label><select style='width:auto;margin-left:10px;vertical-align:baseline;' value='";
 const char spTyCustHTML2[] = "' name='speedo_type' id='speedo_type' autocomplete='off' title='Selects type of speedo display'>";
 const char spTyCustHTMLE[] = "</select></div>";
@@ -64,7 +64,8 @@ const char *dispTypeNames[SP_NUM_TYPES] = {
   "Grove 0.54\" 4x14\0",
   "Grove 0.54\" 4x14 (left)\0"
 #ifdef TWPRIVATE
-  ,"A10001986 custom\0"
+  ,"A10001986 wallclock\0"
+  ,"A10001986 speedo replica\0"
 #endif
 };
 #endif

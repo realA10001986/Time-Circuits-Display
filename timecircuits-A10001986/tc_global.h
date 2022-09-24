@@ -48,10 +48,10 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #ifndef IS_ACAR_DISPLAY
 #define TC_VERSION "V2.0.0"           // 13 chars max
-#define TC_VERSION_EXTRA "SEP202022"  // 13 chars max
+#define TC_VERSION_EXTRA "SEP232022"  // 13 chars max
 #else   // A-Car
 #define TC_VERSION "V2.0.0_A-CAR"     // 12 chars max
-#define TC_VERSION_EXTRA "09202022"   // 12 chars max
+#define TC_VERSION_EXTRA "09232022"   // 12 chars max
 #endif
 
 #ifdef TWPRIVATE
@@ -61,10 +61,15 @@
 #undef TC_VERSION
 #define TC_VERSION "A10001986P"
 #undef SP_NUM_TYPES
-#define SP_NUM_TYPES 11
+#define SP_NUM_TYPES 12
 #elif defined(TWSOUND)
 #undef TC_VERSION
 #define TC_VERSION "A10001986"
+#endif
+
+// No temperature without speedo
+#ifndef TC_HAVESPEEDO
+#undef TC_HAVETEMP
 #endif
 
 // GPIO pins

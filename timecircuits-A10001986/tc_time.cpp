@@ -600,8 +600,10 @@ void time_loop()
                     destinationTime.setBrightness(255); // restore brightnesses
                     presentTime.setBrightness(255);     // in case we got switched
                     departedTime.setBrightness(255);    // off during time travel
+                    #ifdef TC_HAVESPEEDO
                     #ifdef TC_HAVETEMP
                     dispTemperature(true);
+                    #endif
                     #endif
                 }
             } else {
@@ -1618,6 +1620,7 @@ void pwrNeedFullNow(bool force)
   pwrLow = false;
 }
 
+#ifdef TC_HAVESPEEDO
 #ifdef TC_HAVETEMP
 void dispTemperature(bool force)
 {
@@ -1647,4 +1650,5 @@ void dispTemperature(bool force)
     }
 
 }
+#endif
 #endif
