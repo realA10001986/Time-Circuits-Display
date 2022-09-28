@@ -7,7 +7,7 @@ https://circuitsetup.us/product/complete-time-circuits-display-kit/
 
 ![TCD Front](https://raw.githubusercontent.com/CircuitSetup/Time-Circuits-Display/master/Images/tcd_front2.jpg)
 
-"This Time Circuits Display has been meticulously reproduced to be as accurate as possible to the one seen in the Delorean Time Machine in the Back to the Future movies." 
+*"This Time Circuits Display has been meticulously reproduced to be as accurate as possible to the one seen in the Delorean Time Machine in the Back to the Future movies."*
 
 During August of 2022, I have re-written almost the entire code. New features and changes include
 - Time keeping via NTP (network time) or stand-alone
