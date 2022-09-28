@@ -141,7 +141,7 @@ Pressing ENTER cycles through the list, holding ENTER selects an item, ie a mode
  
 How to enter dates/times for the three displays:
 - Hold ENTER to invoke main menu
-- Press ENTER until the desired display is the only one lit
+- Press ENTER repeatedly until the desired display is the only one lit
 - Hold ENTER until the display goes off except for the first field to enter data into
 - The field to enter data into is shown (exclusively), pre-set with its current value
 - Data entry works as follows: If you want to keep the currently shown pre-set, press ENTER to proceed to next field. Otherwise press a digit on the keypad; the pre-set is then overwritten by the value entered. 2 digits can be entered (4 for years), upon which the current value is stored and the next field is activated. You can also enter less than 2/4 digits and press ENTER when done with the field. Note that the month needs to be entered numerically (1-12), and the hour needs to be entered in 24 hour mode, regardless of 12-hour or 24-hour mode as per the Config Portal setting.
@@ -153,7 +153,7 @@ How to set the audio volume:
 
 Basically, and by default, the device uses the hardware volume knob to determine the desired volume. You can change this to a software setting as follows:
 - Hold ENTER to invoke main menu
-- Press ENTER until "VOL-UME" is shown
+- Press ENTER repeatedly until "VOL-UME" is shown
 - Hold ENTER
 - Press ENTER to toggle between "HW" (volume knob) or "SW" (software)
 - Hold ENTER to proceed
@@ -162,7 +162,7 @@ Basically, and by default, the device uses the hardware volume knob to determine
 
 How to set up the alarm:
 - Hold ENTER to invoke main menu
-- Press ENTER until "ALA-RM" is shown
+- Press ENTER repeatedly until "ALA-RM" is shown
 - Hold ENTER
 - Press ENTER to toggle the alarm on and off, hold ENTER to proceed
 - Then enter the hour and minutes. This works as described above.
@@ -176,24 +176,24 @@ If the alarm is set and enabled, the dot in the present time's minute field is l
  
 How to select the Time-rotation Interval:
 - Hold ENTER to invoke main menu
-- Press ENTER until "TIME-ROTATION-INTERVAL" is shown
+- Press ENTER repeatedly until "TIME-ROTATION-INTERVAL" is shown
 - Hold ENTER, "INT" is displayed
-- Press ENTER to cycle through the possible Time-rotation Interval values.
+- Press ENTER repeatedly to cycle through the possible Time-rotation Interval values.
 - A value of 0 disables automatic time cycling ("OFF").
 - Non-zero values make the device cycle through a number of pre-programmed times. The value means "minutes" (hence "MIN-UTES") between changes.              
 - Hold ENTER to select the value shown and exit the menu ("SAVING" is displayed briefly)
  
 How to adjust the display brightness:
 - Hold ENTER to invoke main menu
-- Press ENTER until "BRIGHTNESS" is shown
+- Press ENTER repeatedly until "BRIGHTNESS" is shown
 - Hold ENTER, the displays show all elements, the top-most display says "LVL"
-- Press ENTER to cycle through the possible levels (1-5)
+- Press ENTER repeatedly to cycle through the possible levels (1-5)
 - Hold ENTER to use current value and proceed to next display
 - After the third display, "SAVING" is displayed briefly and the menu is left automatically.
  
 How to find out the IP address and WiFi status:
 - Hold ENTER to invoke main menu
-- Press ENTER until "NET-WORK" is shown
+- Press ENTER repeatedly until "NET-WORK" is shown
 - Hold ENTER, the displays show the IP address
 - Press ENTER to view the WiFi status
 - Hold ENTER to leave the menu
