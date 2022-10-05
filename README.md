@@ -245,15 +245,18 @@ If the SD card holds files named "key3.mp3" and/or "key6.mp3", these files will 
 
 **External switch and button**
 
-The software supports a switch connected to IO13 (active low) to act as a fake "power switch". If this option is enabled, the device will power-up, initialize everything, but stay quiet and dark. Only when the fake "power switch" is activated (IO13 is connected to GND), the device will visually "power up". You can also fake "power off" the device using this switch. Fake "off" disables the displays, the audio (except the alarm) and the keypad.
+The software supports a switch connected to IO13 (active low) to act as a fake "power switch". If corresponding option is enabled in the Config Portal ("Use fake power switch"), the device will power-up, initialize everything, but stay quiet and dark. Only when the fake "power switch" is activated (IO13 is connected to GND), the device will visually "power up". You can also fake "power off" the device using this switch. Fake "off" disables the displays, the audio (except the alarm) and the keypad.
 
-Furthermore, a button switch can be connected to IO27 (active low; before Oct 5, 2022, this was IO14). This button by default triggers a re-entry from a time travel and plays the respective sequence. The button must be pressed for 200ms to be recognized. There are some config options for this button in the Config Portal.
+Furthermore, a button switch can be connected to IO27 (active low; before Oct 5, 2022, this was IO14). This button triggers a time travel. The button must be pressed for 200ms to be recognized. There are some config options for this button in the Config Portal.
 
 Unfortunately, IO27 is not easily accessible on existing TC control boards. Some soldering is required. The button needs to be connected to the two marked pins in the image below:
 
 ![nodemcuio27](https://user-images.githubusercontent.com/76924199/194137873-4ac1794a-623c-4536-bfba-48bbad84e596.jpg)
 
-Luckily, there is a row of solder pads right next to the socket on the control board, where you can add a pin header at the correct place.
+Luckily, there is a row of solder pads right next to the socket on the control board, where you can add a pin header at the correct place:
+
+![tcboard](https://user-images.githubusercontent.com/76924199/194161960-c291bad7-aa75-45a1-be61-f87cf45fd082.jpg)
+
 
 **External I2C speedometer**
 
