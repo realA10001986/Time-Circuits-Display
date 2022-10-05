@@ -31,6 +31,7 @@ During August of 2022, I have re-written almost the entire code. New features an
 - Optional external fake "power switch"
 - Optional externally triggered time travel, with optional delay
 - Support for optional external i2c display acting as Speedometer, used in time travel sequences
+- Support for optional external i2c temperature sensor to display temperature on speedo display while idle
 - Built-in installer for default audio files in addition to OTA firmware updates
 - etc
 
@@ -246,7 +247,13 @@ If the SD card holds files named "key3.mp3" and/or "key6.mp3", these files will 
 
 The software supports a switch connected to IO13 (active low) to act as a fake "power switch". If this option is enabled, the device will power-up, initialize everything, but stay quiet and dark. Only when the fake "power switch" is activated (IO13 is connected to GND), the device will visually "power up". You can also fake "power off" the device using this switch. Fake "off" disables the displays, the audio (except the alarm) and the keypad.
 
-Furthermore, a button switch can be connected to IO14 (active low). This button by default triggers a re-entry from a time travel and plays the respective sequence. The button must be pressed for 200ms to be recognized. There are some config options for this button in the Config Portal.
+Furthermore, a button switch can be connected to IO27 (active low; before Oct 5, 2022, this was IO14). This button by default triggers a re-entry from a time travel and plays the respective sequence. The button must be pressed for 200ms to be recognized. There are some config options for this button in the Config Portal.
+
+Unfortunately, IO27 is not easily accessible on existing TC control boards. Some soldering is required. The button needs to be connected to the two marked pins in the image below:
+
+![nodemcuio27](https://user-images.githubusercontent.com/76924199/194137873-4ac1794a-623c-4536-bfba-48bbad84e596.jpg)
+
+Luckily, there is a row of solder points right next to the socket on the control board, where you can add a pin header at the correct place.
 
 **External I2C speedometer**
 
