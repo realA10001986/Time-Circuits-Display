@@ -178,7 +178,8 @@ void keypadEvent(KeypadEvent key)
         case HOLD:            
             if(key == '0') {    // "0" held down -> time travel
                 doKey = false;
-                timeTravel(true, true);     // make long timeTravel, with speedo (if available)            
+                // complete timeTravel, with speedo
+                timeTravel(true, true);     
             }
             if(key == '9') {    // "9" held down -> return from time travel                
                 doKey = false;
@@ -331,7 +332,7 @@ void keypad_loop()
 #ifdef EXTERNAL_TIMETRAVEL_IN
     if(isEttKeyPressed) {
         if(!ettDelay) {
-            timeTravel(ettLong);
+            timeTravel(ettLong, true);
             ettDelayed = false;          
         } else {
             ettNow = millis();
@@ -341,7 +342,7 @@ void keypad_loop()
     }
     if(ettDelayed) {
         if(millis() - ettNow >= ettDelay) {
-            timeTravel(ettLong);
+            timeTravel(ettLong, true);
             ettDelayed = false;
         }
     }

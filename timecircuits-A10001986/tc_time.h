@@ -38,6 +38,9 @@
 #include "clockdisplay.h"
 #ifdef TC_HAVESPEEDO
 #include "speeddisplay.h"
+#ifdef TC_HAVEGPS
+#include "gps.h"
+#endif
 #ifdef TC_HAVETEMP
 #include "tempsensor.h"
 #endif
@@ -49,14 +52,15 @@
 #include "time.h"
 #include "tc_settings.h"
 
-#define DEST_TIME_ADDR 0x71  // i2C address of displays
+#define DEST_TIME_ADDR 0x71 // i2C address of displays
 #define PRES_TIME_ADDR 0x72
 #define DEPT_TIME_ADDR 0x74
 
 #define SPEEDO_ADDR    0x70 // i2C address of speedo display
+#define GPS_ADDR       0x10 // i2C address of GPS module
 #define TEMP_ADDR      0x18 // i2C address of temperature sensor
 
-// The time between sound being started and the display coming on
+// The time between reentry sound being started and the display coming on
 // Must be sync'd to the sound file used! (startup.mp3/timetravel.mp3)
 #ifdef TWSOUND
 #define STARTUP_DELAY 900
@@ -72,8 +76,22 @@
 #define TT_P1_DELAY_P3  (5800-(TT_P1_DELAY_P2+TT_P1_DELAY_P1))                                  // Off
 #define TT_P1_DELAY_P4  (6800-(TT_P1_DELAY_P3+TT_P1_DELAY_P2+TT_P1_DELAY_P1))                   // Random display I
 #define TT_P1_DELAY_P5  (8000-(TT_P1_DELAY_P4+TT_P1_DELAY_P3+TT_P1_DELAY_P2+TT_P1_DELAY_P1))    // Random display II
+// ACTUAL POINT OF TIME TRAVEL:
+#define TT_P1_POINT88   1000    // ms into "starttravel" sample, when 88mph is reached.
+#define TT_SNDLAT        400    // DO NOT CHANGE
 
-#define TT_P1_POINT88   1000    // ms before end of sample when 88mph is reached
+// Preprocessor config for External Time Travel Output (ETTO):
+// Lead time from trigger (LOW->HIGH) to actual tt (ie when 88mph is reached)
+// The external prop has ETTO_LEAD_TIME ms to play its pre-tt sequence. After
+// ETTO_LEAD_TIME ms, 88mph is reached, and the actual tt takes place.
+#define ETTO_LEAD_TIME      5000
+// Trigger mode: 
+// true:  Pulse for ETTO_PULSE_DURATION ms on tt start minus leadTime
+// false: LOW->HIGH on tt start minus leadTime, HIGH->LOW on start of reentry
+#define ETTO_USE_PULSE      false
+// If ETTO_USE_PULSE is true, pulse for approx. ETTO_PULSE_DURATION ms 
+#define ETTO_PULSE_DURATION 1000
+// End of ETTO config
 
 extern uint8_t        autoInterval;
 extern const uint8_t  autoTimeIntervals[6];
@@ -103,11 +121,12 @@ extern int8_t     autoTime;
 extern void time_boot();
 extern void time_setup();
 extern void time_loop();
-extern void timeTravel(bool makeLong, bool withSpeedo = false);
+extern void timeTravel(bool doComplete, bool withSpeedo = false);
 extern void resetPresentTime();
 extern void pauseAuto();
 extern bool checkIfAutoPaused();
-extern bool getNTPTime();
+bool getNTPOrGPSTime();
+bool getNTPTime();
 extern bool checkTimeOut();
 extern void RTCClockOutEnable();
 extern bool isLeapYear(int year);
@@ -129,6 +148,11 @@ void waitAudioDoneIntro();
 extern void pwrNeedFullNow(bool force = false);
 
 #ifdef TC_HAVESPEEDO
+#ifdef TC_HAVEGPS
+bool getGPStime();
+bool setGPStime();
+void dispGPSSpeed(bool force = false);
+#endif
 #ifdef TC_HAVETEMP
 void dispTemperature(bool force = false);
 #endif

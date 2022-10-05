@@ -104,8 +104,10 @@ extern bool    haveSD;
 #define DEF_SPEEDO_TYPE     SP_MIN_TYPE  // Default display type
 #define DEF_SPEEDO_FACT     2.0   // Speedo factor (1.0 actual DeLorean figures; >1.0 faster, <1.0 slower)
 #define DEF_BRIGHT_SPEEDO   15    // Default: Max. brightness
+#define DEF_USE_GPS         0     // 0: No i2c GPS module
 #define DEF_USE_TEMP        0     // 0: No i2c thermometer
 #define DEF_BRIGHT_TEMP     3     // Default temp brightness
+#define DEF_USE_ETTO        0     // 0: No external props
 
 struct Settings {
     char timesPers[4]       = MS(DEF_TIMES_PERS);
@@ -139,10 +141,16 @@ struct Settings {
     char speedoType[4]      = MS(DEF_SPEEDO_TYPE);
     char speedoBright[4]    = MS(DEF_BRIGHT_SPEEDO);
     char speedoFact[6]      = MS(DEF_SPEEDO_FACT);
+#ifdef TC_HAVEGPS
+    char useGPS[4]          = MS(DEF_USE_GPS);
+#endif    
 #ifdef TC_HAVETEMP    
     char useTemp[4]         = MS(DEF_USE_TEMP);
     char tempBright[4]      = MS(DEF_BRIGHT_TEMP);
 #endif
+#endif
+#ifdef EXTERNAL_TIMETRAVEL_OUT
+    char useETTO[4]         = MS(DEF_USE_ETTO);
 #endif
     char copyAudio[12]      = "";   // never loaded or saved!
 };
