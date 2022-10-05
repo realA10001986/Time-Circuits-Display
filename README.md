@@ -253,7 +253,7 @@ Unfortunately, IO27 is not easily accessible on existing TC control boards. Some
 
 ![nodemcuio27](https://user-images.githubusercontent.com/76924199/194137873-4ac1794a-623c-4536-bfba-48bbad84e596.jpg)
 
-Luckily, there is a row of solder points right next to the socket on the control board, where you can add a pin header at the correct place.
+Luckily, there is a row of solder pads right next to the socket on the control board, where you can add a pin header at the correct place.
 
 **External I2C speedometer**
 
