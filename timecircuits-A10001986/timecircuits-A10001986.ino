@@ -65,6 +65,24 @@
 
 /* Changelog 
  *  
+ *  2022/10/05 (A10001986)
+ *    - Important: The external time travel trigger button is now no longer
+ *      on IO14, but IO27. This will require some soldering on existing TC 
+ *      boards, see https://github.com/realA10001986/Time-Circuits-Display-A10001986
+ *      Also, the external time travel trigger button will now include the
+ *      speedo sequence as part of the time travel sequence, if a speedo is
+ *      connected and activated in the Config Portal. If, in the Config Portal,
+ *      "Play complete time travel sequence" is unchecked, only the re-entry
+ *      part will be played.
+ *    - Add trigger signal for future external props (IO14). If you don't 
+ *      have any compatible external props connected, please leave this disabled
+ *      in the Config Portal as it might delay the time travel sequence 
+ *      unnecessarily.
+ *    - Activate support code for temperature sensor. This is for home setups 
+ *      with a speedo display connected; the speedo will show the ambient 
+ *      temperature as read from this sensor while idle.
+ *    - [Add support for GPS for speed and time. This is yet inactive as it 
+ *      is partly untested.]
  *  2022/09/23 (A10001986)
  *    - Minor fixes
  *  2022/09/20 (A10001986)
@@ -97,7 +115,7 @@
  *      WiFi is active leads to WiFi errors.)
  *      Reduces power consumption by 0.1W.
  *    - Added option to re-format the flash FS in case of FS corruption. 
- *      In the config portal, write "FORMAT" into the audio file installer
+ *      In the Config Portal, write "FORMAT" into the audio file installer
  *      section instead of "COPY". This forces the flash FS to be formatted,
  *      all settings files to be rewritten and the audio files (re-)copied
  *      from SD. Prerequisite: A properly set-up SD card is in the SD card
@@ -157,7 +175,7 @@
  *    - AutoTimes sync'd with movies
  *  2022/08/23 (A10001986)
  *    - Allow a static IP (plus gateway, subnet mask, dns) to be configured.
- *      All four IP address must be valid. IP settings can be reset to DHCP
+ *      All four IP addresses must be valid. IP settings can be reset to DHCP
  *      by holding down ENTER during power-up until the white LED goes on.
  *    - F-ified most constant texts (pointless on ESP32, but standard)
  *  2022/08/22 (A10001986)
@@ -300,8 +318,11 @@ void setup()
 {
     Serial.begin(115200);    
 
-    Wire.begin();
+    // PCF8574 only supports 100kHz, can't go to 400 here.
+    Wire.begin(-1, -1, 100000);
+    
     // scan();
+    
     Serial.println();
 
     time_boot();

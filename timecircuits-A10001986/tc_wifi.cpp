@@ -80,16 +80,22 @@ WiFiManagerParameter custom_dtNmOff("dTnMOff", "Destination time off in night mo
 WiFiManagerParameter custom_ptNmOff("pTnMOff", "Present time off in night mode (0=dimmed, 1=off)", settings.ptNmOff, 1, "autocomplete='off'");
 WiFiManagerParameter custom_ltNmOff("lTnMOff", "Last time dep. off in night mode (0=dimmed, 1=off)", settings.ltNmOff, 1, "autocomplete='off'");
 #ifdef EXTERNAL_TIMETRAVEL_IN
-WiFiManagerParameter custom_ettLong("ettLg", "Time travel sequence (0=short, 1=long)", settings.ettLong, 1, "autocomplete='off'");
+WiFiManagerParameter custom_ettLong("ettLg", "Time travel sequence (0=short, 1=complete)", settings.ettLong, 1, "autocomplete='off'");
 #endif
 #ifdef FAKE_POWER_ON
-WiFiManagerParameter custom_fakePwrOn("fpo", "Enable fake power switch (0=no, 1=yes)", settings.fakePwrOn, 1, "autocomplete='off' title='Enable to use a switch to fake-power-up and fake-power-down the device'");
+WiFiManagerParameter custom_fakePwrOn("fpo", "Use fake power switch (0=no, 1=yes)", settings.fakePwrOn, 1, "autocomplete='off' title='Enable to use a switch to fake-power-up and fake-power-down the device'");
 #endif
 #ifdef TC_HAVESPEEDO
-WiFiManagerParameter custom_useSpeedo("uSpe", "Use I2C-speedometer (0=no, 1=yes)", settings.useSpeedo, 1, "autocomplete='off' title='Enable to use a speedo display as part of the time travel sequence'");
-#ifdef TC_HAVETEMP
-WiFiManagerParameter custom_useTemp("uTem", "Use I2C-thermometer (0=no, 1=yes)", settings.useTemp, 1, "autocomplete='off' title='Enable to use a i2c thermometer to display temperature on speedo display while idle'");
+WiFiManagerParameter custom_useSpeedo("uSpe", "Use speedometer display (0=no, 1=yes)", settings.useSpeedo, 1, "autocomplete='off' title='Enable to use a speedo display'");
+#ifdef TC_HAVEGPS
+WiFiManagerParameter custom_useGPS("uGPS", "Use GPS receiver (0=no, 1=yes)", settings.useGPS, 1, "autocomplete='off' title='Enable to use a MT3333-based GPS receiver to display actual speed on speedo display'");
 #endif
+#ifdef TC_HAVETEMP
+WiFiManagerParameter custom_useTemp("uTem", "Use temperatur sensor (0=no, 1=yes)", settings.useTemp, 1, "autocomplete='off' title='Enable to use a MCP9808-based temperature sensor to display temperature on speedo display while idle'");
+#endif
+#endif
+#ifdef EXTERNAL_TIMETRAVEL_OUT
+WiFiManagerParameter custom_useETTO("uEtto", "Use compatible external props (0=no, 1=yes)", settings.useETTO, 1, "autocomplete='off' title='Enable to use compatible external props to be part of the time travel sequence, eg. FluxCapacitor, SID, etc.'");
 #endif
 #else // -------------------- Checkbox hack: --------------
 WiFiManagerParameter custom_ttrp("ttrp", "Make time travels persistent", settings.timesPers, 1, "title='If unchecked, the displays are reset after reboot' type='checkbox' style='margin-top:3px'", WFM_LABEL_AFTER);
@@ -101,16 +107,22 @@ WiFiManagerParameter custom_dtNmOff("dTnMOff", "Destination time off in night mo
 WiFiManagerParameter custom_ptNmOff("pTnMOff", "Present time off in night mode", settings.ptNmOff, 1, "title='If unchecked, the display will be dimmed' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
 WiFiManagerParameter custom_ltNmOff("lTnMOff", "Last time dep. off in night mode", settings.ltNmOff, 1, "title='If unchecked, the display will be dimmed' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
 #ifdef EXTERNAL_TIMETRAVEL_IN
-WiFiManagerParameter custom_ettLong("ettLg", "Play long time travel sequence", settings.ettLong, 1, "title='If unchecked, the short \"re-entry\" sequence is played' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_ettLong("ettLg", "Play complete time travel sequence", settings.ettLong, 1, "title='If unchecked, the short \"re-entry\" sequence is played' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
 #endif
 #ifdef FAKE_POWER_ON
 WiFiManagerParameter custom_fakePwrOn("fpo", "Use fake power switch", settings.fakePwrOn, 1, "title='Check to use a switch to fake-power-up and fake-power-down the device' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
 #endif
 #ifdef TC_HAVESPEEDO
-WiFiManagerParameter custom_useSpeedo("uSpe", "Use I2C-speedometer", settings.useSpeedo, 1, "title='Check to use a speedo display as part of the time travel sequence' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
-#ifdef TC_HAVETEMP
-WiFiManagerParameter custom_useTemp("uTem", "Use I2C-thermometer", settings.useTemp, 1, "title='Enable to use a i2c thermometer to display temperature on speedo display while idle' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_useSpeedo("uSpe", "Use speedometer display", settings.useSpeedo, 1, "title='Check to use a speedo display' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+#ifdef TC_HAVEGPS
+WiFiManagerParameter custom_useGPS("uGPS", "Use GPS receiver", settings.useGPS, 1, "autocomplete='off' title='Enable to use a MT3333-based GPS receiver to display actual speed on speedo display' type='checkbox' style='margin-top:10px'", WFM_LABEL_AFTER);
 #endif
+#ifdef TC_HAVETEMP
+WiFiManagerParameter custom_useTemp("uTem", "Use temperature sensor", settings.useTemp, 1, "title='Enable to use a MCP9808-based temperature sensor to display temperature on speedo display while idle' type='checkbox' style='margin-top:10px'", WFM_LABEL_AFTER);
+#endif
+#endif
+#ifdef EXTERNAL_TIMETRAVEL_OUT
+WiFiManagerParameter custom_useETTO("uEtto", "Use compatible external props", settings.useETTO, 1, "autocomplete='off' title='Enable to use compatible external props to be part of the time travel sequence, eg. FluxCapacitor, SID, etc.' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
 #endif
 #endif // -------------------------------------------------
 WiFiManagerParameter custom_autoRotateTimes(aintCustHTML);
@@ -127,12 +139,12 @@ WiFiManagerParameter custom_lastTimeBright("lt_bright", "Last Time Dep. display 
 WiFiManagerParameter custom_autoNMOn("anmon", "Auto-NightMode start hour (0-23)", settings.autoNMOn, 2, "type='number' min='0' max='23' autocomplete='off' title='To disable, set start and end to same value'");
 WiFiManagerParameter custom_autoNMOff("anmoff", "Auto-NightMode end hour (0-23)", settings.autoNMOff, 2, "type='number' min='0' max='23' autocomplete='off' title='To disable, set start and end to same value'");
 #ifdef EXTERNAL_TIMETRAVEL_IN
-WiFiManagerParameter custom_ettDelay("ettDe", "Externally triggered time travel:<br>Delay (ms)", settings.ettDelay, 5, "type='number' min='0' max='60000' title='Externally triggered time travel will be delayed by specified number of millisecs'");
+WiFiManagerParameter custom_ettDelay("ettDe", "External time travel button:<br>Delay (ms)", settings.ettDelay, 5, "type='number' min='0' max='60000' title='Externally triggered time travel will be delayed by specified number of millisecs'");
 #endif
 #ifdef TC_HAVESPEEDO
 WiFiManagerParameter custom_speedoType(spTyCustHTML);
 WiFiManagerParameter custom_speedoBright("speBri", "<br>Speedo brightness (0-15)", settings.speedoBright, 2, "type='number' min='0' max='15' autocomplete='off'");
-WiFiManagerParameter custom_speedoFact("speFac", "Speedo sequence speed factor (0.5-5.0)", settings.speedoFact, 3, "type='number' min='0.5' max='5.0' step='0.5' title='1.0 means the sequence is played in real-world DeLorean acceleration time. Higher values make the sequence run faster, lower values slower' autocomplete='off'");
+WiFiManagerParameter custom_speedoFact("speFac", "Speedo sequence speed factor (0.5-5.0)", settings.speedoFact, 3, "type='number' min='0.5' max='5.0' step='0.5' title='1.0 means the sequence is played in real-world DMC-12 acceleration time. Higher values make the sequence run faster, lower values slower' autocomplete='off'");
 #ifdef TC_HAVETEMP
 WiFiManagerParameter custom_tempBright("temBri", "<br>Temperature brightness (0-15)", settings.tempBright, 2, "type='number' min='0' max='15' autocomplete='off'");
 #endif
@@ -257,11 +269,19 @@ void wifi_setup()
     wm.addParameter(&custom_useSpeedo);
     wm.addParameter(&custom_speedoType);
     wm.addParameter(&custom_speedoBright);
-    wm.addParameter(&custom_speedoFact);    
+    wm.addParameter(&custom_speedoFact);
+    #ifdef TC_HAVEGPS
+    wm.addParameter(&custom_useGPS);
+    #endif
     #ifdef TC_HAVETEMP
     wm.addParameter(&custom_useTemp);
     wm.addParameter(&custom_tempBright);
     #endif
+    wm.addParameter(&custom_sectend);
+    #endif
+    #ifdef EXTERNAL_TIMETRAVEL_OUT
+    wm.addParameter(&custom_sectstart);
+    wm.addParameter(&custom_useETTO);
     wm.addParameter(&custom_sectend);
     #endif
     if(check_allow_CPA()) {
@@ -411,9 +431,15 @@ void wifi_loop()
             #endif
             #ifdef TC_HAVESPEEDO
             strcpy(settings.useSpeedo, custom_useSpeedo.getValue());
+            #ifdef TC_HAVEGPS
+            strcpy(settings.useGPS, custom_useGPS.getValue());
+            #endif
             #ifdef TC_HAVETEMP
             strcpy(settings.useTemp, custom_useTemp.getValue());
             #endif
+            #endif
+            #ifdef EXTERNAL_TIMETRAVEL_OUT
+            strcpy(settings.useETTO, custom_useETTO.getValue());
             #endif
             
             #else // -------------------------- Checkboxes: 
@@ -433,9 +459,15 @@ void wifi_loop()
             #endif
             #ifdef TC_HAVESPEEDO
             strcpy(settings.useSpeedo, ((int)atoi(custom_useSpeedo.getValue()) > 0) ? "1" : "0");
+            #ifdef TC_HAVEGPS
+            strcpy(settings.useGPS, ((int)atoi(custom_useGPS.getValue()) > 0) ? "1" : "0");
+            #endif
             #ifdef TC_HAVETEMP
             strcpy(settings.useTemp, ((int)atoi(custom_useTemp.getValue()) > 0) ? "1" : "0");
             #endif
+            #endif
+            #ifdef EXTERNAL_TIMETRAVEL_OUT
+            strcpy(settings.useETTO, ((int)atoi(custom_useETTO.getValue()) > 0) ? "1" : "0");
             #endif
             
             #endif  // -------------------------
@@ -781,9 +813,15 @@ void updateConfigPortalValues()
     #endif
     #ifdef TC_HAVESPEEDO
     custom_useSpeedo.setValue(settings.useSpeedo, 1);
-    #ifdef TC_HAVETEMP
-    custom_useTemo.setValue(settings.useTemp, 1);
+    #ifdef TC_HAVEGPS
+    custom_useGPS.setValue(settings.useGPS, 1);
     #endif
+    #ifdef TC_HAVETEMP
+    custom_useTemp.setValue(settings.useTemp, 1);
+    #endif
+    #endif
+    #ifdef EXTERNAL_TIMETRAVEL_OUT
+    custom_useETTO.setValue(settings.useETTO, 1);
     #endif
 
     #else   // For checkbox hack --------------------------
@@ -803,9 +841,15 @@ void updateConfigPortalValues()
     #endif
     #ifdef TC_HAVESPEEDO
     custom_useSpeedo.setValue(((int)atoi(settings.useSpeedo) > 0) ? makeCheck : "1", 14);
+    #ifdef TC_HAVEGPS
+    custom_useGPS.setValue(((int)atoi(settings.useGPS) > 0) ? makeCheck : "1", 14);
+    #endif
     #ifdef TC_HAVETEMP
     custom_useTemp.setValue(((int)atoi(settings.useTemp) > 0) ? makeCheck : "1", 14);
     #endif
+    #endif
+    #ifdef EXTERNAL_TIMETRAVEL_OUT
+    custom_useETTO.setValue(((int)atoi(settings.useETTO) > 0) ? makeCheck : "1", 14);
     #endif
 
     #endif // ---------------------------------------------
