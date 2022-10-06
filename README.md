@@ -62,7 +62,7 @@ If (and only if) the **exact and complete contents of the data folder** is found
 
 If you choose to use the Config Portal, trigger the audio file installation process by writing "COPY" into the empty text field, and clicking on "Save". The device will then copy all the default audio files from the SD to its internal flash file system. The SD can (and should) be removed afterwards. The keypad menu method is described [further down](#the-keypad-menu) in this document.
 
-If you want to re-use the SD card for substituting the default sound files, please remove the default files and "TCD_def_snd.txt" from the SD card first. More information on sound substitution can be found below in the "SD card" section of this document.
+If you want to re-use the SD card for substituting the default sound files, please remove the default files and "TCD_def_snd.txt" from the SD card first. More information on sound substitution can be found below in the "[SD card](#sd-card)" section of this document.
 
 ## Short summary of first steps
 
@@ -72,13 +72,13 @@ If you want to re-use the SD card for substituting the default sound files, plea
 - Next, if DHCP is used, find out about the IP address assigned to the device. Hold ENTER on the keypad for 2 seconds, then repeatedly press ENTER until "NET-WORK" is shown, then hold ENTER for 2 seconds. The device will then show its current IP address.
 - Then re-open the config portal in your browser using this IP address, and configure other settings on the "Setup" page, first and foremost NTP server and time zone. A list of valid times zones is accessible by a link on the settings page. If the time zone isn't set correctly, the clock will show a wrong time.
 
-There are two ways of configuring the device: Through the aforementioned Config Portal (ie the network), or the keypad menu, as described further below. Not all settings, however, are configurable in both.
+There are two ways of configuring the device: Through the aforementioned Config Portal (ie the network), or the keypad menu, as described [further below](#the-keypad-menu). Not all settings, however, are configurable in both.
 
 If you don't have WiFi access, you can set the time through the keypad menu, see below.
 
 ## Operation basics
 
-*Present time* is a clock and, normally, shows the actual present time, as received from the network or set up through the keypad menu.
+*Present time* is a clock and, normally, shows the actual present time, as received from the network or set up through the [keypad menu](#the-keypad-menu).
 
 *Destination time* and *Last time departed* are stale. These, by default, work like in the movie: Upon a time travel, "present time" becomes "last time departed", and "destination time" becomes "present time". 
 
@@ -96,7 +96,7 @@ Beware that the alarm function, by default, is based on the real actual present 
 
 ## Persistent / Non-persistent time travels
 
-On the Config Portal's "Setup" page, there is a option item named "Make time travels persistent". The default is yes.
+On the Config Portal's "Setup" page, there is an option item named "Make time travels persistent". The default is yes.
 
 If time travels are persistent
 - a user-programmed *destination time* is always stored in flash memory, and retrieved from there after a power-loss. It can be programmed through the keypad menu, or ahead of a time travel by typing mmddyyyy/mmddyyyyhhmm/hhmm plus ENTER. In both cases, the time is stored in flash memory and retrieved upon power-on.
@@ -223,7 +223,7 @@ If the alarm is set and enabled, the dot in the present time's minute field is l
 
 ## SD card
 
-The provided audio files are, after proper installation (see "Audio file installation" section at the top of this document), part of the firmware and stored in the device's flash file system. These default sounds can, however, be substituted by files on a FAT32-formatted SD card, and will be played back from the SD card. No installation necessary. 
+The provided audio files are, after proper installation (see "[Audio file installation](#audio-file-installation)" section at the top of this document), part of the firmware and stored in the device's flash file system. These default sounds can, however, be substituted by files on a FAT32-formatted SD card, and will be played back from the SD card. No installation necessary. 
 
 Your custom replacements need to be put in the root directoy of the card, be in mp3 format (128kbps recommended) and named as follows:
 - "enter.mp3". Played when a date was entered and ENTER was pressed
@@ -247,9 +247,10 @@ Note that the "Audio file installer" cannot be used to replace default sounds in
 
 ## Additional Custom Sounds
 
-If the SD card holds a file named "hour.mp3", this file will be played every hour, on the hour. This feature is disabled in night mode.
+The software supports some user-provided sounds, which must reside on the SD card. If the respective file is present, it will be used. If that file is absent, no sound will be played.
 
-If the SD card holds files named "key3.mp3" and/or "key6.mp3", these files will be played if you hold the "3"/"6" key for 2 seconds.
+- "hour.mp3": Will be played every hour, on the hour. This feature is disabled in night mode.
+- "key3.mp3" and/or "key6.mp3": Will be played if you hold the "3"/"6" key for 2 seconds.
 
 "hour.mp3", "key3.mp3" and "key6.mp3" are not provided here. You can use any mp3, with 128kpbs or less.
 
