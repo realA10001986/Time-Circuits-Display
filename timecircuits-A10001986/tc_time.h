@@ -1,23 +1,23 @@
 /*
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
- * (C) 2021-2022 John deGlavina https://circuitsetup.us 
+ * (C) 2021-2022 John deGlavina https://circuitsetup.us
  * (C) 2022 Thomas Winischhofer (A10001986)
- * 
+ *
  * Clockdisplay and keypad menu code based on code by John Monaco
- * Marmoset Electronics 
+ * Marmoset Electronics
  * https://www.marmosetelectronics.com/time-circuits-clock
  * -------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
@@ -85,11 +85,11 @@
 // The external prop has ETTO_LEAD_TIME ms to play its pre-tt sequence. After
 // ETTO_LEAD_TIME ms, 88mph is reached, and the actual tt takes place.
 #define ETTO_LEAD_TIME      5000
-// Trigger mode: 
+// Trigger mode:
 // true:  Pulse for ETTO_PULSE_DURATION ms on tt start minus leadTime
 // false: LOW->HIGH on tt start minus leadTime, HIGH->LOW on start of reentry
 #define ETTO_USE_PULSE      false
-// If ETTO_USE_PULSE is true, pulse for approx. ETTO_PULSE_DURATION ms 
+// If ETTO_USE_PULSE is true, pulse for approx. ETTO_PULSE_DURATION ms
 #define ETTO_PULSE_DURATION 1000
 // End of ETTO config
 
@@ -138,8 +138,8 @@ extern void minsToDate(uint64_t total, int& year, int& month, int& day, int& hou
 extern uint32_t getHrs1KYrs(int index);
 
 #ifdef FAKE_POWER_ON
-void fpbKeyPressed(); 
-void fpbKeyLongPressStop();  
+void fpbKeyPressed();
+void fpbKeyLongPressStop();
 #endif
 
 void my2delay(unsigned int mydel);
@@ -168,7 +168,7 @@ extern int  timeTravelP2;
 extern int  specDisp;
 
 // Our generic timeout when waiting for buttons, in seconds. max 255.
-#define maxTime 240            
+#define maxTime 240
 extern uint8_t timeout;
 
 extern uint64_t timeDifference;

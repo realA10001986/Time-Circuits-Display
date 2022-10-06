@@ -10,12 +10,12 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
@@ -48,15 +48,15 @@
 // ------
 
 class tempSensor {
-  
+
     public:
 
         tempSensor(uint8_t address);
-        bool begin(); 
+        bool begin();
 
         // Setter for custom delay function
         void setCustomDelayFunc(void (*myDelay)(unsigned int));
-          
+
         void on();
         void off();
         double readTemp(bool celsius = true);
@@ -64,7 +64,7 @@ class tempSensor {
     private:
 
         void onoff(bool shutDown);
-        
+
         uint8_t _address;
 
         uint16_t read16(uint16_t regno);
@@ -73,7 +73,7 @@ class tempSensor {
         void write8(uint16_t regno, uint8_t value);
 
         // Ptr to custom delay function
-        void (*_customDelayFunc)(unsigned int) = NULL; 
+        void (*_customDelayFunc)(unsigned int) = NULL;
 };
 
 #endif

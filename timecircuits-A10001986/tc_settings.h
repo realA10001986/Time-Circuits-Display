@@ -1,23 +1,23 @@
 /*
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
- * (C) 2021-2022 John deGlavina https://circuitsetup.us 
+ * (C) 2021-2022 John deGlavina https://circuitsetup.us
  * (C) 2022 Thomas Winischhofer (A10001986)
- * 
+ *
  * Clockdisplay and keypad menu code based on code by John Monaco
- * Marmoset Electronics 
+ * Marmoset Electronics
  * https://www.marmosetelectronics.com/time-circuits-clock
  * -------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
@@ -130,7 +130,7 @@ struct Settings {
     char dtNmOff[4]         = MS(DEF_DT_OFF);
     char ptNmOff[4]         = MS(DEF_PT_OFF);
     char ltNmOff[4]         = MS(DEF_LT_OFF);
-#ifdef FAKE_POWER_ON 
+#ifdef FAKE_POWER_ON
     char fakePwrOn[4]       = MS(DEF_FAKE_PWR);
 #endif
 #ifdef EXTERNAL_TIMETRAVEL_IN
@@ -144,8 +144,8 @@ struct Settings {
     char speedoFact[6]      = MS(DEF_SPEEDO_FACT);
 #ifdef TC_HAVEGPS
     char useGPS[4]          = MS(DEF_USE_GPS);
-#endif    
-#ifdef TC_HAVETEMP    
+#endif
+#ifdef TC_HAVETEMP
     char useTemp[4]         = MS(DEF_USE_TEMP);
     char tempBright[4]      = MS(DEF_TEMP_BRIGHT);
     char tempUnit[4]        = MS(DEF_TEMP_UNIT);
@@ -162,7 +162,7 @@ struct Settings {
 
 struct IPSettings {
     char ip[20]       = "";
-    char gateway[20]  = "";     
+    char gateway[20]  = "";
     char netmask[20]  = "";
     char dns[20]      = "";
 };

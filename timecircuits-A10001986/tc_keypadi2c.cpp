@@ -43,7 +43,7 @@
 static void defaultDelay(unsigned int mydelay);
 
 // Let the user define a keymap - assume the same row/column count as defined in constructor
-void Keypad_I2C::begin(char *userKeymap) 
+void Keypad_I2C::begin(char *userKeymap)
 {
     Keypad::begin(userKeymap);
 	  port_write(0xffff);			//set to power-up state
@@ -53,7 +53,7 @@ void Keypad_I2C::begin(char *userKeymap)
 }
 
 // Initialize I2C
-void Keypad_I2C::begin(void) 
+void Keypad_I2C::begin(void)
 {
 	  port_write(0xffff);			//set to power-up state
 	  pinState = pinState_set();
@@ -66,27 +66,27 @@ void Keypad_I2C::setCustomDelayFunc(void (*myDelay)(unsigned int))
     _customDelayFunc = myDelay;
 }
 
-void Keypad_I2C::pin_write(byte pinNum, boolean level) 
+void Keypad_I2C::pin_write(byte pinNum, boolean level)
 {
   	word mask = 1 << pinNum;
 
     // Reset row-counter. pin_write() is called
     // at the beginning and the end of scanKeys()'s
-    // column loop, so what follows is reading 
+    // column loop, so what follows is reading
     // the row pins.
     count = 0;
-    
+
     if(level == HIGH) {
       	pinState |= mask;
     } else {
 	      pinState &= ~mask;
-    }      
-   
+    }
+
   	port_write(pinState);
-} 
+}
 
 
-int Keypad_I2C::pin_read(byte pinNum) 
+int Keypad_I2C::pin_read(byte pinNum)
 {
   	word mask = 1 << pinNum;
     word pinVal = 0x1155, pinVal2 = 0x22aa, pinVal3 = 0x33AA;
@@ -103,36 +103,36 @@ int Keypad_I2C::pin_read(byte pinNum)
                 if(i2cwidth > 1) {
                     pinVal |= (_wire->read() << 8);
                 }
-                (*_customDelayFunc)(5);    //delay(5); 
+                (*_customDelayFunc)(5);    //delay(5);
                 _wire->requestFrom((int)i2caddr, (int)i2cwidth);
                 pinVal2 = _wire->read();
                 if(i2cwidth > 1) {
                     pinVal2 |= (_wire->read() << 8);
-                } 
-                if(pinVal != pinVal2) continue; 
-                (*_customDelayFunc)(5);   //delay(5); 
+                }
+                if(pinVal != pinVal2) continue;
+                (*_customDelayFunc)(5);   //delay(5);
                 _wire->requestFrom((int)i2caddr, (int)i2cwidth);
                 pinVal3 = _wire->read();
                 if(i2cwidth > 1) {
                     pinVal3 |= (_wire->read() << 8);
-                }                
+                }
             }
             pinValBuf = pinVal;
             count++;
-        } else {            
-            pinVal = pinValBuf; 
+        } else {
+            pinVal = pinValBuf;
             count++;
-            if(count >= rowCnt) count = 0; // next column          
-        }        
-      
+            if(count >= rowCnt) count = 0; // next column
+        }
+
     } else {
-  
+
         while(pinVal != pinVal2) {
       	    _wire->requestFrom((int)i2caddr, (int)i2cwidth);
       	    pinVal = _wire->read();
             if(i2cwidth > 1) {
                 pinVal |= _wire->read() << 8;
-            } 
+            }
             (*_customDelayFunc)(5); //delay(5);
             _wire->requestFrom((int)i2caddr, (int)i2cwidth);
             pinVal2 = _wire->read();
@@ -141,8 +141,8 @@ int Keypad_I2C::pin_read(byte pinNum)
             }
         }
 
-    }    
-    
+    }
+
   	pinVal &= mask;
   	if(pinVal == mask) {
         return 1;
@@ -151,7 +151,7 @@ int Keypad_I2C::pin_read(byte pinNum)
   	}
 }
 
-void Keypad_I2C::port_write( word i2cportval ) 
+void Keypad_I2C::port_write( word i2cportval )
 {
   	_wire->beginTransmission((int)i2caddr);
   	_wire->write(i2cportval & 0x00FF);
@@ -160,19 +160,19 @@ void Keypad_I2C::port_write( word i2cportval )
   	}
   	_wire->endTransmission();
   	pinState = i2cportval;
-} 
+}
 
-word Keypad_I2C::pinState_set() 
+word Keypad_I2C::pinState_set()
 {
   	_wire->requestFrom((int)i2caddr, (int)i2cwidth);
-    
+
   	pinState = _wire->read();
   	if(i2cwidth > 1) {
   		  pinState |= _wire->read() << 8;
   	}
-   
+
   	return pinState;
-} 
+}
 
 static void defaultDelay(unsigned int mydelay)
 {

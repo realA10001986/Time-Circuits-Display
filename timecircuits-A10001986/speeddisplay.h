@@ -4,20 +4,20 @@
  * (C) 2022 Thomas Winischhofer (A10001986)
  *
  * Optional Speedo Display
- * This is designed for HT16K33-based displays, like the "Grove - 0.54" 
- * Dual/Quad Alphanumeric Display" or some displays with the Adafruit 
+ * This is designed for HT16K33-based displays, like the "Grove - 0.54"
+ * Dual/Quad Alphanumeric Display" or some displays with the Adafruit
  * i2c backpack (878, 1911, 1270; product numbers vary with color).
  * -------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
@@ -29,17 +29,17 @@
 #include <Wire.h>
 
 // The supported display types:
-// The speedo is a 2-digit 7-segment display, with the bottom/right dot lit  
-// in the movies. I have not found a readily made one that fits exactly. 
-// CircuitSetup has yet to design one, all other supported ones are either  
-// 4-digit, and/or use 14-segment tubes, and/or lack the dot. 
+// The speedo is a 2-digit 7-segment display, with the bottom/right dot lit
+// in the movies. I have not found a readily made one that fits exactly.
+// CircuitSetup has yet to design one, all other supported ones are either
+// 4-digit, and/or use 14-segment tubes, and/or lack the dot.
 // For 4-digit displays, there are two entries in this list, one to display
 // the speed right-aligned, one for left-aligned.
 // If you have the skills, you could also remove the 4-tube display from
 // the pcb and connect a 2-tube one. Unfortunately, the pin assignments
 // usually do not match, which makes some re-wiring necessary.
-// Displays with a TM1637 are not supported because this chip is not really  
-// i2c compatible as it has no slave address, and therefore cannot be part 
+// Displays with a TM1637 are not supported because this chip is not really
+// i2c compatible as it has no slave address, and therefore cannot be part
 // of a i2c chain.
 //
 // The display's i2c slave address is 0x70 (defined in tc_time.h).
@@ -58,7 +58,7 @@ enum dispTypes : int {
 #ifdef TWPRIVATE
     SP_TWCUSTOM1,     // Like SP_ADAF_14x4, but with only left hand side tube soldered on
     SP_TWCUSTOM2,     // Like SP_ADAF_7x4L, but only 2 digits soldered on
-#endif    
+#endif
 // ----- do not use the ones below ----
     SP_TCD_TEST7,     // TimeCircuits Display 7 (for testing)
     SP_TCD_TEST14,    // TimeCircuits Display 14 (for testing)
@@ -72,7 +72,7 @@ struct dispConf {
     uint8_t  speed_pos10;    //   Speed's 10s position in 16bit buffer
     uint8_t  speed_pos01;    //   Speed's 1s position in 16bit buffer
     uint8_t  dig10_shift;    //   Shift 10s to align in buffer
-    uint8_t  dig01_shift;    //   Shift 1s to align in buffer    
+    uint8_t  dig01_shift;    //   Shift 1s to align in buffer
     uint8_t  dot_pos01;      //   1s dot position in 16bit buffer
     uint8_t  dot01_shift;    //   1s dot shift to align in buffer
     uint8_t  colon_pos;      //   Pos of colon in 16bit buffer
@@ -88,7 +88,7 @@ struct dispConf {
 // The segments' wiring to buffer bits
 // This reflects the actual hardware wiring
 
-// 7 segment displays 
+// 7 segment displays
 
 // 7 seg generic
 #define S7G_T   0b00000001    // top
@@ -97,7 +97,7 @@ struct dispConf {
 #define S7G_B   0b00001000    // bottom
 #define S7G_BL  0b00010000    // bottom left
 #define S7G_TL  0b00100000    // top left
-#define S7G_M   0b01000000    // middle 
+#define S7G_M   0b01000000    // middle
 #define S7G_DOT 0b10000000    // dot
 
 // 14 segment displays
@@ -156,11 +156,11 @@ struct dispConf {
 // ------
 
 class speedDisplay {
-  
+
     public:
 
         speedDisplay(uint8_t address);
-        void begin(int dispType);    
+        void begin(int dispType);
         void on();
         void off();
         void lampTest();
@@ -187,7 +187,7 @@ class speedDisplay {
         uint8_t getSpeed();
         bool getDot();
         bool getColon();
-        
+
         void showTextDirect(const char *text);
         void setColonDirect(bool colon);
 

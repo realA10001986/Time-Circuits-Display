@@ -1,30 +1,30 @@
 /*
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
- * (C) 2021-2022 John deGlavina https://circuitsetup.us 
+ * (C) 2021-2022 John deGlavina https://circuitsetup.us
  * (C) 2022 Thomas Winischhofer (A10001986)
- * 
+ *
  * Clockdisplay and keypad menu code based on code by John Monaco
- * Marmoset Electronics 
+ * Marmoset Electronics
  * https://www.marmosetelectronics.com/time-circuits-clock
  * -------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include "tc_wifi.h"
 
-// If undefined, use the checkbox/dropdown-hacks. 
+// If undefined, use the checkbox/dropdown-hacks.
 // If defined, go back to standard text boxes
 //#define TC_NOCHECKBOXES
 
@@ -175,23 +175,23 @@ unsigned long origWiFiOffDelay = 0;
 
 /*
  * wifi_setup()
- * 
+ *
  */
-void wifi_setup() 
-{ 
+void wifi_setup()
+{
     int temp;
-    
+
     #define TC_MENUSIZE (7)
     const char* wifiMenu[TC_MENUSIZE] = {"wifi", "param", "info", "sep", "restart", "update", "custom" };
     // We are running in non-blocking mode, so no point in "exit".
 
     // explicitly set mode, esp allegedly defaults to STA_AP
     WiFi.mode(WIFI_MODE_STA);
-    
+
     #ifndef TC_DBG
     wm.setDebugOutput(false);
     #endif
-    
+
     wm.setParamsPage(true);
     wm.setBreakAfterConfig(true);
     wm.setConfigPortalBlocking(false);
@@ -214,15 +214,15 @@ void wifi_setup()
     wm.setShowDnsFields(true);
 
     temp = (int)atoi(settings.wifiConTimeout);
-    if(temp < 1) temp = 1;    // Do not allow 0, might make it hang 
+    if(temp < 1) temp = 1;    // Do not allow 0, might make it hang
     if(temp > 15) temp = 15;
     wm.setConnectTimeout(temp);
-    
+
     temp = (int)atoi(settings.wifiConRetries);
     if(temp < 1) temp = 1;
     if(temp > 15) temp = 15;
     wm.setConnectRetries(temp);
-               
+
     wm.setCleanConnect(true);
     //wm.setRemoveDuplicateAPs(false);
 
@@ -293,7 +293,7 @@ void wifi_setup()
         wm.addParameter(&custom_sectend);
     }
     wm.addParameter(&custom_footer);
-    
+
     updateConfigPortalValues();
 
     // Read settings for WiFi powersave countdown
@@ -322,12 +322,12 @@ void wifi_setup()
 
 /*
  * wifi_loop()
- * 
+ *
  */
-void wifi_loop() 
+void wifi_loop()
 {
     bool forceCopyAudio = false;
-    
+
     wm.process();
 
     if(shouldSaveConfig > 1) {
@@ -353,29 +353,29 @@ void wifi_loop()
     }
 
     if(shouldSaveIPConfig) {
-      
+
         #ifdef TC_DBG
         Serial.println(F("WiFi: Saving IP config"));
         #endif
 
         writeIpSettings();
-        
+
         shouldSaveIPConfig = false;
 
-    } else if(shouldDeleteIPConfig) { 
+    } else if(shouldDeleteIPConfig) {
 
         #ifdef TC_DBG
         Serial.println(F("WiFi: Deleting IP config"));
         #endif
 
         deleteIpSettings();
-        
+
         shouldDeleteIPConfig = false;
-      
+
     }
-    
+
     if(shouldSaveConfig) {
-      
+
         // Save settings and restart esp32
 
         #ifdef TC_DBG
@@ -416,9 +416,9 @@ void wifi_loop()
             strcpy(settings.tempBright, custom_tempBright.getValue());
             #endif
             #endif
-            
+
             #ifdef TC_NOCHECKBOXES // --------- Plain text boxes:
-            
+
             strcpy(settings.mode24, custom_mode24.getValue());
             strcpy(settings.alarmRTC, custom_alarmRTC.getValue());
             strcpy(settings.timesPers, custom_ttrp.getValue());
@@ -426,9 +426,9 @@ void wifi_loop()
             strcpy(settings.dtNmOff, custom_dtNmOff.getValue());
             strcpy(settings.ptNmOff, custom_ptNmOff.getValue());
             strcpy(settings.ltNmOff, custom_ltNmOff.getValue());
-            #ifdef FAKE_POWER_ON      
+            #ifdef FAKE_POWER_ON
             strcpy(settings.fakePwrOn, custom_fakePwrOn.getValue());
-            #endif 
+            #endif
             #ifdef EXTERNAL_TIMETRAVEL_IN
             strcpy(settings.ettLong, custom_ettLong.getValue());
             #endif
@@ -445,18 +445,18 @@ void wifi_loop()
             #ifdef EXTERNAL_TIMETRAVEL_OUT
             strcpy(settings.useETTO, custom_useETTO.getValue());
             #endif
-            
-            #else // -------------------------- Checkboxes: 
-    
+
+            #else // -------------------------- Checkboxes:
+
             strcpy(settings.mode24, ((int)atoi(custom_mode24.getValue()) > 0) ? "1" : "0");
             strcpy(settings.alarmRTC, ((int)atoi(custom_alarmRTC.getValue()) > 0) ? "1" : "0");
-            strcpy(settings.timesPers, ((int)atoi(custom_ttrp.getValue()) > 0) ? "1" : "0"); 
+            strcpy(settings.timesPers, ((int)atoi(custom_ttrp.getValue()) > 0) ? "1" : "0");
             strcpy(settings.playIntro, ((int)atoi(custom_playIntro.getValue()) > 0) ? "1" : "0");
-            strcpy(settings.dtNmOff, ((int)atoi(custom_dtNmOff.getValue()) > 0) ? "1" : "0"); 
-            strcpy(settings.ptNmOff, ((int)atoi(custom_ptNmOff.getValue()) > 0) ? "1" : "0"); 
-            strcpy(settings.ltNmOff, ((int)atoi(custom_ltNmOff.getValue()) > 0) ? "1" : "0"); 
-            #ifdef FAKE_POWER_ON      
-            strcpy(settings.fakePwrOn, ((int)atoi(custom_fakePwrOn.getValue()) > 0) ? "1" : "0"); 
+            strcpy(settings.dtNmOff, ((int)atoi(custom_dtNmOff.getValue()) > 0) ? "1" : "0");
+            strcpy(settings.ptNmOff, ((int)atoi(custom_ptNmOff.getValue()) > 0) ? "1" : "0");
+            strcpy(settings.ltNmOff, ((int)atoi(custom_ltNmOff.getValue()) > 0) ? "1" : "0");
+            #ifdef FAKE_POWER_ON
+            strcpy(settings.fakePwrOn, ((int)atoi(custom_fakePwrOn.getValue()) > 0) ? "1" : "0");
             #endif
             #ifdef EXTERNAL_TIMETRAVEL_IN
             strcpy(settings.ettLong, ((int)atoi(custom_ettLong.getValue()) > 0) ? "1" : "0");
@@ -474,11 +474,11 @@ void wifi_loop()
             #ifdef EXTERNAL_TIMETRAVEL_OUT
             strcpy(settings.useETTO, ((int)atoi(custom_useETTO.getValue()) > 0) ? "1" : "0");
             #endif
-            
+
             #endif  // -------------------------
 
         }
-        
+
         write_settings();
 
         if(shouldSaveConfig > 1) {
@@ -505,7 +505,7 @@ void wifi_loop()
         #endif
 
         Serial.flush();
-        
+
         esp_restart();
     }
 
@@ -513,7 +513,7 @@ void wifi_loop()
     // If a delay > 0 is configured, WiFi is powered-down after timer has
     // run out. The timer starts when the device is powered-up/boots.
     // There are separate delays for AP mode and STA mode.
-    // WiFi can be re-enabled for the configured time by holding '7' 
+    // WiFi can be re-enabled for the configured time by holding '7'
     // on the keypad.
     // NTP requests will re-enable WiFi (in STA mode) for a short
     // while automatically.
@@ -542,7 +542,7 @@ void wifi_loop()
             }
         }
     }
-    
+
 }
 
 void wifiConnect()
@@ -570,7 +570,7 @@ void wifiConnect()
         wifiIsOff = false;
         wifiOnNow = millis();
         wifiAPIsOff = false;  // Sic! Allows checks like if(wifiAPIsOff || wifiIsOff)
-        
+
     } else {
         #ifdef TC_DBG
         Serial.println(F("Config portal running in AP-mode"));
@@ -580,7 +580,7 @@ void wifiConnect()
         wifiAPIsOff = false;
         wifiAPModeNow = millis();
         wifiIsOff = false;    // Sic!
-        
+
         {
             #ifdef TC_DBG
             int8_t power;
@@ -605,7 +605,7 @@ void wifiConnect()
             // WIFI_POWER_5dBm       = 5dBm
             // WIFI_POWER_2dBm       = 2dBm
             // WIFI_POWER_MINUS_1dBm = -1dBm
-            WiFi.setTxPower(WIFI_POWER_7dBm);            
+            WiFi.setTxPower(WIFI_POWER_7dBm);
 
             #ifdef TC_DBG
             esp_wifi_get_max_tx_power(&power);
@@ -641,7 +641,7 @@ void wifiOn(unsigned long newDelay, bool alsoInAPMode)
         if(!wifiAPIsOff) return;
     } else {
         if(origWiFiOffDelay == 0) return; // If no delay set, auto-off is disabled
-        desiredDelay = (newDelay > 0) ? newDelay : origWiFiOffDelay;  
+        desiredDelay = (newDelay > 0) ? newDelay : origWiFiOffDelay;
         if((Now - wifiOnNow >= wifiOffDelay) ||                    // If delay has run out, or
            (wifiOffDelay - (Now - wifiOnNow))  < desiredDelay) {   // new delay exceeds remaining delay:
             wifiOffDelay = desiredDelay;                           // Set new timer delay, and
@@ -665,14 +665,14 @@ void wifiOn(unsigned long newDelay, bool alsoInAPMode)
 // configures WiFi, a default settings file exists upon reboot.
 // Also, this causes a reboot, so if the user entered static
 // IP data, it becomes active after this reboot.
-void saveConfigCallback() 
+void saveConfigCallback()
 {
-    shouldSaveConfig = 1;    
+    shouldSaveConfig = 1;
 }
 
 // This is the callback from the actual Params page. In this
 // case, we really read out the server parms and save them.
-void saveParamsCallback() 
+void saveParamsCallback()
 {
     shouldSaveConfig = 2;
 }
@@ -697,7 +697,7 @@ void preSaveConfigCallback()
     memset(gwBuf, 0, 20);
     memset(snBuf, 0, 20);
     memset(dnsBuf, 0, 20);
-    
+
     if(wm.server->arg(FPSTR(S_ip)) != "") {
         strncpy(ipBuf, wm.server->arg(FPSTR(S_ip)).c_str(), 19);
     } else invalConf |= true;
@@ -712,7 +712,7 @@ void preSaveConfigCallback()
     } else invalConf |= true;
 
     #ifdef TC_DBG
-    Serial.println(ipBuf);   
+    Serial.println(ipBuf);
     Serial.println(gwBuf);
     Serial.println(snBuf);
     Serial.println(dnsBuf);
@@ -723,22 +723,22 @@ void preSaveConfigCallback()
         #ifdef TC_DBG
         Serial.println("All IPs valid");
         #endif
-        
+
         strcpy(ipsettings.ip, ipBuf);
         strcpy(ipsettings.gateway, gwBuf);
         strcpy(ipsettings.netmask, snBuf);
         strcpy(ipsettings.dns, dnsBuf);
-        
+
         shouldSaveIPConfig = true;
-    
+
     } else {
 
         #ifdef TC_DBG
-        Serial.println("Invalid IP"); 
+        Serial.println("Invalid IP");
         #endif
 
-        shouldDeleteIPConfig = true;     
-    
+        shouldDeleteIPConfig = true;
+
     }
 }
 
@@ -754,29 +754,29 @@ void setupStaticIP()
         isIp(ipsettings.gateway) &&
         isIp(ipsettings.netmask) &&
         isIp(ipsettings.dns)) {
-  
+
         ip = stringToIp(ipsettings.ip);
         gw = stringToIp(ipsettings.gateway);
         sn = stringToIp(ipsettings.netmask);
         dns = stringToIp(ipsettings.dns);
 
         wm.setSTAStaticIPConfig(ip, gw, sn, dns);
-           
+
     }
-}       
+}
 
 void updateConfigPortalValues()
 {
     #ifndef TC_NOCHECKBOXES
-    const char makeCheck[] = "1' checked a='"; 
-    #endif   
+    const char makeCheck[] = "1' checked a='";
+    #endif
     const char custHTMLSel[] = " selected";
     int t = atoi(settings.autoRotateTimes);
     #ifdef TC_HAVESPEEDO
     int tt = atoi(settings.speedoType);
     char spTyBuf[8];
     #endif
-    
+
     // Make sure the settings form has the correct values
     custom_wifiConTimeout.setValue(settings.wifiConTimeout, 2);
     custom_wifiConRetries.setValue(settings.wifiConRetries, 2);
@@ -802,15 +802,15 @@ void updateConfigPortalValues()
     strcat(aintCustHTML, aintCustHTML8);
 
     #ifdef TC_NOCHECKBOXES  // Standard text boxes: -------
-    
-    custom_mode24.setValue(settings.mode24, 1);           
+
+    custom_mode24.setValue(settings.mode24, 1);
     custom_alarmRTC.setValue(settings.alarmRTC, 1);
     custom_ttrp.setValue(settings.timesPers, 1);
     custom_playIntro.setValue(settings.playIntro, 1);
     custom_dtNmOff.setValue(settings.dtNmOff, 1);
     custom_ptNmOff.setValue(settings.ptNmOff, 1);
     custom_ltNmOff.setValue(settings.ltNmOff, 1);
-    #ifdef FAKE_POWER_ON 
+    #ifdef FAKE_POWER_ON
     custom_fakePwrOn.setValue(settings.fakePwrOn, 1);
     #endif
     #ifdef EXTERNAL_TIMETRAVEL_IN
@@ -834,12 +834,12 @@ void updateConfigPortalValues()
 
     custom_mode24.setValue(((int)atoi(settings.mode24) > 0) ? makeCheck : "1", 14);
     custom_alarmRTC.setValue(((int)atoi(settings.alarmRTC) > 0) ? makeCheck : "1", 14);
-    custom_ttrp.setValue(((int)atoi(settings.timesPers) > 0) ? makeCheck : "1", 14);           
+    custom_ttrp.setValue(((int)atoi(settings.timesPers) > 0) ? makeCheck : "1", 14);
     custom_playIntro.setValue(((int)atoi(settings.playIntro) > 0) ? makeCheck : "1", 14);
     custom_dtNmOff.setValue(((int)atoi(settings.dtNmOff) > 0) ? makeCheck : "1", 14);
     custom_ptNmOff.setValue(((int)atoi(settings.ptNmOff) > 0) ? makeCheck : "1", 14);
     custom_ltNmOff.setValue(((int)atoi(settings.ltNmOff) > 0) ? makeCheck : "1", 14);
-    #ifdef FAKE_POWER_ON 
+    #ifdef FAKE_POWER_ON
     custom_fakePwrOn.setValue(((int)atoi(settings.fakePwrOn) > 0) ? makeCheck : "1", 14);
     #endif
     #ifdef EXTERNAL_TIMETRAVEL_IN
@@ -869,7 +869,7 @@ void updateConfigPortalValues()
     #ifdef EXTERNAL_TIMETRAVEL_IN
     custom_ettDelay.setValue(settings.ettDelay, 5);
     #endif
-    
+
     #ifdef TC_HAVESPEEDO
     strcpy(spTyCustHTML, spTyCustHTML1);
     strcat(spTyCustHTML, settings.speedoType);
@@ -903,7 +903,7 @@ int wifi_getStatus()
       case WIFI_MODE_AP:
           return 0x10000;     // AP MODE
       case WIFI_MODE_NULL:
-          return 0x10001;     // OFF          
+          return 0x10001;     // OFF
     }
 
     return 0x10002;           // UNKNOWN
@@ -943,14 +943,14 @@ bool isIp(char *str)
     while(*str != '\0') {
 
         if(*str == '.') {
-            
+
             if(!digcnt || (++segs == 4))
                 return false;
 
             num = digcnt = 0;
             str++;
             continue;
-            
+
         } else if((*str < '0') || (*str > '9')) {
 
             return false;
@@ -968,7 +968,7 @@ bool isIp(char *str)
 }
 
 // IPAddress to string
-void ipToString(char *str, IPAddress ip) 
+void ipToString(char *str, IPAddress ip)
 {
     sprintf(str, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
 }
@@ -985,9 +985,9 @@ IPAddress stringToIp(char *str)
 
 /*
  * read parameter from server, for customhmtl input
- */ 
+ */
 void getParam(String name, char *destBuf, size_t length)
-{  
+{
     memset(destBuf, 0, length+1);
     if(wm.server->hasArg(name)) {
         strncpy(destBuf, wm.server->arg(name).c_str(), length);
