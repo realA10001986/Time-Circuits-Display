@@ -118,7 +118,7 @@ Note that a non-zero Time-rotation Interval will force the device to cycle throu
 
 Night mode will switch off the *destination time* and *last time departed* displays, dim the *present time* display to a minimum, and reduce the volume of sound playback (except alarm). Holding "4" enables night mode, holding "5" disables it.
 
-In the Config Portal, you can configure automatic night mode. Enter start and end hours, and the device will go into night mode at the defined start hour (xx:00), and return to normal at end hour (yy:00). To disable automatic night mode, set start and end to the same value.
+In the Config Portal, you can also configure "automatic night mode". Enter start and end hours, and the device will go into night mode at the defined start hour (xx:00), and return to normal at the end hour (yy:00). To disable automatic night mode, set start and end to the same value.
 
 Apart from increasing the displays' lifetime, Night Mode reduces the power consumption of the device from around 4.5W to around 2.5W.
 
