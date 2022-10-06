@@ -42,7 +42,7 @@
 // i2c compatible as it has no slave address, and therefore cannot be part 
 // of a i2c chain.
 //
-// Important: The display's i2c slave address is 0x70 (defined in tc_time.h).
+// The display's i2c slave address is 0x70 (defined in tc_time.h).
 //
 enum dispTypes : int {
     SP_CIRCSETUP,     // Original CircuitSetup.us speedo                        [yet to be designed]
@@ -57,9 +57,9 @@ enum dispTypes : int {
     SP_GROVE_4DIG14L, // " " " (left aligned)
 #ifdef TWPRIVATE
     SP_TWCUSTOM1,     // Like SP_ADAF_14x4, but with only left hand side tube soldered on
-    SP_TWCUSTOM2,     // Like SP_ADAF_7x4L, but only 2 digits
+    SP_TWCUSTOM2,     // Like SP_ADAF_7x4L, but only 2 digits soldered on
 #endif    
-// ----- do not use the two below ----
+// ----- do not use the ones below ----
     SP_TCD_TEST7,     // TimeCircuits Display 7 (for testing)
     SP_TCD_TEST14,    // TimeCircuits Display 14 (for testing)
     SP_TCD_TEST14L    // " " " (left-aligned)

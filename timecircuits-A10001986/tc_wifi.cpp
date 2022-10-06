@@ -92,6 +92,7 @@ WiFiManagerParameter custom_useGPS("uGPS", "Use GPS receiver (0=no, 1=yes)", set
 #endif
 #ifdef TC_HAVETEMP
 WiFiManagerParameter custom_useTemp("uTem", "Use temperatur sensor (0=no, 1=yes)", settings.useTemp, 1, "autocomplete='off' title='Enable to use a MCP9808-based temperature sensor to display temperature on speedo display while idle'");
+WiFiManagerParameter custom_tempUnit("uTem", "Temperture unit (0=°F, 1=°C)", settings.tempUnit, 1, "autocomplete='off' title='Select unit for temperature'");
 #endif
 #endif
 #ifdef EXTERNAL_TIMETRAVEL_OUT
@@ -115,10 +116,11 @@ WiFiManagerParameter custom_fakePwrOn("fpo", "Use fake power switch", settings.f
 #ifdef TC_HAVESPEEDO
 WiFiManagerParameter custom_useSpeedo("uSpe", "Use speedometer display", settings.useSpeedo, 1, "title='Check to use a speedo display' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
 #ifdef TC_HAVEGPS
-WiFiManagerParameter custom_useGPS("uGPS", "Use GPS receiver", settings.useGPS, 1, "autocomplete='off' title='Enable to use a MT3333-based GPS receiver to display actual speed on speedo display' type='checkbox' style='margin-top:10px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_useGPS("uGPS", "Use GPS receiver", settings.useGPS, 1, "autocomplete='off' title='Enable to use a MT3333-based GPS receiver to display actual speed on speedo display' type='checkbox' style='margin-top:12px'", WFM_LABEL_AFTER);
 #endif
 #ifdef TC_HAVETEMP
-WiFiManagerParameter custom_useTemp("uTem", "Use temperature sensor", settings.useTemp, 1, "title='Enable to use a MCP9808-based temperature sensor to display temperature on speedo display while idle' type='checkbox' style='margin-top:10px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_useTemp("uTem", "Use temperature sensor", settings.useTemp, 1, "title='Enable to use a MCP9808-based temperature sensor to display temperature on speedo display while idle' type='checkbox' style='margin-top:12px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_tempUnit("temUnt", "Celsius", settings.tempUnit, 1, "title='Temperature shown in Fahrenheit if unchecked' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
 #endif
 #endif
 #ifdef EXTERNAL_TIMETRAVEL_OUT
@@ -275,6 +277,7 @@ void wifi_setup()
     #endif
     #ifdef TC_HAVETEMP
     wm.addParameter(&custom_useTemp);
+    wm.addParameter(&custom_tempUnit);
     wm.addParameter(&custom_tempBright);
     #endif
     wm.addParameter(&custom_sectend);
@@ -436,6 +439,7 @@ void wifi_loop()
             #endif
             #ifdef TC_HAVETEMP
             strcpy(settings.useTemp, custom_useTemp.getValue());
+            strcpy(settings.tempUnit, custom_tempUnit.getValue());
             #endif
             #endif
             #ifdef EXTERNAL_TIMETRAVEL_OUT
@@ -464,6 +468,7 @@ void wifi_loop()
             #endif
             #ifdef TC_HAVETEMP
             strcpy(settings.useTemp, ((int)atoi(custom_useTemp.getValue()) > 0) ? "1" : "0");
+            strcpy(settings.tempUnit, ((int)atoi(custom_tempUnit.getValue()) > 0) ? "1" : "0");
             #endif
             #endif
             #ifdef EXTERNAL_TIMETRAVEL_OUT
@@ -818,6 +823,7 @@ void updateConfigPortalValues()
     #endif
     #ifdef TC_HAVETEMP
     custom_useTemp.setValue(settings.useTemp, 1);
+    custom_tempUnit.setValue(settings.tempUnit, 1);
     #endif
     #endif
     #ifdef EXTERNAL_TIMETRAVEL_OUT
@@ -846,6 +852,7 @@ void updateConfigPortalValues()
     #endif
     #ifdef TC_HAVETEMP
     custom_useTemp.setValue(((int)atoi(settings.useTemp) > 0) ? makeCheck : "1", 14);
+    custom_tempUnit.setValue(((int)atoi(settings.tempUnit) > 0) ? makeCheck : "1", 14);
     #endif
     #endif
     #ifdef EXTERNAL_TIMETRAVEL_OUT

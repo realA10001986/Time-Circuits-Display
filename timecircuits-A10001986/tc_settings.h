@@ -106,7 +106,8 @@ extern bool    haveSD;
 #define DEF_BRIGHT_SPEEDO   15    // Default: Max. brightness
 #define DEF_USE_GPS         0     // 0: No i2c GPS module
 #define DEF_USE_TEMP        0     // 0: No i2c thermometer
-#define DEF_BRIGHT_TEMP     3     // Default temp brightness
+#define DEF_TEMP_BRIGHT     3     // Default temp brightness
+#define DEF_TEMP_UNIT       0     // Default: temp unit Fahrenheit
 #define DEF_USE_ETTO        0     // 0: No external props
 
 struct Settings {
@@ -146,7 +147,8 @@ struct Settings {
 #endif    
 #ifdef TC_HAVETEMP    
     char useTemp[4]         = MS(DEF_USE_TEMP);
-    char tempBright[4]      = MS(DEF_BRIGHT_TEMP);
+    char tempBright[4]      = MS(DEF_TEMP_BRIGHT);
+    char tempUnit[4]        = MS(DEF_TEMP_UNIT);
 #endif
 #endif
 #ifdef EXTERNAL_TIMETRAVEL_OUT

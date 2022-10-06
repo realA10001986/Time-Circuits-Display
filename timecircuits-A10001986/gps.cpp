@@ -31,14 +31,14 @@ static void defaultDelay(unsigned int mydelay);
 
 
 // Store i2c address
-tcGPS::tcGPS(uint8_t address) 
-{    
+tcGPS::tcGPS(uint8_t address)
+{
     _address = address;
 }
 
 // Start and init the GPS module
 bool tcGPS::begin() 
-{   
+{
     _customDelayFunc = defaultDelay;
 
     _currentline = _line1;
@@ -62,8 +62,8 @@ bool tcGPS::begin()
     delay(30);
 
     // No antenna status
-    //sendCommand("$PGCMD,33,0*6D");
-    //delay(30);
+    sendCommand("$PGCMD,33,0*6D");
+    delay(30);
 
     // Send xxRMC and xxZDA only
     //sendCommand("$PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0*28");
@@ -78,7 +78,7 @@ void tcGPS::loop()
     unsigned long myNow = millis();
     unsigned long myLater, myLater2;  //DBG
     
-    read();
+    //read();
     
     myLater = millis();               //DBG
 
@@ -124,7 +124,7 @@ int16_t tcGPS::getSpeed()
     return -1;
 }
 
-bool tcGPS::getDateTime(struct tm *timeinfo, time_t *fixTime)
+bool tcGPS::getDateTime(struct tm *timeinfo, time_t *fixAge)
 {
     char tmp[4] = { 0, 0, 0, 0 };
 
@@ -136,7 +136,7 @@ bool tcGPS::getDateTime(struct tm *timeinfo, time_t *fixTime)
     timeinfo->tm_min = 32;
     timeinfo->tm_sec = 11;
     timeinfo->tm_wday = 0;
-    *fixTime = 0;
+    *fixAge = 0;
     return true;
     */
 
@@ -158,7 +158,7 @@ bool tcGPS::getDateTime(struct tm *timeinfo, time_t *fixTime)
 
         timeinfo->tm_wday = 0;
 
-        *fixTime = (time_t)(millis() - _curTS);
+        *fixAge = (time_t)(millis() - _curTS);
 
         return true;
 
@@ -180,7 +180,7 @@ bool tcGPS::getDateTime(struct tm *timeinfo, time_t *fixTime)
 
         timeinfo->tm_wday = 0;
 
-        *fixTime = (time_t)(millis() - _curTS2);
+        *fixAge = (time_t)(millis() - _curTS2);
 
         return true;
 
@@ -360,7 +360,7 @@ bool tcGPS::parseNMEA(char *nmea)
     } else {      // ZDA
 
         // Only use ZDA if we have a fix, no point in
-        // reading back the GPS' mere RTC.
+        // reading back the GPS' mere RTC time.
         if(fix) {
             t = strchr(t, ',') + 1; // Skip to time
             strncpy(_curTime, t, 6);
