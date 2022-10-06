@@ -59,19 +59,21 @@ The other way is as follows:
  
 If (and only if) the **exact and complete contents of the data folder** is found on the SD card during boot, the keypad will have an "INSTALL AUDIO FILES" menu item, and the Config portal will show an "Audio file installation" option at the bottom of the "Setup" page. 
 
-If you choose to use the Config Portal, trigger the audio file installation process by writing "COPY" into the empty text field, and click on "Save". The device will then copy all the default audio files from the SD to its internal flash file system. The SD can (and should) be removed afterwards. The keypad menu method is described further down in this document.
+If you choose to use the Config Portal, trigger the audio file installation process by writing "COPY" into the empty text field, and clicking on "Save". The device will then copy all the default audio files from the SD to its internal flash file system. The SD can (and should) be removed afterwards. The keypad menu method is described further down in this document.
 
 If you want to re-use the SD card for substituting the default sound files, please remove the default files and "TCD_def_snd.txt" from the SD card first. More information on sound substitution can be found below in the "SD card" section of this document.
 
 **Short summary of first steps:**
 
-- As long as the device is unconfigured or later for some reason fails to connect to a configured network, it starts in "access point" mode, i.e. it creates an access point named "TCD-AP". The default IP in access point mode is 192.168.4.1. Please turn the volume knob down to a minimum while in AP mode; this mode needs more power and might - in connection with a high volume level - cause the 3.3V converter on the ESP32 to overload, resulting in a freeze or crash of the software.
-- Connect to the AP and go to http://192.168.4.1 in your browser to enter the Config Portal, click on "Configure WiFi" and configure your Wifi network. Note that the device expects an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). (If the device is inaccessible as a result of wrong static IPs, hold ENTER when powering it up until the white LED lits; the static IP data will be deleted and the device returns to DHCP.)
+- As long as the device is unconfigured or later for some reason fails to connect to a configured WiFi network, it starts in "access point" mode, i.e. it creates a WiFi access point named "TCD-AP". The default IP in access point mode is 192.168.4.1. Please turn the volume knob down to a minimum while in AP mode; this mode needs more power and might - in connection with a high volume level - cause the 3.3V converter on the ESP32 to overload, resulting in a freeze or crash of the software.
+- Using your computer or handheld device, connect to the AP and go to http://192.168.4.1 in your browser to enter the Config Portal, click on "Configure WiFi" and configure your Wifi network. Note that the device expects an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). (If the device is inaccessible as a result of wrong static IPs, hold ENTER when powering it up until the white LED lits; static IP data will be deleted and the device will return to DHCP.)
 - After saving the WiFi network settings, the device reboots and tries to connect to your configured WiFi network. If it fails to connect to your network, the device will again start in access point mode. 
 - Next, if DHCP is used, find out about the IP address assigned to the device. Hold ENTER on the keypad for 2 seconds, then repeatedly press ENTER until "NET-WORK" is shown, then hold ENTER for 2 seconds. The device will then show its current IP address.
-- Then re-open the config portal in your browser using this IP address, and configure other settings on the "Setup" page, eg WiFi connection timeout, WiFi connection retries, NTP server and time zone. A list of valid times zones is accessible by a link on the settings page.
-- There are two ways of configuring the device: Through the aforementioned Config Portal (ie the network), or the keypad menu, as described further below. Not all settings, however, are configurable in both.
-- If you don't have WiFi access, you can set the time through the keypad menu, see below.
+- Then re-open the config portal in your browser using this IP address, and configure other settings on the "Setup" page, first and foremost NTP server and time zone. A list of valid times zones is accessible by a link on the settings page. If the time zone isn't set correctly, the clock will show a wrong time.
+
+There are two ways of configuring the device: Through the aforementioned Config Portal (ie the network), or the keypad menu, as described further below. Not all settings, however, are configurable in both.
+
+If you don't have WiFi access, you can set the time through the keypad menu, see below.
 
 **Operation basics**
 
@@ -141,6 +143,7 @@ First step is to choose a menu item. The available "items" are
 Pressing ENTER cycles through the list, holding ENTER selects an item, ie a mode.
  
 How to enter dates/times for the three displays:
+
 - Hold ENTER to invoke main menu
 - Press ENTER repeatedly until the desired display is the only one lit
 - Hold ENTER until the display goes off except for the first field to enter data into
@@ -162,6 +165,7 @@ Basically, and by default, the device uses the hardware volume knob to determine
 - Hold ENTER to save and quit the menu
 
 How to set up the alarm:
+
 - Hold ENTER to invoke main menu
 - Press ENTER repeatedly until "ALA-RM" is shown
 - Hold ENTER
@@ -176,6 +180,7 @@ Note that the alarm is recurring, ie it rings every day at the programmed time, 
 If the alarm is set and enabled, the dot in the present time's minute field is lit. 
  
 How to select the Time-rotation Interval:
+
 - Hold ENTER to invoke main menu
 - Press ENTER repeatedly until "TIME-ROTATION-INTERVAL" is shown
 - Hold ENTER, "INT" is displayed
@@ -185,6 +190,7 @@ How to select the Time-rotation Interval:
 - Hold ENTER to select the value shown and exit the menu ("SAVING" is displayed briefly)
  
 How to adjust the display brightness:
+
 - Hold ENTER to invoke main menu
 - Press ENTER repeatedly until "BRIGHTNESS" is shown
 - Hold ENTER, the displays show all elements, the top-most display says "LVL"
@@ -193,6 +199,7 @@ How to adjust the display brightness:
 - After the third display, "SAVING" is displayed briefly and the menu is left automatically.
  
 How to find out the IP address and WiFi status:
+
 - Hold ENTER to invoke main menu
 - Press ENTER repeatedly until "NET-WORK" is shown
 - Hold ENTER, the displays show the IP address
@@ -200,14 +207,16 @@ How to find out the IP address and WiFi status:
 - Hold ENTER to leave the menu
 
 How to install the default audio files:
+
 - Hold ENTER to invoke main menu
-- Press ENTER until "INSTALL AUDIO FILES" is shown. If this menu does not appear, the SD card isn't configured properly; see the "Audio file installation" section at the top of this document.
+- Press ENTER repeatedly until "INSTALL AUDIO FILES" is shown. If this menu does not appear, the SD card isn't configured properly; see the "Audio file installation" section at the top of this document.
 - Hold ENTER to proceed
 - Press ENTER to toggle between "CANCEL" and "COPY"
 - Hold ENTER to proceed. If "COPY" was chosen, the display will guide you through the rest of the process. The menu is quit automatically afterwards.
  
  How to leave the menu:
- - While the menu is active, press ENTER until "END" is displayed.
+ 
+ - While the menu is active, press ENTER repeatedly until "END" is displayed.
  - Hold ENTER to leave the menu
  
 
@@ -246,6 +255,10 @@ If the SD card holds files named "key3.mp3" and/or "key6.mp3", these files will 
 **External switch and button**
 
 The software supports a switch connected to IO13 (active low) to act as a fake "power switch". If corresponding option is enabled in the Config Portal ("Use fake power switch"), the device will power-up, initialize everything, but stay quiet and dark. Only when the fake "power switch" is activated (IO13 is connected to GND), the device will visually "power up". You can also fake "power off" the device using this switch. Fake "off" disables the displays, the audio (except the alarm) and the keypad.
+
+The switch needs to be connected to these two solder pads on the TC control board:
+
+![io13](https://user-images.githubusercontent.com/76924199/194283241-3bee5fef-f51a-4b1a-a158-ed92292bcf32.jpg)
 
 Furthermore, a button switch can be connected to IO27 (active low; before Oct 5, 2022, this was IO14). This button triggers a time travel. The button must be pressed for 200ms to be recognized. There are some config options for this button in the Config Portal.
 
