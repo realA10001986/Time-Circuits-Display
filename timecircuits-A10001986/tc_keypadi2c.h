@@ -50,31 +50,31 @@
 class Keypad_I2C : public Keypad {
 public:
 	Keypad_I2C(char* userKeymap, byte* row, byte* col, byte numRows, byte numCols, byte address,
-               byte width = 1, TwoWire * awire=&Wire) 
-		: Keypad(userKeymap, row, col, numRows, numCols) { 
-                i2caddr = address; 
-                i2cwidth = width; 
-                _wire = awire; 
+               byte width = 1, TwoWire * awire=&Wire)
+		: Keypad(userKeymap, row, col, numRows, numCols) {
+                i2caddr = address;
+                i2cwidth = width;
+                _wire = awire;
                 rowCnt = numRows;
-		  } 
-	
+		  }
+
   	// Keypad function
   	void begin(char *userKeymap);
-   
+
   	// Wire function
   	void begin(void);
 
     // Setter for custom delay function
     void setCustomDelayFunc(void (*myDelay)(unsigned int));
-   
+
   	// Wire functions
   	void pin_mode(byte pinNum, byte mode) {}
   	void pin_write(byte pinNum, boolean level);
   	int  pin_read(byte pinNum);
-   
+
   	// read initial value for pinState
   	word pinState_set( );
-   
+
   	// write a whole byte or word (depending on the port expander chip) to i2c port
   	void port_write(word i2cportval);
 
@@ -92,14 +92,14 @@ private:
     // I2C pin_write state persistant storage
     // least significant byte is used for 8-bit port expanders
     word pinState;
-    TwoWire *_wire;  
+    TwoWire *_wire;
 
     word pinValBuf;
     int count = 0;
     int rowCnt = 0;
 
     // Ptr to custom delay function
-    void (*_customDelayFunc)(unsigned int) = NULL; 
+    void (*_customDelayFunc)(unsigned int) = NULL;
 };
 
 #endif
