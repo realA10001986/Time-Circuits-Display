@@ -5,7 +5,8 @@ This was a fork of a previous version of the firmware for [this](https://circuit
 
 https://circuitsetup.us/product/complete-time-circuits-display-kit/
 
-![TCD Front](https://raw.githubusercontent.com/CircuitSetup/Time-Circuits-Display/master/Images/tcd_front2.jpg)
+![TCD_Front](https://user-images.githubusercontent.com/76924199/194286089-8f3b6ae8-2e50-46c0-8476-8c4cf0775188.jpg)
+
 
 *"This Time Circuits Display has been meticulously reproduced to be as accurate as possible to the one seen in the Delorean Time Machine in the Back to the Future movies."*
 
@@ -258,17 +259,17 @@ The software supports a switch connected to IO13 (active low) to act as a fake "
 
 The switch needs to be connected to these two solder pads on the TC control board:
 
-![io13](https://user-images.githubusercontent.com/76924199/194283241-3bee5fef-f51a-4b1a-a158-ed92292bcf32.jpg)
+![access_to_io13](https://user-images.githubusercontent.com/76924199/194283241-3bee5fef-f51a-4b1a-a158-ed92292bcf32.jpg)
 
 Furthermore, a button switch can be connected to IO27 (active low; before Oct 5, 2022, this was IO14). This button triggers a time travel. The button must be pressed for 200ms to be recognized. There are some config options for this button in the Config Portal.
 
 Unfortunately, IO27 is not easily accessible on existing TC control boards. Some soldering is required. The button needs to be connected to the two marked pins in the image below:
 
-![nodemcuio272](https://user-images.githubusercontent.com/76924199/194284838-635419f9-5eb7-4480-8693-2bf7cfc7c744.jpg)
+![nodemcuio27](https://user-images.githubusercontent.com/76924199/194284838-635419f9-5eb7-4480-8693-2bf7cfc7c744.jpg)
 
 Luckily, there is a row of solder pads right next to the socket on the control board, where you can add a pin header at the correct place:
 
-![tcboard2](https://user-images.githubusercontent.com/76924199/194284336-2fe9fa9b-d5e5-49f5-b1cd-b0fd2abdff53.jpg)
+![tcboard_io27](https://user-images.githubusercontent.com/76924199/194284336-2fe9fa9b-d5e5-49f5-b1cd-b0fd2abdff53.jpg)
 
 **External speedometer**
 
