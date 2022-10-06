@@ -264,7 +264,7 @@ Furthermore, a button switch can be connected to IO27 (active low; before Oct 5,
 
 Unfortunately, IO27 is not easily accessible on existing TC control boards. Some soldering is required. The button needs to be connected to the two marked pins in the image below:
 
-![nodemcuio27](https://user-images.githubusercontent.com/76924199/194137873-4ac1794a-623c-4536-bfba-48bbad84e596.jpg)
+![nodemcuio272](https://user-images.githubusercontent.com/76924199/194284838-635419f9-5eb7-4480-8693-2bf7cfc7c744.jpg)
 
 Luckily, there is a row of solder pads right next to the socket on the control board, where you can add a pin header at the correct place:
 
@@ -276,7 +276,7 @@ The software supports a speedometer display connected via i2c (address 0x70) as 
 
 [![Watch the video](https://img.youtube.com/vi/FRRecGxAONc/0.jpg)](https://youtu.be/FRRecGxAONc)
 
-The speedo replica shown in this video is based on a fairly well-designed stand-alone replica purchased on ebay. I removed the Arduino Uno inside and wired the LED segments to an Adafruit i2c backpack (eg ADA 878). The strange look of the LEDs in the video is due to the iPhone camera's limitations; in real life it looks as good as any LED segment display.
+The speedo display shown in this video is based on a fairly well-designed stand-alone replica purchased on ebay. I removed the Arduino Uno inside and wired the LED segments to an Adafruit i2c backpack (eg ADA 878). The strange look of the LEDs in the video is due to the iPhone camera's limitations; in real life it looks as good as any LED segment display.
 
 Since the I2C bus is already quite long from the control board to the last display in the chain, I recommend soldering another JST XH 4pin plug onto the control board (there are two additional i2c break-outs available), and to connect the speedometer there.
 
