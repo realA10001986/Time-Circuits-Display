@@ -38,7 +38,7 @@ During August of 2022, I have re-written almost the entire code. New features an
 
 In the meantime, the nice folks over at circuitsetup.us decided to use this software (as "v2") for their Time Circuits Display and merged my code into their repository (apart from some sounds, of which they say they like theirs better). This means that what you see here is probably mostly identical with that circuitsetup.us has, maybe a little further ahead in development, and with some better sounds ;)
 
-### Installation
+## Installation
 
 There are different alternative ways to install this firmware:
 
@@ -46,7 +46,7 @@ There are different alternative ways to install this firmware:
 
 2) Using the Arduino IDE: Download the sketch source code, all required libraries (info in the source code) and compile it. Then upload the sketch to the device. Alternatively, you could use PlatformIO. This method is the one for fresh ESP32 boards and/or folks familiar with Arduino programming.
 
-## Audio file installation
+### Audio file installation
 
 While the sound files are part of this software, they need to be installed separately.
 
@@ -64,7 +64,7 @@ If you choose to use the Config Portal, trigger the audio file installation proc
 
 If you want to re-use the SD card for substituting the default sound files, please remove the default files and "TCD_def_snd.txt" from the SD card first. More information on sound substitution can be found below in the "SD card" section of this document.
 
-### Short summary of first steps
+## Short summary of first steps
 
 - As long as the device is unconfigured or later for some reason fails to connect to a configured WiFi network, it starts in "access point" mode, i.e. it creates a WiFi access point named "TCD-AP". The default IP in access point mode is 192.168.4.1. Please turn the volume knob down to a minimum while in AP mode; this mode needs more power and might - in connection with a high volume level - cause the 3.3V converter on the ESP32 to overload, resulting in a freeze or crash of the software.
 - Using your computer or handheld device, connect to the AP and go to http://192.168.4.1 in your browser to enter the Config Portal, click on "Configure WiFi" and configure your Wifi network. Note that the device expects an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). (If the device is inaccessible as a result of wrong static IPs, hold ENTER when powering it up until the white LED lits; static IP data will be deleted and the device will return to DHCP.)
@@ -76,7 +76,7 @@ There are two ways of configuring the device: Through the aforementioned Config 
 
 If you don't have WiFi access, you can set the time through the keypad menu, see below.
 
-### Operation basics
+## Operation basics
 
 *Present time* is a clock and, normally, shows the actual present time, as received from the network or set up through the keypad menu.
 
@@ -84,7 +84,7 @@ If you don't have WiFi access, you can set the time through the keypad menu, see
 
 There is also a "decorative" mode where the device cycles through a list of pre-programmed "destination" and "last time departed" times. This mode is chosen by setting the "Time-rotation Interval" in the config portal (via network) or the keypad menu to a non-zero value. The device will then cycle through named list every 5th, 10th, 15th, 30th or 60th minute, and thereby change the displays, regardless of times displayed as a result from a time travel. Set the interval to 0 to disable this "decorative" mode.
 
-### Time travel
+## Time travel
 
 To travel through time, hold "0" for 2 seconds. The destination time, as shown in the red display, will be your new present time, the old "present time" will be the "last time departed". The new "present" time will continue to run like a normal clock.
 
@@ -94,7 +94,7 @@ To travel back to actual present time, hold "9" for 2 seconds.
 
 Beware that the alarm function, by default, is based on the real actual present time, not the time displayed. This can be changed in the Config Portal.
 
-### Persistent / Non-persistent time travels
+## Persistent / Non-persistent time travels
 
 On the Config Portal's "Setup" page, there is a option item named "Make time travels persistent". The default is yes.
 
@@ -114,7 +114,7 @@ If you want to display your favorite *destination time* and *last time departed*
 
 Note that a non-zero Time-rotation Interval will force the device to cycle through the list of pre-programmed times, regardless of your time travel persistence setting. This cycling will, however, paused for 30 minutes if entered a new destination time and/or travelled in time.
 
-### Night mode
+## Night mode
 
 Night mode will switch off the *destination time* and *last time departed* displays, dim the *present time* display to a minimum, and reduce the volume of sound playback (except alarm). Holding "4" enables night mode, holding "5" disables it.
 
@@ -122,7 +122,7 @@ In the Config Portal, you can configure automatic night mode. Enter start and en
 
 Apart from increasing the displays' lifetime, Night Mode reduces the power consumption of the device from around 4.5W to around 2.5W.
 
-### The keypad menu
+## The keypad menu
  
 The menu is controlled by "pressing" or "holding" the ENTER key on the keypad.
 
@@ -221,7 +221,7 @@ If the alarm is set and enabled, the dot in the present time's minute field is l
  - Hold ENTER to leave the menu
  
 
-### SD card
+## SD card
 
 The provided audio files are, after proper installation (see "Audio file installation" section at the top of this document), part of the firmware and stored in the device's flash file system. These default sounds can, however, be substituted by files on a FAT32-formatted SD card, and will be played back from the SD card. No installation necessary. 
 
@@ -245,7 +245,7 @@ Several sounds are time-sync'd to display action, such as "intro", "enter", "bad
 
 Note that the "Audio file installer" cannot be used to replace default sounds in the device's flash memory with custom sounds. Your custom sounds will be played back from the SD card, which needs to remain in the slot for that matter.
 
-### Additional Custom Sounds
+## Additional Custom Sounds
 
 If the SD card holds a file named "hour.mp3", this file will be played every hour, on the hour. This feature is disabled in night mode.
 
@@ -253,7 +253,7 @@ If the SD card holds files named "key3.mp3" and/or "key6.mp3", these files will 
 
 "hour.mp3", "key3.mp3" and "key6.mp3" are not provided here. You can use any mp3, with 128kpbs or less.
 
-#### External switch and button
+## External switch and button
 
 The software supports a switch connected to IO13 (active low) to act as a fake "power switch". If corresponding option is enabled in the Config Portal ("Use fake power switch"), the device will power-up, initialize everything, but stay quiet and dark. Only when the fake "power switch" is activated (IO13 is connected to GND), the device will visually "power up". You can also fake "power off" the device using this switch. Fake "off" disables the displays, the audio (except the alarm) and the keypad.
 
@@ -271,7 +271,7 @@ Luckily, there is a row of solder pads right next to the socket on the control b
 
 ![tcboard_io27](https://user-images.githubusercontent.com/76924199/194284336-2fe9fa9b-d5e5-49f5-b1cd-b0fd2abdff53.jpg)
 
-### External speedometer
+## External speedometer
 
 The software supports a speedometer display connected via i2c (address 0x70) as part of the time travel sequence. Unfortunately, CircuitSetup have not yet designed such a speedometer, so you are on your own to build one currently. There are, however, various readily available LED segment displays from Adafruit and Grove, that can be used as a basis. Adafruit 878, 1270 and 1922, as well as Grove 0.54" 14-segment 2 or 4 digit alphanumeric displays are supported. (The product numbers vary with color, the numbers here are the red ones.)
 
@@ -281,11 +281,11 @@ The speedo display shown in this video is based on a fairly well-designed stand-
 
 Since the I2C bus is already quite long from the control board to the last display in the chain, I recommend soldering another JST XH 4pin plug onto the control board (there are two additional i2c break-outs available), and to connect the speedometer there.
 
-### Temperature sensor
+## Temperature sensor
 
 Unless you do time travelling on a regular basis, the speedo display is idle most of the time in a typical home setup. To give it more of a purpose, the software supports connecting a MCP9808-based temperature sensor to the i2c bus (readily available from Adafruit, product number 1782). After connecting this sensor and enabling it in the Config Portal, the speedo display will show the ambient temperature in idle mode. (Note that you need a speedo display in order to use the temperature sensor.)
 
-### WiFi power saving features
+## WiFi power saving features
 
 The Config Portal offers two options for WiFi power saving, one for AP-mode (ie when the device acts as an access point), one for station mode (ie when the device is connected to a WiFi network). Both options do the same: They configure a timer after whose expiry WiFi is switched off; the device is no longer transmitting or receiving data over WiFi. 
 
