@@ -268,8 +268,7 @@ Unfortunately, IO27 is not easily accessible on existing TC control boards. Some
 
 Luckily, there is a row of solder pads right next to the socket on the control board, where you can add a pin header at the correct place:
 
-![tcboard](https://user-images.githubusercontent.com/76924199/194161960-c291bad7-aa75-45a1-be61-f87cf45fd082.jpg)
-
+![tcboard2](https://user-images.githubusercontent.com/76924199/194284336-2fe9fa9b-d5e5-49f5-b1cd-b0fd2abdff53.jpg)
 
 **External speedometer**
 
