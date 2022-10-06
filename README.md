@@ -38,7 +38,7 @@ During August of 2022, I have re-written almost the entire code. New features an
 
 In the meantime, the nice folks over at circuitsetup.us decided to use this software (as "v2") for their Time Circuits Display and merged my code into their repository (apart from some sounds, of which they say they like theirs better). This means that what you see here is probably mostly identical with that circuitsetup.us has, maybe a little further ahead in development, and with some better sounds ;)
 
-**Installation**
+### Installation
 
 There are different alternative ways to install this firmware:
 
