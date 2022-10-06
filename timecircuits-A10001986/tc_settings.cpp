@@ -310,7 +310,11 @@ void settings_setup()
                     } else writedefault = true;
                     if(json["tempBright"]) {
                         strcpy(settings.tempBright, json["tempBright"]);
-                        writedefault |= checkValidNumParm(settings.tempBright, 0, 15, DEF_BRIGHT_TEMP);
+                        writedefault |= checkValidNumParm(settings.tempBright, 0, 15, DEF_TEMP_BRIGHT);
+                    } else writedefault = true;
+                    if(json["tempUnit"]) {
+                        strcpy(settings.tempUnit, json["tempUnit"]);
+                        writedefault |= checkValidNumParm(settings.tempUnit, 0, 1, DEF_TEMP_UNIT);
                     } else writedefault = true;
                     #endif
                     #endif
@@ -410,6 +414,7 @@ void write_settings()
     #ifdef TC_HAVETEMP
     json["useTemp"] = settings.useTemp;
     json["tempBright"] = settings.tempBright;
+    json["tempUnit"] = settings.tempUnit;
     #endif
     #endif
     #ifdef EXTERNAL_TIMETRAVEL_OUT

@@ -58,7 +58,7 @@ eg3. $GPRMC,220516,A,5133.82,N,00042.24,W,173.8,231.8,130694,004.2,W*70
 // ------
 
 class tcGPS : public Print {
-  
+
     public:
 
         tcGPS(uint8_t address);
@@ -70,7 +70,7 @@ class tcGPS : public Print {
         void loop();
 
         int16_t getSpeed();
-        bool    getDateTime(struct tm *timeInfo, time_t *fixTime);
+        bool    getDateTime(struct tm *timeInfo, time_t *fixAge);
         bool    setDateTime(struct tm *timeinfo);
 
         int16_t speed = -1;

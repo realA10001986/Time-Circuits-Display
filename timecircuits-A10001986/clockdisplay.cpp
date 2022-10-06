@@ -31,14 +31,14 @@ const char months[12][4] = {
 };
 
 // Store i2c address and eeprom data location
-clockDisplay::clockDisplay(uint8_t address, int saveAddress) 
-{    
+clockDisplay::clockDisplay(uint8_t address, int saveAddress)
+{
     _address = address;
     _saveAddress = saveAddress;
 }
 
 // Start the display
-void clockDisplay::begin() 
+void clockDisplay::begin()
 {
     Wire.beginTransmission(_address);
     Wire.write(0x20 | 1);  // turn on oscillator
@@ -51,10 +51,10 @@ void clockDisplay::begin()
 }
 
 // Turn on the display
-void clockDisplay::on() 
+void clockDisplay::on()
 {
     Wire.beginTransmission(_address);
-    Wire.write(0x80 | 1);  
+    Wire.write(0x80 | 1);
     Wire.endTransmission();
 }
 
@@ -62,13 +62,13 @@ void clockDisplay::on()
 void clockDisplay::off() 
 {
     Wire.beginTransmission(_address);
-    Wire.write(0x80);  
+    Wire.write(0x80);
     Wire.endTransmission();
 }
 
 // Turn on all LEDs
 void clockDisplay::lampTest() 
-{  
+{
     Wire.beginTransmission(_address);
     Wire.write(0x00);  // start at address 0x0
 
@@ -79,10 +79,10 @@ void clockDisplay::lampTest()
 }
 
 // Clear the buffer
-void clockDisplay::clear() 
+void clockDisplay::clear()
 {
     // must call show() to actually clear display
-    
+
     for(int i = 0; i < CD_BUF_SIZE; i++) {
         _displayBuffer[i] = 0;
     }
@@ -91,11 +91,11 @@ void clockDisplay::clear()
 // Set display brightness
 // Valid brighness levels are 0 to 15. Default is 15.
 // 255 sets it to previous level
-uint8_t clockDisplay::setBrightness(uint8_t level, bool setInitial) 
+uint8_t clockDisplay::setBrightness(uint8_t level, bool setInitial)
 {
-    if(level == 255)  
+    if(level == 255)
         level = _brightness;    // restore to old val 
-        
+
     _brightness = setBrightnessDirect(level);
 
     if(setInitial) _origBrightness = _brightness;
@@ -103,7 +103,7 @@ uint8_t clockDisplay::setBrightness(uint8_t level, bool setInitial)
     return _brightness;
 }
 
-uint8_t clockDisplay::setBrightnessDirect(uint8_t level) 
+uint8_t clockDisplay::setBrightnessDirect(uint8_t level)
 {
     if(level > 15)
         level = 15;
@@ -115,7 +115,7 @@ uint8_t clockDisplay::setBrightnessDirect(uint8_t level)
     return level;
 }
 
-uint8_t clockDisplay::getBrightness() 
+uint8_t clockDisplay::getBrightness()
 {
     return _brightness;
 }
@@ -146,14 +146,14 @@ void clockDisplay::setNMOff(bool NMOff)
 }
 
 // Track if this is will be holding real time.
-void clockDisplay::setRTC(bool rtc) 
+void clockDisplay::setRTC(bool rtc)
 {
     _rtc = rtc;
 }
 
 // is this an real time display?
-bool clockDisplay::isRTC() 
-{    
+bool clockDisplay::isRTC()
+{
     return _rtc;
 }
 
@@ -161,13 +161,13 @@ bool clockDisplay::isRTC()
 
 
 // Set the displayed time with supplied DateTime object, ignores timeDifference
-void clockDisplay::setDateTime(DateTime dt) 
+void clockDisplay::setDateTime(DateTime dt)
 {
-    // ATTN: DateTime implemention does not work for years < 2000!    
+    // ATTN: DateTime implemention does not work for years < 2000!
 
     setYear(dt.year());
     setMonth(dt.month());
-    setDay(dt.day());    
+    setDay(dt.day());
     setHour(dt.hour());
     setMinute(dt.minute());
 }
@@ -194,19 +194,19 @@ void clockDisplay::setDateTimeDiff(DateTime dt)
         rtcTime -= timeDifference;
     }
 
-    minsToDate(rtcTime, year, month, day, hour, minute); 
+    minsToDate(rtcTime, year, month, day, hour, minute);
 
     setYear(year + _yearoffset);
     setMonth(month);
-    setDay(day);    
+    setDay(day);
     setHour(hour);
     setMinute(minute);
 }
 
 // Set YEAR, MONTH, DAY, HOUR, MIN from structure 
 // Never use for RTC!
-void clockDisplay::setFromStruct(dateStruct* s) 
-{    
+void clockDisplay::setFromStruct(dateStruct* s)
+{
     if(isRTC()) {
         Serial.println(F("Clockdisplay: Internal error; setFromStruct() called for RTC"));
     }
@@ -221,23 +221,23 @@ void clockDisplay::setFromStruct(dateStruct* s)
 
 
 // Show the buffer 
-void clockDisplay::show() 
+void clockDisplay::show()
 {
     showInt(false);
 }
 
 // Show all but month
-void clockDisplay::showAnimate1() 
-{    
+void clockDisplay::showAnimate1()
+{
     showInt(true);
 }
 
 // Show month, assumes showAnimate1() was already called
-void clockDisplay::showAnimate2() 
+void clockDisplay::showAnimate2()
 {
     if(_nightmode && _NmOff)
         return;
-    
+
     Wire.beginTransmission(_address);
     Wire.write(0x00);  // start at address 0x0
     for(int i = 0; i < CD_BUF_SIZE; i++) {
@@ -252,39 +252,39 @@ void clockDisplay::showAnimate2()
 
 
 // Set yearOffset
-void clockDisplay::setYearOffset(int16_t yearOffs) 
+void clockDisplay::setYearOffset(int16_t yearOffs)
 {
     _yearoffset = yearOffs;
 }
 
 // Place LED pattern in year position in buffer
-void clockDisplay::setYear(uint16_t yearNum) 
+void clockDisplay::setYear(uint16_t yearNum)
 {
-    if(yearNum < 1) {         
+    if(yearNum < 1) {
         Serial.print(F("Clockdisplay: setYear: Bad year: "));
         Serial.println(yearNum, DEC);
-        yearNum = 1;        
+        yearNum = 1;
     }
-    
+
     _year = yearNum;
     yearNum -= _yearoffset;
 
-    while(yearNum >= 10000) 
+    while(yearNum >= 10000)
         yearNum -= 10000;
-    
+
     _displayBuffer[CD_YEAR_POS]     = makeNum(yearNum / 100);
     _displayBuffer[CD_YEAR_POS + 1] = makeNum(yearNum % 100);
 }
 
 // Place LED pattern in month position in buffer
-void clockDisplay::setMonth(int monthNum) 
+void clockDisplay::setMonth(int monthNum)
 {
-    if(monthNum < 1 || monthNum > 12) {        
-        Serial.print(F("Clockdisplay: setMonth: Bad month: ")); 
-        Serial.println(monthNum, DEC); 
-        monthNum = (monthNum > 12) ? 12 : 1;                   
-    } 
-  
+    if(monthNum < 1 || monthNum > 12) {      
+        Serial.print(F("Clockdisplay: setMonth: Bad month: "));
+        Serial.println(monthNum, DEC);
+        monthNum = (monthNum > 12) ? 12 : 1;
+    }
+
     _month = monthNum;
     
 #ifdef IS_ACAR_DISPLAY
@@ -293,7 +293,7 @@ void clockDisplay::setMonth(int monthNum)
     // We always work with months 1-12, not 0-11
     // Exception: timeinfo (tm) works with 0-11, but we only use this in getNTPtime 
     // for syncing. Therefore, we must ALWAYS decrease monthNum here
-    monthNum--;    
+    monthNum--;
     _displayBuffer[CD_MONTH_POS]     = getLEDAlphaChar(months[monthNum][0]);
     _displayBuffer[CD_MONTH_POS + 1] = getLEDAlphaChar(months[monthNum][1]);
     _displayBuffer[CD_MONTH_POS + 2] = getLEDAlphaChar(months[monthNum][2]);
@@ -301,21 +301,21 @@ void clockDisplay::setMonth(int monthNum)
 }
 
 // Place LED pattern in day position in buffer
-void clockDisplay::setDay(int dayNum) 
+void clockDisplay::setDay(int dayNum)
 {
     int maxDay = daysInMonth(_month, _year-_yearoffset);
 
     // It is essential that setDay is called AFTER year
     // and month have been set!
-    
-    if(dayNum < 1 || dayNum > maxDay) {          
+
+    if(dayNum < 1 || dayNum > maxDay) {
         Serial.print(F("Clockdisplay: setDay: Bad day: "));
         Serial.println(dayNum, DEC);
         dayNum = (dayNum < 1) ? 1 : maxDay;
     }
-    
+
     _day = dayNum;
-    
+
     _displayBuffer[CD_DAY_POS] = makeNum(dayNum);
 }
 
@@ -331,7 +331,7 @@ void clockDisplay::setHour(uint16_t hourNum)
     _hour = hourNum;
 
     if(!_mode24) {
-      
+
         if(hourNum == 0) {
             _displayBuffer[CD_HOUR_POS] = makeNum(12);
         } else if(hourNum > 12) {
@@ -341,36 +341,36 @@ void clockDisplay::setHour(uint16_t hourNum)
             // am
             _displayBuffer[CD_HOUR_POS] = makeNum(hourNum);
         }
-        
+
     } else {
-      
-        _displayBuffer[CD_HOUR_POS] = makeNum(hourNum);      
-        
+
+        _displayBuffer[CD_HOUR_POS] = makeNum(hourNum);
+
     }
 
     // AM/PM will be set on show() to avoid being overwritten
 }
 
 // Place LED pattern in minute position in buffer
-void clockDisplay::setMinute(int minNum) 
+void clockDisplay::setMinute(int minNum)
 {
     if(minNum < 0 || minNum > 59) {
         Serial.print(F("Clockdisplay: setMinute: Bad Minute: "));
         Serial.println(minNum, DEC);
         minNum = (minNum > 59) ? 59 : 0;
     }
-    
+
     _minute = minNum;
-    
+
     _displayBuffer[CD_MIN_POS] = makeNum(minNum);
 
     if(isRTC()) {
-        if(alarmOnOff) 
+        if(alarmOnOff)
             _displayBuffer[CD_MIN_POS] |= 0x8000;
     }
 }
 
-void clockDisplay::setColon(bool col) 
+void clockDisplay::setColon(bool col)
 {
     // set true to turn it on
     _colon = col;
@@ -380,32 +380,33 @@ void clockDisplay::setColon(bool col)
 // Query data ------------------------------------------------------------------
 
 
-uint8_t clockDisplay::getMonth() 
+uint8_t clockDisplay::getMonth()
 {
     return _month;
 }
 
-uint8_t clockDisplay::getDay() 
+uint8_t clockDisplay::getDay()
 {
     return _day;
 }
 
-int16_t clockDisplay::getYearOffset() 
+int16_t clockDisplay::getYearOffset()
 {
     return _yearoffset;
 }
 
-uint16_t clockDisplay::getYear() 
+uint16_t clockDisplay::getYear()
 {
     return _year;
 }
 
-uint8_t clockDisplay::getHour() 
+uint8_t clockDisplay::getHour()
 {
     return _hour;
 }
 
-uint8_t clockDisplay::getMinute() {
+uint8_t clockDisplay::getMinute()
+{
     return _minute;
 }
 
@@ -414,35 +415,36 @@ uint8_t clockDisplay::getMinute() {
 
 
 // clears the display RAM and only shows the provided month
-void clockDisplay::showOnlyMonth(int monthNum) 
+void clockDisplay::showOnlyMonth(int monthNum)
 {
     clearDisplay();
-    
+
     if(monthNum < 1 || monthNum > 12) {
         Serial.println(F("Clockdisplay: showOnlyMonth: Bad month"));
         monthNum = (monthNum > 12) ? 12 : 1;
     }
-    
-#ifdef IS_ACAR_DISPLAY    
+
+#ifdef IS_ACAR_DISPLAY
     directCol(CD_MONTH_POS, makeNum(monthNum));
 #else
     monthNum--;
     directCol(CD_MONTH_POS,     getLEDAlphaChar(months[monthNum][0]));
     directCol(CD_MONTH_POS + 1, getLEDAlphaChar(months[monthNum][1]));
     directCol(CD_MONTH_POS + 2, getLEDAlphaChar(months[monthNum][2]));
-#endif    
+#endif
 }
+
 // clears the display RAM and only shows the provided day
-void clockDisplay::showOnlyDay(int dayNum) 
-{    
+void clockDisplay::showOnlyDay(int dayNum)
+{
     clearDisplay();
-    
+
     directCol(CD_DAY_POS, makeNum(dayNum));
 }
 
 // clears the display RAM and only shows the provided year
-void clockDisplay::showOnlyYear(int yearNum) 
-{    
+void clockDisplay::showOnlyYear(int yearNum)
+{
     clearDisplay();
 
     if(yearNum > 10000) yearNum -= 10000;
@@ -452,12 +454,12 @@ void clockDisplay::showOnlyYear(int yearNum)
 }
 
 // clears the display RAM and only shows the provided hour
-void clockDisplay::showOnlyHour(int hourNum) 
+void clockDisplay::showOnlyHour(int hourNum)
 {
     clearDisplay();
 
     if(!_mode24) {
-      
+
         if(hourNum == 0) {
             directCol(CD_HOUR_POS, makeNum(12));
             directAM();

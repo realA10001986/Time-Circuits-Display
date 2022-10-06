@@ -65,6 +65,8 @@
 
 /* Changelog 
  *  
+ *  2022/10/06 (A10001986)
+ *    - Add unit selector for temperature in Config Portal
  *  2022/10/05 (A10001986)
  *    - Important: The external time travel trigger button is now no longer
  *      on IO14, but IO27. This will require some soldering on existing TC 
