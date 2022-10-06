@@ -28,10 +28,10 @@ During August of 2022, I have re-written almost the entire code. New features an
 - 24-hour clock mode for non-Americans ;)
 - Optional power-up intro with sound
 - Optional sound on the hour
-- Optional external fake "power switch"
-- Optional externally triggered time travel, with optional delay
-- Support for optional external i2c display acting as Speedometer, used in time travel sequences
-- Support for optional external i2c temperature sensor to display temperature on speedo display while idle
+- Support for external fake "power switch"
+- Support for externally triggered time travel, with selectable delay
+- Support for external display acting as Speedometer, used in time travel sequences
+- Support for external temperature sensor to display temperature on speedo display while idle
 - Built-in installer for default audio files in addition to OTA firmware updates
 - etc
 
@@ -258,15 +258,19 @@ Luckily, there is a row of solder pads right next to the socket on the control b
 ![tcboard](https://user-images.githubusercontent.com/76924199/194161960-c291bad7-aa75-45a1-be61-f87cf45fd082.jpg)
 
 
-**External I2C speedometer**
+**External speedometer**
 
-The device supports a speedometer display connected via i2c (address 0x70) as part of the time travel sequence. Unfortunately, CircuitSetup have not yet designed such a speedometer, so you are on your own to build one. The software supports various readily available LED displays from Adafruit and Grove, to be configured in the Config Portal.
-
-Since the I2C bus is already quite long from the control board to the last display in the chain, I recommend soldering another JST XH 4pin plug onto the control board (there are two additional i2c break-outs available), and to connect the speedometer there.
+The software supports a speedometer display connected via i2c (address 0x70) as part of the time travel sequence. Unfortunately, CircuitSetup have not yet designed such a speedometer, so you are on your own to build one currently. There are, however, various readily available LED segment displays from Adafruit and Grove, that can be used as a basis. Adafruit 878, 1270 and 1922, as well as Grove 0.54" 14-segment 2 or 4 digit alphanumeric displays are supported. (The product numbers vary with color, the numbers here are the red ones.)
 
 [![Watch the video](https://img.youtube.com/vi/FRRecGxAONc/0.jpg)](https://youtu.be/FRRecGxAONc)
 
 The speedo replica shown in this video is based on a fairly well-designed stand-alone replica purchased on ebay. I removed the Arduino Uno inside and wired the LED segments to an Adafruit i2c backpack (eg ADA 878). The strange look of the LEDs in the video is due to the iPhone camera's limitations; in real life it looks as good as any LED segment display.
+
+Since the I2C bus is already quite long from the control board to the last display in the chain, I recommend soldering another JST XH 4pin plug onto the control board (there are two additional i2c break-outs available), and to connect the speedometer there.
+
+**Temperature sensor**
+
+Unless you do time travelling on a regular basis, the speedo display is idle most of the time in a typical home setup. To give it more of a purpose, the software supports connecting a MCP9808-based temperature sensor to the i2c bus (readily available from Adafruit, product number 1782). After connecting this sensor and enabling it in the Config Portal, the speedo display will show the ambient temperature in idle mode. (Note that you need a speedo display in order to use the temperature sensor.)
 
 **WiFi power saving features**
 
