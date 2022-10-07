@@ -7,7 +7,6 @@ https://circuitsetup.us/product/complete-time-circuits-display-kit/
 
 ![TCD_Front](https://user-images.githubusercontent.com/76924199/194286089-8f3b6ae8-2e50-46c0-8476-8c4cf0775188.jpg)
 
-
 *"This Time Circuits Display has been meticulously reproduced to be as accurate as possible to the one seen in the Delorean Time Machine in the Back to the Future movies."*
 
 During August of 2022, I have re-written almost the entire code. New features and changes include
@@ -174,11 +173,9 @@ Basically, and by default, the device uses the hardware volume knob to determine
 - Then enter the hour and minutes. This works as described above.
 - The menu is left automatically after entering the minute. "SAVING" is displayed briefly.
 
-Under normal operation (ie outside of the menu), holding "1" enables the alarm, holding "2" disables it. 
+Under normal operation (ie outside of the menu), holding "1" enables the alarm, holding "2" disables it. When the alarm is set and enabled, the dot in the present time's minute field is lit. 
 
 Note that the alarm is recurring, ie it rings every day at the programmed time, unless disabled. Also note, as mentioned, that the alarm is by default relative to your actual *present time*, not the time displayed (eg after a time travel). It can, however, be configured to be based on the time displayed, in the Config Portal.
-
-If the alarm is set and enabled, the dot in the present time's minute field is lit. 
  
 #### How to select the Time-rotation Interval:
 
@@ -220,7 +217,6 @@ If the alarm is set and enabled, the dot in the present time's minute field is l
  - While the menu is active, press ENTER repeatedly until "END" is displayed.
  - Hold ENTER to leave the menu
  
-
 ## SD card
 
 The provided audio files are, after proper installation (see "[Audio file installation](#audio-file-installation)" section at the top of this document), part of the firmware and stored in the device's flash file system. These default sounds can, however, be substituted by files on a FAT32-formatted SD card, and will be played back from the SD card. No installation necessary. 
@@ -235,7 +231,7 @@ Your custom replacements need to be put in the root directoy of the card, be in 
 - "alarmon.mp3". Played when enabling the alarm by holding "1"
 - "alarmoff.mp3". Played when disabling the alarm by holding "2"
 - "nmon.mp3". Played when enabling night mode by holding "4"
-- "nmoff.mp3". Played when disabling night might by holding "5"
+- "nmoff.mp3". Played when disabling night mode by holding "5"
 - "shutdown.mp3". Played when the device is fake "powered down" using an external switch (see below)
 - "startup.mp3". Played when the clock is connected to power and finished booting
 
@@ -247,34 +243,34 @@ Note that the "Audio file installer" cannot be used to replace default sounds in
 
 ## Additional Custom Sounds
 
-The software supports some user-provided sounds, which must reside on the SD card. If the respective file is present, it will be used. If that file is absent, no sound will be played.
+The software supports some additional user-provided sounds, which must reside on the SD card. If the respective file is present, it will be used. If that file is absent, no sound will be played.
 
 - "hour.mp3": Will be played every hour, on the hour. This feature is disabled in night mode.
 - "key3.mp3" and/or "key6.mp3": Will be played if you hold the "3"/"6" key for 2 seconds.
 
 "hour.mp3", "key3.mp3" and "key6.mp3" are not provided here. You can use any mp3, with 128kpbs or less.
 
-## External switch and button
+## Fake "power on/off" Switch; external Time Travel Trigger
 
-The software supports a switch connected to IO13 (active low) to act as a fake "power switch". If corresponding option is enabled in the Config Portal ("Use fake power switch"), the device will power-up, initialize everything, but stay quiet and dark. Only when the fake "power switch" is activated (IO13 is connected to GND), the device will visually "power up". You can also fake "power off" the device using this switch. Fake "off" disables the displays, the audio (except the alarm) and the keypad.
+The firmware supports a switch connected to IO13 (active low) to act as a fake "power switch". If corresponding option is enabled in the Config Portal ("Use fake power switch"), the device will power-up, initialize everything, but stay quiet and dark. Only when the fake "power switch" is activated (IO13 is connected to GND), the device will visually "power up". You can also fake "power off" the device using this switch. Fake "off" disables the displays, all audio (except the alarm) and the keypad.
 
 The switch needs to be connected to these two solder pads on the TC control board:
 
 ![access_to_io13](https://user-images.githubusercontent.com/76924199/194283241-3bee5fef-f51a-4b1a-a158-ed92292bcf32.jpg)
 
-Furthermore, a button switch can be connected to IO27 (active low; before Oct 5, 2022, this was IO14). This button triggers a time travel. The button must be pressed for 200ms to be recognized. There are some config options for this button in the Config Portal.
+Furthermore, a button switch can be connected to IO27 (active low; before Oct 5, 2022, IO14 was used instead of IO27). This button switch triggers a time travel. The button must be pressed for 200ms to be recognized. There are some config options for this button in the Config Portal.
 
-Unfortunately, IO27 is not easily accessible on existing TC control boards. Some soldering is required. The button needs to be connected to the two marked pins in the image below:
+Unfortunately, there is no header and no break out for IO27 on existing TC control boards. Some soldering is required. The button needs to be connected to the two marked pins in the image below:
 
 ![nodemcuio27](https://user-images.githubusercontent.com/76924199/194284838-635419f9-5eb7-4480-8693-2bf7cfc7c744.jpg)
 
-Luckily, there is a row of solder pads right next to the socket on the control board, where you can add a pin header at the correct place:
+Luckily, there is a row of solder pads right next to the socket on the control board, where a pin header or cable can easily be soldered on:
 
 ![tcboard_io27](https://user-images.githubusercontent.com/76924199/194284336-2fe9fa9b-d5e5-49f5-b1cd-b0fd2abdff53.jpg)
 
 ## External speedometer
 
-The software supports a speedometer display connected via i2c (address 0x70) as part of the time travel sequence. Unfortunately, CircuitSetup have not yet designed such a speedometer, so you are on your own to build one currently. There are, however, various readily available LED segment displays from Adafruit and Grove, that can be used as a basis. Adafruit 878, 1270 and 1922, as well as Grove 0.54" 14-segment 2 or 4 digit alphanumeric displays are supported. (The product numbers vary with color, the numbers here are the red ones.)
+The firmware supports a speedometer display connected via i2c (address 0x70) as part of the time travel sequence. Unfortunately, CircuitSetup have not yet designed such a speedometer, so you are on your own to build one for the time being. There are, however, various readily available LED segment displays from Adafruit and Grove, that can be used as a basis. Adafruit 878, 1270 and 1922, as well as Grove 0.54" 14-segment 2 or 4 digit alphanumeric displays are supported. (The product numbers vary with color, the numbers here are the red ones.)
 
 [![Watch the video](https://img.youtube.com/vi/FRRecGxAONc/0.jpg)](https://youtu.be/FRRecGxAONc)
 
