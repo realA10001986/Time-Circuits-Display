@@ -3,7 +3,8 @@
  * CircuitSetup.us Time Circuits Display
  * (C) 2022 Thomas Winischhofer (A10001986)
  *
- * Optional Speedo Display
+ * Speedo Display
+ *
  * This is designed for HT16K33-based displays, like the "Grove - 0.54"
  * Dual/Quad Alphanumeric Display" or some displays with the Adafruit
  * i2c backpack (878, 1911, 1270; product numbers vary with color).

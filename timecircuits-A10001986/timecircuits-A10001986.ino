@@ -23,6 +23,8 @@
  */
 
 /*
+ * Build instructions
+ * 
  * I recommend the Arduino IDE 1.8, simply because it supports the "ESP32 Sketch
  * data upload" extension, which is useful for uploading the sound files. This,
  * for whatever reason, is no longer supported in 2.0 as of 2.0.0.rc9.
@@ -45,8 +47,6 @@
  *   (Tested with 2.0.4)
  * - ESP8266Audio: https://github.com/earlephilhower/ESP8266Audio
  *   (1.9.7 and later for esp32-arduino 2.x; 1.9.5 for 1.x)
- * - RTClib (Adafruit): https://github.com/adafruit/RTClib
- *   (Tested with 2.1.1)
  * - WifiManager (tablatronix, tzapu; v0.16 and later) https://github.com/tzapu/WiFiManager
  *   (Tested with 2.1.12beta)
  * - Keypad ("by Community; Mark Stanley, Alexander Brevig): https://github.com/Chris--A/Keypad
@@ -59,27 +59,30 @@
  * https://github.com/CircuitSetup/Time-Circuits-Display/wiki/Programming-the-ESP32-Module
  * See here for info on the data uploader (for sound files):
  * https://randomnerdtutorials.com/install-esp32-filesystem-uploader-arduino-ide/
- * (The audio files can also be uploaded using an SD card, so the uploader is
+ * (The sound files can also be uploaded using an SD card, so the uploader is
  * optional. See Changelog entry 2022/08/25 and README.md)
  */
 
 /* Changelog
  *
+ *  2022/10/08 (A10001986)
+ *    - Integrate cut-down version of RTCLib to reduce bloat
+ *    - Add support for the PCF2129 RTC
  *  2022/10/06 (A10001986)
  *    - Add unit selector for temperature in Config Portal
  *  2022/10/05 (A10001986)
  *    - Important: The external time travel trigger button is now no longer
  *      on IO14, but IO27. This will require some soldering on existing TC
  *      boards, see https://github.com/realA10001986/Time-Circuits-Display-A10001986
- *      Also, the external time travel trigger button will now include the
- *      speedo sequence as part of the time travel sequence, if a speedo is
+ *      Also, externally triggered time travels will now include the speedo
+ *      sequence as part of the time travel sequence, if a speedo is
  *      connected and activated in the Config Portal. If, in the Config Portal,
  *      "Play complete time travel sequence" is unchecked, only the re-entry
- *      part will be played.
+ *      part will be played (as before).
  *    - Add trigger signal for future external props (IO14). If you don't
- *      have any compatible external props connected, please leave this disabled
- *      in the Config Portal as it might delay the time travel sequence
- *      unnecessarily.
+ *      have any compatible external props connected (which is likely since 
+ *      those do not yet exist), please leave this disabled in the Config 
+ *      Portal as it might delay the time travel sequence unnecessarily.
  *    - Activate support code for temperature sensor. This is for home setups
  *      with a speedo display connected; the speedo will show the ambient
  *      temperature as read from this sensor while idle.

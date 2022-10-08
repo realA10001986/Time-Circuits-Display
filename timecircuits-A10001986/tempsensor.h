@@ -3,7 +3,8 @@
  * CircuitSetup.us Time Circuits Display
  * (C) 2022 Thomas Winischhofer (A10001986)
  *
- * Optional Temperature Sensor
+ * Temperature Sensor handling
+ *
  * This is designed for MCP9808-based sensors.
  * -------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
@@ -44,8 +45,6 @@
 #define MCP9808_CONFIG_ALERTSEL   0x0004  // alert output select
 #define MCP9808_CONFIG_ALERTPOL   0x0002  // alert output polarity
 #define MCP9808_CONFIG_ALERTMODE  0x0001  // alert output mode
-
-// ------
 
 class tempSensor {
 

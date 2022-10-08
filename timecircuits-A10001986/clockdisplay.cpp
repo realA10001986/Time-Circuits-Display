@@ -4,8 +4,9 @@
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
  * (C) 2022 Thomas Winischhofer (A10001986)
  *
- * Clockdisplay and keypad menu code based on code by John Monaco
- * Marmoset Electronics
+ * Clockdisplay: Handles the TC LED segment displays
+ *
+ * Based on code by John Monaco, Marmoset Electronics
  * https://www.marmosetelectronics.com/time-circuits-clock
  * -------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
@@ -839,21 +840,6 @@ int16_t clockDisplay::loadYOffs()
     return -1;
 }
 
-// Write time to RTC chip
-void clockDisplay::setDS3232time(byte second, byte minute, byte hour, byte dayOfWeek, byte dayOfMonth, byte month, byte year)
-{
-    Wire.beginTransmission(DS3231_I2CADDR);
-    Wire.write(0);                     // sends 00h - time register
-    Wire.write(decToBcd(second));      // set seconds
-    Wire.write(decToBcd(minute));      // set minutes
-    Wire.write(decToBcd(hour));        // set hours
-    Wire.write(decToBcd(dayOfWeek));   // set day of week (1-7; user defined; we use 1=Sunday, 7=Saturday)
-    Wire.write(decToBcd(dayOfMonth));  // set date (1~31)
-    Wire.write(decToBcd(month));       // set month (1~12)
-    Wire.write(decToBcd(year));        // set year (0~99) (ie 2000-2099)
-    Wire.endTransmission();
-}
-
 
 // Private functions ###########################################################
 
@@ -1065,11 +1051,3 @@ void clockDisplay::directAMPMoff()
 {
     directAMPM(0x00, 0x00);
 }
-
-// Convert normal decimal numbers to binary coded decimal
-byte clockDisplay::decToBcd(byte val)
-{
-    return ((val / 10 * 16) + (val % 10));
-}
-
-
