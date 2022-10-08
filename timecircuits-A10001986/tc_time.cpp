@@ -802,7 +802,7 @@ void time_loop()
             #ifdef TC_DBG
             #ifdef EXTERNAL_TIMETRAVEL_OUT
             ettope = univNow;
-            Serial.print(F("##### ETTO total elapsed lead time: ") b B><);
+            Serial.print(F("##### ETTO total elapsed lead time: "));
             Serial.println(ettope - ettops, DEC);
             #endif
             #endif
