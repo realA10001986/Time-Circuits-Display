@@ -59,7 +59,7 @@
 #define GPS_ADDR       0x10 // i2C address of GPS receiver
 #define TEMP_ADDR      0x18 // i2C address of temperature sensor
 
-#define PCF2129_ADDR   0x51
+#define PCF2129_ADDR   0x51 // i2C address of PCF2129 RTC
 #define DS3231_ADDR    0x68 // i2C address of DS3231 RTC
 
 // The time between reentry sound being started and the display coming on
@@ -130,9 +130,6 @@ extern bool checkIfAutoPaused();
 bool getNTPOrGPSTime();
 bool getNTPTime();
 extern bool checkTimeOut();
-extern void DS3231clockOutEnable();
-extern void DS3231setTime(byte second, byte minute, byte hour, byte dayOfWeek, byte dayOfMonth, byte month, byte year);
-byte decToBcd(byte val);
 extern bool isLeapYear(int year);
 extern int  daysInMonth(int month, int year);
 extern DateTime myrtcnow();
