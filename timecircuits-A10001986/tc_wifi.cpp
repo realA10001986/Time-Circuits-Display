@@ -4,9 +4,8 @@
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
  * (C) 2022 Thomas Winischhofer (A10001986)
  *
- * Clockdisplay and keypad menu code based on code by John Monaco
- * Marmoset Electronics
- * https://www.marmosetelectronics.com/time-circuits-clock
+ * WiFi and Config Portal handling
+ *
  * -------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -120,11 +119,11 @@ WiFiManagerParameter custom_useGPS("uGPS", "Use GPS receiver", settings.useGPS, 
 #endif
 #ifdef TC_HAVETEMP
 WiFiManagerParameter custom_useTemp("uTem", "Use temperature sensor", settings.useTemp, 1, "title='Enable to use a MCP9808-based temperature sensor to display temperature on speedo display while idle' type='checkbox' style='margin-top:12px'", WFM_LABEL_AFTER);
-WiFiManagerParameter custom_tempUnit("temUnt", "Celsius", settings.tempUnit, 1, "title='Temperature shown in Fahrenheit if unchecked' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_tempUnit("temUnt", "Display in °Celsius", settings.tempUnit, 1, "title='Temperature displayed in Fahrenheit if unchecked' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
 #endif
 #endif
 #ifdef EXTERNAL_TIMETRAVEL_OUT
-WiFiManagerParameter custom_useETTO("uEtto", "Use compatible external props", settings.useETTO, 1, "autocomplete='off' title='Enable to use compatible external props to be part of the time travel sequence, eg. FluxCapacitor, SID, etc.' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_useETTO("uEtto", "Use compatible external props", settings.useETTO, 1, "autocomplete='off' title='Enable to use compatible external props to be part of the time travel sequence, eg. Flux Capacitor, SID, etc.' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
 #endif
 #endif // -------------------------------------------------
 WiFiManagerParameter custom_autoRotateTimes(aintCustHTML);

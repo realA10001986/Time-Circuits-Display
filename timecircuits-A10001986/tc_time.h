@@ -4,9 +4,8 @@
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
  * (C) 2022 Thomas Winischhofer (A10001986)
  *
- * Clockdisplay and keypad menu code based on code by John Monaco
- * Marmoset Electronics
- * https://www.marmosetelectronics.com/time-circuits-clock
+ * Time and Main Controller
+ *
  * -------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +26,6 @@
 
 #include <Arduino.h>
 #include <time.h>
-#include <RTClib.h>
 #include <WiFi.h>
 #include <Wire.h>
 #ifdef FAKE_POWER_ON
@@ -35,6 +33,7 @@
 #endif
 
 #include "tc_global.h"
+#include "rtc.h"
 #include "clockdisplay.h"
 #ifdef TC_HAVESPEEDO
 #include "speeddisplay.h"
@@ -52,13 +51,16 @@
 #include "time.h"
 #include "tc_settings.h"
 
-#define DEST_TIME_ADDR 0x71 // i2C address of displays
+#define DEST_TIME_ADDR 0x71 // i2C address of TC displays
 #define PRES_TIME_ADDR 0x72
 #define DEPT_TIME_ADDR 0x74
 
 #define SPEEDO_ADDR    0x70 // i2C address of speedo display
-#define GPS_ADDR       0x10 // i2C address of GPS module
+#define GPS_ADDR       0x10 // i2C address of GPS receiver
 #define TEMP_ADDR      0x18 // i2C address of temperature sensor
+
+#define PCF2129_ADDR   0x51
+#define DS3231_ADDR    0x68 // i2C address of DS3231 RTC
 
 // The time between reentry sound being started and the display coming on
 // Must be sync'd to the sound file used! (startup.mp3/timetravel.mp3)
@@ -111,7 +113,7 @@ extern bool useTemp;
 #endif
 #endif
 
-extern RTC_DS3231 rtc;
+extern tcRTC rtc;
 
 #define NUM_AUTOTIMES 11
 extern dateStruct destinationTimes[NUM_AUTOTIMES];
@@ -128,7 +130,9 @@ extern bool checkIfAutoPaused();
 bool getNTPOrGPSTime();
 bool getNTPTime();
 extern bool checkTimeOut();
-extern void RTCClockOutEnable();
+extern void DS3231clockOutEnable();
+extern void DS3231setTime(byte second, byte minute, byte hour, byte dayOfWeek, byte dayOfMonth, byte month, byte year);
+byte decToBcd(byte val);
 extern bool isLeapYear(int year);
 extern int  daysInMonth(int month, int year);
 extern DateTime myrtcnow();

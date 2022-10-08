@@ -4,8 +4,9 @@
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
  * (C) 2022 Thomas Winischhofer (A10001986)
  *
- * Clockdisplay and keypad menu code based on code by John Monaco
- * Marmoset Electronics
+ * Keypad Menu handling
+ *
+ * Based on code by John Monaco, Marmoset Electronics
  * https://www.marmosetelectronics.com/time-circuits-clock
  * -------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify

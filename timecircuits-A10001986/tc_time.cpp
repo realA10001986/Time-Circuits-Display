@@ -4,9 +4,8 @@
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
  * (C) 2022 Thomas Winischhofer (A10001986)
  *
- * Clockdisplay and keypad menu code based on code by John Monaco
- * Marmoset Electronics
- * https://www.marmosetelectronics.com/time-circuits-clock
+ * Time and Main Controller
+ *
  * -------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -103,8 +102,10 @@ int           specDisp = 0;
 bool          pwrLow = false;
 unsigned long pwrFullNow = 0;
 
-struct tm _timeinfo;  //for NTP/GPS
-RTC_DS3231 rtc;       //for RTC IC
+// For NTP/GPS
+struct tm _timeinfo; 
+// For RTC IC
+tcRTC rtc(2, (uint8_t[2]){ DS3231_ADDR, PCF2129_ADDR }); 
 
 // For displaying times off the real time
 uint64_t timeDifference = 0;
@@ -344,7 +345,7 @@ void time_setup()
 
     }
 
-    RTCClockOutEnable();  // Turn on the 1Hz second output
+    rtc.clockOutEnable();  // Turn on the 1Hz second output
 
     // Start the displays
     presentTime.begin();
@@ -555,8 +556,8 @@ void time_setup()
         allOff();
     }
 
-    // Show "BATT" message if RTC battery is depleted
-    if(rtcbad) {
+    // Show "BATT" message if RTC battery is low or depleted
+    if(rtcbad || rtc.battLow()) {
         destinationTime.showOnlyText("BATT");
         delay(3000);
         allOff();
@@ -711,7 +712,7 @@ void time_loop()
                   #ifdef TC_HAVEGPS
                   !useGPS &&
                   #endif
-                              (wifiIsOff || wifiAPIsOff) && (millis() - pwrFullNow >= 5*60*1000)) {
+                             (wifiIsOff || wifiAPIsOff) && (millis() - pwrFullNow >= 5*60*1000)) {
         setCpuFrequencyMhz(80);
         pwrLow = true;
 
@@ -758,7 +759,7 @@ void time_loop()
         ettoPulse = true;
         ettoPulseNow = millis();
         #ifdef TC_DBG
-        Serial.println("ETTO triggered");
+        Serial.println(F("ETTO triggered"));
         #endif
     }
     // Timer to end ETTO pulse
@@ -801,7 +802,7 @@ void time_loop()
             #ifdef TC_DBG
             #ifdef EXTERNAL_TIMETRAVEL_OUT
             ettope = univNow;
-            Serial.print("##### ETTO total elapsed lead time: ");
+            Serial.print(F("##### ETTO total elapsed lead time: ") b B><);
             Serial.println(ettope - ettops, DEC);
             #endif
             #endif
@@ -1697,13 +1698,13 @@ bool getNTPTime()
 
         presentTime.setYearOffset(newYOffs);
 
-        presentTime.setDS3232time(_timeinfo.tm_sec,
-                                  _timeinfo.tm_min,
-                                  _timeinfo.tm_hour,
-                                  _timeinfo.tm_wday + 1,  // We use Su=1...Sa=7 on HW-RTC, tm uses 0-6 (days since Sunday)
-                                  _timeinfo.tm_mday,
-                                  _timeinfo.tm_mon + 1,   // Month needs to be 1-12, timeinfo uses 0-11
-                                  newYear - 2000);
+        rtc.adjust(_timeinfo.tm_sec,
+                   _timeinfo.tm_min,
+                   _timeinfo.tm_hour,
+                   _timeinfo.tm_wday,      // tm uses 0-6 (days since Sunday)
+                   _timeinfo.tm_mday,
+                   _timeinfo.tm_mon + 1,   // Month needs to be 1-12, timeinfo uses 0-11
+                   newYear - 2000);
 
         #ifdef TC_DBG
         Serial.print(F("getNTPTime: Result from NTP update: "));
@@ -1768,13 +1769,13 @@ bool getGPStime()
 
     presentTime.setYearOffset(newYOffs);
 
-    presentTime.setDS3232time(ti->tm_sec,
-                              ti->tm_min,
-                              ti->tm_hour,
-                              ti->tm_wday + 1,  // We use Su=1...Sa=7 on HW-RTC, tm uses 0-6 (days since Sunday)
-                              ti->tm_mday,
-                              ti->tm_mon + 1,   // Month needs to be 1-12, timeinfo uses 0-11
-                              newYear - 2000);
+    rtc.adjust(ti->tm_sec,
+               ti->tm_min,
+               ti->tm_hour,
+               ti->tm_wday,       // tm uses 0-6 (days since Sunday)
+               ti->tm_mday,
+               ti->tm_mon + 1,    // Month needs to be 1-12, timeinfo uses 0-11
+               newYear - 2000);
 
     return true;
 }
@@ -1832,28 +1833,6 @@ bool checkTimeOut()
     }
 
     return false;
-}
-
-// Enable the 1Hz RTC output
-void RTCClockOutEnable()
-{
-    uint8_t readValue = 0;
-
-    Wire.beginTransmission(DS3231_I2CADDR);
-    Wire.write((byte)0x0E);  // select control register
-    Wire.endTransmission();
-
-    Wire.requestFrom(DS3231_I2CADDR, 1);
-    readValue = Wire.read();
-    // enable squarewave and set to 1Hz,
-    // Bit 2 INTCN - 0 enables wave output
-    // Bit 3 and 4 - 0 0 sets 1Hz
-    readValue = readValue & B11100011;
-
-    Wire.beginTransmission(DS3231_I2CADDR);
-    Wire.write((byte)0x0E);  // select control register
-    Wire.write(readValue);
-    Wire.endTransmission();
 }
 
 // Determine if provided year is a leap year.

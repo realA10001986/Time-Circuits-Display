@@ -3,7 +3,8 @@
  * CircuitSetup.us Time Circuits Display
  * (C) 2022 Thomas Winischhofer (A10001986)
  *
- * Optional Temperature Sensor
+ * Temperature Sensor handling
+ *
  * This is designed for MCP9808-based sensors.
  * -------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify

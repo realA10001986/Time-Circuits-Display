@@ -4,8 +4,9 @@
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
  * (C) 2022 Thomas Winischhofer (A10001986)
  *
- * Clockdisplay and keypad menu code based on code by John Monaco
- * Marmoset Electronics
+ * Clockdisplay: Handles the TC LED segment displays
+ *
+ * Based on code by John Monaco, Marmoset Electronics
  * https://www.marmosetelectronics.com/time-circuits-clock
  * -------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
@@ -26,13 +27,11 @@
 #define _CLOCKDISPLAY_H
 
 #include <Arduino.h>
-#include <RTClib.h>
 #include <Wire.h>
 #include <EEPROM.h>
 
 #include "tc_global.h"
-
-#define DS3231_I2CADDR 0x68
+#include "rtc.h"
 
 #ifdef IS_ACAR_DISPLAY      // A-Car (2-digit-month) ---------------------
 #define CD_MONTH_POS  0     //      possibly needs to be adapted
@@ -147,8 +146,6 @@ class clockDisplay {
         bool load(int initialBrightness = -1);
         int16_t loadYOffs();
 
-        void setDS3232time(byte second, byte minute, byte hour, byte dayOfWeek, byte dayOfMonth, byte month, byte year);
-
     private:
 
         uint8_t _address;
@@ -195,8 +192,6 @@ class clockDisplay {
         void directAM();
         void directPM();
         void directAMPMoff();
-
-        byte decToBcd(byte val);
 };
 
 #endif

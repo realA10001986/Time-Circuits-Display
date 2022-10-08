@@ -3,7 +3,8 @@
  * CircuitSetup.us Time Circuits Display
  * (C) 2022 Thomas Winischhofer (A10001986)
  *
- * Optional GPS module
+ * GPS receiver handling and data parsing
+ *
  * This is designed for MTK3333-based modules.
  * -------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
