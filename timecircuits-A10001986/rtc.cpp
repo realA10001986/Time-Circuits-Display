@@ -1,20 +1,19 @@
 /*
  * -------------------------------------------------------------------
- * Cut-down and customized fork of Adafruit's RTClib
+ * CircuitSetup.us Time Circuits Display
+ * (C) 2022 Thomas Winischhofer (A10001986)
+ * DateTime part: Copyright (C) 2019 Adafruit Industries
  * 
- * Handles DS3231/PCF2129 RTC and provides DateTime Class
+ * DS3231/PCF2129 RTC handling and DateTime Class
  * 
  * Note: DateTime mirrors the features of RTC; 
  * this means it only works for dates from 2000 to 2099.
  * 
+ * DateTime is a cut-down and customized fork of Adafruit's RTClib
  * The original version can be found here:
  * https://github.com/adafruit/RTClib
  * -------------------------------------------------------------------
  * License: MIT
- * Modifications and additions: (C) Thomas Winischhofer (A10001986)
- * Original Version: Copyright (c) 2019 Adafruit Industries
- * 
- * For original and modified version:
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
