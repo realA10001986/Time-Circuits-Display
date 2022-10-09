@@ -66,8 +66,8 @@
 /* Changelog
  *
  *  2022/10/08 (A10001986)
- *    - Integrate cut-down version of RTCLib to reduce bloat
- *    - Add support for the PCF2129 RTC
+ *    - Integrate cut-down version of RTCLib's DateTime to reduce bloat
+ *    - Remove RTCLib dependency; add native RTC support for DS3231 and PCF2129 RTCs
  *  2022/10/06 (A10001986)
  *    - Add unit selector for temperature in Config Portal
  *  2022/10/05 (A10001986)
@@ -97,7 +97,7 @@
  *    - Fix brightness logic if changed in menu, and night mode activated
  *      afterwards.
  *    - No longer call .save() on display when changing brightness in menu
- *    - (A10001986 wallclock customization: temperature sensor; inactive)
+ *    - [A10001986 wallclock customization: temperature sensor; inactive]
  *  2022/09/08-10 (A10001986)
  *    - Keypadi2c: Custom delay function to support uninterrupted audio during
  *      key scanning; i2c is now read three times in order to properly
@@ -141,7 +141,7 @@
  *    - More Config Portal beauty enhancements
  *    - Clockdisplay: Remove dependency on settings.h
  *    - Fix static ip parameter handling (make sure strings are 0-terminated)
- *    [- I2C-Speedo integration; still inactive]
+ *    - [I2C-Speedo integration; still inactive]
  *  2022/08/31 (A10001986)
  *    - Add some tool tips to Config Portal
  *  2022/08/30 (A10001986)
