@@ -7,18 +7,25 @@
  *
  * This is designed for MTK3333-based modules.
  * -------------------------------------------------------------------
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * License: MIT
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 #include "tc_global.h"
@@ -101,7 +108,8 @@ void tcGPS::loop()
     //
 
     if(_lineready) {
-        parseNMEA(lastNMEA());
+        _lineready = false;
+        parseNMEA(_lastline, _lastTS);
     }
 
     #ifdef TC_DBG
@@ -233,7 +241,7 @@ bool tcGPS::setDateTime(struct tm *timeinfo)
     strcat(pkt335, temp);
 
     #ifdef TC_DBG
-    Serial.println("SetGPStime();");
+    Serial.println("SetGPStime():");
     Serial.println(pkt335);
     #endif
 
@@ -297,6 +305,9 @@ bool tcGPS::read()
 
     buff_idx = 0;
     while(buff_idx <= buff_max) {
+      
+        if(!_lineidx) _currentTS = millis();
+        
         c = _currentline[_lineidx++] = _buffer[buff_idx++];
 
         if(_lineidx >= MAXLINELENGTH) {
@@ -316,6 +327,7 @@ bool tcGPS::read()
                 _lastline = _line2;
             }
 
+            _lastTS = _currentTS;
             _lineidx = 0;
             _lineready = true;
 
@@ -339,7 +351,7 @@ size_t tcGPS::write(uint8_t value)
     return 1;
 }
 
-bool tcGPS::parseNMEA(char *nmea)
+bool tcGPS::parseNMEA(char *nmea, unsigned long nmeaTS)
 {
     char *t = nmea, *t2;
     char buf[16];
@@ -373,7 +385,7 @@ bool tcGPS::parseNMEA(char *nmea)
         } else {
             speed = (int16_t)(round(atof(buf) * GPS_MPH_PER_KNOT));
             _haveSpeed = true;
-            _curspdTS = millis();
+            _curspdTS = nmeaTS;
         }
 
         t = strchr(t, ',') + 1;  // Skip to track made good
@@ -381,8 +393,8 @@ bool tcGPS::parseNMEA(char *nmea)
         strncpy(_curDay2, t, 2);
         strncpy(_curMonth2, t+2, 2);
         strncpy(&_curYear2[2], t+4, 2);
-
-        _curTS2 = millis();
+        
+        _curTS2 = nmeaTS;
         _haveDateTime2 = true;
 
     } else {      // ZDA
@@ -399,19 +411,13 @@ bool tcGPS::parseNMEA(char *nmea)
             t = strchr(t, ',') + 1; // Skip to year
             strncpy(_curYear, t, 4);
 
-            _curTS = millis();
+            _curTS = nmeaTS;
             _haveDateTime = true;
         }
 
     }
 
     return true;
-}
-
-char *tcGPS::lastNMEA(void)
-{
-    _lineready = false;
-    return (char *)_lastline;
 }
 
 bool tcGPS::checkNMEA(char *nmea)
