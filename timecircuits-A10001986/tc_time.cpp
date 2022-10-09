@@ -102,11 +102,6 @@ int           specDisp = 0;
 bool          pwrLow = false;
 unsigned long pwrFullNow = 0;
 
-// For NTP/GPS
-struct tm _timeinfo; 
-// For RTC IC
-tcRTC rtc(2, (uint8_t[2]){ DS3231_ADDR, PCF2129_ADDR }); 
-
 // For displaying times off the real time
 uint64_t timeDifference = 0;
 bool     timeDiffUp = false;  // true = add difference, false = subtract difference
@@ -131,6 +126,13 @@ bool alarmRTC = true;
 
 // For tracking idle time in menus
 uint8_t timeout = 0;
+
+// For NTP/GPS
+struct tm _timeinfo;
+ 
+// The RTC object
+tcRTC rtc(2, (uint8_t[2*2]){ DS3231_ADDR,  RTCT_DS3231, 
+                             PCF2129_ADDR, RTCT_PCF2129 }); 
 
 // The display objects
 clockDisplay destinationTime(DEST_TIME_ADDR, DEST_TIME_PREF);
@@ -552,13 +554,17 @@ void time_setup()
     // Show "RESET" message if data loaded was invalid somehow
     if(!validLoad) {
         destinationTime.showOnlyText("RESET");
+        destinationTime.on();
         delay(1000);
         allOff();
     }
 
-    // Show "BATT" message if RTC battery is low or depleted
+    // Show "REPLACE BATTERY" message if RTC battery is low or depleted
     if(rtcbad || rtc.battLow()) {
-        destinationTime.showOnlyText("BATT");
+        destinationTime.showOnlyText("REPLACE");
+        presentTime.showOnlyText("BATTERY");
+        destinationTime.on();
+        presentTime.on();
         delay(3000);
         allOff();
     }
@@ -1709,14 +1715,14 @@ bool getNTPTime()
         #ifdef TC_DBG
         Serial.print(F("getNTPTime: Result from NTP update: "));
         Serial.println(&_timeinfo, "%A, %B %d %Y %H:%M:%S");
-        Serial.println(F("getNTPTime: Time successfully set with NTP"));
+        Serial.println(F("getNTPTime: NTP time sync successful"));
         #endif
 
         return true;
 
     } else {
 
-        Serial.println(F("getNTPTime: Time NOT set with NTP, WiFi not connected"));
+        Serial.println(F("getNTPTime: NTP time sync failed, WiFi not connected"));
         return false;
 
     }
@@ -1777,9 +1783,19 @@ bool getGPStime()
                ti->tm_mon + 1,    // Month needs to be 1-12, timeinfo uses 0-11
                newYear - 2000);
 
+    #ifdef TC_DBG
+    Serial.print(F("getGPSTime: GPS time: "));
+    Serial.println(ti, "%A, %B %d %Y %H:%M:%S");
+    Serial.println(F("getGPSTime: GPS time sync successful"));
+    #endif
+        
     return true;
 }
 
+/*
+ * Set GPS's own RTC
+ * This is supposed to speed up finding a fix
+ */
 bool setGPStime()
 {
     DateTime dt;
@@ -1789,6 +1805,10 @@ bool setGPStime()
 
     if(!useGPS)
         return false;
+
+    #ifdef TC_DBG
+    Serial.println(F("setGPSTime() called"));
+    #endif
 
     dt = myrtcnow();
 
