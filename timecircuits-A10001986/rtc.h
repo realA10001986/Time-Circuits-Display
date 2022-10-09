@@ -6,12 +6,33 @@
  * 
  * Note: DateTime mirrors the features of RTC; 
  * this means it only works for dates from 2000 to 2099.
+ * 
+ * The original version can be found here:
+ * https://github.com/adafruit/RTClib
  * -------------------------------------------------------------------
  * License: MIT
- * Modifications (C) Thomas Winischhofer (A10001986)
+ * Modifications and additions: (C) Thomas Winischhofer (A10001986)
+ * Original Version: Copyright (c) 2019 Adafruit Industries
  * 
- * For complete version and credits, see:
- * https://github.com/adafruit/RTClib
+ * For original and modified version:
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 #ifndef _RTC_H_
@@ -100,7 +121,7 @@ class tcRTC
 {
     public:
     
-        tcRTC(int numAddr, uint8_t addrArr[]);
+        tcRTC(int numTypes, uint8_t addrArr[]);
         
         bool begin();
 
@@ -120,9 +141,9 @@ class tcRTC
 
     private:
 
+        int     _numTypes;
+        uint8_t _addrArr[2*2];
         uint8_t _address;
-        uint8_t _addrArr[2];
-
         uint8_t _rtcType = RTCT_DS3231;
     
         static uint8_t bcd2bin(uint8_t val) { return val - 6 * (val >> 4); }

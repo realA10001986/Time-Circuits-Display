@@ -6,12 +6,33 @@
  * 
  * Note: DateTime mirrors the features of RTC; 
  * this means it only works for dates from 2000 to 2099.
+ * 
+ * The original version can be found here:
+ * https://github.com/adafruit/RTClib
  * -------------------------------------------------------------------
  * License: MIT
- * Modifications (C) Thomas Winischhofer (A10001986)
+ * Modifications and additions: (C) Thomas Winischhofer (A10001986)
+ * Original Version: Copyright (c) 2019 Adafruit Industries
  * 
- * For complete version and credits, see:
- * https://github.com/adafruit/RTClib
+ * For original and modified version:
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 #include "tc_global.h"
@@ -349,13 +370,16 @@ String DateTime::timestamp(timestampOpt opt) const
  * tcRTC Class for DS3231/PCF2129
  ****************************************************************/
 
-tcRTC::tcRTC(int addrNum, uint8_t addrArr[])
+tcRTC::tcRTC(int numTypes, uint8_t addrArr[])
 {
-    for(int i = 0; i < min(2, addrNum); i++) {
+    _numTypes = numTypes;
+
+    for(int i = 0; i < min(2, numTypes) * 2; i++) {
         _addrArr[i] = addrArr[i];
     }
+
     _address = addrArr[0];
-    _rtcType = RTCT_DS3231;
+    _rtcType = addrArr[1];
 }
 
 /*
@@ -363,31 +387,27 @@ tcRTC::tcRTC(int addrNum, uint8_t addrArr[])
  */
 bool tcRTC::begin()
 {
-    // Check for DS3231 on i2c bus
-    Wire.beginTransmission(_address);
-    
-    if(Wire.endTransmission(true)) {
-      
-        // Check for PCF2129 on i2c bus
-        Wire.beginTransmission(_addrArr[1]);
-        if(Wire.endTransmission(true)) {
+    for(int i = 0; i < min(2, _numTypes) * 2; i += 2) {
+
+        // Check for RTC on i2c bus
+        Wire.beginTransmission(_addrArr[i]);
+
+        if(!(Wire.endTransmission(true))) {
+
+            _address = _addrArr[i];
+            _rtcType = _addrArr[i+1];
+
             #ifdef TC_DBG
-            Serial.println(F("RTC: No supported RTC detected"));
+            const char *tpArr[2] = { "DS3231", "PCF2129" };
+            Serial.print(F("RTC: Detected "));
+            Serial.println(tpArr[_rtcType]);
             #endif
-            return false;
+
+            return true;
         }
-        _address = _addrArr[1];
-        _rtcType = RTCT_PCF2129;
-        
     }
 
-    #ifdef TC_DBG
-    const char *tpArr[2] = { "DS3231", "PCF2129" };
-    Serial.print(F("RTC: Detected "));
-    Serial.println(tpArr[_rtcType]);
-    #endif
-
-    return true;
+    return false;
 }
 
 /*
@@ -397,12 +417,12 @@ bool tcRTC::begin()
  */
 void tcRTC::adjust(const DateTime &dt)
 {
-    adjust(dt.second(), 
-           dt.minute(), 
-           dt.hour(), 
-           dt.dayOfTheWeek(), 
-           dt.day(), 
-           dt.month(), 
+    adjust(dt.second(),
+           dt.minute(),
+           dt.hour(),
+           dt.dayOfTheWeek(),
+           dt.day(),
+           dt.month(),
            dt.year() - 2000U);
 }
 
@@ -475,13 +495,13 @@ DateTime tcRTC::now()
             buffer[i] = Wire.read();
         }
 
-        return DateTime(bcd2bin(buffer[6]) + 2000U, 
+        return DateTime(bcd2bin(buffer[6]) + 2000U,
                         bcd2bin(buffer[5] & 0x7F),
-                        bcd2bin(buffer[3]), 
-                        bcd2bin(buffer[2]), 
+                        bcd2bin(buffer[3]),
+                        bcd2bin(buffer[2]),
                         bcd2bin(buffer[1]),
                         bcd2bin(buffer[0] & 0x7F));
-                        
+
     case RTCT_DS3231:
     default:
         Wire.beginTransmission(_address);
@@ -492,10 +512,10 @@ DateTime tcRTC::now()
             buffer[i] = Wire.read();
         }
 
-        return DateTime(bcd2bin(buffer[6]) + 2000U, 
+        return DateTime(bcd2bin(buffer[6]) + 2000U,
                         bcd2bin(buffer[5] & 0x7F),
-                        bcd2bin(buffer[4]), 
-                        bcd2bin(buffer[2]), 
+                        bcd2bin(buffer[4]),
+                        bcd2bin(buffer[2]),
                         bcd2bin(buffer[1]),
                         bcd2bin(buffer[0] & 0x7F));
     }
