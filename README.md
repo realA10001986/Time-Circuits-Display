@@ -12,7 +12,7 @@ https://circuitsetup.us/product/complete-time-circuits-display-kit/
 During August of 2022, I have re-written almost the entire code. New features and changes include
 - Time keeping via NTP (network time) or stand-alone
 - "Present time" is always a clock (not stale), even after time travel
-- Correct clocking for years 1-9999, including leap years
+- Clocking for years 1-9999, including leap years, based on Gregorian Calendar (which fictitiously is assumed to be valid since year 1; the Julian Calendar is not supported)
 - Support for time zones and automatic DST (in NTP-mode only)
 - Option to make time travels persistent over reboots
 - Movie-accurate time travel times in "decorative mode" (automatic time cycling)
