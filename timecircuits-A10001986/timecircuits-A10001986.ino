@@ -63,8 +63,32 @@
  * optional. See Changelog entry 2022/08/25 and README.md)
  */
 
-/* Changelog
+/*  Changelog
  *
+ *  2022/10/11 (A10001986)
+ *    - IMPORTANT BUGFIX: Due to some (IMHO) compiler idiocy and my sloppyness, in 
+ *      this case presenting itself in trusting Serial output instead of checking 
+ *      the actual result of a function, the entire leap-year-detection was de-funct. 
+ *      IOW: The clock didn't support leap years for time travels and some other
+ *      functions.
+ *    - New and now centralized logic to keep RTC within its supported time span 
+ *      when we and our descendants cross over to 2100 or fun loving folks set their 
+ *      RTC to years <1900 or >2099.
+ *    - Throw out more unused code from DateTime class
+ *    - Use Sakamoto's method for day-of-week determination
+ *    - Clarification: The clock only supports the Gregorian Calendar, of which it
+ *      pretends to have been used since year 1. The Julian Calendar is not taken
+ *      into account. As a result, some years that, in the Julian Calendar, were leap 
+ *      years between years 1 and 1582 in most of today's Europe, 1700 in DK/NO/NL
+ *      (except Holland and Zeeland), 1752 in the British Empire, 1753 in Sweden, 
+ *      1760 in Lorraine, 1872 in Japan, 1912 in China, 1915 in Bulgaria, 1917 in 
+ *      the Ottoman Empire, 1918 in Russia and Serbia and 1923 in Greece, are 
+ *      normal years in the Gregorian one. As a result, dates do not match in those 
+ *      two calender systems, the Julian calendar is currently 13 days behind. 
+ *      I wonder if Doc's TC took all this into account. Then again, he wanted to
+ *      see Christ's birth on Dec 25, 0. Luckily, he didn't actually try to travel
+ *      to that date. Assuming a negative roll-over, he might have ended up in
+ *      eternity.
  *  2022/10/08 (A10001986)
  *    - Integrate cut-down version of RTCLib's DateTime to reduce bloat
  *    - Remove RTCLib dependency; add native RTC support for DS3231 and PCF2129 RTCs
@@ -308,6 +332,12 @@
  *    - Support for time zones and automatic DST
  *    - More stable sound playback
  *    - various bug fixes
+ *    
+ * Known issues:
+ * - time_t is 32bit, so NTP and GPS as time sources will have problems in the
+ *   years 2038 and on. Until 2099, this is worked-around in the code, but that
+ *   is no looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooog
+ *   term solution.
  */
 
 #include <Arduino.h>

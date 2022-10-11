@@ -2,12 +2,12 @@
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
  * (C) 2022 Thomas Winischhofer (A10001986)
- * DateTime part: Copyright (C) 2019 Adafruit Industries
+ * DateTime part: Based on code Copyright (C) 2019 Adafruit Industries
  * 
  * DS3231/PCF2129 RTC handling and DateTime Class
  * 
- * Note: DateTime mirrors the features of RTC; 
- * this means it only works for dates from 2000 to 2099.
+ * Note: DateTime mirrors the features of RTC; it only works for
+ * dates from 1/1/2000 to 31/12/2099.
  * 
  * DateTime is a cut-down and customized fork of Adafruit's RTClib
  * The original version can be found here:
@@ -52,106 +52,103 @@
 #define PCF2129_ALARM     0x0A // Alarm
 #define PCF2129_CLKCTRL   0x0F // CLK Control
 
-// Other definitions
-#define SECONDS_PER_DAY   86400L 
-
 
 /*****************************************************************
  * DateTime Class
  * 
- * Simple general-purpose date/time class 
+ * Rudimentary general-purpose date/time class 
  * (no TZ / DST / leap seconds).
+ * 
+ * Used as a vehicle to pass date between functions only; all
+ * other features have been removed.
+ * 
  * Supports dates in the range from 1 Jan 2000 to 31 Dec 2099.
  ****************************************************************/
-
-const uint8_t daysInMonth[] = {31, 28, 31, 30, 31, 30,
-                               31, 31, 30, 31, 30};
 
 /*
  * Given a date, return number of days since 2000/01/01,
  * valid for 2000-2099
  */
-static uint16_t date2days(uint16_t y, uint8_t m, uint8_t d) 
+/* 
+static uint16_t date2days(uint16_t yr, uint8_t mo, uint8_t da)
 {
-    if(y >= 2000U)
-        y -= 2000U;
-    
-    uint16_t days = d;
-    
-    for(uint8_t i = 1; i < m; ++i)
-        days += daysInMonth[ + i - 1];
-    
-    if((m > 2) && (y % 4 == 0))
-        ++days;
-        
-    return days + (365 * y) + ((y + 3) / 4) - 1;
-}
+    const uint16_t daysToMonth[] = {
+          0,  31,  59,  90, 120, 151,
+        181, 212, 243, 273, 304, 334
+    };
 
-/*
- * Num of seconds from number of days, hours, minutes, and seconds
- * 
- */
-static uint32_t time2ulong(uint16_t days, uint8_t h, uint8_t m, uint8_t s) 
-{
-    return((days * 24UL + h) * 60 + m) * 60 + s;
+    uint16_t days = da + daysToMonth[mo-1];
+    
+    if(yr >= 2000U)
+        yr -= 2000U;
+
+    if((yr % 4 == 0) && (mo > 2))
+        days++;
+
+    return days + (365 * yr) + ((yr + 3) / 4) - 1;
 }
+*/
 
 /*
  * Convert a string containing two digits to uint8_t
  */
-static uint8_t conv2d(const char *p) 
+static uint8_t conv2d(const char *p)
 {
     uint8_t v = 0;
-    
-    if('0' <= *p && *p <= '9')
-        v = *p - '0';
 
-    return 10 * v + *++p - '0';
+    if(*p >= '0' && *p <= '9')
+        v = (*p - '0') * 10;
+
+    return v + (*++p - '0');
 }
 
 /*
- * Constructor from Unix time
- * (Time elapsed in seconds since 1970-01-01 00:00:00)
+ * Convert 3-letter-month to numerical
  */
-DateTime::DateTime(uint32_t t) 
+static uint8_t convMS2m(const char *date)
 {
-    t -= SECONDS_FROM_1970_TO_2000; // bring to 2000 timestamp from 1970
+    // Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
+    switch(date[0]) {
+    case 'J':
+        return (date[1] == 'a') ? 1 : ((date[2] == 'n') ? 6 : 7);
+    case 'F':
+        return 2;
+    case 'M':
+        return date[2] == 'r' ? 3 : 5;
+    case 'A':
+        return date[2] == 'r' ? 4 : 8;
+    case 'S':
+        return 9;
+    case 'O':
+        return 10;
+    case 'N':
+        return 11;
+    }
+    return 12;
+}
 
-    ss = t % 60;
-    t /= 60;
-    mm = t % 60;
-    t /= 60;
-    hh = t % 24;
-    uint16_t days = t / 24;
-    uint8_t leap;
-    
-    for(yOff = 0;; ++yOff) {
-        leap = yOff % 4 == 0;
-        if(days < 365U + leap)
-            break;
-        days -= 365 + leap;
-    }
-    
-    for(m = 1; m < 12; ++m) {
-        uint8_t daysPerMonth = pgm_read_byte(daysInMonth + m - 1);
-        if(leap && m == 2)
-            ++daysPerMonth;
-        if(days < daysPerMonth)
-            break;
-        days -= daysPerMonth;
-    }
-    
-    d = days + 1;
+/*
+ * Constructor for empty DateTime object (1-Jan-2000 00:00)
+ */
+DateTime::DateTime()
+{
+    yOff = 0;
+    m = 1;
+    d = 1;
+    hh = 0;
+    mm = 0;
+    ss = 0;
 }
 
 /*
  * Constructor from (year, month, day, hour, minute, second) 
  */
-DateTime::DateTime(uint16_t year, uint8_t month, uint8_t day, uint8_t hour,
-                   uint8_t min, uint8_t sec) 
+DateTime::DateTime(uint16_t year, uint8_t month, uint8_t day,
+                   uint8_t  hour, uint8_t min,   uint8_t sec)
 {
     if(year >= 2000U)
         year -= 2000U;
+        
     yOff = year;
     m = month;
     d = day;
@@ -160,7 +157,41 @@ DateTime::DateTime(uint16_t year, uint8_t month, uint8_t day, uint8_t hour,
     ss = sec;
 }
 
-/* 
+/*
+ * Constructor for generating the build time
+ * from strings
+ */
+DateTime::DateTime(const char *date, const char *time)
+{
+    yOff = conv2d(date + 9);
+    m = convMS2m(date);
+    d  = conv2d(date + 4);
+    hh = conv2d(time);
+    mm = conv2d(time + 3);
+    ss = conv2d(time + 6);
+}
+
+/*
+ * Constructor for generating the build time
+ * from __FlashStringHelper strings
+ * 
+ * DateTime buildTime(F(__DATE__), F(__TIME__));
+ */
+DateTime::DateTime(const __FlashStringHelper *date,
+                   const __FlashStringHelper *time) 
+{
+    char buff[11];
+    memcpy_P(buff, date, 11);
+    yOff = conv2d(buff + 9);
+    m = convMS2m((const char *)buff);
+    d = conv2d(buff + 4);
+    memcpy_P(buff, time, 8);
+    hh = conv2d(buff);
+    mm = conv2d(buff + 3);
+    ss = conv2d(buff + 6);
+}
+
+/*
  *  Copy constructor
  */
 DateTime::DateTime(const DateTime &copy)
@@ -172,198 +203,20 @@ DateTime::DateTime(const DateTime &copy)
       ss(copy.ss) {}
 
 /*
- * Constructor for generating the build time
- */
-DateTime::DateTime(const char *date, const char *time) 
-{
-    yOff = conv2d(date + 9);
-    // Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
-    switch(date[0]) {
-    case 'J':
-        m = (date[1] == 'a') ? 1 : ((date[2] == 'n') ? 6 : 7);
-        break;
-    case 'F':
-        m = 2;
-        break;
-    case 'A':
-        m = date[2] == 'r' ? 4 : 8;
-        break;
-    case 'M':
-        m = date[2] == 'r' ? 3 : 5;
-        break;
-    case 'S':
-        m = 9;
-        break;
-    case 'O':
-        m = 10;
-        break;
-    case 'N':
-        m = 11;
-        break;
-    case 'D':
-        m = 12;
-        break;
-    }
-    d  = conv2d(date + 4);
-    hh = conv2d(time);
-    mm = conv2d(time + 3);
-    ss = conv2d(time + 6);
-}
-
-/*
- * Memory friendly constructor for generating the build time
- * 
- * DateTime buildTime(F(__DATE__), F(__TIME__));
- */
-DateTime::DateTime(const __FlashStringHelper *date,
-                   const __FlashStringHelper *time) 
-{
-    char buff[11];
-    memcpy_P(buff, date, 11);
-    yOff = conv2d(buff + 9);
-    // Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
-    switch (buff[0]) {
-    case 'J':
-        m = (buff[1] == 'a') ? 1 : ((buff[2] == 'n') ? 6 : 7);
-        break;
-    case 'F':
-        m = 2;
-        break;
-    case 'A':
-        m = buff[2] == 'r' ? 4 : 8;
-        break;
-    case 'M':
-        m = buff[2] == 'r' ? 3 : 5;
-        break;
-    case 'S':
-        m = 9;
-        break;
-    case 'O':
-        m = 10;
-        break;
-    case 'N':
-        m = 11;
-        break;
-    case 'D':
-        m = 12;
-      break;
-    }
-    d = conv2d(buff + 4);
-    memcpy_P(buff, time, 8);
-    hh = conv2d(buff);
-    mm = conv2d(buff + 3);
-    ss = conv2d(buff + 6);
-}
-
-/* 
- *  Constructor for creating a DateTime from an ISO8601 date string
- *  
- *  "2020-06-25T15:29:37"
- */
-DateTime::DateTime(const char *iso8601dateTime) 
-{
-    char ref[] = "2000-01-01T00:00:00";
-
-    memcpy(ref, iso8601dateTime, min(strlen(ref), strlen(iso8601dateTime)));
-    yOff = conv2d(ref + 2);
-    m  = conv2d(ref + 5);
-    d  = conv2d(ref + 8);
-    hh = conv2d(ref + 11);
-    mm = conv2d(ref + 14);
-    ss = conv2d(ref + 17);
-}
-
-/* 
- *  Check whether this DateTime is valid.
- */
-bool DateTime::isValid() const 
-{
-    if(yOff >= 100)
-        return false;
-      
-    DateTime other(unixtime());
-    
-    return yOff == other.yOff && 
-           m == other.m && 
-           d == other.d && 
-           hh == other.hh &&
-           mm == other.mm && 
-           ss == other.ss;
-}
-
-/*
- * Return week day (0=Sun)
+ * Return weekday (0=Sun)
  */
 uint8_t DateTime::dayOfTheWeek() const 
 {
-    uint16_t day = date2days(yOff, m, d);
+    const int t[] = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
+    int y = yOff + 2000;
+    if(m < 3) y -= 1;
+    return (y + y/4 - y/100 + y/400 + t[m-1] + d) % 7;
 
-    // Jan 1, 2000 was a Saturday
-    return (day + 6) % 7; 
+    //uint16_t day = date2days(yOff, m, d);
+    // Jan 1, 2000 was a Saturday, so that's our offset
+    //return (day + 6) % 7; 
 }
 
-/*
- * Return Unix time: seconds since 1 Jan 1970.
- */ 
-uint32_t DateTime::unixtime(void) const 
-{
-    uint32_t t;
-    uint16_t days = date2days(yOff, m, d);
-
-    t = time2ulong(days, hh, mm, ss);
-    t += SECONDS_FROM_1970_TO_2000;
-
-    return t;
-}
-
-/* 
- *  Test if one DateTime is less (earlier) than another
- */
-bool DateTime::operator<(const DateTime &right) const 
-{
-    return (yOff + 2000U < right.year() ||
-            (yOff + 2000U == right.year() &&
-              (m < right.month() ||
-                (m == right.month() &&
-                  (d < right.day() ||
-                    (d == right.day() &&
-                      (hh < right.hour() ||
-                        (hh == right.hour() &&
-                          (mm < right.minute() ||
-                            (mm == right.minute() && ss < right.second()))))))))));
-}
-
-/*
- * Test if two DateTime objects are equal.
- */
-bool DateTime::operator==(const DateTime &right) const 
-{
-  return (right.year() == yOff + 2000U && right.month() == m &&
-          right.day() == d && right.hour() == hh && right.minute() == mm &&
-          right.second() == ss);
-}
-
-/*
- * Return a ISO 8601 timestamp as a 'String' object
- */
-String DateTime::timestamp(timestampOpt opt) const 
-{
-    char buffer[25]; // large enough for any DateTime, including invalid ones
-
-    // Generate timestamp according to opt
-    switch (opt) {
-    case TIMESTAMP_TIME:
-        sprintf(buffer, "%02d:%02d:%02d", hh, mm, ss);
-        break;
-    case TIMESTAMP_DATE:
-        sprintf(buffer, "%u-%02d-%02d", 2000U + yOff, m, d);
-        break;
-    default:
-        sprintf(buffer, "%u-%02d-%02dT%02d:%02d:%02d", 2000U + yOff, m, d, hh, mm, ss);
-    }
-
-    return String(buffer);
-}
 
 /****************************************************************
  * tcRTC Class for DS3231/PCF2129
@@ -410,9 +263,12 @@ bool tcRTC::begin()
 }
 
 /*
- * Set the date/time
+ * Set the date/time from DateTime object
+ * 
+ * - Only years 2000-2099
+ * - doW is calculated from object
  *
- * (dayOfWeek: 0=Sun..6=Sat)
+ * (year: 2000-2099; dayOfWeek: 0=Sun..6=Sat)
  */
 void tcRTC::adjust(const DateTime &dt)
 {
@@ -425,6 +281,14 @@ void tcRTC::adjust(const DateTime &dt)
            dt.year() - 2000U);
 }
 
+/*
+ * Set the date/time from individual elements
+ * 
+ * - Only years 2000-2099
+ * - Allows independent calculation of dayOfWeek
+ *
+ * (year: 0-99; dayOfWeek: 0=Sun..6=Sat)
+ */
 void tcRTC::adjust(byte second, byte minute, byte hour, byte dayOfWeek, byte dayOfMonth, byte month, byte year)
 {
     uint8_t buffer[8];
@@ -474,6 +338,23 @@ void tcRTC::adjust(byte second, byte minute, byte hour, byte dayOfWeek, byte day
         write_register(DS3231_STATUS, statreg);
         break;
     }
+
+    #ifdef TC_DBG
+    Serial.print("RTC: Adjusted to ");
+    Serial.print(dayOfMonth, DEC);
+    Serial.print("-");
+    Serial.print(month, DEC);
+    Serial.print("-");
+    Serial.print(year+2000, DEC);
+    Serial.print(" ");
+    Serial.print(hour, DEC);
+    Serial.print(":");
+    Serial.print(minute, DEC);
+    Serial.print(":");
+    Serial.print(second, DEC);
+    Serial.print(" ");
+    Serial.println(dayOfWeek);
+    #endif
 }
 
 /*
@@ -620,8 +501,10 @@ float tcRTC::getTemperature()
         Wire.write(DS3231_TEMP); 
         Wire.endTransmission();
         Wire.requestFrom(_address, (uint8_t)2);
+        buffer[0] = Wire.read();
+        buffer[1] = Wire.read();
   
-        return (float)buffer[0] + (buffer[1] >> 6) * 0.25f;
+        return (float)buffer[0] + (float)(buffer[1] >> 6) * 0.25f;
     }
 
     return 0.0f;

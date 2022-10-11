@@ -128,6 +128,7 @@ class clockDisplay {
         uint8_t getDay();
         int16_t getYearOffset();
         uint16_t getYear();
+        uint16_t getDisplayYear();
         uint8_t getHour();
         uint8_t getMinute();
 

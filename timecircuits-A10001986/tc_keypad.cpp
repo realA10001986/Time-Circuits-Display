@@ -458,22 +458,22 @@ void keypad_loop()
                 }
 
                 // year: 1-9999 allowed. There is no year "0", for crying out loud.
-                if(_setYear < 1)    _setYear = 1;
+                if(_setYear < 1) _setYear = 1;
 
                 spTmp = (uint32_t)_setYear << 16 | _setMonth << 8 | _setDay;
-                if((spTmp ^ getHrs1KYrs(7)) == 70880781) {
+                if((spTmp ^ getHrs1KYrs(7)) == 70659877) {
                     special = 1;
                     spTxt[EE1_KL1] = '\0';
                     for(int i = EE1_KL1-1; i >= 0; i--) {
                         spTxt[i] = spTxtS1[i] ^ (i == 0 ? 0xff : spTxtS1[i-1]);
                     }
-                } else if((spTmp ^ getHrs1KYrs(8)) == 59652301)  {
+                } else if((spTmp ^ getHrs1KYrs(8)) == 59695765)  {
                     if(_setHour >= 9 && _setHour <=11) {
                         special = 2;
                     }
-                } else if((spTmp ^ getHrs1KYrs(6)) == 97637962)  {
+                } else if((spTmp ^ getHrs1KYrs(6)) == 97676954)  {
                     special = 3;
-                } else if((spTmp ^ getHrs1KYrs(8)) == 65811679)  {
+                } else if((spTmp ^ getHrs1KYrs(8)) == 65859207)  {
                     special = 4;
                 }
             }
