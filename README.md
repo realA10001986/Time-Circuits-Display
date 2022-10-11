@@ -12,7 +12,7 @@ https://circuitsetup.us/product/complete-time-circuits-display-kit/
 During August of 2022, I have re-written almost the entire code. New features and changes include
 - Time keeping via NTP (network time) or stand-alone
 - "Present time" is always a clock (not stale), even after time travel
-- Clocking for years 1-9999, including leap years, based on Gregorian Calendar (which fictitiously is assumed to be valid since year 1; the Julian Calendar is not supported)
+- Clocking for years 1-9999, including leap years, based on Gregorian Calendar
 - Support for time zones and automatic DST (in NTP-mode only)
 - Option to make time travels persistent over reboots
 - Movie-accurate time travel times in "decorative mode" (automatic time cycling)
@@ -82,6 +82,8 @@ If you don't have WiFi access, you can set the time through the keypad menu, see
 *Destination time* and *Last time departed* are stale. These, by default, work like in the movie: Upon a time travel, "present time" becomes "last time departed", and "destination time" becomes "present time". 
 
 There is also a "decorative" mode where the device cycles through a list of pre-programmed "destination" and "last time departed" times. This mode is chosen by setting the "Time-rotation Interval" in the config portal (via network) or the keypad menu to a non-zero value. The device will then cycle through named list every 5th, 10th, 15th, 30th or 60th minute, and thereby change the displays, regardless of times displayed as a result from a time travel. Set the interval to 0 to disable this "decorative" mode.
+[
+The clock only supports the [Gregorian Calendar](https://en.wikipedia.org/wiki/Gregorian_calendar), of which it pretends to have been used since year 1. The [Julian Calendar](Julian calendar) is not taken into account. As a result, some years that were leap years between years 1 and 1582 in most of today's Europe, 1700 in DK/NO/NL(except Holland and Zeeland), 1752 in the British Empire, 1753 in Sweden, 1760 in Lorraine, 1872 in Japan, 1912 in China, 1915 in Bulgaria, 1917 in the Ottoman Empire, 1918 in Russia and Serbia and 1923 in Greece, in the Julian Calendar, are normal years in the Gregorian one. As a result, dates do not match in those two calender systems, the Julian calendar is currently 13 days behind. I wonder if Doc's TC took all this into account. (Then again, he wanted to see Christ's birth on Dec 25, 0. Luckily, he didn't actually try to travel to that date. Assuming a negative roll-over, he might have ended up in eternity.)
 
 ## Time travel
 
