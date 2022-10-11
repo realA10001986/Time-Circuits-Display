@@ -59,8 +59,8 @@
 #define GPS_ADDR       0x10 // i2C address of GPS receiver
 #define TEMP_ADDR      0x18 // i2C address of temperature sensor
 
-#define PCF2129_ADDR   0x51 // i2C address of PCF2129 RTC
 #define DS3231_ADDR    0x68 // i2C address of DS3231 RTC
+#define PCF2129_ADDR   0x51 // i2C address of PCF2129 RTC
 
 // The time between reentry sound being started and the display coming on
 // Must be sync'd to the sound file used! (startup.mp3/timetravel.mp3)
@@ -102,6 +102,8 @@ extern bool           alarmOnOff;
 extern uint8_t        alarmHour;
 extern uint8_t        alarmMinute;
 
+extern uint16_t       lastYear;
+
 extern clockDisplay destinationTime;
 extern clockDisplay presentTime;
 extern clockDisplay departedTime;
@@ -133,10 +135,11 @@ extern bool checkTimeOut();
 extern bool isLeapYear(int year);
 extern int  daysInMonth(int month, int year);
 extern DateTime myrtcnow();
-
 extern uint64_t dateToMins(int year, int month, int day, int hour, int minute);
 extern void minsToDate(uint64_t total, int& year, int& month, int& day, int& hour, int& minute);
 extern uint32_t getHrs1KYrs(int index);
+uint8_t dayOfWeek(int d, int m, int y);
+extern void correctYr4RTC(uint16_t& year, int16_t& offs);
 
 #ifdef FAKE_POWER_ON
 void fpbKeyPressed();

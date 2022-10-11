@@ -347,22 +347,18 @@ void enter_menu()
                 // Update RTC and fake year if neccessary
                 // see comments in tc_time.cpp
 
-                int tyr = yearSet, tyroffs = 0;
-                if(tyr < 2000) {
-                    while(tyr < 2000) {
-                        tyr += 28;
-                        tyroffs += 28;
-                    }
-                } else if(tyr > 2050) {
-                    while(tyr > 2050) {
-                        tyr -= 28;
-                        tyroffs -= 28;
-                    }
-                }
+                uint16_t newYear = yearSet;
+                int16_t tyroffs = 0;
+
+                // Get RTC-fit year plus offs for given real year
+                correctYr4RTC(newYear, tyroffs);
 
                 displaySet->setYearOffset(tyroffs);
 
-                rtc.adjust(DateTime(tyr, monthSet, daySet, hourSet, minSet, 0));
+                rtc.adjust(0, minSet, hourSet, dayOfWeek(daySet, monthSet, yearSet), daySet, monthSet, newYear-2000U);
+
+                // Avoid immediate re-adjustment in time_loop
+                lastYear = yearSet;
 
                 // Resetting the RTC invalidates our timeDifference, ie
                 // fake present time. Make the user return to present

@@ -164,7 +164,7 @@ bool clockDisplay::isRTC()
 // Set the displayed time with supplied DateTime object, ignores timeDifference
 void clockDisplay::setDateTime(DateTime dt)
 {
-    // ATTN: DateTime implemention does not work for years < 2000!
+    // ATTN: DateTime implemention does not work for years < 2000, > 2099!
 
     setYear(dt.year());
     setMonth(dt.month());
@@ -256,15 +256,21 @@ void clockDisplay::showAnimate2()
 void clockDisplay::setYearOffset(int16_t yearOffs)
 {
     _yearoffset = yearOffs;
+    #ifdef TC_DBG
+    Serial.print("ClockDisplay: _yearoffset set to ");
+    Serial.println(yearOffs, DEC);
+    #endif
 }
 
 // Place LED pattern in year position in buffer
 void clockDisplay::setYear(uint16_t yearNum)
 {
-    if(yearNum < 1) {
+    if(yearNum - _yearoffset < 1) {
         Serial.print(F("Clockdisplay: setYear: Bad year: "));
-        Serial.println(yearNum, DEC);
-        yearNum = 1;
+        Serial.print(yearNum, DEC);
+        Serial.print(F(" / yearoffset: "));
+        Serial.println(_yearoffset, DEC);
+        yearNum = _yearoffset + 1;
     }
 
     _year = yearNum;
@@ -399,6 +405,11 @@ int16_t clockDisplay::getYearOffset()
 uint16_t clockDisplay::getYear()
 {
     return _year;
+}
+
+uint16_t clockDisplay::getDisplayYear()
+{
+    return _year - _yearoffset;
 }
 
 uint8_t clockDisplay::getHour()
