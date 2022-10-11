@@ -365,6 +365,10 @@ void enter_menu()
                 // time after setting the RTC
                 timeDifference = 0;
 
+                // 'newYear' is the year to write to display
+                // (where it is corrected by subtracting tyroffs)
+                yearSet = newYear;
+
             } else {
 
                 // Non-RTC: Setting a static display, turn off autoInverval
