@@ -35,7 +35,7 @@
 #define TC_VERSION_EXTRA "10232022"   // 12 chars max
 #endif
 
-#define TC_DBG            // debug output on Serial
+//#define TC_DBG            // debug output on Serial
 
 /*************************************************************************
  ***                 Configuration for peripherals                     ***
@@ -104,7 +104,7 @@
 
 // Custom stuff -----
 #define TWSOUND         // Use A10001986's sound files
-#define TWPRIVATE     // A10001986's private customizations
+//#define TWPRIVATE     // A10001986's private customizations
 
 #ifdef TWPRIVATE
 #undef TC_VERSION
