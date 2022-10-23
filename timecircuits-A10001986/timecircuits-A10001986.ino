@@ -48,23 +48,46 @@
  * - ESP8266Audio: https://github.com/earlephilhower/ESP8266Audio
  *   (1.9.7 and later for esp32-arduino 2.x; 1.9.5 for 1.x)
  * - WifiManager (tablatronix, tzapu; v0.16 and later) https://github.com/tzapu/WiFiManager
- *   (Tested with 2.1.12beta)
+ *   (Tested with 2.1.13beta)
  * - Keypad ("by Community; Mark Stanley, Alexander Brevig): https://github.com/Chris--A/Keypad
  *   (Tested with 3.1.1)
- *
- * This program needs "-std=gnu++11". If you are using PlatformIO, please check
- * this.
  *
  * Detailed installation and compilation instructions are here:
  * https://github.com/CircuitSetup/Time-Circuits-Display/wiki/Programming-the-ESP32-Module
  * See here for info on the data uploader (for sound files):
  * https://randomnerdtutorials.com/install-esp32-filesystem-uploader-arduino-ide/
  * (The sound files can also be uploaded using an SD card, so the uploader is
- * optional. See Changelog entry 2022/08/25 and README.md)
+ * optional. There is a built-in installer in the firmware, see Changelog entry 2022/08/25 
+ * and README.md)
  */
 
 /*  Changelog
  *
+ *  2022/10/14-23 (A10001986)
+ *    - Fix time travel with speedo: Added forgotten code after re-write.
+ *    - Added support for MTK3333 based GPS receivers connected through i2c. These
+ *      can act as a source of authoritative time (just like NTP), as well as for
+ *      calculating current speed, to be displayed on a speedo display (which only
+ *      really makes sense in a car/boat/whatevermoves).
+ *    - Due to the system's time library's inability to handle some time zones
+ *      correctly (eg Lord Howe and Iran) and its unawareness of the well-known facts  
+ *      that NTP will roll-over in 2036 and unix time in 2038 (for which the system 
+ *      as it stands is not prepared and will fail), all ties with time library were 
+ *      cut, and a completely native time system was implemented, handling NTP/GPS, 
+ *      time zones and DST calculation all by itself.
+ *      This allows using this firmware with correct clocking until the year 9999 
+ *      (at which point it rolls over to 1), with NTP support until around
+ *      2150. Also, DST is now automatically switched in stand-alone mode
+ *      (ie without NTP or GPS).
+ *      For all this to work, it is essential that the user configures his time
+ *      zone in the Config Portal, and, for GPS and stand-alone, adjusts the TC's
+ *      RTC (real time clock) to current local time using the keypad menu.
+ *    - General cleanup (declarations, header files, etc)
+ *  2022/10/13 (A10001986)
+ *    - Implement own DST management (TZ string parsing, DST time adjustments)
+ *      This system is only active, if no authoritative time source is available.
+ *      As long as NTP or GPS deliver time, we rely on their assessments.
+ *    - Clean up declarations & definitions all over
  *  2022/10/11 (A10001986)
  *    - IMPORTANT BUGFIX: Due to some (IMHO) compiler idiocy and my sloppyness, in 
  *      this case presenting itself in trusting Serial output instead of checking 
@@ -76,6 +99,7 @@
  *      RTC to years <1900 or >2099.
  *    - Throw out more unused code from DateTime class
  *    - Use Sakamoto's method for day-of-week determination
+ *    - Fix tcRTC.getTemperature() (only used in debug mode)
  *    - Clarification: The clock only supports the Gregorian Calendar, of which it
  *      pretends to have been used since year 1. The Julian Calendar is not taken
  *      into account. As a result, some years that, in the Julian Calendar, were leap 
@@ -332,25 +356,25 @@
  *    - Support for time zones and automatic DST
  *    - More stable sound playback
  *    - various bug fixes
- *    
- * Known issues:
- * - time_t is 32bit, so NTP and GPS as time sources will have problems in the
- *   years 2038 and on. Until 2099, this is worked-around in the code, but that
- *   is no looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooog
- *   term solution.
+ *
  */
 
+#include "tc_global.h"
+
 #include <Arduino.h>
-#include "clockdisplay.h"
+#include <Wire.h>
+
 #include "tc_audio.h"
 #include "tc_keypad.h"
 #include "tc_menus.h"
+#include "tc_settings.h"
 #include "tc_time.h"
 #include "tc_wifi.h"
-#include "tc_settings.h"
 
 void setup()
 {
+    powerupMillis = millis();
+  
     Serial.begin(115200);
 
     // PCF8574 only supports 100kHz, can't go to 400 here.
@@ -375,6 +399,9 @@ void loop()
 {
     keypad_loop();
     get_key();
+    #ifndef OLDNTP
+    ntp_loop();
+    #endif
     time_loop();
     wifi_loop();
     audio_loop();
