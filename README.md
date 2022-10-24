@@ -70,7 +70,7 @@ If you want to re-use the SD card for substituting the default sound files, plea
 - Using your computer or handheld device, connect to the AP and go to http://192.168.4.1 in your browser to enter the Config Portal, click on "Configure WiFi" and configure your Wifi network. Note that the device expects an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). (If the device is inaccessible as a result of wrong static IPs, hold ENTER when powering it up until the white LED lits; static IP data will be deleted and the device will return to DHCP.)
 - After saving the WiFi network settings, the device reboots and tries to connect to your configured WiFi network. If it fails to connect to your network, the device will again start in access point mode. 
 - Next, if DHCP is used, find out about the IP address assigned to the device. Hold ENTER on the keypad for 2 seconds, then repeatedly press ENTER until "NET-WORK" is shown, then hold ENTER for 2 seconds. The device will then show its current IP address.
-- Then re-open the config portal in your browser using this IP address, and configure other settings on the "Setup" page, first and foremost NTP server and time zone. A list of valid times zones is accessible by a link on the settings page. If the time zone isn't set correctly, the clock will show a wrong time.
+- Then re-open the config portal in your browser using this IP address, and configure other settings on the "Setup" page, first and foremost NTP server (if availabl) and your time zone. A list of valid times zones is accessible by a link on the settings page. If the time zone isn't set correctly, the clock will show a wrong time and DST (daylight saving) will not be switched on/off correctly.
 
 There are two ways of configuring the device: Through the aforementioned Config Portal (ie the network), or the keypad menu, as described [further below](#the-keypad-menu). Not all settings, however, are configurable in both.
 
@@ -154,7 +154,7 @@ Pressing ENTER cycles through the list, holding ENTER selects an item, ie a mode
 - Data entry works as follows: If you want to keep the currently shown pre-set, press ENTER to proceed to next field. Otherwise press a digit on the keypad; the pre-set is then overwritten by the value entered. 2 digits can be entered (4 for years), upon which the current value is stored and the next field is activated. You can also enter less than 2/4 digits and press ENTER when done with the field. Note that the month needs to be entered numerically (1-12), and the hour needs to be entered in 24 hour mode, regardless of 12-hour or 24-hour mode as per the Config Portal setting.
 - After entering data into all fields, the data is saved and the menu is left automatically.
 - Note that when entering dates/times into the *destination time* or *last time departed* displays, the Time-rotation Interval is automatically set to 0. Your entered date/time(s) are shown until overwritten by time travels (see below, section "How to select the Time-rotation Interval").
-- By entering a date/time into the *present time* display, the RTC (real time clock) of the device is adjusted, which is useful if you can't use NTP for time keeping. Always set the real actual present time here; if you want to display some other time, use the Time Travel function. Note: The time you entered will be overwritten if/when the device has access to network time via NTP.
+- By entering a date/time into the *present time* display, the RTC (real time clock) of the device is adjusted, which is useful if you can't use NTP for time keeping, and really helpful when using GPS. Always set the real actual present time here; if you want to display some other time, use the Time Travel function. Note: The time you entered will be overwritten if/when the device has access to network time via NTP or GPS. For DST (daylight saving) and GPS, it is essential that you also set the correct time zone in the Config Portal.
 
 #### How to set the audio volume:
 
@@ -287,14 +287,17 @@ Unless you do time travelling on a regular basis, the speedo display is idle mos
 
 ## GPS receiver
 
-The firmware supports an MT(K)3333-based GPS receiver, connected through i2c. The CircuitSetup-designed speedo display will have such a chip built-in, but since this gadget is not yet available, in the meantime, alternatives can be used, such as the Adafruit Mini GPS PA1010D (product id 4415). The GPS receiver can be used both as a source of authoritative time (like NTP), or display speed of movement on a speedo display. The latter only really makes sence in a car or boad, anthing that moves.
+The firmware supports an MT(K)3333-based GPS receiver, connected through i2c. The CircuitSetup-designed speedo display will have such a chip built-in, but since this gadget is not yet available, in the meantime, you can fall back to alternatives such as the Adafruit Mini GPS PA1010D (product id 4415). The GPS receiver can be used both as a source of authoritative time (like NTP), or display speed of movement on a speedo display. The latter only really makes sense in a car or boat, anything that moves.
 
-#GPS as a source for time
+GPS receivers receive signals from satellites, but in order to do so, they need to be "tuned in" (aka get a "fix"). This "tuning" process can take a long time; after first power up, it can take 30 minutes or more for a receiver to be able to determine its position. In order to speed up this process, modern GPS receivers have special "assisting" features. One key element is knowledge of current time, as this helps identifying satellite signals quicker. So, in other words, initially, you need to tell the receiver, what it is supposed to tell you. However, as soon as the receiver has received satellite signals for 15-20 minutes, it saves the data it collected to its battery-backed memory and will find a fix within seconds after power-up in the future.
 
-The seemingly odd thing about GPS if used as a source for accurate time is that the GPS receiver needs to know more or less accurate time before it can connect to the satellite signal. It is therefore essential, that the user sets the TimeCicuit's RTC (real time clock) to correct local time, and defines the correct time zone in the Config Portal.
+For using GPS effectively as a long term source of accurate time, it is therefore essential, that 
+- the TimeCicuit's RTC (real time clock) is initially set to correct local time, 
+- the correct time zone is defined in the Config Portal,
+- the GPS receiver has a battery
+- and has been receiving data for 15-20 mins at least once a month.
 
-#GPS for speed
-todo
+If/as long as the GPS receiver has a fix and receives data from satellites, the dot in the present time's year field is lit.
 
 ## WiFi power saving features
 
