@@ -281,13 +281,9 @@ The speedo display shown in this video is based on a fairly well-designed stand-
 
 Since the I2C bus is already quite long from the control board to the last display in the chain, I recommend soldering another JST XH 4pin plug onto the control board (there are two additional i2c break-outs available), and to connect the speedometer there.
 
-## Temperature sensor
-
-Unless you do time travelling on a regular basis, the speedo display is idle most of the time in a typical home setup. To give it more of a purpose, the software supports connecting a MCP9808-based temperature sensor to the i2c bus (readily available from Adafruit, product number 1782). After connecting this sensor and enabling it in the Config Portal, the speedo display will show the ambient temperature in idle mode. (Note that you need a speedo display in order to use the temperature sensor.)
-
 ## GPS receiver
 
-The firmware supports an MT(K)3333-based GPS receiver, connected through i2c. The CircuitSetup-designed speedo display will have such a chip built-in, but since this gadget is not yet available, in the meantime, you can fall back to alternatives such as the Adafruit Mini GPS PA1010D (product id 4415). The GPS receiver can be used both as a source of authoritative time (like NTP), or display speed of movement on a speedo display. The latter only really makes sense in a car or boat, anything that moves.
+The firmware supports an MT(K)3333-based GPS receiver, connected through i2c. The CircuitSetup-designed speedo display will have such a chip built-in, but since this gadget is not yet available, in the meantime, you can fall back to alternatives such as the Adafruit Mini GPS PA1010D (product id 4415). The GPS receiver can be used both as a source of authoritative time (like NTP), or display speed of movement on a speedo display.
 
 GPS receivers receive signals from satellites, but in order to do so, they need to be "tuned in" (aka get a "fix"). This "tuning" process can take a long time; after first power up, it can take 30 minutes or more for a receiver to be able to determine its position. In order to speed up this process, modern GPS receivers have special "assisting" features. One key element is knowledge of current time, as this helps identifying satellite signals quicker. So, in other words, initially, you need to tell the receiver, what it is supposed to tell you. However, as soon as the receiver has received satellite signals for 15-20 minutes, it saves the data it collected to its battery-backed memory and will find a fix within seconds after power-up in the future.
 
@@ -298,6 +294,14 @@ For using GPS effectively as a long term source of accurate time, it is therefor
 - and has been receiving data for 15-20 mins at least once a month.
 
 If/as long as the GPS receiver has a fix and receives data from satellites, the dot in the present time's year field is lit.
+
+####GPS for speed
+
+One nice feature of GPS is that the receiver can deliver current speed of movement. If the Time Cicuits are, for instance, mounted in a car or on a boat, and a speedo display is connected, this display will be just that: A real speedometer.
+
+## Temperature sensor
+
+Unless you do time travelling on a regular basis, the speedo display is idle most of the time in a typical home setup. To give it more of a purpose, the software supports connecting a MCP9808-based temperature sensor to the i2c bus (readily available from Adafruit, product number 1782). After connecting this sensor and enabling it in the Config Portal, the speedo display will show the ambient temperature in idle mode. (Note that you need a speedo display in order to use the temperature sensor.)
 
 ## WiFi power saving features
 
