@@ -63,6 +63,11 @@
 
 /*  Changelog
  *
+ *  2022/10/24 (A10001986)
+ *    - Defer starting the Config Portal during boot: Starting with 2.0.13beta,
+ *      WiFiManager triggers an async WiFi Scan when the CP is started, which 
+ *      interferes with our NTP traffic during the boot process. Start CP after NTP 
+ *      is done.
  *  2022/10/14-23 (A10001986)
  *    - Fix time travel with speedo: Added forgotten code after re-write.
  *    - Added support for MTK3333 based GPS receivers connected through i2c. These

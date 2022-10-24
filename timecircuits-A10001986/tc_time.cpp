@@ -597,10 +597,10 @@ void time_setup()
 #else
     ntp_setup();
     if((settings.ntpServer[0] != 0) && (WiFi.status() == WL_CONNECTED)) {
-        int timeout = 200;
+        int timeout = 20;
         do {
             ntp_loop();
-            delay(10);
+            delay(100);
             timeout--;
         } while (!NTPHaveTime() && timeout);
     }
@@ -658,6 +658,13 @@ void time_setup()
     // Reset (persistent) time travel if RTC is bad and no NTP/GPS time
     if(rtcbad && !haveAuthTime) {
         timeDifference = 0;
+    }
+
+    // Start the Config Portal. Now is a good time, we had
+    // our NTP access, so a WiFiScan does not disturb anything
+    // at this point.
+    if(WiFi.status() == WL_CONNECTED) {
+        wifiStartCP();
     }
 
     // Load the time for initial animation show
