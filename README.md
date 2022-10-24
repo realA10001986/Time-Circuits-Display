@@ -295,7 +295,7 @@ For using GPS effectively as a long term source of accurate time, it is therefor
 
 If/as long as the GPS receiver has a fix and receives data from satellites, the dot in the present time's year field is lit.
 
-####GPS for speed
+#### GPS for speed
 
 One nice feature of GPS is that the receiver can deliver current speed of movement. If the Time Cicuits are, for instance, mounted in a car or on a boat, and a speedo display is connected, this display will be just that: A real speedometer.
 
