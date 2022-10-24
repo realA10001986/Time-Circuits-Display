@@ -9,11 +9,11 @@ https://circuitsetup.us/product/complete-time-circuits-display-kit/
 
 *"This Time Circuits Display has been meticulously reproduced to be as accurate as possible to the one seen in the Delorean Time Machine in the Back to the Future movies."*
 
-During August of 2022, I have re-written almost the entire code. New features and changes include
-- Time keeping via NTP (network time) or stand-alone
+Starting in August of 2022, I have re-written almost the entire code in the meantime. New features and changes include
+- Time keeping via NTP (network time), GPS or stand-alone
 - "Present time" is always a clock (not stale), even after time travel
 - Clocking for years 1-9999, including leap years, based on Gregorian Calendar
-- Support for time zones and automatic DST (in NTP-mode only)
+- Support for time zones and automatic DST
 - Option to make time travels persistent over reboots
 - Movie-accurate time travel times in "decorative mode" (automatic time cycling)
 - Alarm function
@@ -31,6 +31,7 @@ During August of 2022, I have re-written almost the entire code. New features an
 - Support for external fake "power switch"
 - Support for externally triggered time travel, with selectable delay
 - Support for external display acting as Speedometer, used in time travel sequences
+- Support for external GPS receiver module, used as time source, and for speed to be displayed on speedo display
 - Support for external temperature sensor to display temperature on speedo display while idle
 - Built-in installer for default audio files in addition to OTA firmware updates
 - etc
@@ -283,6 +284,17 @@ Since the I2C bus is already quite long from the control board to the last displ
 ## Temperature sensor
 
 Unless you do time travelling on a regular basis, the speedo display is idle most of the time in a typical home setup. To give it more of a purpose, the software supports connecting a MCP9808-based temperature sensor to the i2c bus (readily available from Adafruit, product number 1782). After connecting this sensor and enabling it in the Config Portal, the speedo display will show the ambient temperature in idle mode. (Note that you need a speedo display in order to use the temperature sensor.)
+
+## GPS receiver
+
+The firmware supports an MT(K)3333-based GPS receiver, connected through i2c. The CircuitSetup-designed speedo display will have such a chip built-in, but since this gadget is not yet available, in the meantime, alternatives can be used, such as the Adafruit Mini GPS PA1010D (product id 4415). The GPS receiver can be used both as a source of authoritative time (like NTP), or display speed of movement on a speedo display. The latter only really makes sence in a car or boad, anthing that moves.
+
+#GPS as a source for time
+
+The seemingly odd thing about GPS if used as a source for accurate time is that the GPS receiver needs to know more or less accurate time before it can connect to the satellite signal. It is therefore essential, that the user sets the TimeCicuit's RTC (real time clock) to correct local time, and defines the correct time zone in the Config Portal.
+
+#GPS for speed
+todo
 
 ## WiFi power saving features
 
