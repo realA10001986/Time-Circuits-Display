@@ -187,7 +187,7 @@ unsigned long wifiOnNow = 0;
 unsigned long wifiOffDelay     = 0;   // default: never
 unsigned long origWiFiOffDelay = 0;
 
-static void wifiConnect();
+static void wifiConnect(bool deferConfigPortal = false);
 static void saveParamsCallback();
 static void saveConfigCallback();
 static void preSaveConfigCallback();
@@ -348,7 +348,8 @@ void wifi_setup()
         setupStaticIP();
     }
 
-    wifiConnect();
+    // Connect, but defer starting the CP
+    wifiConnect(true);
 }
 
 /*
@@ -582,7 +583,7 @@ void wifi_loop()
 
 }
 
-static void wifiConnect()
+static void wifiConnect(bool deferConfigPortal)
 {
     // Automatically connect using saved credentials if they exist
     // If connection fails it starts an access point with the specified name
@@ -590,7 +591,14 @@ static void wifiConnect()
         #ifdef TC_DBG
         Serial.println(F("WiFi connected"));
         #endif
-        wm.startWebPortal();  // start config portal in STA mode
+
+        // Since WM 2.0.13beta, starting the CP invokes an async
+        // WiFi scan. This interferes with network access for a 
+        // few seconds after connecting. So, during boot, we start
+        // the CP later, to allow a quick NTP update.
+        if(!deferConfigPortal) {
+            wm.startWebPortal();
+        }
 
         // Allow modem sleep:
         // WIFI_PS_MIN_MODEM is the default, and activated when calling this
@@ -693,7 +701,15 @@ void wifiOn(unsigned long newDelay, bool alsoInAPMode)
 
     WiFi.mode(WIFI_MODE_STA);
 
-    wifiConnect();
+    wifiConnect(false);
+}
+
+void wifiStartCP()
+{
+    if(wifiInAPMode || wifiIsOff)
+        return;
+
+    wm.startWebPortal();
 }
 
 // This is called when the WiFi config changes, so it has
