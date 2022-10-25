@@ -1,40 +1,35 @@
-# Time-Circuits-Display (A10001986)
-Firmware for ESP32-based Time-Circuits-Display
+# Firmware for Time-Circuits-Display
 
-This is a firmware for [this](https://circuitsetup.us/product/complete-time-circuits-display-kit/) wonderful piece of hardware:
+This repository holds the current firmware for the wonderful ESP32-based [Time-Circuits-Display](https://circuitsetup.us/product/complete-time-circuits-display-kit/).
 
-https://circuitsetup.us/product/complete-time-circuits-display-kit/
+Readily available here: https://circuitsetup.us/product/complete-time-circuits-display-kit/
 
 ![TCD_Front](https://user-images.githubusercontent.com/76924199/194286089-8f3b6ae8-2e50-46c0-8476-8c4cf0775188.jpg)
 
 Features include
 - Time keeping via NTP (network time), GPS or stand-alone
-- "Present time" is always a clock (not stale), even after time travel
 - Clocking for years 1-9999, including leap years, based on Gregorian Calendar
 - Support for time zones and automatic DST
+- "Present time" is always a clock (not stale), even after time travel
 - Option to make time travels persistent over reboots
 - Movie-accurate time travel times in "decorative mode" (automatic time cycling)
 - Alarm function
-- SD card support for custom audio files
 - Night mode (displays off or dimmed; manual or automatic)
-- Enhanced time travel sequence
+- SD card support for custom audio files
 - "Return from Time Travel" (hold "9" for 2 seconds)
 - Keypad menu for adjusting various settings and viewing IP address and WiFi status
 - Enhanced Config Portal for setup
-- More stable WiFi connections at startup
-- Configurable WiFi connection timeouts and retries
 - 24-hour clock mode for non-Americans ;)
-- Optional power-up intro with sound
+- Optional power-up intro
 - Optional sound on the hour
 - Support for external fake "power switch"
 - Support for externally triggered time travel, with selectable delay
 - Support for external display acting as Speedometer, used in time travel sequences
-- Support for external GPS receiver module, used as time source, and for speed to be displayed on speedo display
+- Support for external GPS receiver, used as time source, and for speed to be displayed on speedo display
 - Support for external temperature sensor to display temperature on speedo display while idle
 - Built-in installer for default audio files in addition to OTA firmware updates
-- etc
 
-The nice folks over at circuitsetup.us decided to use this software (starting as "v2") for their Time Circuits Display and merged my code into their repository (apart from some sounds, of which they say they like theirs better). This means that what you see here is probably mostly identical with that circuitsetup.us has, maybe a little further ahead in development, and with some better sounds ;)
+The code here is based on rudementary code from/by circuitsetup.us, who in the meantime decided to use this software, under the name "v2", as their "official" firmware (apart from some sounds, of which they say they like theirs better). The difference between what you get here and what circuitsetup.us have in their repo is that the code here might be ahead in development, and have more features enabled.
 
 ## Installation
 
