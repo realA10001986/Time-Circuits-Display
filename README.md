@@ -1,15 +1,13 @@
 # Time-Circuits-Display (A10001986)
 Firmware for ESP32-based Time-Circuits-Display
 
-This was a fork of a previous version of the firmware for [this](https://circuitsetup.us/product/complete-time-circuits-display-kit/) wonderful piece of hardware:
+This is a firmware for [this](https://circuitsetup.us/product/complete-time-circuits-display-kit/) wonderful piece of hardware:
 
 https://circuitsetup.us/product/complete-time-circuits-display-kit/
 
 ![TCD_Front](https://user-images.githubusercontent.com/76924199/194286089-8f3b6ae8-2e50-46c0-8476-8c4cf0775188.jpg)
 
-*"This Time Circuits Display has been meticulously reproduced to be as accurate as possible to the one seen in the Delorean Time Machine in the Back to the Future movies."*
-
-Starting in August of 2022, I have re-written almost the entire code in the meantime. New features and changes include
+Features include
 - Time keeping via NTP (network time), GPS or stand-alone
 - "Present time" is always a clock (not stale), even after time travel
 - Clocking for years 1-9999, including leap years, based on Gregorian Calendar
@@ -36,7 +34,7 @@ Starting in August of 2022, I have re-written almost the entire code in the mean
 - Built-in installer for default audio files in addition to OTA firmware updates
 - etc
 
-In the meantime, the nice folks over at circuitsetup.us decided to use this software (as "v2") for their Time Circuits Display and merged my code into their repository (apart from some sounds, of which they say they like theirs better). This means that what you see here is probably mostly identical with that circuitsetup.us has, maybe a little further ahead in development, and with some better sounds ;)
+The nice folks over at circuitsetup.us decided to use this software (starting as "v2") for their Time Circuits Display and merged my code into their repository (apart from some sounds, of which they say they like theirs better). This means that what you see here is probably mostly identical with that circuitsetup.us has, maybe a little further ahead in development, and with some better sounds ;)
 
 ## Installation
 
