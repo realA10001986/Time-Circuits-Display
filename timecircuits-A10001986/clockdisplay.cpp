@@ -3,6 +3,7 @@
  * CircuitSetup.us Time Circuits Display
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
  * (C) 2022 Thomas Winischhofer (A10001986)
+ * https://github.com/realA10001986/Time-Circuits-Display-A10001986
  *
  * Clockdisplay: Handles the TC LED segment displays
  *
@@ -430,11 +431,9 @@ void clockDisplay::setMinute(int minNum)
 
     _displayBuffer[CD_MIN_POS] = makeNum(minNum);
 
-    switch(_did) {
-    case DISP_PRES:
+    if(_did == DISP_PRES) {
         if(alarmOnOff)
             _displayBuffer[CD_MIN_POS] |= 0x8000;
-        break;
     }
 }
 
@@ -864,7 +863,7 @@ bool clockDisplay::load(int initialBrightness)
         if( (sum != 0) && ((sum & 0xff) == loadBuf[9])) {
 
             #ifdef TC_DBG
-            Serial.println(F("Clockdisplay: Loading non-RTC settings from EEPROM"));
+            Serial.println(F("Clockdisplay: Loaded non-RTC settings from EEPROM"));
             #endif
 
             setYearOffset((loadBuf[3] << 8) | loadBuf[2]);
@@ -905,7 +904,7 @@ bool clockDisplay::load(int initialBrightness)
               timeDiffUp = loadBuf[8] ? true : false;
 
               #ifdef TC_DBG
-              Serial.println(F("Clockdisplay: Loading RTC settings from EEPROM"));
+              Serial.println(F("Clockdisplay: Loaded RTC settings from EEPROM"));
               #endif
 
         } else {

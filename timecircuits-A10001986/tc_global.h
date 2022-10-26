@@ -3,6 +3,7 @@
  * CircuitSetup.us Time Circuits Display
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
  * (C) 2022 Thomas Winischhofer (A10001986)
+ * https://github.com/realA10001986/Time-Circuits-Display-A10001986
  *
  * Global definitions
  *
@@ -29,10 +30,10 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #ifndef IS_ACAR_DISPLAY
 #define TC_VERSION "V2.2.0"           // 13 chars max
-#define TC_VERSION_EXTRA "OCT242022"  // 13 chars max
+#define TC_VERSION_EXTRA "OCT262022"  // 13 chars max
 #else   // A-Car
 #define TC_VERSION "V2.2.0_A-CAR"     // 12 chars max
-#define TC_VERSION_EXTRA "10242022"   // 12 chars max
+#define TC_VERSION_EXTRA "10262022"   // 12 chars max
 #endif
 
 //#define TC_DBG            // debug output on Serial

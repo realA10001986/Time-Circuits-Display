@@ -182,8 +182,8 @@ static void defaultDelay(unsigned int mydelay)
 /*
 || @changelog
 || | 3.01tc 2022-09-22 - A10001986 add custom delay function; read three times.
-|| | 3.0tc 2022-08-11 - A10001986; Read twice to catch ghost key presses,and
-|| |                    reduce i2c traffic by buffering row pin status
+|| | 3.0tc 2022-08-11  - A10001986; Read twice to catch ghost key presses, and
+|| |                     reduce i2c traffic by buffering row pin status
 || | 3.0  2020-04-06 - Joe Young : multiple WireX param in constructor
 || | 2.0  2013-08-31 - Paul Williamson : Added i2cwidth parameter for PCF8575 support
 || |

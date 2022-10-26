@@ -3,6 +3,7 @@
  * CircuitSetup.us Time Circuits Display
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
  * (C) 2022 Thomas Winischhofer (A10001986)
+ * https://github.com/realA10001986/Time-Circuits-Display-A10001986
  *
  * Clockdisplay and keypad menu code based on code by John Monaco
  * Marmoset Electronics
@@ -63,6 +64,10 @@
 
 /*  Changelog
  *
+ *  2022/10/26 (A10001986)
+ *    - Enhancements to DST logic
+ *    - Fine-tune GPS polling and RTC updating
+ *    - Remove unused stuff
  *  2022/10/24 (A10001986)
  *    - Defer starting the Config Portal during boot: Starting with 2.0.13beta,
  *      WiFiManager triggers an async WiFi Scan when the CP is started, which 
