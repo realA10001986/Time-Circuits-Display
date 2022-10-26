@@ -2,6 +2,7 @@
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
  * (C) 2022 Thomas Winischhofer (A10001986)
+ * https://github.com/realA10001986/Time-Circuits-Display-A10001986
  *
  * Temperature Sensor handling
  *
@@ -63,7 +64,7 @@ static void defaultDelay(unsigned int mydelay);
 //  2    0.125°C     130 ms
 //  3    0.0625°C    250 ms
 #define TC_TEMP_RESOLUTION 2
-const uint16_t wakeDelay[4] = { 30, 65, 130, 250 };
+static const uint16_t wakeDelay[4] = { 30, 65, 130, 250 };
 
 
 // Store i2c address

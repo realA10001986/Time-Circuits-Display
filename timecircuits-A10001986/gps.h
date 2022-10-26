@@ -2,6 +2,7 @@
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
  * (C) 2022 Thomas Winischhofer (A10001986)
+ * https://github.com/realA10001986/Time-Circuits-Display-A10001986
  *
  * GPS receiver handling and data parsing
  *
@@ -50,7 +51,7 @@ class tcGPS {
         void    loop(bool doDelay);
 
         int16_t getSpeed();
-        bool    getDateTime(struct tm *timeInfo, time_t *fixAge);
+        bool    getDateTime(struct tm *timeInfo, unsigned long *fixAge, unsigned long updInt);
         bool    setDateTime(struct tm *timeinfo);
 
         int16_t speed = -1;
@@ -67,7 +68,10 @@ class tcGPS {
 
         uint8_t _address;
 
-        uint8_t _lenArr[32] = { 32, 32, 32, 32, 32, 32, 32, 31 };
+        #define GPS_LENBUFLIMIT 0x03
+        uint8_t _lenArr[32] = { 64, 64, 64, 63 };
+        //#define GPS_LENBUFLIMIT 0x07
+        //uint8_t _lenArr[32] = { 32, 32, 32, 32, 32, 32, 32, 31 };
         int     _lenIdx = 0;
 
         char    _buffer[GPS_MAX_I2C_LEN];
@@ -85,10 +89,12 @@ class tcGPS {
         unsigned long _curspdTS = 0;
 
         char    _curTime[8]   = { 0, 0, 0, 0, 0, 0, 0, 0 };
+        char    _curFrac[4]   = { 0, 0, 0, 0 };
         char    _curDay[4]    = { 0, 0, 0, 0 };
         char    _curMonth[4]  = { 0, 0, 0, 0 };
         char    _curYear[6]   = { 0, 0, 0, 0, 0, 0 };
         char    _curTime2[8]  = { 0, 0, 0, 0, 0, 0, 0, 0 };
+        char    _curFrac2[4]  = { 0, 0, 0, 0 };
         char    _curDay2[4]   = { 0, 0, 0, 0 };
         char    _curMonth2[4] = { 0, 0, 0, 0 };
         char    _curYear2[6]  = { '2', '0', 0, 0, 0, 0 };

@@ -2,6 +2,7 @@
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
  * (C) 2022 Thomas Winischhofer (A10001986)
+ * https://github.com/realA10001986/Time-Circuits-Display-A10001986
  *
  * Speedo Display
  *

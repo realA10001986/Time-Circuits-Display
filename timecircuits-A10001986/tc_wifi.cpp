@@ -3,6 +3,7 @@
  * CircuitSetup.us Time Circuits Display
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
  * (C) 2022 Thomas Winischhofer (A10001986)
+ * https://github.com/realA10001986/Time-Circuits-Display-A10001986
  *
  * WiFi and Config Portal handling
  *
@@ -605,10 +606,6 @@ static void wifiConnect(bool deferConfigPortal)
         // with "true". When this is enabled, received WiFi data can be
         // delayed for as long as the DTIM period.
         // Since it is the default setting, so no need to call it here.
-        //#ifdef TC_DBG
-        //Serial.print("WiFi.getSleep() returned ");
-        //Serial.println(WiFi.getSleep());
-        //#endif
         //WiFi.setSleep(true);
 
         wifiInAPMode = false;

@@ -3,6 +3,7 @@
  * CircuitSetup.us Time Circuits Display
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
  * (C) 2022 Thomas Winischhofer (A10001986)
+ * https://github.com/realA10001986/Time-Circuits-Display-A10001986
  *
  * Keypad Menu handling
  *
@@ -74,7 +75,8 @@
  *     By entering a date/time into the present time display, the RTC (real time clock)
  *     of the device is adjusted, which is useful if you can't use NTP for time keeping.
  *     The time you entered will be overwritten if/when the device has access to network
- *     time via NTP.
+ *     time via NTP, or time from GPS. Don't forget to configure your time zone in the
+ *     Config Portal.
  *
  * How to set the audio volume:
  *

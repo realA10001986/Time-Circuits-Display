@@ -2,6 +2,7 @@
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
  * (C) 2022 Thomas Winischhofer (A10001986)
+ * https://github.com/realA10001986/Time-Circuits-Display-A10001986
  * DateTime part: Based on code Copyright (C) 2019 Adafruit Industries
  * 
  * DS3231/PCF2129 RTC handling and DateTime Class
@@ -56,8 +57,6 @@ class DateTime {
         DateTime();
         DateTime(uint16_t year, uint8_t month, uint8_t day, 
                  uint8_t hour = 0, uint8_t min = 0, uint8_t sec = 0);
-        DateTime(const char *date, const char *time);
-        DateTime(const __FlashStringHelper *date, const __FlashStringHelper *time);
         DateTime(const DateTime &copy);
 
         uint16_t year() const { return 2000U + yOff; }

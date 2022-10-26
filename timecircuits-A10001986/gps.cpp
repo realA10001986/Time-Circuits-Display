@@ -2,6 +2,7 @@
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
  * (C) 2022 Thomas Winischhofer (A10001986)
+ * https://github.com/realA10001986/Time-Circuits-Display-A10001986
  *
  * GPS receiver handling and data parsing
  *
@@ -37,6 +38,7 @@
 
 #include <Arduino.h>
 #include <Wire.h>
+
 #include "gps.h"
 
 #define GPS_MPH_PER_KNOT  1.15077945
@@ -83,32 +85,34 @@ bool tcGPS::begin(unsigned long powerupTime, bool quickUpdates)
     }
 
     // Send xxRMC and xxZDA only
-    // If we use GPS speed, we need more frequent updates.
+    // If we use GPS for speed, we need more frequent updates.
+    // The value in PKT 314 is a multiplier for the value of PKT 220.
+    // For speed we want updates every second for the RMC sentence,
+    // so we set the fix update to 1000ms, and the multiplier to 1.
+    // For mere time, we set the fix update to 5000, and the
+    // multiplier to 1 as well, so we get it every 5th second.
     if(quickUpdates) {
         sendCommand("$PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0*30");
+        // Set update rate to 1000ms
+        sendCommand("$PMTK220,1000*1F");
     } else {
-        sendCommand("$PMTK314,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0*34");
+        //sendCommand("$PMTK314,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0*34");
+        sendCommand("$PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0*34");
+        // Set update rate to 5000ms
+        sendCommand("$PMTK220,5000*1B");
     }
-    delay(30);
-
-    // Set update rate to 1Hz
-    sendCommand("$PMTK220,1000*1F");
-    delay(30);
 
     // No antenna status
     sendCommand("$PGCMD,33,0*6D");
-    delay(30);
 
     // Search for GPS, GLONASS, Galileo satellites
     //sendCommand("$PMTK353,1,1,1,0,0*2A");   // GPS, GLONASS, Galileo
     sendCommand("$PMTK353,1,1,0,0,0*2B");     // GPS, GLONASS
     //sendCommand("$PMTK353,1,0,0,0,0*2A");   // GPS
-    delay(30);
 
-    // Send "hot start" (to clear i2c buffer)
-    // No, not required. 
-    //sendCommand("$PMTK101*32");
-    //delay(800);
+    // Send "hot start" to clear i2c buffer 
+    sendCommand("$PMTK101*32");
+    delay(800);
 
     return true;
 }
@@ -133,6 +137,8 @@ void tcGPS::loop(bool doDelay)
         Serial.print("GPS loop(): readAndParse ");
         Serial.println(myLater-myNow, DEC);
     }
+    // read 32 bytes: 9ms
+    // read 64 bytes: 12ms
     #endif
 
     // Expire time/date info after 15 minutes
@@ -161,7 +167,7 @@ int16_t tcGPS::getSpeed()
  * Set GPS' RTC time
  * timeinfo returned is in UTC
  */
-bool tcGPS::getDateTime(struct tm *timeinfo, time_t *fixAge)
+bool tcGPS::getDateTime(struct tm *timeinfo, unsigned long *fixAge, unsigned long updInt)
 {
     char tmp[4] = { 0, 0, 0, 0 };
 
@@ -183,7 +189,7 @@ bool tcGPS::getDateTime(struct tm *timeinfo, time_t *fixAge)
 
         timeinfo->tm_wday = 0;
 
-        *fixAge = (time_t)(millis() - _curTS);
+        *fixAge = (unsigned long)(updInt + atoi(_curFrac) + millis() - _curTS);
 
         return true;
 
@@ -208,7 +214,7 @@ bool tcGPS::getDateTime(struct tm *timeinfo, time_t *fixAge)
 
         timeinfo->tm_wday = 0;
 
-        *fixAge = (time_t)(millis() - _curTS2);
+        *fixAge = (unsigned long)(updInt + atoi(_curFrac) + millis() - _curTS2);
 
         return true;
 
@@ -270,10 +276,8 @@ bool tcGPS::setDateTime(struct tm *timeinfo)
     #endif
 
     sendCommand(pkt740);
-    (*_customDelayFunc)(30);
 
     sendCommand(pkt335);
-    (*_customDelayFunc)(30);
 
     return true;
 }
@@ -295,6 +299,7 @@ void tcGPS::sendCommand(const char *str)
     Wire.write(0x0d);
     Wire.write(0x0a);
     Wire.endTransmission(true);
+    (*_customDelayFunc)(30);
 }
 
 bool tcGPS::readAndParse(bool doDelay)
@@ -304,16 +309,15 @@ bool tcGPS::readAndParse(bool doDelay)
     int8_t buff_max = 0;
     int8_t buff_idx = 0;
     bool   haveParsedSome = false;
+    unsigned long myNow = millis();
 
     // Read i2c data in small blocks, call delay between
     // transfers to allow uninterrupted sound playback.
 
-    for(int j = 0; j < 1; j++) {    // 1 iteration is enough
+    i2clen = Wire.requestFrom(_address, _lenArr[_lenIdx++]);
+    _lenIdx &= GPS_LENBUFLIMIT;
 
-        i2clen = Wire.requestFrom(_address, _lenArr[_lenIdx++]);
-        _lenIdx &= 0x07;
-
-        if(!i2clen) break;
+    if(i2clen) {
 
         // Read i2c data to _buffer
         for(int i = 0; i < i2clen; i++) {
@@ -335,7 +339,7 @@ bool tcGPS::readAndParse(bool doDelay)
     buff_idx = 0;
     while(buff_idx <= buff_max) {
       
-        if(!_lineidx) _currentTS = millis();
+        if(!_lineidx) _currentTS = myNow;
         
         curr_char = _currentline[_lineidx++] = _buffer[buff_idx++];
 
@@ -395,6 +399,11 @@ bool tcGPS::parseNMEA(char *nmea, unsigned long nmeaTS)
 
         t = strchr(t, ',') + 1;  // Skip to time
         strncpy(_curTime2, t, 6);
+        if(*(t+6) == '.') {
+            strncpy(_curFrac2, t+7, 3);
+        } else {
+            _curFrac2[0] = 0;
+        }
         t = strchr(t, ',') + 1;  // Skip to validity
         fix = (*t == 'A');
 
@@ -433,6 +442,11 @@ bool tcGPS::parseNMEA(char *nmea, unsigned long nmeaTS)
         if(fix) {
             t = strchr(t, ',') + 1; // Skip to time
             strncpy(_curTime, t, 6);
+            if(*(t+6) == '.') {
+                strncpy(_curFrac, t+7, 3);
+            } else {
+                _curFrac[0] = 0;
+            }
             t = strchr(t, ',') + 1; // Skip to day
             strncpy(_curDay, t, 2);
             t = strchr(t, ',') + 1; // Skip to month
