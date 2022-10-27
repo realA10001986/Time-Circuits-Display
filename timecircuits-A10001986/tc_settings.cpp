@@ -108,13 +108,14 @@ void settings_setup()
     pinMode(ENTER_BUTTON_PIN, INPUT_PULLUP);
     delay(20);
 
+    // Init our EEPROM
+    EEPROM.begin(512);
+
     #ifdef TC_DBG
     Serial.println(F("settings_setup: Mounting SD..."));
     #endif
 
-    EEPROM.begin(512);
-
-    // set up SD card
+    // Set up SD card
     SPI.begin(SPI_SCK_PIN, SPI_MISO_PIN, SPI_MOSI_PIN);
 
     haveSD = false;
