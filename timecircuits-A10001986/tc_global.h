@@ -29,11 +29,11 @@
 // These must not contain any characters other than
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION "V2.2.0"           // 13 chars max
-#define TC_VERSION_EXTRA "OCT262022"  // 13 chars max
+#define TC_VERSION "V2.3.0"           // 13 chars max
+#define TC_VERSION_EXTRA "OCT272022"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION "V2.2.0_A-CAR"     // 12 chars max
-#define TC_VERSION_EXTRA "10262022"   // 12 chars max
+#define TC_VERSION "V2.3.0_A-CAR"     // 12 chars max
+#define TC_VERSION_EXTRA "10272022"   // 12 chars max
 #endif
 
 //#define TC_DBG            // debug output on Serial
@@ -87,9 +87,6 @@
 #ifndef TC_HAVESPEEDO
 #undef TC_HAVETEMP
 #endif
-
-// Use old (ESP32-arduino internal) NTP routines
-//define OLDNTP
 
 /*************************************************************************
  ***                           Miscellaneous                           ***

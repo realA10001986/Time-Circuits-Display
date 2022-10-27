@@ -1798,9 +1798,7 @@ static void myssdelay(unsigned long mydel)
     unsigned long startNow = millis();
     while(millis() - startNow < mydel) {
         audio_loop();
-        #ifndef OLDNTP
         ntp_short_loop();
-        #endif
         delay(10);
     }
 }
@@ -1814,9 +1812,7 @@ static void myloop()
     enterkeytick();
     wifi_loop();
     audio_loop();
-    #ifndef OLDNTP
     ntp_loop();
-    #endif
     #ifdef TC_HAVEGPS
     gps_loop();
     #endif

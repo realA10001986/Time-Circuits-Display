@@ -64,6 +64,8 @@
 
 /*  Changelog
  *
+ *  2022/10/27 (A10001986)
+ *    - Minor fixes/enhancements (in time setup, etc)
  *  2022/10/26 (A10001986)
  *    - Enhancements to DST logic
  *    - Fine-tune GPS polling and RTC updating
@@ -409,9 +411,7 @@ void loop()
 {
     keypad_loop();
     get_key();
-    #ifndef OLDNTP
     ntp_loop();
-    #endif
     time_loop();
     wifi_loop();
     audio_loop();

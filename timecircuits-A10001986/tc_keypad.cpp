@@ -661,9 +661,7 @@ static void mykpddelay(unsigned int mydel)
     unsigned long startNow = millis();
     while(millis() - startNow < mydel) {
         audio_loop();
-        #ifndef OLDNTP
         ntp_short_loop();
-        #endif
         delay(1);
     }
 }
