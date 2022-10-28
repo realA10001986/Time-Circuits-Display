@@ -14,7 +14,7 @@ Features include
 - Option to make time travels persistent over reboots
 - Movie-accurate time travel times in "decorative mode" (automatic time cycling)
 - Alarm function
-- Night mode (displays off or dimmed; manual or automatic)
+- [Night mode](#night-mode) (displays off or dimmed; manual or automatic)
 - SD card support for custom audio files
 - "Return from Time Travel" (hold "9" for 2 seconds)
 - Keypad menu for adjusting various settings and viewing IP address and WiFi status
