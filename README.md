@@ -281,7 +281,7 @@ The firmware supports an MT(K)3333-based GPS receiver, connected through i2c. Th
 GPS receivers receive signals from satellites, but in order to do so, they need to be "tuned in" (aka get a "fix"). This "tuning" process can take a long time; after first power up, it can take 30 minutes or more for a receiver to be able to determine its position. In order to speed up this process, modern GPS receivers have special "assisting" features. One key element is knowledge of current time, as this helps identifying satellite signals quicker. So, in other words, initially, you need to tell the receiver, what it is supposed to tell you. However, as soon as the receiver has received satellite signals for 15-20 minutes, it saves the data it collected to its battery-backed memory and will find a fix within seconds after power-up in the future.
 
 For using GPS effectively as a long term source of accurate time, it is therefore essential, that 
-- the TimeCicuit's RTC (real time clock) is initially set to correct local time, 
+- the TimeCircuit's RTC (real time clock) is initially [set to correct local time](#how-to-enter-datestimes-for-the-three-displays), 
 - the correct time zone is defined in the Config Portal,
 - the GPS receiver has a battery
 - and has been receiving data for 15-20 mins at least once a month.
