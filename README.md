@@ -10,23 +10,23 @@ Features include
 - Time keeping via NTP (network time), GPS or stand-alone
 - Time keeping for years 1-9999, based on Gregorian Calendar
 - Support for time zones and automatic DST
-- "Present time" is always a clock (not stale), also after time travel
-- Option to make time travels persistent over reboots
+- "Present time" is always a clock (not stale), also after [time travel](#time-travel)
+- Option to make time travels [persistent](#persistent--non-persistent-time-travels) over reboots
 - Movie-accurate time travel times in "decorative mode" (automatic time cycling)
-- Alarm function
+- [Alarm function](#how-to-set-up-the-alarm)
 - [Night mode](#night-mode) (displays off or dimmed; manual or automatic)
-- SD card support for custom audio files
-- "Return from Time Travel" (hold "9" for 2 seconds)
-- Keypad menu for adjusting various settings and viewing IP address and WiFi status
-- Enhanced network-accessible Config Portal for setup
+- [SD card](#sd-card) support for custom audio files
+- ["Return from Time Travel"](#time-travel) (hold "9" for 2 seconds)
+- [Keypad menu](#the-keypad-menu) for adjusting various settings and viewing IP address and WiFi status
+- Enhanced network-accessible [Config Portal](#short-summary-of-first-steps) for setup
 - 24-hour clock mode for non-Americans ;)
 - Optional power-up intro
-- Optional sound on the hour
-- Support for external fake "power switch"
-- Support for externally triggered time travel, with selectable delay
-- Support for external display acting as Speedometer, used in time travel sequences
-- Support for external GPS receiver, used as time source, and for speed to be displayed on speedo display
-- Support for external temperature sensor to display temperature on speedo display while idle
+- Optional [sound on the hour](#additional-custom-sounds)
+- Support for external [fake "power switch"](#fake-power-onoff-switch-external-time-travel-trigger)
+- Support for [externally triggered time travel](#fake-power-onoff-switch-external-time-travel-trigger), with selectable delay
+- Support for external display acting as [Speedometer](#external-speedometer), used in time travel sequences
+- Support for external [GPS receiver](#gps-receiver), used as time source, and for speed to be displayed on speedo display
+- Support for external [temperature sensor](#temperature-sensor) to display temperature on speedo display while idle
 - Built-in installer for default audio files in addition to OTA firmware updates
 
 The code here is based on rudementary code from/by circuitsetup.us, who in the meantime decided to use this software, under the name "v2", as their "official" firmware (apart from some sounds, of which they say they like theirs better). The difference between what you get here and what circuitsetup.us have in their repo is that the code here might be ahead in development, and have more features enabled.
@@ -63,7 +63,7 @@ If you want to re-use the SD card for substituting the default sound files, plea
 - Using your computer or handheld device, connect to the AP and go to http://192.168.4.1 in your browser to enter the Config Portal, click on "Configure WiFi" and configure your Wifi network. Note that the device expects an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). (If the device is inaccessible as a result of wrong static IPs, hold ENTER when powering it up until the white LED lits; static IP data will be deleted and the device will return to DHCP.)
 - After saving the WiFi network settings, the device reboots and tries to connect to your configured WiFi network. If it fails to connect to your network, the device will again start in access point mode. 
 - Next, if DHCP is used, find out about the IP address assigned to the device. Hold ENTER on the keypad for 2 seconds, then repeatedly press ENTER until "NET-WORK" is shown, then hold ENTER for 2 seconds. The device will then show its current IP address.
-- Then re-open the config portal in your browser using this IP address, and configure other settings on the "Setup" page, first and foremost NTP server (if availabl) and your time zone. A list of valid times zones is accessible by a link on the settings page. If the time zone isn't set correctly, the clock will show a wrong time and DST (daylight saving) will not be switched on/off correctly.
+- Then re-open the config portal in your browser using this IP address, and configure other settings on the "Setup" page, first and foremost NTP server (if available) and your time zone. A list of valid times zones is accessible by a link on the settings page. If the time zone isn't set correctly, the clock will show a wrong time and DST (daylight saving) will not be switched on/off correctly.
 
 There are two ways of configuring the device: Through the aforementioned Config Portal (ie the network), or the keypad menu, as described [further below](#the-keypad-menu). Not all settings, however, are configurable in both.
 
