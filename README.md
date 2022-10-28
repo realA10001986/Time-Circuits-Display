@@ -8,9 +8,9 @@ Readily available here: https://circuitsetup.us/product/complete-time-circuits-d
 
 Features include
 - Time keeping via NTP (network time), GPS or stand-alone
-- Clocking for years 1-9999, including leap years, based on Gregorian Calendar
+- Time keeping for years 1-9999, based on Gregorian Calendar
 - Support for time zones and automatic DST
-- "Present time" is always a clock (not stale), even after time travel
+- "Present time" is always a clock (not stale), also after time travel
 - Option to make time travels persistent over reboots
 - Movie-accurate time travel times in "decorative mode" (automatic time cycling)
 - Alarm function
@@ -18,7 +18,7 @@ Features include
 - SD card support for custom audio files
 - "Return from Time Travel" (hold "9" for 2 seconds)
 - Keypad menu for adjusting various settings and viewing IP address and WiFi status
-- Enhanced Config Portal for setup
+- Enhanced network-accessible Config Portal for setup
 - 24-hour clock mode for non-Americans ;)
 - Optional power-up intro
 - Optional sound on the hour
