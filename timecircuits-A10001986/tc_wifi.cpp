@@ -53,6 +53,15 @@ static const char aintCustHTML6[] = ">Every 15th minute</option><option value='4
 static const char aintCustHTML7[] = ">Every 30th minute</option><option value='5'";
 static const char aintCustHTML8[] = ">Every 60th minute</option></select></div>";
 
+static char anmCustHTML[768] = "";
+static const char anmCustHTML1[] = "<div style='margin:0;padding:0;'><label for='autonmtimes'>Schedule</label><select style='font-size:90%;width:auto;margin-left:10px;vertical-align:baseline;' value='";
+static const char anmCustHTML2[] = "' name='autonmtimes' id='autonmtimes' autocomplete='off' title='Select schedule for auto night-mode'><option value='0'";
+static const char anmCustHTML3[] = ">Daily, set hours below</option><option value='1'";
+static const char anmCustHTML4[] = ">&#127968; M-T:17-23/F:13-1/S:9-1/Su:9-23</option><option value='2'";
+static const char anmCustHTML5[] = ">&#127970; M-F:9-17</option><option value='3'";
+static const char anmCustHTML6[] = ">&#127970; M-T:7-17/F:7-14</option><option value='4'";
+static const char anmCustHTML7[] = ">&#128722; M-W:8-20/T-F:8-21/S:8-17</option></select></div>";
+
 #ifdef TC_HAVESPEEDO
 static char spTyCustHTML[1024] = "";
 static const char spTyCustHTML1[] = "<div style='margin:0;padding:0;'><label for='speedo_type'>Display type</label><select style='width:auto;margin-left:10px;vertical-align:baseline;' value='";
@@ -85,6 +94,7 @@ WiFiManagerParameter custom_ttrp("ttrp", "Make time travels persistent (0=no, 1=
 WiFiManagerParameter custom_alarmRTC("artc", "Alarm base is RTC (1) or displayed \"present\" time (0)", settings.alarmRTC, 1, "autocomplete='off'");
 WiFiManagerParameter custom_playIntro("plIn", "Play intro (0=off, 1=on)", settings.playIntro, 1, "autocomplete='off'");
 WiFiManagerParameter custom_mode24("md24", "24-hour clock mode: (0=12hr, 1=24hr)", settings.mode24, 1, "autocomplete='off'");
+WiFiManagerParameter custom_autoNM("anm", "Automatic night-mode (0=off, 1=on)", settings.autoNM, 1, "autocomplete='off'");
 WiFiManagerParameter custom_dtNmOff("dTnMOff", "Destination time off in night mode (0=dimmed, 1=off)", settings.dtNmOff, 1, "autocomplete='off'");
 WiFiManagerParameter custom_ptNmOff("pTnMOff", "Present time off in night mode (0=dimmed, 1=off)", settings.ptNmOff, 1, "autocomplete='off'");
 WiFiManagerParameter custom_ltNmOff("lTnMOff", "Last time dep. off in night mode (0=dimmed, 1=off)", settings.ltNmOff, 1, "autocomplete='off'");
@@ -115,7 +125,7 @@ WiFiManagerParameter custom_ttrp("ttrp", "Make time travels persistent", setting
 WiFiManagerParameter custom_alarmRTC("artc", "Alarm base is real present time", settings.alarmRTC, 1, "title='If unchecked, the alarm base is the displayed \"present\" time' type='checkbox'", WFM_LABEL_AFTER);
 WiFiManagerParameter custom_playIntro("plIn", "Play intro", settings.playIntro, 1, "type='checkbox'", WFM_LABEL_AFTER);
 WiFiManagerParameter custom_mode24("md24", "24-hour clock mode", settings.mode24, 1, "type='checkbox' style='margin-bottom:10px'", WFM_LABEL_AFTER);
-
+WiFiManagerParameter custom_autoNM("anm", "Automatic night-mode", settings.autoNM, 1, "title='Check to enable automatic night-mode' type='checkbox' style='margin-top:12px'", WFM_LABEL_AFTER);
 WiFiManagerParameter custom_dtNmOff("dTnMOff", "Destination time off in night mode", settings.dtNmOff, 1, "title='If unchecked, the display will be dimmed' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
 WiFiManagerParameter custom_ptNmOff("pTnMOff", "Present time off in night mode", settings.ptNmOff, 1, "title='If unchecked, the display will be dimmed' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
 WiFiManagerParameter custom_ltNmOff("lTnMOff", "Last time dep. off in night mode", settings.ltNmOff, 1, "title='If unchecked, the display will be dimmed' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
@@ -153,8 +163,9 @@ WiFiManagerParameter custom_timeZone("time_zone", "Timezone (in <a href='https:/
 WiFiManagerParameter custom_destTimeBright("dt_bright", "Destination Time display brightness (0-15)", settings.destTimeBright, 2, "type='number' min='0' max='15' autocomplete='off'", WFM_LABEL_BEFORE);
 WiFiManagerParameter custom_presTimeBright("pt_bright", "Present Time display brightness (0-15)", settings.presTimeBright, 2, "type='number' min='0' max='15' autocomplete='off'");
 WiFiManagerParameter custom_lastTimeBright("lt_bright", "Last Time Dep. display brightness (0-15)", settings.lastTimeBright, 2, "type='number' min='0' max='15' autocomplete='off'");
-WiFiManagerParameter custom_autoNMOn("anmon", "Auto-NightMode start hour (0-23)", settings.autoNMOn, 2, "type='number' min='0' max='23' autocomplete='off' title='To disable, set start and end to same value'");
-WiFiManagerParameter custom_autoNMOff("anmoff", "Auto-NightMode end hour (0-23)", settings.autoNMOff, 2, "type='number' min='0' max='23' autocomplete='off' title='To disable, set start and end to same value'");
+WiFiManagerParameter custom_autoNMTimes(anmCustHTML);
+WiFiManagerParameter custom_autoNMOn("anmon", "Night-mode start hour (0-23)", settings.autoNMOn, 2, "type='number' min='0' max='23' autocomplete='off' title='Enter hour to switch on night-mode'");
+WiFiManagerParameter custom_autoNMOff("anmoff", "Night-mode end hour (0-23)", settings.autoNMOff, 2, "type='number' min='0' max='23' autocomplete='off' title='Enter hour to switch off night-mode'");
 #ifdef EXTERNAL_TIMETRAVEL_IN
 WiFiManagerParameter custom_ettDelay("ettDe", "External time travel button<br>Delay (ms)", settings.ettDelay, 5, "type='number' min='0' max='60000' title='Externally triggered time travel will be delayed by specified number of millisecs'");
 #endif
@@ -259,6 +270,7 @@ void wifi_setup()
     wm.setMenu(wifiMenu, TC_MENUSIZE);
 
     wm.addParameter(&custom_headline);
+    
     wm.addParameter(&custom_sectstart);
     wm.addParameter(&custom_ttrp);
     wm.addParameter(&custom_alarmRTC);
@@ -266,6 +278,7 @@ void wifi_setup()
     wm.addParameter(&custom_mode24);
     wm.addParameter(&custom_autoRotateTimes);
     wm.addParameter(&custom_sectend);
+    
     wm.addParameter(&custom_sectstart);
     wm.addParameter(&custom_wifiConRetries);
     wm.addParameter(&custom_wifiConTimeout);
@@ -278,27 +291,33 @@ void wifi_setup()
     wm.addParameter(&custom_useGPS);
     #endif
     wm.addParameter(&custom_sectend);
+    
     wm.addParameter(&custom_sectstart);
     wm.addParameter(&custom_destTimeBright);
     wm.addParameter(&custom_presTimeBright);
     wm.addParameter(&custom_lastTimeBright);
+    wm.addParameter(&custom_autoNM);
+    wm.addParameter(&custom_autoNMTimes);
     wm.addParameter(&custom_autoNMOn);
     wm.addParameter(&custom_autoNMOff);
     wm.addParameter(&custom_dtNmOff);
     wm.addParameter(&custom_ptNmOff);
     wm.addParameter(&custom_ltNmOff);
     wm.addParameter(&custom_sectend);
+    
     #ifdef EXTERNAL_TIMETRAVEL_IN
     wm.addParameter(&custom_sectstart);
     wm.addParameter(&custom_ettDelay);
     wm.addParameter(&custom_ettLong);
     wm.addParameter(&custom_sectend);
     #endif
+    
     #ifdef FAKE_POWER_ON
     wm.addParameter(&custom_sectstart);
     wm.addParameter(&custom_fakePwrOn);
     wm.addParameter(&custom_sectend);
     #endif
+    
     #ifdef TC_HAVESPEEDO
     wm.addParameter(&custom_sectstart);
     wm.addParameter(&custom_useSpeedo);
@@ -315,16 +334,19 @@ void wifi_setup()
     #endif
     wm.addParameter(&custom_sectend);
     #endif
+    
     #ifdef EXTERNAL_TIMETRAVEL_OUT
     wm.addParameter(&custom_sectstart);
     wm.addParameter(&custom_useETTO);
     wm.addParameter(&custom_sectend);
     #endif
+    
     if(check_allow_CPA()) {
         wm.addParameter(&custom_sectstart);
         wm.addParameter(&custom_copyAudio);
         wm.addParameter(&custom_sectend);
     }
+    
     wm.addParameter(&custom_footer);
 
     updateConfigPortalValues();
@@ -420,28 +442,37 @@ void wifi_loop()
               settings.autoRotateTimes[0] = DEF_AUTOROTTIMES + '0';
               settings.autoRotateTimes[1] = '\0';
             }
-            strcpytrim(settings.ntpServer, custom_ntpServer.getValue());
-            strcpytrim(settings.timeZone, custom_timeZone.getValue());
-            strcpy(settings.destTimeBright, custom_destTimeBright.getValue());
-            strcpy(settings.presTimeBright, custom_presTimeBright.getValue());
-            strcpy(settings.lastTimeBright, custom_lastTimeBright.getValue());
-            strcpy(settings.autoNMOn, custom_autoNMOn.getValue());
-            strcpy(settings.autoNMOff, custom_autoNMOff.getValue());
             strcpy(settings.wifiConRetries, custom_wifiConRetries.getValue());
             strcpy(settings.wifiConTimeout, custom_wifiConTimeout.getValue());
             strcpy(settings.wifiOffDelay, custom_wifiOffDelay.getValue());
             strcpy(settings.wifiAPOffDelay, custom_wifiAPOffDelay.getValue());
+            strcpytrim(settings.ntpServer, custom_ntpServer.getValue());
+            strcpytrim(settings.timeZone, custom_timeZone.getValue());
+            
+            strcpy(settings.destTimeBright, custom_destTimeBright.getValue());
+            strcpy(settings.presTimeBright, custom_presTimeBright.getValue());
+            strcpy(settings.lastTimeBright, custom_lastTimeBright.getValue());
+            getParam("autonmtimes", settings.autoNMPreset, 1);
+            if(strlen(settings.autoNMPreset) == 0) {
+              settings.autoNMPreset[0] = DEF_AUTONM_PRESET + '0';
+              settings.autoNMPreset[1] = '\0';
+            }
+            strcpy(settings.autoNMOn, custom_autoNMOn.getValue());
+            strcpy(settings.autoNMOff, custom_autoNMOff.getValue());
+            
             #ifdef EXTERNAL_TIMETRAVEL_IN
             strcpy(settings.ettDelay, custom_ettDelay.getValue());
             #endif
+            
             #ifdef TC_HAVESPEEDO
             getParam("speedo_type", settings.speedoType, 2);
             if(strlen(settings.speedoType) == 0) {
               settings.speedoType[0] = DEF_SPEEDO_TYPE + '0';
               settings.speedoType[1] = '\0';
             }
-            strcpy(settings.speedoFact, custom_speedoFact.getValue());
             strcpy(settings.speedoBright, custom_speedoBright.getValue());
+            strcpy(settings.speedoFact, custom_speedoFact.getValue());
+            
             #ifdef TC_HAVETEMP
             strcpy(settings.tempBright, custom_tempBright.getValue());
             #endif
@@ -449,21 +480,22 @@ void wifi_loop()
 
             #ifdef TC_NOCHECKBOXES // --------- Plain text boxes:
 
-            strcpy(settings.mode24, custom_mode24.getValue());
-            strcpy(settings.alarmRTC, custom_alarmRTC.getValue());
             strcpy(settings.timesPers, custom_ttrp.getValue());
+            strcpy(settings.alarmRTC, custom_alarmRTC.getValue());
             strcpy(settings.playIntro, custom_playIntro.getValue());
+            strcpy(settings.mode24, custom_mode24.getValue());            
+            #ifdef TC_HAVEGPS
+            strcpy(settings.useGPS, custom_useGPS.getValue());
+            #endif
+            strcpy(settings.autoNM, custom_autoNM.getValue());
             strcpy(settings.dtNmOff, custom_dtNmOff.getValue());
             strcpy(settings.ptNmOff, custom_ptNmOff.getValue());
             strcpy(settings.ltNmOff, custom_ltNmOff.getValue());
-            #ifdef FAKE_POWER_ON
-            strcpy(settings.fakePwrOn, custom_fakePwrOn.getValue());
-            #endif
             #ifdef EXTERNAL_TIMETRAVEL_IN
             strcpy(settings.ettLong, custom_ettLong.getValue());
             #endif
-            #ifdef TC_HAVEGPS
-            strcpy(settings.useGPS, custom_useGPS.getValue());
+            #ifdef FAKE_POWER_ON
+            strcpy(settings.fakePwrOn, custom_fakePwrOn.getValue());
             #endif
             #ifdef TC_HAVESPEEDO
             strcpy(settings.useSpeedo, custom_useSpeedo.getValue());
@@ -481,21 +513,22 @@ void wifi_loop()
 
             #else // -------------------------- Checkboxes:
 
-            strcpy(settings.mode24, ((int)atoi(custom_mode24.getValue()) > 0) ? "1" : "0");
-            strcpy(settings.alarmRTC, ((int)atoi(custom_alarmRTC.getValue()) > 0) ? "1" : "0");
             strcpy(settings.timesPers, ((int)atoi(custom_ttrp.getValue()) > 0) ? "1" : "0");
+            strcpy(settings.alarmRTC, ((int)atoi(custom_alarmRTC.getValue()) > 0) ? "1" : "0");
             strcpy(settings.playIntro, ((int)atoi(custom_playIntro.getValue()) > 0) ? "1" : "0");
+            strcpy(settings.mode24, ((int)atoi(custom_mode24.getValue()) > 0) ? "1" : "0");
+            #ifdef TC_HAVEGPS
+            strcpy(settings.useGPS, ((int)atoi(custom_useGPS.getValue()) > 0) ? "1" : "0");
+            #endif
+            strcpy(settings.autoNM, ((int)atoi(custom_autoNM.getValue()) > 0) ? "1" : "0");
             strcpy(settings.dtNmOff, ((int)atoi(custom_dtNmOff.getValue()) > 0) ? "1" : "0");
             strcpy(settings.ptNmOff, ((int)atoi(custom_ptNmOff.getValue()) > 0) ? "1" : "0");
             strcpy(settings.ltNmOff, ((int)atoi(custom_ltNmOff.getValue()) > 0) ? "1" : "0");
-            #ifdef FAKE_POWER_ON
-            strcpy(settings.fakePwrOn, ((int)atoi(custom_fakePwrOn.getValue()) > 0) ? "1" : "0");
-            #endif
             #ifdef EXTERNAL_TIMETRAVEL_IN
             strcpy(settings.ettLong, ((int)atoi(custom_ettLong.getValue()) > 0) ? "1" : "0");
             #endif
-            #ifdef TC_HAVEGPS
-            strcpy(settings.useGPS, ((int)atoi(custom_useGPS.getValue()) > 0) ? "1" : "0");
+            #ifdef FAKE_POWER_ON
+            strcpy(settings.fakePwrOn, ((int)atoi(custom_fakePwrOn.getValue()) > 0) ? "1" : "0");
             #endif
             #ifdef TC_HAVESPEEDO
             strcpy(settings.useSpeedo, ((int)atoi(custom_useSpeedo.getValue()) > 0) ? "1" : "0");
@@ -819,18 +852,13 @@ void updateConfigPortalValues()
     #endif
     const char custHTMLSel[] = " selected";
     int t = atoi(settings.autoRotateTimes);
+    int tnm = atoi(settings.autoNMPreset);
     #ifdef TC_HAVESPEEDO
     int tt = atoi(settings.speedoType);
     char spTyBuf[8];
     #endif
 
     // Make sure the settings form has the correct values
-    custom_wifiConTimeout.setValue(settings.wifiConTimeout, 2);
-    custom_wifiConRetries.setValue(settings.wifiConRetries, 2);
-    custom_wifiOffDelay.setValue(settings.wifiOffDelay, 2);
-    custom_wifiAPOffDelay.setValue(settings.wifiAPOffDelay, 2);
-    custom_ntpServer.setValue(settings.ntpServer, 63);
-    custom_timeZone.setValue(settings.timeZone, 63);
 
     strcpy(aintCustHTML, aintCustHTML1);
     strcat(aintCustHTML, settings.autoRotateTimes);
@@ -847,78 +875,35 @@ void updateConfigPortalValues()
     strcat(aintCustHTML, aintCustHTML7);
     if(t == 5) strcat(aintCustHTML, custHTMLSel);
     strcat(aintCustHTML, aintCustHTML8);
-
-    #ifdef TC_NOCHECKBOXES  // Standard text boxes: -------
-
-    custom_mode24.setValue(settings.mode24, 1);
-    custom_alarmRTC.setValue(settings.alarmRTC, 1);
-    custom_ttrp.setValue(settings.timesPers, 1);
-    custom_playIntro.setValue(settings.playIntro, 1);
-    custom_dtNmOff.setValue(settings.dtNmOff, 1);
-    custom_ptNmOff.setValue(settings.ptNmOff, 1);
-    custom_ltNmOff.setValue(settings.ltNmOff, 1);
-    #ifdef FAKE_POWER_ON
-    custom_fakePwrOn.setValue(settings.fakePwrOn, 1);
-    #endif
-    #ifdef EXTERNAL_TIMETRAVEL_IN
-    custom_ettLong.setValue(settings.ettLong, 1);
-    #endif
-    #ifdef TC_HAVEGPS
-    custom_useGPS.setValue(settings.useGPS, 1);
-    #endif
-    #ifdef TC_HAVESPEEDO
-    custom_useSpeedo.setValue(settings.useSpeedo, 1);
-    #ifdef TC_HAVEGPS
-    custom_useGPSS.setValue(settings.useGPSSpeed, 1);
-    #endif
-    #ifdef TC_HAVETEMP
-    custom_useTemp.setValue(settings.useTemp, 1);
-    custom_tempUnit.setValue(settings.tempUnit, 1);
-    #endif
-    #endif
-    #ifdef EXTERNAL_TIMETRAVEL_OUT
-    custom_useETTO.setValue(settings.useETTO, 1);
-    #endif
-
-    #else   // For checkbox hack --------------------------
-
-    custom_mode24.setValue(((int)atoi(settings.mode24) > 0) ? makeCheck : "1", 14);
-    custom_alarmRTC.setValue(((int)atoi(settings.alarmRTC) > 0) ? makeCheck : "1", 14);
-    custom_ttrp.setValue(((int)atoi(settings.timesPers) > 0) ? makeCheck : "1", 14);
-    custom_playIntro.setValue(((int)atoi(settings.playIntro) > 0) ? makeCheck : "1", 14);
-    custom_dtNmOff.setValue(((int)atoi(settings.dtNmOff) > 0) ? makeCheck : "1", 14);
-    custom_ptNmOff.setValue(((int)atoi(settings.ptNmOff) > 0) ? makeCheck : "1", 14);
-    custom_ltNmOff.setValue(((int)atoi(settings.ltNmOff) > 0) ? makeCheck : "1", 14);
-    #ifdef FAKE_POWER_ON
-    custom_fakePwrOn.setValue(((int)atoi(settings.fakePwrOn) > 0) ? makeCheck : "1", 14);
-    #endif
-    #ifdef EXTERNAL_TIMETRAVEL_IN
-    custom_ettLong.setValue(((int)atoi(settings.ettLong) > 0) ? makeCheck : "1", 14);
-    #endif
-    #ifdef TC_HAVEGPS
-    custom_useGPS.setValue(((int)atoi(settings.useGPS) > 0) ? makeCheck : "1", 14);
-    #endif
-    #ifdef TC_HAVESPEEDO
-    custom_useSpeedo.setValue(((int)atoi(settings.useSpeedo) > 0) ? makeCheck : "1", 14);
-    #ifdef TC_HAVEGPS
-    custom_useGPSS.setValue(((int)atoi(settings.useGPSSpeed) > 0) ? makeCheck : "1", 14);
-    #endif
-    #ifdef TC_HAVETEMP
-    custom_useTemp.setValue(((int)atoi(settings.useTemp) > 0) ? makeCheck : "1", 14);
-    custom_tempUnit.setValue(((int)atoi(settings.tempUnit) > 0) ? makeCheck : "1", 14);
-    #endif
-    #endif
-    #ifdef EXTERNAL_TIMETRAVEL_OUT
-    custom_useETTO.setValue(((int)atoi(settings.useETTO) > 0) ? makeCheck : "1", 14);
-    #endif
-
-    #endif // ---------------------------------------------
+    
+    custom_wifiConTimeout.setValue(settings.wifiConTimeout, 2);
+    custom_wifiConRetries.setValue(settings.wifiConRetries, 2);
+    custom_wifiOffDelay.setValue(settings.wifiOffDelay, 2);
+    custom_wifiAPOffDelay.setValue(settings.wifiAPOffDelay, 2);
+    custom_ntpServer.setValue(settings.ntpServer, 63);
+    custom_timeZone.setValue(settings.timeZone, 63);
 
     custom_destTimeBright.setValue(settings.destTimeBright, 2);
     custom_presTimeBright.setValue(settings.presTimeBright, 2);
     custom_lastTimeBright.setValue(settings.lastTimeBright, 2);
+
+    strcpy(anmCustHTML, anmCustHTML1);
+    strcat(anmCustHTML, settings.autoNMPreset);
+    strcat(anmCustHTML, anmCustHTML2);
+    if(tnm == 0) strcat(anmCustHTML, custHTMLSel);
+    strcat(anmCustHTML, anmCustHTML3);
+    if(tnm == 1) strcat(anmCustHTML, custHTMLSel);
+    strcat(anmCustHTML, anmCustHTML4);
+    if(tnm == 2) strcat(anmCustHTML, custHTMLSel);
+    strcat(anmCustHTML, anmCustHTML5);
+    if(tnm == 3) strcat(anmCustHTML, custHTMLSel);
+    strcat(anmCustHTML, anmCustHTML6);
+    if(tnm == 4) strcat(anmCustHTML, custHTMLSel);
+    strcat(anmCustHTML, anmCustHTML7);
+
     custom_autoNMOn.setValue(settings.autoNMOn, 2);
     custom_autoNMOff.setValue(settings.autoNMOff, 2);
+    
     #ifdef EXTERNAL_TIMETRAVEL_IN
     custom_ettDelay.setValue(settings.ettDelay, 5);
     #endif
@@ -937,13 +922,80 @@ void updateConfigPortalValues()
         strcat(spTyCustHTML, spTyOptP3);
     }
     strcat(spTyCustHTML, spTyCustHTMLE);
-
     custom_speedoBright.setValue(settings.speedoBright, 2);
     custom_speedoFact.setValue(settings.speedoFact, 3);
     #ifdef TC_HAVETEMP
     custom_tempBright.setValue(settings.tempBright, 2);
     #endif
     #endif
+
+    #ifdef TC_NOCHECKBOXES  // Standard text boxes: -------
+
+    custom_ttrp.setValue(settings.timesPers, 1);
+    custom_alarmRTC.setValue(settings.alarmRTC, 1);
+    custom_playIntro.setValue(settings.playIntro, 1);
+    custom_mode24.setValue(settings.mode24, 1);
+    #ifdef TC_HAVEGPS
+    custom_useGPS.setValue(settings.useGPS, 1);
+    #endif
+    custom_autoNM.setValue(settings.autoNM, 1);
+    custom_dtNmOff.setValue(settings.dtNmOff, 1);
+    custom_ptNmOff.setValue(settings.ptNmOff, 1);
+    custom_ltNmOff.setValue(settings.ltNmOff, 1);
+    #ifdef EXTERNAL_TIMETRAVEL_IN
+    custom_ettLong.setValue(settings.ettLong, 1);
+    #endif
+    #ifdef FAKE_POWER_ON
+    custom_fakePwrOn.setValue(settings.fakePwrOn, 1);
+    #endif
+    #ifdef TC_HAVESPEEDO
+    custom_useSpeedo.setValue(settings.useSpeedo, 1);
+    #ifdef TC_HAVEGPS
+    custom_useGPSS.setValue(settings.useGPSSpeed, 1);
+    #endif
+    #ifdef TC_HAVETEMP
+    custom_useTemp.setValue(settings.useTemp, 1);
+    custom_tempUnit.setValue(settings.tempUnit, 1);
+    #endif
+    #endif
+    #ifdef EXTERNAL_TIMETRAVEL_OUT
+    custom_useETTO.setValue(settings.useETTO, 1);
+    #endif
+
+    #else   // For checkbox hack --------------------------
+
+    custom_ttrp.setValue(((int)atoi(settings.timesPers) > 0) ? makeCheck : "1", 14);
+    custom_alarmRTC.setValue(((int)atoi(settings.alarmRTC) > 0) ? makeCheck : "1", 14);
+    custom_playIntro.setValue(((int)atoi(settings.playIntro) > 0) ? makeCheck : "1", 14);
+    custom_mode24.setValue(((int)atoi(settings.mode24) > 0) ? makeCheck : "1", 14);
+    #ifdef TC_HAVEGPS
+    custom_useGPS.setValue(((int)atoi(settings.useGPS) > 0) ? makeCheck : "1", 14);
+    #endif
+    custom_autoNM.setValue(((int)atoi(settings.autoNM) > 0) ? makeCheck : "1", 14);
+    custom_dtNmOff.setValue(((int)atoi(settings.dtNmOff) > 0) ? makeCheck : "1", 14);
+    custom_ptNmOff.setValue(((int)atoi(settings.ptNmOff) > 0) ? makeCheck : "1", 14);
+    custom_ltNmOff.setValue(((int)atoi(settings.ltNmOff) > 0) ? makeCheck : "1", 14);
+    #ifdef EXTERNAL_TIMETRAVEL_IN
+    custom_ettLong.setValue(((int)atoi(settings.ettLong) > 0) ? makeCheck : "1", 14);
+    #endif
+    #ifdef FAKE_POWER_ON
+    custom_fakePwrOn.setValue(((int)atoi(settings.fakePwrOn) > 0) ? makeCheck : "1", 14);
+    #endif  
+    #ifdef TC_HAVESPEEDO
+    custom_useSpeedo.setValue(((int)atoi(settings.useSpeedo) > 0) ? makeCheck : "1", 14);
+    #ifdef TC_HAVEGPS
+    custom_useGPSS.setValue(((int)atoi(settings.useGPSSpeed) > 0) ? makeCheck : "1", 14);
+    #endif
+    #ifdef TC_HAVETEMP
+    custom_useTemp.setValue(((int)atoi(settings.useTemp) > 0) ? makeCheck : "1", 14);
+    custom_tempUnit.setValue(((int)atoi(settings.tempUnit) > 0) ? makeCheck : "1", 14);
+    #endif
+    #endif
+    #ifdef EXTERNAL_TIMETRAVEL_OUT
+    custom_useETTO.setValue(((int)atoi(settings.useETTO) > 0) ? makeCheck : "1", 14);
+    #endif
+
+    #endif // ---------------------------------------------    
 
     custom_copyAudio.setValue("", 6);   // Always clear
 }

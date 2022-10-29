@@ -97,6 +97,7 @@ static bool           couldHaveAuthTime = false;
 static bool           haveAuthTime = false;
 uint16_t              lastYear = 0;
 static uint8_t        resyncInt = 5;
+static uint8_t        dstChkInt = 5;
 
 // For tracking second changes
 static bool x = false;  
@@ -308,9 +309,51 @@ dateStruct departedTimes[NUM_AUTOTIMES] = {
 
 #endif  // ------------------------------------
 
+// Night mode
 static bool    autoNightMode = false;
-static uint8_t autoNMOnHour = 0;
+static uint8_t autoNightModeMode = 0;   // 0 = daily hours, 1-4 presets
+static uint8_t autoNMOnHour  = 0;
 static uint8_t autoNMOffHour = 0;
+static const uint32_t autoNMhomePreset[7] = {     // Mo-Th 5pm-11pm, Fr 1pm-1am, Sa 9am-1am, Su 9am-11pm
+        0b011111111000000000000001,   //Sun
+        0b111111111111111110000001,   //Mon
+        0b111111111111111110000001,   //Tue
+        0b111111111111111110000001,   //Wed
+        0b111111111111111110000001,   //Thu
+        0b111111111111100000000000,   //Fri
+        0b011111111000000000000000    //Sat
+};
+static const uint32_t autoNMofficePreset[7] = {   // Mo-Fr 9am-5pm
+        0b111111111111111111111111,   //Sun
+        0b111111111000000001111111,   //Mon
+        0b111111111000000001111111,   //Tue
+        0b111111111000000001111111,   //Wed
+        0b111111111000000001111111,   //Thu
+        0b111111111000000001111111,   //Fri
+        0b111111111111111111111111    //Sat
+};
+static const uint32_t autoNMoffice2Preset[7] = {  // Mo-Th 7am-5pm, Fr 7am-2pm
+        0b111111111111111111111111,   //Sun
+        0b111111100000000001111111,   //Mon
+        0b111111100000000001111111,   //Tue
+        0b111111100000000001111111,   //Wed
+        0b111111100000000001111111,   //Thu
+        0b111111100000001111111111,   //Fri
+        0b111111111111111111111111    //Sat
+};
+static const uint32_t autoNMshopPreset[7] = {     // Mo-We 8am-8pm, Th-Fr 8am-9pm, Sa 8am-5pm
+        0b111111111111111111111111,   //Sun
+        0b111111110000000000001111,   //Mon
+        0b111111110000000000001111,   //Tue
+        0b111111110000000000001111,   //Wed
+        0b111111110000000000000111,   //Thu
+        0b111111110000000000000111,   //Fri
+        0b111111110000000001111111    //Sat
+};
+const uint32_t *autoNMPresets[AUTONM_NUM_PRESETS] = {
+    autoNMhomePreset, autoNMofficePreset, 
+    autoNMoffice2Preset, autoNMshopPreset
+};
 
 // State flags
 static bool DSTcheckDone = false;
@@ -385,7 +428,6 @@ static void myIntroDelay(unsigned int mydel, bool withGPS = true);
 static void waitAudioDoneIntro();
 
 static bool getNTPOrGPSTime();
-static bool getNTPTime();
 static bool getNTPTime();
 #ifdef TC_HAVEGPS
 static bool getGPStime();
@@ -664,7 +706,7 @@ void time_setup()
     if(haveAuthTime) {
         // Save YearOffs & isDST to EEPROM if change is detected
         if( (presentTime.getYearOffset() != presentTime.loadYOffs()) ||
-            (presentTime.getDST() != presentTime.loadDST()) ) {
+            (presentTime.getDST()        != presentTime.loadDST()) ) {
             presentTime.save();
         }
     }
@@ -682,10 +724,10 @@ void time_setup()
     }
 
     // Load the time for initial display
+    
     DateTime dt = myrtcnow();
-    presentTime.setDateTimeDiff(dt);
 
-    // Current year as read from RTC
+    // rtcYear: Current year as read from the RTC
     uint16_t rtcYear = dt.year() - presentTime.getYearOffset();
 
     // lastYear: The year when the RTC was adjusted for the last time.
@@ -710,7 +752,7 @@ void time_setup()
     // RTC year-translation.
     if(lastYear != rtcYear) {
 
-        // Get RTC-fit year plus offs for real year
+        // Get RTC-fit year & offs for real year
         int16_t yOffs = 0;
         uint16_t newYear = rtcYear;
         correctYr4RTC(newYear, yOffs);
@@ -748,24 +790,20 @@ void time_setup()
             dt = myrtcnow();
         }
     }
-    
-    // If DST status is unknown, determine DST status from current local time and date
-    // (This should not ever happen since our own DST routines don't ever return -1)
-    if(couldDST && (presentTime.getDST() == -1)) {
-        int currTimeMins;
-        int myDST = timeIsDST(rtcYear, dt.month(), dt.day(), dt.hour(), dt.minute(), currTimeMins);
-        // We must not make a determination during 'time-loop-hour'
-        if(!(blockDSTChange(currTimeMins))) {
-            presentTime.setDST(myDST);
-            presentTime.save();
-            #ifdef TC_DBG
-            Serial.print(F("time_setup: DST status was -1, is now "));
-            Serial.println(presentTime.getDST(), DEC);
-            #endif
-        }
-    }
+
+    // Load to display
+    presentTime.setDateTimeDiff(dt);
+
+    // If we don't have authTime, DST status (time & flag) might be 
+    // wrong at this point if we're switched on after a long time. 
+    // We leave DST determination to time_loop; just cut short the 
+    // check interval here.
+    if(!haveAuthTime) dstChkInt = 1;
 
     // Set GPS RTC
+    // It does not matter, if DST status (time & flag) is wrong here,
+    // as long as time matches DST flag setting (which it does even
+    // if we have no authTime).
     #ifdef TC_HAVEGPS
     if(useGPS || useGPSSpeed) {
         if(!haveAuthTimeGPS && (haveAuthTime || !rtcbad)) {
@@ -800,11 +838,16 @@ void time_setup()
     loadAlarm();
 
     // Auto-NightMode
+    autoNightMode = (int)atoi(settings.autoNM);
+    autoNightModeMode = (int)atoi(settings.autoNMPreset);
+    if(autoNightModeMode > AUTONM_NUM_PRESETS) autoNightModeMode = 0;
     autoNMOnHour = (int)atoi(settings.autoNMOn);
     if(autoNMOnHour > 23) autoNMOnHour = 0;
     autoNMOffHour = (int)atoi(settings.autoNMOff);
     if(autoNMOffHour > 23) autoNMOffHour = 0;
-    autoNightMode = (autoNMOnHour != autoNMOffHour);
+    if(autoNightMode && (autoNightModeMode == 0)) {
+        autoNightMode = (autoNMOnHour != autoNMOffHour);
+    }
 
     // If using auto times, put up the first one
     if(autoTimeIntervals[autoInterval]) {
@@ -1060,7 +1103,7 @@ void time_loop()
 
     // Power management: CPU speed
     // Can only reduce when GPS is not used and WiFi is off
-    if(!pwrLow &&
+    if(!pwrLow && checkAudioDone() &&
                   #ifdef TC_HAVEGPS
                   !useGPS && !useGPSSpeed &&
                   #endif
@@ -1309,7 +1352,7 @@ void time_loop()
 
                             // User played with RTC; return to actual present time
                             // (Allow a difference of 'allowedDiff' minutes to keep
-                            //  timeDifference in the event of a DST change)
+                            // timeDifference in the event of a DST change)
                             if(wasFakeRTC) timeDifference = 0;
                         }
 
@@ -1428,14 +1471,16 @@ void time_loop()
 
             // Check if we need to switch from/to DST
 
-            if(useDST && !DSTcheckDone && ((dt.minute() % 5) == 0)) {
+            if(useDST && !DSTcheckDone && ((dt.minute() % dstChkInt) == 0)) {
 
+                int oldDST = presentTime.getDST();
                 int currTimeMins = 0;
                 int myDST = timeIsDST(dt.year() - presentTime.getYearOffset(), dt.month(), dt.day(), dt.hour(), dt.minute(), currTimeMins);
 
                 DSTcheckDone = true;
+                dstChkInt = 5;
 
-                if( (myDST != presentTime.getDST()) &&
+                if( (myDST != oldDST) &&
                     (!(blockDSTChange(currTimeMins))) ) {
                   
                     int nyear, nmonth, nday, nhour, nminute;
@@ -1451,33 +1496,39 @@ void time_loop()
                     Serial.println(myDST, DEC);
                     #endif
 
-                    if(myDST == 0) myDiff *= -1;
-
                     presentTime.setDST(myDST);
 
-                    dt = myrtcnow();
+                    // If DST status is -1 (unknown), do not adjust clock,
+                    // only save corrected flag
+                    if(oldDST >= 0) {
 
-                    rtcTime = dateToMins(dt.year() - presentTime.getYearOffset(),
-                                       dt.month(), dt.day(), dt.hour(), dt.minute());
+                        if(myDST == 0) myDiff *= -1;
 
-                    rtcTime += myDiff;
+                        dt = myrtcnow();
+    
+                        rtcTime = dateToMins(dt.year() - presentTime.getYearOffset(),
+                                           dt.month(), dt.day(), dt.hour(), dt.minute());
+    
+                        rtcTime += myDiff;
+    
+                        minsToDate(rtcTime, nyear, nmonth, nday, nhour, nminute);
+    
+                        // Get RTC-fit year & offs for our real year
+                        rtcYear = nyear;
+                        correctYr4RTC(rtcYear, yOffs);
+    
+                        rtc.adjust(dt.second(), 
+                                   nminute, 
+                                   nhour, 
+                                   dayOfWeek(nday, nmonth, nyear),
+                                   nday, 
+                                   nmonth, 
+                                   rtcYear-2000
+                        );
+    
+                        presentTime.setYearOffset(yOffs);
 
-                    minsToDate(rtcTime, nyear, nmonth, nday, nhour, nminute);
-
-                    // Get RTC-fit year & offs for our real year
-                    rtcYear = nyear;
-                    correctYr4RTC(rtcYear, yOffs);
-
-                    rtc.adjust(dt.second(), 
-                               nminute, 
-                               nhour, 
-                               dayOfWeek(nday, nmonth, nyear),
-                               nday, 
-                               nmonth, 
-                               rtcYear-2000
-                    );
-
-                    presentTime.setYearOffset(yOffs);
+                    }
 
                     // Save yearOffset & isDTS to EEPROM
                     if(timetravelPersistent) {
@@ -1503,15 +1554,16 @@ void time_loop()
             lastYear = dt.year() - presentTime.getYearOffset();
             presentTime.saveLastYear(lastYear);
 
-            // Logging beacon
+            // Debug log beacon
             #ifdef TC_DBG
             if((dt.second() == 0) && (dt.minute() != dbgLastMin)) {
-                char dbgBuf[80];
+                char dbgBuf[128];
                 dbgLastMin = dt.minute();
-                sprintf(dbgBuf, "%d[%d-(%d)]/%02d/%02d %02d:%02d:00 (Chip Temp %.2f) / WD of PT: %d",
+                sprintf(dbgBuf, "%d[%d-(%d)]/%02d/%02d %02d:%02d:00 (Chip Temp %.2f) / WD of PT: %d (%d)",
                       lastYear, dt.year(), presentTime.getYearOffset(), dt.month(), dt.day(), dt.hour(), dbgLastMin,
                       rtc.getTemperature(),
-                      dayOfWeek(presentTime.getDay(), presentTime.getMonth(), presentTime.getDisplayYear()));
+                      dayOfWeek(presentTime.getDay(), presentTime.getMonth(), presentTime.getDisplayYear()),
+                      dayOfWeek(dt.day(), dt.month(), dt.year() - presentTime.getYearOffset()));
                 Serial.println(dbgBuf);
             }
             #endif
@@ -1521,13 +1573,13 @@ void time_loop()
             {
                 int compHour = alarmRTC ? dt.hour()   : presentTime.getHour();
                 int compMin  = alarmRTC ? dt.minute() : presentTime.getMinute();
-                int weekDay =  alarmRTC ? dayOfWeek(dt.year() - presentTime.getYearOffset(), 
+                int weekDay =  alarmRTC ? dayOfWeek(dt.day(), 
                                                     dt.month(), 
-                                                    dt.day()) 
+                                                    dt.year() - presentTime.getYearOffset())
                                           : 
-                                          dayOfWeek(presentTime.getDisplayYear(), 
+                                          dayOfWeek(presentTime.getDay(), 
                                                     presentTime.getMonth(), 
-                                                    presentTime.getDay());
+                                                    presentTime.getDisplayYear());
 
                 // Sound to play hourly (if available)
                 // Follows setting for alarm as regards the options
@@ -1568,14 +1620,24 @@ void time_loop()
                 // Handle Auto-NightMode
 
                 if(autoNightMode) {
-                    if((autoNMOnHour == compHour) && (compMin == 0)) {
-                        if(!autoNMDone) {
-                            nightModeOn();
-                            autoNMDone = true;
+                    if(autoNightModeMode == 0) {
+                        if((autoNMOnHour == compHour) && (compMin == 0)) {
+                            if(!autoNMDone) {
+                                nightModeOn();
+                                autoNMDone = true;
+                            }
+                        } else if((autoNMOffHour == compHour) && (compMin == 0)) {
+                            if(!autoNMDone) {
+                                nightModeOff();
+                                autoNMDone = true;
+                            }
+                        } else {
+                            autoNMDone = false;
                         }
-                    } else if((autoNMOffHour == compHour) && (compMin == 0)) {
+                    } else if(compMin == 0) {
                         if(!autoNMDone) {
-                            nightModeOff();
+                            const uint32_t *myField = autoNMPresets[autoNightModeMode - 1];
+                            (myField[weekDay] & (1 << (23 - compHour))) ? nightModeOn() : nightModeOff();
                             autoNMDone = true;
                         }
                     } else {
@@ -1585,7 +1647,7 @@ void time_loop()
 
             }
 
-            // Handle autoInterval
+            // Handle autoInterval ("decorative mode")
 
             // Do this on previous minute:59
             minNext = (dt.minute() == 59) ? 0 : dt.minute() + 1;
@@ -2123,8 +2185,6 @@ static bool getNTPTime()
         int nyear, nmonth, nday, nhour, nmin, nsecond, nisDST;
                 
         if(NTPGetLocalTime(nyear, nmonth, nday, nhour, nmin, nsecond, nisDST)) {
-
-            // Don't waste any time here...
             
             // Get RTC-fit year plus offs for given real year
             newYear = nyear;
@@ -2269,7 +2329,7 @@ static bool getGPStime()
         }
     }
 
-    // Get RTC-fit year plus offs for given real year
+    // Get RTC-fit year & offs for given real year
     newYOffs = 0;
     newYear = nyear;
     correctYr4RTC(newYear, newYOffs);   

@@ -47,7 +47,9 @@ extern bool    haveSD;
 #define DEF_BRIGHT_DEST     15    // 1-15; Default: max brightness
 #define DEF_BRIGHT_PRES     15
 #define DEF_BRIGHT_DEPA     15
-#define DEF_AUTONM_ON       0     // Default: Both 0, Auto-Night-Mode disabled
+#define DEF_AUTONM          0     // Default: AutoNM disabled
+#define DEF_AUTONM_PRESET   0     
+#define DEF_AUTONM_ON       0     // Default: Both 0
 #define DEF_AUTONM_OFF      0
 #define DEF_DT_OFF          1     // Default: Dest. time off in night mode
 #define DEF_PT_OFF          0     // Default: Present time dimmed in night mode
@@ -81,6 +83,8 @@ struct Settings {
     char destTimeBright[4]  = MS(DEF_BRIGHT_DEST);
     char presTimeBright[4]  = MS(DEF_BRIGHT_PRES);
     char lastTimeBright[4]  = MS(DEF_BRIGHT_DEPA);
+    char autoNM[4]          = MS(DEF_AUTONM);
+    char autoNMPreset[4]    = MS(DEF_AUTONM_PRESET);
     char autoNMOn[4]        = MS(DEF_AUTONM_ON);
     char autoNMOff[4]       = MS(DEF_AUTONM_OFF);
     char dtNmOff[4]         = MS(DEF_DT_OFF);
