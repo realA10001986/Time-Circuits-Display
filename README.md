@@ -2,7 +2,7 @@
 
 This repository holds the current firmware for the wonderful ESP32-based [Time-Circuits-Display](https://circuitsetup.us/product/complete-time-circuits-display-kit/).
 
-Readily available here: https://circuitsetup.us/product/complete-time-circuits-display-kit/
+The hardware is readily available here: https://circuitsetup.us/product/complete-time-circuits-display-kit/
 
 ![TCD_Front](https://user-images.githubusercontent.com/76924199/194286089-8f3b6ae8-2e50-46c0-8476-8c4cf0775188.jpg)
 
@@ -64,7 +64,9 @@ If you want to re-use the SD card for substituting the default sound files, plea
 - After saving the WiFi network settings, the device reboots and tries to connect to your configured WiFi network. If it fails to connect to your network, the device will again start in access point mode. 
 - Next, if DHCP is used, find out about the IP address assigned to the device. Hold ENTER on the keypad for 2 seconds, then repeatedly press ENTER until "NET-WORK" is shown, then hold ENTER for 2 seconds. The device will then show its current IP address.
 
-Knowing the device's IP address enables you to (re-)enter the Config Portal: Direct your browser to http://a.b.c.d (a.b.c.d being the Ip address as shown the last step above) and configure other settings on the "Setup" page, first and foremost NTP server (if available) and your time zone. A list of valid times zones is accessible by a link on the settings page. If the time zone isn't set correctly, the clock will show a wrong time and DST (daylight saving) will not be switched on/off correctly.
+Knowing the device's IP address enables you to (re-)enter the **Config Portal**: Direct your browser to http://a.b.c.d (a.b.c.d being the Ip address as shown the last step above) and configure other settings on the "Setup" page, first and foremost NTP server (if available) and your time zone. A list of valid times zones is accessible by a link on the settings page. If the time zone isn't set correctly, the clock will show a wrong time and DST (daylight saving) will not be switched on/off correctly.
+
+![Screenshot-2022-10-29-at-14 25 13](https://user-images.githubusercontent.com/76924199/198831555-cb9a4170-885d-4c23-9eaa-c5b20f6b72de.jpg)
 
 There are two ways of configuring the device: Through the aforementioned Config Portal (ie the network), or the keypad menu, as described [further below](#the-keypad-menu). Not all settings, however, are configurable in both.
 
