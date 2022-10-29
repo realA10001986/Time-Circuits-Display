@@ -38,6 +38,7 @@
 
 #include "tc_settings.h"
 #include "tc_menus.h"
+#include "tc_time.h"
 
 /*
  * Mount SPIFFS/LittleFS, und SD (if available)
@@ -281,6 +282,14 @@ void settings_setup()
                         strcpy(settings.playIntro, json["playIntro"]);
                         writedefault |= checkValidNumParm(settings.playIntro, 0, 1, DEF_PLAY_INTRO);
                     } else writedefault = true;
+                    if(json["autoNM"]) {
+                        strcpy(settings.autoNM, json["autoNM"]);
+                        writedefault |= checkValidNumParm(settings.autoNM, 0, 1, DEF_AUTONM);
+                    } else writedefault = true;
+                    if(json["autoNMPreset"]) {
+                        strcpy(settings.autoNMPreset, json["autoNMPreset"]);
+                        writedefault |= checkValidNumParm(settings.autoNMPreset, 0, AUTONM_NUM_PRESETS, DEF_AUTONM_PRESET);
+                    } else writedefault = true;
                     if(json["autoNMOn"]) {
                         strcpy(settings.autoNMOn, json["autoNMOn"]);
                         writedefault |= checkValidNumParm(settings.autoNMOn, 0, 23, DEF_AUTONM_ON);
@@ -431,6 +440,8 @@ void write_settings()
     #endif
     json["alarmRTC"] = settings.alarmRTC;
     json["playIntro"] = settings.playIntro;
+    json["autoNM"] = settings.autoNM;
+    json["autoNMPreset"] = settings.autoNMPreset;
     json["autoNMOn"] = settings.autoNMOn;
     json["autoNMOff"] = settings.autoNMOff;
     json["dtNmOff"] = settings.dtNmOff;

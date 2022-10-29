@@ -958,6 +958,8 @@ static bool loadCurVolume()
 
         curVolume = 255;
 
+        saveCurVolume();
+
         return false;
     }
 

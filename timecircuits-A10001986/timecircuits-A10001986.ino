@@ -64,6 +64,17 @@
 
 /*  Changelog
  *
+ *  2022/10/29 (A10001986)
+ *    - Added auto night-mode presets. There are currently four presets, for
+ *      (hopefully) typical home, office and store setups. The times in the description
+ *      define when the clock is in use, which might appear somewhat counter-intuitive 
+ *      at first, but is easier to describe:
+ *      Home: Mon-Thu 5pm-11pm, Fri 1pm-1am, Sat 9am-1am, Sun 9am-11pm
+ *      Office (1): Mon-Fri 9am-5pm
+ *      Office (2): Mon-Thu 7am-5pm, Fri 7am-2pm
+ *      Shop: Mon-Wed 8am-8pm, Thu-Fri 8am-9pm, Sat 8am-5pm
+ *      The old daily "start hour" and "end hour" setting still present, of course.
+ *    - time_loop: Do not adjust time if DST flag is -1
  *  2022/10/27 (A10001986)
  *    - Minor fixes/enhancements (in time setup, etc)
  *  2022/10/26 (A10001986)

@@ -37,6 +37,8 @@
 #endif
 #endif
 
+#define AUTONM_NUM_PRESETS 4
+
 extern unsigned long  powerupMillis;
 
 extern uint16_t lastYear;

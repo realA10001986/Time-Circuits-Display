@@ -707,7 +707,7 @@ bool clockDisplay::save()
         savBuf[5] = _day;
         savBuf[6] = _hour;
         savBuf[7] = _minute;
-        savBuf[8] = 0;        // was _brightness, now in settings
+        savBuf[8] = 0;        // unused
 
         for(i = 0; i < 9; i++) {
             sum += savBuf[i];
@@ -720,8 +720,8 @@ bool clockDisplay::save()
 
     } else if(isRTC() && _saveAddress >= 0) {
 
-        // RTC: Save yearoffs, timeDiff (time comes from battery-backed RTC)
-
+        // RTC: Save IsDST, yearoffs, timeDiff
+        
         #ifdef TC_DBG
         Serial.println(F("Clockdisplay: Saving RTC settings to EEPROM"));
         #endif
@@ -882,7 +882,7 @@ bool clockDisplay::load(int initialBrightness)
 
     } else {
 
-        // RTC: yearoffs & timeDiff is saved
+        // RTC: IsDST, yearoffs & timeDiff is saved
 
         for(i = 0; i < 10; i++) {
             loadBuf[i] = EEPROM.read(_saveAddress + i);
