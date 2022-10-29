@@ -112,9 +112,19 @@ Note that a non-zero Time-rotation Interval will force the device to cycle throu
 
 ## Night mode
 
-Night mode will switch off the *destination time* and *last time departed* displays, dim the *present time* display to a minimum, and reduce the volume of sound playback (except alarm). Holding "4" enables night mode, holding "5" disables it.
+Night mode will, by default, switch off the *destination time* and *last time departed* displays, dim the *present time* display to a minimum, and reduce the volume of sound playback (except alarm). This behavior, as regards displays off/dimmed, can changed in the Config Portal.
 
-In the Config Portal, you can also configure "automatic night mode". Enter start and end hours, and the device will go into night mode at the defined start hour (xx:00), and return to normal at the end hour (yy:00). To disable automatic night mode, set start and end to the same value.
+To switch on night-mode manually, hold "4". To switch off night-mode, hold "5".
+
+In the Config Portal, you can also configure "automatic night mode". You can choose from currently four time schedule presets, or enter daily start and end hour manually.
+
+The presets are for (hopefully) typical home, office and shop setups, and they assume to clock to be in use (ie night mode off) at the following times:
+- Home: Mon-Thu 5pm-11pm, Fri 1pm-1am, Sat 9am-1am, Sun 9am-11pm
+- Office (1): Mon-Fri 9am-5pm
+- Office (2): Mon-Thu 7am-5pm, Fri 7am-2pm
+- Shop: Mon-Wed 8am-8pm, Thu-Fri 8am-9pm, Sat 8am-5pm
+
+The fifth way is to enter start and end for a daily schedule. The clock will go into night mode at the defined start hour (xx:00), and return to normal at the end hour (yy:00). 
 
 Apart from increasing the displays' lifetime, Night Mode reduces the power consumption of the device from around 4.5W to around 2.5W.
 
