@@ -218,7 +218,7 @@ Note that the alarm is recurring, ie it rings every day at the programmed time, 
 #### How to install the default audio files:
 
 - Hold ENTER to invoke main menu
-- Press ENTER repeatedly until "INSTALL AUDIO FILES" is shown. If this menu does not appear, the SD card isn't configured properly; see the "Audio file installation" section at the top of this document.
+- Press ENTER repeatedly until "INSTALL AUDIO FILES" is shown. If this menu does not appear, the SD card isn't configured properly; see the [Audio file installation](#audio-file-installation) section.
 - Hold ENTER to proceed
 - Press ENTER to toggle between "CANCEL" and "COPY"
 - Hold ENTER to proceed. If "COPY" was chosen, the display will guide you through the rest of the process. The menu is quit automatically afterwards.
@@ -230,7 +230,7 @@ Note that the alarm is recurring, ie it rings every day at the programmed time, 
  
 ## SD card
 
-The provided audio files are, after proper installation (see "[Audio file installation](#audio-file-installation)" section at the top of this document), part of the firmware and stored in the device's flash file system. These default sounds can, however, be substituted by files on a FAT32-formatted SD card, and will be played back from the SD card. No installation necessary. 
+The provided audio files are, after proper installation (see "[Audio file installation](#audio-file-installation)" section), part of the firmware and stored in the device's flash file system. These default sounds can, however, be substituted by files on a FAT32-formatted SD card, and will be played back from the SD card. No installation necessary. 
 
 Your custom replacements need to be put in the root directoy of the card, be in mp3 format (128kbps recommended) and named as follows:
 - "enter.mp3". Played when a date was entered and ENTER was pressed
