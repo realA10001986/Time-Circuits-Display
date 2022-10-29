@@ -240,7 +240,7 @@ Your custom replacements need to be put in the root directoy of the SD card, be 
 - "nmon.mp3". Played when manually enabling night mode by holding "4"
 - "nmoff.mp3". Played when manually disabling night mode by holding "5"
 
-The following sounds are time-sync'd to display action. If you decide to substitute these with your own, be prepared to lose synchronicity to display action:
+The following sounds are time-sync'd to display action. If you decide to substitute these with your own, be prepared to lose synchronicity:
 - "enter.mp3". Played when a date was entered and ENTER was pressed
 - "baddate.mp3". Played when a bad (too short or too long) date was entered and ENTER was pressed
 - "intro.mp3": Played during the power-up intro
