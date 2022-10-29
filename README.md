@@ -43,19 +43,16 @@ There are different alternative ways to install this firmware:
 
 While the sound files are part of this software, they need to be installed separately.
 
-If you are familiar with the Arduino IDE (1.8), you could use "Tools"->"ESP32 Sketch Data Upload" to upload the sound files. Version 2.x of the IDE lacks that data upload menu item and/or plug-ins; in this case go the other way:
-
-The other way is as follows:
 - Copy all the files in the "data" folder to the root folder of a FAT32 formatted SD card (it is recommended to format this card before usage, but if it contains other files, these will be ignored)
 - power down the clock,
-- insert this SD card into the device and 
+- insert this SD card into the device's slot and 
 - power up the clock.
  
-If (and only if) the **exact and complete contents of the data folder** is found on the SD card during boot, the keypad will have an "INSTALL AUDIO FILES" menu item, and the Config portal will show an "Audio file installation" option at the bottom of the "Setup" page. 
+If (and only if) the **exact and complete contents of the data folder** is found on the SD card during boot, the keypad will have an "INSTALL AUDIO FILES" menu item, and the Config portal will show an "Audio file installation" option at the bottom of the "Setup" page.
 
-If you choose to use the Config Portal, trigger the audio file installation process by writing "COPY" into the empty text field, and clicking on "Save". The device will then copy all the default audio files from the SD to its internal flash file system. The SD can (and should) be removed afterwards. The keypad menu method is described [further down](#the-keypad-menu) in this document.
+If you choose to use the Config Portal, trigger the audio file installation process by writing "COPY" (without the quotation marks) into the empty text field, and clicking on "Save". The device will then copy all the default audio files from the SD to its internal flash file system. The SD can - and should - be removed afterwards. The keypad menu method is described [here](#how-to-install-the-default-audio-files).
 
-If you want to re-use the SD card for substituting the default sound files, please remove the default files and "TCD_def_snd.txt" from the SD card first. More information on sound substitution can be found below in the "[SD card](#sd-card)" section of this document.
+(Expert way: If you are familiar with the Arduino IDE (1.8), you could use "Tools"->"ESP32 Sketch Data Upload" to upload the sound files. Version 2.x of the IDE lacks that data upload menu item and/or plug-ins; in this case go the way described above.)
 
 ## Short summary of first steps
 
@@ -232,27 +229,27 @@ Note that the alarm is recurring, ie it rings every day at the programmed time, 
  
 ## SD card
 
-The provided audio files are, after proper installation (see "[Audio file installation](#audio-file-installation)"), part of the firmware and stored in the device's flash memory. These default sounds can, however, be substituted by files on a FAT32-formatted SD card, and will be played back from the SD card. No installation necessary. 
+The provided audio files are, after [proper installation](#audio-file-installation), part of the firmware and stored in the device's flash memory. 
 
-Your custom replacements need to be put in the root directoy of the SD card, be in mp3 format (128kbps recommended) and named as follows:
+The default sounds can be substituted by your own sound files on a FAT32-formatted SD card. These files will be played back directly from the SD card during operation, so the SD card has to remain in the slot. The built-in [Audio file installer](#audio-file-installation) cannot be used to replace default sounds in the device's flash memory with custom sounds. 
+
+Your custom replacements need to be put in the root directoy of the SD card, be in mp3 format (128kbps) and named as follows:
+- "alarm.mp3". Played when the alarm sounds.
+- "alarmon.mp3". Played when enabling the alarm by holding "1"
+- "alarmoff.mp3". Played when disabling the alarm by holding "2"
+- "nmon.mp3". Played when manually enabling night mode by holding "4"
+- "nmoff.mp3". Played when manually disabling night mode by holding "5"
+
+The following sounds are time-sync'd to display action. If you decide to substitute these with your own, be prepared to lose synchronicity to display action:
 - "enter.mp3". Played when a date was entered and ENTER was pressed
 - "baddate.mp3". Played when a bad (too short or too long) date was entered and ENTER was pressed
 - "intro.mp3": Played during the power-up intro
 - "travelstart.mp3". Played when a time travel starts.
 - "timetravel.mp3". Played when re-entry of a time travel takes place.
-- "alarm.mp3". Played when the alarm sounds.
-- "alarmon.mp3". Played when enabling the alarm by holding "1"
-- "alarmoff.mp3". Played when disabling the alarm by holding "2"
-- "nmon.mp3". Played when enabling night mode by holding "4"
-- "nmoff.mp3". Played when disabling night mode by holding "5"
 - "shutdown.mp3". Played when the device is fake "powered down" using an external switch (see below)
 - "startup.mp3". Played when the clock is connected to power and finished booting
 
-If a file is not found on the SD card, the default file from the device's flash memory will be played.
-
-Several sounds are time-sync'd to display action, such as "intro", "enter", "baddate", "startup", "timetravel", "travelstart". If you substitute those with custom files on the SD card, synchronicity will naturally be lost.
-
-Note that the "Audio file installer" cannot be used to replace default sounds in the device's flash memory with custom sounds. Your custom sounds will be played back from the SD card, which needs to remain in the slot.
+If you intend to use the very same SD card that you used for installing the default sound files, please remove the file "TCD_def_snd.txt" from the SD card first.
 
 ## Additional Custom Sounds
 
