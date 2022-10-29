@@ -62,7 +62,9 @@ If you want to re-use the SD card for substituting the default sound files, plea
 - As long as the device is unconfigured or later for some reason fails to connect to a configured WiFi network, it starts in "access point" mode, i.e. it creates a WiFi access point named "TCD-AP". The default IP in access point mode is 192.168.4.1. Please turn the volume knob down to a minimum while in AP mode; this mode needs more power and might - in connection with a high volume level - cause the 3.3V converter on the ESP32 to overload, resulting in a freeze or crash of the software.
 - Using your computer or handheld device, connect to the AP and go to http://192.168.4.1 in your browser to enter the Config Portal, click on "Configure WiFi" and configure your Wifi network. Note that the device expects an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). (If the device is inaccessible as a result of wrong static IPs, hold ENTER when powering it up until the white LED lits; static IP data will be deleted and the device will return to DHCP.)
 - After saving the WiFi network settings, the device reboots and tries to connect to your configured WiFi network. If it fails to connect to your network, the device will again start in access point mode. 
-- Next, if DHCP is used, find out about the IP address assigned to the device. Hold ENTER on the keypad for 2 seconds, then repeatedly press ENTER until "NET-WORK" is shown, then hold ENTER for 2 seconds. The device will then show its current IP address.
+- Next, if DHCP is used, find out about the IP address assigned to the device. Hold ENTER on the keypad for 2 seconds, then repeatedly press ENTER until "NET-WORK" is shown, then hold ENTER for 2 seconds. The device will then show its current IP address. Use this to enter the Config Portal, as described immediately below.
+
+### The Config Portal
 
 Knowing the device's IP address enables you to (re-)enter the **Config Portal**: Direct your browser to http://a.b.c.d (a.b.c.d being the Ip address as shown in the last step above) and configure other settings on the "Setup" page, first and foremost NTP server (if available) and your time zone. A list of valid times zones is accessible by a link on the settings page. If the time zone isn't set correctly, the clock will show a wrong time and DST (daylight saving) will not be switched on/off correctly.
 
@@ -72,7 +74,7 @@ Knowing the device's IP address enables you to (re-)enter the **Config Portal**:
 
 There are two ways of configuring the device: Through the aforementioned Config Portal (ie the network), or the keypad menu, as described [further below](#the-keypad-menu). Not all settings, however, are configurable in both.
 
-If you don't have WiFi access, you can set the time through the keypad menu, see below.
+If you don't have WiFi access, you can set the time through the [keypad menu](#how-to-enter-datestimes-for-the-three-displays).
 
 ## Operation basics
 
