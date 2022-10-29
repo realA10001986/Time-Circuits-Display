@@ -66,7 +66,7 @@ If you want to re-use the SD card for substituting the default sound files, plea
 
 ### The Config Portal
 
-Knowing the device's IP address enables you to enter the Config Portal: Direct your browser to http://a.b.c.d (a.b.c.d being the Ip address as shown in the last step above) and configure other settings on the "Setup" page, first and foremost NTP server (if available) and your time zone. If the time zone isn't set correctly, the clock will show a wrong time, and DST (daylight saving) will not be switched on/off correctly.
+Knowing the device's IP address enables you to enter the Config Portal: Direct your browser to http://a.b.c.d (a.b.c.d being the Ip address as shown in the last step above) and configure other settings on the "Setup" page, first and foremost your time zone. If the time zone isn't set correctly, the clock will show a wrong time, and DST (daylight saving) will not be switched on/off correctly.
 
 | ![The_Config_Portal](https://user-images.githubusercontent.com/76924199/198831635-8cfef3ca-a06e-4321-b2fd-d23cc1e91c56.jpg) |
 |:--:| 
@@ -114,11 +114,11 @@ If you want your device to display exactly the same after a power loss, choose p
 
 If you want to display your favorite *destination time* and *last time departed* upon power-up, and not have time travels overwrite them in flash memory, choose "non-persistent", and program your times through the keypad menu (and set the Time-rotation Interval to 0). Those times will never be overwritten in flash memory by later time travels. Note, however, that the times displayed might actually change due to time travels.
 
-Note that a non-zero Time-rotation Interval will force the device to cycle through the list of pre-programmed times, regardless of your time travel persistence setting. This cycling will, however, paused for 30 minutes if you entered a new destination time and/or travelled in time.
+Note that a non-zero Time-rotation Interval will force the device to cycle through the list of pre-programmed times, regardless of your time travel persistence setting. This cycling will, however, be paused for 30 minutes after you entered a new destination time and/or travelled in time.
 
 ## Night mode
 
-Night mode will, by default, switch off the *destination time* and *last time departed* displays, dim the *present time* display to a minimum, and reduce the volume of sound playback (except alarm). This behavior, as regards displays off/dimmed, can changed in the Config Portal.
+Night mode will, by default, switch off the *destination time* and *last time departed* displays, dim the *present time* display to a minimum, and reduce the volume of sound playback (except alarm). This behavior, as regards the displays (off/dimmed), can changed in the Config Portal.
 
 To switch on night-mode manually, hold "4". To switch off night-mode, hold "5".
 
@@ -130,7 +130,7 @@ The presets are for (hopefully) typical home, office and shop setups, and they a
 - Office (2): Mon-Thu 7am-5pm, Fri 7am-2pm
 - Shop: Mon-Wed 8am-8pm, Thu-Fri 8am-9pm, Sat 8am-5pm
 
-The fifth way is to enter start and end for a daily schedule. The clock will go into night mode at the defined start hour (xx:00), and return to normal at the end hour (yy:00). 
+The fifth way is to enter start and end for a daily schedule. The clock will go into night mode at the defined start hour (xx:00), and return to normal operation at the end hour (yy:00). 
 
 Apart from increasing the displays' lifetime, Night Mode reduces the power consumption of the device from around 4.5W to around 2.5W.
 
@@ -232,9 +232,9 @@ Note that the alarm is recurring, ie it rings every day at the programmed time, 
  
 ## SD card
 
-The provided audio files are, after proper installation (see "[Audio file installation](#audio-file-installation)" section), part of the firmware and stored in the device's flash file system. These default sounds can, however, be substituted by files on a FAT32-formatted SD card, and will be played back from the SD card. No installation necessary. 
+The provided audio files are, after proper installation (see "[Audio file installation](#audio-file-installation)"), part of the firmware and stored in the device's flash memory. These default sounds can, however, be substituted by files on a FAT32-formatted SD card, and will be played back from the SD card. No installation necessary. 
 
-Your custom replacements need to be put in the root directoy of the card, be in mp3 format (128kbps recommended) and named as follows:
+Your custom replacements need to be put in the root directoy of the SD card, be in mp3 format (128kbps recommended) and named as follows:
 - "enter.mp3". Played when a date was entered and ENTER was pressed
 - "baddate.mp3". Played when a bad (too short or too long) date was entered and ENTER was pressed
 - "intro.mp3": Played during the power-up intro
@@ -252,7 +252,7 @@ If a file is not found on the SD card, the default file from the device's flash 
 
 Several sounds are time-sync'd to display action, such as "intro", "enter", "baddate", "startup", "timetravel", "travelstart". If you substitute those with custom files on the SD card, synchronicity will naturally be lost.
 
-Note that the "Audio file installer" cannot be used to replace default sounds in the device's flash memory with custom sounds. Your custom sounds will be played back from the SD card, which needs to remain in the slot for that matter.
+Note that the "Audio file installer" cannot be used to replace default sounds in the device's flash memory with custom sounds. Your custom sounds will be played back from the SD card, which needs to remain in the slot.
 
 ## Additional Custom Sounds
 
@@ -283,7 +283,7 @@ Luckily, there is a row of solder pads right next to the socket on the control b
 
 ## External speedometer
 
-The firmware supports a speedometer display connected via i2c (address 0x70) as part of the time travel sequence. Unfortunately, CircuitSetup have not yet designed such a speedometer, so you are on your own to build one for the time being. There are, however, various readily available LED segment displays from Adafruit and Grove, that can be used as a basis. Adafruit 878, 1270 and 1922, as well as Grove 0.54" 14-segment 2 or 4 digit alphanumeric displays are supported. (The product numbers vary with color, the numbers here are the red ones.)
+The firmware supports a speedometer display connected via i2c (slave address 0x70) as part of the time travel sequence. Unfortunately, CircuitSetup have not yet designed such a speedometer, so you are on your own to build one for the time being. There are, however, various readily available LED segment displays from Adafruit and Grove, that can be used as a basis. Adafruit 878, 1270 and 1922, as well as Grove 0.54" 14-segment 2 or 4 digit alphanumeric displays are supported. (The product numbers vary with color, the numbers here are the red ones.)
 
 [![Watch the video](https://img.youtube.com/vi/FRRecGxAONc/0.jpg)](https://youtu.be/FRRecGxAONc)
 
@@ -293,7 +293,7 @@ Since the I2C bus is already quite long from the control board to the last displ
 
 ## GPS receiver
 
-The firmware supports an MT(K)3333-based GPS receiver, connected through i2c. The CircuitSetup-designed speedo display will have such a chip built-in, but since this gadget is not yet available, in the meantime, you can fall back to alternatives such as the Adafruit Mini GPS PA1010D (product id 4415). The GPS receiver can be used both as a source of authoritative time (like NTP), or display speed of movement on a speedo display.
+The firmware supports an MT(K)3333-based GPS receiver, connected through i2c (slave address 0x10). The CircuitSetup-designed speedo display will have such a chip built-in, but since this gadget is not yet available, in the meantime, you use alternatives such as the Adafruit Mini GPS PA1010D (product id 4415). The GPS receiver can be used both as a source of authoritative time (like NTP), or display speed of movement on a speedo display.
 
 GPS receivers receive signals from satellites, but in order to do so, they need to be "tuned in" (aka get a "fix"). This "tuning" process can take a long time; after first power up, it can take 30 minutes or more for a receiver to be able to determine its position. In order to speed up this process, modern GPS receivers have special "assisting" features. One key element is knowledge of current time, as this helps identifying satellite signals quicker. So, in other words, initially, you need to tell the receiver, what it is supposed to tell you. However, as soon as the receiver has received satellite signals for 15-20 minutes, it saves the data it collected to its battery-backed memory and will find a fix within seconds after power-up in the future.
 
@@ -311,7 +311,7 @@ One nice feature of GPS is that the receiver can deliver current speed of moveme
 
 ## Temperature sensor
 
-Unless you do time travelling on a regular basis, the speedo display is idle most of the time in a typical home setup. To give it more of a purpose, the software supports connecting a MCP9808-based temperature sensor to the i2c bus (readily available from Adafruit, product number 1782). After connecting this sensor and enabling it in the Config Portal, the speedo display will show the ambient temperature in idle mode. (Note that you need a speedo display in order to use the temperature sensor.)
+Unless you do time travelling on a regular basis, the speedo display is idle most of the time in a typical home setup. To give it more of a purpose, the software supports connecting a MCP9808-based temperature sensor to the i2c bus (slave address 0x18; readily available from Adafruit, product number 1782). After connecting this sensor and enabling it in the Config Portal, the speedo display will show the ambient temperature in idle mode. (Note that you need a speedo display in order to use the temperature sensor.)
 
 ## WiFi power saving features
 
