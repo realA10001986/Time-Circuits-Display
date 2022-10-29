@@ -231,9 +231,9 @@ Note that the alarm is recurring, ie it rings every day at the programmed time, 
 
 The provided audio files are, after [proper installation](#audio-file-installation), part of the firmware and stored in the device's flash memory. 
 
-The default sounds can be substituted by your own sound files on a FAT32-formatted SD card. These files will be played back directly from the SD card during operation, so the SD card has to remain in the slot. The built-in [Audio file installer](#audio-file-installation) cannot be used to replace default sounds in the device's flash memory with custom sounds. 
+These sounds can be substituted by your own sound files on a FAT32-formatted SD card. These files will be played back directly from the SD card during operation, so the SD card has to remain in the slot. The built-in [Audio file installer](#audio-file-installation) cannot be used to replace default sounds in the device's flash memory with custom sounds. 
 
-Your custom replacements need to be put in the root directoy of the SD card, be in mp3 format (128kbps) and named as follows:
+Your replacements need to be put in the root directoy of the SD card, be in mp3 format (128kbps) and named as follows:
 - "alarm.mp3". Played when the alarm sounds.
 - "alarmon.mp3". Played when enabling the alarm by holding "1"
 - "alarmoff.mp3". Played when disabling the alarm by holding "2"
