@@ -66,8 +66,7 @@ If you want to re-use the SD card for substituting the default sound files, plea
 
 Knowing the device's IP address enables you to (re-)enter the **Config Portal**: Direct your browser to http://a.b.c.d (a.b.c.d being the Ip address as shown in the last step above) and configure other settings on the "Setup" page, first and foremost NTP server (if available) and your time zone. A list of valid times zones is accessible by a link on the settings page. If the time zone isn't set correctly, the clock will show a wrong time and DST (daylight saving) will not be switched on/off correctly.
 
-![The_Config_Portal](https://user-images.githubusercontent.com/76924199/198831635-8cfef3ca-a06e-4321-b2fd-d23cc1e91c56.jpg)
-*The Config Portal*
+![The_Config_Portal](https://user-images.githubusercontent.com/76924199/198831635-8cfef3ca-a06e-4321-b2fd-d23cc1e91c56.jpg)*The Config Portal*
 
 There are two ways of configuring the device: Through the aforementioned Config Portal (ie the network), or the keypad menu, as described [further below](#the-keypad-menu). Not all settings, however, are configurable in both.
 
