@@ -1,6 +1,6 @@
 # Firmware for Time-Circuits-Display
 
-This repository holds the current firmware for the wonderful ESP32-based [Time-Circuits-Display](https://circuitsetup.us/product/complete-time-circuits-display-kit/).
+This repository holds the most current firmware for CircuitSetup's wonderful ESP32-based [Time-Circuits-Display](https://circuitsetup.us/product/complete-time-circuits-display-kit/).
 
 The hardware is readily available here: https://circuitsetup.us/product/complete-time-circuits-display-kit/
 
