@@ -68,7 +68,7 @@ Knowing the device's IP address enables you to (re-)enter the **Config Portal**:
 
 | ![The_Config_Portal](https://user-images.githubusercontent.com/76924199/198831635-8cfef3ca-a06e-4321-b2fd-d23cc1e91c56.jpg) |
 |:--:| 
-| *The Config Portal* |
+| *The Config Portal's Setup page* |
 
 There are two ways of configuring the device: Through the aforementioned Config Portal (ie the network), or the keypad menu, as described [further below](#the-keypad-menu). Not all settings, however, are configurable in both.
 
