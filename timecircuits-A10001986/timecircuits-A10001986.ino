@@ -64,6 +64,21 @@
 
 /*  Changelog
  *
+ *  2022/10/31 (A10001986)
+ *    - Strengthen logic regarding when to try to resync time with NTP or GPS; if 
+ *      there is no autoritative time, WiFi power saving timeout is set long enough 
+ *      to avoid consecutive reconnects (and thereby frozen displays). This 
+ *      essentially defeats the WiFi power saving feature, but accurate time is 
+ *      more important than power saving. This is a clock after all.
+ *    - Fix NTP update when WiFi is on power-save mode (ie off); WiFiManager's annoying 
+ *      async WiFi scan when re-connecting and starting the Config Portal prohibited an 
+ *      NTP update within the available time frame. Fixed by immediately re-triggering 
+ *      an NTP request when an old packet timed out.
+ *    - Do not start Config Portal when WiFi is reconnecting because of an NTP update.
+ *      (This also fixes the issue above, but both measures are reasonable)
+ *    - NTP: Give request packets a unique id in order to filter out outdated 
+ *      responses.
+ *    - NTP: Packet timeout changed from 3 to 10 seconds.
  *  2022/10/29 (A10001986)
  *    - Added auto night-mode presets. There are currently four presets, for
  *      (hopefully) typical home, office and store setups. The times in the description

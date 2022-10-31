@@ -277,7 +277,7 @@ static void keypadEvent(KeypadEvent key)
                 doKey = false;
                 play_file("/ping.mp3", 1.0, true, 0);
                 waitAudioDone();
-                wifiOn(0, true);    // Enable WiFi even if in AP mode
+                wifiOn(0, true, false);    // Enable WiFi even if in AP mode, with CP
             }
             break;
         case RELEASED:
