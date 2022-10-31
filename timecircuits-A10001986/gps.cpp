@@ -163,6 +163,12 @@ int16_t tcGPS::getSpeed()
     return -1;
 }
 
+
+bool tcGPS::haveTime()
+{
+    return (_haveDateTime || _haveDateTime2);
+}
+
 /*
  * Set GPS' RTC time
  * timeinfo returned is in UTC

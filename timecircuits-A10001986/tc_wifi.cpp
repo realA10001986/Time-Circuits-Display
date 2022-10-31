@@ -398,7 +398,7 @@ void wifi_loop()
                 Serial.println("Re-writing alarm settings");
                 #endif
                 saveAlarm();          // re-write alarm settings
-                // all other written below
+                // all others written below
                 forceCopyAudio = true;
             }
         }
@@ -439,8 +439,7 @@ void wifi_loop()
 
             getParam("rotate_times", settings.autoRotateTimes, 1);
             if(strlen(settings.autoRotateTimes) == 0) {
-              settings.autoRotateTimes[0] = DEF_AUTOROTTIMES + '0';
-              settings.autoRotateTimes[1] = '\0';
+                sprintf(settings.autoRotateTimes, "%d", DEF_AUTOROTTIMES);
             }
             strcpy(settings.wifiConRetries, custom_wifiConRetries.getValue());
             strcpy(settings.wifiConTimeout, custom_wifiConTimeout.getValue());
@@ -454,8 +453,7 @@ void wifi_loop()
             strcpy(settings.lastTimeBright, custom_lastTimeBright.getValue());
             getParam("autonmtimes", settings.autoNMPreset, 1);
             if(strlen(settings.autoNMPreset) == 0) {
-              settings.autoNMPreset[0] = DEF_AUTONM_PRESET + '0';
-              settings.autoNMPreset[1] = '\0';
+                sprintf(settings.autoNMPreset, "%d", DEF_AUTONM_PRESET);
             }
             strcpy(settings.autoNMOn, custom_autoNMOn.getValue());
             strcpy(settings.autoNMOff, custom_autoNMOff.getValue());
@@ -467,8 +465,7 @@ void wifi_loop()
             #ifdef TC_HAVESPEEDO
             getParam("speedo_type", settings.speedoType, 2);
             if(strlen(settings.speedoType) == 0) {
-              settings.speedoType[0] = DEF_SPEEDO_TYPE + '0';
-              settings.speedoType[1] = '\0';
+                sprintf(settings.speedoType, "%d", DEF_SPEEDO_TYPE);
             }
             strcpy(settings.speedoBright, custom_speedoBright.getValue());
             strcpy(settings.speedoFact, custom_speedoFact.getValue());
@@ -568,6 +565,10 @@ void wifi_loop()
         shouldSaveConfig = 0;
 
         // Reset esp32 to load new settings
+
+        allOff();
+        destinationTime.showOnlyText("REBOOTING");
+        destinationTime.on();
 
         #ifdef TC_DBG
         Serial.println(F("WiFi: Restarting ESP...."));
@@ -700,7 +701,7 @@ void wifiOff()
     WiFi.mode(WIFI_OFF);
 }
 
-void wifiOn(unsigned long newDelay, bool alsoInAPMode)
+void wifiOn(unsigned long newDelay, bool alsoInAPMode, bool deferCP)
 {
     unsigned long desiredDelay;
     unsigned long Now = millis();
@@ -723,12 +724,21 @@ void wifiOn(unsigned long newDelay, bool alsoInAPMode)
             Serial.println(wifiOffDelay, DEC);
             #endif
         }
-        if(!wifiIsOff) return;
+        if(!wifiIsOff) {
+            // If WiFi is not off, check if user wanted
+            // to start the CP, and do so, if not running
+            if(!deferCP) {
+                if(!wm.getWebPortalActive()) {
+                    wm.startWebPortal();
+                }
+            }
+            return;
+        }
     }
 
     WiFi.mode(WIFI_MODE_STA);
 
-    wifiConnect(false);
+    wifiConnect(deferCP);
 }
 
 void wifiStartCP()
@@ -741,9 +751,9 @@ void wifiStartCP()
 
 // This is called when the WiFi config changes, so it has
 // nothing to do with our settings here. Despite that,
-// we write out our config file so that if the user initially
+// we write out our config file so that when the user initially
 // configures WiFi, a default settings file exists upon reboot.
-// Also, this causes a reboot, so if the user entered static
+// Also, this triggers a reboot, so if the user entered static
 // IP data, it becomes active after this reboot.
 static void saveConfigCallback()
 {

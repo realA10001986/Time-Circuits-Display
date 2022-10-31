@@ -34,7 +34,7 @@ extern bool wifiInAPMode;
 void wifi_setup();
 void wifi_loop();
 void wifiOff();
-void wifiOn(unsigned long newDelay = 0, bool alsoInAPMode = false);
+void wifiOn(unsigned long newDelay = 0, bool alsoInAPMode = false, bool deferConfigPortal = false);
 void wifiStartCP();
 
 void updateConfigPortalValues();
