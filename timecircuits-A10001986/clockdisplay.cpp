@@ -447,6 +447,9 @@ void clockDisplay::setDST(int8_t isDST)
 void clockDisplay::setColon(bool col)
 {
     // set true to turn it on
+    // colon is off in night mode
+    
+    if(_nightmode) col = false;
     _colon = col;
 }
 

@@ -888,7 +888,7 @@ static void setField(uint16_t& number, uint8_t field, int year = 0, int month = 
     while( !checkTimeOut() && !checkEnterPress() &&
               ( (!someupddone && number == prevNum) || strlen(timeBuffer) < numChars) ) {
 
-        get_key();      // We're outside our main loop, so poll here
+        scanKeypad();      // We're outside our main loop, so poll here
 
         /* Using strlen here means that we always need to start a new number at timebuffer[0].
          * This is therefore NOT a ringbuffer!
@@ -1692,6 +1692,8 @@ void allOff()
 
 void start_file_copy()
 {
+    stopAudio();
+  
     destinationTime.on();
     presentTime.on();
     departedTime.on();

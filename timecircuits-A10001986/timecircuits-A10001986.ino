@@ -44,26 +44,30 @@
  *    "Default 4MB with spiffs", Debug level "none", PSRAM disabled)
  *
  * Library dependencies:
- * - OneButton: https://github.com/mathertel/OneButton
- *   (Tested with 2.0.4)
  * - ESP8266Audio: https://github.com/earlephilhower/ESP8266Audio
  *   (1.9.7 and later for esp32-arduino 2.x; 1.9.5 for 1.x)
- * - WifiManager (tablatronix, tzapu; v0.16 and later) https://github.com/tzapu/WiFiManager
+ * - WifiManager (tablatronix, tzapu) https://github.com/tzapu/WiFiManager
  *   (Tested with 2.1.13beta)
- * - Keypad ("by Community; Mark Stanley, Alexander Brevig): https://github.com/Chris--A/Keypad
- *   (Tested with 3.1.1)
  *
  * Detailed installation and compilation instructions are here:
  * https://github.com/CircuitSetup/Time-Circuits-Display/wiki/Programming-the-ESP32-Module
  * See here for info on the data uploader (for sound files):
  * https://randomnerdtutorials.com/install-esp32-filesystem-uploader-arduino-ide/
- * (The sound files can also be uploaded using an SD card, so the uploader is
- * optional. There is a built-in installer in the firmware, see Changelog entry 2022/08/25 
- * and README.md)
+ * (The sound files can also be uploaded using an SD card and the built-in installer, so 
+ * the uploader is optional. See Changelog entry 2022/08/25 and README.md)
  */
 
 /*  Changelog
  *
+ *  2022/11/02 (A10001986)
+ *    - Re-order Config Portal options
+ *    - Disable colon in night mode
+ *    - Unify keypad and keypad_i2c into keypad_i2c; remove unused stuff, and further
+ *      optimize code and improve key responsiveness and debouncing. The dependency 
+ *      on Keypad is now history.
+ *    - Include minimized version of OneButton library (renamed "TCButton"), thereby
+ *      remove dependency on this library.
+ *    - "tc_keypadi2c.*" renamed to tc_input.* to better reflect actual contents.
  *  2022/10/31 (A10001986)
  *    - Strengthen logic regarding when to try to resync time with NTP or GPS; if 
  *      there is no autoritative time, WiFi power saving timeout is set long enough 
@@ -77,8 +81,7 @@
  *    - Do not start Config Portal when WiFi is reconnecting because of an NTP update.
  *      (This also fixes the issue above, but both measures are reasonable)
  *    - NTP: Give request packets a unique id in order to filter out outdated 
- *      responses.
- *    - NTP: Packet timeout changed from 3 to 10 seconds.
+ *      responses; response packet timeout changed from 3 to 10 seconds.
  *  2022/10/29 (A10001986)
  *    - Added auto night-mode presets. There are currently four presets, for
  *      (hopefully) typical home, office and store setups. The times in the description
@@ -250,7 +253,7 @@
  *      text input for boolean options
  *  2022/08/25 (A10001986)
  *    - Add default sound file installer. This installer is for initial installation
- *      or upgrade of the software. Put the contents of the data folder on a
+ *      or upgrade of the firmware. Put the contents of the data folder on a
  *      FAT formatted SD card, put this card in the slot, reboot the clock,
  *      and either go to the "INSTALL AUDIO FILES" menu item in the keypad menu,
  *      or to the "Setup" page on the Config Portal (see bottom).
@@ -284,7 +287,7 @@
  *    - Value check for settings entered on WiFi setup page
  *  2022/08/20 (A10001986)
  *    - Added a little intro display upon power on; not played at "fake" power on.
- *    - Added menu item to show software version
+ *    - Added menu item to show firmware version
  *    - Fixed copy/paste error in WiFi menu display; add remaining WiFi stati.
  *    - Fixed compilation for A-Car display
  *    - Displays off during boot
@@ -436,11 +439,11 @@ void setup()
 void loop()
 {
     keypad_loop();
-    get_key();
+    scanKeypad();
     ntp_loop();
     time_loop();
-    wifi_loop();
     audio_loop();
+    wifi_loop();
 }
 
 // For testing I2C connections and addresses

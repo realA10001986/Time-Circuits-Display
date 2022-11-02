@@ -26,10 +26,8 @@
 #include "tc_global.h"
 
 #include <Arduino.h>
-#include <Keypad.h>
-#include <OneButton.h>
 
-#include "tc_keypadi2c.h"
+#include "tc_input.h"
 #include "tc_menus.h"
 #include "tc_audio.h"
 #include "tc_time.h"
@@ -75,11 +73,11 @@ static const char keys[4][3] = {
 };
 
 #ifdef GTE_KEYPAD
-static byte rowPins[4] = {5, 0, 1, 3};
-static byte colPins[3] = {4, 6, 2};
+static const uint8_t rowPins[4] = {5, 0, 1, 3};
+static const uint8_t colPins[3] = {4, 6, 2};
 #else
-static byte rowPins[4] = {1, 6, 5, 3}; // connect to the row pinouts of the keypad  2+64+32+8 = 0x6a  INPUT
-static byte colPins[3] = {2, 0, 4};    // connect to the column pinouts of the keypad  4+1+16 = 0x15  OUTPUT
+static const uint8_t rowPins[4] = {1, 6, 5, 3}; // connect to the row pinouts of the keypad  2+64+32+8 = 0x6a  INPUT
+static const uint8_t colPins[3] = {2, 0, 4};    // connect to the column pinouts of the keypad  4+1+16 = 0x15  OUTPUT
 #endif
 
 static Keypad_I2C keypad(makeKeymap(keys), rowPins, colPins, 4, 3, KEYPAD_ADDR, PCF8574);
@@ -116,19 +114,19 @@ static bool doKey = false;
 
 static unsigned long enterDelay = 0;
 
-static OneButton enterKey = OneButton(ENTER_BUTTON_PIN,
+static TCButton enterKey = TCButton(ENTER_BUTTON_PIN,
     false,    // Button is active HIGH
     false     // Disable internal pull-up resistor
 );
 
 #ifdef EXTERNAL_TIMETRAVEL_IN
-static OneButton ettKey = OneButton(EXTERNAL_TIMETRAVEL_IN_PIN,
+static TCButton ettKey = TCButton(EXTERNAL_TIMETRAVEL_IN_PIN,
     true,     // Button is active LOW
     true      // Enable internal pull-up resistor
 );
 #endif
 
-static void keypadEvent(KeypadEvent key);
+static void keypadEvent(char key, KeyState kstate);
 static void recordKey(char key);
 static void recordSetTimeKey(char key);
 static void recordSetYearKey(char key);
@@ -148,11 +146,8 @@ static void mykpddelay(unsigned int mydel);
  */
 void keypad_setup()
 {
-    byte rowMask = (1 << rowPins[0]) | (1 << rowPins[1]) | (1 << rowPins[2]) | (1 << rowPins[3]); // input
-    byte colMask = (1 << colPins[0]) | (1 << colPins[1]) | (1 << colPins[2]);                     // output
-
     // Set up the keypad
-    keypad.begin(makeKeymap(keys));
+    keypad.begin();
 
     keypad.addEventListener(keypadEvent);
 
@@ -161,11 +156,8 @@ void keypad_setup()
     // (calls audio_loop() while waiting)
     keypad.setCustomDelayFunc(mykpddelay);
 
-    keypad.setDebounceTime(20);
+    keypad.setScanInterval(20);
     keypad.setHoldTime(ENTER_HOLD_TIME);
-
-    keypad.colMask = colMask;
-    keypad.rowMask = rowMask;
 
     // Set up pin for white LED
     pinMode(WHITE_LED_PIN, OUTPUT);
@@ -200,32 +192,25 @@ void keypad_setup()
 }
 
 /*
- * get_key()
+ * scanKeypad(): Scan keypad keys
  *
- * Do not use keypad.getKey() directly!
  */
-char get_key()
+bool scanKeypad()
 {
-    char key;
-
-    keypad.scanKeys = true;
-    key = keypad.getKey();
-    keypad.scanKeys = false;
-
-    return key;
+    return keypad.scanKeypad();
 }
 
 /*
  *  The keypad event handler
  */
-static void keypadEvent(KeypadEvent key)
+static void keypadEvent(char key, KeyState kstate)
 {
     if(!FPBUnitIsOn || startup || timeTraveled || timeTravelP0 || timeTravelP1)
         return;
 
     pwrNeedFullNow();
 
-    switch(keypad.getState()) {
+    switch(kstate) {
         case PRESSED:
             if(key != '#' && key != '*') {
                 play_keypad_sound(key);
@@ -654,15 +639,16 @@ void cancelETTAnim()
 }
 
 /*
- * Custom delay funktion for key scan in i2ckeypad
+ * Custom delay function for key scan in i2ckeypad
  */
 static void mykpddelay(unsigned int mydel)
 {
     unsigned long startNow = millis();
+    audio_loop();
     while(millis() - startNow < mydel) {
-        audio_loop();
-        ntp_short_loop();
         delay(1);
+        ntp_short_loop();
+        audio_loop();
     }
 }
 

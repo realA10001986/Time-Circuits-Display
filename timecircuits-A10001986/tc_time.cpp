@@ -28,9 +28,6 @@
 #include <time.h>
 #include <WiFi.h>
 #include <Wire.h>
-#ifdef FAKE_POWER_ON
-#include <OneButton.h>
-#endif
 #include <Udp.h>
 #include <WiFiUdp.h>
 
@@ -39,6 +36,9 @@
 #include "tc_audio.h"
 #include "tc_wifi.h"
 #include "tc_settings.h"
+#ifdef FAKE_POWER_ON
+#include "tc_input.h"
+#endif
 
 #include "tc_time.h"
 
@@ -362,7 +362,6 @@ static bool DSTcheckDone = false;
 static bool autoIntDone = false;
 static int  autoIntAnimRunning = 0;
 static bool autoReadjust = false;
-static bool nightlyAdjustDone = false;
 static unsigned long lastAuthTime = 0;
 static bool authTimeExpired = false;
 static bool alarmDone = false;
@@ -372,7 +371,7 @@ static bool autoNMDone = false;
 // Fake "power" switch
 bool FPBUnitIsOn = true;
 #ifdef FAKE_POWER_ON
-static OneButton fakePowerOnKey = OneButton(FAKE_POWER_BUTTON_PIN,
+static TCButton fakePowerOnKey = TCButton(FAKE_POWER_BUTTON_PIN,
     true,    // Button is active LOW
     true     // Enable internal pull-up resistor
 );
@@ -1695,7 +1694,7 @@ void time_loop()
             // Do this on previous minute:59
             minNext = (dt.minute() == 59) ? 0 : dt.minute() + 1;
 
-            // End autoPause if run out
+            // Check if autoPause has run out
             if(autoPaused && (millis() - pauseNow >= pauseDelay)) {
                 autoPaused = false;
             }
@@ -1814,8 +1813,7 @@ void time_loop()
             departedTime.show();
             
         }
-    }
-
+    } 
 }
 
 
@@ -3467,20 +3465,6 @@ static void NTPCheckPacket()
 
     // Convert fraction into ms
     NTPmsSinceSecond = (uint32_t)(((uint64_t)fractSec * 1000ULL) >> 32);
-
-    #ifdef TC_DBG1
-    Serial.print("UDP packet size ");
-    Serial.println(psize);
-    for(int i = 0; i < psize; i+=4) {
-        Serial.print(NTPUDPBuf[i], HEX);
-        Serial.print(" ");
-        Serial.print(NTPUDPBuf[i+1], HEX);
-        Serial.print(" ");
-        Serial.print(NTPUDPBuf[i+2], HEX);
-        Serial.print(" ");
-        Serial.println(NTPUDPBuf[i+3], HEX);
-    }
-    #endif
 }
 
 static bool NTPHaveTime()

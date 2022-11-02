@@ -250,7 +250,7 @@ void settings_setup()
                     } else writedefault = true;
                     if(json["wifiConTimeout"]) {
                         strcpy(settings.wifiConTimeout, json["wifiConTimeout"]);
-                        writedefault |= checkValidNumParm(settings.wifiConTimeout, 1, 15, DEF_WIFI_TIMEOUT);
+                        writedefault |= checkValidNumParm(settings.wifiConTimeout, 7, 25, DEF_WIFI_TIMEOUT);
                     } else writedefault = true;
                     if(json["wifiOffDelay"]) {
                         strcpy(settings.wifiOffDelay, json["wifiOffDelay"]);
