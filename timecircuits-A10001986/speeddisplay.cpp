@@ -434,7 +434,7 @@ uint8_t speedDisplay::getBrightness()
 
 void speedDisplay::setNightMode(bool mymode)
 {
-    _nightmode = mymode ? true : false;
+    _nightmode = mymode;
 }
 
 bool speedDisplay::getNightMode(void)

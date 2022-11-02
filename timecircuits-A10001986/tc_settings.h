@@ -39,9 +39,9 @@ extern bool    haveSD;
 #define DEF_MODE24          0     // 0-1;  Default: 0=12-hour-mode, 1=24-hour-mode
 #define DEF_AUTOROTTIMES    1     // 0-5;  Default: Auto-rotate every 5th minute
 #define DEF_WIFI_RETRY      3     // 1-15; Default: 3 retries
-#define DEF_WIFI_TIMEOUT    7     // 1-15; Default: 7 seconds time-out
-#define DEF_WIFI_OFFDELAY   0     // 0/10-99: Default 0 = Never power down WiFi in STA-mode
-#define DEF_WIFI_APOFFDELAY 0     // 0/10-99: Default 0 = Never power down WiFi in AP-mode
+#define DEF_WIFI_TIMEOUT    7     // 7-25; Default: 7 seconds
+#define DEF_WIFI_OFFDELAY   0     // 0/10-99; Default 0 = Never power down WiFi in STA-mode
+#define DEF_WIFI_APOFFDELAY 0     // 0/10-99; Default 0 = Never power down WiFi in AP-mode
 #define DEF_NTP_SERVER      "pool.ntp.org"
 #define DEF_TIMEZONE        "CST6CDT,M3.2.0,M11.1.0"    // Posix format
 #define DEF_BRIGHT_DEST     15    // 1-15; Default: max brightness

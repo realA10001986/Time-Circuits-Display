@@ -31,7 +31,7 @@ extern bool isEnterKeyHeld;
 extern char timeBuffer[];
 
 void keypad_setup();
-char get_key();
+bool scanKeypad();
 
 void keypad_loop();
 
