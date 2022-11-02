@@ -217,7 +217,10 @@ static void keypadEvent(char key, KeyState kstate)
             }
             doKey = true;
             break;
+            
         case HOLD:
+            if(isSetUpdate) break;    // Don't do anything while in menu
+            
             if(key == '0') {    // "0" held down -> time travel
                 doKey = false;
                 // complete timeTravel, with speedo
@@ -265,6 +268,7 @@ static void keypadEvent(char key, KeyState kstate)
                 wifiOn(0, true, false);    // Enable WiFi even if in AP mode, with CP
             }
             break;
+            
         case RELEASED:
             if(doKey && key != '#' && key != '*') {
                 if(isSetUpdate) {
@@ -278,6 +282,7 @@ static void keypadEvent(char key, KeyState kstate)
                 }
             }
             break;
+            
         case IDLE:
             break;
     }
