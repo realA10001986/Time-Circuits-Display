@@ -233,7 +233,7 @@ bool tcGPS::getDateTime(struct tm *timeinfo, unsigned long *fixAge, unsigned lon
  * Set GPS' RTC time
  * timeinfo needs to be in UTC
  * 
- * Different formwares support different packet types. 
+ * Different firmwares support different packet types. 
  * We send both to make sure. If the GPS has updated 
  * its RTC from the GPS signal, "supported, but failed" 
  * is returned; so there is no danger of overwriting 

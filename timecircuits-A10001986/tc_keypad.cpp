@@ -42,12 +42,12 @@
 #define KEYPAD_ADDR     0x20    // I2C address of the PCF8574 port expander (keypad)
 
 #define ENTER_DEBOUNCE    50    // enter button debounce time in ms
-#define ENTER_CLICK_TIME 200    // enter button will register a click
-#define ENTER_HOLD_TIME 2000    // time in ms holding the enter button will count as a hold
+#define ENTER_PRESS_TIME 200    // enter button will register a short press
+#define ENTER_HOLD_TIME 2000    // time in ms holding the enter button will count as a long press
 
 #define ETT_DEBOUNCE      50    // external time travel button debounce time in ms
-#define ETT_CLICK_TIME   250    // external time travel button will register a click (unused)
-#define ETT_HOLD_TIME    200    // external time travel button will register a press (that's the one)
+#define ETT_PRESS_TIME   250    // external time travel button will register a short press (unused)
+#define ETT_HOLD_TIME    200    // external time travel button will register a long press (that's the one)
 
 // When ENTER button is pressed, turn off display for this many ms
 // Must be sync'd to the sound file used (enter.mp3)
@@ -64,7 +64,6 @@
 #define EE3_DELAY     500
 #define EE4_DELAY    3000
 
-
 static const char keys[4][3] = {
     {'1', '2', '3'},
     {'4', '5', '6'},
@@ -76,8 +75,8 @@ static const char keys[4][3] = {
 static const uint8_t rowPins[4] = {5, 0, 1, 3};
 static const uint8_t colPins[3] = {4, 6, 2};
 #else
-static const uint8_t rowPins[4] = {1, 6, 5, 3}; // connect to the row pinouts of the keypad  2+64+32+8 = 0x6a  INPUT
-static const uint8_t colPins[3] = {2, 0, 4};    // connect to the column pinouts of the keypad  4+1+16 = 0x15  OUTPUT
+static const uint8_t rowPins[4] = {1, 6, 5, 3};
+static const uint8_t colPins[3] = {2, 0, 4};
 #endif
 
 static Keypad_I2C keypad(makeKeymap(keys), rowPins, colPins, 4, 3, KEYPAD_ADDR, PCF8574);
@@ -104,7 +103,7 @@ static unsigned long lastKeyPressed = 0;
 #define DATELEN_CODE   3   // special
 
 static char dateBuffer[DATELEN_ALL + 2];
-char        timeBuffer[8]; // 4 characters to accommodate date and time settings
+char        timeBuffer[8];
 
 static int dateIndex = 0;
 static int timeIndex = 0;
@@ -142,7 +141,6 @@ static void mykpddelay(unsigned int mydel);
 
 /*
  * keypad_setup()
- *
  */
 void keypad_setup()
 {
@@ -164,16 +162,16 @@ void keypad_setup()
     digitalWrite(WHITE_LED_PIN, LOW);
 
     // Set up Enter button
-    enterKey.setClickTicks(ENTER_CLICK_TIME);
-    enterKey.setPressTicks(ENTER_HOLD_TIME);
+    enterKey.setPressTicks(ENTER_PRESS_TIME);
+    enterKey.setLongPressTicks(ENTER_HOLD_TIME);
     enterKey.setDebounceTicks(ENTER_DEBOUNCE);
-    enterKey.attachClick(enterKeyPressed);
+    enterKey.attachPress(enterKeyPressed);
     enterKey.attachLongPressStart(enterKeyHeld);
 
 #ifdef EXTERNAL_TIMETRAVEL_IN
     // Set up External time travel button
-    ettKey.setClickTicks(ETT_CLICK_TIME);
-    ettKey.setPressTicks(ETT_HOLD_TIME);
+    ettKey.setPressTicks(ETT_PRESS_TIME);
+    ettKey.setLongPressTicks(ETT_HOLD_TIME);
     ettKey.setDebounceTicks(ETT_DEBOUNCE);
     ettKey.attachLongPressStart(ettKeyPressed);
 
@@ -193,7 +191,6 @@ void keypad_setup()
 
 /*
  * scanKeypad(): Scan keypad keys
- *
  */
 bool scanKeypad()
 {
@@ -211,80 +208,80 @@ static void keypadEvent(char key, KeyState kstate)
     pwrNeedFullNow();
 
     switch(kstate) {
-        case PRESSED:
-            if(key != '#' && key != '*') {
-                play_keypad_sound(key);
-            }
+    case TCKS_PRESSED:
+        if(key != '#' && key != '*') {
+            play_keypad_sound(key);
             doKey = true;
+        }
+        break;
+        
+    case TCKS_HOLD:
+        if(isSetUpdate) break;    // Don't do anything while in menu
+
+        switch(key) {
+        case '0':    // "0" held down -> time travel
+            doKey = false;
+            // Complete timeTravel, with speedo
+            timeTravel(true, true);
             break;
-            
-        case HOLD:
-            if(isSetUpdate) break;    // Don't do anything while in menu
-            
-            if(key == '0') {    // "0" held down -> time travel
-                doKey = false;
-                // complete timeTravel, with speedo
-                timeTravel(true, true);
+        case '9':    // "9" held down -> return from time travel
+            doKey = false;
+            resetPresentTime();
+            break;
+        case '1':    // "1" held down -> turn alarm on
+            doKey = false;
+            if(alarmOn()) {
+                play_file("/alarmon.mp3", 1.0, true, 0);
+            } else {
+                play_file("/baddate.mp3", 1.0, true, 0);
             }
-            if(key == '9') {    // "9" held down -> return from time travel
-                doKey = false;
-                resetPresentTime();
-            }
-            if(key == '1') {    // "1" held down -> turn alarm on
-                doKey = false;
-                if(alarmOn()) {
-                    play_file("/alarmon.mp3", 1.0, true, 0);
+            break;
+        case '2':    // "2" held down -> turn alarm off
+            doKey = false;
+            alarmOff();
+            play_file("/alarmoff.mp3", 1.0, true, 0);
+            break;
+        case '4':    // "4" held down -> nightmode on
+            doKey = false;
+            nightModeOn();
+            play_file("/nmon.mp3", 1.0, false, 0);
+            break;
+        case '5':    // "5" held down -> nightmode off
+            doKey = false;
+            nightModeOff();
+            play_file("/nmoff.mp3", 1.0, false, 0);
+            break;
+        case '3':    // "3" held down -> play audio file "key3"
+            doKey = false;
+            play_file("/key3.mp3", 1.0, true, 0);
+            break;
+        case '6':    // "6" held down -> play audio file "key6"
+            doKey = false;
+            play_file("/key6.mp3", 1.0, true, 0);
+            break;
+        case '7':    // "7" held down -> re-enable WiFi if in PowerSave mode
+            doKey = false;
+            play_file("/ping.mp3", 1.0, true, 0);
+            waitAudioDone();
+            // Enable WiFi even if in AP mode, with CP
+            wifiOn(0, true, false);    
+            break;
+        }
+        break;
+        
+    case TCKS_RELEASED:
+        if(doKey) {
+            if(isSetUpdate) {
+                if(isYearUpdate) {
+                    recordSetYearKey(key);
                 } else {
-                    play_file("/baddate.mp3", 1.0, true, 0);
+                    recordSetTimeKey(key);
                 }
+            } else {
+                recordKey(key);
             }
-            if(key == '2') {    // "2" held down -> turn alarm off
-                doKey = false;
-                alarmOff();
-                play_file("/alarmoff.mp3", 1.0, true, 0);
-            }
-            if(key == '4') {    // "4" held down -> nightmode on
-                doKey = false;
-                nightModeOn();
-                play_file("/nmon.mp3", 1.0, false, 0);
-            }
-            if(key == '5') {    // "5" held down -> nightmode off
-                doKey = false;
-                nightModeOff();
-                play_file("/nmoff.mp3", 1.0, false, 0);
-            }
-            if(key == '3') {    // "3" held down -> play audio file "key3"
-                doKey = false;
-                play_file("/key3.mp3", 1.0, true, 0);
-            }
-            if(key == '6') {    // "6" held down -> play audio file "key6"
-                doKey = false;
-                play_file("/key6.mp3", 1.0, true, 0);
-            }
-            if(key == '7') {    // "7" held down -> re-enable WiFi if in PowerSave mode
-                doKey = false;
-                play_file("/ping.mp3", 1.0, true, 0);
-                waitAudioDone();
-                wifiOn(0, true, false);    // Enable WiFi even if in AP mode, with CP
-            }
-            break;
-            
-        case RELEASED:
-            if(doKey && key != '#' && key != '*') {
-                if(isSetUpdate) {
-                    if(isYearUpdate) {
-                        recordSetYearKey(key);
-                    } else {
-                        recordSetTimeKey(key);
-                    }
-                } else {
-                    recordKey(key);
-                }
-            }
-            break;
-            
-        case IDLE:
-            break;
+        }
+        break;
     }
 }
 
@@ -312,7 +309,8 @@ static void recordKey(char key)
 {
     dateBuffer[dateIndex++] = key;
     dateBuffer[dateIndex] = '\0';
-    if(dateIndex >= DATELEN_ALL) dateIndex = DATELEN_ALL - 1;  // don't overflow, will overwrite end of date next time
+    // Don't overflow, overwrite end of date instead
+    if(dateIndex >= DATELEN_ALL) dateIndex = DATELEN_ALL - 1;  
     lastKeyPressed = millis();
 }
 
@@ -336,18 +334,17 @@ void resetTimebufIndices()
     // Do NOT clear the timeBuffer, might be pre-set
 }
 
-void enterkeytick()
+void enterkeyScan()
 {
-    enterKey.tick();  // manages the enter button (updates flags)
+    enterKey.scan();  // scan the enter button
 
 #ifdef EXTERNAL_TIMETRAVEL_IN
-    ettKey.tick();    // manages the extern time travel button (updates flags)
+    ettKey.scan();    // scan the ext. time travel button
 #endif
 }
 
 /*
  * keypad_loop()
- *
  */
 void keypad_loop()
 {
@@ -355,7 +352,7 @@ void keypad_loop()
     #define EE1_KL2 12
     char spTxtS2[EE1_KL2] = { 181, 224, 179, 231, 199, 140, 197, 129, 197, 140, 194, 133 };
 
-    enterkeytick();
+    enterkeyScan();
 
     // Discard keypad input after 5 minutes of inactivity
     if(millis() - lastKeyPressed >= 5*60*1000) {
@@ -395,7 +392,7 @@ void keypad_loop()
     }
 #endif
 
-    // if enter key is held go into keypad menu
+    // If enter key is held, go into keypad menu
     if(isEnterKeyHeld) {
 
         isEnterKeyHeld = false;
@@ -406,7 +403,7 @@ void keypad_loop()
         timeIndex = yearIndex = 0;
         timeBuffer[0] = '\0';
 
-        enter_menu();     // enter menu mode; in tc_menu.cpp
+        enter_menu();
 
         isEnterKeyHeld = false;
         isEnterKeyPressed = false;
@@ -636,15 +633,12 @@ void cancelEnterAnim()
 void cancelETTAnim()
 {
     #ifdef EXTERNAL_TIMETRAVEL_IN
-    if(ettDelayed) {
-        ettDelayed = false;
-        // ...
-    }
+    ettDelayed = false;
     #endif
 }
 
 /*
- * Custom delay function for key scan in i2ckeypad
+ * Custom delay function for key scan in keypad_i2c
  */
 static void mykpddelay(unsigned int mydel)
 {
@@ -659,7 +653,6 @@ static void mykpddelay(unsigned int mydel)
 
 /*
  * Night mode
- *
  */
 void nightModeOn()
 {

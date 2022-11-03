@@ -90,14 +90,13 @@
 #define NTP_PACKET_SIZE 48
 #define NTP_DEFAULT_LOCAL_PORT 1337
 
+unsigned long  powerupMillis = 0;
 
-unsigned long powerupMillis = 0;
-
-static bool           couldHaveAuthTime = false;
-static bool           haveAuthTime = false;
-uint16_t              lastYear = 0;
-static uint8_t        resyncInt = 5;
-static uint8_t        dstChkInt = 5;
+static bool    couldHaveAuthTime = false;
+static bool    haveAuthTime = false;
+uint16_t       lastYear = 0;
+static uint8_t resyncInt = 5;
+static uint8_t dstChkInt = 5;
 
 // For tracking second changes
 static bool x = false;  
@@ -151,9 +150,6 @@ static unsigned long triggerETTONow = 0;
 static bool          ettoPulse = false;
 static unsigned long ettoPulseNow = 0;
 static long          ettoLeadPoint = 0;
-#ifdef TC_DBG
-static unsigned long ettope, ettops;
-#endif
 #endif
 
 // The timetravel re-entry sequence
@@ -414,15 +410,15 @@ static const uint32_t hours1kYears[] =
 #ifdef TC_HAVESPEEDO
 static const int16_t tt_p0_delays[88] =
 {
-         0, 100, 100,  90,  80,  80,  80,  80,  80,  80,  // 0 - 9  10mph 0.8s    0.8=800ms
-        80,  80,  80,  80,  80,  80,  80,  80,  80,  80,  // 10-19  20mph 1.6s    0.8
-        90, 100, 110, 110, 110, 110, 110, 110, 120, 120,  // 20-29  30mph 2.7s    1.1
-       120, 130, 130, 130, 130, 130, 130, 130, 130, 140,  // 30-39  40mph 4.0s    1.3
-       150, 160, 190, 190, 190, 190, 190, 190, 210, 230,  // 40-49  50mph 5.9s    1.9
-       230, 230, 240, 240, 240, 240, 240, 240, 250, 250,  // 50-59  60mph 8.3s    2.4
-       250, 250, 260, 260, 270, 270, 270, 280, 290, 300,  // 60-69  70mph 11.0s   2.7
-       320, 330, 350, 370, 370, 380, 380, 390, 400, 410,  // 70-79  80mph 14.7s   3.7
-       410, 410, 410, 410, 410, 410, 410, 410             // 80-87  90mph 18.8s   4,1
+      0, 100, 100,  90,  80,  80,  80,  80,  80,  80,  // 0 - 9  10mph 0.8s    0.8=800ms
+     80,  80,  80,  80,  80,  80,  80,  80,  80,  80,  // 10-19  20mph 1.6s    0.8
+     90, 100, 110, 110, 110, 110, 110, 110, 120, 120,  // 20-29  30mph 2.7s    1.1
+    120, 130, 130, 130, 130, 130, 130, 130, 130, 140,  // 30-39  40mph 4.0s    1.3
+    150, 160, 190, 190, 190, 190, 190, 190, 210, 230,  // 40-49  50mph 5.9s    1.9
+    230, 230, 240, 240, 240, 240, 240, 240, 250, 250,  // 50-59  60mph 8.3s    2.4
+    250, 250, 260, 260, 270, 270, 270, 280, 290, 300,  // 60-69  70mph 11.0s   2.7
+    320, 330, 350, 370, 370, 380, 380, 390, 400, 410,  // 70-79  80mph 14.7s   3.7
+    410, 410, 410, 410, 410, 410, 410, 410             // 80-87  90mph 18.8s   4,1
 };
 static long tt_p0_totDelays[88];
 #endif
@@ -513,9 +509,9 @@ void time_setup()
     #ifdef FAKE_POWER_ON
     waitForFakePowerButton = ((int)atoi(settings.fakePwrOn) > 0);
     if(waitForFakePowerButton) {
-        fakePowerOnKey.setClickTicks(10);     // ms after single click is assumed (default 400)
-        fakePowerOnKey.setPressTicks(50);     // ms after press is assumed (default 800)
-        fakePowerOnKey.setDebounceTicks(50);  // ms after safe click is assumed (default 50)
+        fakePowerOnKey.setPressTicks(10);     // ms after short press is assumed (default 400)
+        fakePowerOnKey.setLongPressTicks(50); // ms after long press is assumed (default 800)
+        fakePowerOnKey.setDebounceTicks(50);
         fakePowerOnKey.attachLongPressStart(fpbKeyPressed);
         fakePowerOnKey.attachLongPressStop(fpbKeyLongPressStop);
     }
@@ -1060,7 +1056,7 @@ void time_loop()
 
     #ifdef FAKE_POWER_ON
     if(waitForFakePowerButton) {
-        fakePowerOnKey.tick();
+        fakePowerOnKey.scan();
 
         if(isFPBKeyChange) {
             if(isFPBKeyPressed) {
@@ -1205,13 +1201,6 @@ void time_loop()
 
             timeTravelP0 = 0;
 
-            #ifdef TC_DBG
-            #ifdef EXTERNAL_TIMETRAVEL_OUT
-            ettope = univNow;
-            Serial.print(F("##### ETTO total elapsed lead time: "));
-            Serial.println(ettope - ettops, DEC);
-            #endif
-            #endif
         }
 
         speedo.setSpeed(timeTravelP0Speed);
@@ -2088,7 +2077,6 @@ static void ettoPulseStart()
     digitalWrite(EXTERNAL_TIMETRAVEL_OUT_PIN, HIGH);
     #ifdef TC_DBG
     digitalWrite(WHITE_LED_PIN, HIGH);
-    ettops = millis();
     #endif
 }
 static void ettoPulseEnd()
@@ -2222,10 +2210,11 @@ static void waitAudioDoneIntro()
 static void myCustomDelay(unsigned int mydel)
 {
     unsigned long startNow = millis();
+    audio_loop();
     while(millis() - startNow < mydel) {
         delay(5);
-        audio_loop();
         ntp_short_loop();
+        audio_loop();
     }
 }
 
