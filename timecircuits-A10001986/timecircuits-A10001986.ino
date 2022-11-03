@@ -59,6 +59,9 @@
 
 /*  Changelog
  *
+ *  2022/11/03 (A10001986)
+ *    - Reboot after audio file installation from keypad menu
+ *    - Ignore held keys while in keypad menu
  *  2022/11/02 (A10001986)
  *    - Re-order Config Portal options
  *    - Disable colon in night mode

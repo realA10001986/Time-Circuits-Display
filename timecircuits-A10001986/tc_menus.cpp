@@ -67,16 +67,16 @@
  *     - After entering data into all fields, the data is saved and the menu is left
  *       automatically.
  *
- *     Note that when entering dates/times into the destination time or last time departed
- *     displays, the Time-rotation Interval is automatically set to 0. Your entered
- *     date/time(s) are shown until overwritten by time travels (see below, section
- *     How to select the Time-rotation Interval").
- *
  *     By entering a date/time into the present time display, the RTC (real time clock)
  *     of the device is adjusted, which is useful if you can't use NTP for time keeping.
  *     The time you entered will be overwritten if/when the device has access to network
  *     time via NTP, or time from GPS. Don't forget to configure your time zone in the
  *     Config Portal.
+ *     
+ *     Note that when entering dates/times into the destination time or last time departed
+ *     displays, the Time-rotation Interval is automatically set to 0. Your entered
+ *     date/time(s) are shown until overwritten by time travels (see below, section
+ *     How to select the Time-rotation Interval").
  *
  * How to set the audio volume:
  *
@@ -882,7 +882,7 @@ static void setField(uint16_t& number, uint8_t field, int year = 0, int month = 
     Serial.println(F("setField: Awaiting digits or ENTER..."));
     #endif
 
-    // Force keypad to send keys to our buffer
+    // Force keypad to send keys to our buffer (and block key holding)
     isSetUpdate = true;
 
     while( !checkTimeOut() && !checkEnterPress() &&
@@ -1656,6 +1656,12 @@ static void doCopyAudioFiles()
         mydelay(3000);
     }
     mydelay(2000);
+
+    allOff();
+    destinationTime.showOnlyText("REBOOTING");
+    destinationTime.on();
+
+    esp_restart();
 }
 
 /* *** Helpers ################################################### */
@@ -1706,7 +1712,7 @@ void start_file_copy()
 
 void file_copy_progress()
 {
-    if((millis() - fcstart >= 1000)) {
+    if(millis() - fcstart >= 1000) {
         departedTime.showOnlyText(fcprog ? "PLEASE" : "WAIT");
         fcprog = !fcprog;
         fcstart = millis();
@@ -1787,9 +1793,10 @@ static bool checkTimeOut()
 void mydelay(unsigned long mydel)
 {
     unsigned long startNow = millis();
+    myloop();
     while(millis() - startNow < mydel) {
-        myloop();
         delay(10);
+        myloop();
     }
 }
 
@@ -1800,10 +1807,11 @@ void mydelay(unsigned long mydel)
 static void myssdelay(unsigned long mydel)
 {
     unsigned long startNow = millis();
+    audio_loop();
     while(millis() - startNow < mydel) {
-        audio_loop();
         ntp_short_loop();
         delay(10);
+        audio_loop();
     }
 }
 
@@ -1813,7 +1821,7 @@ static void myssdelay(unsigned long mydel)
  */
 static void myloop()
 {
-    enterkeytick();
+    enterkeyScan();
     wifi_loop();
     audio_loop();
     ntp_loop();
