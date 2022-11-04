@@ -5,9 +5,8 @@
  * (C) 2022 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display-A10001986
  *
- * Clockdisplay and keypad menu code based on code by John Monaco
- * Marmoset Electronics
- * https://www.marmosetelectronics.com/time-circuits-clock
+ * This is a multi-license program. Each piece of source code has a
+ * license of its own.
  * -------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,35 +25,44 @@
 /*
  * Build instructions
  * 
- * I recommend the Arduino IDE 1.8, simply because it supports the "ESP32 Sketch
+ * I am using the Arduino IDE 1.8, simply because it supports the "ESP32 Sketch
  * data upload" extension, which is useful for uploading the sound files. This,
- * for whatever reason, is no longer supported in 2.0 as of 2.0.0.rc9.
+ * for whatever reason, is no longer supported in 2.0 as of 2.0.0.rc9. There is,
+ * however, a built-in installer for the audio files in the firmware, so in the
+ *  end, it is a matter of personal taste if you use 1.8 or 2.x (or PlatformIO, 
+ * which I have no experience with.)
  *
- * Needs ESP32 Arduino framework: https://github.com/espressif/arduino-esp32
- *  - In Arduino, go to File > Preferences
+ * This software requires the "ESP32-Arduino" framework: 
+ * https://github.com/espressif/arduino-esp32
+ *  - In the Arduino IDE, go to File > Preferences
  *  - Add the URL
  *    https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
- *    to Additional Boards Manager URLs
- *  - Go to Tools > Board > Boards Manager, then search for ESP32, and install the
- *    latest version by Espressif Systems
- *  - Detailed instructions:
+ *    to Additional Boards Manager URLs. The list is comma-separated.
+ *  - Go to Tools > Board > Boards Manager, then search for "esp32", and install 
+ *    the latest version by Espressif Systems.
+ *    Detailed instructions for this step:
  *    https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html
- *  - The board settings can all be left on their default setting
- *    (Upload speed 921600, CPU 240Mhz, Flash 80Mhz, QIO, Size 4MB, Partition scheme
- *    "Default 4MB with spiffs", Debug level "none", PSRAM disabled)
+ *    (Personal note: I am still running on 1.0.6 and the pre-compiled binaries
+ *    on my github do as well; from what I read, the 2.x.x branch has a lot of
+ *    issues even as of 2.0.5; I honestly can't say whether or not any of those
+ *    issues have an influence on the stability of this firmware.
+ *    CircuitSetup.us and their pre-compiled binaries, however, use 2.0.x.)
+ *  - Go to Tools > Board: "..." -> ESP32 Arduino and select "NodeMCU-32S".
  *
- * Library dependencies:
+ * Library dependencies: (Tools -> Manage Libraries)
  * - ESP8266Audio: https://github.com/earlephilhower/ESP8266Audio
- *   (1.9.7 and later for esp32-arduino 2.x; 1.9.5 for 1.x)
+ *   (1.9.7 and later for esp32-arduino 2.x.x; 1.9.5 for 1.0.6 and below)
  * - WifiManager (tablatronix, tzapu) https://github.com/tzapu/WiFiManager
- *   (Tested with 2.1.13beta)
+ *   (Tested with 2.1.13beta; 2.0.14beta does not work on esp32-arduino 1.x)
  *
- * Detailed installation and compilation instructions are here:
- * https://github.com/CircuitSetup/Time-Circuits-Display/wiki/Programming-the-ESP32-Module
+ * Detailed installation and compilation instructions, while a bit outdated in 
+ * library requirements, are here:
+ * https://github.com/CircuitSetup/Time-Circuits-Display/wiki/9.-Programming-&-Upgrading-the-Firmware-(ESP32)
  * See here for info on the data uploader (for sound files):
  * https://randomnerdtutorials.com/install-esp32-filesystem-uploader-arduino-ide/
- * (The sound files can also be uploaded using an SD card and the built-in installer, so 
- * the uploader is optional. See Changelog entry 2022/08/25 and README.md)
+ * (The sound files can also be uploaded using an SD card and the built-in 
+ * installer, so the uploader is optional. See Changelog entry 2022/08/25 and 
+ * README.md)
  */
 
 /*  Changelog
@@ -62,6 +70,7 @@
  *  2022/11/03 (A10001986)
  *    - Reboot after audio file installation from keypad menu
  *    - Ignore held keys while in keypad menu
+ *    - Optimize tc_input
  *  2022/11/02 (A10001986)
  *    - Re-order Config Portal options
  *    - Disable colon in night mode
