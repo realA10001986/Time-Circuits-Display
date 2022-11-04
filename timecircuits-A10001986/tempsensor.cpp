@@ -4,7 +4,7 @@
  * (C) 2022 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display-A10001986
  *
- * Temperature Sensor handling
+ * tempSensor Class: Temperature Sensor handling
  *
  * This is designed for MCP9808-based sensors.
  * -------------------------------------------------------------------

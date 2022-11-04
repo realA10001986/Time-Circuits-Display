@@ -37,7 +37,7 @@
 #include "tc_wifi.h"
 #include "tc_settings.h"
 #ifdef FAKE_POWER_ON
-#include "tc_input.h"
+#include "input.h"
 #endif
 
 #include "tc_time.h"

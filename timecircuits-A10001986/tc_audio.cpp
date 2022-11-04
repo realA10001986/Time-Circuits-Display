@@ -24,6 +24,13 @@
 
 #include "tc_global.h"
 
+// Use the mixer, or do not use the mixer.
+// Since we don't use mixing, turn it off.
+// With the current versions of the audio library,
+// turning it on might cause a static after stopping
+// sound play back.
+//#define TC_USE_MIXER
+
 #include <Arduino.h>
 #include <AudioOutputI2S.h>
 #ifdef USE_SPIFFS
@@ -35,21 +42,16 @@
 #endif
 #include <AudioFileSourceSD.h>
 #include <AudioGeneratorMP3.h>
-#include <AudioGeneratorWAV.h>
+//#include <AudioGeneratorWAV.h>
+#ifdef TC_USE_MIXER
 #include <AudioOutputMixer.h>
+#endif
 
 #include "tc_settings.h"
 #include "tc_keypad.h"
 #include "tc_time.h"
 
 #include "tc_audio.h"
-
-// Use the mixer, or do not use the mixer.
-// Since we don't use mixing, turn it off.
-// With the current versions of the audio library,
-// turning it on might cause a static after stopping
-// sound play back.
-//#define TC_USE_MIXER
 
 // Initialize ESP32 Audio Library classes
 

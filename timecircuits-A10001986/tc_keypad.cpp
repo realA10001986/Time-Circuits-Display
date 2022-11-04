@@ -27,7 +27,7 @@
 
 #include <Arduino.h>
 
-#include "tc_input.h"
+#include "input.h"
 #include "tc_menus.h"
 #include "tc_audio.h"
 #include "tc_time.h"
@@ -79,7 +79,7 @@ static const uint8_t rowPins[4] = {1, 6, 5, 3};
 static const uint8_t colPins[3] = {2, 0, 4};
 #endif
 
-static Keypad_I2C keypad(makeKeymap(keys), rowPins, colPins, 4, 3, KEYPAD_ADDR, PCF8574);
+static Keypad_I2C keypad(makeKeymap(keys), rowPins, colPins, 4, 3, KEYPAD_ADDR);
 
 bool isEnterKeyPressed = false;
 bool isEnterKeyHeld = false;
