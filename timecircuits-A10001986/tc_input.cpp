@@ -4,15 +4,15 @@
  * (C) 2022 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display-A10001986
  *
- * Keypad_I2C and Button handling
+ * I2C-Keypad and Button handling
  *
- * This is a customized fork and unification of the Keypad and the
- * Keypad_I2C libraries, as well as the OneButton library
- * Authors of original Keypad library: Mark Stanley, Alexander Brevig
- * Authors of original Keypad_I2C library: G. D. (Joe) Young, ptw
- * Author of original OneButton library: Matthias Hertel
+ * Parts of this are customized minimizations of parts of the Keypad 
+ * and the OneButton library.
+ * Authors of Keypad library: Mark Stanley, Alexander Brevig
+ * Author of OneButton library: Matthias Hertel
  * -------------------------------------------------------------------
- * License of original KeyPad/Keypad_I2C libraries and this version:
+ * License of original KeyPad library and this program as regards the 
+ * Key and Keypad_I2C classes:
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; version
@@ -26,8 +26,10 @@
  * <https://www.gnu.org/licenses/>
  * -------------------------------------------------------------------
  * Original OneButton library 
- * Copyright (c) 2005-2014 by Matthias Hertel,  http://www.mathertel.de/
+ * Copyright (c) 2005-2014 by Matthias Hertel, http://www.mathertel.de/
  * 
+ * License of original OneButton library and this program as regards
+ * the TCButton class:
  * Software License Agreement (BSD License)
  * Redistribution and use in source and binary forms, with or without 
  * modification, are permitted provided that the following conditions 
