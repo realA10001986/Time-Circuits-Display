@@ -4,7 +4,7 @@
  * (C) 2022 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display-A10001986
  *
- * Speedo Display
+ * speedDisplay Class: Speedo Display
  *
  * This is designed for HT16K33-based displays, like the "Grove - 0.54"
  * Dual/Quad Alphanumeric Display" or some displays with the Adafruit

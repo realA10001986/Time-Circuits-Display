@@ -5,7 +5,7 @@
  * https://github.com/realA10001986/Time-Circuits-Display-A10001986
  * DateTime part: Based on code Copyright (C) 2019 Adafruit Industries
  * 
- * DS3231/PCF2129 RTC handling and DateTime Class
+ * RTC Class (DS3231/PCF2129 RTC handling) and DateTime Class
  * 
  * Note: DateTime mirrors the features of RTC; it only works for
  * dates from 1/1/2000 to 31/12/2099.

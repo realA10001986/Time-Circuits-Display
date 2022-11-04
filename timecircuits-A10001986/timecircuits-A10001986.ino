@@ -29,7 +29,7 @@
  * data upload" extension, which is useful for uploading the sound files. This,
  * for whatever reason, is no longer supported in 2.0 as of 2.0.0.rc9. There is,
  * however, a built-in installer for the audio files in the firmware, so in the
- *  end, it is a matter of personal taste if you use 1.8 or 2.x (or PlatformIO, 
+ * end, it is a matter of personal taste if you use 1.8 or 2.x (or PlatformIO, 
  * which I have no experience with.)
  *
  * This software requires the "ESP32-Arduino" framework: 
@@ -67,6 +67,8 @@
 
 /*  Changelog
  *
+ *  2022/11/04 (A10001986)
+ *    - Rename "tc_input" to "input" for consistency reasons
  *  2022/11/03 (A10001986)
  *    - Reboot after audio file installation from keypad menu
  *    - Ignore held keys while in keypad menu
@@ -441,7 +443,6 @@ void setup()
     settings_setup();
     wifi_setup();
     audio_setup();
-
     menu_setup();
     keypad_setup();
     time_setup();
