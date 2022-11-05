@@ -36,6 +36,7 @@ extern const uint8_t  autoTimeIntervals[6];
 extern bool    alarmOnOff;
 extern uint8_t alarmHour;
 extern uint8_t alarmMinute;
+extern uint8_t alarmWeekday;
 
 void menu_setup();
 void enter_menu();

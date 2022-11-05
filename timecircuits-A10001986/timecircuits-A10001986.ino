@@ -67,8 +67,14 @@
 
 /*  Changelog
  *
- *  2022/11/04 (A10001986)
- *    - Rename "tc_input" to "input" for consistency reasons
+ *  2022/11/05 (A10001986)
+ *    - Re-order keypad menu; alarm and volume are probably used more often than
+ *      programming times for the displays or setting the RTC...
+ *    - Add weekday selection for alarm
+ *    - Add option to disable time travel sounds (in order to have other props play
+ *      theirs. This is only useful in connection with compatible props, triggered by 
+ *      IO14.)
+ *    - Rename "tc_input.*" files to "input.*" for consistency reasons
  *  2022/11/03 (A10001986)
  *    - Reboot after audio file installation from keypad menu
  *    - Ignore held keys while in keypad menu

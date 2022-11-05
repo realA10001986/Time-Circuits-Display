@@ -67,6 +67,7 @@ extern bool    haveSD;
 #define DEF_TEMP_BRIGHT     3     // Default temp brightness
 #define DEF_TEMP_UNIT       0     // Default: temp unit Fahrenheit
 #define DEF_USE_ETTO        0     // 0: No external props
+#define DEF_PLAY_TT_SND     1     // 1: Play time travel sounds (0: Do not; for use with external equipment)
 
 struct Settings {
     char timesPers[4]       = MS(DEF_TIMES_PERS);
@@ -117,6 +118,7 @@ struct Settings {
 #ifdef EXTERNAL_TIMETRAVEL_OUT
     char useETTO[4]         = MS(DEF_USE_ETTO);
 #endif
+    char playTTsnds[4]      = MS(DEF_PLAY_TT_SND);
     char copyAudio[12]      = "";   // never loaded or saved!
 };
 

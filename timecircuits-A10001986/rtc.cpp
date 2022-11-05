@@ -3,36 +3,33 @@
  * CircuitSetup.us Time Circuits Display
  * (C) 2022 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display-A10001986
- * DateTime part: Based on code Copyright (C) 2019 Adafruit Industries
  * 
  * RTC Class (DS3231/PCF2129 RTC handling) and DateTime Class
  * 
- * Note: DateTime mirrors the features of RTC; it only works for
- * dates from 1/1/2000 to 31/12/2099.
- * 
- * DateTime is a cut-down and customized fork of Adafruit's RTClib
- * The original version can be found here:
- * https://github.com/adafruit/RTClib
+ * DateTime mirrors the features of RTC; it only works for dates
+ * from 1/1/2000 to 31/12/2099. Idea taken from RTCLib by
+ * Adafruit.
  * -------------------------------------------------------------------
  * License: MIT
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person 
+ * obtaining a copy of this software and associated documentation 
+ * files (the "Software"), to deal in the Software without restriction, 
+ * including without limitation the rights to use, copy, modify, 
+ * merge, publish, distribute, sublicense, and/or sell copies of the 
+ * Software, and to permit persons to whom the Software is furnished to 
+ * do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be 
+ * included in all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 #include "tc_global.h"
@@ -60,11 +57,8 @@
 /*****************************************************************
  * DateTime Class
  * 
- * Rudimentary general-purpose date/time class 
- * (no TZ / DST / leap seconds).
- * 
- * Used as a vehicle to pass date between functions only; all
- * other features have been removed.
+ * Rudimentary general-purpose date/time class, used as a 
+ * vehicle to pass date/time between functions.
  * 
  * Supports dates in the range from 1 Jan 2000 to 31 Dec 2099.
  ****************************************************************/
@@ -189,7 +183,7 @@ void tcRTC::adjust(const DateTime &dt)
  * Set the date/time from individual elements
  * 
  * - Only years 2000-2099
- * - Allows independent calculation of dayOfWeek
+ * - No calculation of dayOfWeek
  *
  * (year: 0-99; dayOfWeek: 0=Sun..6=Sat)
  */
@@ -363,6 +357,7 @@ bool tcRTC::lostPower(void)
     case RTCT_PCF2129:
         // Check Oscillator Stop Flag to see 
         // if RTC stopped due to power loss
+        // Only works before writing seconds
         return read_register(PCF2129_TIME) >> 7;
 
     case RTCT_DS3231:
