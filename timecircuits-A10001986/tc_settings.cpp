@@ -370,6 +370,10 @@ void settings_setup()
                         writedefault |= checkValidNumParm(settings.useETTO, 0, 1, DEF_USE_ETTO);
                     } else writedefault = true;
                     #endif
+                    if(json["playTTsnds"]) {
+                        strcpy(settings.playTTsnds, json["playTTsnds"]);
+                        writedefault |= checkValidNumParm(settings.playTTsnds, 0, 1, DEF_PLAY_TT_SND);
+                    } else writedefault = true;
 
                 } else {
 
@@ -471,6 +475,7 @@ void write_settings()
     #ifdef EXTERNAL_TIMETRAVEL_OUT
     json["useETTO"] = settings.useETTO;
     #endif
+    json["playTTsnds"] = settings.playTTsnds;
 
     File configFile = SPIFFS.open("/config.json", FILE_WRITE);
 
@@ -590,7 +595,10 @@ bool loadAlarm()
                 #endif
 
                 if(json["alarmonoff"]) {
-                    alarmOnOff = (atoi(json["alarmonoff"]) != 0) ? true : false;
+                    int aoo = atoi(json["alarmonoff"]);
+                    alarmOnOff = ((aoo & 0x0f) != 0);
+                    alarmWeekday = (aoo & 0xf0) >> 4;
+                    if(alarmWeekday > 9) alarmWeekday = 0;
                 } else {
                     writedefault = true;
                 }
@@ -661,11 +669,14 @@ static bool loadAlarmEEPROM()
 
         alarmOnOff = false;
         alarmHour = alarmMinute = 255;    // means "unset"
+        alarmWeekday = 0;
 
         return false;
     }
 
-    alarmOnOff = loadBuf[0] ? true : false;
+    alarmOnOff = ((loadBuf[0] & 0x0f) != 0);
+    alarmWeekday = (loadBuf[0] & 0xf0) >> 4;
+    if(alarmWeekday > 9) alarmWeekday = 0;
     alarmHour = loadBuf[1];
     alarmMinute = loadBuf[2];
 
@@ -674,6 +685,7 @@ static bool loadAlarmEEPROM()
 
 void saveAlarm()
 {
+    char aooBuf[8];
     char hourBuf[8];
     char minBuf[8];
 
@@ -691,7 +703,8 @@ void saveAlarm()
         return;
     }
 
-    json["alarmonoff"] = (char *)(alarmOnOff ? "1" : "0");
+    sprintf(aooBuf, "%d", (alarmWeekday * 16) + (alarmOnOff ? 1 : 0));
+    json["alarmonoff"] = (char *)aooBuf;
 
     sprintf(hourBuf, "%d", alarmHour);
     sprintf(minBuf, "%d", alarmMinute);
@@ -716,11 +729,11 @@ void saveAlarm()
 
 static void saveAlarmEEPROM()
 {
-    uint8_t savBuf[4];    // on/off, hour, minute, checksum
+    uint8_t savBuf[4];    // on/off/wd, hour, minute, checksum
     uint16_t sum = 0;
     int i;
 
-    savBuf[0] = alarmOnOff ? 1 : 0;
+    savBuf[0] = (alarmWeekday * 16) + (alarmOnOff ? 1 : 0);
     savBuf[1] = alarmHour;
     savBuf[2] = alarmMinute;
 

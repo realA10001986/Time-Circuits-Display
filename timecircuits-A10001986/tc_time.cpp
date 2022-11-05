@@ -113,6 +113,7 @@ static unsigned long pauseNow = 0;
 static unsigned long pauseDelay = 30*60*1000;  // Pause for 30 minutes
 
 // The timetravel sequence: Timers, triggers, state
+static bool          playTTsounds = true;
 int                  timeTravelP0 = 0;
 int                  timeTravelP2 = 0;
 #ifdef TC_HAVESPEEDO
@@ -248,7 +249,6 @@ int8_t        autoTime = 0;  // Selects date/time from array below
 #ifndef TWPRIVATE //  ----------------- OFFICIAL
 
 dateStruct destinationTimes[NUM_AUTOTIMES] = {
-    //YEAR, MONTH, DAY, HOUR, MIN
     {1985, 10, 26,  1, 21},   // Einstein 1:20 -> 1:21
     {1955, 11,  5,  6,  0},   // Marty -> 1955
     {1985, 10, 26,  1, 24},   // Marty -> 1985
@@ -278,7 +278,6 @@ dateStruct departedTimes[NUM_AUTOTIMES] = {
 #else //  --------------------------- TWPRIVATE
 
 dateStruct destinationTimes[NUM_AUTOTIMES] = {
-    //YEAR, MONTH, DAY, HOUR, MIN
     {1985,  7, 23, 20,  1},
     {1985, 11, 23, 16, 24},
     {1986,  5, 26, 14, 12},
@@ -307,6 +306,12 @@ dateStruct departedTimes[NUM_AUTOTIMES] = {
 
 #endif  // ------------------------------------
 
+// Alarm weekday masks
+static const uint8_t alarmWDmasks[10] = { 
+    0b01111111, 0b00111110, 0b01000001, 0b00000010, 0b00000100,
+    0b00001000, 0b00010000, 0b00100000, 0b01000000, 0b00000001
+};
+                
 // Night mode
 static bool    autoNightMode = false;
 static uint8_t autoNightModeMode = 0;   // 0 = daily hours, 1-4 presets
@@ -862,6 +867,9 @@ void time_setup()
     // Set up alarm base: RTC or current "present time"
     alarmRTC = ((int)atoi(settings.alarmRTC) > 0);
 
+    // Set up option to play/mute time travel sounds
+    playTTsounds = ((int)atoi(settings.playTTsnds) > 0);
+    
     // Set up speedo display & temperature sensor
     #ifdef TC_HAVESPEEDO
     if(useSpeedo) {
@@ -1613,7 +1621,7 @@ void time_loop()
                                                     presentTime.getDisplayYear());
 
                 // Sound to play hourly (if available)
-                // Follows setting for alarm as regards the options
+                // Follows setting for alarm as regards the option
                 // of "real actual present time" vs whatever is currently
                 // displayed on presentTime.
 
@@ -1638,7 +1646,8 @@ void time_loop()
                 // Handle alarm
 
                 if(alarmOnOff) {
-                    if((alarmHour == compHour) && (alarmMinute == compMin) ) {
+                    if((alarmHour == compHour) && (alarmMinute == compMin) && 
+                                  (alarmWDmasks[alarmWeekday] & (1 << weekDay))) {
                         if(!alarmDone) {
                             play_file("/alarm.mp3", 1.0, false, 0);
                             alarmDone = true;
@@ -1998,7 +2007,7 @@ void timeTravel(bool doComplete, bool withSpeedo)
     timetravelNow = ttUnivNow;
     timeTraveled = true;
 
-    play_file("/timetravel.mp3", 1.0, true, 0);
+    if(playTTsounds) play_file("/timetravel.mp3", 1.0, true, 0);
 
     allOff();
 
@@ -2065,7 +2074,7 @@ void timeTravel(bool doComplete, bool withSpeedo)
 
 static void triggerLongTT()
 {
-    play_file("/travelstart.mp3", 1.0, true, 0);
+    if(playTTsounds) play_file("/travelstart.mp3", 1.0, true, 0);
     timetravelP1Now = millis();
     timetravelP1Delay = TT_P1_DELAY_P1;
     timeTravelP1 = 1;
@@ -2099,7 +2108,7 @@ void resetPresentTime()
     timetravelNow = millis();
     timeTraveled = true;
     if(timeDifference) {
-        play_file("/timetravel.mp3", 1.0, true, 0);
+        if(playTTsounds) play_file("/timetravel.mp3", 1.0, true, 0);
     }
 
     cancelEnterAnim();

@@ -7,7 +7,7 @@
  * Keypad_I2C Class, TCButton Class: I2C-Keypad and Button handling
  *
  * Parts of this are customized minimizations of parts of the Keypad 
- * and the OneButton library.
+ * and the OneButton libraries.
  * Authors of Keypad library: Mark Stanley, Alexander Brevig
  * Author of OneButton library: Matthias Hertel
  * -------------------------------------------------------------------
@@ -336,7 +336,7 @@ static void defaultDelay(unsigned int mydelay)
 }
 
 /*
- * TCButton class (ex-OneButton)
+ * TCButton class
  */
 
 /* pin: The pin to be used

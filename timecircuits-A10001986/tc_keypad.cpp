@@ -82,15 +82,15 @@ static const uint8_t colPins[3] = {2, 0, 4};
 static Keypad_I2C keypad(makeKeymap(keys), rowPins, colPins, 4, 3, KEYPAD_ADDR);
 
 bool isEnterKeyPressed = false;
-bool isEnterKeyHeld = false;
+bool isEnterKeyHeld    = false;
 static bool enterWasPressed = false;
 
 #ifdef EXTERNAL_TIMETRAVEL_IN
-static bool isEttKeyPressed = false;
+static bool          isEttKeyPressed = false;
 static unsigned long ettNow = 0;
-static bool ettDelayed = false;
+static bool          ettDelayed = false;
 static unsigned long ettDelay = 0; // ms
-static bool ettLong = DEF_ETT_LONG;
+static bool          ettLong = DEF_ETT_LONG;
 #endif
 
 static unsigned long timeNow = 0;

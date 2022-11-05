@@ -191,6 +191,11 @@ WiFiManagerParameter custom_useETTO("uEtto", "Use compatible external props (0=n
 WiFiManagerParameter custom_useETTO("uEtto", "Use compatible external props", settings.useETTO, 1, "autocomplete='off' title='Check to use compatible external props to be part of the time travel sequence, eg. Flux Capacitor, SID, etc.' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 #endif // EXTERNAL_TIMETRAVEL_OUT
+#ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
+WiFiManagerParameter custom_playTTSnd("plyTTS", "Play time travel sounds (0=no, 1=yes)", settings.playTTsnds, 1, "autocomplete='off' title='Enable to have the device play time travel sounds'");
+#else // -------------------- Checkbox hack: --------------
+WiFiManagerParameter custom_playTTSnd("plyTTS", "Play time travel sounds", settings.playTTsnds, 1, "autocomplete='off' title='Check to have the device play time travel sounds' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+#endif // -------------------------------------------------
 
 WiFiManagerParameter custom_copyAudio("cpAu", "Audio file installation: Write COPY here to copy the original audio files from the SD card to the internal flash file system", settings.copyAudio, 6, "autocomplete='off'");
 WiFiManagerParameter custom_footer("<p></p>");
@@ -355,11 +360,13 @@ void wifi_setup()
     wm.addParameter(&custom_sectend);
     #endif
     
-    #ifdef EXTERNAL_TIMETRAVEL_OUT
     wm.addParameter(&custom_sectstart);
+    #ifdef EXTERNAL_TIMETRAVEL_OUT
     wm.addParameter(&custom_useETTO);
-    wm.addParameter(&custom_sectend);
     #endif
+    wm.addParameter(&custom_playTTSnd);
+    wm.addParameter(&custom_sectend);
+    
     
     if(check_allow_CPA()) {
         wm.addParameter(&custom_sectstart);
@@ -528,6 +535,7 @@ void wifi_loop()
             #ifdef EXTERNAL_TIMETRAVEL_OUT
             strcpy(settings.useETTO, custom_useETTO.getValue());
             #endif
+            strcpy(settings.playTTsnds, custom_playTTSnd.getValue());
 
             #else // -------------------------- Checkboxes:
 
@@ -561,6 +569,7 @@ void wifi_loop()
             #ifdef EXTERNAL_TIMETRAVEL_OUT
             strcpy(settings.useETTO, ((int)atoi(custom_useETTO.getValue()) > 0) ? "1" : "0");
             #endif
+            strcpy(settings.playTTsnds, ((int)atoi(custom_playTTSnd.getValue()) > 0) ? "1" : "0");
 
             #endif  // -------------------------
 
@@ -992,6 +1001,7 @@ void updateConfigPortalValues()
     #ifdef EXTERNAL_TIMETRAVEL_OUT
     custom_useETTO.setValue(settings.useETTO, 1);
     #endif
+    custom_playTTSnd.setValue(settings.playTTsnds, 1);
 
     #else   // For checkbox hack --------------------------
 
@@ -1025,6 +1035,7 @@ void updateConfigPortalValues()
     #ifdef EXTERNAL_TIMETRAVEL_OUT
     custom_useETTO.setValue(((int)atoi(settings.useETTO) > 0) ? makeCheck : "1", 14);
     #endif
+    custom_playTTSnd.setValue(((int)atoi(settings.playTTsnds) > 0) ? makeCheck : "1", 14);
 
     #endif // ---------------------------------------------    
 
