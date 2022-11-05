@@ -136,32 +136,36 @@ Apart from increasing the displays' lifetime, Night Mode reduces the power consu
 The menu is controlled by "pressing" or "holding" the ENTER key on the keypad.
 
 A "press" is shorter than 2 seconds, a "hold" is 2 seconds or longer.
-Data entry is done by pressing the keypad's number keys.
 
 The menu is involked by holding the ENTER button.
 
-First step is to choose a menu item. The available "items" are   
-- enter dates/times for the three displays,
-- set the audio volume (VOL-UME),
+Data entry, such as for dates and times, is done through the keypad's number keys and works as follows: Whenever a data entry is requested, the field for that data is lit (while the rest of the display is dark) and a pre-set value is shown. If you want to keep that pre-set, press ENTER to proceed to next field. Otherwise press a digit on the keypad; the pre-set is then overwritten by the value entered. 2 digits can be entered (4 for years), upon which the new value is stored and the next field is activated. You can also enter less than 2 digits (4 for years) and press ENTER when done with the field. Note that a month needs to be entered numerically (1-12), and hours need to be entered in 24 hour notation (0-23), regardless of 12-hour or 24-hour mode as per the Config Portal setting.
+
+First step is to choose a menu item. The available items are   
 - set an alarm ("ALA-RM"),
+- set the audio volume (VOL-UME),
 - select the Time-rotation Interval ("TIME-ROTATION-INT"),
 - select the brightness for the three displays ("BRIGHTNESS"),
 - show network information ("NET-WORK"),
+- enter dates/times for the three displays (and set the RTC),
 - install the default audio files ("INSTALL AUDIO FILES")
 - quit the menu ("END").
  
 Pressing ENTER cycles through the list, holding ENTER selects an item, ie a mode.
- 
-#### How to enter dates/times for the three displays:
+
+#### How to set up the alarm:
 
 - Hold ENTER to invoke main menu
-- Press ENTER repeatedly until the desired display is the only one lit
-- Hold ENTER until the display goes off except for the first field to enter data into
-- The field to enter data into is shown (exclusively), pre-set with its current value
-- Data entry works as follows: If you want to keep the currently shown pre-set, press ENTER to proceed to next field. Otherwise press a digit on the keypad; the pre-set is then overwritten by the value entered. 2 digits can be entered (4 for years), upon which the current value is stored and the next field is activated. You can also enter less than 2/4 digits and press ENTER when done with the field. Note that the month needs to be entered numerically (1-12), and the hour needs to be entered in 24 hour mode, regardless of 12-hour or 24-hour mode as per the Config Portal setting.
-- After entering data into all fields, the data is saved and the menu is left automatically.
-- By entering a date/time into the *present time* display, the **RTC (real time clock)** of the device is adjusted, which is useful if you can't use NTP for time keeping, and really helpful when using GPS. Always set the real actual present time here; if you want to display some other time, use the Time Travel function. Note: The time you entered will be overwritten if/when the device has access to network time via NTP or GPS. For DST (daylight saving) and GPS, it is essential that you also set the correct time zone in the Config Portal.
-- Note that when entering dates/times into the *destination time* or *last time departed* displays, the Time-rotation Interval is automatically set to 0. Your entered date/time(s) are shown until overwritten by time travels (see [below](#how-to-select-the-time-rotation-interval)).
+- (Currently, the alarm is the first menu item; otherwise press ENTER repeatedly until "ALA-RM" is shown)
+- Hold ENTER
+- Press ENTER to toggle the alarm on and off, hold ENTER to proceed
+- Then enter the hour and minutes. This works as described above.
+- Choose the weekday(s) by repeatedly pressing ENTER
+- Hold ENTER to finalize your weekday selection. "SAVING" is displayed briefly.
+
+Under normal operation (ie outside of the menu), holding "1" enables the alarm, holding "2" disables it. When the alarm is set and enabled, the dot in the present time's minute field is lit. 
+
+Note that the alarm is recurring, ie it rings at the programmed time, unless disabled. Also note, as mentioned, that the alarm is by default relative to your actual *present time*, not the time displayed (eg after a time travel). It can, however, be configured to be based on the time displayed, in the Config Portal.
 
 #### How to set the audio volume:
 
@@ -174,19 +178,6 @@ Basically, and by default, the device uses the hardware volume knob to determine
 - If you chose "SW", you can now select the desired level by pressing ENTER repeatedly. There are 16 levels available.
 - Hold ENTER to save and quit the menu
 
-#### How to set up the alarm:
-
-- Hold ENTER to invoke main menu
-- Press ENTER repeatedly until "ALA-RM" is shown
-- Hold ENTER
-- Press ENTER to toggle the alarm on and off, hold ENTER to proceed
-- Then enter the hour and minutes. This works as described above.
-- The menu is left automatically after entering the minute. "SAVING" is displayed briefly.
-
-Under normal operation (ie outside of the menu), holding "1" enables the alarm, holding "2" disables it. When the alarm is set and enabled, the dot in the present time's minute field is lit. 
-
-Note that the alarm is recurring, ie it rings every day at the programmed time, unless disabled. Also note, as mentioned, that the alarm is by default relative to your actual *present time*, not the time displayed (eg after a time travel). It can, however, be configured to be based on the time displayed, in the Config Portal.
- 
 #### How to select the Time-rotation Interval:
 
 - Hold ENTER to invoke main menu
@@ -213,6 +204,19 @@ Note that the alarm is recurring, ie it rings every day at the programmed time, 
 - Hold ENTER, the displays show the IP address
 - Press ENTER to view the WiFi status
 - Hold ENTER to leave the menu
+
+#### How to enter dates/times for the three displays:
+
+By entering a date/time into the *present time* display, the **RTC (real time clock)** of the device is adjusted, which is useful if you can't use NTP for time keeping, and really helpful when using GPS. Always set the real actual present time here; if you want to display some other time, use the Time Travel function. Note: The time you entered will be overwritten if/when the device has access to network time via NTP or GPS. For DST (daylight saving) and GPS, it is essential that you also set the correct time zone in the Config Portal.
+
+Note that when entering dates/times into the *destination time* or *last time departed* displays, the Time-rotation Interval is automatically set to 0. Your entered date/time(s) are shown until overwritten by time travels (see [here](#how-to-select-the-time-rotation-interval)).
+
+- Hold ENTER to invoke main menu
+- Press ENTER repeatedly until the desired display is the only one lit and shows a date and time
+- Hold ENTER until the display goes off except for the first field to enter data into
+- The field to enter data into is shown (exclusively), pre-set with its current value
+- Data entry works as described above; remember that months need to be entered numerically (01-12), and hours in 24-hour notation (0-23).
+- After entering data into all fields, the data is saved and the menu is left automatically.
 
 #### How to install the default audio files:
 
