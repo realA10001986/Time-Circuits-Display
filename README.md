@@ -2,7 +2,7 @@
 
 This repository holds the most current firmware for CircuitSetup's wonderful ESP32-based [Time-Circuits-Display](https://circuitsetup.us/product/complete-time-circuits-display-kit/).
 
-The hardware is readily available here: https://circuitsetup.us/product/complete-time-circuits-display-kit/
+The hardware is readily available [here](https://circuitsetup.us/product/complete-time-circuits-display-kit/) and built around a NodeMCU ESP32-S dev board.
 
 ![TCD_Front](https://user-images.githubusercontent.com/76924199/194286089-8f3b6ae8-2e50-46c0-8476-8c4cf0775188.jpg)
 
@@ -30,7 +30,7 @@ Features include
 - Support for triggering time travels on other props; TC can act as master controller for SID, flux capacitor, etc.
 - Built-in installer for default audio files in addition to OTA firmware updates
 
-The code here is based on rudementary code from/by circuitsetup.us, who in the meantime decided to use this software, under the name "v2", as their "official" firmware (apart from some sounds, of which they say they like theirs better). The difference between what you get here and what circuitsetup.us have in their repo is that the code here might be ahead in development, and have more features enabled.
+The code here is based on rudimentary code from/by circuitsetup.us, who in the meantime decided to use this firmware, under the name "v2", as their "official" firmware (apart from some sounds, of which they say they like theirs better). The difference between what you get here and what circuitsetup.us have in their repo is that the code here might be ahead in development, and have more features enabled.
 
 ## Installation
 
