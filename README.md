@@ -18,7 +18,7 @@ Features include
 - [SD card](#sd-card) support for custom audio files
 - ["Return from Time Travel"](#time-travel) (hold "9" for 2 seconds)
 - [Keypad menu](#the-keypad-menu) for adjusting various settings and viewing IP address and WiFi status
-- Enhanced network-accessible [Config Portal](#short-summary-of-first-steps) for setup
+- Advanced network-accessible [Config Portal](#short-summary-of-first-steps) for setup
 - 24-hour clock mode for non-Americans ;)
 - Optional power-up intro
 - Optional [sound on the hour](#additional-custom-sounds)
