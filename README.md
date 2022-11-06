@@ -57,22 +57,23 @@ If you choose to use the Config Portal, trigger the audio file installation proc
 
 ## Short summary of first steps
 
-- As long as the device is unconfigured or later for some reason fails to connect to a configured WiFi network, it starts in "access point" mode, i.e. it creates a WiFi access point named "TCD-AP". The default IP in access point mode is 192.168.4.1. Please turn the volume knob down to a minimum while in AP mode; this mode needs more power and might - in connection with a high volume level - cause the 3.3V converter on the ESP32 to overload, resulting in a freeze or crash of the software.
-- Using your computer or handheld device, connect to the AP and go to http://192.168.4.1 in your browser to enter the Config Portal, click on "Configure WiFi" and configure your Wifi network. Note that the device expects an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). (If the device is inaccessible as a result of wrong static IPs, hold ENTER when powering it up until the white LED lits; static IP data will be deleted and the device will return to DHCP.)
+- As long as the device is unconfigured or later for some reason fails to connect to a configured WiFi network, it starts in "access point" mode, i.e. it creates a WiFi access point named "TCD-AP". The default IP in access point mode is 192.168.4.1.
+- Using your computer or handheld device, connect to the AP and go to http://192.168.4.1 in your browser to enter the Config Portal. 
+- In order to connect the device to your WiFi network, click on "Configure WiFi" and configure your Wifi network. Note that the device expects an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). (If the device is inaccessible as a result of wrong static IPs, hold ENTER when powering it up until the white LED lits; static IP data will be deleted and the device will return to DHCP.)
 - After saving the WiFi network settings, the device reboots and tries to connect to your configured WiFi network. If it fails to connect to your network, the device will again start in access point mode. 
 - Next, if DHCP is used, find out about the IP address assigned to the device. Hold ENTER on the keypad for 2 seconds, then repeatedly press ENTER until "NET-WORK" is shown, then hold ENTER for 2 seconds. The device will then show its current IP address. Use this information to re-enter the Config Portal, as described immediately below.
 
+NTP (time synchronization over the internet) is only possible if the clock is connected to a WiFi network. If no WiFi network is available, please set your local time through the [keypad menu](#how-to-enter-datestimes-for-the-three-displays) after first power-up.
+
 ### The Config Portal
 
-Knowing the device's IP address enables you to enter the Config Portal: Direct your browser to http://a.b.c.d (a.b.c.d being the Ip address as shown in the last step above) and configure other settings on the "Setup" page, first and foremost your time zone. If the time zone isn't set correctly, the clock will show a wrong time, and DST (daylight saving) will not be switched on/off correctly.
+The Config Portal is accessible regardless of a WiFi connection. As outlined above, if the device is not connected to a WiFi network, it creates a WiFi access point, to which your WiFi-enabled hand held device or computer can connect ("TCD-AP", http://192.168.4.1 ). If the clock is connected to your WiFi network, direct your browser instead to http://a.b.c.d (a.b.c.d being the Ip address as shown in the last step above) in order to enter the Config Portal. 
+
+In the main menu, click on "Setup" to configure your clock, first and foremost your time zone. If the time zone isn't set correctly, the clock might show a wrong time, and DST (daylight saving) will not be switched on/off correctly.
 
 | ![The_Config_Portal](https://user-images.githubusercontent.com/76924199/198831635-8cfef3ca-a06e-4321-b2fd-d23cc1e91c56.jpg) |
 |:--:| 
 | *The Config Portal's Setup page* |
-
-There are two ways of configuring the device: Through the Config Portal (ie the network), or the [keypad menu](#the-keypad-menu). Not all settings, however, are configurable in both.
-
-If you don't have WiFi access, you can set your local time through the [keypad menu](#how-to-enter-datestimes-for-the-three-displays).
 
 ## Operation basics
 
