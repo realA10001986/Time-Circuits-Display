@@ -67,6 +67,12 @@
 
 /*  Changelog
  *
+ *  2022/11/06 (A10001986)
+ *    - Add short-cut to set alarm by typing 11hhmm+ENTER (weekday selection must
+ *      still be done through keypad menu)
+ *    - Change default time zone to UTC; folks without WiFi should not be bothered
+ *      by unexpected DST changes.
+ *    - Change default "time travel persistence" to off to avoid flash wear.
  *  2022/11/05 (A10001986)
  *    - Re-order keypad menu; alarm and volume are probably used more often than
  *      programming times for the displays or setting the RTC...

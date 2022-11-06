@@ -99,8 +99,9 @@ static unsigned long lastKeyPressed = 0;
 
 #define DATELEN_ALL   12   // month, day, year, hour, min
 #define DATELEN_DATE   8   // month, day, year
+#define DATELEN_QALM   6   // 11, hour, min (alarm-set shortcut)
 #define DATELEN_TIME   4   // hour, minute
-#define DATELEN_CODE   3   // special
+#define DATELEN_CODE   3   // xxx (special; todo)
 
 static char dateBuffer[DATELEN_ALL + 2];
 char        timeBuffer[8];
@@ -419,7 +420,9 @@ void keypad_loop()
     // if enter key is merely pressed, copy dateBuffer to destination time (if valid)
     if(isEnterKeyPressed) {
 
-        int strLen = strlen(dateBuffer);
+        int  strLen = strlen(dateBuffer);
+        bool invalidEntry = false;
+        bool validEntry = false;
 
         isEnterKeyPressed = false;
         enterWasPressed = true;
@@ -437,12 +440,12 @@ void keypad_loop()
         if(strLen != DATELEN_ALL  &&
            strLen != DATELEN_DATE &&
            strLen != DATELEN_TIME &&
+           strLen != DATELEN_QALM &&
            strLen != DATELEN_CODE) {
 
             Serial.println(F("keypad_loop: Date is too long or too short"));
 
-            play_file("/baddate.mp3", 1.0, true, 0);
-            enterDelay = BADDATE_DELAY;
+            invalidEntry = true;
 
         } else if(strLen == DATELEN_CODE) {
 
@@ -452,14 +455,41 @@ void keypad_loop()
             // TODO
 
             default:
-                play_file("/baddate.mp3", 1.0, true, 0);
-                enterDelay = BADDATE_DELAY;
+                invalidEntry = true;
+            }
+
+        } else if(strLen == DATELEN_QALM) {
+
+            char atxt[16];
+            uint8_t aHour, aMin;
+            bool valid = false;
+
+            if(dateBuffer[0] == '1' && dateBuffer[1] == '1') {
+                aHour = ((dateBuffer[2] - '0') * 10) + (dateBuffer[3] - '0');
+                aMin  = ((dateBuffer[4] - '0') * 10) + (dateBuffer[5] - '0');
+                if(aHour <= 23 && aMin <= 59) valid = true;
+            }
+            if(!valid) {
+                invalidEntry = true;
+            } else {
+                alarmHour = aHour;
+                alarmMinute = aMin;
+                alarmOnOff = true;
+                saveAlarm();
+                #ifdef IS_ACAR_DISPLAY
+                sprintf(atxt, "ALARM   %02d%02d", alarmHour, alarmMinute);
+                #else
+                sprintf(atxt, "ALARM    %02d%02d", alarmHour, alarmMinute);
+                #endif
+                destinationTime.showOnlyText(atxt);
+                specDisp = 10;
+                validEntry = true;
             }
 
         } else {
 
             int _setMonth = -1, _setDay = -1, _setYear = -1;
-            int _setHour = -1, _setMin = -1;
+            int _setHour = -1, _setMin = -1, temp1, temp2;
             int special = 0;
             uint32_t spTmp;
             #ifdef IS_ACAR_DISPLAY
@@ -476,20 +506,23 @@ void keypad_loop()
             Serial.println(F("]"));
             #endif
 
-            // Convert char to String so substring can be used
-            String dateBufferString(dateBuffer);
+            for(int i = 0; i < strLen; i++) dateBuffer[i] -= '0';
 
+            temp1 = (dateBuffer[0] * 10) + dateBuffer[1];
+            temp2 = (dateBuffer[2] * 10) + dateBuffer[3];
+            
             // Convert dateBuffer to date
             if(strLen == DATELEN_TIME) {
-                _setHour = dateBufferString.substring(0, 2).toInt();
-                _setMin  = dateBufferString.substring(2, 4).toInt();
+                _setHour  = temp1;
+                _setMin   = temp2;
             } else {
-                _setMonth = dateBufferString.substring(0, 2).toInt();
-                _setDay = dateBufferString.substring(2, 4).toInt();
-                _setYear = dateBufferString.substring(4, 8).toInt();
+                _setMonth = temp1;
+                _setDay   = temp2;
+                _setYear  = (dateBuffer[4] * 1000) + (dateBuffer[5] * 100) + 
+                            (dateBuffer[6] *   10) +  dateBuffer[7];
                 if(strLen == DATELEN_ALL) {
-                    _setHour = dateBufferString.substring(8, 10).toInt();
-                    _setMin = dateBufferString.substring(10, 12).toInt();
+                    _setHour = (dateBuffer[8]  * 10) + dateBuffer[9];
+                    _setMin  = (dateBuffer[10] * 10) + dateBuffer[11];
                 }
 
                 // Fix month
@@ -499,7 +532,8 @@ void keypad_loop()
                 // Check if day makes sense for the month entered
                 if(_setDay < 1)     _setDay = 1;
                 if(_setDay > daysInMonth(_setMonth, _setYear)) {
-                    _setDay = daysInMonth(_setMonth, _setYear); //set to max day in that month
+                    //set to max day in that month
+                    _setDay = daysInMonth(_setMonth, _setYear); 
                 }
 
                 // year: 1-9999 allowed. There is no year "0", for crying out loud.
@@ -513,7 +547,7 @@ void keypad_loop()
                         spTxt[i] = spTxtS1[i] ^ (i == 0 ? 0xff : spTxtS1[i-1]);
                     }
                 } else if((spTmp ^ getHrs1KYrs(8)) == 59695765)  {
-                    if(_setHour >= 9 && _setHour <=11) {
+                    if(_setHour >= 9 && _setHour <= 11) {
                         special = 2;
                     }
                 } else if((spTmp ^ getHrs1KYrs(6)) == 97676954)  {
@@ -529,8 +563,7 @@ void keypad_loop()
             case 1:
                 destinationTime.showOnlyText(spTxt);
                 specDisp = 1;
-                play_file("/enter.mp3", 1.0, true, 0);
-                enterDelay = ENTER_DELAY;
+                validEntry = true;
                 break;
             case 2:
                 play_file("/ee2.mp3", 1.0, true, 0, false);
@@ -545,8 +578,7 @@ void keypad_loop()
                 enterDelay = EE4_DELAY;
                 break;
             default:
-                play_file("/enter.mp3", 1.0, true, 0);
-                enterDelay = ENTER_DELAY;
+                validEntry = true;
             }
 
             // Copy date to destination time
@@ -567,6 +599,14 @@ void keypad_loop()
             pauseAuto();
         }
 
+        if(validEntry) {
+            play_file("/enter.mp3", 1.0, true, 0);
+            enterDelay = ENTER_DELAY;
+        } else if(invalidEntry) {
+            play_file("/baddate.mp3", 1.0, true, 0);
+            enterDelay = BADDATE_DELAY;
+        } 
+
         // Prepare for next input
         dateIndex = 0;
         dateBuffer[0] = '\0';
@@ -581,11 +621,12 @@ void keypad_loop()
 
             switch(specDisp++) {
             case 2:
+            case 10:
                 destinationTime.on();
                 digitalWrite(WHITE_LED_PIN, LOW);
                 timeNow = millis();
                 enterWasPressed = true;
-                enterDelay = EE1_DELAY2;
+                enterDelay = (specDisp == 3) ? EE1_DELAY2 : ENTER_DELAY*5;
                 break;
             case 3:
                 spTxt[EE1_KL2] = '\0';
@@ -599,6 +640,7 @@ void keypad_loop()
                 play_file("/ee1.mp3", 1.0, true, 0, false);
                 break;
             case 4:
+            case 11:
                 specDisp = 0;
                 break;
             }
