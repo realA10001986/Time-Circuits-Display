@@ -987,6 +987,8 @@ int8_t clockDisplay::loadDST()
     return -1;
 }
 
+// Load lastYear from EEPROM
+// !!! Does not *SET* it, just returns it !!!
 int16_t clockDisplay::loadLastYear()
 {
     uint8_t loadBuf[4];
@@ -1032,6 +1034,8 @@ uint8_t clockDisplay::getLED7AlphaChar(uint8_t value)
         return numDigs[value - 48];
     } else if(value >= 'A' && value <= 'Z') {
         return numDigs[value - 'A' + 10];
+    } else if(value >= 'a' && value <= 'z') {
+        return numDigs[value - 'a' + 10];
     }
     switch(value) {
     case '-':

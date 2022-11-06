@@ -216,8 +216,8 @@ static uint8_t       NTPfailCount = 0;
 static uint8_t       NTPUDPID[4] = { 0, 0, 0, 0};
  
 // The RTC object
-tcRTC rtc(2, (uint8_t[2*2]){ DS3231_ADDR,  RTCT_DS3231, 
-                             PCF2129_ADDR, RTCT_PCF2129 });
+tcRTC rtc(2, (uint8_t[2*2]){ PCF2129_ADDR, RTCT_PCF2129, 
+                             DS3231_ADDR,  RTCT_DS3231 });
 
 // The GPS object
 #ifdef TC_HAVEGPS

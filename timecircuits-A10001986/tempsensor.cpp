@@ -113,7 +113,7 @@ void tempSensor::off()
     onoff(true);
 }
 
-
+// Read temperature
 double tempSensor::readTemp(bool celsius)
 {
     double temp = NAN;
