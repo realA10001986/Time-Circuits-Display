@@ -164,7 +164,7 @@ Pressing ENTER cycles through the list, holding ENTER selects an item, ie a mode
 - Choose the weekday(s) by repeatedly pressing ENTER
 - Hold ENTER to finalize your weekday selection. "SAVING" is displayed briefly.
 
-Under normal operation (ie outside of the menu), holding "1" enables the alarm, holding "2" disables it. When the alarm is set and enabled, the dot in the present time's minute field is lit. 
+Under normal operation (ie outside of the menu), holding "1" enables the alarm, holding "2" disables it. When the alarm is set and enabled, the dot in the present time's minute field will light up. 
 
 Note that the alarm is recurring, ie it rings at the programmed time, unless disabled. Also note, as mentioned, that the alarm is by default relative to your actual *present time*, not the time displayed (eg after a time travel). It can, however, be configured to be based on the time displayed, in the Config Portal.
 
