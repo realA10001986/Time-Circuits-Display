@@ -4,7 +4,7 @@ This repository holds the most current firmware for CircuitSetup's wonderful ESP
 
 The hardware is readily available [here](https://circuitsetup.us/product/complete-time-circuits-display-kit/) and built around a NodeMCU ESP32-S dev board.
 
-![TCD_Front](https://user-images.githubusercontent.com/76924199/194286089-8f3b6ae8-2e50-46c0-8476-8c4cf0775188.jpg)
+![TCD Front](https://user-images.githubusercontent.com/76924199/200327688-cfa7b1c2-abbd-464d-be6d-5d295e51056e.jpg)
 
 Features include
 - Time keeping via NTP (network time), GPS or stand-alone
