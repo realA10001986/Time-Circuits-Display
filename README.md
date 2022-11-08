@@ -167,6 +167,8 @@ Pressing ENTER cycles through the list, holding ENTER selects an item, ie a mode
 
 Under normal operation (ie outside of the menu), holding "1" enables the alarm, holding "2" disables it. When the alarm is set and enabled, the dot in the present time's minute field will light up. 
 
+As of Nov 6, 2022, the alarm time can also be quickly set by typing 11hhmm (eg 110645 for 6:45am, or 112300 for 11:00pm) and pressing ENTER, just like when setting a time travel destination time. (The weekday selection has still to be done via the keypad menu.)
+
 Note that the alarm is recurring, ie it rings at the programmed time, unless disabled. Also note, as mentioned, that the alarm is by default relative to your actual *present time*, not the time displayed (eg after a time travel). It can, however, be configured to be based on the time displayed, in the Config Portal.
 
 #### How to set the audio volume:
