@@ -355,8 +355,8 @@ void keypad_loop()
 
     enterkeyScan();
 
-    // Discard keypad input after 5 minutes of inactivity
-    if(millis() - lastKeyPressed >= 5*60*1000) {
+    // Discard keypad input after 2 minutes of inactivity
+    if(millis() - lastKeyPressed >= 2*60*1000) {
         dateBuffer[0] = '\0';
         dateIndex = 0;
     }
@@ -537,22 +537,24 @@ void keypad_loop()
                 }
 
                 // year: 1-9999 allowed. There is no year "0", for crying out loud.
-                if(_setYear < 1) _setYear = 1;
+                // Having said that, we allow it anyway, let the people have
+                // the full movie experience.
+                //if(_setYear < 1) _setYear = 1;
 
                 spTmp = (uint32_t)_setYear << 16 | _setMonth << 8 | _setDay;
-                if((spTmp ^ getHrs1KYrs(7)) == 70659877) {
+                if((spTmp ^ getHrs1KYrs(7)) == 70667637) {
                     special = 1;
                     spTxt[EE1_KL1] = '\0';
                     for(int i = EE1_KL1-1; i >= 0; i--) {
                         spTxt[i] = spTxtS1[i] ^ (i == 0 ? 0xff : spTxtS1[i-1]);
                     }
-                } else if((spTmp ^ getHrs1KYrs(8)) == 59695765)  {
+                } else if((spTmp ^ getHrs1KYrs(8)) == 59572453)  {
                     if(_setHour >= 9 && _setHour <= 11) {
                         special = 2;
                     }
-                } else if((spTmp ^ getHrs1KYrs(6)) == 97676954)  {
+                } else if((spTmp ^ getHrs1KYrs(6)) == 97681642)  {
                     special = 3;
-                } else if((spTmp ^ getHrs1KYrs(8)) == 65859207)  {
+                } else if((spTmp ^ getHrs1KYrs(8)) == 65998071)  {
                     special = 4;
                 }
             }
@@ -582,7 +584,7 @@ void keypad_loop()
             }
 
             // Copy date to destination time
-            if(_setYear > 0)    destinationTime.setYear(_setYear);
+            if(_setYear >= 0)    destinationTime.setYear(_setYear);   // y0
             if(_setMonth > 0)   destinationTime.setMonth(_setMonth);
             if(_setDay > 0)     destinationTime.setDay(_setDay);
             if(_setHour >= 0)   destinationTime.setHour(_setHour);
@@ -696,22 +698,23 @@ static void mykpddelay(unsigned int mydel)
 /*
  * Night mode
  */
+
+static void setNightMode(bool nm)
+{
+    destinationTime.setNightMode(nm);
+    presentTime.setNightMode(nm);
+    departedTime.setNightMode(nm);
+    #ifdef TC_HAVESPEEDO
+    if(useSpeedo) speedo.setNightMode(nm);
+    #endif
+}
+
 void nightModeOn()
 {
-    destinationTime.setNightMode(true);
-    presentTime.setNightMode(true);
-    departedTime.setNightMode(true);
-    #ifdef TC_HAVESPEEDO
-    if(useSpeedo) speedo.setNightMode(true);
-    #endif
+    setNightMode(true);
 }
 
 void nightModeOff()
 {
-    destinationTime.setNightMode(false);
-    presentTime.setNightMode(false);
-    departedTime.setNightMode(false);
-    #ifdef TC_HAVESPEEDO
-    if(useSpeedo) speedo.setNightMode(false);
-    #endif
+    setNightMode(false);
 }

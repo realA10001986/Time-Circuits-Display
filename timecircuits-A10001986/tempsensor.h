@@ -33,11 +33,15 @@
 #ifndef _tempSensor_H
 #define _tempSensor_H
 
+enum sensType {
+    MCP9808
+};
+
 class tempSensor {
 
     public:
 
-        tempSensor(uint8_t address);
+        tempSensor(int numTypes, uint8_t addrArr[]);
         bool begin();
 
         // Setter for custom delay function
@@ -48,6 +52,10 @@ class tempSensor {
         double readTemp(bool celsius = true);
 
     private:
+
+        int     _numTypes = 0;
+        uint8_t _addrArr[4*2];    // up to 4 sensor types fit here
+        int8_t  _st = -1;
 
         void onoff(bool shutDown);
 

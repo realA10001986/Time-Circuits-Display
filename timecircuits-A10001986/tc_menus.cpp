@@ -239,9 +239,11 @@ static bool yy;
 #define maxTime 240
 static uint8_t timeout = 0;
 
+static const char *StrSaving = "SAVING";
+
 static void menuSelect(int& number);
-static void menuShow(int& number);
-static void setUpdate(uint16_t& number, int field);
+static void menuShow(int number);
+static void setUpdate(uint16_t number, int field);
 static void setField(uint16_t& number, uint8_t field, int year, int month);
 static void saveCurVolume();
 static bool loadCurVolume();
@@ -257,7 +259,7 @@ static void doShowNetInfo();
 static void doCopyAudioFiles();
 static void waitForEnterRelease();
 static bool checkEnterPress();
-static void prepareInput(uint16_t& number);
+static void prepareInput(uint16_t number);
 
 static bool checkTimeOut();
 
@@ -370,7 +372,7 @@ void enter_menu()
         setUpdate(yearSet, FIELD_YEAR);
         prepareInput(yearSet);
         waitForEnterRelease();
-        setField(yearSet, FIELD_YEAR, 0, 0);
+        setField(yearSet, FIELD_YEAR, displaySet->isRTC() ? TCEPOCH : 0, 0);
         isYearUpdate = false;
 
         if(checkTimeOut())
@@ -471,7 +473,7 @@ void enter_menu()
             }
 
             // Show a save message for a brief moment
-            displaySet->showOnlyText("SAVING");
+            displaySet->showOnlyText(StrSaving);
 
             waitAudioDone();
 
@@ -540,7 +542,7 @@ void enter_menu()
         // Now save
         if(!checkTimeOut()) {
 
-            presentTime.showOnlyText("SAVING");
+            presentTime.showOnlyText(StrSaving);
 
             // (Re)Set current brightness as "initial" brightness
             destinationTime.setBrightness(destinationTime.getBrightness(), true);
@@ -676,8 +678,10 @@ static void menuSelect(int& number)
  *  Displays the current main menu item
  *
  */
-static void menuShow(int& number)
+static void menuShow(int number)
 {
+    displaySet = NULL;
+    
     switch (number) {
     case MODE_DEST:  // Destination Time
         destinationTime.on();
@@ -715,7 +719,6 @@ static void menuShow(int& number)
         #endif
         destinationTime.on();
         departedTime.off();
-        displaySet = NULL;
         break;
     case MODE_ALRM:   // Alarm
         #ifdef IS_ACAR_DISPLAY
@@ -743,14 +746,12 @@ static void menuShow(int& number)
         departedTime.on();
         #endif
         destinationTime.on();
-        displaySet = NULL;
         break;
     case MODE_BRI:  // Brightness
         destinationTime.showOnlyText("BRIGHTNESS");
         presentTime.off();
         departedTime.off();
         destinationTime.on();
-        displaySet = NULL;
         break;
     case MODE_NET:  // Network info
         #ifdef IS_ACAR_DISPLAY
@@ -764,7 +765,6 @@ static void menuShow(int& number)
         presentTime.on();
         #endif
         departedTime.off();
-        displaySet = NULL;
         break;
     case MODE_VER:  // Version info
         destinationTime.showOnlyText("VERSION");
@@ -777,7 +777,6 @@ static void menuShow(int& number)
         #else
         departedTime.off();
         #endif
-        displaySet = NULL;
         break;
     case MODE_CPA:  // Install audio files
         destinationTime.showOnlyText("INSTALL");
@@ -785,7 +784,6 @@ static void menuShow(int& number)
         presentTime.showOnlyText("AUDIO FILES");
         presentTime.on();
         departedTime.off();
-        displaySet = NULL;
         break;
     case MODE_END:  // end
         destinationTime.showOnlyText("END");
@@ -793,7 +791,6 @@ static void menuShow(int& number)
         destinationTime.setColon(false);
         presentTime.off();
         departedTime.off();
-        displaySet = NULL;
         break;
     }
 }
@@ -806,9 +803,9 @@ static void menuShow(int& number)
  * field = field to show it in
  *
  */
-static void setUpdate(uint16_t& number, int field)
+static void setUpdate(uint16_t number, int field)
 {
-    switch (field) {
+    switch(field) {
     case FIELD_MONTH:
         displaySet->showOnlyMonth(number);
         break;
@@ -828,7 +825,7 @@ static void setUpdate(uint16_t& number, int field)
 }
 
 // Prepare timeBuffer
-static void prepareInput(uint16_t& number)
+static void prepareInput(uint16_t number)
 {
     // Write pre-set into buffer, reset index to 0
     // Upon first key input, the pre-set will be overwritten
@@ -871,7 +868,7 @@ static void setField(uint16_t& number, uint8_t field, int year = 0, int month = 
         break;
     case FIELD_YEAR:
         upperLimit = 9999;
-        lowerLimit = 1;
+        lowerLimit = year;
         numChars = 4;
         break;
     case FIELD_HOUR:
@@ -1129,7 +1126,7 @@ static void doSetVolume()
 
         stopAudio();
 
-        destinationTime.showOnlyText("SAVING");
+        destinationTime.showOnlyText(StrSaving);
 
         // Save it
         saveCurVolume();
@@ -1182,13 +1179,14 @@ static void doSetAlarm()
       #endif
       "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"
     };
+    #ifdef IS_ACAR_DISPLAY
+    const char *almFmt = "%s     %02d%02d";
+    #else
+    const char *almFmt = "%s      %02d%02d";
+    #endif
 
     // On/Off
-    #ifdef IS_ACAR_DISPLAY
-    sprintf(almBuf, "%s     %02d%02d", newAlarmOnOff ? "ON " : "OFF", newAlarmHour, newAlarmMinute);
-    #else
-    sprintf(almBuf, "%s      %02d%02d", newAlarmOnOff ? "ON " : "OFF", newAlarmHour, newAlarmMinute);
-    #endif
+    sprintf(almBuf, almFmt, newAlarmOnOff ? "ON " : "OFF", newAlarmHour, newAlarmMinute);
     displaySet->showOnlyText(almBuf);
     displaySet->on();
 
@@ -1220,11 +1218,7 @@ static void doSetAlarm()
 
                 newAlarmOnOff = !newAlarmOnOff;
 
-                #ifdef IS_ACAR_DISPLAY
-                sprintf(almBuf, "%s     %02d%02d", newAlarmOnOff ? "ON " : "OFF", newAlarmHour, newAlarmMinute);
-                #else
-                sprintf(almBuf, "%s      %02d%02d", newAlarmOnOff ? "ON " : "OFF", newAlarmHour, newAlarmMinute);
-                #endif
+                sprintf(almBuf, almFmt, newAlarmOnOff ? "ON " : "OFF", newAlarmHour, newAlarmMinute);
                 displaySet->showOnlyText(almBuf);
 
             }
@@ -1304,7 +1298,7 @@ static void doSetAlarm()
     // Do nothing if there was a timeout waiting for button presses
     if(!checkTimeOut()) {
 
-        displaySet->showOnlyText("SAVING");
+        displaySet->showOnlyText(StrSaving);
 
         waitAudioDone();
 
@@ -1336,8 +1330,8 @@ bool loadAutoInterval()
 
     autoInterval = (uint8_t)atoi(settings.autoRotateTimes);
     if(autoInterval > 5) {
-        autoInterval = 1;
-        Serial.println(F("loadAutoInterval: Bad autoInterval, resetting to 1"));
+        autoInterval = DEF_AUTOROTTIMES;
+        Serial.println(F("loadAutoInterval: Bad autoInterval, resetting to default"));
         return false;
     }
     return true;
@@ -1434,7 +1428,7 @@ static void doSetAutoInterval()
         presentTime.off();
         departedTime.off();
 
-        destinationTime.showOnlyText("SAVING");
+        destinationTime.showOnlyText(StrSaving);
 
         // Save it
         saveAutoInterval();
@@ -1659,36 +1653,36 @@ static void doCopyAudioFiles()
     // Wait for enter
     while(!checkTimeOut() && !doCancDone) {
 
-      // If pressed
-      if(checkEnterPress()) {
-
-          // wait for release
-          while(!checkTimeOut() && checkEnterPress()) {
-              // If hold threshold is passed, return false */
-              myloop();
-              if(isEnterKeyHeld) {
-                  isEnterKeyHeld = false;
-                  doCancDone = true;
-                  break;
-              }
-              delay(10);
-          }
-
-          if(!checkTimeOut() && !doCancDone) {
-
-              timeout = 0;  // button pressed, reset timeout
-
-              newCanc = !newCanc;
-
-              departedTime.showOnlyText(newCanc ? "COPY" : "CANCEL");
-
-          }
-
-      } else {
-
-          mydelay(50);
-
-      }
+        // If pressed
+        if(checkEnterPress()) {
+  
+            // wait for release
+            while(!checkTimeOut() && checkEnterPress()) {
+                // If hold threshold is passed, return false */
+                myloop();
+                if(isEnterKeyHeld) {
+                    isEnterKeyHeld = false;
+                    doCancDone = true;
+                    break;
+                }
+                delay(10);
+            }
+  
+            if(!checkTimeOut() && !doCancDone) {
+  
+                timeout = 0;  // button pressed, reset timeout
+  
+                newCanc = !newCanc;
+  
+                departedTime.showOnlyText(newCanc ? "COPY" : "CANCEL");
+  
+            }
+  
+        } else {
+  
+            mydelay(50);
+  
+        }
 
     }
 

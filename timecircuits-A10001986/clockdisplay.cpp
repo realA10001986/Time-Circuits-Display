@@ -318,12 +318,12 @@ void clockDisplay::setYearOffset(int16_t yearOffs)
 // Place LED pattern in year position in buffer
 void clockDisplay::setYear(uint16_t yearNum)
 {
-    if(yearNum - _yearoffset < 1) {
+    if((int16_t)yearNum - _yearoffset < 0) {    // ny0: < 1
         Serial.print(F("Clockdisplay: setYear: Bad year: "));
         Serial.print(yearNum, DEC);
         Serial.print(F(" / yearoffset: "));
         Serial.println(_yearoffset, DEC);
-        yearNum = _yearoffset + 1;
+        yearNum = _yearoffset;                  // ny0: yo+1
     }
 
     _year = yearNum;
@@ -533,7 +533,8 @@ void clockDisplay::showOnlyYear(int yearNum)
 {
     clearDisplay();
 
-    if(yearNum > 10000) yearNum -= 10000;
+    while(yearNum >= 10000) 
+        yearNum -= 10000;
 
     directCol(CD_YEAR_POS,     makeNum(yearNum / 100));
     directCol(CD_YEAR_POS + 1, makeNum(yearNum % 100));
