@@ -542,7 +542,7 @@ void speedDisplay::setText(const char *text)
 // Write given speed to buffer
 // (including current dot01 setting; colon is cleared and ignored)
 void speedDisplay::setSpeed(int8_t speedNum)
-{ 
+{
     clear();
 
     _speed = speedNum;

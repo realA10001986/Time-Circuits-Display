@@ -47,8 +47,10 @@
 #define DEPT_TIME_ADDR 0x74
 
 #define SPEEDO_ADDR    0x70 // i2C address of speedo display
+
 #define GPS_ADDR       0x10 // i2C address of GPS receiver
-#define TEMP_ADDR      0x18 // i2C address of temperature sensor
+
+#define MCP9808_ADDR   0x18 // i2C address of temperature sensor
 
 #define DS3231_ADDR    0x68 // i2C address of DS3231 RTC
 #define PCF2129_ADDR   0x51 // i2C address of PCF2129 RTC
@@ -236,7 +238,7 @@ clockDisplay departedTime(DISP_LAST, DEPT_TIME_ADDR, DEPT_TIME_PREF);
 #ifdef TC_HAVESPEEDO
 speedDisplay speedo(SPEEDO_ADDR);
 #ifdef TC_HAVETEMP
-static tempSensor tempSens(TEMP_ADDR);
+static tempSensor tempSens(1, (uint8_t[1*2]){ MCP9808_ADDR, MCP9808 });
 static bool tempOldNM = false;
 #endif
 #endif
@@ -399,17 +401,17 @@ static const unsigned int mon_ydayt24t60[2][13] =
 };
 static const uint64_t mins1kYears[] =
 {
-             0,  262448640,  525422880,  788397120, 1051371360, 
-    1314347040, 1577321280, 1840295520, 2103269760, 2366245440, 
-    2629219680, 2892193920, 3155168160, 3418143840, 3681118080, 
-    3944092320, 4207066560, 4470042240, 4733016480, 4995990720
+             0,  262975680,  525949920,  788924160, 1051898400,
+    1314874080, 1577848320, 1840822560, 2103796800, 2366772480,
+    2629746720, 2892720960, 3155695200, 3418670880, 3681645120,
+    3944619360, 4207593600, 4470569280, 4733543520, 4996517760
 };
 static const uint32_t hours1kYears[] =
 {
-                0,  262448640/60,  525422880/60,  788397120/60, 1051371360/60, 
-    1314347040/60, 1577321280/60, 1840295520/60, 2103269760/60, 2366245440/60, 
-    2629219680/60, 2892193920/60, 3155168160/60, 3418143840/60, 3681118080/60, 
-    3944092320/60, 4207066560/60, 4470042240/60, 4733016480/60, 4995990720/60
+                0,  262975680/60,  525949920/60,  788924160/60, 1051898400/60,
+    1314874080/60, 1577848320/60, 1840822560/60, 2103796800/60, 2366772480/60, 
+    2629746720/60, 2892720960/60, 3155695200/60, 3418670880/60, 3681645120/60, 
+    3944619360/60, 4207593600/60, 4470569280/60, 4733543520/60, 4996517760/60  
 };
 
 #ifdef TC_HAVESPEEDO
@@ -1454,13 +1456,19 @@ void time_loop()
                         #ifdef TC_DBG
                         Serial.println(F("time_loop: Rollover 9999->1 detected"));
                         #endif
-    
+
+                        // We do not roll over to year "0".
+                        // TZ calc doesn't cope with y0.
                         thisYear = 1;
     
                         if(timeDifference) {
-                            // Correct timeDifference
-                            timeDifference = 5255474400 - timeDifference;
-                            timeDiffUp = !timeDiffUp;
+                            // Correct timeDifference [r-o to 0: 5259492000]
+                            if(timeDifference >= 5258964960) {
+                                timeDifference -= 5258964960;
+                            } else {
+                                timeDifference = 5258964960 - timeDifference;
+                                timeDiffUp = !timeDiffUp;
+                            }
                         }
                     }
     
@@ -2674,7 +2682,7 @@ uint64_t dateToMins(int year, int month, int day, int hour, int minute)
 {
     uint64_t total64 = 0;
     uint32_t total32 = 0;
-    int c = year, d = 1;
+    int c = year, d = 0;        // ny0: d=1
 
     total32 = hours1kYears[year / 500];
     if(total32) d = (year / 500) * 500;
@@ -2695,13 +2703,13 @@ uint64_t dateToMins(int year, int month, int day, int hour, int minute)
  */
 void minsToDate(uint64_t total64, int& year, int& month, int& day, int& hour, int& minute)
 {
-    int c = 1, d = 19;
+    int c = 0, d = 19;    // ny0: c=1
     int temp;
     uint32_t total32;
 
-    year = month = day = 1;
-    hour = 0;
-    minute = 0;
+    year = 0;             // ny0: 1
+    month = day = 1;
+    hour = minute = 0;
 
     while(d >= 0) {
         if(total64 > mins1kYears[d]) break;
@@ -2752,8 +2760,11 @@ uint8_t dayOfWeek(int d, int m, int y)
 {
     // Sakamoto's method
     const int t[] = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
-    if(m < 3) y -= 1;
-    return (y + y/4 - y/100 + y/400 + t[m-1] + d) % 7;
+    if(y > 0) {
+        if(m < 3) y -= 1;
+        return (y + y/4 - y/100 + y/400 + t[m-1] + d) % 7;
+    }
+    return (mon_yday[1][m-1] + d + 5) % 7;
 }
 
 /*

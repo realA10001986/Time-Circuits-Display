@@ -195,7 +195,7 @@ void Keypad_I2C::scanKeys()
         
     } while(maxRetry-- && repeat);
 
-    for(uint8_t c = 0; c < _columns; c++) {       
+    for(uint8_t c = 0; c < _columns; c++) {      
         for(uint8_t r = 0; r < _rows; r++) {
             // keypress is active low, so invert read result
             bitWrite(_bitMap[r], c, (pinVals[0][c] & (1 << _rowPins[r])) ? 0 : 1);

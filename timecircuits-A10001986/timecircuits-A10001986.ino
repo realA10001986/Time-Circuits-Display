@@ -67,6 +67,12 @@
 
 /*  Changelog
  *
+ *  2022/11/08 (A10001986)
+ *    - Allow time travel to (non-existing) year 0, so users can simulate the movie
+ *      error (Dec 25, 0000).
+ *    - RTC can no longer be set to a date below TCEPOCH (which is 2022 currently)
+ *    - Adapt temperature sensor code to allow quickly adding other sensor types
+ *    - Fix time travel time difference in case of a 9999->1 roll-over.
  *  2022/11/06 (A10001986)
  *    - Add short-cut to set alarm by typing 11hhmm+ENTER (weekday selection must
  *      still be done through keypad menu)
