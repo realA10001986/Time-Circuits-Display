@@ -292,7 +292,7 @@ The firmware supports a speedometer display connected via i2c (slave address 0x7
 
 [![Watch the video](https://img.youtube.com/vi/FRRecGxAONc/0.jpg)](https://youtu.be/FRRecGxAONc)
 
-The speedo display shown in this video is based on a fairly well-designed stand-alone replica purchased on ebay. I removed the Arduino Uno inside and wired the LED segments to an Adafruit i2c backpack (eg ADA 878). The strange look of the LEDs in the video is due to the iPhone camera's limitations; in real life it looks as good as any LED segment display.
+The speedo display shown in this video is based on a fairly well-designed stand-alone replica purchased on ebay. I removed the Arduino Uno inside and wired the LED segments to an Adafruit i2c backpack (eg ADA 878). The strange look of the speedo's LEDs in the video is due to camera limitations in combination with the layer of semi-clear plastic covering the LED display to make it like the originally used Stanley Readout displays plus the originally used diffusers; in real life it looks much better.
 
 Since the I2C bus is already quite long from the control board to the last display in the chain, I recommend soldering another JST XH 4pin plug onto the control board (there are two additional i2c break-outs available), and to connect the speedometer there.
 
