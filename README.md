@@ -36,7 +36,7 @@ The code here is based on rudimentary code from/by circuitsetup.us, who in the m
 
 There are different alternative ways to install this firmware:
 
-1) If a previous version of this software was installed on your device, you can upload the provided pre-compiled binary to update to the current version: Go to the Config Portal, click on "Update" and select the pre-compiled binary file provided in this repository. 
+1) If a previous version of the Time Circuits firmware was installed on your device, you can upload the provided pre-compiled binary to update to the current version: Go to the Config Portal, click on "Update" and select the pre-compiled binary file provided in this repository. 
 
 2) Using the Arduino IDE: Download the sketch source code, all required libraries (info in the source code) and compile it. Then upload the sketch to the device. Alternatively, you could use PlatformIO. This method is the one for fresh ESP32 boards and/or folks familiar with Arduino programming.
 
