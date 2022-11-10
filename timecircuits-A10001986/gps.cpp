@@ -87,7 +87,8 @@ bool tcGPS::begin(unsigned long powerupTime, bool quickUpdates)
 
     // Send xxRMC and xxZDA only
     // If we use GPS for speed, we need more frequent updates.
-    // The value in PKT 314 is a multiplier for the value of PKT 220.
+    // The value in PKT 314 is apparently a multiplier for the value 
+    // of PKT 220.
     // For speed we want updates every second for the RMC sentence,
     // so we set the fix update to 1000ms, and the multiplier to 1.
     // For mere time, we set the fix update to 5000, and the
@@ -505,13 +506,13 @@ bool tcGPS::checkNMEA(char *nmea)
 
 static uint8_t parseHex(char c)
 {
-  if(c < '0')   return 0;
-  if(c <= '9')  return c - '0';
-  if(c < 'A')   return 0;
-  if(c <= 'F')  return (c - 'A') + 10;
-  if(c < 'a')   return 0;
-  if(c <= 'f')  return (c - 'a') + 10;
-  return 0;
+    if(c < '0')   return 0;
+    if(c <= '9')  return c - '0';
+    if(c < 'A')   return 0;
+    if(c <= 'F')  return (c - 'A') + 10;
+    if(c < 'a')   return 0;
+    if(c <= 'f')  return (c - 'a') + 10;
+    return 0;
 }
 
 static void defaultDelay(unsigned int mydelay)

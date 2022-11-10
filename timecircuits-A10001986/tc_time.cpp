@@ -1771,19 +1771,49 @@ void time_loop()
                 presentTime.on();
                 departedTime.on();
                 while(ii--) {
-                    ((rand() % 10) < 5) ? destinationTime.showOnlyText("MALFUNCTION") : destinationTime.show();
-                    if(ii % 2) destinationTime.setBrightnessDirect((1+(rand() % 10)) & 0x0a);
-                    if(ii % 3) presentTime.setBrightnessDirect((1+(rand() % 10)) & 0x0b);
+                    #ifdef IS_ACAR_DISPLAY
+                    #define JAN011885 "010118851200"
+                    #else
+                    #define JAN011885 "JAN0118851200"
+                    #endif
+                    ((rand() % 10) < 4) ? destinationTime.showOnlyText(JAN011885) : destinationTime.show();
+                    if(!(ii % 2)) destinationTime.setBrightnessDirect((1+(rand() % 10)) & 0x0a);
+                    if(ii % 2) presentTime.setBrightnessDirect((1+(rand() % 10)) & 0x0b);
                     ((rand() % 10) < 3) ? departedTime.showOnlyText(">ACS2011GIDUW") : departedTime.show();
                     if(ii % 2) departedTime.setBrightnessDirect((1+(rand() % 10)) & 0x07);
                     mydelay(20);
+                    
+                    #if 0   // Code of death
+                    ((rand() % 10) < 5) ? destinationTime.showOnlyText("MALFUNCTION") : destinationTime.show();
+                    destinationTime.setBrightnessDirect((1+(rand() % 10)) & 0x0a);
+                    presentTime.setBrightnessDirect((1+(rand() % 10)) & 0x0b);
+                    ((rand() % 10) < 3) ? departedTime.showOnlyText(">ACS2011GIDUW") : departedTime.show();
+                    departedTime.setBrightnessDirect((1+(rand() % 10)) & 0x07);
+                    mydelay(20);               
+                    #endif
                 }
-                //allOff();
                 break;
             case 5:
                 departedTime.setBrightness(255);
+                departedTime.on();
                 while(ii--) {
                     tt = rand() % 10;
+                    if(!(ii % 4))   presentTime.setBrightnessDirect(1+(rand() % 8));
+                    if(tt < 3)      { presentTime.lampTest(); }
+                    else if(tt < 7) { presentTime.show(); presentTime.on(); }
+                    else            { presentTime.off(); }
+                    tt = (rand() + millis()) % 10;
+                    if(tt < 2)      { destinationTime.lampTest(); }
+                    else if(tt < 6) { destinationTime.show(); destinationTime.on(); }
+                    else            { if(!(ii % 2)) destinationTime.setBrightnessDirect(1+(rand() % 8)); }
+                    tt = (tt + (rand() + millis())) % 10;
+                    if(tt < 4)      { departedTime.lampTest(); }
+                    else if(tt < 7) { departedTime.showOnlyText("R 2 0 1 1 T R "); }
+                    else            { departedTime.show(); }
+                    mydelay(10);
+                    
+                    #if 0 // Code of death
+                    tt = rand() % 10; 
                     presentTime.setBrightnessDirect(1+(rand() % 8));
                     if(tt < 3)      { presentTime.lampTest(); }
                     else if(tt < 7) { presentTime.show(); presentTime.on(); }
@@ -1791,12 +1821,13 @@ void time_loop()
                     tt = (rand() + millis()) % 10;
                     if(tt < 2)      { destinationTime.lampTest(); }
                     else if(tt < 6) { destinationTime.show(); destinationTime.on(); }
-                    else            { if(ii % 2) destinationTime.setBrightnessDirect(1+(rand() % 8)); }
-                    tt = (rand() + millis()) % 10;
+                    else            { destinationTime.setBrightnessDirect(1+(rand() % 8)); }  
+                    tt = (rand() + millis()) % 10; 
                     if(tt < 4)      { departedTime.lampTest(); }
                     else if(tt < 8) { departedTime.showOnlyText("00000000000000"); departedTime.on(); }
                     else            { departedTime.off(); }
                     mydelay(10);
+                    #endif
                 }
                 break;
             default:
