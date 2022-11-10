@@ -67,6 +67,9 @@
 
 /*  Changelog
  *
+ *  2022/11/10 (A10001986)
+ *    - Minor optimizations (wifi)
+ *    - Soft-reset the clock by entering 64738 and ENTER
  *  2022/11/08 (A10001986)
  *    - Allow time travel to (non-existing) year 0, so users can simulate the movie
  *      error (Dec 25, 0000).
