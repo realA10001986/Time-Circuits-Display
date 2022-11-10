@@ -79,11 +79,13 @@ In the main menu, click on "Setup" to configure your clock, first and foremost y
 
 *Present time* is a clock and normally shows the actual local present time, as received from the network or set up through the [keypad menu](#how-to-enter-datestimes-for-the-three-displays).
 
-*Destination time* and *Last time departed* are stale. These, by default, work like in the movie: Upon a time travel, "present time" becomes "last time departed", and "destination time" becomes "present time". 
+*Destination time* and *Last time departed* are stale. These, by default, work like in the movie: Upon a time travel, *present time* becomes *last time departed*, and *destination time* becomes *present time*.
 
-There is also a "decorative" mode where the device cycles through a list of pre-programmed "destination" and "last time departed" times. This mode is chosen by setting the "Time-rotation Interval" in the Config Portal (via network) or the [keypad menu](#how-to-select-the-time-rotation-interval) to a non-zero value. The device will then cycle through named list every 5th, 10th, 15th, 30th or 60th minute, and thereby change the displays, regardless of times displayed as a result from a time travel. Set the interval to 0 to disable this "decorative" mode.
+There is also a "decorative" mode where the device cycles through a list of pre-programmed *destination* and *last time departed* times. This mode is chosen by setting the "Time-rotation Interval" in the Config Portal (via network) or the [keypad menu](#how-to-select-the-time-rotation-interval) to a non-zero value. The device will then cycle through named list every 5th, 10th, 15th, 30th or 60th minute, and thereby change the displays, regardless of times displayed as a result from a time travel. Set the interval to 0 to disable this "decorative" mode.
 
 The clock only supports the [Gregorian Calendar](https://en.wikipedia.org/wiki/Gregorian_calendar), of which it pretends to have been used since year 1. The [Julian Calendar](https://en.wikipedia.org/wiki/Julian_calendar) is not taken into account. As a result, some years that, in the then-used Julian Calendar, were leap years between years 1 and 1582 in most of today's Europe, 1700 in DK/NO/NL(except Holland and Zeeland), 1752 in the British Empire, 1753 in Sweden, 1760 in Lorraine, 1872 in Japan, 1912 in China, 1915 in Bulgaria, 1917 in the Ottoman Empire, 1918 in Russia and Serbia and 1923 in Greece, are normal years in the Gregorian one. As a result, dates do not match in those two calender systems, the Julian calendar is currently 13 days behind. I wonder if Doc's TC took all this into account. (Then again, he wanted to see Christ's birth on Dec 25, 0. Luckily, he didn't actually try to travel to that date. Assuming a negative roll-over, he might have ended up in eternity.)
+
+Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed after 1BC. Nevertheless, it is possible to travel to year 0. In good old Hollywood tradition, I won't let mere facts stand in the way of an authentic movie experience.
 
 ## Time travel
 
