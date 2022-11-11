@@ -334,4 +334,18 @@ After WiFi has been switched off due to timer expiry, it can be re-enabled by ho
 
 The device can tell other props about a time travel, and in essence act as a "master controller" for several props. It does so via IO13.
 
-TODO
+```
+|<---------- P0: speedo accleration ------>|                         |<P2:speedo de-accleration>|
+0....10....20....................xx....87..88------------------------88...87....................0
+                                 |<-------- travelstart.mp3 -------->|<-tt.mp3>|
+                                 11111111111111111111111111111111111122222222222
+                                 |         |<--Actual Time Travel -->|
+                         P1 starts         |  (Display disruption)   |
+                                      TT starts                      Reentry phase
+                                           |                         |
+             |<---------ETTO lead--------->|                         |
+             |                             |                         |
+        ETTO: Pulse                  TT_P1_POINT88                   |
+             or                    (ms from P1 start)                |
+         LOW->HIGH                                            ETTO: HIGH->LOW
+ ```
