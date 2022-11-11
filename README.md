@@ -278,7 +278,7 @@ The switch needs to be connected to these two solder pads on the TC control boar
 
 ![access_to_io13](https://user-images.githubusercontent.com/76924199/194283241-3bee5fef-f51a-4b1a-a158-ed92292bcf32.jpg)
 
-Furthermore, a button switch can be connected to IO27 (active low; before Oct 5, 2022, IO14 was used instead of IO27). This button switch triggers a time travel. The button must be pressed for 200ms to be recognized. There are some config options for this button in the Config Portal.
+Furthermore, a time travel can be triggered from a button switch or another prop. This switch/prop must be connected to IO27 (active low; before Oct 5, 2022, IO14 was used instead of IO27). The IO and GND pins must be shorted for 200ms to be recognized. The Config Portal allows configuring a delay and the type of sequence played, in order match the device to another prop.
 
 Unfortunately, there is no header and no break out for IO27 on existing TC control boards. Some soldering is required. The button needs to be connected to the two marked pins in the image below:
 
@@ -329,3 +329,9 @@ The timers can be set to 0 (which disables them; WiFi is never switched off; thi
 The reason for having two different timers for AP-mode and for station mode is that if the device is used in a car, it might act as an access point, while at home it is most probably connected to a WiFi network as a client. Since in a car, WiFi will most likely not be used on a regular basis, the timer for AP mode can be short (eg 10 minutes), while the timer for station mode can be disabled.
 
 After WiFi has been switched off due to timer expiry, it can be re-enabled by holding "7" on the keypad for approx. 2 seconds, in which case the timers are restarted (ie WiFi is again switched off after timer expiry).
+
+## Controlling other props
+
+The device can tell other props about a time travel, and in essence act as a "master controller" for several props. It does so via IO13.
+
+TODO
