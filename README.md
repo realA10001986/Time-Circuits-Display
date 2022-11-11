@@ -85,7 +85,7 @@ There is also a "decorative" mode where the device cycles through a list of pre-
 
 The clock only supports the [Gregorian Calendar](https://en.wikipedia.org/wiki/Gregorian_calendar), of which it pretends to have been used since year 1. The [Julian Calendar](https://en.wikipedia.org/wiki/Julian_calendar) is not taken into account. As a result, some years that, in the then-used Julian Calendar, were leap years between years 1 and 1582 in most of today's Europe, 1700 in DK/NO/NL(except Holland and Zeeland), 1752 in the British Empire, 1753 in Sweden, 1760 in Lorraine, 1872 in Japan, 1912 in China, 1915 in Bulgaria, 1917 in the Ottoman Empire, 1918 in Russia and Serbia and 1923 in Greece, are normal years in the Gregorian one. As a result, dates do not match in those two calender systems, the Julian calendar is currently 13 days behind. I wonder if Doc's TC took all this into account. (Then again, he wanted to see Christ's birth on Dec 25, 0. Luckily, he didn't actually try to travel to that date. Assuming a negative roll-over, he might have ended up in eternity.)
 
-Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed after 1BC. Nevertheless, it is possible to travel to year 0. In good old Hollywood tradition, I won't let mere facts stand in the way of an authentic movie experience.
+Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed after 1BC. Nevertheless, it is possible to travel to year 0. In good old Hollywood tradition, I won't let facts and science stand in the way of an authentic movie experience.
 
 ## Time travel
 
