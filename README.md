@@ -342,9 +342,9 @@ The device can tell other props about a time travel, and in essence act as a "ma
                                       TT starts                      Reentry phase
                                            |                         |
              |<---------ETTO lead--------->|                         |
-             |                             |                         |
-             |                       TT_P1_POINT88                   |
-             |                     (ms from P1 start)                |
+             |                                                       |
+             |                                                       |
+             |                                                       |
      IO13: LOW->HIGH                                           IO13: HIGH->LOW
  ```
 
