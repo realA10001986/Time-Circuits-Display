@@ -348,4 +348,4 @@ The device can tell other props about a time travel, and in essence act as a "ma
      IO13: LOW->HIGH                                           IO13: HIGH->LOW
  ```
 
-"ETTO lead", ie the lead time between IO13 going high and the actual start of a time travel is defined with 5000ms (ETTO_LEAD_TIME). In this window of time, the prop can play its pre-time-travel (warm-up/acceleration/etc) sequence. The sequence inside the time "tunnel" follows after that lead time, and when IO13 goes LOW, the re-entry into the destination time takes place.
+"ETTO lead", ie the lead time between IO13 going high and the actual start of a time travel is defined as 5000ms (ETTO_LEAD_TIME). In this window of time, the prop can play its pre-time-travel (warm-up/acceleration/etc) sequence. The sequence inside the time "tunnel" follows after that lead time, and when IO13 goes LOW, the re-entry into the destination time takes place.
