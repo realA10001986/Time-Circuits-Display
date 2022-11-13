@@ -1644,7 +1644,7 @@ void time_loop()
                         hourlySoundDone = true;
                     }
                     if(!hourlySoundDone) {
-                        play_file("/hour.mp3", 1.0, false, 0);
+                        play_hour_sound(compHour);
                         hourlySoundDone = true;
                     }
                 } else {

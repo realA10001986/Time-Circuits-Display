@@ -155,6 +155,21 @@ void play_keypad_sound(char key)
     }
 }
 
+void play_hour_sound(int hour)
+{
+    char buf[16];
+
+    if(!haveSD) return;
+    
+    sprintf(buf, "/hour-%02d.mp3", hour);
+    if(mySD0->open(buf)) {
+        mySD0->close();
+        play_file(buf, 1.0, false, 0);
+        return;
+    }
+    
+    play_file("/hour.mp3", 1.0, false, 0);
+}
 /*
  * audio_loop()
  *
@@ -248,7 +263,9 @@ void play_file(const char *audio_file, double volumeFactor, bool checkNightMode,
             Serial.println(F("Playing from flash FS"));
             #endif
         } else {
+            #ifdef TC_DBG
             Serial.println(F("Audio file not found"));
+            #endif
         }
     //} else {
     //    myFS1->open(audio_file);
