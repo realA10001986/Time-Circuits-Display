@@ -67,10 +67,15 @@
 
 /*  Changelog
  *
+ *  2022/11/11 (A10001986)
+ *    - Extended Sound on the Hour: User can now put "hour-xx.mp3" files for each
+ *      hour on the SD card (hour-00.mp3, hour-01.mp3, ..., hour-23.mp3). If one of
+ *      the files is missing, "hour.mp3" will be played (if it exists on the SD card)
+ *    - Support comma on ADA-1270 7-segment display
  *  2022/11/10 (A10001986)
  *    - Minor optimizations (wifi)
  *    - Soft-reset the clock by entering 64738 and ENTER
- *  2022/11/08 (A10001986)
+ *  2022/11/08 (A10001986) [2.3]
  *    - Allow time travel to (non-existing) year 0, so users can simulate the movie
  *      error (Dec 25, 0000).
  *    - RTC can no longer be set to a date below TCEPOCH (which is 2022 currently)
