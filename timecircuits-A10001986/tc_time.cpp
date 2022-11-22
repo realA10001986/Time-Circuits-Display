@@ -52,6 +52,11 @@
 
 #define MCP9808_ADDR   0x18 // i2C address of temperature sensor
 
+#define TSL2561_ADDR   0x29 // I2C address of light sensors 
+#define BH1750_ADDR    0x23
+#define VEML6030_ADDR  0x48
+#define VEML7700_ADDR  0x10 // (conflicts with GPS!)
+
 #define DS3231_ADDR    0x68 // i2C address of DS3231 RTC
 #define PCF2129_ADDR   0x51 // i2C address of PCF2129 RTC
 
@@ -242,6 +247,14 @@ static tempSensor tempSens(1, (uint8_t[1*2]){ MCP9808_ADDR, MCP9808 });
 static bool tempOldNM = false;
 #endif
 #endif
+#ifdef TC_HAVELIGHT
+lightSensor lightSens(4, 
+            (uint8_t[4*2]){ TSL2561_ADDR, LST_TSL2561,
+                            BH1750_ADDR,  LST_BH1750,
+                            VEML6030_ADDR,LST_VEML7700,
+                            VEML7700_ADDR,LST_VEML7700  // must be last
+                          });
+#endif
 
 // Automatic times ("decorative mode")
 
@@ -319,6 +332,11 @@ static bool    autoNightMode = false;
 static uint8_t autoNightModeMode = 0;   // 0 = daily hours, 1-4 presets
 static uint8_t autoNMOnHour  = 0;
 static uint8_t autoNMOffHour = 0;
+static int8_t  timedNightMode = -1;
+static int8_t  sensorNightMode = -1;
+int8_t         manualNightMode = -1;
+unsigned long  manualNMNow = 0;
+int32_t        luxLimit = 3;
 static const uint32_t autoNMhomePreset[7] = {     // Mo-Th 5pm-11pm, Fr 1pm-1am, Sa 9am-1am, Su 9am-11pm
         0b011111111000000000000001,   //Sun
         0b111111111111111110000001,   //Mon
@@ -359,6 +377,10 @@ const uint32_t *autoNMPresets[AUTONM_NUM_PRESETS] = {
     autoNMhomePreset, autoNMofficePreset, 
     autoNMoffice2Preset, autoNMshopPreset
 };
+bool useLight = false;
+#ifdef TC_HAVELIGHT
+static unsigned long lastLoopLight = 0;
+#endif
 
 // State flags
 static bool DSTcheckDone = false;
@@ -494,6 +516,7 @@ void time_setup()
     bool validLoad = true;
     bool rtcbad = false;
     bool tzbad = false;
+    bool haveGPS = false;
     #ifdef TC_HAVEGPS
     bool haveAuthTimeGPS = false;
     #endif
@@ -609,13 +632,17 @@ void time_setup()
         useGPSSpeed = ((int)atoi(settings.useGPSSpeed) > 0);
     }
     #endif
-    
-    if(useGPS || useGPSSpeed) {
-        
-        if(myGPS.begin(powerupMillis, useGPSSpeed)) {
-          
-            myGPS.setCustomDelayFunc(myCustomDelay);
 
+    // Check for GPS receiver
+    // Do so regardless of usage in order to eliminate
+    // VEML7700 light sensor with identical i2c address
+    if(myGPS.begin(powerupMillis, useGPSSpeed)) {
+
+        myGPS.setCustomDelayFunc(myCustomDelay);
+        haveGPS = true;
+        
+        if(useGPS || useGPSSpeed) {
+          
             // ms between GPS polls
             // need more updates if speed is to be displayed
             GPSupdateFreq    = useGPSSpeed ? 250 : 500;
@@ -631,13 +658,16 @@ void time_setup()
             Serial.println(F("time_setup: GPS Receiver found and initialized"));
             #endif
 
-        } else {
-            useGPS = useGPSSpeed = false;
+        } 
 
-            #ifdef TC_DBG
-            Serial.println(F("time_setup: GPS Receiver not found"));
-            #endif
-        }
+    } else {
+      
+        useGPS = useGPSSpeed = false;
+        
+        #ifdef TC_DBG
+        Serial.println(F("time_setup: GPS Receiver not found"));
+        #endif
+        
     }
     #endif
 
@@ -947,6 +977,18 @@ void time_setup()
             useTemp = false;
         }
         #endif
+    }
+    #endif
+
+    #ifdef TC_HAVELIGHT
+    useLight = ((int)atoi(settings.useLight) > 0);
+    luxLimit = atoi(settings.luxLimit);
+    if(useLight) {
+        if(lightSens.begin(haveGPS)) {
+            lightSens.setCustomDelayFunc(myCustomDelay);
+        } else {
+            useLight = false;
+        }
     }
     #endif
 
@@ -1293,6 +1335,12 @@ void time_loop()
     dispTemperature();
     #endif
     #endif
+    #ifdef TC_HAVELIGHT
+    if(useLight && (millis() - lastLoopLight >= 3000)) {
+        lightSens.loop();
+        lastLoopLight = millis();
+    }
+    #endif
 
     // Actual clock stuff
 
@@ -1618,6 +1666,9 @@ void time_loop()
             // Alarm & Sound on the Hour
 
             {
+                #ifdef TC_HAVELIGHT
+                bool switchNMoff = false;
+                #endif
                 int compHour = alarmRTC ? dt.hour()   : presentTime.getHour();
                 int compMin  = alarmRTC ? dt.minute() : presentTime.getMinute();
                 int weekDay =  alarmRTC ? dayOfWeek(dt.day(), 
@@ -1667,16 +1718,27 @@ void time_loop()
 
                 // Handle Auto-NightMode
 
-                if(autoNightMode) {
+                // Manually switching NM pauses automatic for 30 mins
+                if(manualNightMode >= 0 && (millis() - manualNMNow > 30*60*1000)) {
+                    manualNightMode = -1;
+                }
+                
+                if((manualNightMode < 0) && autoNightMode) {
                     if(autoNightModeMode == 0) {
                         if((autoNMOnHour == compHour) && (compMin == 0)) {
                             if(!autoNMDone) {
                                 nightModeOn();
+                                timedNightMode = 1;
                                 autoNMDone = true;
                             }
                         } else if((autoNMOffHour == compHour) && (compMin == 0)) {
                             if(!autoNMDone) {
+                                #ifdef TC_HAVELIGHT
+                                switchNMoff = true;
+                                #else
                                 nightModeOff();
+                                #endif
+                                timedNightMode = 0;
                                 autoNMDone = true;
                             }
                         } else {
@@ -1685,13 +1747,46 @@ void time_loop()
                     } else if(compMin == 0) {
                         if(!autoNMDone) {
                             const uint32_t *myField = autoNMPresets[autoNightModeMode - 1];
-                            (myField[weekDay] & (1 << (23 - compHour))) ? nightModeOn() : nightModeOff();
+                            if(myField[weekDay] & (1 << (23 - compHour))) {
+                                nightModeOn();
+                                timedNightMode = 1; 
+                            } else {
+                                #ifdef TC_HAVELIGHT
+                                switchNMoff = true;
+                                #else
+                                nightModeOff();
+                                #endif
+                                timedNightMode = 0;
+                            }
                             autoNMDone = true;
                         }
                     } else {
                         autoNMDone = false;
                     }
                 }
+                #ifdef TC_HAVELIGHT
+                // Light sensor overrules scheduled NM only in non-NightMode periods
+                if(useLight && (manualNightMode < 0) && (timedNightMode < 1)) {
+                    int32_t myLux = lightSens.readLux();
+                    if(myLux >= 0) {
+                        if(lightSens.readLux() > luxLimit) {
+                            sensorNightMode = 0;
+                            switchNMoff = true;
+                        } else {
+                            sensorNightMode = 1;
+                            nightModeOn();
+                        }
+                    } else {
+                        // Bad lux (probably by sensor overload), switch NM off
+                        sensorNightMode = -1;
+                        switchNMoff = true;
+                    }
+                }
+                if(switchNMoff) {
+                    if(sensorNightMode < 1) nightModeOff();
+                    switchNMoff = false;
+                }
+                #endif
 
             }
 
@@ -1782,15 +1877,6 @@ void time_loop()
                     ((rand() % 10) < 3) ? departedTime.showOnlyText(">ACS2011GIDUW") : departedTime.show();
                     if(ii % 2) departedTime.setBrightnessDirect((1+(rand() % 10)) & 0x07);
                     mydelay(20);
-                    
-                    #if 0   // Code of death
-                    ((rand() % 10) < 5) ? destinationTime.showOnlyText("MALFUNCTION") : destinationTime.show();
-                    destinationTime.setBrightnessDirect((1+(rand() % 10)) & 0x0a);
-                    presentTime.setBrightnessDirect((1+(rand() % 10)) & 0x0b);
-                    ((rand() % 10) < 3) ? departedTime.showOnlyText(">ACS2011GIDUW") : departedTime.show();
-                    departedTime.setBrightnessDirect((1+(rand() % 10)) & 0x07);
-                    mydelay(20);               
-                    #endif
                 }
                 break;
             case 5:
@@ -1799,31 +1885,31 @@ void time_loop()
                 while(ii--) {
                     tt = rand() % 10;
                     if(!(ii % 4))   presentTime.setBrightnessDirect(1+(rand() % 8));
-                    if(tt < 3)      { presentTime.lampTest(); }
+                    if(tt < 3)      { presentTime.setBrightnessDirect(4); presentTime.lampTest(); }
                     else if(tt < 7) { presentTime.show(); presentTime.on(); }
                     else            { presentTime.off(); }
                     tt = (rand() + millis()) % 10;
-                    if(tt < 2)      { destinationTime.lampTest(); }
+                    if(tt < 2)      { destinationTime.showOnlyText("8888888888888"); }
                     else if(tt < 6) { destinationTime.show(); destinationTime.on(); }
                     else            { if(!(ii % 2)) destinationTime.setBrightnessDirect(1+(rand() % 8)); }
                     tt = (tt + (rand() + millis())) % 10;
-                    if(tt < 4)      { departedTime.lampTest(); }
+                    if(tt < 4)      { departedTime.setBrightnessDirect(4); departedTime.lampTest(); }
                     else if(tt < 7) { departedTime.showOnlyText("R 2 0 1 1 T R "); }
                     else            { departedTime.show(); }
                     mydelay(10);
                     
-                    #if 0 // Code of death
+                    #if 0 // Code of death for some red displays, seems they don't like (real)LampTest
                     tt = rand() % 10; 
                     presentTime.setBrightnessDirect(1+(rand() % 8));
-                    if(tt < 3)      { presentTime.lampTest(); }
+                    if(tt < 3)      { presentTime.realLampTest(); }
                     else if(tt < 7) { presentTime.show(); presentTime.on(); }
                     else            { presentTime.off(); }
                     tt = (rand() + millis()) % 10;
-                    if(tt < 2)      { destinationTime.lampTest(); }
+                    if(tt < 2)      { destinationTime.realLampTest(); }
                     else if(tt < 6) { destinationTime.show(); destinationTime.on(); }
                     else            { destinationTime.setBrightnessDirect(1+(rand() % 8)); }  
                     tt = (rand() + millis()) % 10; 
-                    if(tt < 4)      { departedTime.lampTest(); }
+                    if(tt < 4)      { departedTime.realLampTest(); }
                     else if(tt < 8) { departedTime.showOnlyText("00000000000000"); departedTime.on(); }
                     else            { departedTime.off(); }
                     mydelay(10);

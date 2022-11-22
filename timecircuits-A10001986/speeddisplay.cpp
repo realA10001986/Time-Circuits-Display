@@ -37,6 +37,7 @@
 #ifdef TC_HAVESPEEDO
 
 #include <Arduino.h>
+#include <math.h>
 #include "speeddisplay.h"
 #include <Wire.h>
 
@@ -578,10 +579,12 @@ void speedDisplay::setTemperature(double temp)
     char buf[8];
     char alignBuf[20];
     int t, strlenBuf = 0;
+    const char *myNan = "----";
 
     switch(_num_digs) {
     case 2:
-        if(temp <= -10.0) setText("Lo");
+        if(isnan(temp)) setText(myNan);
+        else if(temp <= -10.0) setText("Lo");
         else if(t >= 100.0) setText("Hi");
         else if(temp >= 10.0 || temp < 0.0) {
             t = (int)((double)round(temp));
@@ -593,7 +596,8 @@ void speedDisplay::setTemperature(double temp)
         }
         break;
     case 3:
-        if(temp <= -100.0) setText("Low");
+        if(isnan(temp)) setText(myNan);
+        else if(temp <= -100.0) setText("Low");
         else if(t >= 1000.0) setText("Hi");
         else if(temp >= 100.0 || temp <= -10.0) {
             t = (int)((double)round(temp));
@@ -605,7 +609,7 @@ void speedDisplay::setTemperature(double temp)
         }
         break;
     default:
-        sprintf(buf, "%.1f", temp);
+        sprintf(buf, isnan(temp) ? myNan : "%.1f", temp);
         for(int i = 0; i < strlen(buf); i++) {
             if(buf[i] != '.') strlenBuf++;
         }

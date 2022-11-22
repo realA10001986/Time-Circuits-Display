@@ -45,6 +45,7 @@ class clockDisplay {
         void begin();
         void on();
         void off();
+        void realLampTest();
         void lampTest();
 
         void clearBuf();

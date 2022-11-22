@@ -61,6 +61,9 @@ tcGPS::tcGPS(uint8_t address)
 // Start and init the GPS module
 bool tcGPS::begin(unsigned long powerupTime, bool quickUpdates)
 {
+    uint8_t testBuf;
+    int i2clen;
+    
     _customDelayFunc = defaultDelay;
 
     _lineBufIdx = 0;
@@ -84,6 +87,19 @@ bool tcGPS::begin(unsigned long powerupTime, bool quickUpdates)
     if(millisNow - powerupTime < 1000) {
         delay(1000 - (millisNow - powerupTime));
     }
+
+    // Test reading the sensor
+    i2clen = Wire.requestFrom(_address, (uint8_t)8);
+    if(i2clen) {
+        for(int i = 0; i < min(8, i2clen); i++) {
+            testBuf = Wire.read();
+            // Bail if illegal characters returned
+            if(testBuf != 0x0A && testBuf != 0x0D && (testBuf < ' ' || testBuf > 0x7f)) {
+                return false;
+            }
+        }
+    } else
+        return false;
 
     // Send xxRMC and xxZDA only
     // If we use GPS for speed, we need more frequent updates.
@@ -132,16 +148,9 @@ void tcGPS::loop(bool doDelay)
 
     readAndParse(doDelay);
 
-    #ifdef TC_DBG1
-    myLater = millis();
-    DBGloopCnt++;
-    if(!(DBGloopCnt % 40)) {
-        Serial.print("GPS loop(): readAndParse ");
-        Serial.println(myLater-myNow, DEC);
-    }
+    // Time needed:
     // read 32 bytes: 9ms
     // read 64 bytes: 12ms
-    #endif
 
     // Expire time/date info after 15 minutes
     if(_haveDateTime && (myNow - _curTS >= 15*60*1000))
