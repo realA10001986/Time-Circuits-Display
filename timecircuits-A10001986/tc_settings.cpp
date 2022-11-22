@@ -372,6 +372,10 @@ void settings_setup()
                         strcpy(settings.useLight, json["useLight"]);
                         writedefault |= checkValidNumParm(settings.useLight, 0, 1, DEF_USE_LIGHT);
                     } else writedefault = true;
+                    if(json["luxLimit"]) {
+                        strcpy(settings.luxLimit, json["luxLimit"]);
+                        writedefault |= checkValidNumParm(settings.luxLimit, 0, 100000, DEF_LUX_LIMIT);
+                    } else writedefault = true;
                     #endif
                     #ifdef EXTERNAL_TIMETRAVEL_OUT
                     if(json["useETTO"]) {
@@ -484,6 +488,7 @@ void write_settings()
     #endif
     #ifdef TC_HAVELIGHT
     json["useLight"] = settings.useLight;
+    json["luxLimit"] = settings.luxLimit;
     #endif
     #ifdef EXTERNAL_TIMETRAVEL_OUT
     json["useETTO"] = settings.useETTO;
