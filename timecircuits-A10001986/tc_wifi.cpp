@@ -140,6 +140,14 @@ WiFiManagerParameter custom_autoNM("anm", "Automatic night-mode", settings.autoN
 WiFiManagerParameter custom_autoNMTimes(anmCustHTML);
 WiFiManagerParameter custom_autoNMOn("anmon", "Daily night-mode start hour (0-23)", settings.autoNMOn, 2, "type='number' min='0' max='23' autocomplete='off' title='Enter hour to switch on night-mode'");
 WiFiManagerParameter custom_autoNMOff("anmoff", "Daily night-mode end hour (0-23)", settings.autoNMOff, 2, "type='number' min='0' max='23' autocomplete='off' title='Enter hour to switch off night-mode'");
+#ifdef TC_HAVELIGHT
+#ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
+WiFiManagerParameter custom_uLS("uLS", "Use light sensor (0=no, 1=yes)", settings.useLight, 1, aco);
+#else // -------------------- Checkbox hack: --------------
+WiFiManagerParameter custom_uLS("uLS", "Use light sensor", settings.useLight, 1, "title='If checked, device will go into night mode if light level is below threshold' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+#endif
+WiFiManagerParameter custom_lxLim("lxLim", "<br>Light (lux) threshold (0-100000)", settings.luxLimit, 6, "type='number' min='0' max='100000' autocomplete='off'", WFM_LABEL_BEFORE);
+#endif
 
 #ifdef TC_HAVESPEEDO
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
@@ -334,6 +342,10 @@ void wifi_setup()
     wm.addParameter(&custom_autoNMTimes);
     wm.addParameter(&custom_autoNMOn);
     wm.addParameter(&custom_autoNMOff);
+    #ifdef TC_HAVELIGHT
+    wm.addParameter(&custom_uLS);
+    wm.addParameter(&custom_lxLim);
+    #endif
     wm.addParameter(&custom_sectend);
 
     #ifdef TC_HAVESPEEDO
@@ -491,6 +503,9 @@ void wifi_loop()
             }
             strcpy(settings.autoNMOn, custom_autoNMOn.getValue());
             strcpy(settings.autoNMOff, custom_autoNMOff.getValue());
+            #ifdef TC_HAVELIGHT
+            strcpy(settings.luxLimit, custom_lxLim.getValue());
+            #endif
             
             #ifdef EXTERNAL_TIMETRAVEL_IN
             strcpy(settings.ettDelay, custom_ettDelay.getValue());
@@ -522,6 +537,9 @@ void wifi_loop()
             strcpy(settings.dtNmOff, custom_dtNmOff.getValue());
             strcpy(settings.ptNmOff, custom_ptNmOff.getValue());
             strcpy(settings.ltNmOff, custom_ltNmOff.getValue());
+            #ifdef TC_HAVELIGHT
+            strcpy(settings.useLight, custom_uLS.getValue());
+            #endif
             #ifdef EXTERNAL_TIMETRAVEL_IN
             strcpy(settings.ettLong, custom_ettLong.getValue());
             #endif
@@ -556,6 +574,9 @@ void wifi_loop()
             strcpyCB(settings.dtNmOff, &custom_dtNmOff);
             strcpyCB(settings.ptNmOff, &custom_ptNmOff);
             strcpyCB(settings.ltNmOff, &custom_ltNmOff);
+            #ifdef TC_HAVELIGHT
+            strcpyCB(settings.useLight, &custom_uLS);
+            #endif
             #ifdef EXTERNAL_TIMETRAVEL_IN
             strcpyCB(settings.ettLong, &custom_ettLong);
             #endif
@@ -946,6 +967,9 @@ void updateConfigPortalValues()
 
     custom_autoNMOn.setValue(settings.autoNMOn, 2);
     custom_autoNMOff.setValue(settings.autoNMOff, 2);
+    #ifdef TC_HAVELIGHT
+    custom_lxLim.setValue(settings.luxLimit, 6);
+    #endif
     
     #ifdef EXTERNAL_TIMETRAVEL_IN
     custom_ettDelay.setValue(settings.ettDelay, 5);
@@ -985,6 +1009,9 @@ void updateConfigPortalValues()
     custom_dtNmOff.setValue(settings.dtNmOff, 1);
     custom_ptNmOff.setValue(settings.ptNmOff, 1);
     custom_ltNmOff.setValue(settings.ltNmOff, 1);
+    #ifdef TC_HAVELIGHT
+    custom_uLS.setValue(settings.useLight, 1);
+    #endif
     #ifdef EXTERNAL_TIMETRAVEL_IN
     custom_ettLong.setValue(settings.ettLong, 1);
     #endif
@@ -1019,6 +1046,9 @@ void updateConfigPortalValues()
     setCBVal(&custom_dtNmOff, settings.dtNmOff);
     setCBVal(&custom_ptNmOff, settings.ptNmOff);
     setCBVal(&custom_ltNmOff, settings.ltNmOff);
+    #ifdef TC_HAVELIGHT
+    setCBVal(&custom_uLS, settings.useLight);
+    #endif
     #ifdef EXTERNAL_TIMETRAVEL_IN
     setCBVal(&custom_ettLong, settings.ettLong);
     #endif

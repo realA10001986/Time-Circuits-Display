@@ -248,11 +248,15 @@ static void keypadEvent(char key, KeyState kstate)
         case '4':    // "4" held down -> nightmode on
             doKey = false;
             nightModeOn();
+            manualNightMode = 1;
+            manualNMNow = millis();
             play_file("/nmon.mp3", 1.0, false, 0);
             break;
         case '5':    // "5" held down -> nightmode off
             doKey = false;
             nightModeOff();
+            manualNightMode = 0;
+            manualNMNow = millis();
             play_file("/nmoff.mp3", 1.0, false, 0);
             break;
         case '3':    // "3" held down -> play audio file "key3"

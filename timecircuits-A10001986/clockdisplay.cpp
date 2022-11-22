@@ -119,13 +119,30 @@ void clockDisplay::off()
 }
 
 // Turn on all LEDs
+// Not for use in normal operation
+// Red displays apparently draw more power
+// and might remain dark after repeatedly
+// calling this.
+void clockDisplay::realLampTest()
+{
+    Wire.beginTransmission(_address);
+    Wire.write(0x00);  // start at address 0x0
+
+    for(int i = 0; i < CD_BUF_SIZE*2; i++) {
+        Wire.write(0xff);
+    }
+    Wire.endTransmission();
+}
+
+// Turn on some LEDs
+// Used for effects and brightness keypad menu
 void clockDisplay::lampTest()
 {
     Wire.beginTransmission(_address);
     Wire.write(0x00);  // start at address 0x0
 
     for(int i = 0; i < CD_BUF_SIZE*2; i++) {
-        Wire.write(0xFF);
+        Wire.write(0x55);
     }
     Wire.endTransmission();
 }
