@@ -137,7 +137,7 @@ Finally, you can connect a light sensor to the device. If the measured lux level
 
 If both a schedule is enabled and the light sensor option is checked in the Config Portal, the sensor will overrule the schedule only in non-night-mode hours; ie it will never switch off night mode when night mode is active according to the schedule.
 
-Switching on/off night mode manually (4 or 5 on the keypad) deactivates any schedule or the light sensor for 30 minutes. Afterwards, a programmed schedule and/or the light sensor will overrule the manual setting.
+Switching on/off night mode manually (4 or 5 on the keypad) deactivates any schedule and the light sensor for 30 minutes. Afterwards, a programmed schedule and/or the light sensor will overrule the manual setting.
 
 ## The keypad menu
  
