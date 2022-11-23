@@ -130,12 +130,12 @@ WiFiManagerParameter custom_lastTimeBright("lt_bright", "Last Time Dep. display 
 WiFiManagerParameter custom_dtNmOff("dTnMOff", "Destination time off in night mode (0=dimmed, 1=off)", settings.dtNmOff, 1, aco);
 WiFiManagerParameter custom_ptNmOff("pTnMOff", "Present time off in night mode (0=dimmed, 1=off)", settings.ptNmOff, 1, aco);
 WiFiManagerParameter custom_ltNmOff("lTnMOff", "Last time dep. off in night mode (0=dimmed, 1=off)", settings.ltNmOff, 1, aco);
-WiFiManagerParameter custom_autoNM("anm", "Automatic night-mode (0=off, 1=on)", settings.autoNM, 1, aco);
+WiFiManagerParameter custom_autoNM("anm", "Scheduled night-mode (0=off, 1=on)", settings.autoNM, 1, aco);
 #else // -------------------- Checkbox hack: --------------
 WiFiManagerParameter custom_dtNmOff("dTnMOff", "Destination time off in night mode", settings.dtNmOff, 1, "title='If unchecked, the display will be dimmed' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
 WiFiManagerParameter custom_ptNmOff("pTnMOff", "Present time off in night mode", settings.ptNmOff, 1, "title='If unchecked, the display will be dimmed' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
 WiFiManagerParameter custom_ltNmOff("lTnMOff", "Last time dep. off in night mode", settings.ltNmOff, 1, "title='If unchecked, the display will be dimmed' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
-WiFiManagerParameter custom_autoNM("anm", "Automatic night-mode", settings.autoNM, 1, "title='Check to enable automatic night-mode' type='checkbox' style='margin-top:14px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_autoNM("anm", "Scheduled night-mode", settings.autoNM, 1, "title='Check to enable scheduled night-mode' type='checkbox' style='margin-top:14px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 WiFiManagerParameter custom_autoNMTimes(anmCustHTML);
 WiFiManagerParameter custom_autoNMOn("anmon", "Daily night-mode start hour (0-23)", settings.autoNMOn, 2, "type='number' min='0' max='23' autocomplete='off' title='Enter hour to switch on night-mode'");
@@ -144,7 +144,7 @@ WiFiManagerParameter custom_autoNMOff("anmoff", "Daily night-mode end hour (0-23
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
 WiFiManagerParameter custom_uLS("uLS", "Use light sensor (0=no, 1=yes)", settings.useLight, 1, aco);
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_uLS("uLS", "Use light sensor", settings.useLight, 1, "title='If checked, device will go into night mode if light level is below threshold' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_uLS("uLS", "Use light sensor", settings.useLight, 1, "title='If checked, device will go into night mode if light level is below threshold' type='checkbox' style='margin-top:14px'", WFM_LABEL_AFTER);
 #endif
 WiFiManagerParameter custom_lxLim("lxLim", "<br>Light (lux) threshold (0-100000)", settings.luxLimit, 6, "type='number' min='0' max='100000' autocomplete='off'", WFM_LABEL_BEFORE);
 #endif

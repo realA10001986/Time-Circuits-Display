@@ -90,8 +90,8 @@ bool tcGPS::begin(unsigned long powerupTime, bool quickUpdates)
 
     // Test reading the sensor
     i2clen = Wire.requestFrom(_address, (uint8_t)8);
-    if(i2clen) {
-        for(int i = 0; i < min(8, i2clen); i++) {
+    if(i2clen == 8) {
+        for(int i = 0; i < 8; i++) {
             testBuf = Wire.read();
             // Bail if illegal characters returned
             if(testBuf != 0x0A && testBuf != 0x0D && (testBuf < ' ' || testBuf > 0x7f)) {

@@ -1723,7 +1723,7 @@ void time_loop()
                     manualNightMode = -1;
                 }
                 
-                if((manualNightMode < 0) && autoNightMode) {
+                if(autoNightMode && (manualNightMode < 0)) {
                     if(autoNightModeMode == 0) {
                         if((autoNMOnHour == compHour) && (compMin == 0)) {
                             if(!autoNMDone) {
@@ -1769,7 +1769,7 @@ void time_loop()
                 if(useLight && (manualNightMode < 0) && (timedNightMode < 1)) {
                     int32_t myLux = lightSens.readLux();
                     if(myLux >= 0) {
-                        if(lightSens.readLux() > luxLimit) {
+                        if(myLux > luxLimit) {
                             sensorNightMode = 0;
                             switchNMoff = true;
                         } else {
