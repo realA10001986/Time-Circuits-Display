@@ -14,7 +14,7 @@ Features include
 - Option to make time travels [persistent](#persistent--non-persistent-time-travels) over reboots
 - Movie-accurate time travel times in "decorative mode" (automatic time cycling)
 - [Alarm function](#how-to-set-up-the-alarm)
-- [Night mode](#night-mode) (displays off or dimmed; manual or automatic)
+- [Night mode](#night-mode) (displays off or dimmed; manual, scheduled or sensor-controlled)
 - [SD card](#sd-card) support for custom audio files
 - ["Return from Time Travel"](#time-travel) (hold "9" for 2 seconds)
 - [Keypad menu](#the-keypad-menu) for adjusting various settings and viewing IP address and WiFi status
@@ -119,21 +119,25 @@ Note that a non-zero Time-rotation Interval will force the device to cycle throu
 
 ## Night mode
 
-Night mode will, by default, switch off the *destination time* and *last time departed* displays, dim the *present time* display to a minimum, and reduce the volume of sound playback (except alarm). This behavior, as regards the displays (off/dimmed), can changed in the Config Portal.
+Night mode will, by default, switch off the *destination time* and *last time departed* displays, dim the *present time* display to a minimum, and reduce the volume of sound playback (except alarm). Apart from considerably increasing the displays' lifetime, night-mode reduces the power consumption of the device from around 4.5W to around 2.5W.
 
 To switch on night-mode manually, hold "4". To switch off night-mode, hold "5".
 
-In the Config Portal, you can also configure "automatic night mode". You can choose from currently four time schedule presets, or enter daily start and end hour manually.
+In the Config Portal, you can configure the displays' behavior in night-mode, as well as "scheduled night mode": You can choose from currently four time schedule presets, or enter daily start and end hour manually.
 
-The presets are for (hopefully) typical home, office and shop setups, and they assume to clock to be in use (ie night mode off) at the following times:
+The presets are for (hopefully) typical home, office and shop setups, and they assume the clock to be in use (ie night mode off) at the following times:
 - Home: Mon-Thu 5pm-11pm, Fri 1pm-1am, Sat 9am-1am, Sun 9am-11pm
 - Office (1): Mon-Fri 9am-5pm
 - Office (2): Mon-Thu 7am-5pm, Fri 7am-2pm
 - Shop: Mon-Wed 8am-8pm, Thu-Fri 8am-9pm, Sat 8am-5pm
 
-The fifth way is to enter start and end for a daily schedule. The clock will go into night mode at the defined start hour (xx:00), and return to normal operation at the end hour (yy:00). 
+The "daily schedule" works by entering start and end in the text fields below. The clock will go into night mode at the defined start hour (xx:00), and return to normal operation at the end hour (yy:00). 
 
-Apart from increasing the displays' lifetime, Night Mode reduces the power consumption of the device from around 4.5W to around 2.5W.
+Finally, you can connect a light sensor to the device. If the measured lux level is below the configured threshold, the device will go into night mode. Three sensor types are supported:  TSL2561, BH1750, VEML7700/VEML6030. The VEML7700 can only be connected if no GPS receiver is connected at the same time; the 6030 needs its address set to 0x48 if GPS is present at the same time. All these sensor types are readily available from Adafruit or SeedGrove.
+
+If both a schedule is enabled and the light sensor option is checked, the sensor will overrule the schedule only in non-night-mode hours; ie it will never switch off night mode when night mode is active according to the schedule.
+
+Switching on/off night mode manually (4 or 5 on the keypad), any schedule or the light sensor will be inactive for 30 minutes. Afterwards, a programmed schedule or the light sensor will overrule the manual setting.
 
 ## The keypad menu
  
@@ -266,6 +270,7 @@ If you intend to use the very same SD card that you used for installing the defa
 The software supports some additional user-provided sounds, which must reside on the SD card. If the respective file is present, it will be used. If that file is absent, no sound will be played.
 
 - "hour.mp3": Will be played every hour, on the hour. This feature is disabled in night mode.
+- "hour-xx.mp3", xx being 00 through 23: Special sounds-on-the-hour for specific hours. Will be played instead of "hour.mp3".
 - "key3.mp3" and/or "key6.mp3": Will be played if you hold the "3"/"6" key for 2 seconds.
 
 "hour.mp3", "key3.mp3" and "key6.mp3" are not provided here. You can use any mp3, with 128kpbs or less.
