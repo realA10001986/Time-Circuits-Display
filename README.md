@@ -133,11 +133,11 @@ The presets are for (hopefully) typical home, office and shop setups, and they a
 
 The "daily schedule" works by entering start and end in the text fields below. The clock will go into night mode at the defined start hour (xx:00), and return to normal operation at the end hour (yy:00). 
 
-Finally, you can connect a light sensor to the device. If the measured lux level is below the configured threshold, the device will go into night mode. Three sensor types are supported:  TSL2561, BH1750, VEML7700/VEML6030. The VEML7700 can only be connected if no GPS receiver is connected at the same time; the 6030 needs its address set to 0x48 if GPS is present at the same time. All these sensor types are readily available from Adafruit or SeedGrove.
+Finally, you can connect a light sensor to the device. If the measured lux level is below the configured threshold, the device will go into night mode. Three sensor types are supported: TSL2561, BH1750, VEML7700/VEML6030, connected through i2c with their respective default slave address. The VEML7700 can only be connected if no GPS receiver is connected at the same time; the 6030 needs its address to be set to 0x48 if a GPS receiver is present at the same time. All these sensor types are readily available from Adafruit or SeedGrove. Only one sensor can be used at the same time.
 
-If both a schedule is enabled and the light sensor option is checked, the sensor will overrule the schedule only in non-night-mode hours; ie it will never switch off night mode when night mode is active according to the schedule.
+If both a schedule is enabled and the light sensor option is checked in the Config Portal, the sensor will overrule the schedule only in non-night-mode hours; ie it will never switch off night mode when night mode is active according to the schedule.
 
-Switching on/off night mode manually (4 or 5 on the keypad), any schedule or the light sensor will be inactive for 30 minutes. Afterwards, a programmed schedule or the light sensor will overrule the manual setting.
+Switching on/off night mode manually (4 or 5 on the keypad) deactivates any schedule or the light sensor for 30 minutes. Afterwards, a programmed schedule and/or the light sensor will overrule the manual setting.
 
 ## The keypad menu
  
@@ -149,13 +149,14 @@ The menu is involked by holding the ENTER button.
 
 Data entry, such as for dates and times, is done through the keypad's number keys and works as follows: Whenever a data entry is requested, the field for that data is lit (while the rest of the display is dark) and a pre-set value is shown. If you want to keep that pre-set, press ENTER to proceed to next field. Otherwise press a digit on the keypad; the pre-set is then overwritten by the value entered. 2 digits can be entered (4 for years), upon which the new value is stored and the next field is activated. You can also enter less than 2 digits (4 for years) and press ENTER when done with the field. Note that a month needs to be entered numerically (1-12), and hours need to be entered in 24 hour notation (0-23), regardless of 12-hour or 24-hour mode as per the Config Portal setting.
 
-First step is to choose a menu item. The available items are   
+After invoking the keypad menu, the first step is to choose a menu item. The available items are   
 - set an alarm ("ALA-RM"),
 - set the audio volume (VOL-UME),
 - select the Time-rotation Interval ("TIME-ROTATION-INT"),
 - select the brightness for the three displays ("BRIGHTNESS"),
 - show network information ("NET-WORK"),
 - enter dates/times for the three displays (and set the RTC),
+- show light sensor info (if such a sensor is connected) ("LIGHT SENSOR"),
 - install the default audio files ("INSTALL AUDIO FILES")
 - quit the menu ("END").
  
@@ -228,6 +229,14 @@ Note that when entering dates/times into the *destination time* or *last time de
 - Data entry works as described above; remember that months need to be entered numerically (01-12), and hours in 24-hour notation (0-23).
 - After entering data into all fields, the data is saved and the menu is left automatically.
 
+#### How to view light sensor info
+
+- Hold ENTER to invoke main menu
+- Press ENTER repeatedly until "LIGHT SENSOR" is shown. If that menu item is missing, a light sensor was not detected during boot.
+- Hold ENTER
+- Now the currently measured lux level is displayed.
+- Hold ENTER to exit the menu
+
 #### How to install the default audio files:
 
 - Hold ENTER to invoke main menu
@@ -270,12 +279,12 @@ If you intend to use the very same SD card that you used for installing the defa
 The software supports some additional user-provided sounds, which must reside on the SD card. If the respective file is present, it will be used. If that file is absent, no sound will be played.
 
 - "hour.mp3": Will be played every hour, on the hour. This feature is disabled in night mode.
-- "hour-xx.mp3", xx being 00 through 23: Special sounds-on-the-hour for specific hours. Will be played instead of "hour.mp3".
+- "hour-xx.mp3", xx being 00 through 23: Sounds-on-the-hour for specific hours that will be played instead of "hour.mp3". If a sound for a specific hour is not present, "hour.mp3" will be played, if that one exists.
 - "key3.mp3" and/or "key6.mp3": Will be played if you hold the "3"/"6" key for 2 seconds.
 
-"hour.mp3", "key3.mp3" and "key6.mp3" are not provided here. You can use any mp3, with 128kpbs or less.
+"hour.mp3"/"hour-xx.mp3", "key3.mp3" and "key6.mp3" are not provided here. You can use any mp3, with 128kpbs or less.
 
-## Fake "power on/off" Switch; external Time Travel Trigger
+## Fake "power on/off" Switch; External Time Travel Trigger
 
 The firmware supports a switch connected to IO13 (active low) to act as a fake "power switch". If corresponding option is enabled in the Config Portal ("Use fake power switch"), the device will power-up, initialize everything, but stay quiet and dark. Only when the fake "power switch" is activated (IO13 is connected to GND), the device will visually "power up". You can also fake "power off" the device using this switch. Fake "off" disables the displays, all audio (except the alarm) and the keypad.
 
