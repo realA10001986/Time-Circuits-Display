@@ -328,7 +328,7 @@ If/as long as the GPS receiver has a fix and receives data from satellites, the 
 
 #### GPS for speed
 
-One nice feature of GPS is that the receiver can deliver current speed of movement. If the Time Cicuits are, for instance, mounted in a car or on a boat, and a speedo display is connected, this display will be just that: A real speedometer.
+One nice feature of GPS is that the receiver can deliver current speed of movement. If the Time Circuits are, for instance, mounted in a car or on a boat, and a speedo display is connected, this display will be just that: A real speedometer.
 
 ## Temperature sensor
 
