@@ -133,7 +133,7 @@ The presets are for (hopefully) typical home, office and shop setups, and they a
 
 The "daily schedule" works by entering start and end in the text fields below. The clock will go into night mode at the defined start hour (xx:00), and return to normal operation at the end hour (yy:00). 
 
-Finally, you can connect a light sensor to the device. If the measured lux level is below the configured threshold, the device will go into night mode. Three sensor types are supported: TSL2561, BH1750, VEML7700/VEML6030, connected through i2c with their respective default slave address. The VEML7700 can only be connected if no GPS receiver is connected at the same time; the 6030 needs its address to be set to 0x48 if a GPS receiver is present at the same time. All these sensor types are readily available from Adafruit or SeedGrove. Only one sensor can be used at the same time.
+Finally, you can connect a light sensor to the device. If the measured lux level is below the configured threshold, the device will go into night mode. Three sensor types are supported: TSL2561, BH1750, VEML7700/VEML6030, connected through i2c with their respective default slave address. The VEML7700 can only be connected if no GPS receiver is connected at the same time; the 6030 needs its address to be set to 0x48 if a GPS receiver is present at the same time. All these sensor types are readily available from Adafruit or Seeed (Grove). Only one sensor can be used at the same time.
 
 If both a schedule is enabled and the light sensor option is checked in the Config Portal, the sensor will overrule the schedule only in non-night-mode hours; ie it will never switch off night mode when night mode is active according to the schedule.
 
@@ -304,7 +304,7 @@ Luckily, there is a row of solder pads right next to the socket on the control b
 
 ## External speedometer
 
-The firmware supports a speedometer display connected via i2c (slave address 0x70) as part of the time travel sequence. Unfortunately, CircuitSetup have not yet designed such a speedometer, so you are on your own to build one for the time being. There are, however, various readily available LED segment displays from Adafruit and Grove, that can be used as a basis. Adafruit 878, 1270 and 1922, as well as Grove 0.54" 14-segment 2 or 4 digit alphanumeric displays are supported. (The product numbers vary with color, the numbers here are the red ones.)
+The firmware supports a speedometer display connected via i2c (slave address 0x70) as part of the time travel sequence. Unfortunately, CircuitSetup have not yet designed such a speedometer, so you are on your own to build one for the time being. There are, however, various readily available LED segment displays from Adafruit and Seeed (Grove), that can be used as a basis. Adafruit 878, 1270 and 1922, as well as Grove 0.54" 14-segment 2 or 4 digit alphanumeric displays are supported. (The product numbers vary with color, the numbers here are the red ones.)
 
 [![Watch the video](https://img.youtube.com/vi/FRRecGxAONc/0.jpg)](https://youtu.be/FRRecGxAONc)
 
