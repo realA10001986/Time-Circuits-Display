@@ -346,7 +346,7 @@ After WiFi has been switched off due to timer expiry, it can be re-enabled by ho
 
 ## Controlling other props
 
-The device can tell other props about a time travel, and in essence act as a "master controller" for several props. It does so via IO13, see diagram below.
+The device can tell other props about a time travel, and in essence act as a "master controller" for several props. It does so via IO14, see diagram below.
 
 ```
 |<---------- speedo accleration ---------->|                         |<-speedo de-acceleration->|
@@ -359,7 +359,7 @@ The device can tell other props about a time travel, and in essence act as a "ma
              |                                                       |
              |                                                       |
              |                                                       |
-     IO13: LOW->HIGH                                           IO13: HIGH->LOW
+     IO14: LOW->HIGH                                           IO14: HIGH->LOW
  ```
 
-"ETTO lead", ie the lead time between IO13 going high and the actual start of a time travel is defined as 5000ms (ETTO_LEAD_TIME). In this window of time, the prop can play its pre-time-travel (warm-up/acceleration/etc) sequence. The sequence inside the time "tunnel" follows after that lead time, and when IO13 goes LOW, the re-entry into the destination time takes place.
+"ETTO lead", ie the lead time between IO14 going high and the actual start of a time travel is defined as 5000ms (ETTO_LEAD_TIME). In this window of time, the prop can play its pre-time-travel (warm-up/acceleration/etc) sequence. The sequence inside the time "tunnel" follows after that lead time, and when IO14 goes LOW, the re-entry into the destination time takes place.
