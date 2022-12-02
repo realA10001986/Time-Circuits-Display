@@ -229,12 +229,13 @@ Note that when entering dates/times into the *destination time* or *last time de
 - Data entry works as described above; remember that months need to be entered numerically (01-12), and hours in 24-hour notation (0-23).
 - After entering data into all fields, the data is saved and the menu is left automatically.
 
-#### How to view light sensor info
+#### How to view sensor info
 
 - Hold ENTER to invoke main menu
-- Press ENTER repeatedly until "LIGHT SENSOR" is shown. If that menu item is missing, a light sensor was not detected during boot.
+- Press ENTER repeatedly until "SENSORS" is shown. If that menu item is missing, a light or temperature sensor was not detected during boot.
 - Hold ENTER
-- Now the currently measured lux level is displayed.
+- Now the currently measured lux level or temperature is displayed.
+- Press ENTER to toggle between light sensor and temperature sensor info (if both are connected)
 - Hold ENTER to exit the menu
 
 #### How to install the default audio files:
@@ -332,7 +333,7 @@ One nice feature of GPS is that the receiver can deliver current speed of moveme
 
 ## Temperature sensor
 
-Unless you do time travelling on a regular basis, the speedo display is idle most of the time in a typical home setup. To give it more of a purpose, the software supports connecting a MCP9808-based temperature sensor to the i2c bus (slave address 0x18; readily available from Adafruit, product number 1782). After connecting this sensor and enabling it in the Config Portal, the speedo display will show the ambient temperature in idle mode. (Note that you need a speedo display in order to use the temperature sensor.)
+Unless you do time travelling on a regular basis, the speedo display is idle most of the time in a typical home setup. To give it more of a purpose, the software supports connecting a MCP9808 or BMx820 temperature sensor to the i2c bus (readily available from Adafruit, product numbers 1782 or 2652). After connecting this sensor and enabling it in the Config Portal, the speedo display will show the ambient temperature in idle mode. (Note that you need a speedo display in order to use the temperature sensor.)
 
 ## WiFi power saving features
 
