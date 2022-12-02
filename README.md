@@ -156,7 +156,7 @@ After invoking the keypad menu, the first step is to choose a menu item. The ava
 - select the brightness for the three displays ("BRIGHTNESS"),
 - show network information ("NET-WORK"),
 - enter dates/times for the three displays (and set the RTC),
-- show light sensor info (if such a sensor is connected) ("LIGHT SENSOR"),
+- show light/temperature sensor info (if such a sensor is connected) ("SENSORS"),
 - install the default audio files ("INSTALL AUDIO FILES")
 - quit the menu ("END").
  
