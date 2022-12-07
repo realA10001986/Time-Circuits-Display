@@ -364,3 +364,11 @@ The device can tell other props about a time travel, and in essence act as a "ma
  ```
 
 "ETTO lead", ie the lead time between IO14 going high and the actual start of a time travel is defined as 5000ms (ETTO_LEAD_TIME). In this window of time, the prop can play its pre-time-travel (warm-up/acceleration/etc) sequence. The sequence inside the time "tunnel" follows after that lead time, and when IO14 goes LOW, the re-entry into the destination time takes place.
+
+## My custom-made Wall Clock
+
+![204099461-6499d8a4-4c8f-446c-b0a8-7ef13b558c67](https://user-images.githubusercontent.com/76924199/206280615-e466c2ab-8670-4ff2-a055-6dfec356a966.jpg)
+
+More here: [Link](https://github.com/realA10001986/Time-Circuits-Display/wiki/Time-Circuits-Wall-Clock)
+
+
