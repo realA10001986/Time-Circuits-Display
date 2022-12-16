@@ -2,7 +2,7 @@
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
- * (C) 2022 Thomas Winischhofer (A10001986)
+ * (C) 2022-2023 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display-A10001986
  *
  * This is a multi-license program. Each piece of source code has a
@@ -67,7 +67,22 @@
 
 /*  Changelog
  *
- *  2022/12/02 (A10001986)
+ *  2022/12/16 (A10001986)
+ *    - Add support for SI7021, SHT40, TMP117, AHT20, HTU31D temperature sensors
+ *      [SI7021, SHT40, TMP117, HTU31D untested]
+ *    - Add reading humidity from BME820, SI7021, SHT40, AHT20, HTU31D sensors 
+ *    - Add "room condition" mode, where destination and departed time are replaced
+ *      by temperature and humidity, respectively. Toggle normal and rc mode by entering
+ *      "111" and pressing ENTER. Sensor values are updated every 30 seconds in this
+ *      mode (otherwise every 2 minutes).
+ *    - Add humidity display to SENSORS keypad menu
+ *    - Add MAC address display to "Network" keypad menu. Only the "station mode" MAC
+ *      is shown, ie the MAC address of the ESP32 when it is connected to a WiFi
+ *      network. For some reason there are up to four MAC addresses, used in different
+ *      network modes (AP, STA, etc). A "6" as part of the MAC is shown using the
+ *      "modern"/common segment pattern here to distinguish it from "b".
+ *    - Fix formatting bug in tc_font.h leading to font missing one character
+ *  2022/12/02 (A10001986) [2.5]
  *    - Add support for BMx820 sensor (temperature only).
  *    - Modify former "light sensor" keypad menu to not only show measured lux level
  *      from a light sensor, but also current ambient temperature as measured by
@@ -83,7 +98,7 @@
  *    - clockdisplay: lampTest(), as part of the display disruption sequence, might 
  *      be the reason for some red displays to go dark after time travel; reduce 
  *      the number of segments lit.
- *    - Rename "tempSensor" to "sensors" and add light sensor support. Three types
+ *    - Rename "tempSensor" to "sensors" and add light sensor support. Three models
  *      are supported: TSL2561, BH1750, VEML7700/VEML6030 (VEML7700 only if no GPS 
  *      receiver is connected due to an i2c address conflict; VEML6030 must be configured
  *      for address 0x48, ie ADDR must be high, if GPS is connected at the same time). 
@@ -104,7 +119,7 @@
  *  2022/11/08 (A10001986) [2.3]
  *    - Allow time travel to (non-existing) year 0, so users can simulate the movie
  *      error (Dec 25, 0000).
- *    - RTC can no longer be set to a date below TCEPOCH (which is 2022 currently)
+ *    - RTC can no longer be set to a date below TCEPOCH_GEN (which is 2022 currently)
  *    - Adapt temperature sensor code to allow quickly adding other sensor types
  *    - Fix time travel time difference in case of a 9999->1 roll-over.
  *  2022/11/06 (A10001986)

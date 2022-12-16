@@ -2,7 +2,7 @@
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
- * (C) 2022 Thomas Winischhofer (A10001986)
+ * (C) 2022-2023 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display-A10001986
  *
  * Keypad handling
@@ -36,8 +36,6 @@
 #include "tc_settings.h"
 #include "tc_time.h"
 #include "tc_wifi.h"
-
-//#define GTE_KEYPAD // uncomment if using real GTE/TRW keypad control board
 
 #define KEYPAD_ADDR     0x20    // I2C address of the PCF8574 port expander (keypad)
 
@@ -84,6 +82,8 @@ static Keypad_I2C keypad(makeKeymap(keys), rowPins, colPins, 4, 3, KEYPAD_ADDR);
 bool isEnterKeyPressed = false;
 bool isEnterKeyHeld    = false;
 static bool enterWasPressed = false;
+
+static bool rcModeDepTime = false;
 
 #ifdef EXTERNAL_TIMETRAVEL_IN
 static bool          isEttKeyPressed = false;
@@ -455,9 +455,20 @@ void keypad_loop()
 
             uint16_t code = atoi(dateBuffer);
             switch(code) {
-
-            // TODO
-
+            #ifdef TC_HAVETEMP
+            case 111:
+                if(haveRcMode) {
+                    toggleRcMode();
+                    validEntry = true;
+                    if(tempSens.haveHum()) {
+                        departedTime.off();
+                        rcModeDepTime = true;
+                    }
+                } else {
+                    invalidEntry = true;
+                }
+                break;
+            #endif
             default:
                 invalidEntry = true;
             }
@@ -466,7 +477,7 @@ void keypad_loop()
 
             if(!(strncmp(dateBuffer, "64738", 5))) {
                 allOff();
-                destinationTime.showOnlyText("REBOOTING");
+                destinationTime.showTextDirect("REBOOTING");
                 destinationTime.on();
                 delay(ENTER_DELAY);
                 digitalWrite(WHITE_LED_PIN, LOW);
@@ -498,7 +509,7 @@ void keypad_loop()
                 #else
                 sprintf(atxt, "ALARM    %02d%02d", alarmHour, alarmMinute);
                 #endif
-                destinationTime.showOnlyText(atxt);
+                destinationTime.showTextDirect(atxt);
                 specDisp = 10;
                 validEntry = true;
             }
@@ -580,7 +591,7 @@ void keypad_loop()
 
             switch(special) {
             case 1:
-                destinationTime.showOnlyText(spTxt);
+                destinationTime.showTextDirect(spTxt);
                 specDisp = 1;
                 validEntry = true;
                 break;
@@ -616,6 +627,9 @@ void keypad_loop()
 
             // Pause autoInterval-cycling so user can play undisturbed
             pauseAuto();
+
+            // Disable rc mode
+            enableRcMode(false);
         }
 
         if(validEntry) {
@@ -641,7 +655,8 @@ void keypad_loop()
             switch(specDisp++) {
             case 2:
             case 10:
-                destinationTime.on();
+                if(specDisp == 3) destinationTime.onCond();
+                else              destinationTime.on();
                 digitalWrite(WHITE_LED_PIN, LOW);
                 timeNow = millis();
                 enterWasPressed = true;
@@ -652,7 +667,7 @@ void keypad_loop()
                 for(int i = EE1_KL2-1; i >= 0; i--) {
                     spTxt[i] = spTxtS2[i] ^ (i == 0 ? 0xff : spTxtS2[i-1]);
                 }
-                destinationTime.showOnlyText(spTxt);
+                destinationTime.showTextDirect(spTxt);
                 timeNow = millis();
                 enterWasPressed = true;
                 enterDelay = EE1_DELAY3;
@@ -668,25 +683,82 @@ void keypad_loop()
 
         if(!specDisp) {
 
-            destinationTime.showAnimate1();   // Show all but month
-            mydelay(80);                      // Wait 80ms
-            destinationTime.showAnimate2();   // turn on month
+            #ifdef TC_HAVETEMP
+            if(isRcMode()) {
+
+                destinationTime.showTempDirect(tempSens.readLastTemp(), tempUnit);
+                if(rcModeDepTime) {
+                    departedTime.showHumDirect(tempSens.readHum());
+                }
+                destinationTime.onCond();
+                if(rcModeDepTime) {
+                    departedTime.onCond();
+                }
+              
+            } else {
+            #endif
+
+                destinationTime.showAnimate1();   // Show all but month
+                #ifdef TC_HAVETEMP
+                if(rcModeDepTime) {
+                    departedTime.showAnimate1();
+                }
+                #endif
+                mydelay(80);                      // Wait 80ms
+                destinationTime.showAnimate2();   // turn on month
+                #ifdef TC_HAVETEMP
+                if(rcModeDepTime) {
+                    departedTime.showAnimate2();
+                }
+                #endif
+
+            #ifdef TC_HAVETEMP
+            }
+            #endif
 
             digitalWrite(WHITE_LED_PIN, LOW); // turn off white LED
 
-            enterWasPressed = false;          // reset flag
+            enterWasPressed = false;          // reset flags
+
+            #ifdef TC_HAVETEMP
+            rcModeDepTime = false;
+            #endif
 
         }
+
     }
 }
 
-void cancelEnterAnim()
+void cancelEnterAnim(bool reenableDT)
 {
     if(enterWasPressed) {
         enterWasPressed = false;
+        
         digitalWrite(WHITE_LED_PIN, LOW);
-        destinationTime.show();
-        destinationTime.on();
+        
+        if(reenableDT) {
+            #ifdef TC_HAVETEMP
+            if(isRcMode()) {
+                destinationTime.showTempDirect(tempSens.readLastTemp(), tempUnit);
+            } else
+            #endif
+                destinationTime.show();
+            destinationTime.onCond();
+            #ifdef TC_HAVETEMP
+            if(rcModeDepTime) {
+                if(isRcMode()) {
+                    departedTime.showHumDirect(tempSens.readHum());
+                } else {
+                    departedTime.show();
+                }
+                departedTime.onCond();
+            }
+            #endif
+        }
+        
+        #ifdef TC_HAVETEMP
+        rcModeDepTime = false;
+        #endif
         specDisp = 0;
     }
 }

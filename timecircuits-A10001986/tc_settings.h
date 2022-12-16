@@ -2,7 +2,7 @@
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
- * (C) 2022 Thomas Winischhofer (A10001986)
+ * (C) 2022-2023 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display-A10001986
  *
  * Settings handling
@@ -64,6 +64,7 @@ extern bool    haveSD;
 #define DEF_USE_GPS         0     // 0: No i2c GPS module
 #define DEF_USE_GPS_SPEED   0     // 0: Do not use GPS speed on speedo display
 #define DEF_USE_TEMP        0     // 0: No i2c thermometer
+#define DEF_DISP_TEMP       1     // 1: Display temperature (if available) on speedo
 #define DEF_TEMP_BRIGHT     3     // Default temp brightness
 #define DEF_TEMP_UNIT       0     // Default: temp unit Fahrenheit
 #define DEF_TEMP_OFFS       0.0   // Default temp offset 0.0
@@ -104,6 +105,15 @@ struct Settings {
 #ifdef TC_HAVEGPS
     char useGPS[4]          = MS(DEF_USE_GPS);
 #endif
+#ifdef TC_HAVETEMP
+    char useTemp[4]         = MS(DEF_USE_TEMP);
+    char tempUnit[4]        = MS(DEF_TEMP_UNIT);
+    char tempOffs[6]        = MS(DEF_TEMP_OFFS);
+#endif
+#ifdef TC_HAVELIGHT
+    char useLight[4]         = MS(DEF_USE_LIGHT);
+    char luxLimit[8]         = MS(DEF_LUX_LIMIT);
+#endif
 #ifdef TC_HAVESPEEDO
     char useSpeedo[4]       = MS(DEF_USE_SPEEDO);
     char speedoType[4]      = MS(DEF_SPEEDO_TYPE);
@@ -113,16 +123,10 @@ struct Settings {
     char useGPSSpeed[4]     = MS(DEF_USE_GPS_SPEED);
 #endif
 #ifdef TC_HAVETEMP
-    char useTemp[4]         = MS(DEF_USE_TEMP);
+    char dispTemp[4]        = MS(DEF_DISP_TEMP);
     char tempBright[4]      = MS(DEF_TEMP_BRIGHT);
-    char tempUnit[4]        = MS(DEF_TEMP_UNIT);
-    char tempOffs[6]        = MS(DEF_TEMP_OFFS);
 #endif
-#endif
-#ifdef TC_HAVELIGHT
-    char useLight[4]         = MS(DEF_USE_LIGHT);
-    char luxLimit[8]         = MS(DEF_LUX_LIMIT);
-#endif
+#endif // HAVESPEEDO
 #ifdef EXTERNAL_TIMETRAVEL_OUT
     char useETTO[4]         = MS(DEF_USE_ETTO);
 #endif

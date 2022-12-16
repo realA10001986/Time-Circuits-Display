@@ -2,7 +2,7 @@
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
- * (C) 2022 Thomas Winischhofer (A10001986)
+ * (C) 2022-2023 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display-A10001986
  *
  * WiFi and Config Portal handling
@@ -149,6 +149,17 @@ WiFiManagerParameter custom_uLS("uLS", "Use light sensor", settings.useLight, 1,
 WiFiManagerParameter custom_lxLim("lxLim", "<br>Light (lux) threshold (0-100000)", settings.luxLimit, 6, "type='number' min='0' max='100000' autocomplete='off'", WFM_LABEL_BEFORE);
 #endif
 
+#ifdef TC_HAVETEMP
+#ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
+WiFiManagerParameter custom_useTemp("uTem", "Use temperatur sensor (0=no, 1=yes)", settings.useTemp, 1, "autocomplete='off' title='Enable to use a MCP9808-based temperature sensor to display temperature on speedo display while idle'");
+WiFiManagerParameter custom_tempUnit("uTem", "Temperture unit (0=°F, 1=°C)", settings.tempUnit, 1, "autocomplete='off' title='Select unit for temperature'");
+#else // -------------------- Checkbox hack: --------------
+WiFiManagerParameter custom_useTemp("uTem", "Use temperature sensor", settings.useTemp, 1, "title='Check to use a MCP9808-based temperature sensor to display temperature on speedo display while idle' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_tempUnit("temUnt", "Display in °Celsius", settings.tempUnit, 1, "title='If unchecked, temperature is displayed in Fahrenheit' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+#endif // -------------------------------------------------
+WiFiManagerParameter custom_tempOffs("tOffs", "<br>Temperature offset (-3.0-3.0)", settings.tempOffs, 4, "type='number' min='-3.0' max='3.0' step='0.1' title='Correction value to add to temperature' autocomplete='off'");
+#endif // TC_HAVETEMP
+
 #ifdef TC_HAVESPEEDO
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
 WiFiManagerParameter custom_useSpeedo("uSpe", "Use speedometer display (0=no, 1=yes)", settings.useSpeedo, 1, "autocomplete='off' title='Enable to use a speedo display'");
@@ -164,18 +175,16 @@ WiFiManagerParameter custom_useGPSS("uGPSS", "Display GPS speed (0=no, 1=yes)", 
 #else // -------------------- Checkbox hack: --------------
 WiFiManagerParameter custom_useGPSS("uGPSS", "Display GPS speed", settings.useGPSSpeed, 1, "autocomplete='off' title='Check to use a MT3333-based GPS receiver to display actual speed on speedo display' type='checkbox' style='margin-top:12px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
-#endif // TC_HAVEGPS
 #ifdef TC_HAVETEMP
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
-WiFiManagerParameter custom_useTemp("uTem", "Use temperatur sensor (0=no, 1=yes)", settings.useTemp, 1, "autocomplete='off' title='Enable to use a MCP9808-based temperature sensor to display temperature on speedo display while idle'");
-WiFiManagerParameter custom_tempUnit("uTem", "Temperture unit (0=°F, 1=°C)", settings.tempUnit, 1, "autocomplete='off' title='Select unit for temperature'");
+WiFiManagerParameter custom_useDpTemp("dpTemp", "Display temperature (0=no, 1=yes)", settings.useGPSSpeed, 1, "autocomplete='off' title='Enable to display temperature on speedo display when idle (needs temperature sensor)'");
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_useTemp("uTem", "Use temperature sensor", settings.useTemp, 1, "title='Check to use a MCP9808-based temperature sensor to display temperature on speedo display while idle' type='checkbox' style='margin-top:12px'", WFM_LABEL_AFTER);
-WiFiManagerParameter custom_tempUnit("temUnt", "Display in °Celsius", settings.tempUnit, 1, "title='If unchecked, temperature is displayed in Fahrenheit' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_useDpTemp("dpTemp", "Display temperature", settings.useGPSSpeed, 1, "autocomplete='off' title='Check to display temperature on speedo display when idle (needs temperature sensor)' type='checkbox' style='margin-top:12px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 WiFiManagerParameter custom_tempBright("temBri", "<br>Temperature brightness (0-15)", settings.tempBright, 2, "type='number' min='0' max='15' autocomplete='off'");
-WiFiManagerParameter custom_tempOffs("tOffs", "Temperature offset (-3.0-3.0)", settings.tempOffs, 4, "type='number' min='-3.0' max='3.0' step='0.1' title='Correction value to add to temperature' autocomplete='off'");
-#endif // TC_HAVETEMP
+#endif
+#endif // TC_HAVEGPS
+
 #endif // TC_HAVESPEEDO
 
 #ifdef FAKE_POWER_ON
@@ -349,6 +358,14 @@ void wifi_setup()
     #endif
     wm.addParameter(&custom_sectend);
 
+    #ifdef TC_HAVETEMP
+    wm.addParameter(&custom_sectstart);
+    wm.addParameter(&custom_useTemp);
+    wm.addParameter(&custom_tempUnit);
+    wm.addParameter(&custom_tempOffs);
+    wm.addParameter(&custom_sectend);
+    #endif
+
     #ifdef TC_HAVESPEEDO
     wm.addParameter(&custom_sectstart);
     wm.addParameter(&custom_useSpeedo);
@@ -359,10 +376,8 @@ void wifi_setup()
     wm.addParameter(&custom_useGPSS);
     #endif
     #ifdef TC_HAVETEMP
-    wm.addParameter(&custom_useTemp);
-    wm.addParameter(&custom_tempUnit);
+    wm.addParameter(&custom_useDpTemp);
     wm.addParameter(&custom_tempBright);
-    wm.addParameter(&custom_tempOffs);
     #endif
     wm.addParameter(&custom_sectend);
     #endif
@@ -512,6 +527,10 @@ void wifi_loop()
             #ifdef EXTERNAL_TIMETRAVEL_IN
             strcpy(settings.ettDelay, custom_ettDelay.getValue());
             #endif
+
+            #ifdef TC_HAVETEMP
+            strcpy(settings.tempOffs, custom_tempOffs.getValue());
+            #endif
             
             #ifdef TC_HAVESPEEDO
             getParam("speedo_type", settings.speedoType, 2);
@@ -520,22 +539,22 @@ void wifi_loop()
             }
             strcpy(settings.speedoBright, custom_speedoBright.getValue());
             strcpy(settings.speedoFact, custom_speedoFact.getValue());
-            
             #ifdef TC_HAVETEMP
             strcpy(settings.tempBright, custom_tempBright.getValue());
-            strcpy(settings.tempOffs, custom_tempOffs.getValue());
             #endif
             #endif
-
+            
             #ifdef TC_NOCHECKBOXES // --------- Plain text boxes:
 
             strcpy(settings.timesPers, custom_ttrp.getValue());
             strcpy(settings.alarmRTC, custom_alarmRTC.getValue());
             strcpy(settings.playIntro, custom_playIntro.getValue());
-            strcpy(settings.mode24, custom_mode24.getValue());            
+            strcpy(settings.mode24, custom_mode24.getValue()); 
+                       
             #ifdef TC_HAVEGPS
             strcpy(settings.useGPS, custom_useGPS.getValue());
             #endif
+            
             strcpy(settings.autoNM, custom_autoNM.getValue());
             strcpy(settings.dtNmOff, custom_dtNmOff.getValue());
             strcpy(settings.ptNmOff, custom_ptNmOff.getValue());
@@ -543,22 +562,29 @@ void wifi_loop()
             #ifdef TC_HAVELIGHT
             strcpy(settings.useLight, custom_uLS.getValue());
             #endif
-            #ifdef EXTERNAL_TIMETRAVEL_IN
-            strcpy(settings.ettLong, custom_ettLong.getValue());
+            
+            #ifdef TC_HAVETEMP
+            strcpy(settings.useTemp, custom_useTemp.getValue());
+            strcpy(settings.tempUnit, custom_tempUnit.getValue());
             #endif
-            #ifdef FAKE_POWER_ON
-            strcpy(settings.fakePwrOn, custom_fakePwrOn.getValue());
-            #endif
+            
             #ifdef TC_HAVESPEEDO
             strcpy(settings.useSpeedo, custom_useSpeedo.getValue());
             #ifdef TC_HAVEGPS
             strcpy(settings.useGPSSpeed, custom_useGPSS.getValue());
             #endif
             #ifdef TC_HAVETEMP
-            strcpy(settings.useTemp, custom_useTemp.getValue());
-            strcpy(settings.tempUnit, custom_tempUnit.getValue());
+            strcpy(settings.dispTemp, custom_useDpTemp.getValue());
             #endif
             #endif
+            
+            #ifdef EXTERNAL_TIMETRAVEL_IN
+            strcpy(settings.ettLong, custom_ettLong.getValue());
+            #endif
+            #ifdef FAKE_POWER_ON
+            strcpy(settings.fakePwrOn, custom_fakePwrOn.getValue());
+            #endif
+            
             #ifdef EXTERNAL_TIMETRAVEL_OUT
             strcpy(settings.useETTO, custom_useETTO.getValue());
             #endif
@@ -570,9 +596,11 @@ void wifi_loop()
             strcpyCB(settings.alarmRTC, &custom_alarmRTC);
             strcpyCB(settings.playIntro, &custom_playIntro);
             strcpyCB(settings.mode24, &custom_mode24);
+            
             #ifdef TC_HAVEGPS
             strcpyCB(settings.useGPS, &custom_useGPS);
             #endif
+            
             strcpyCB(settings.autoNM, &custom_autoNM);
             strcpyCB(settings.dtNmOff, &custom_dtNmOff);
             strcpyCB(settings.ptNmOff, &custom_ptNmOff);
@@ -580,22 +608,30 @@ void wifi_loop()
             #ifdef TC_HAVELIGHT
             strcpyCB(settings.useLight, &custom_uLS);
             #endif
-            #ifdef EXTERNAL_TIMETRAVEL_IN
-            strcpyCB(settings.ettLong, &custom_ettLong);
+            
+            #ifdef TC_HAVETEMP
+            strcpyCB(settings.useTemp, &custom_useTemp);
+            strcpyCB(settings.tempUnit, &custom_tempUnit);
             #endif
-            #ifdef FAKE_POWER_ON
-            strcpyCB(settings.fakePwrOn, &custom_fakePwrOn);
-            #endif
+            
             #ifdef TC_HAVESPEEDO
             strcpyCB(settings.useSpeedo, &custom_useSpeedo);
             #ifdef TC_HAVEGPS
             strcpyCB(settings.useGPSSpeed, &custom_useGPSS);
             #endif
             #ifdef TC_HAVETEMP
-            strcpyCB(settings.useTemp, &custom_useTemp);
-            strcpyCB(settings.tempUnit, &custom_tempUnit);
+            strcpyCB(settings.dispTemp, &custom_useDpTemp);
             #endif
             #endif
+            
+            #ifdef EXTERNAL_TIMETRAVEL_IN
+            strcpyCB(settings.ettLong, &custom_ettLong);
+            #endif
+            
+            #ifdef FAKE_POWER_ON
+            strcpyCB(settings.fakePwrOn, &custom_fakePwrOn);
+            #endif
+            
             #ifdef EXTERNAL_TIMETRAVEL_OUT
             strcpyCB(settings.useETTO, &custom_useETTO);
             #endif
@@ -627,7 +663,7 @@ void wifi_loop()
         // Reset esp32 to load new settings
 
         allOff();
-        destinationTime.showOnlyText("REBOOTING");
+        destinationTime.showTextDirect("REBOOTING");
         destinationTime.on();
 
         #ifdef TC_DBG
@@ -978,6 +1014,10 @@ void updateConfigPortalValues()
     custom_ettDelay.setValue(settings.ettDelay, 5);
     #endif
 
+    #ifdef TC_HAVETEMP
+    custom_tempOffs.setValue(settings.tempOffs, 4);
+    #endif
+
     #ifdef TC_HAVESPEEDO
     strcpy(spTyCustHTML, spTyCustHTML1);
     strcat(spTyCustHTML, settings.speedoType);
@@ -996,7 +1036,6 @@ void updateConfigPortalValues()
     custom_speedoFact.setValue(settings.speedoFact, 3);
     #ifdef TC_HAVETEMP
     custom_tempBright.setValue(settings.tempBright, 2);
-    custom_tempOffs.setValue(settings.tempOffs, 4);
     #endif
     #endif
 
@@ -1016,11 +1055,9 @@ void updateConfigPortalValues()
     #ifdef TC_HAVELIGHT
     custom_uLS.setValue(settings.useLight, 1);
     #endif
-    #ifdef EXTERNAL_TIMETRAVEL_IN
-    custom_ettLong.setValue(settings.ettLong, 1);
-    #endif
-    #ifdef FAKE_POWER_ON
-    custom_fakePwrOn.setValue(settings.fakePwrOn, 1);
+    #ifdef TC_HAVETEMP
+    custom_useTemp.setValue(settings.useTemp, 1);
+    custom_tempUnit.setValue(settings.tempUnit, 1);
     #endif
     #ifdef TC_HAVESPEEDO
     custom_useSpeedo.setValue(settings.useSpeedo, 1);
@@ -1028,9 +1065,14 @@ void updateConfigPortalValues()
     custom_useGPSS.setValue(settings.useGPSSpeed, 1);
     #endif
     #ifdef TC_HAVETEMP
-    custom_useTemp.setValue(settings.useTemp, 1);
-    custom_tempUnit.setValue(settings.tempUnit, 1);
+    custom_useDpTemp.setValue(settings.dispTemp, 1);
     #endif
+    #endif
+    #ifdef FAKE_POWER_ON
+    custom_fakePwrOn.setValue(settings.fakePwrOn, 1);
+    #endif
+    #ifdef EXTERNAL_TIMETRAVEL_IN
+    custom_ettLong.setValue(settings.ettLong, 1);
     #endif
     #ifdef EXTERNAL_TIMETRAVEL_OUT
     custom_useETTO.setValue(settings.useETTO, 1);
@@ -1053,21 +1095,24 @@ void updateConfigPortalValues()
     #ifdef TC_HAVELIGHT
     setCBVal(&custom_uLS, settings.useLight);
     #endif
-    #ifdef EXTERNAL_TIMETRAVEL_IN
-    setCBVal(&custom_ettLong, settings.ettLong);
+    #ifdef TC_HAVETEMP
+    setCBVal(&custom_useTemp, settings.useTemp);
+    setCBVal(&custom_tempUnit, settings.tempUnit);
     #endif
-    #ifdef FAKE_POWER_ON
-    setCBVal(&custom_fakePwrOn, settings.fakePwrOn);
-    #endif  
     #ifdef TC_HAVESPEEDO
     setCBVal(&custom_useSpeedo, settings.useSpeedo);
     #ifdef TC_HAVEGPS
     setCBVal(&custom_useGPSS, settings.useGPSSpeed);
     #endif
     #ifdef TC_HAVETEMP
-    setCBVal(&custom_useTemp, settings.useTemp);
-    setCBVal(&custom_tempUnit, settings.tempUnit);
+    setCBVal(&custom_useDpTemp, settings.dispTemp);
     #endif
+    #endif
+    #ifdef FAKE_POWER_ON
+    setCBVal(&custom_fakePwrOn, settings.fakePwrOn);
+    #endif
+    #ifdef EXTERNAL_TIMETRAVEL_IN
+    setCBVal(&custom_ettLong, settings.ettLong);
     #endif
     #ifdef EXTERNAL_TIMETRAVEL_OUT
     setCBVal(&custom_useETTO, settings.useETTO);
@@ -1115,6 +1160,14 @@ bool wifi_getIP(uint8_t& a, uint8_t& b, uint8_t& c, uint8_t& d)
     d = myip[3];
 
     return true;
+}
+
+void wifi_getMAC(char *buf)
+{
+    byte myMac[6];
+    
+    WiFi.macAddress(myMac);
+    sprintf(buf, "%02x%02x%02x%02x%02x%02x", myMac[0], myMac[1], myMac[2], myMac[3], myMac[4], myMac[5]); 
 }
 
 // Check if String is a valid IP address

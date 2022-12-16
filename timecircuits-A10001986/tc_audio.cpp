@@ -2,7 +2,7 @@
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
- * (C) 2022 Thomas Winischhofer (A10001986)
+ * (C) 2022-2023 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display-A10001986
  *
  * Sound handling
@@ -253,11 +253,13 @@ void play_file(const char *audio_file, double volumeFactor, bool checkNightMode,
             #ifdef TC_DBG
             Serial.println(F("Playing from SD"));
             #endif
+        }
         #ifdef USE_SPIFFS
-        } else if(SPIFFS.exists(audio_file) && myFS0->open(audio_file)) {
+          else if(SPIFFS.exists(audio_file) && myFS0->open(audio_file))
         #else    
-        } else if(myFS0->open(audio_file)) {
+          else if(myFS0->open(audio_file))
         #endif
+        {
             #ifdef TC_USE_MIXER
             mp3->begin(myFS0, stub[0]);
             #else
