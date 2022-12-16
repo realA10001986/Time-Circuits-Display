@@ -341,7 +341,7 @@ The firmware supports connecting a temperature/humidity sensor for "room conditi
 
 Furthermore, unless you do time travelling on a regular basis, the speedo display is idle most of the time in a typical home setup. To give it more of a purpose, the software can display room temperature on the speedo while idle.
 
-Seven sensor types are supported: MCP9808 (i2c address 0x18), BMx820 (0x77), SI7021 (0x40), SHT40 (0x44), TMP117 (0x49), AHT20 (0x38), HTU31D (0x41). All of those are readily available from Adafruit or Sesed (Grove). Note that BMP820 (unlike BME820), MCP9808 and TMP117 are pure temperature sensors, the others deliver temperature and humidity.
+Seven sensor types are supported: MCP9808 (i2c address 0x18), BMx820 (0x77), SI7021 (0x40), SHT40 (0x44), TMP117 (0x49), AHT20 (0x38), HTU31D (0x41). All of those are readily available from Adafruit or Seeed (Grove). Note that BMP820 (unlike BME820), MCP9808 and TMP117 are pure temperature sensors, the others deliver temperature and humidity.
 
 ## WiFi power saving features
 
