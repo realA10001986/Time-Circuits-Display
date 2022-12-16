@@ -20,13 +20,14 @@ Features include
 - [Keypad menu](#the-keypad-menu) for adjusting various settings and viewing IP address and WiFi status
 - Advanced network-accessible [Config Portal](#short-summary-of-first-steps) for setup
 - 24-hour clock mode for non-Americans ;)
+- Room condition mode: Display temperature and humidity instead of destination/departed time (requires suitable sensor)
 - Optional power-up intro
 - Optional [sound on the hour](#additional-custom-sounds)
 - Support for external [fake "power switch"](#fake-power-onoff-switch-external-time-travel-trigger)
 - Support for [externally triggered time travel](#fake-power-onoff-switch-external-time-travel-trigger), with selectable delay
 - Support for external display acting as [Speedometer](#external-speedometer), used in time travel sequences
 - Support for external [GPS receiver](#gps-receiver), used as time source, and for speed to be displayed on speedo display
-- Support for external [temperature sensor](#temperature-sensor) to display temperature on speedo display while idle
+- Support for external [temperature/humidity sensor](#temperature-sensor) for "room condition mode" and to display temperature on speedo display while idle
 - Support for triggering time travels on [other props](#controlling-other-props); TCD can act as master controller for SID, flux capacitor, etc.
 - Built-in installer for default audio files in addition to OTA firmware updates
 
@@ -331,9 +332,15 @@ If/as long as the GPS receiver has a fix and receives data from satellites, the 
 
 One nice feature of GPS is that the receiver can deliver current speed of movement. If the Time Circuits are, for instance, mounted in a car or on a boat, and a speedo display is connected, this display will be just that: A real speedometer.
 
-## Temperature sensor
+## Room Condition Mode, Temperature/humidity sensor
 
-Unless you do time travelling on a regular basis, the speedo display is idle most of the time in a typical home setup. To give it more of a purpose, the software supports connecting a MCP9808 or BMx820 temperature sensor to the i2c bus (readily available from Adafruit, product numbers 1782 or 2652). After connecting this sensor and enabling it in the Config Portal, the speedo display will show the ambient temperature in idle mode. (Note that you need a speedo display in order to use the temperature sensor.)
+The firmware supports connecting a temperature/humidity sensor for "room condition mode"; in this mode, destination and last departed times are replaced by temperature and humidity, respectively. To toggle between normal and room condition mode, enter "111" and press ENTER.
+
+![rcmode](https://user-images.githubusercontent.com/76924199/208133653-f0fb0a38-51e4-4436-9506-d841ef1bfa6c.jpg)
+
+Furthermore, unless you do time travelling on a regular basis, the speedo display is idle most of the time in a typical home setup. To give it more of a purpose, the software can display room temperature on the speedo while idle.
+
+Seven sensor types are supported: MCP9808 (i2c address 0x18), BMx820 (0x77), SI7021 (0x40), SHT40 (0x44), TMP117 (0x49), AHT20 (0x38), HTU31D (0x41). All of those are readily available from Adafruit or Seed/Grove. Note that BMP820 (unlike BME820), MCP9808 and TMP117 are pure temperature sensors, the others deliver temperature and humidity.
 
 ## WiFi power saving features
 
