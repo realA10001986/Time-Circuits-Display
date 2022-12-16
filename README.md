@@ -335,13 +335,13 @@ One nice feature of GPS is that the receiver can deliver current speed of moveme
 
 ## Room Condition Mode, Temperature/humidity sensor
 
-The firmware supports connecting a temperature/humidity sensor for "room condition mode"; in this mode, destination and last departed times are replaced by temperature and humidity, respectively. To toggle between normal and room condition mode, enter "111" and press ENTER.
+The firmware supports connecting a temperature/humidity sensor for "room condition mode"; in this mode, *destination* and *last departed* times are replaced by temperature and humidity, respectively. To toggle between normal and room condition mode, enter "111" and press ENTER.
 
 ![rcmode](https://user-images.githubusercontent.com/76924199/208133653-f0fb0a38-51e4-4436-9506-d841ef1bfa6c.jpg)
 
 Furthermore, unless you do time travelling on a regular basis, the speedo display is idle most of the time in a typical home setup. To give it more of a purpose, the software can display room temperature on the speedo while idle.
 
-Seven sensor types are supported: MCP9808 (i2c address 0x18), BMx820 (0x77), SI7021 (0x40), SHT40 (0x44), TMP117 (0x49), AHT20 (0x38), HTU31D (0x41). All of those are readily available from Adafruit or Seed/Grove. Note that BMP820 (unlike BME820), MCP9808 and TMP117 are pure temperature sensors, the others deliver temperature and humidity.
+Seven sensor types are supported: MCP9808 (i2c address 0x18), BMx820 (0x77), SI7021 (0x40), SHT40 (0x44), TMP117 (0x49), AHT20 (0x38), HTU31D (0x41). All of those are readily available from Adafruit or Sesed (Grove). Note that BMP820 (unlike BME820), MCP9808 and TMP117 are pure temperature sensors, the others deliver temperature and humidity.
 
 ## WiFi power saving features
 
