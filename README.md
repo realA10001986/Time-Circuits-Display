@@ -20,14 +20,14 @@ Features include
 - [Keypad menu](#the-keypad-menu) for adjusting various settings and viewing IP address and WiFi status
 - Advanced network-accessible [Config Portal](#short-summary-of-first-steps) for setup
 - 24-hour clock mode for non-Americans ;)
-- Room condition mode: Display temperature and humidity instead of destination/departed time (requires suitable sensor)
+- [Room condition mode](##room-condition-mode-temperaturehumidity-sensor): Display temperature and humidity instead of destination/departed time (requires suitable sensor)
 - Optional power-up intro
 - Optional [sound on the hour](#additional-custom-sounds)
 - Support for external [fake "power switch"](#fake-power-onoff-switch-external-time-travel-trigger)
 - Support for [externally triggered time travel](#fake-power-onoff-switch-external-time-travel-trigger), with selectable delay
 - Support for external display acting as [Speedometer](#external-speedometer), used in time travel sequences
 - Support for external [GPS receiver](#gps-receiver), used as time source, and for speed to be displayed on speedo display
-- Support for external [temperature/humidity sensor](#temperature-sensor) for "room condition mode" and to display temperature on speedo display while idle
+- Support for external [temperature/humidity sensor](##room-condition-mode-temperaturehumidity-sensor) for "room condition mode" and to display temperature on speedo display while idle
 - Support for triggering time travels on [other props](#controlling-other-props); TCD can act as master controller for SID, flux capacitor, etc.
 - Built-in installer for default audio files in addition to OTA firmware updates
 
@@ -157,7 +157,7 @@ After invoking the keypad menu, the first step is to choose a menu item. The ava
 - select the brightness for the three displays ("BRIGHTNESS"),
 - show network information ("NET-WORK"),
 - enter dates/times for the three displays (and set the RTC),
-- show light/temperature sensor info (if such a sensor is connected) ("SENSORS"),
+- show light/temperature/humidity sensor info (if such a sensor is connected) ("SENSORS"),
 - install the default audio files ("INSTALL AUDIO FILES")
 - quit the menu ("END").
  
@@ -215,6 +215,7 @@ Basically, and by default, the device uses the hardware volume knob to determine
 - Press ENTER repeatedly until "NET-WORK" is shown
 - Hold ENTER, the displays show the IP address
 - Press ENTER to view the WiFi status
+- Press ENTER to display the device's MAC address (in station mode)
 - Hold ENTER to leave the menu
 
 #### How to enter dates/times for the three displays:
