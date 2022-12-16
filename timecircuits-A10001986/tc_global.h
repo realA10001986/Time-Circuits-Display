@@ -2,24 +2,10 @@
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
- * (C) 2022 Thomas Winischhofer (A10001986)
+ * (C) 2022-2023 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display-A10001986
  *
  * Global definitions
- *
- * -------------------------------------------------------------------
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #ifndef _TC_GLOBAL_H
@@ -29,11 +15,11 @@
 // These must not contain any characters other than
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION "V2.5.0"           // 13 chars max
-#define TC_VERSION_EXTRA "DEC022022"  // 13 chars max
+#define TC_VERSION "V2.6.0"           // 13 chars max
+#define TC_VERSION_EXTRA "DEC162022"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION "V2.5.0_A-CAR"     // 12 chars max
-#define TC_VERSION_EXTRA "12022022"   // 12 chars max
+#define TC_VERSION "V2.6.0_A-CAR"     // 12 chars max
+#define TC_VERSION_EXTRA "12162022"   // 12 chars max
 #endif
 
 //#define TC_DBG            // debug output on Serial
@@ -53,16 +39,19 @@
 #define SP_NUM_TYPES    10  // Number of speedo display types supported
 #define SP_MIN_TYPE     1   // Change to 0 when CircuitSetup speedo prop exists
 
-// Uncomment for support of a temperature sensor (MCP9808, BMx820) connected 
-// via i2c. Will be used to display ambient temperature on speedometer 
-// display when idle. GPS speed has higher priority, ie if GPS speed is 
-// enabled in Config Portal, temperature will not be shown.
+// Uncomment for support of a temperature/humidity sensor (MCP9808, BMx820, 
+// SI7021, SHT40, TMP117, AHT20) connected via i2c. Will be used for room  
+// condition mode and to display ambient temperature on speedometer display  
+// when idle (GPS speed has higher priority, ie if GPS speed is enabled in
+// the Config Portal, temperature will not be shown on speedo).
+// See sensors.cpp for supported i2c slave addresses
 #define TC_HAVETEMP
 
 // Uncomment for support of a light sensor (TLS2561, BH1750, VEML7700 or
 // VEML6030) connected via i2c. Used for night-mode-switching. VEML7700  
 // and GPS cannot be present at the same time since they share the same 
 // i2c slave address. VEML6030 needs to be set to 0x48 if GPS is present.
+// See sensors.cpp for supported i2c slave addresses
 #define TC_HAVELIGHT
 
 // Fake Power Switch:
@@ -72,27 +61,22 @@
 // "fake" powered on. De-activating the switch "fake" powers down the device
 // (ie the displays are switched off, and no keypad input is accepted)
 // GPS speed will be shown on speedo display regardless of this switch.
-// Uncomment to include support for Fake Power Switch
+// Uncomment to include support for a Fake Power Switch
 #define FAKE_POWER_ON
 
 // External time travel (input) ("ett")
 // If the pin goes low (by connecting it to GND using a button), a time
 // travel is triggered.
-// Uncomment to include support for ett
+// Uncomment to include support for ett, see below for pin number
 #define EXTERNAL_TIMETRAVEL_IN
 
 // External time travel (output) ("etto")
 // The defined pin is set HIGH on a time travel, and LOW upon re-entry from 
 // a time travel. See tc_time.c for a timing diagram.
-// Uncomment to include support for etto
+// Uncomment to include support for etto, see below for pin number
 #define EXTERNAL_TIMETRAVEL_OUT
 
 // --- end of config options
-
-// No temperature without speedo [do not remove or alter]
-#ifndef TC_HAVESPEEDO
-#undef TC_HAVETEMP
-#endif
 
 /*************************************************************************
  ***                           Miscellaneous                           ***
@@ -100,6 +84,9 @@
 
 // Uncomment if month is 2 digits (7-seg), as in the original A-Car display.
 //#define IS_ACAR_DISPLAY
+
+// Uncomment if using real GTE/TRW keypad control board
+//#define GTE_KEYPAD 
 
 // Use SPIFFS (if defined) or LittleFS (if undefined; esp32-arduino >= 2.x)
 // As long as SPIFFS is around, and LittleFS does not support wear leveling,
@@ -172,7 +159,7 @@
 
 #define SECS1970_2022 1640995200ULL
 #define SECS1970_2023 1672527600ULL
-#define SECS1970_2024 1704063600ULL   // For future use...
+#define SECS1970_2024 1704063600ULL
 #define SECS1970_2025 1735686000ULL
 #define SECS1970_2026 1735686000ULL
 #define SECS1970_2027 1798758000ULL
@@ -186,10 +173,15 @@
 #define SECS1970_2035 2051218800ULL
 #define SECS1970_2036 2082754800ULL
 
-// Increase by one after 1/1 to prolong NTP life time
-// Stop at 2036.
-#define TCEPOCH       2022            
+// NTP baseline data: Prolong life time of NTP
+// Set this to current year. Stop and leave at 2036.
+#define TCEPOCH       2022
+// Set to SECS1970_xxxx, xxxx being current year. Stop at 2036.
 #define TCEPOCH_SECS  SECS1970_2022
+
+// Epoch for general use; increase yearly, no limit
+// Defines the minimum date considered valid
+#define TCEPOCH_GEN   2022
 
 
 #endif

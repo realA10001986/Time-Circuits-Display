@@ -2,7 +2,7 @@
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
- * (C) 2022 Thomas Winischhofer (A10001986)
+ * (C) 2022-2023 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display-A10001986
  *
  * Clockdisplay Class: Handles the TC LED segment displays
@@ -44,6 +44,7 @@ class clockDisplay {
         clockDisplay(uint8_t did, uint8_t address, int saveAddress);
         void begin();
         void on();
+        void onCond();
         void off();
         void realLampTest();
         void lampTest();
@@ -97,9 +98,14 @@ class clockDisplay {
         void showOnlyMinute(int minuteNum);
         void showOnlyYear(int yearNum);
 
-        void showOnlySettingVal(const char* setting, int8_t val = -1, bool clear = false);
-        void showOnlyText(const char *text);
-        void showOnlyHalfIP(int a, int b, bool clear = false);
+        void showSettingValDirect(const char* setting, int8_t val = -1, bool clear = false);
+        void showTextDirect(const char *text, bool corr6 = false);
+        void showHalfIPDirect(int a, int b, bool clear = false);
+
+        #ifdef TC_HAVETEMP
+        void showTempDirect(double temp, bool tempUnit);
+        void showHumDirect(int hum);
+        #endif
 
         bool    save();
         bool    saveYOffs();
@@ -112,10 +118,41 @@ class clockDisplay {
 
     private:
 
+        void     saveRTCEPROMData(uint8_t *savBuf);
+        uint16_t loadRTCEPROMData(uint8_t *loadBuf);
+
+        uint8_t  getLED7NumChar(uint8_t value);
+        uint8_t  getLED7AlphaChar(uint8_t value);
+        #ifndef IS_ACAR_DISPLAY
+        uint16_t getLEDAlphaChar(uint8_t value);
+        #endif
+
+        uint16_t makeNum(uint8_t num);
+        uint16_t makeNumN0(uint8_t num);
+
+        void directCol(int col, int segments);  // directly writes column RAM
+
+        void clearDisplay();                    // clears display RAM
+        bool handleNM();
+        void showInt(bool animate = false);
+
+        void colonOn();
+        void colonOff();
+
+        void AM();
+        void PM();
+        void AMPMoff();
+        void directAMPM(int val1, int val2);
+        void directAM();
+        void directPM();
+        void directAMPMoff();
+
+        void directCmd(uint8_t val);
+
         uint8_t  _did = 0;
         uint8_t  _address = 0;
         int      _saveAddress = -1;
-        uint16_t _displayBuffer[8]; // Segments to make current time.
+        uint16_t _displayBuffer[8]; // Segments to make current time
 
         uint16_t _year = 2021;      // keep track of these
         int16_t  _yearoffset = 0;   // Offset for faking years < 2000, > 2098
@@ -134,31 +171,8 @@ class clockDisplay {
         bool _nightmode = false;    // true = dest/dept times off
         bool _NmOff = false;        // true = off during night mode, false = dimmed
         int _oldnm = -1;
-
-        uint8_t  getLED7NumChar(uint8_t value);
-        uint8_t  getLED7AlphaChar(uint8_t value);
-        #ifndef IS_ACAR_DISPLAY
-        uint16_t getLEDAlphaChar(uint8_t value);
-        #endif
-
-        uint16_t makeNum(uint8_t num);
-        uint16_t makeNumN0(uint8_t num);
-
-        void directCol(int col, int segments);  // directly writes column RAM
-
-        void clearDisplay();                    // clears display RAM
-        void showInt(bool animate = false);
-
-        void colonOn();
-        void colonOff();
-
-        void AM();
-        void PM();
-        void AMPMoff();
-        void directAMPM(int val1, int val2);
-        void directAM();
-        void directPM();
-        void directAMPMoff();
+        bool _corr6 = false;
+        bool _yearDot = false;
 };
 
 #endif

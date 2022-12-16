@@ -2,7 +2,7 @@
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
- * (C) 2022 Thomas Winischhofer (A10001986)
+ * (C) 2022-2023 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display-A10001986
  *
  * Time and Main Controller
@@ -50,12 +50,13 @@ extern clockDisplay presentTime;
 extern clockDisplay departedTime;
 #ifdef TC_HAVESPEEDO
 extern bool useSpeedo;
-extern bool useTemp;
 extern speedDisplay speedo;
+#endif
+extern bool useTemp;
+extern bool haveRcMode;
 #ifdef TC_HAVETEMP
 extern tempSensor tempSens;
 extern bool tempUnit;
-#endif
 #endif
 extern bool useLight;
 #ifdef TC_HAVELIGHT
@@ -98,6 +99,10 @@ void timeTravel(bool doComplete, bool withSpeedo = false);
 void resetPresentTime();
 void pauseAuto();
 bool checkIfAutoPaused();
+
+void enableRcMode(bool onOff);
+bool toggleRcMode();
+bool isRcMode();
 
 bool      isLeapYear(int year);
 int       daysInMonth(int month, int year);

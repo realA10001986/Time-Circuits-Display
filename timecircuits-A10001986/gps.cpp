@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
- * (C) 2022 Thomas Winischhofer (A10001986)
+ * (C) 2022-2023 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display-A10001986
  *
  * GPS Class: GPS receiver handling and data parsing
@@ -181,8 +181,8 @@ bool tcGPS::haveTime()
 }
 
 /*
- * Set GPS' RTC time
- * timeinfo returned is in UTC
+ * Get GPS time
+ * timeinfo returned is UTC
  */
 bool tcGPS::getDateTime(struct tm *timeinfo, unsigned long *fixAge, unsigned long updInt)
 {
@@ -216,7 +216,7 @@ bool tcGPS::getDateTime(struct tm *timeinfo, unsigned long *fixAge, unsigned lon
         timeinfo->tm_mon = atoi(_curMonth2) - 1;
         timeinfo->tm_year = atoi(_curYear2) - 1900;
         
-        if(timeinfo->tm_year < (TCEPOCH-1900))
+        if(timeinfo->tm_year < (TCEPOCH_GEN-1900))
             timeinfo->tm_year += 100;
 
         tmp[0] = _curTime2[0];
@@ -260,9 +260,10 @@ bool tcGPS::setDateTime(struct tm *timeinfo)
     int checksum = 0;
 
     // If the date is clearly invalid, bail
-    if(timeinfo->tm_year + 1900 < TCEPOCH)
+    if(timeinfo->tm_year + 1900 < TCEPOCH_GEN)
         return false;
 
+    // Generate command string
     sprintf(pktgen, ",%d,%d,%d,%d,%d,%d",
                   timeinfo->tm_year + 1900,
                   timeinfo->tm_mon + 1,
@@ -311,7 +312,7 @@ void tcGPS::sendCommand(const char *str)
 { 
     Wire.beginTransmission(_address);
     for(int i = 0; i < strlen(str); i++) {
-        Wire.write((uint8_t)(str[i] & 0xff));
+        Wire.write((uint8_t)str[i]);
     }
     Wire.write(0x0d);
     Wire.write(0x0a);

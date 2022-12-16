@@ -2,7 +2,7 @@
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
- * (C) 2022 Thomas Winischhofer (A10001986)
+ * (C) 2022-2023 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display-A10001986
  *
  * Settings handling
@@ -225,28 +225,27 @@ void settings_setup()
                     Serial.println(F("settings_setup: Parsed json"));
                     #endif
 
-                    if(json["ntpServer"]) {
-                        strcpy(settings.ntpServer, json["ntpServer"]);
+                    if(json["timeTrPers"]) {
+                        strcpy(settings.timesPers, json["timeTrPers"]);
+                        writedefault |= checkValidNumParm(settings.timesPers, 0, 1, DEF_TIMES_PERS);
                     } else writedefault = true;
-                    if(json["timeZone"]) {
-                        strcpy(settings.timeZone, json["timeZone"]);
+                    if(json["alarmRTC"]) {
+                        strcpy(settings.alarmRTC, json["alarmRTC"]);
+                        writedefault |= checkValidNumParm(settings.alarmRTC, 0, 1, DEF_ALARM_RTC);
+                    } else writedefault = true;
+                    if(json["playIntro"]) {
+                        strcpy(settings.playIntro, json["playIntro"]);
+                        writedefault |= checkValidNumParm(settings.playIntro, 0, 1, DEF_PLAY_INTRO);
+                    } else writedefault = true;
+                    if(json["mode24"]) {
+                        strcpy(settings.mode24, json["mode24"]);
+                        writedefault |= checkValidNumParm(settings.mode24, 0, 1, DEF_MODE24);
                     } else writedefault = true;
                     if(json["autoRotateTimes"]) {
                         strcpy(settings.autoRotateTimes, json["autoRotateTimes"]);
                         writedefault |= checkValidNumParm(settings.autoRotateTimes, 0, 5, DEF_AUTOROTTIMES);
                     } else writedefault = true;
-                    if(json["destTimeBright"]) {
-                        strcpy(settings.destTimeBright, json["destTimeBright"]);
-                        writedefault |= checkValidNumParm(settings.destTimeBright, 0, 15, DEF_BRIGHT_DEST);
-                    } else writedefault = true;
-                    if(json["presTimeBright"]) {
-                        strcpy(settings.presTimeBright, json["presTimeBright"]);
-                        writedefault |= checkValidNumParm(settings.presTimeBright, 0, 15, DEF_BRIGHT_PRES);
-                    } else writedefault = true;
-                    if(json["lastTimeBright"]) {
-                        strcpy(settings.lastTimeBright, json["lastTimeBright"]);
-                        writedefault |= checkValidNumParm(settings.lastTimeBright, 0, 15, DEF_BRIGHT_DEPA);
-                    } else writedefault = true;
+
                     if(json["wifiConRetries"]) {
                         strcpy(settings.wifiConRetries, json["wifiConRetries"]);
                         writedefault |= checkValidNumParm(settings.wifiConRetries, 1, 15, DEF_WIFI_RETRY);
@@ -263,27 +262,44 @@ void settings_setup()
                         strcpy(settings.wifiAPOffDelay, json["wifiAPOffDelay"]);
                         writedefault |= checkValidNumParm(settings.wifiAPOffDelay, 0, 99, DEF_WIFI_APOFFDELAY);
                     } else writedefault = true;
-                    if(json["mode24"]) {
-                        strcpy(settings.mode24, json["mode24"]);
-                        writedefault |= checkValidNumParm(settings.mode24, 0, 1, DEF_MODE24);
+                    
+                    if(json["timeZone"]) {
+                        strcpy(settings.timeZone, json["timeZone"]);
                     } else writedefault = true;
-                    if(json["timeTrPers"]) {
-                        strcpy(settings.timesPers, json["timeTrPers"]);
-                        writedefault |= checkValidNumParm(settings.timesPers, 0, 1, DEF_TIMES_PERS);
+                    if(json["ntpServer"]) {
+                        strcpy(settings.ntpServer, json["ntpServer"]);
                     } else writedefault = true;
-                    #ifdef FAKE_POWER_ON
-                    if(json["fakePwrOn"]) {
-                        strcpy(settings.fakePwrOn, json["fakePwrOn"]);
-                        writedefault |= checkValidNumParm(settings.fakePwrOn, 0, 1, DEF_FAKE_PWR);
+                    #ifdef TC_HAVEGPS
+                    if(json["useGPS"]) {
+                        strcpy(settings.useGPS, json["useGPS"]);
+                        writedefault |= checkValidNumParm(settings.useGPS, 0, 1, DEF_USE_GPS);
                     } else writedefault = true;
                     #endif
-                    if(json["alarmRTC"]) {
-                        strcpy(settings.alarmRTC, json["alarmRTC"]);
-                        writedefault |= checkValidNumParm(settings.alarmRTC, 0, 1, DEF_ALARM_RTC);
+
+                    if(json["destTimeBright"]) {
+                        strcpy(settings.destTimeBright, json["destTimeBright"]);
+                        writedefault |= checkValidNumParm(settings.destTimeBright, 0, 15, DEF_BRIGHT_DEST);
                     } else writedefault = true;
-                    if(json["playIntro"]) {
-                        strcpy(settings.playIntro, json["playIntro"]);
-                        writedefault |= checkValidNumParm(settings.playIntro, 0, 1, DEF_PLAY_INTRO);
+                    if(json["presTimeBright"]) {
+                        strcpy(settings.presTimeBright, json["presTimeBright"]);
+                        writedefault |= checkValidNumParm(settings.presTimeBright, 0, 15, DEF_BRIGHT_PRES);
+                    } else writedefault = true;
+                    if(json["lastTimeBright"]) {
+                        strcpy(settings.lastTimeBright, json["lastTimeBright"]);
+                        writedefault |= checkValidNumParm(settings.lastTimeBright, 0, 15, DEF_BRIGHT_DEPA);
+                    } else writedefault = true;
+
+                    if(json["dtNmOff"]) {
+                        strcpy(settings.dtNmOff, json["dtNmOff"]);
+                        writedefault |= checkValidNumParm(settings.dtNmOff, 0, 1, DEF_DT_OFF);
+                    } else writedefault = true;
+                    if(json["ptNmOff"]) {
+                        strcpy(settings.ptNmOff, json["ptNmOff"]);
+                        writedefault |= checkValidNumParm(settings.ptNmOff, 0, 1, DEF_PT_OFF);
+                    } else writedefault = true;
+                    if(json["ltNmOff"]) {
+                        strcpy(settings.ltNmOff, json["ltNmOff"]);
+                        writedefault |= checkValidNumParm(settings.ltNmOff, 0, 1, DEF_LT_OFF);
                     } else writedefault = true;
                     if(json["autoNM"]) {
                         strcpy(settings.autoNM, json["autoNM"]);
@@ -301,34 +317,32 @@ void settings_setup()
                         strcpy(settings.autoNMOff, json["autoNMOff"]);
                         writedefault |= checkValidNumParm(settings.autoNMOff, 0, 23, DEF_AUTONM_OFF);
                     } else writedefault = true;
-                    if(json["dtNmOff"]) {
-                        strcpy(settings.dtNmOff, json["dtNmOff"]);
-                        writedefault |= checkValidNumParm(settings.dtNmOff, 0, 1, DEF_DT_OFF);
+                    #ifdef TC_HAVELIGHT
+                    if(json["useLight"]) {
+                        strcpy(settings.useLight, json["useLight"]);
+                        writedefault |= checkValidNumParm(settings.useLight, 0, 1, DEF_USE_LIGHT);
                     } else writedefault = true;
-                    if(json["ptNmOff"]) {
-                        strcpy(settings.ptNmOff, json["ptNmOff"]);
-                        writedefault |= checkValidNumParm(settings.ptNmOff, 0, 1, DEF_PT_OFF);
-                    } else writedefault = true;
-                    if(json["ltNmOff"]) {
-                        strcpy(settings.ltNmOff, json["ltNmOff"]);
-                        writedefault |= checkValidNumParm(settings.ltNmOff, 0, 1, DEF_LT_OFF);
-                    } else writedefault = true;
-                    #ifdef EXTERNAL_TIMETRAVEL_IN
-                    if(json["ettDelay"]) {
-                        strcpy(settings.ettDelay, json["ettDelay"]);
-                        writedefault |= checkValidNumParm(settings.ettDelay, 0, ETT_MAX_DEL, DEF_ETT_DELAY);
-                    } else writedefault = true;
-                    if(json["ettLong"]) {
-                        strcpy(settings.ettLong, json["ettLong"]);
-                        writedefault |= checkValidNumParm(settings.ettLong, 0, 1, DEF_ETT_LONG);
+                    if(json["luxLimit"]) {
+                        strcpy(settings.luxLimit, json["luxLimit"]);
+                        writedefault |= checkValidNumParm(settings.luxLimit, 0, 100000, DEF_LUX_LIMIT);
                     } else writedefault = true;
                     #endif
-                    #ifdef TC_HAVEGPS
-                    if(json["useGPS"]) {
-                        strcpy(settings.useGPS, json["useGPS"]);
-                        writedefault |= checkValidNumParm(settings.useGPS, 0, 1, DEF_USE_GPS);
+
+                    #ifdef TC_HAVETEMP
+                    if(json["useTemp"]) {
+                        strcpy(settings.useTemp, json["useTemp"]);
+                        writedefault |= checkValidNumParm(settings.useTemp, 0, 1, DEF_USE_TEMP);
+                    } else writedefault = true;
+                    if(json["tempUnit"]) {
+                        strcpy(settings.tempUnit, json["tempUnit"]);
+                        writedefault |= checkValidNumParm(settings.tempUnit, 0, 1, DEF_TEMP_UNIT);
+                    } else writedefault = true;
+                    if(json["tempOffs"]) {
+                        strcpy(settings.tempOffs, json["tempOffs"]);
+                        writedefault |= checkValidNumParmF(settings.tempOffs, -3.0, 3.0, DEF_TEMP_OFFS);
                     } else writedefault = true;
                     #endif
+
                     #ifdef TC_HAVESPEEDO
                     if(json["useSpeedo"]) {
                         strcpy(settings.useSpeedo, json["useSpeedo"]);
@@ -353,34 +367,35 @@ void settings_setup()
                     } else writedefault = true;
                     #endif
                     #ifdef TC_HAVETEMP
-                    if(json["useTemp"]) {
-                        strcpy(settings.useTemp, json["useTemp"]);
-                        writedefault |= checkValidNumParm(settings.useTemp, 0, 1, DEF_USE_TEMP);
+                    if(json["dispTemp"]) {
+                        strcpy(settings.useTemp, json["dispTemp"]);
+                        writedefault |= checkValidNumParm(settings.dispTemp, 0, 1, DEF_DISP_TEMP);
                     } else writedefault = true;
                     if(json["tempBright"]) {
                         strcpy(settings.tempBright, json["tempBright"]);
                         writedefault |= checkValidNumParm(settings.tempBright, 0, 15, DEF_TEMP_BRIGHT);
                     } else writedefault = true;
-                    if(json["tempUnit"]) {
-                        strcpy(settings.tempUnit, json["tempUnit"]);
-                        writedefault |= checkValidNumParm(settings.tempUnit, 0, 1, DEF_TEMP_UNIT);
-                    } else writedefault = true;
-                    if(json["tempOffs"]) {
-                        strcpy(settings.tempOffs, json["tempOffs"]);
-                        writedefault |= checkValidNumParmF(settings.tempOffs, -3.0, 3.0, DEF_TEMP_OFFS);
+                    #endif
+                    #endif // HAVESPEEDO
+                    
+                    #ifdef FAKE_POWER_ON
+                    if(json["fakePwrOn"]) {
+                        strcpy(settings.fakePwrOn, json["fakePwrOn"]);
+                        writedefault |= checkValidNumParm(settings.fakePwrOn, 0, 1, DEF_FAKE_PWR);
                     } else writedefault = true;
                     #endif
-                    #endif
-                    #ifdef TC_HAVELIGHT
-                    if(json["useLight"]) {
-                        strcpy(settings.useLight, json["useLight"]);
-                        writedefault |= checkValidNumParm(settings.useLight, 0, 1, DEF_USE_LIGHT);
+
+                    #ifdef EXTERNAL_TIMETRAVEL_IN
+                    if(json["ettDelay"]) {
+                        strcpy(settings.ettDelay, json["ettDelay"]);
+                        writedefault |= checkValidNumParm(settings.ettDelay, 0, ETT_MAX_DEL, DEF_ETT_DELAY);
                     } else writedefault = true;
-                    if(json["luxLimit"]) {
-                        strcpy(settings.luxLimit, json["luxLimit"]);
-                        writedefault |= checkValidNumParm(settings.luxLimit, 0, 100000, DEF_LUX_LIMIT);
+                    if(json["ettLong"]) {
+                        strcpy(settings.ettLong, json["ettLong"]);
+                        writedefault |= checkValidNumParm(settings.ettLong, 0, 1, DEF_ETT_LONG);
                     } else writedefault = true;
                     #endif
+                    
                     #ifdef EXTERNAL_TIMETRAVEL_OUT
                     if(json["useETTO"]) {
                         strcpy(settings.useETTO, json["useETTO"]);
@@ -444,38 +459,46 @@ void write_settings()
     #ifdef TC_DBG
     Serial.println(F("write_settings: Writing config file"));
     #endif
-
-    json["ntpServer"] = settings.ntpServer;
-    json["timeZone"] = settings.timeZone;
+    
+    json["timeTrPers"] = settings.timesPers;
+    json["alarmRTC"] = settings.alarmRTC;
+    json["mode24"] = settings.mode24;
+    json["playIntro"] = settings.playIntro;
     json["autoRotateTimes"] = settings.autoRotateTimes;
-    json["destTimeBright"] = settings.destTimeBright;
-    json["presTimeBright"] = settings.presTimeBright;
-    json["lastTimeBright"] = settings.lastTimeBright;
+    
     json["wifiConRetries"] = settings.wifiConRetries;
     json["wifiConTimeout"] = settings.wifiConTimeout;
     json["wifiOffDelay"] = settings.wifiOffDelay;
     json["wifiAPOffDelay"] = settings.wifiAPOffDelay;
-    json["mode24"] = settings.mode24;
-    json["timeTrPers"] = settings.timesPers;
-    #ifdef FAKE_POWER_ON
-    json["fakePwrOn"] = settings.fakePwrOn;
+    
+    json["timeZone"] = settings.timeZone;
+    json["ntpServer"] = settings.ntpServer;
+    #ifdef TC_HAVEGPS
+    json["useGPS"] = settings.useGPS;
     #endif
-    json["alarmRTC"] = settings.alarmRTC;
-    json["playIntro"] = settings.playIntro;
+    
+    json["destTimeBright"] = settings.destTimeBright;
+    json["presTimeBright"] = settings.presTimeBright;
+    json["lastTimeBright"] = settings.lastTimeBright;
+
+    json["dtNmOff"] = settings.dtNmOff;
+    json["ptNmOff"] = settings.ptNmOff;
+    json["ltNmOff"] = settings.ltNmOff;
     json["autoNM"] = settings.autoNM;
     json["autoNMPreset"] = settings.autoNMPreset;
     json["autoNMOn"] = settings.autoNMOn;
     json["autoNMOff"] = settings.autoNMOff;
-    json["dtNmOff"] = settings.dtNmOff;
-    json["ptNmOff"] = settings.ptNmOff;
-    json["ltNmOff"] = settings.ltNmOff;
-    #ifdef EXTERNAL_TIMETRAVEL_IN
-    json["ettDelay"] = settings.ettDelay;
-    json["ettLong"] = settings.ettLong;
+    #ifdef TC_HAVELIGHT
+    json["useLight"] = settings.useLight;
+    json["luxLimit"] = settings.luxLimit;
     #endif
-    #ifdef TC_HAVEGPS
-    json["useGPS"] = settings.useGPS;
+
+    #ifdef TC_HAVETEMP
+    json["useTemp"] = settings.useTemp;
+    json["tempUnit"] = settings.tempUnit;
+    json["tempOffs"] = settings.tempOffs;
     #endif
+
     #ifdef TC_HAVESPEEDO
     json["useSpeedo"] = settings.useSpeedo;
     json["speedoType"] = settings.speedoType;
@@ -485,16 +508,20 @@ void write_settings()
     json["useGPSSpeed"] = settings.useGPSSpeed;
     #endif
     #ifdef TC_HAVETEMP
-    json["useTemp"] = settings.useTemp;
+    json["dispTemp"] = settings.dispTemp;
     json["tempBright"] = settings.tempBright;
-    json["tempUnit"] = settings.tempUnit;
-    json["tempOffs"] = settings.tempOffs;
     #endif
+    #endif // HAVESPEEDO
+    
+    #ifdef FAKE_POWER_ON
+    json["fakePwrOn"] = settings.fakePwrOn;
     #endif
-    #ifdef TC_HAVELIGHT
-    json["useLight"] = settings.useLight;
-    json["luxLimit"] = settings.luxLimit;
+
+    #ifdef EXTERNAL_TIMETRAVEL_IN
+    json["ettDelay"] = settings.ettDelay;
+    json["ettLong"] = settings.ettLong;
     #endif
+
     #ifdef EXTERNAL_TIMETRAVEL_OUT
     json["useETTO"] = settings.useETTO;
     #endif

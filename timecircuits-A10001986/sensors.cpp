@@ -1,14 +1,33 @@
 /*
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
- * (C) 2022 Thomas Winischhofer (A10001986)
+ * (C) 2022-2023 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display-A10001986
  *
- * Sensor Class: Temperature and Light Sensor handling
+ * Sensor Class: Temperature/humidty and Light Sensor handling
  *
  * This is designed for 
- * - MCP9808, BMx820 temperature sensors,
+ * - MCP9808, TMP117, BMx820, SHT4x, SI7012, AHT20, HTU31D temp/hum
+ *   sensors,
  * - BH1750, TSL2561 and VEML7700/VEML6030 light sensors.
+ *                             
+ * The i2c slave addresses need to be:
+ * MCP9808:   0x18                [temperature only]
+ * TMP117:    0x49 [non-default]  [temperature only]
+ * BMx820:    0x77                ['E' t+h, 'P' t only]
+ * SHT40:     0x44                [temperature, humidity]
+ * SI7021:    0x40                [temperature, humidity]
+ * AHT20:     0x38                [temperature, humidity]
+ * HTU31D:    0x41 [non-default]  [temperature, humidity]
+ * 
+ * TSL2561:   0x29 
+ * BH1750:    0x23
+ * VEML6030:  0x10, 0x48 [non-default]
+ * VEML7700:  0x10
+ * 
+ * If a GPS receiver is connected at the same time, 
+ * - the VEML7700 cannot be used;
+ * - the VEML6030 needs to be set to address 0x48.
  * -------------------------------------------------------------------
  * License: MIT
  * 
@@ -109,7 +128,9 @@ uint8_t tcSensor::read8(uint16_t regno)
 void tcSensor::write16(uint16_t regno, uint16_t value, bool LSBfirst)
 {
     Wire.beginTransmission(_address);
-    Wire.write((uint8_t)(regno));
+    if(regno <= 0xff) {
+        Wire.write((uint8_t)(regno));
+    }
     if(LSBfirst) {
         value = (value >> 8) | (value << 8);
     } 
@@ -126,6 +147,21 @@ void tcSensor::write8(uint16_t regno, uint8_t value)
     }
     Wire.write((uint8_t)(value & 0xff));
     Wire.endTransmission();
+}
+
+uint8_t tcSensor::crc8(uint8_t initVal, uint8_t poly, uint8_t len, uint8_t *buf)
+{
+    uint8_t crc = initVal;
+ 
+    while(len--) {
+        crc ^= *buf++;
+ 
+        for(uint8_t i = 0; i < 8; i++) {
+            crc = (crc & 0x80) ? (crc << 1) ^ poly : (crc << 1);
+        }
+    }
+ 
+    return crc;
 }
 #endif
 
@@ -169,6 +205,12 @@ static const uint16_t wakeDelayMCP9808[4] = { 30, 65, 130, 250 };
 #define BMx280_REG_DIG_T1 0x88
 #define BMx280_REG_DIG_T2 0x8a
 #define BMx280_REG_DIG_T3 0x8c
+#define BMx280_REG_DIG_H1 0xa1
+#define BMx280_REG_DIG_H2 0xe1
+#define BMx280_REG_DIG_H3 0xe3
+#define BMx280_REG_DIG_H4 0xe4
+#define BMx280_REG_DIG_H5 0xe5
+#define BMx280_REG_DIG_H6 0xe7
 #define BMx280_REG_ID     0xd0
 #define BME280_REG_RESET  0xe0
 #define BMx820_REG_CTRLH  0xf2
@@ -176,12 +218,58 @@ static const uint16_t wakeDelayMCP9808[4] = { 30, 65, 130, 250 };
 #define BMx820_REG_CTRLM  0xf4
 #define BMx820_REG_CONF   0xf5
 #define BMx820_REG_TEMP   0xfa
+#define BMx820_REG_HUM    0xfd
 
+#define SHT40_DUMMY       0x100
+#define SHT40_CMD_RTEMPL  0xe0    // 1.3ms
+#define SHT40_CMD_RTEMPM  0xf6    // 4.5ms
+#define SHT40_CMD_RTEMPH  0xfd    // 8.3ms
+
+#define SHT40_CRC_INIT    0xff
+#define SHT40_CRC_POLY    0x31
+
+#define SI7021_DUMMY      0x100
+#define SI7021_REG_U1W    0xe6
+#define SI7021_REG_U1R    0xe7
+#define SI7021_REG_HCRW   0x51
+#define SI7021_REG_HCRR   0x11
+#define SI7021_CMD_RTEMP  0xf3
+#define SI7021_CMD_RHUM   0xf5
+#define SI7021_CMD_RTEMPQ 0xe0
+#define SI7021_RESET      0xfe
+
+#define SI7021_CRC_INIT   0x00
+#define SI7021_CRC_POLY   0x31
+
+#define TMP117_REG_TEMP   0x00
+#define TMP117_REG_CONF   0x01
+#define TMP117_REG_DEV_ID 0x0f
+
+#define TMP117_C_MODE_CC  (0x01 << 10)
+#define TMP117_C_MODE_M   (0x03 << 10)
+#define TMP117_C_AVG_0    (0x00 << 5)
+#define TMP117_C_AVG_M    (0x03 << 5)
+#define TMP117_C_CONV_16s (0x07 << 7)
+#define TMP117_C_CONV_M   (0x07 << 7)
+#define TMP117_C_RESET    0x0002
+
+#define AHT20_DUMMY       0x100
+#define AHT20_CRC_INIT    0xff
+#define AHT20_CRC_POLY    0x31
+
+#define HTU31_DUMMY       0x100
+#define HTU31_RESET       0x1e
+#define HTU31_CONV        (0x40 + 0x00 + 0x04)
+#define HTU31_READTRH     0x00
+#define HTU31_HEATEROFF   0x02
+
+#define HTU31_CRC_INIT    0x00
+#define HTU31_CRC_POLY    0x31
 
 // Store i2c address
 tempSensor::tempSensor(int numTypes, uint8_t addrArr[])
 {
-    _numTypes = min(4, numTypes);
+    _numTypes = min(8, numTypes);
 
     for(int i = 0; i < _numTypes * 2; i++) {
         _addrArr[i] = addrArr[i];
@@ -189,12 +277,21 @@ tempSensor::tempSensor(int numTypes, uint8_t addrArr[])
 }
 
 // Start the display
-bool tempSensor::begin()
+bool tempSensor::begin(unsigned long powerupTime)
 {
     bool foundSt = false;
     uint8_t temp, timeOut = 20;
+    uint16_t t16 = 0;
+    size_t i2clen;
+    uint8_t buf[6];
+    unsigned long millisNow = millis();
     
     _customDelayFunc = defaultDelay;
+
+    // Give the sensor some time to boot
+    if(millisNow - powerupTime < 50) {
+        delay(50 - (millisNow - powerupTime));
+    }
 
     for(int i = 0; i < _numTypes * 2; i += 2) {
 
@@ -205,24 +302,63 @@ bool tempSensor::begin()
             if( (read16(MCP9808_REG_MANUF_ID)  == 0x0054) && 
                 (read16(MCP9808_REG_DEVICE_ID) == 0x0400) ) {
                 foundSt = true;
-                #ifdef TC_DBG
-                Serial.println("tempSensor: Detected MCP9808 temperature sensor");
-                #endif
             }
             break;
         case BMx820:
             temp = read8(BMx280_REG_ID);
             if(temp == 0x60 || temp == 0x58) {
                 foundSt = true;
-                #ifdef TC_DBG
-                Serial.println("tempSensor: Detected BMx820 temperature sensor");
-                #endif
+                if(temp == 0x60) _haveHum = true;
+            }
+            break;
+        case SHT40:
+            Wire.beginTransmission(_address);
+            if(!Wire.endTransmission(true)) {
+                // Do a test-measurement for id
+                write8(SHT40_DUMMY, SHT40_CMD_RTEMPL);
+                (*_customDelayFunc)(2);
+                if(Wire.requestFrom(_address, (uint8_t)6) == 6) {
+                    for(uint8_t i = 0; i < 6; i++) buf[i] = Wire.read();
+                    if(crc8(SHT40_CRC_INIT, SHT40_CRC_POLY, 2, buf) == buf[2]) {
+                        foundSt = true;
+                    }
+                }
+            }
+            break;
+        case SI7021:
+            Wire.beginTransmission(_address);
+            if(!Wire.endTransmission(true)) {
+                // Check power-up value of user1 register for id
+                write8(SI7021_DUMMY, SI7021_RESET);
+                (*_customDelayFunc)(20);
+                if(read8(SI7021_REG_U1R) == 0x3a) {
+                    foundSt = true;
+                }
+            }
+            break;
+        case TMP117:
+            if((read16(TMP117_REG_DEV_ID) & 0xfff) == 0x117) {
+                foundSt = true;
+            }
+            break;
+        case AHT20:
+        case HTU31:
+            Wire.beginTransmission(_address);
+            if(!Wire.endTransmission(true)) {
+                foundSt = true;
             }
             break;
         }
-
+        
         if(foundSt) {
             _st = _addrArr[i+1];
+
+            #ifdef TC_DBG
+            const char *tpArr[7] = { "MCP9808", "BMx820", "SHT4x", "SI7021", "TMP117", "AHT20", "HTU31" };
+            Serial.print("Temperature sensor: Detected ");
+            Serial.println(tpArr[_st]);
+            #endif
+
             break;
         }
     }
@@ -252,21 +388,92 @@ bool tempSensor::begin()
         _BMx280_CD_T1 = read16(BMx280_REG_DIG_T1, true);
         _BMx280_CD_T2 = (int32_t)((int16_t)read16(BMx280_REG_DIG_T2, true));
         _BMx280_CD_T3 = (int32_t)((int16_t)read16(BMx280_REG_DIG_T3, true));
+        if(_haveHum) {
+            _BMx280_CD_H1 = read8(BMx280_REG_DIG_H1);
+            _BMx280_CD_H2 = (int32_t)((int16_t)read16(BMx280_REG_DIG_H2, true));
+            _BMx280_CD_H3 = read8(BMx280_REG_DIG_H3);
+            buf[0] = read8(BMx280_REG_DIG_H4);
+            buf[1] = read8(BMx280_REG_DIG_H5);
+            buf[2] = read8(BMx280_REG_DIG_H5+1);
+            _BMx280_CD_H4 = (int32_t)((int16_t)((buf[0] << 4) | (buf[1] & 0x0f)));
+            _BMx280_CD_H5 = (int32_t)((int16_t)(((buf[1] & 0xf0) >> 4) | (buf[2] << 4)));
+            _BMx280_CD_H6 = read8(BMx280_REG_DIG_H6);
+            _BMx280_CD_H4 *= 1048576;
+        }
         #ifdef TC_DBG
         Serial.println("BMx820 calib values");
         Serial.println(_BMx280_CD_T1);
         Serial.println(_BMx280_CD_T2);
         Serial.println(_BMx280_CD_T3);
+        if(_haveHum) {
+            Serial.println(_BMx280_CD_H1);
+            Serial.println(_BMx280_CD_H2);
+            Serial.println(_BMx280_CD_H3);
+            Serial.println(_BMx280_CD_H4 / 1048576);
+            Serial.println(_BMx280_CD_H5);
+            Serial.println(_BMx280_CD_H6);
+        }
         #endif
 
         // setup sensor parameters
         write8(BMx820_REG_CTRLM, 0x20);  // Temp OSx1; Pres skipped; "sleep mode"
-        write8(BMx820_REG_CTRLH, 0x00);  // Hum skipped
+        if(_haveHum) {
+            write8(BMx820_REG_CTRLH, 0x01);  // Hum OSx1
+        }
         write8(BMx820_REG_CONF,  0xa0);  // t_sb 1000ms; filter off, SPI3w off
 
         write8(BMx820_REG_CTRLM, 0x23);  // Temp OSx1; Pres skipped; "normal mode"
-        break;
         
+        break;
+
+    case SHT40:
+        _haveHum = true;
+        break;
+
+    case SI7021:
+        temp = read8(SI7021_REG_U1R);
+        temp &= 0x3a;                    // 13bit temp, 10bit rh, heater off
+        temp |= 0x80;
+        write8(SI7021_REG_U1W, temp);
+        temp = read8(SI7021_REG_HCRR);
+        temp &= 0xf0;                    // (Heater minimum)
+        write8(SI7021_REG_HCRW, temp);
+        _haveHum = true;
+        break;
+
+    case TMP117:
+        // Reset
+        t16 = read16(TMP117_REG_CONF);
+        t16 |= TMP117_C_RESET;
+        write16(TMP117_REG_CONF, t16);
+        (*_customDelayFunc)(5);
+
+        // Config: cont. mode, no avg, 16s conversion cycle
+        t16 = read16(TMP117_REG_CONF);
+        t16 &= ~(TMP117_C_MODE_M | TMP117_C_AVG_M | TMP117_C_CONV_M);
+        t16 |= (TMP117_C_MODE_CC | TMP117_C_AVG_0 | TMP117_C_CONV_16s);
+        write16(TMP117_REG_CONF, t16);
+        break;
+
+    case AHT20:
+        write8(AHT20_DUMMY, 0xba); // reset
+        (*_customDelayFunc)(21);
+        write16(0xbe, 0x0800);     // init (calibrate)
+        (*_customDelayFunc)(11);
+        write16(0xac, 0x3300);     // trigger measurement
+        _tempReadNow = millis();
+        _haveHum = true;
+        break;
+
+    case HTU31:
+        write8(HTU31_DUMMY, HTU31_RESET);     // reset
+        (*_customDelayFunc)(20);
+        write8(HTU31_DUMMY, HTU31_HEATEROFF); // heater off
+        write8(HTU31_DUMMY, HTU31_CONV);      // Trigger conversion
+        _tempReadNow = millis();
+        _haveHum = true;
+        break;
+
     default:
         return false;
     }
@@ -297,30 +504,123 @@ void tempSensor::off()
 double tempSensor::readTemp(bool celsius)
 {
     double temp = NAN;
-    uint16_t t;
+    uint16_t t = 0;
+    unsigned long elapsed;
 
     switch(_st) {
     case MCP9808:
         t = read16(MCP9808_REG_AMBIENT_TEMP);
-
         if(t != 0xffff) {
             temp = ((double)(t & 0x0fff)) / 16.0;
             if(t & 0x1000) temp = 256.0 - temp;
         }
         break;
     case BMx820:
-        temp = BMx280_CalcTemp(read24(BMx820_REG_TEMP));
+        if(_haveHum) t = read16(BMx820_REG_HUM);
+        temp = BMx280_CalcTemp(read24(BMx820_REG_TEMP), t);
+        break;
+    case SHT40:
+        write8(SHT40_DUMMY, SHT40_CMD_RTEMPM);
+        (*_customDelayFunc)(5);
+        if(Wire.requestFrom(_address, (uint8_t)6) == 6) {
+            uint8_t buf[6];
+            for(uint8_t i = 0; i < 6; i++) buf[i] = Wire.read();
+            if(crc8(SHT40_CRC_INIT, SHT40_CRC_POLY, 2, buf) == buf[2]) {
+                t = (buf[0] << 8) | buf[1];
+                temp = ((175.0 * (double)t) / 65535.0) - 45.0;
+            }
+            if(crc8(SHT40_CRC_INIT, SHT40_CRC_POLY, 2, buf+3) == buf[5]) {
+                t = (buf[3] << 8) | buf[4];
+                _hum = (int8_t)(((125.0 * (double)t) / 65535.0) - 6.0);
+                if(_hum < 0) _hum = 0;
+            }
+        }
+        break;
+    case SI7021:
+        write8(SI7021_DUMMY, SI7021_CMD_RHUM);
+        (*_customDelayFunc)(7+5+1);
+        if(Wire.requestFrom(_address, (uint8_t)3) == 3) {
+            uint8_t buf[3];
+            for(uint8_t i = 0; i < 3; i++) buf[i] = Wire.read();
+            if(crc8(SI7021_CRC_INIT, SI7021_CRC_POLY, 2, buf) == buf[2]) {
+                t = (buf[0] << 8) | buf[1];
+                _hum = ((125.0 * (double)t) / 65536.0) - 6;
+                if(_hum < 0) _hum = 0;
+            }
+        }
+        write8(SI7021_DUMMY, SI7021_CMD_RTEMPQ);
+        if(Wire.requestFrom(_address, (uint8_t)2) == 2) {
+            uint8_t buf[2];
+            for(uint8_t i = 0; i < 2; i++) buf[i] = Wire.read();
+            t = (buf[0] << 8) | buf[1];
+            temp = ((175.72 * (double)t) / 65536.0) - 46.85;
+        }
+        break;
+    case TMP117:
+        t = read16(TMP117_REG_TEMP);
+        if(t != 0x8000) {
+            temp = (double)((int16_t)t) / 128.0;
+        }
+        break;
+    case AHT20:
+        elapsed = millis() - _tempReadNow;
+        if(elapsed < 85) {
+            (*_customDelayFunc)(85 - elapsed);
+        }
+        if(Wire.requestFrom(_address, (uint8_t)7) == 7) {
+            uint8_t buf[7];
+            for(uint8_t i = 0; i < 7; i++) buf[i] = Wire.read();
+            if(crc8(AHT20_CRC_INIT, AHT20_CRC_POLY, 6, buf) == buf[6]) {
+                _hum = ((uint32_t)((buf[1] << 12) | (buf[2] << 4) | (buf[3] >> 4))) * 100 / 1048576;
+                if(_hum < 0) _hum = 0;
+                temp = ((double)((uint32_t)(((buf[3] & 0x0f) << 16) | (buf[4] << 8) | buf[5]))) * 200.0 / 1048576.0 - 50.0;
+                write16(0xac, 0x3300);    // trigger new measurement
+                _tempReadNow = millis();
+            }
+        }
+        break;
+    case HTU31:
+        elapsed = millis() - _tempReadNow;
+        if(elapsed < 20) {
+            (*_customDelayFunc)(20 - elapsed);
+        }
+        write8(HTU31_DUMMY, HTU31_READTRH);  // read t+rh
+        if(Wire.requestFrom(_address, (uint8_t)6) == 6) {
+            uint8_t buf[6];
+            for(uint8_t i = 0; i < 6; i++) buf[i] = Wire.read();
+            if(crc8(HTU31_CRC_INIT, HTU31_CRC_POLY, 2, buf) == buf[2]) {
+                t = (buf[0] << 8) | buf[1];
+                temp = ((165.0 * (double)t) / 65535.0) - 40.0;
+            }
+            if(crc8(HTU31_CRC_INIT, HTU31_CRC_POLY, 2, buf+3) == buf[5]) {
+                t = (buf[3] << 8) | buf[4];
+                _hum = (int8_t)((100.0 * (double)t) / 65535.0);
+                if(_hum < 0) _hum = 0;
+            }
+            write8(HTU31_DUMMY, HTU31_CONV);  // Trigger new conversion
+            _tempReadNow = millis();
+        }
         break;
     }
 
-    if(!celsius && !isnan(temp)) temp = temp * 9.0 / 5.0 + 32.0;
+    if(!isnan(temp)) {
+        if(!celsius) temp = temp * 9.0 / 5.0 + 32.0;
+        temp += _userOffset;
+    }
 
-    temp += _userOffset;
+    // We use only 2 digits, so truncate
+    if(_hum > 99) _hum = 99;
     
     #ifdef TC_DBG
     Serial.print("Read temp: ");
     Serial.println(temp);
-    #endif   
+    if(_haveHum) {
+        Serial.print("Humidity: ");
+        Serial.println(_hum);
+    }
+    #endif
+
+    _lastTemp = temp;
 
     return temp;
 }
@@ -362,9 +662,9 @@ void tempSensor::onoff(bool shutDown)
     }
 }
 
-double tempSensor::BMx280_CalcTemp(uint32_t ival)
+double tempSensor::BMx280_CalcTemp(uint32_t ival, uint32_t hval)
 {
-    int32_t var1, var2;
+    int32_t var1, var2, fine_t, temp;
 
     if(ival == 0x800000) return NAN;
 
@@ -373,8 +673,22 @@ double tempSensor::BMx280_CalcTemp(uint32_t ival)
     var1 = ((((ival >> 3) - (_BMx280_CD_T1 << 1))) * _BMx280_CD_T2) / 2048;
     var2 = (ival >> 4) - _BMx280_CD_T1;
     var2 = (((var2 * var2) / 4096) * _BMx280_CD_T3) / 16384;
+
+    fine_t = var1 + var2;
+
+    if(_haveHum) {
+        temp = fine_t - 76800;
     
-    return (double)(((var1 + var2) * 5 + 128) / 256) / 100.0;
+        temp = ((((hval << 14) - _BMx280_CD_H4 - (_BMx280_CD_H5 * temp)) + 16384) / 32768) * 
+               ( ( ((( ((temp * _BMx280_CD_H6) / 1024) * (((temp * _BMx280_CD_H3) >> 11) + 32768)) / 1024) + 2097152) * 
+                  _BMx280_CD_H2 + 8192 ) / 16384);
+        temp -= (((((temp / 32768) * (temp / 32768)) / 128) * _BMx280_CD_H1) / 16);
+        if(temp < 0) temp = 0;
+    
+        _hum = temp >> 22;
+    }
+    
+    return (double)((fine_t * 5 + 128) / 256) / 100.0;
 }
 
 #endif // TC_HAVETEMP
@@ -422,7 +736,7 @@ double tempSensor::BMx280_CalcTemp(uint32_t ival)
 static const uint8_t bh1750Arr[3][2] = {
       { BH1750_CONT_HRES,   120+30 }, 
       { BH1750_CONT_HRES2,  120+30 }, 
-      { BH1750_CONT_HRES,    16+30 }
+      { BH1750_CONT_LRES,    16+30 }
 };
 
 #define BH1750_USE_SET  0   // to be adjusted (0-2, index in array above)
@@ -523,7 +837,7 @@ bool lightSensor::begin(bool skipLast)
             
             #ifdef TC_DBG
             const char *tpArr[3] = { "TSL2561", "BH1750", "VEML7700/6030" };
-            Serial.print("Sensors: Detected light sensor ");
+            Serial.print("Light sensor: Detected ");
             Serial.println(tpArr[_st]);
             #endif
             
@@ -540,7 +854,7 @@ bool lightSensor::begin(bool skipLast)
         
     case LST_BH1750:
         write8(BH1750_DUMMY, 0x01); // Power up
-        _gainIdx = 0;               // Use High res mode (cont.)
+        _gainIdx = BH1750_USE_SET;  // Set mode
         write8(BH1750_DUMMY, bh1750Arr[_gainIdx][0]);
         break;
         
