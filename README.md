@@ -187,7 +187,7 @@ Basically, and by default, the device uses the hardware volume knob to determine
 - Hold ENTER
 - Press ENTER to toggle between "HW" (volume knob) or "SW" (software)
 - Hold ENTER to proceed
-- If you chose "SW", you can now select the desired level by pressing ENTER repeatedly. There are 16 levels available.
+- If you chose "SW", you can now select the desired level by pressing ENTER repeatedly. There are 16 levels available. The volume knob is now ignored.
 - Hold ENTER to save and quit the menu
 
 #### How to select the Time-rotation Interval:
@@ -279,7 +279,7 @@ If you intend to use the very same SD card that you used for installing the defa
 
 ## Additional Custom Sounds
 
-The software supports some additional user-provided sounds, which must reside on the SD card. If the respective file is present, it will be used. If that file is absent, no sound will be played.
+The firmware supports some additional user-provided sounds, which must reside on the SD card. If the respective file is present, it will be used. If that file is absent, no sound will be played.
 
 - "hour.mp3": Will be played every hour, on the hour. This feature is disabled in night mode.
 - "hour-xx.mp3", xx being 00 through 23: Sounds-on-the-hour for specific hours that will be played instead of "hour.mp3". If a sound for a specific hour is not present, "hour.mp3" will be played, if that one exists.
@@ -317,7 +317,7 @@ Since the I2C bus is already quite long from the control board to the last displ
 
 ## GPS receiver
 
-The firmware supports an MT(K)3333-based GPS receiver, connected through i2c (slave address 0x10). The CircuitSetup-designed speedo display will have such a chip built-in, but since this gadget is not yet available, in the meantime, you can use alternatives such as the Adafruit Mini GPS PA1010D (product id 4415) or the Pimoroni P1010D GPS Breakout (PIM525). The GPS receiver can be used as a source of authoritative time (like NTP), and/or speed of movement (to be displayed on a speedo display).
+The firmware supports an MT(K)3333-based GPS receiver, connected through i2c (slave address 0x10). The CircuitSetup-designed speedo display will have such a chip built-in, but since this gadget is not yet available, in the meantime, you can use alternatives such as the Adafruit Mini GPS PA1010D (product id 4415) or the Pimoroni P1010D GPS Breakout (PIM525). The GPS receiver can be used as a source of authoritative time (like NTP), and/or speed of movement (to be displayed on a [speedo display](#speedometer)).
 
 GPS receivers receive signals from satellites, but in order to do so, they need to be "tuned in" (aka get a "fix"). This "tuning" process can take a long time; after first power up, it can take 30 minutes or more for a receiver to be able to determine its position. In order to speed up this process, modern GPS receivers have special "assisting" features. One key element is knowledge of current time, as this helps identifying satellite signals quicker. So, in other words, initially, you need to tell the receiver, what it is supposed to tell you. However, as soon as the receiver has received satellite signals for 15-20 minutes, it saves the data it collected to its battery-backed memory and will find a fix within seconds after power-up in the future.
 
@@ -331,7 +331,7 @@ If/as long as the GPS receiver has a fix and receives data from satellites, the 
 
 #### GPS for speed
 
-One nice feature of GPS is that the receiver can deliver current speed of movement. If the Time Circuits are, for instance, mounted in a car or on a boat, and a speedo display is connected, this display will be just that: A real speedometer.
+One nice feature of GPS is that the receiver can deliver current speed of movement. If the Time Circuits are, for instance, mounted in a car or on a boat, and a [speedo display](#speedometer) is connected, this display will be just that: A real speedometer.
 
 ## Room Condition Mode, Temperature/humidity sensor
 
@@ -339,7 +339,7 @@ The firmware supports connecting a temperature/humidity sensor for "room conditi
 
 ![rcmode](https://user-images.githubusercontent.com/76924199/208133653-f0fb0a38-51e4-4436-9506-d841ef1bfa6c.jpg)
 
-Furthermore, unless you do time travelling on a regular basis, the speedo display is idle most of the time in a typical home setup. To give it more of a purpose, the software can display room temperature on the speedo while idle.
+Furthermore, unless you do time travelling on a regular basis, the [speedo display](#speedometer) is idle most of the time in a typical home setup. To give it more of a purpose, the firmware can display ambient temperature on the speedo while idle.
 
 Seven sensor types are supported: MCP9808 (i2c address 0x18), BMx820 (0x77), SI7021 (0x40), SHT40 (0x44), TMP117 (0x49), AHT20 (0x38), HTU31D (0x41). All of those are readily available from Adafruit or Seeed (Grove). Note that BMP820 (unlike BME820), MCP9808 and TMP117 are pure temperature sensors, the others deliver temperature and humidity.
 
