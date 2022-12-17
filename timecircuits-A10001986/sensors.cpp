@@ -7,23 +7,23 @@
  * Sensor Class: Temperature/humidty and Light Sensor handling
  *
  * This is designed for 
- * - MCP9808, TMP117, BMx820, SHT4x, SI7012, AHT20, HTU31D temp/hum
- *   sensors,
+ * - MCP9808, TMP117, BMx820, SHT4x, SI7012, AHT20/AM2315C, HTU31D 
+ *   temperature/humidity sensors,
  * - BH1750, TSL2561 and VEML7700/VEML6030 light sensors.
  *                             
  * The i2c slave addresses need to be:
- * MCP9808:   0x18                [temperature only]
- * TMP117:    0x49 [non-default]  [temperature only]
- * BMx820:    0x77                ['E' t+h, 'P' t only]
- * SHT40:     0x44                [temperature, humidity]
- * SI7021:    0x40                [temperature, humidity]
- * AHT20:     0x38                [temperature, humidity]
- * HTU31D:    0x41 [non-default]  [temperature, humidity]
+ * MCP9808:       0x18                [temperature only]
+ * TMP117:        0x49 [non-default]  [temperature only]
+ * BMx820:        0x77                ['P' t only, 'E' t+h]
+ * SHT40:         0x44                [temperature, humidity]
+ * SI7021:        0x40                [temperature, humidity]
+ * AHT20/AM2315C: 0x38                [temperature, humidity]
+ * HTU31D:        0x41 [non-default]  [temperature, humidity]
  * 
- * TSL2561:   0x29 
- * BH1750:    0x23
- * VEML6030:  0x10, 0x48 [non-default]
- * VEML7700:  0x10
+ * TSL2561:       0x29 
+ * BH1750:        0x23
+ * VEML6030:      0x10, 0x48 [non-default]
+ * VEML7700:      0x10
  * 
  * If a GPS receiver is connected at the same time, 
  * - the VEML7700 cannot be used;
@@ -354,7 +354,7 @@ bool tempSensor::begin(unsigned long powerupTime)
             _st = _addrArr[i+1];
 
             #ifdef TC_DBG
-            const char *tpArr[7] = { "MCP9808", "BMx820", "SHT4x", "SI7021", "TMP117", "AHT20", "HTU31" };
+            const char *tpArr[7] = { "MCP9808", "BMx820", "SHT4x", "SI7021", "TMP117", "AHT20/AM2315C", "HTU31D" };
             Serial.print("Temperature sensor: Detected ");
             Serial.println(tpArr[_st]);
             #endif

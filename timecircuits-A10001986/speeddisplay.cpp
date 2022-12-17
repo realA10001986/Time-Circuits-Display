@@ -372,6 +372,7 @@ void speedDisplay::off()
 }
 
 // Turn on all LEDs
+#if 0
 void speedDisplay::lampTest()
 {
     Wire.beginTransmission(_address);
@@ -384,6 +385,7 @@ void speedDisplay::lampTest()
 
     _lastBufPosCol = 0xffff;
 }
+#endif
 
 // Clear the buffer
 void speedDisplay::clearBuf()

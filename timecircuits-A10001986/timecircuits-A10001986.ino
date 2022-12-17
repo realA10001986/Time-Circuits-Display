@@ -69,8 +69,14 @@
  *
  *  2022/12/17 (A10001986)
  *    - "Animate" room condition mode display (imitate delayed month)
+ *    - Sensors keypad menu: Read sensors only every 3rd second to avoid self-
+ *      heating
+ *    - Add mDNS support: Access the Config Portal via http://timecircuits.local (the
+ *      hostname is configurable in the Config Portal)
+ *    - Disable WiFiManager's "capitive portal" in order to avoid server-redirects to 
+ *      IP address.
  *  2022/12/16 (A10001986)
- *    - Add support for SI7021, SHT40, TMP117, AHT20, HTU31D temperature sensors
+ *    - Add support for SI7021, SHT40, TMP117, AHT20/AM2315C, HTU31D temperature sensors 
  *      [SI7021, SHT40, TMP117, HTU31D untested]
  *    - Add reading humidity from BME820, SI7021, SHT40, AHT20, HTU31D sensors 
  *    - Add "room condition" mode, where destination and departed time are replaced

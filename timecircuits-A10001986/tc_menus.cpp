@@ -1581,7 +1581,7 @@ static void doShowSensors()
     maxIdx = numIdx - 1;
     numIdx = 0;
 
-    destinationTime.showTextDirect("");
+    destinationTime.showTextDirect("WAIT");
     destinationTime.on();
     presentTime.showTextDirect("");
     presentTime.on();
@@ -1612,7 +1612,7 @@ static void doShowSensors()
             if(maxIdx > 0) {
                 numIdx++;
                 if(numIdx > maxIdx) numIdx = 0;
-                destinationTime.showTextDirect("");
+                destinationTime.showTextDirect("WAIT");
                 presentTime.showTextDirect("");
             }
             
@@ -1620,7 +1620,7 @@ static void doShowSensors()
 
             mydelay(50);
 
-            if(millis() - sensNow > 1000) {
+            if(millis() - sensNow > 3000) {
                 switch(numberArr[numIdx]) {
                 case 0:
                     #ifdef TC_HAVELIGHT
