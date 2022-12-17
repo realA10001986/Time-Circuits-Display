@@ -38,6 +38,7 @@ extern bool    haveSD;
 #define DEF_PLAY_INTRO      1     // 0-1;  Default: 1 = Play intro
 #define DEF_MODE24          0     // 0-1;  Default: 0=12-hour-mode, 1=24-hour-mode
 #define DEF_AUTOROTTIMES    1     // 0-5;  Default: Auto-rotate every 5th minute
+#define DEF_HOSTNAME        "timecircuits"
 #define DEF_WIFI_RETRY      3     // 1-15; Default: 3 retries
 #define DEF_WIFI_TIMEOUT    7     // 7-25; Default: 7 seconds
 #define DEF_WIFI_OFFDELAY   0     // 0/10-99; Default 0 = Never power down WiFi in STA-mode
@@ -63,12 +64,12 @@ extern bool    haveSD;
 #define DEF_BRIGHT_SPEEDO   15    // Default: Max. brightness
 #define DEF_USE_GPS         0     // 0: No i2c GPS module
 #define DEF_USE_GPS_SPEED   0     // 0: Do not use GPS speed on speedo display
-#define DEF_USE_TEMP        0     // 0: No i2c thermometer
+#define DEF_USE_TEMP        0     // 0: No i2c temperature/humidity sensor
 #define DEF_DISP_TEMP       1     // 1: Display temperature (if available) on speedo
 #define DEF_TEMP_BRIGHT     3     // Default temp brightness
 #define DEF_TEMP_UNIT       0     // Default: temp unit Fahrenheit
 #define DEF_TEMP_OFFS       0.0   // Default temp offset 0.0
-#define DEF_USE_LIGHT       0     // Default: No light sensor
+#define DEF_USE_LIGHT       0     // Default: No i2c light sensor
 #define DEF_LUX_LIMIT       3     // Default Lux for night mode
 #define DEF_USE_ETTO        0     // 0: No external props
 #define DEF_PLAY_TT_SND     1     // 1: Play time travel sounds (0: Do not; for use with external equipment)
@@ -78,7 +79,8 @@ struct Settings {
     char alarmRTC[4]        = MS(DEF_ALARM_RTC);
     char playIntro[4]       = MS(DEF_PLAY_INTRO);
     char mode24[4]          = MS(DEF_MODE24);
-    char autoRotateTimes[4] = MS(DEF_AUTOROTTIMES);
+    char autoRotateTimes[4] = MS(DEF_AUTOROTTIMES);   
+    char hostName[32]       = DEF_HOSTNAME;
     char wifiConRetries[4]  = MS(DEF_WIFI_RETRY);
     char wifiConTimeout[4]  = MS(DEF_WIFI_TIMEOUT);
     char wifiOffDelay[4]    = MS(DEF_WIFI_OFFDELAY);

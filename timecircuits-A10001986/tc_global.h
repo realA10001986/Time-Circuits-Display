@@ -22,7 +22,17 @@
 #define TC_VERSION_EXTRA "12172022"   // 12 chars max
 #endif
 
-//#define TC_DBG            // debug output on Serial
+//#define TC_DBG              // debug output on Serial
+
+/*************************************************************************
+ ***                          mDNS support                             ***
+ *************************************************************************/
+
+// Supply mDNS service 
+// Allows accessing the Config Portal via http://hostname.local
+// <hostname> is configurable in the Config Portal
+// This needs to be commented if WiFiManager provides mDNS
+#define TC_MDNS             
 
 /*************************************************************************
  ***                 Configuration for peripherals                     ***

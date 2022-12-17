@@ -246,6 +246,9 @@ void settings_setup()
                         writedefault |= checkValidNumParm(settings.autoRotateTimes, 0, 5, DEF_AUTOROTTIMES);
                     } else writedefault = true;
 
+                    if(json["hostName"]) {
+                        strcpy(settings.hostName, json["hostName"]);
+                    } else writedefault = true;
                     if(json["wifiConRetries"]) {
                         strcpy(settings.wifiConRetries, json["wifiConRetries"]);
                         writedefault |= checkValidNumParm(settings.wifiConRetries, 1, 15, DEF_WIFI_RETRY);
@@ -465,7 +468,8 @@ void write_settings()
     json["mode24"] = settings.mode24;
     json["playIntro"] = settings.playIntro;
     json["autoRotateTimes"] = settings.autoRotateTimes;
-    
+
+    json["hostName"] = settings.hostName;
     json["wifiConRetries"] = settings.wifiConRetries;
     json["wifiConTimeout"] = settings.wifiConTimeout;
     json["wifiOffDelay"] = settings.wifiOffDelay;

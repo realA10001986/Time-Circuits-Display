@@ -83,7 +83,9 @@ class speedDisplay {
         void begin(int dispType);
         void on();
         void off();
+        #if 0
         void lampTest();
+        #endif
 
         void clearBuf();
 
