@@ -18,7 +18,7 @@ Features include
 - [SD card](#sd-card) support for custom audio files
 - ["Return from Time Travel"](#time-travel) (hold "9" for 2 seconds)
 - [Keypad menu](#the-keypad-menu) for adjusting various settings and viewing IP address and WiFi status
-- Advanced network-accessible [Config Portal](#short-summary-of-first-steps) for setup
+- Advanced network-accessible [Config Portal](#short-summary-of-first-steps) for setup and &#127381; mDNS support
 - 24-hour clock mode for non-Americans ;)
 - &#127381; [Room condition mode](#room-condition-mode-temperaturehumidity-sensor): Display temperature and humidity instead of destination/departed time (requires suitable sensor)
 - Optional power-up intro
@@ -68,7 +68,7 @@ NTP (time synchronization over the internet) is only possible if the clock is co
 
 ### The Config Portal
 
-The Config Portal is accessible in two ways: As outlined above, if the device is not connected to a WiFi network, it creates a WiFi access point, to which your WiFi-enabled hand held device or computer can connect ("TCD-AP", http://192.168.4.1 ) to enter the Config Portal. If the clock is connected to your WiFi network, direct your browser instead to http://a.b.c.d (a.b.c.d being the Ip address as shown in the last step above) in order to enter the Config Portal. 
+The Config Portal is accessible in two ways: As outlined above, if the device is not connected to a WiFi network, it creates a WiFi access point, to which your WiFi-enabled hand held device or computer can connect ("TCD-AP", http://192.168.4.1 ) to enter the Config Portal. If the clock is connected to your WiFi network, direct your browser instead to either http://timecircuits.local or, if that fails, to http://a.b.c.d (a.b.c.d being the Ip address as shown in the last step above) in order to enter the Config Portal.
 
 In the main menu, click on "Setup" to configure your clock, first and foremost your time zone. If the time zone isn't set correctly, the clock might show a wrong time, and DST (daylight saving) will not be switched on/off correctly.
 
