@@ -67,6 +67,8 @@
 
 /*  Changelog
  *
+ *  2022/12/17 (A10001986)
+ *    - "Animate" room condition mode display (imitate delayed month)
  *  2022/12/16 (A10001986)
  *    - Add support for SI7021, SHT40, TMP117, AHT20, HTU31D temperature sensors
  *      [SI7021, SHT40, TMP117, HTU31D untested]

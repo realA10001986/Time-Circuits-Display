@@ -686,13 +686,18 @@ void keypad_loop()
             #ifdef TC_HAVETEMP
             if(isRcMode()) {
 
-                destinationTime.showTempDirect(tempSens.readLastTemp(), tempUnit);
+                destinationTime.showTempDirect(tempSens.readLastTemp(), tempUnit, true);
                 if(rcModeDepTime) {
-                    departedTime.showHumDirect(tempSens.readHum());
+                    departedTime.showHumDirect(tempSens.readHum(), true);
                 }
                 destinationTime.onCond();
                 if(rcModeDepTime) {
                     departedTime.onCond();
+                }
+                mydelay(80);                      // Wait 80ms
+                destinationTime.showTempDirect(tempSens.readLastTemp(), tempUnit);
+                if(rcModeDepTime) {
+                    departedTime.showHumDirect(tempSens.readHum());
                 }
               
             } else {
