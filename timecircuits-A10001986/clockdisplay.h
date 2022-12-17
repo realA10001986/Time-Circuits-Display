@@ -103,8 +103,8 @@ class clockDisplay {
         void showHalfIPDirect(int a, int b, bool clear = false);
 
         #ifdef TC_HAVETEMP
-        void showTempDirect(double temp, bool tempUnit);
-        void showHumDirect(int hum);
+        void showTempDirect(double temp, bool tempUnit, bool animate = false);
+        void showHumDirect(int hum, bool animate = false);
         #endif
 
         bool    save();

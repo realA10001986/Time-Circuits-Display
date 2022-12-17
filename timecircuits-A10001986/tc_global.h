@@ -16,10 +16,10 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #ifndef IS_ACAR_DISPLAY
 #define TC_VERSION "V2.6.0"           // 13 chars max
-#define TC_VERSION_EXTRA "DEC162022"  // 13 chars max
+#define TC_VERSION_EXTRA "DEC172022"  // 13 chars max
 #else   // A-Car
 #define TC_VERSION "V2.6.0_A-CAR"     // 12 chars max
-#define TC_VERSION_EXTRA "12162022"   // 12 chars max
+#define TC_VERSION_EXTRA "12172022"   // 12 chars max
 #endif
 
 //#define TC_DBG            // debug output on Serial
@@ -40,10 +40,10 @@
 #define SP_MIN_TYPE     1   // Change to 0 when CircuitSetup speedo prop exists
 
 // Uncomment for support of a temperature/humidity sensor (MCP9808, BMx820, 
-// SI7021, SHT40, TMP117, AHT20) connected via i2c. Will be used for room  
-// condition mode and to display ambient temperature on speedometer display  
-// when idle (GPS speed has higher priority, ie if GPS speed is enabled in
-// the Config Portal, temperature will not be shown on speedo).
+// SI7021, SHT40, TMP117, AHT20, HTU31D) connected via i2c. Will be used for 
+// room condition mode and to display ambient temperature on speedometer  
+// display when idle (GPS speed has higher priority, ie if GPS speed is 
+// enabled in the Config Portal, temperature will not be shown on speedo).
 // See sensors.cpp for supported i2c slave addresses
 #define TC_HAVETEMP
 

@@ -1896,7 +1896,7 @@ void animate()
 {
     #ifdef TC_HAVETEMP
     if(isRcMode()) {
-        destinationTime.showTempDirect(tempSens.readLastTemp(), tempUnit);
+        destinationTime.showTempDirect(tempSens.readLastTemp(), tempUnit, true);
         destinationTime.onCond();
     } else
     #endif
@@ -1906,7 +1906,7 @@ void animate()
 
     #ifdef TC_HAVETEMP
     if(isRcMode() && tempSens.haveHum()) {
-        departedTime.showHumDirect(tempSens.readHum());
+        departedTime.showHumDirect(tempSens.readHum(), true);
         departedTime.onCond();
     } else
     #endif
@@ -1915,14 +1915,18 @@ void animate()
     mydelay(80);
 
     #ifdef TC_HAVETEMP
-    if(!isRcMode())
+    if(isRcMode())
+        destinationTime.showTempDirect(tempSens.readLastTemp(), tempUnit);
+    else
     #endif
         destinationTime.showAnimate2();
         
     presentTime.showAnimate2();
 
     #ifdef TC_HAVETEMP
-    if(!isRcMode() || !tempSens.haveHum())
+    if(isRcMode() && tempSens.haveHum()) {
+        departedTime.showHumDirect(tempSens.readHum());
+    } else
     #endif
         departedTime.showAnimate2();
 }

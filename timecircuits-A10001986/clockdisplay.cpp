@@ -706,10 +706,10 @@ void clockDisplay::showSettingValDirect(const char* setting, int8_t val, bool cl
 }
 
 #ifdef TC_HAVETEMP
-void clockDisplay::showTempDirect(double temp, bool tempUnit)
+void clockDisplay::showTempDirect(double temp, bool tempUnit, bool animate)
 {
     char buf[32];
-    const char *ttem = "TEMP";
+    const char *ttem = animate ? "    " : "TEMP";
     int t2; 
 
     if(!handleNM())
@@ -738,10 +738,10 @@ void clockDisplay::showTempDirect(double temp, bool tempUnit)
     if(_NmOff) _oldnm = 0;
 }
 
-void clockDisplay::showHumDirect(int hum)
+void clockDisplay::showHumDirect(int hum, bool animate)
 {
     char buf[16];
-    const char *thum = "HUMIDITY";
+    const char *thum = animate ? "        " : "HUMIDITY";
 
     if(!handleNM())
         return;
