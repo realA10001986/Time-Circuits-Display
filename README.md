@@ -379,4 +379,118 @@ The device can tell other props about a time travel, and in essence act as a "ma
 
 More here: [Link](https://github.com/realA10001986/Time-Circuits-Display/wiki/Time-Circuits-Wall-Clock)
 
+## Appendix: The Config Portal
+
+#### Make time travels persistent
+
+See [here](#persistent--non-persistent-time-travels)
+
+#### Alarm base is real present time
+
+Selects wether the alarm, sound-on-the-hour and night-mode schedules are based on real, actual present time, or "present" time as displayed (eg after a time travel).
+
+#### Play intro
+
+Selects wether or not the animated "Back to the Future" intro is played upon power-up.
+
+#### 24-hour clock mode
+
+Selects 24-hour clock mode, ie hours count from 0 to 23, "AM" and "PM" are permanently dark.
+
+#### Time-rotation interval
+
+In "decorative" mode the device cycles through a list of pre-programmed destination and last time departed times. This mode is chosen by setting the "Time-rotation Interval" to a non-zero value. The device will cycle through named list every 5th, 10th, 15th, 30th or 60th minute, and thereby change the displays, regardless of times displayed as a result from a time travel. Set the interval to 0 to disable "decorative" mode.
+
+#### Hostname
+
+The device's hostname in the WiFi network. This also is the domain name at which the Config Portal is accessible from a browser in the same local network. The URL of the Config Portal then is http://<i>hostname</i>.local (the default is http://timecircuits.local )
+
+#### WiFi connection attempts
+
+Number of times the firmware tries to reconnect to a WiFi network, before falling back to AP-mode.
+
+#### WiFi connection timeout
+
+Number of seconds before a timeout occurs when connecting to a WiFi network. 
+
+#### WiFi power save timer
+
+See [here](#wifi-power-saving-features)
+
+#### WiFi power save timer (AP-mode)
+
+See [here](#wifi-power-saving-features)
+
+#### Timezone
+
+The time zone of the place where the device is operated. Has to be in POSIX format. Defaults to UTC0.
+
+#### NTP Server
+
+Name of your preferred NTP (network time protocol) server for time synchronization. Leave this empty to disable NTP.
+
+#### Use GPS as time source
+
+If a [GPS receiver](#gps-receiver) is connected, this selects whether GPS time is used for synchronization.
+
+#### Destination Time display brightness
+
+Selects the brightness of the *destination time* display. Ranges from 0 (darkest) to 15 (brightest).
+
+#### Present Time display brightness (0-15)
+
+Selects the brightness of the *present time* display. Ranges from 0 (darkest) to 15 (brightest).
+
+#### Last Time Dep. display brightness
+
+Selects the brightness of the *last time departed* display. Ranges from 0 (darkest) to 15 (brightest).
+
+#### Destination time off in night mode
+
+Selects whether the *destination time* display is dimmed or switched of in night mode.
+
+#### Present time off in night mode
+
+Selects whether the *present time* display is dimmed or switched of in night mode.
+
+#### Last time dep. off in night mode
+
+Selects whether the *last time departed* display is dimmed or switched of in night mode.
+
+#### Scheduled night-mode
+
+Enables or disables schedules night mode, as configured by the following options. See [here](#night-mode)
+
+#### Schedule
+
+See [here](#night-mode)
+
+#### Daily night-mode start hour (0-23)
+
+If "Daily" is chosen in the "Schedule"-drop-down, enter night-mode start hour here.
+
+#### Daily night-mode end hour (0-23)
+
+If "Daily" is chosen in the "Schedule"-drop-down, enter night-mode end hour here.
+
+#### Use light sensor
+
+Select whether to use a light sensor's data to enable night-mode. See [here](#night-mode)
+
+#### Light (lux) threshold
+
+If the light sensor reports a number of lux below or equal to this value, night-mode is activated. See [here](#night-mode)
+
+#### Use temperature sensor
+
+Select whether to use a temperature/humidity sensor. The sensor data is used for room condition mode, and the temperature is optionally displayed on a connected Speedo display. See [here](#room-condition-mode-temperaturehumidity-sensor)
+
+#### Display in °Celsius
+
+Selects between Fahrenheit and Celsius for temperature display.
+
+#### Temperature offset
+
+This offset, which can range from -3.0 to 3.0, is added to the sensor measurement, in order to compensate sensor inaccuracy or suboptimal sensor placement.
+
 
