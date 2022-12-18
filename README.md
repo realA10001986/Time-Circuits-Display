@@ -407,13 +407,15 @@ In "decorative" mode the device cycles through a list of pre-programmed destinat
 
 The device's hostname in the WiFi network. This also is the domain name at which the Config Portal is accessible from a browser in the same local network. The URL of the Config Portal then is http://<i>hostname</i>.local (the default is http://timecircuits.local )
 
+If you have more than one clock in your local network, please give them unique hostnames.
+
 #### WiFi connection attempts
 
-Number of times the firmware tries to reconnect to a WiFi network, before falling back to AP-mode.
+Number of times the firmware tries to reconnect to a WiFi network, before falling back to AP-mode. See [here](#short-summary-of-first-steps)
 
 #### WiFi connection timeout
 
-Number of seconds before a timeout occurs when connecting to a WiFi network. 
+Number of seconds before a timeout occurs when connecting to a WiFi network. When a timeout happens, another attempt is made (see immediately above), and if all attempts fail, the device falls back to AP-mode. See [here](#short-summary-of-first-steps)
 
 #### WiFi power save timer
 
@@ -425,7 +427,7 @@ See [here](#wifi-power-saving-features)
 
 #### Timezone
 
-The time zone of the place where the device is operated. Has to be in POSIX format. Defaults to UTC0.
+The time zone of the place where the device is operated. Has to be in POSIX format. Needs to be set in order to use NTP or GPS, and for DST (daylight saving). Defaults to UTC0.
 
 #### NTP Server
 
