@@ -76,7 +76,7 @@ In the main menu, click on "Setup" to configure your clock, first and foremost y
 |:--:| 
 | *The Config Portal's Setup page* |
 
-A full reference is [here](#appendix-the-config-portal).
+A full reference of the Config Portal is [here](#appendix-the-config-portal).
 
 ## Operation basics
 
@@ -405,7 +405,7 @@ In "decorative" mode the device cycles through a list of pre-programmed destinat
 
 #### Hostname
 
-The device's hostname in the WiFi network. This also is the domain name at which the Config Portal is accessible from a browser in the same local network. The URL of the Config Portal then is http://<i>hostname</i>.local (the default is http://timecircuits.local )
+The device's hostname in the WiFi network. Defaults to 'timecircuits'. This also is the domain name at which the Config Portal is accessible from a browser in the same local network. The URL of the Config Portal then is http://<i>hostname</i>.local (the default is http://timecircuits.local )
 
 If you have more than one clock in your local network, please give them unique hostnames.
 
