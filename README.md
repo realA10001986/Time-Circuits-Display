@@ -389,19 +389,19 @@ See [here](#persistent--non-persistent-time-travels)
 
 #### Alarm base is real present time
 
-Selects wether the alarm, sound-on-the-hour and night-mode schedules are based on real, actual present time, or "present" time as displayed (eg after a time travel).
+Selects whether the alarm, sound-on-the-hour and night-mode schedules are based on real, actual present time, or "present" time as displayed (eg after a time travel).
 
 #### Play intro
 
-Selects wether or not the animated "Back to the Future" intro is played upon power-up.
+Selects whether the animated "Back to the Future" intro should be played upon power-up.
 
 #### 24-hour clock mode
 
-Selects 24-hour clock mode, ie hours count from 0 to 23, "AM" and "PM" are permanently dark.
+Selects 24-hour clock mode, ie hours go from 0 to 23, "AM" and "PM" are permanently dark.
 
 #### Time-rotation interval
 
-In "decorative" mode the device cycles through a list of pre-programmed destination and last time departed times. This mode is chosen by setting the "Time-rotation Interval" to a non-zero value. The device will cycle through named list every 5th, 10th, 15th, 30th or 60th minute, and thereby change the displays, regardless of times displayed as a result from a time travel. Set the interval to 0 to disable "decorative" mode. See [here](#operation-basics)
+In "decorative" mode the device cycles through a list of pre-programmed, movie-accurate *destination* and *last time departed* times. This mode is enabled by setting the "Time-rotation Interval" to anything but "off". The device will cycle through named list every 5th, 10th, 15th, 30th or 60th minute, and thereby change the displays. Set the interval to "off" to disable "decorative" mode. See [here](#operation-basics)
 
 #### Hostname
 
@@ -435,7 +435,7 @@ Name of your preferred NTP (network time protocol) server for time synchronizati
 
 #### Use GPS as time source
 
-If a [GPS receiver](#gps-receiver) is connected, this selects whether GPS time is used for synchronization.
+If a [GPS receiver](#gps-receiver) is connected, this selects whether GPS time is used for time synchronization.
 
 #### Destination Time display brightness
 
@@ -511,7 +511,7 @@ Brightness of speedo display when displaying speed.
 
 #### Speedo sequence speed factor
 
-Since the DMC-12 wasn't the world's fastest car, it's acceleration figures might soon get boring if played in real-time. This factor speeds up the acceleration. 2.0 means twice as fast as the real car.
+Since the DMC-12 wasn't the world's fastest car, it's acceleration figures might soon cause boredom if played in real-time as part of the time travel sequence with a speedo display. This factor speeds up the acceleration. 2.0 means twice as fast as the real car.
 
 #### Display GPS speed
 
@@ -535,7 +535,7 @@ Selects a delay (in millisconds) from when pressing the external time travel but
 
 #### Play complete time travel sequence
 
-For externally triggered time travels, this selects if the entire sequence (including acceleration, if a speedo is available) is played, or the only the short re-entry sequence. See [here](#fake-power-onoff-switch-external-time-travel-trigger)
+For externally triggered time travels, this selects if the entire sequence (including acceleration, if a speedo is available) should be played, or the only the short re-entry sequence. See [here](#fake-power-onoff-switch-external-time-travel-trigger)
 
 #### Use compatible external props
 
@@ -543,4 +543,4 @@ This selects whether a GPIO pin is activated upon a time-travel in order to cont
 
 #### Play time travel sounds
 
-If other props are connected, they might bring their own time travel sound effects. In this case, you can check this to disable the Time Circuit's own time travel sounds.
+If other props are connected, they might bring their own time travel sound effects. In this case, you can uncheck this to disable the Time Circuit's own time travel sounds.
