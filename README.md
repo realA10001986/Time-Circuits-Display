@@ -76,6 +76,8 @@ In the main menu, click on "Setup" to configure your clock, first and foremost y
 |:--:| 
 | *The Config Portal's Setup page* |
 
+A full reference is [here](#appendix-the-config-portal).
+
 ## Operation basics
 
 *Present time* is a clock and normally shows the actual local present time, as received from the network or set up through the [keypad menu](#how-to-enter-datestimes-for-the-three-displays).
@@ -399,7 +401,7 @@ Selects 24-hour clock mode, ie hours count from 0 to 23, "AM" and "PM" are perma
 
 #### Time-rotation interval
 
-In "decorative" mode the device cycles through a list of pre-programmed destination and last time departed times. This mode is chosen by setting the "Time-rotation Interval" to a non-zero value. The device will cycle through named list every 5th, 10th, 15th, 30th or 60th minute, and thereby change the displays, regardless of times displayed as a result from a time travel. Set the interval to 0 to disable "decorative" mode.
+In "decorative" mode the device cycles through a list of pre-programmed destination and last time departed times. This mode is chosen by setting the "Time-rotation Interval" to a non-zero value. The device will cycle through named list every 5th, 10th, 15th, 30th or 60th minute, and thereby change the displays, regardless of times displayed as a result from a time travel. Set the interval to 0 to disable "decorative" mode. See [here](#operation-basics)
 
 #### Hostname
 
@@ -507,7 +509,7 @@ Brightness of speedo display when displaying speed.
 
 #### Speedo sequence speed factor
 
-Since the DMC-12 wasn't the world's fastest car, it's acceleration figures might soon get boring if played in real-time. This factor speeds up the acceleration.
+Since the DMC-12 wasn't the world's fastest car, it's acceleration figures might soon get boring if played in real-time. This factor speeds up the acceleration. 2.0 means twice as fast as the real car.
 
 #### Display GPS speed
 
