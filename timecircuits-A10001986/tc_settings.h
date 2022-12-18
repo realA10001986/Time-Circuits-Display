@@ -19,7 +19,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 #ifndef _TC_SETTINGS_H
@@ -164,5 +164,7 @@ bool copy_audio_files();
 bool check_allow_CPA();
 
 void formatFlashFS();
+
+void rewriteSecondarySettings();
 
 #endif

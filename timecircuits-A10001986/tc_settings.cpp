@@ -19,7 +19,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include "tc_global.h"
@@ -1114,4 +1114,16 @@ void formatFlashFS()
     Serial.println(F("Formatting flash FS"));
     #endif
     SPIFFS.format();
+}
+
+void rewriteSecondarySettings()
+{
+    #ifdef TC_DBG
+    Serial.println("Re-writing IP settings");
+    #endif
+    writeIpSettings();    // re-write IP settings
+    #ifdef TC_DBG
+    Serial.println("Re-writing alarm settings");
+    #endif
+    saveAlarm();          // re-write alarm settings
 }

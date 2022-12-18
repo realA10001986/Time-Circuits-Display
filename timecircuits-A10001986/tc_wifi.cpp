@@ -19,7 +19,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include "tc_global.h"
@@ -111,9 +111,9 @@ WiFiManagerParameter custom_mode24("md24", "24-hour clock mode", settings.mode24
 WiFiManagerParameter custom_autoRotateTimes(aintCustHTML);
 
 #ifdef TC_MDNS
-#define HNTEXT "Hostname (mDNS)<br><span style='font-size:80%'>Allows accessing the Config Portal at http://<i>hostname</i>.local</span>"
+#define HNTEXT "Hostname<br><span style='font-size:80%'>Allows accessing the Config Portal at http://<i>hostname</i>.local<br>(Valid characters: a-z/0-9/-)</span>"
 #else
-#define HNTEXT "Hostname"
+#define HNTEXT "Hostname<br><span style='font-size:80%'>(Valid characters: a-z/0-9/-)</span>"
 #endif
 WiFiManagerParameter custom_hostName("hostname", HNTEXT, settings.hostName, 31, "placeholder='Example: timecircuits'");
 WiFiManagerParameter custom_wifiConRetries("wifiret", "WiFi connection attempts (1-15)", settings.wifiConRetries, 2, "type='number' min='1' max='15' autocomplete='off'", WFM_LABEL_BEFORE);
@@ -266,7 +266,7 @@ static IPAddress stringToIp(char *str);
 
 static void getParam(String name, char *destBuf, size_t length);
 static bool myisspace(char mychar);
-static char* strcpytrim(char* destination, const char* source);
+static char* strcpytrim(char* destination, const char* source, bool doFilter = false);
 #ifndef TC_NOCHECKBOXES
 static void strcpyCB(char *sv, WiFiManagerParameter *el);
 static void setCBVal(WiFiManagerParameter *el, char *sv);
@@ -473,14 +473,7 @@ void wifi_loop()
                 Serial.println("Formatting flash FS....");
                 #endif
                 formatFlashFS();      // Format
-                #ifdef TC_DBG
-                Serial.println("Re-writing IP settings");
-                #endif
-                writeIpSettings();    // re-write IP settings
-                #ifdef TC_DBG
-                Serial.println("Re-writing alarm settings");
-                #endif
-                saveAlarm();          // re-write alarm settings
+                rewriteSecondarySettings();
                 // all others written below
                 forceCopyAudio = true;
             }
@@ -524,7 +517,7 @@ void wifi_loop()
             if(strlen(settings.autoRotateTimes) == 0) {
                 sprintf(settings.autoRotateTimes, "%d", DEF_AUTOROTTIMES);
             }
-            strcpytrim(settings.hostName, custom_hostName.getValue());
+            strcpytrim(settings.hostName, custom_hostName.getValue(), true);
             if(strlen(settings.hostName) == 0) {
                 strcpy(settings.hostName, DEF_HOSTNAME);
             } else {
@@ -1264,12 +1257,17 @@ static bool myisspace(char mychar)
     return (mychar == ' ' || mychar == '\n' || mychar == '\t' || mychar == '\v' || mychar == '\f' || mychar == '\r');
 }
 
-static char* strcpytrim(char* destination, const char* source)
+static bool myisgoodchar(char mychar)
+{
+    return ((mychar >= '0' && mychar <= '9') || (mychar >= 'a' && mychar <= 'z') || (mychar >= 'A' && mychar <= 'Z') || mychar == '-');
+}
+
+static char* strcpytrim(char* destination, const char* source, bool doFilter)
 {
     char *ret = destination;
     
     do {
-        if(!isspace(*source)) *destination++ = *source;
+        if(!myisspace(*source) && (!doFilter || myisgoodchar(*source))) *destination++ = *source;
         source++;
     } while(*source);
     
