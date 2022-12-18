@@ -493,4 +493,50 @@ Selects between Fahrenheit and Celsius for temperature display.
 
 This offset, which can range from -3.0 to 3.0, is added to the sensor measurement, in order to compensate sensor inaccuracy or suboptimal sensor placement.
 
+#### Use speedometer display
 
+Check this if you have an external speedo display connected and want to use it. See [here]()
+
+#### Display type
+
+Type of speedo display. Several types are supported, mostly Adafruit or Seeed/Grove LED segement displays. See [here](#speedometer)
+
+#### Speedo brightness
+
+Brightness of speedo display when displaying speed.
+
+#### Speedo sequence speed factor
+
+Since the DMC-12 wasn't the world's fastest car, it's acceleration figures might soon get boring if played in real-time. This factor speeds up the acceleration.
+
+#### Display GPS speed
+
+If a GPS receiver is connected, this selects whether to display GPS speed on the speedo display. This only makes sense if the Time Circuits are mounted in a car. See [here](#gps-receiver)
+
+#### Display temperature
+
+Selects whether temperature as received from a suitable sensor is displayed on the speedo display, when it is idle (ie no time travel is in progress).
+
+#### Temperature brightness
+
+Brightness of speedo display when displaying temperature.
+
+#### Use fake power switch
+
+Check this if you want to use a fake power switch. See [here](#fake-power-onoff-switch-external-time-travel-trigger)
+
+#### External time travel button: Delay
+
+Selects a delay (in millisconds) from when pressing the external time travel button until the time travel sequence starts. See [here](#fake-power-onoff-switch-external-time-travel-trigger)
+
+#### Play complete time travel sequence
+
+For externally triggered time travels, this selects if the entire sequence (including acceleration, if a speedo is available) is played, or the only the short re-entry sequence. See [here](#fake-power-onoff-switch-external-time-travel-trigger)
+
+#### Use compatible external props
+
+This selects whether a GPIO pin is activated upon a time-travel in order to control external props. See [here](#controlling-other-props)
+
+#### Play time travel sounds
+
+If other props are connected, they might bring their own time travel sound effects. In this case, you can check this to disable the Time Circuit's own time travel sounds.
