@@ -21,7 +21,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 /*
@@ -1878,7 +1878,17 @@ static void doCopyAudioFiles()
     }
 
     if(!copy_audio_files()) {
-        mydelay(3000);
+        // If copy fails, re-format flash FS
+        departedTime.showTextDirect("FORMATTING");
+        formatFlashFS();            // Format
+        rewriteSecondarySettings(); // Re-write alarm/ip settings
+        #ifdef TC_DBG 
+        Serial.println("Re-writing general settings");
+        #endif
+        write_settings();           // Re-write general settings
+        if(!copy_audio_files()) {   // Retry copy
+            mydelay(3000);
+        }
     }
     mydelay(2000);
 

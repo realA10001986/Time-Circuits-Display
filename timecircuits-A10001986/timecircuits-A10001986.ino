@@ -19,7 +19,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 /*
@@ -67,6 +67,10 @@
 
 /*  Changelog
  *
+ *  2022/12/18 (A10001986)
+ *    - Audio files installer in keypad menu: If copy fails, re-format flash FS,
+ *      re-write settings, and retry copy. (Same can be done by writing "FORMAT"
+ *      instead of "COPY" in Config Portal)
  *  2022/12/17 (A10001986)
  *    - "Animate" room condition mode display (imitate delayed month)
  *    - Sensors keypad menu: Read sensors only every 3rd second to avoid self-
