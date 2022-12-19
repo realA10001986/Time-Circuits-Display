@@ -18,7 +18,7 @@ Features include
 - [SD card](#sd-card) support for custom audio files
 - ["Return from Time Travel"](#time-travel) (hold "9" for 2 seconds)
 - [Keypad menu](#the-keypad-menu) for adjusting various settings and viewing IP address and WiFi status
-- Advanced network-accessible [Config Portal](#short-summary-of-first-steps) for setup and &#127381; mDNS support (http://timeciscuits.local)
+- Advanced network-accessible [Config Portal](#short-summary-of-first-steps) for setup with &#127381; mDNS support for easy access (http://timecircuits.local)
 - 24-hour clock mode for non-Americans ;)
 - &#127381; [Room condition mode](#room-condition-mode-temperaturehumidity-sensor): Display temperature and humidity instead of destination/departed time (requires suitable sensor)
 - Optional power-up intro
