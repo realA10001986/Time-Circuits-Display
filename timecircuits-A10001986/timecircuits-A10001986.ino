@@ -23,14 +23,7 @@
  */
 
 /*
- * Build instructions
- * 
- * I am using the Arduino IDE 1.8, simply because it supports the "ESP32 Sketch
- * data upload" extension, which is useful for uploading the sound files. This,
- * for whatever reason, is no longer supported in 2.0 as of 2.0.0.rc9. There is,
- * however, a built-in installer for the audio files in the firmware, so in the
- * end, it is a matter of personal taste if you use 1.8 or 2.x (or PlatformIO, 
- * which I have no experience with.)
+ * Build instructions (for Arduino IDE)
  *
  * This software requires the "ESP32-Arduino" framework: 
  * https://github.com/espressif/arduino-esp32
@@ -53,7 +46,7 @@
  * - ESP8266Audio: https://github.com/earlephilhower/ESP8266Audio
  *   (1.9.7 and later for esp32-arduino 2.x.x; 1.9.5 for 1.0.6 and below)
  * - WifiManager (tablatronix, tzapu) https://github.com/tzapu/WiFiManager
- *   (Tested with 2.1.13beta; 2.0.14beta does not work on esp32-arduino 1.x)
+ *   (Tested with 2.0.13beta and 2.0.15-rc1)
  *
  * Detailed installation and compilation instructions, while a bit outdated in 
  * library requirements, are here:
@@ -67,6 +60,12 @@
 
 /*  Changelog
  *
+ *  2022/12/19 (A10001986)
+ *    - Changed read logic for Si7021 and SHT4x; fix typo in TMP117 code path
+ *      [HTU31D still untested; all others verfied working]
+ *    - Run MCP9808 in higher resolution mode, scrap sensor shut-down
+ *    - Restrict allowed chars in NTP server and hostname fields in Config Portal
+ *    - Updated WiFiManager to 2.0.15-rc1 in pre-compiled binary
  *  2022/12/18 (A10001986)
  *    - Audio files installer in keypad menu: If copy fails, re-format flash FS,
  *      re-write settings, and retry copy. (Same can be done by writing "FORMAT"
@@ -81,7 +80,7 @@
  *      IP address.
  *  2022/12/16 (A10001986)
  *    - Add support for SI7021, SHT40, TMP117, AHT20/AM2315C, HTU31D temperature sensors 
- *      [SI7021, SHT40, TMP117, HTU31D untested]
+ *      [HTU31D untested]
  *    - Add reading humidity from BME820, SI7021, SHT40, AHT20, HTU31D sensors 
  *    - Add "room condition" mode, where destination and departed time are replaced
  *      by temperature and humidity, respectively. Toggle normal and rc mode by entering

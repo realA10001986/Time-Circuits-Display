@@ -1575,7 +1575,6 @@ static void doShowSensors()
     if(useTemp) {  
         numberArr[numIdx++] = 1;
         if(tempSens.haveHum()) numberArr[numIdx++] = 2;
-        tempSens.on();
     }
     #endif
     maxIdx = numIdx - 1;
@@ -1678,12 +1677,6 @@ static void doShowSensors()
         }
 
     }
-
-    #ifdef TC_HAVETEMP
-    if(useTemp) {
-        tempSens.off();
-    }
-    #endif
 }
 #endif
 
