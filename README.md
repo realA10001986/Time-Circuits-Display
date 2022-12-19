@@ -136,7 +136,7 @@ The presets are for (hopefully) typical home, office and shop setups, and they a
 
 The "daily schedule" works by entering start and end in the text fields below. The clock will go into night mode at the defined start hour (xx:00), and return to normal operation at the end hour (yy:00). 
 
-Finally, you can connect a light sensor to the device. If the measured lux level is below the configured threshold, the device will go into night mode. Three sensor types are supported: TSL2561, BH1750, VEML7700/VEML6030, connected through i2c with their respective default slave address. The VEML7700 can only be connected if no GPS receiver is connected at the same time; the 6030 needs its address to be set to 0x48 if a GPS receiver is present at the same time. All these sensor types are readily available from Adafruit or Seeed (Grove). Only one sensor can be used at the same time.
+Finally, you can connect a light sensor to the device. If the measured lux level is below the configured threshold, the device will go into night mode. Three sensor types are supported: TSL2561, BH1750, VEML7700/VEML6030, connected through i2c with their respective default slave address. The VEML7700 can only be connected if no GPS receiver is connected at the same time; the 6030 needs its address to be set to 0x48 if a GPS receiver is present at the same time. All these sensor types are readily available from Adafruit or Seeed (Grove). Only one light sensor can be used at the same time.
 
 If both a schedule is enabled and the light sensor option is checked in the Config Portal, the sensor will overrule the schedule only in non-night-mode hours; ie it will never switch off night mode when night mode is active according to the schedule.
 
