@@ -16,10 +16,10 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #ifndef IS_ACAR_DISPLAY
 #define TC_VERSION "V2.6.0"           // 13 chars max
-#define TC_VERSION_EXTRA "DEC182022"  // 13 chars max
+#define TC_VERSION_EXTRA "DEC192022"  // 13 chars max
 #else   // A-Car
 #define TC_VERSION "V2.6.0_A-CAR"     // 12 chars max
-#define TC_VERSION_EXTRA "12182022"   // 12 chars max
+#define TC_VERSION_EXTRA "12192022"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -32,7 +32,10 @@
 // Allows accessing the Config Portal via http://hostname.local
 // <hostname> is configurable in the Config Portal
 // This needs to be commented if WiFiManager provides mDNS
-#define TC_MDNS             
+#define TC_MDNS
+
+// Uncomment this if WiFiManager has mDNS enabled
+//#define TC_WM_HAS_MDNS          
 
 /*************************************************************************
  ***                 Configuration for peripherals                     ***

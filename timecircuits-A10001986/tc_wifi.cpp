@@ -110,12 +110,12 @@ WiFiManagerParameter custom_mode24("md24", "24-hour clock mode", settings.mode24
 #endif // -------------------------------------------------
 WiFiManagerParameter custom_autoRotateTimes(aintCustHTML);
 
-#ifdef TC_MDNS
-#define HNTEXT "Hostname<br><span style='font-size:80%'>Allows accessing the Config Portal at http://<i>hostname</i>.local<br>(Valid characters: a-z/0-9/-)</span>"
+#if defined(TC_MDNS) || defined(TC_WM_HAS_MDNS)
+#define HNTEXT "Hostname<br><span style='font-size:80%'>The Config Portal is accessible at http://<i>hostname</i>.local<br>(Valid characters: a-z/0-9/-)</span>"
 #else
 #define HNTEXT "Hostname<br><span style='font-size:80%'>(Valid characters: a-z/0-9/-)</span>"
 #endif
-WiFiManagerParameter custom_hostName("hostname", HNTEXT, settings.hostName, 31, "placeholder='Example: timecircuits'");
+WiFiManagerParameter custom_hostName("hostname", HNTEXT, settings.hostName, 31, "pattern='[A-Za-z0-9-]+' placeholder='Example: timecircuits'");
 WiFiManagerParameter custom_wifiConRetries("wifiret", "WiFi connection attempts (1-15)", settings.wifiConRetries, 2, "type='number' min='1' max='15' autocomplete='off'", WFM_LABEL_BEFORE);
 WiFiManagerParameter custom_wifiConTimeout("wificon", "WiFi connection timeout (7-25[seconds])", settings.wifiConTimeout, 2, "type='number' min='7' max='25'");
 WiFiManagerParameter custom_wifiOffDelay("wifioff", "WiFi power save timer<br>(10-99[minutes];0=off)", settings.wifiOffDelay, 2, "type='number' min='0' max='99' title='If in station mode, WiFi will be shut down after chosen number of minutes after power-on. 0 means never.'");
@@ -123,7 +123,7 @@ WiFiManagerParameter custom_wifiAPOffDelay("wifiAPoff", "WiFi power save timer (
 WiFiManagerParameter custom_wifiHint("<div style='margin:0px;padding:0px'>Hold '7' to re-enable Wifi when in power save mode.</div>");
 
 WiFiManagerParameter custom_timeZone("time_zone", "Timezone (in <a href='https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv' target=_blank>Posix</a> format)", settings.timeZone, 63, "placeholder='Example: CST6CDT,M3.2.0,M11.1.0'");
-WiFiManagerParameter custom_ntpServer("ntp_server", "NTP Server (empty to disable NTP)", settings.ntpServer, 63, "placeholder='Example: pool.ntp.org'");
+WiFiManagerParameter custom_ntpServer("ntp_server", "NTP Server (empty to disable NTP)", settings.ntpServer, 63, "pattern='[a-zA-Z0-9.-]+' placeholder='Example: pool.ntp.org'");
 #ifdef TC_HAVEGPS
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
 WiFiManagerParameter custom_useGPS("uGPS", "Use GPS as time source (0=no, 1=yes)", settings.useGPS, 1, "autocomplete='off' title='Enable to use a MT3333-based GPS receiver as a time source'");

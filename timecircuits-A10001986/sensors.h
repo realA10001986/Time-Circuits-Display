@@ -78,8 +78,6 @@ class tempSensor : tcSensor {
         // Setter for custom delay function
         void setCustomDelayFunc(void (*myDelay)(unsigned int));
 
-        void on();
-        void off();
         double readTemp(bool celsius = true);
         double readLastTemp() { return _lastTemp; };
 
@@ -95,6 +93,7 @@ class tempSensor : tcSensor {
         int8_t  _st = -1;
         int8_t  _hum = -1;
         bool    _haveHum = false;
+        unsigned long _delayNeeded = 0;
 
         double  _lastTemp = NAN;
 
@@ -111,8 +110,6 @@ class tempSensor : tcSensor {
         int32_t  _BMx280_CD_H6;
 
         unsigned long _tempReadNow = 0;
-
-        void onoff(bool shutDown);
 
         double BMx280_CalcTemp(uint32_t ival, uint32_t hval);
 

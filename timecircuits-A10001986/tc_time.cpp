@@ -2513,9 +2513,7 @@ static void updateTemperature(bool force)
         return;
         
     if(force || (millis() - tempReadNow >= tempUpdInt)) {
-        tempSens.on();
         tempSens.readTemp(tempUnit);
-        tempSens.off();
         tempReadNow = millis();
     }
 }

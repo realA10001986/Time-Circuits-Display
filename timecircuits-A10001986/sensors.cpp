@@ -199,7 +199,7 @@ uint8_t tcSensor::crc8(uint8_t initVal, uint8_t poly, uint8_t len, uint8_t *buf)
 //  1    0.25°C      65 ms
 //  2    0.125°C     130 ms
 //  3    0.0625°C    250 ms
-#define TC_TEMP_RES_MCP9808 2
+#define TC_TEMP_RES_MCP9808 3
 static const uint16_t wakeDelayMCP9808[4] = { 30, 65, 130, 250 };
 
 #define BMx280_REG_DIG_T1 0x88
@@ -224,6 +224,7 @@ static const uint16_t wakeDelayMCP9808[4] = { 30, 65, 130, 250 };
 #define SHT40_CMD_RTEMPL  0xe0    // 1.3ms
 #define SHT40_CMD_RTEMPM  0xf6    // 4.5ms
 #define SHT40_CMD_RTEMPH  0xfd    // 8.3ms
+#define SHT40_CMD_RESET   0x94    // 2ms
 
 #define SHT40_CRC_INIT    0xff
 #define SHT40_CRC_POLY    0x31
@@ -245,7 +246,7 @@ static const uint16_t wakeDelayMCP9808[4] = { 30, 65, 130, 250 };
 #define TMP117_REG_CONF   0x01
 #define TMP117_REG_DEV_ID 0x0f
 
-#define TMP117_C_MODE_CC  (0x01 << 10)
+#define TMP117_C_MODE_CC  (0x00 << 10)
 #define TMP117_C_MODE_M   (0x03 << 10)
 #define TMP117_C_AVG_0    (0x00 << 5)
 #define TMP117_C_AVG_M    (0x03 << 5)
@@ -316,7 +317,7 @@ bool tempSensor::begin(unsigned long powerupTime)
             if(!Wire.endTransmission(true)) {
                 // Do a test-measurement for id
                 write8(SHT40_DUMMY, SHT40_CMD_RTEMPL);
-                (*_customDelayFunc)(2);
+                (*_customDelayFunc)(5);
                 if(Wire.requestFrom(_address, (uint8_t)6) == 6) {
                     for(uint8_t i = 0; i < 6; i++) buf[i] = Wire.read();
                     if(crc8(SHT40_CRC_INIT, SHT40_CRC_POLY, 2, buf) == buf[2]) {
@@ -400,6 +401,7 @@ bool tempSensor::begin(unsigned long powerupTime)
             _BMx280_CD_H6 = read8(BMx280_REG_DIG_H6);
             _BMx280_CD_H4 *= 1048576;
         }
+
         #ifdef TC_DBG
         Serial.println("BMx820 calib values");
         Serial.println(_BMx280_CD_T1);
@@ -416,29 +418,38 @@ bool tempSensor::begin(unsigned long powerupTime)
         #endif
 
         // setup sensor parameters
-        write8(BMx820_REG_CTRLM, 0x20);  // Temp OSx1; Pres skipped; "sleep mode"
+        write8(BMx820_REG_CTRLM, 0x20);     // Temp OSx1; Pres skipped; "sleep mode"
         if(_haveHum) {
-            write8(BMx820_REG_CTRLH, 0x01);  // Hum OSx1
+            write8(BMx820_REG_CTRLH, 0x01); // Hum OSx1
         }
-        write8(BMx820_REG_CONF,  0xa0);  // t_sb 1000ms; filter off, SPI3w off
-
-        write8(BMx820_REG_CTRLM, 0x23);  // Temp OSx1; Pres skipped; "normal mode"
-        
+        write8(BMx820_REG_CONF,  0xa0);     // t_sb 1000ms; filter off, SPI3w off
+        write8(BMx820_REG_CTRLM, 0x23);     // Temp OSx1; Pres skipped; "normal mode"
         break;
 
     case SHT40:
+        // Reset
+        write8(SHT40_DUMMY, SHT40_CMD_RESET);
+        (*_customDelayFunc)(5);
+        // Trigger measurement
+        write8(SHT40_DUMMY, SHT40_CMD_RTEMPM);
         _haveHum = true;
+        _delayNeeded = 10;
         break;
 
     case SI7021:
         temp = read8(SI7021_REG_U1R);
-        temp &= 0x3a;                    // 13bit temp, 10bit rh, heater off
+        // 13bit temp, 10bit rh, heater off
+        temp &= 0x3a;                    
         temp |= 0x80;
         write8(SI7021_REG_U1W, temp);
+        // (Heater minimum)
         temp = read8(SI7021_REG_HCRR);
-        temp &= 0xf0;                    // (Heater minimum)
+        temp &= 0xf0;
         write8(SI7021_REG_HCRW, temp);
+        // Trigger measurement
+        write8(SI7021_DUMMY, SI7021_CMD_RHUM); 
         _haveHum = true;
+        _delayNeeded = 7+5+1;
         break;
 
     case TMP117:
@@ -447,7 +458,6 @@ bool tempSensor::begin(unsigned long powerupTime)
         t16 |= TMP117_C_RESET;
         write16(TMP117_REG_CONF, t16);
         (*_customDelayFunc)(5);
-
         // Config: cont. mode, no avg, 16s conversion cycle
         t16 = read16(TMP117_REG_CONF);
         t16 &= ~(TMP117_C_MODE_M | TMP117_C_AVG_M | TMP117_C_CONV_M);
@@ -456,29 +466,35 @@ bool tempSensor::begin(unsigned long powerupTime)
         break;
 
     case AHT20:
-        write8(AHT20_DUMMY, 0xba); // reset
+        // reset
+        write8(AHT20_DUMMY, 0xba); 
         (*_customDelayFunc)(21);
-        write16(0xbe, 0x0800);     // init (calibrate)
+        // init (calibrate)
+        write16(0xbe, 0x0800);     
         (*_customDelayFunc)(11);
-        write16(0xac, 0x3300);     // trigger measurement
-        _tempReadNow = millis();
+        // trigger measurement
+        write16(0xac, 0x3300);
         _haveHum = true;
+        _delayNeeded = 85;
         break;
 
     case HTU31:
-        write8(HTU31_DUMMY, HTU31_RESET);     // reset
+        // reset
+        write8(HTU31_DUMMY, HTU31_RESET);
         (*_customDelayFunc)(20);
-        write8(HTU31_DUMMY, HTU31_HEATEROFF); // heater off
-        write8(HTU31_DUMMY, HTU31_CONV);      // Trigger conversion
-        _tempReadNow = millis();
+        // heater off
+        write8(HTU31_DUMMY, HTU31_HEATEROFF);
+        // Trigger conversion
+        write8(HTU31_DUMMY, HTU31_CONV);
         _haveHum = true;
+        _delayNeeded = 20;
         break;
 
     default:
         return false;
     }
 
-    on();
+    _tempReadNow = millis();
 
     return true;
 }
@@ -488,26 +504,19 @@ void tempSensor::setCustomDelayFunc(void (*myDelay)(unsigned int))
     _customDelayFunc = myDelay;
 }
 
-// Turn on the sensor
-void tempSensor::on()
-{
-    onoff(false);
-}
-
-// Turn off the sensor
-void tempSensor::off()
-{
-    onoff(true);
-}
-
 // Read temperature
 double tempSensor::readTemp(bool celsius)
 {
     double temp = NAN;
     uint16_t t = 0;
-    unsigned long elapsed;
+
+    if(_delayNeeded > 0) {
+        unsigned long elapsed = millis() - _tempReadNow;
+        if(elapsed < _delayNeeded) (*_customDelayFunc)(_delayNeeded - elapsed);
+    }
 
     switch(_st) {
+
     case MCP9808:
         t = read16(MCP9808_REG_AMBIENT_TEMP);
         if(t != 0xffff) {
@@ -515,13 +524,13 @@ double tempSensor::readTemp(bool celsius)
             if(t & 0x1000) temp = 256.0 - temp;
         }
         break;
+
     case BMx820:
         if(_haveHum) t = read16(BMx820_REG_HUM);
         temp = BMx280_CalcTemp(read24(BMx820_REG_TEMP), t);
         break;
+
     case SHT40:
-        write8(SHT40_DUMMY, SHT40_CMD_RTEMPM);
-        (*_customDelayFunc)(5);
         if(Wire.requestFrom(_address, (uint8_t)6) == 6) {
             uint8_t buf[6];
             for(uint8_t i = 0; i < 6; i++) buf[i] = Wire.read();
@@ -535,16 +544,16 @@ double tempSensor::readTemp(bool celsius)
                 if(_hum < 0) _hum = 0;
             }
         }
+        write8(SHT40_DUMMY, SHT40_CMD_RTEMPM);    // Trigger new measurement
         break;
+
     case SI7021:
-        write8(SI7021_DUMMY, SI7021_CMD_RHUM);
-        (*_customDelayFunc)(7+5+1);
         if(Wire.requestFrom(_address, (uint8_t)3) == 3) {
             uint8_t buf[3];
             for(uint8_t i = 0; i < 3; i++) buf[i] = Wire.read();
             if(crc8(SI7021_CRC_INIT, SI7021_CRC_POLY, 2, buf) == buf[2]) {
                 t = (buf[0] << 8) | buf[1];
-                _hum = ((125.0 * (double)t) / 65536.0) - 6;
+                _hum = (int8_t)(((125.0 * (double)t) / 65536.0) - 6.0);
                 if(_hum < 0) _hum = 0;
             }
         }
@@ -555,18 +564,17 @@ double tempSensor::readTemp(bool celsius)
             t = (buf[0] << 8) | buf[1];
             temp = ((175.72 * (double)t) / 65536.0) - 46.85;
         }
+        write8(SI7021_DUMMY, SI7021_CMD_RHUM);    // Trigger new measurement
         break;
+
     case TMP117:
         t = read16(TMP117_REG_TEMP);
         if(t != 0x8000) {
             temp = (double)((int16_t)t) / 128.0;
         }
         break;
+
     case AHT20:
-        elapsed = millis() - _tempReadNow;
-        if(elapsed < 85) {
-            (*_customDelayFunc)(85 - elapsed);
-        }
         if(Wire.requestFrom(_address, (uint8_t)7) == 7) {
             uint8_t buf[7];
             for(uint8_t i = 0; i < 7; i++) buf[i] = Wire.read();
@@ -574,17 +582,13 @@ double tempSensor::readTemp(bool celsius)
                 _hum = ((uint32_t)((buf[1] << 12) | (buf[2] << 4) | (buf[3] >> 4))) * 100 / 1048576;
                 if(_hum < 0) _hum = 0;
                 temp = ((double)((uint32_t)(((buf[3] & 0x0f) << 16) | (buf[4] << 8) | buf[5]))) * 200.0 / 1048576.0 - 50.0;
-                write16(0xac, 0x3300);    // trigger new measurement
-                _tempReadNow = millis();
             }
         }
+        write16(0xac, 0x3300);    // Trigger new measurement
         break;
+
     case HTU31:
-        elapsed = millis() - _tempReadNow;
-        if(elapsed < 20) {
-            (*_customDelayFunc)(20 - elapsed);
-        }
-        write8(HTU31_DUMMY, HTU31_READTRH);  // read t+rh
+        write8(HTU31_DUMMY, HTU31_READTRH);  // Read t+rh
         if(Wire.requestFrom(_address, (uint8_t)6) == 6) {
             uint8_t buf[6];
             for(uint8_t i = 0; i < 6; i++) buf[i] = Wire.read();
@@ -597,11 +601,12 @@ double tempSensor::readTemp(bool celsius)
                 _hum = (int8_t)((100.0 * (double)t) / 65535.0);
                 if(_hum < 0) _hum = 0;
             }
-            write8(HTU31_DUMMY, HTU31_CONV);  // Trigger new conversion
-            _tempReadNow = millis();
         }
+        write8(HTU31_DUMMY, HTU31_CONV);  // Trigger new conversion
         break;
     }
+
+    _tempReadNow = millis();
 
     if(!isnan(temp)) {
         if(!celsius) temp = temp * 9.0 / 5.0 + 32.0;
@@ -631,36 +636,6 @@ void tempSensor::setOffset(double myOffs)
 }
 
 // Private functions ###########################################################
-
-void tempSensor::onoff(bool shutDown)
-{
-    uint16_t mydelay = 0;
-    uint16_t temp;
-    
-    switch(_st) {
-    case MCP9808:
-        temp = read16(MCP9808_REG_CONFIG);
-    
-        if(shutDown) {
-            temp |= MCP9808_CONFIG_SHUTDOWN;
-        } else {
-            temp &= ~MCP9808_CONFIG_SHUTDOWN;
-        }
-    
-        temp &= ~(MCP9808_CONFIG_CRITLOCKED|MCP9808_CONFIG_WINLOCKED);
-    
-        write16(MCP9808_REG_CONFIG, temp);
-        
-        mydelay = wakeDelayMCP9808[TC_TEMP_RES_MCP9808];
-        break;
-    default:
-        return;
-    }
-
-    if(!shutDown && mydelay) {
-        (*_customDelayFunc)(mydelay);
-    }
-}
 
 double tempSensor::BMx280_CalcTemp(uint32_t ival, uint32_t hval)
 {
