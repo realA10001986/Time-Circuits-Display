@@ -5,6 +5,7 @@ This repository holds the most current firmware for CircuitSetup's wonderful ESP
 The hardware is readily available [here](https://circuitsetup.us/product/complete-time-circuits-display-kit/) and built around a NodeMCU ESP32-S dev board.
 
 | ![TCD Front](https://user-images.githubusercontent.com/76924199/200327688-cfa7b1c2-abbd-464d-be6d-5d295e51056e.jpg) |
+|:--:|
 | This one is now in the Universal Studios BTTF Escape Room (Orlando) |
 
 Features include
