@@ -72,7 +72,7 @@ NTP (time synchronization over the internet) is only possible if the clock is co
 
 ### The Config Portal
 
-The Config Portal is accessible in two ways: As outlined above, if the device is not connected to a WiFi network, it creates a WiFi access point, to which your WiFi-enabled hand held device or computer can connect ("TCD-AP", http://192.168.4.1 ) to enter the Config Portal. If the clock is connected to your WiFi network, direct your browser to either http://timecircuits.local or, if that fails, to http://a.b.c.d (a.b.c.d being the Ip address as shown in the last step above) in order to enter the Config Portal.
+The Config Portal is accessible in two ways: As outlined above, if the device is not connected to a WiFi network, it creates a WiFi access point, to which your WiFi-enabled hand held device or computer can connect ("TCD-AP", http://timecircuits.local or http://192.168.4.1 ) to enter the Config Portal. If the clock is connected to your WiFi network, direct your browser to either http://timecircuits.local or, if that fails, to http://a.b.c.d (a.b.c.d being the Ip address as shown in the last step above) in order to enter the Config Portal.
 
 In the main menu, click on "Setup" to configure your clock, first and foremost your time zone. If the time zone isn't set correctly, the clock might show a wrong time, and DST (daylight saving) will not be switched on/off correctly.
 
