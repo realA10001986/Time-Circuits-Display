@@ -43,7 +43,7 @@ There are different alternative ways to install this firmware:
 
 2) Using the Arduino IDE: Download the sketch source code, all required libraries (info in the source code) and compile it. Then upload the sketch to the device. Alternatively, you could use PlatformIO. This method is the one for fresh ESP32 boards and/or folks familiar with Arduino programming.
 
- *Note: After a firmware update, the device might stay dark for up to 1 minute during power-off. Do NOT unplug it!*
+ *Important: After a firmware update, the displays might stay dark for up to a minute when rebooted. Do NOT unplug it!*
 
 ### Audio file installation
 
