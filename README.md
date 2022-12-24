@@ -9,12 +9,12 @@ The hardware is readily available [here](https://circuitsetup.us/product/complet
 | *This very one is now in the Universal Studios [BTTF Escape Room](https://www.universalorlando.com/web/en/us/things-to-do/entertainment/universals-great-movie-escape) (Orlando)* |
 
 Features include
-- Time keeping via NTP (network time), GPS or stand-alone
 - Time keeping for years 1-9999, based on Gregorian Calendar
 - Support for time zones and automatic DST
-- "Present time" is always a clock (not stale), also after [time travel](#time-travel)
-- Option to make time travels [persistent](#persistent--non-persistent-time-travels) over reboots
+- Time synchronization via NTP or [GPS](#gps-receiver)
+- *Present time* is always a clock (not stale), also after [time travel](#time-travel)
 - Movie-accurate time travel times in "decorative mode" (automatic time cycling)
+- Option to make time travels [persistent](#persistent--non-persistent-time-travels) over reboots
 - [Alarm function](#how-to-set-up-the-alarm)
 - [Night mode](#night-mode) (displays off or dimmed; manual, scheduled or sensor-controlled)
 - [SD card](#sd-card) support for custom audio files
