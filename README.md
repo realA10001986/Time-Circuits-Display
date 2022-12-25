@@ -12,8 +12,8 @@ Features include
 - Time keeping for years 1-9999, based on Gregorian Calendar
 - Support for time zones and automatic DST
 - Time synchronization via NTP or [GPS](#gps-receiver)
-- *Present time* is always a clock (not stale), also after [time travel](#time-travel)
-- Movie-accurate time travel times in "decorative mode" (automatic time cycling)
+- Movie-accurate [time travel](#time-travel) function with *Present time* always running as a clock (as opposed to being stale)
+- "Decorative mode": Movie-accurate time travel times displayed in *destination time* and *last time departed* displays, and cycled in configurable interval
 - Option to make time travels [persistent](#persistent--non-persistent-time-travels) over reboots
 - [Alarm function](#how-to-set-up-the-alarm)
 - [Night mode](#night-mode) (displays off or dimmed; manual, scheduled or sensor-controlled)
@@ -21,7 +21,7 @@ Features include
 - ["Return from Time Travel"](#time-travel) (hold "9" for 2 seconds)
 - [Keypad menu](#the-keypad-menu) for adjusting various settings and viewing IP address and WiFi status
 - Advanced network-accessible [Config Portal](#short-summary-of-first-steps) for setup with &#127381; mDNS support for easy access (http://timecircuits.local)
-- 24-hour clock mode for non-Americans ;)
+- 24-hour clock mode for non-Americans
 - &#127381; [Room condition mode](#room-condition-mode-temperaturehumidity-sensor): Display temperature and humidity instead of destination/departed time (requires suitable sensor)
 - Optional power-up intro
 - Optional [sound on the hour](#additional-custom-sounds)
