@@ -156,7 +156,7 @@ The menu is involked by holding the ENTER button.
 Data entry, such as for dates and times, is done through the keypad's number keys and works as follows: Whenever a data entry is requested, the field for that data is lit (while the rest of the display is dark) and a pre-set value is shown. If you want to keep that pre-set, press ENTER to proceed to next field. Otherwise press a digit on the keypad; the pre-set is then overwritten by the value entered. 2 digits can be entered (4 for years), upon which the new value is stored and the next field is activated. You can also enter less than 2 digits (4 for years) and press ENTER when done with the field. Note that a month needs to be entered numerically (1-12), and hours need to be entered in 24 hour notation (0-23), regardless of 12-hour or 24-hour mode as per the Config Portal setting.
 
 After invoking the keypad menu, the first step is to choose a menu item. The available items are   
-- set an alarm ("ALA-RM"),
+- set the alarm ("ALA-RM"),
 - set the audio volume (VOL-UME),
 - select the Time-rotation Interval ("TIME-ROTATION-INT"),
 - select the brightness for the three displays ("BRIGHTNESS"),
