@@ -56,7 +56,7 @@ While the sound files are part of this software, they need to be installed separ
  
 If (and only if) the **exact and complete contents of sound-pack archive** is found on the SD card during boot, the keypad will have an "INSTALL AUDIO FILES" menu item, and the Config portal will show an "Audio file installation" option at the bottom of the "Setup" page.
 
-If you choose to use the Config Portal, trigger the audio file installation process by writing "COPY" (without the quotation marks) into the empty text field in then "Audio file installation" section, and clicking on "Save". The device will then copy all the default audio files from the SD to its internal flash file system. The SD can - and should - be removed afterwards. The keypad menu method is described [here](#how-to-install-the-default-audio-files).
+If you choose to use the Config Portal, trigger the audio file installation process by writing "COPY" (without the quotation marks) into the empty text field in the "Audio file installation" section, and clicking on "Save". The device will then copy all the default audio files from the SD card to its internal flash file system. The SD card can - and should - be removed afterwards. The keypad menu method is described [here](#how-to-install-the-default-audio-files).
 
 (Expert way: If you are familiar with the Arduino IDE (1.8), you could use "Tools"->"ESP32 Sketch Data Upload" to upload the sound files; you can use the files of the "data"-folder of this repo, or the extracted contents of "install/sound-pack.zip". Version 2.x of the IDE lacks that data upload menu item and/or plug-ins; in this case go the way described above, using an SD card.)
 
