@@ -47,16 +47,16 @@ There are different alternative ways to install this firmware:
 
 ### Audio file installation
 
-While the sound files are part of this software, they need to be installed separately.
+While the sound files are part of this software, they need to be installed separately. However, the sound files are not updated as often as the firmware itself. If you have previously installed the latest version of the sound-pack, you normally don't have to re-install the audio files you update the firmware. Only if either a new version of the sound-pack is released, or your clock is quiet after a firmware update, a re-installation is needed.
 
-- Download "install/sound-pack.zip" and extract it to the root directory of of a FAT32 formatted SD card
+- Download "install/sound-pack-xxxxxxxx.zip" and extract it to the root directory of of a FAT32 formatted SD card
 - power down the clock,
 - insert this SD card into the device's slot and 
 - power up the clock.
  
-If (and only if) the **exact and complete contents of sound-pack.zip** is found on the SD card during boot, the keypad will have an "INSTALL AUDIO FILES" menu item, and the Config portal will show an "Audio file installation" option at the bottom of the "Setup" page.
+If (and only if) the **exact and complete contents of sound-pack archive** is found on the SD card during boot, the keypad will have an "INSTALL AUDIO FILES" menu item, and the Config portal will show an "Audio file installation" option at the bottom of the "Setup" page.
 
-If you choose to use the Config Portal, trigger the audio file installation process by writing "COPY" (without the quotation marks) into the empty text field, and clicking on "Save". The device will then copy all the default audio files from the SD to its internal flash file system. The SD can - and should - be removed afterwards. The keypad menu method is described [here](#how-to-install-the-default-audio-files).
+If you choose to use the Config Portal, trigger the audio file installation process by writing "COPY" (without the quotation marks) into the empty text field in then "Audio file installation" section, and clicking on "Save". The device will then copy all the default audio files from the SD to its internal flash file system. The SD can - and should - be removed afterwards. The keypad menu method is described [here](#how-to-install-the-default-audio-files).
 
 (Expert way: If you are familiar with the Arduino IDE (1.8), you could use "Tools"->"ESP32 Sketch Data Upload" to upload the sound files; you can use the files of the "data"-folder of this repo, or the extracted contents of "install/sound-pack.zip". Version 2.x of the IDE lacks that data upload menu item and/or plug-ins; in this case go the way described above, using an SD card.)
 
