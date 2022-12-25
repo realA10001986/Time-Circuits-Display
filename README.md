@@ -39,11 +39,11 @@ The code here is based on rudimentary code from/by circuitsetup.us, who in the m
 
 There are different alternative ways to install this firmware:
 
-1) If a previous version of the Time Circuits firmware was installed on your device, you can upload the provided pre-compiled binary ("install/timecircuits-A10001986.ino.nodemcu-32s.bin") to update to the current version: Go to the Config Portal, click on "Update" and select the pre-compiled binary file provided in this repository.
+1) If a previous version of the Time Circuits firmware was installed on your device, you can upload the provided pre-compiled binary to update to the current version: Go to the Config Portal, click on "Update" and select the pre-compiled binary file provided in this repository ("install/timecircuits-A10001986.ino.nodemcu-32s.bin").
 
-2) Using the Arduino IDE: Download the sketch source code, all required libraries (info in the source code) and compile it. Then upload the sketch to the device. Alternatively, you could use PlatformIO. This method is the one for fresh ESP32 boards and/or folks familiar with Arduino programming.
+2) Using the Arduino IDE or PlatformIO: Download the sketch source code, all required libraries (see info in timecircuits-A10001986.ino) and compile it. Then upload the sketch to the device. This method is the one for fresh ESP32 boards and/or folks familiar with Arduino programming.
 
- *Important: After a firmware update, the displays might stay dark or display "WAIT" for up to a minute after reboot. Do NOT unplug the clock during this time. Only after the displays come to life, unplugging is safe again.*
+ *Important: After a firmware update, the displays might stay dark or display "WAIT" for up to a minute after reboot. Do NOT unplug the clock during this time.*
 
 ### Audio file installation
 
@@ -58,7 +58,7 @@ If (and only if) the **exact and complete contents of sound-pack.zip** is found 
 
 If you choose to use the Config Portal, trigger the audio file installation process by writing "COPY" (without the quotation marks) into the empty text field, and clicking on "Save". The device will then copy all the default audio files from the SD to its internal flash file system. The SD can - and should - be removed afterwards. The keypad menu method is described [here](#how-to-install-the-default-audio-files).
 
-(Expert way: If you are familiar with the Arduino IDE (1.8), you could use "Tools"->"ESP32 Sketch Data Upload" to upload the sound files; you can use the files of the "data"-folder of this repo, or the extracted contents of "install/sound-pack.zip". Version 2.x of the IDE lacks that data upload menu item and/or plug-ins; in this case go the way described above.)
+(Expert way: If you are familiar with the Arduino IDE (1.8), you could use "Tools"->"ESP32 Sketch Data Upload" to upload the sound files; you can use the files of the "data"-folder of this repo, or the extracted contents of "install/sound-pack.zip". Version 2.x of the IDE lacks that data upload menu item and/or plug-ins; in this case go the way described above, using an SD card.)
 
 ## Short summary of first steps
 
