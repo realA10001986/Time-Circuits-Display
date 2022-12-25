@@ -13,23 +13,23 @@ Features include
 - Support for time zones and automatic DST
 - Time synchronization via NTP or [GPS](#gps-receiver)
 - Movie-accurate [time travel](#time-travel) function with *Present time* always running as a clock (as opposed to being stale)
+- ["Return from Time Travel"](#time-travel) (hold "9" for 2 seconds)
 - "Decorative mode": Movie-accurate time travel times displayed in *destination time* and *last time departed* displays, and cycled in configurable interval
 - Option to make time travels [persistent](#persistent--non-persistent-time-travels) over reboots
 - [Alarm function](#how-to-set-up-the-alarm)
 - [Night mode](#night-mode) (displays off or dimmed; manual, scheduled or sensor-controlled)
 - [SD card](#sd-card) support for custom audio files
-- ["Return from Time Travel"](#time-travel) (hold "9" for 2 seconds)
-- [Keypad menu](#the-keypad-menu) for adjusting various settings and viewing IP address and WiFi status
 - Advanced network-accessible [Config Portal](#short-summary-of-first-steps) for setup with &#127381; mDNS support for easy access (http://timecircuits.local)
+- [Keypad menu](#the-keypad-menu) for adjusting various settings and viewing IP address and WiFi status
 - 24-hour clock mode for non-Americans
 - &#127381; [Room condition mode](#room-condition-mode-temperaturehumidity-sensor): Display temperature and humidity instead of destination/departed time (requires suitable sensor)
 - Optional power-up intro
 - Optional [sound on the hour](#additional-custom-sounds)
 - Support for external [fake "power switch"](#fake-power-onoff-switch-external-time-travel-trigger)
-- Support for [externally triggered time travel](#fake-power-onoff-switch-external-time-travel-trigger), with selectable delay
-- Support for external display acting as [Speedometer](#speedometer), used in time travel sequences
+- Support for external display acting as [Speedometer](#speedometer)
 - Support for external [GPS receiver](#gps-receiver), used as time source, and for speed to be displayed on speedo display
 - &#127381; Support for external [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for "room condition mode" and to display temperature on speedo display while idle
+- Support for time travel [triggered by external source](#fake-power-onoff-switch-external-time-travel-trigger), with selectable delay
 - Support for triggering time travels on [other props](#controlling-other-props); TCD can act as master controller for SID, flux capacitor, etc.
 - Built-in installer for default audio files in addition to OTA firmware updates
 
