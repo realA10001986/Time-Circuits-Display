@@ -60,9 +60,12 @@
 
 /*  Changelog
  *
+ *  2022/12/25 (A10001986)
+ *    - Display "wait" if Flash-FS is being formatted upon boot
+ *    - Add support for LTR3xx light sensor [untested]
+ *    - [All supported temperature sensors verified working]
  *  2022/12/19 (A10001986)
  *    - Changed read logic for Si7021 and SHT4x; fix typo in TMP117 code path
- *      [HTU31D still untested; all others verfied working]
  *    - Run MCP9808 in higher resolution mode, scrap sensor shut-down
  *    - Restrict allowed chars in NTP server and hostname fields in Config Portal
  *    - Updated WiFiManager to 2.0.15-rc1 in pre-compiled binary
@@ -80,7 +83,6 @@
  *      IP address.
  *  2022/12/16 (A10001986)
  *    - Add support for SI7021, SHT40, TMP117, AHT20/AM2315C, HTU31D temperature sensors 
- *      [HTU31D untested]
  *    - Add reading humidity from BME820, SI7021, SHT40, AHT20, HTU31D sensors 
  *    - Add "room condition" mode, where destination and departed time are replaced
  *      by temperature and humidity, respectively. Toggle normal and rc mode by entering
@@ -90,8 +92,8 @@
  *    - Add MAC address display to "Network" keypad menu. Only the "station mode" MAC
  *      is shown, ie the MAC address of the ESP32 when it is connected to a WiFi
  *      network. For some reason there are up to four MAC addresses, used in different
- *      network modes (AP, STA, etc). A "6" as part of the MAC is shown using the
- *      "modern"/common segment pattern here to distinguish it from "b".
+ *      network modes (AP, STA, etc). The digit "6" as part of the MAC is shown using
+ *      the "modern"/common segment pattern here to distinguish it from "b".
  *    - Fix formatting bug in tc_font.h leading to font missing one character
  *  2022/12/02 (A10001986) [2.5]
  *    - Add support for BMx820 sensor (temperature only).

@@ -164,6 +164,8 @@ void settings_setup()
         Serial.println(F("settings_setup: Mounting flash FS failed, formatting..."));
         #endif
 
+        destinationTime.showTextDirect("WAIT");
+
         SPIFFS.format();
         if(SPIFFS.begin()) haveFS = true;
 
