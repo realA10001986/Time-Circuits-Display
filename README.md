@@ -47,7 +47,7 @@ There are different alternative ways to install this firmware:
 
 ### Audio file installation
 
-While the sound files are part of this software, they need to be installed separately. However, the sound files are not updated as often as the firmware itself. If you have previously installed the latest version of the sound-pack, you normally don't have to re-install the audio files you update the firmware. Only if either a new version of the sound-pack is released, or your clock is quiet after a firmware update, a re-installation is needed.
+While the sound files are part of this software, they need to be installed separately. However, the sound files are not updated as often as the firmware itself. If you have previously installed the latest version of the sound-pack, you normally don't have to re-install the audio files when you update the firmware. Only if either a new version of the sound-pack is released, or your clock is quiet after a firmware update, a re-installation is needed.
 
 - Download "install/sound-pack-xxxxxxxx.zip" and extract it to the root directory of of a FAT32 formatted SD card
 - power down the clock,
