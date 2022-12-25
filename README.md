@@ -381,7 +381,7 @@ The device can tell other props about a time travel, and in essence act as a "ma
 
 ## My custom-made Wall Clock
 
-![204099461-6499d8a4-4c8f-446c-b0a8-7ef13b558c67](https://github.com/realA10001986/Time-Circuits-Display/wiki/Time-Circuits-Wall-Clock)
+![204099461-6499d8a4-4c8f-446c-b0a8-7ef13b558c67](https://user-images.githubusercontent.com/76924199/206280615-e466c2ab-8670-4ff2-a055-6dfec356a966.jpg)
 
 More here: [Link](https://github.com/realA10001986/Time-Circuits-Display/wiki/Time-Circuits-Wall-Clock)
 
