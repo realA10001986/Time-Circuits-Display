@@ -1,6 +1,6 @@
 This folder holds all files necessary for immediate installation on your Time Circuits Display. Here you'll find
 - a pre-compiled binary of the current firmware,
-- the audio files for this very version of the firmware
+- the latest audio files
 
 ### Firmware installation
 
@@ -10,7 +10,9 @@ For a fresh installation, using the Arduino IDE or PlatformIO: Download the sket
 
 ### Audio file installation
 
-- Download "sound-pack.zip" and extract it to the root directory of of a FAT32 formatted SD card
+The sound pack is not updated as often as the firmware itself. If you have previously installed the latest version of the sound-pack, you normally don't have to re-install the audio files you update the firmware. Only if either a new version of the sound-pack is released here, or your clock is quiet after a firmware update, a re-installation is needed.
+
+- Download "sound-pack-xxxxxxxx.zip" and extract it to the root directory of of a FAT32 formatted SD card
 - power down the clock,
 - insert this SD card into the device's slot and 
 - power up the clock.
