@@ -9,7 +9,7 @@
  * This is designed for 
  * - MCP9808, TMP117, BMx820, SHT4x, SI7012, AHT20/AM2315C, HTU31D 
  *   temperature/humidity sensors,
- * - BH1750, TSL2561 and VEML7700/VEML6030 light sensors.
+ * - BH1750, TSL2561, LTR3xx and VEML7700/VEML6030 light sensors.
  *                             
  * The i2c slave addresses need to be:
  * MCP9808:       0x18                [temperature only]
@@ -21,6 +21,7 @@
  * HTU31D:        0x41 [non-default]  [temperature, humidity]
  * 
  * TSL2561:       0x29 
+ * LTR3xx:        0x29
  * BH1750:        0x23
  * VEML6030:      0x10, 0x48 [non-default]
  * VEML7700:      0x10
@@ -200,7 +201,7 @@ uint8_t tcSensor::crc8(uint8_t initVal, uint8_t poly, uint8_t len, uint8_t *buf)
 //  2    0.125°C     130 ms
 //  3    0.0625°C    250 ms
 #define TC_TEMP_RES_MCP9808 3
-static const uint16_t wakeDelayMCP9808[4] = { 30, 65, 130, 250 };
+//static const uint16_t wakeDelayMCP9808[4] = { 30, 65, 130, 250 };
 
 #define BMx280_REG_DIG_T1 0x88
 #define BMx280_REG_DIG_T2 0x8a
@@ -617,10 +618,10 @@ double tempSensor::readTemp(bool celsius)
     if(_hum > 99) _hum = 99;
     
     #ifdef TC_DBG
-    Serial.print("Read temp: ");
+    Serial.print("Sensor temp+offset: ");
     Serial.println(temp);
     if(_haveHum) {
-        Serial.print("Humidity: ");
+        Serial.print("Sensor humidity: ");
         Serial.println(_hum);
     }
     #endif
@@ -672,7 +673,7 @@ double tempSensor::BMx280_CalcTemp(uint32_t ival, uint32_t hval)
 /*****************************************************************
  * lightSensor Class
  * 
- * Supports TSL2561, BH1750, VEML7700/6030 light sensors
+ * Supports TSL2561, LTR3xx, BH1750, VEML7700/6030 light sensors
  * 
  * Sensors are set for indoor conditions and might overflow (in 
  * which case -1 is returned) or report bad lux values outdoors.
@@ -699,6 +700,25 @@ double tempSensor::BMx280_CalcTemp(uint32_t ival, uint32_t hval)
 
 #define TLS_USE_GAIN    TLS_GAIN_LOW    // to be adjusted (TLS_GAIN_xxx)
 #define TLS_USE_IT      TLS_IT_101      // to be adjusted (TLS_IT_xxx)
+
+#define LTR303_DUMMY    0x100
+#define LTR303_CTRL     0x80
+#define LTR303_MRATE    0x85
+#define LTR303_DATA1    0x88  // LSBFirst
+#define LTR303_DATA0    0x8a  // LSBFirst
+#define LTR303_PID      0x86
+#define LTR303_MID      0x87
+
+static const uint8_t ltr3xxGains[6] = {
+    0x00, 0x01, 0x02, 0x03, 0x06, 0x07
+//   1x    2x    4x    8x   48x   96x
+};
+static const uint8_t ltr3xxITs[8] = {
+    0x01, 0x00, 0x04, 0x02, 0x05, 0x06, 0x07, 0x03
+//   50   100   150   200   250   300   350   400ms
+};
+#define LTR303_USE_GAIN   1     // to be adjusted (index in above array)
+#define LTR303_USE_IT     1     // to be adjusted (index in above array)
 
 #define BH1750_DUMMY      0x100
 
@@ -771,22 +791,40 @@ lightSensor::lightSensor(int numTypes, uint8_t addrArr[])
     }
 }
 
-bool lightSensor::begin(bool skipLast)
+bool lightSensor::begin(bool skipLast, unsigned long powerupTime)
 {
     bool foundSt = false;
+    unsigned long millisNow = millis();
 
     _customDelayFunc = defaultDelay;
 
     // VEML7700 shares i2c address with GPS, so
     // skip it if GPS is connected
     if(skipLast) _numTypes--;
+
+    // Give the sensor some time to boot
+    if(millisNow - powerupTime < 100) {
+        delay(100 - (millisNow - powerupTime));
+    }
     
     for(int i = 0; i < _numTypes * 2; i += 2) {
 
         _address = _addrArr[i];
 
         switch(_addrArr[i+1]) {
+        case LST_LTR3xx:
+            // Needs to be checked before the TSL2561
+            Wire.beginTransmission(_address);
+            if(!Wire.endTransmission(true)) {
+                if((read8(LTR303_MID) == 0x05) &&
+                   ((read8(LTR303_PID) & 0xf0) == 0xa0)) {
+                    // 303 and 329 share part number. Smart move.
+                    foundSt = true;
+                }
+            }
+            break;
         case LST_TSL2561:
+            // LTR3xx must be tested for before this
             Wire.beginTransmission(_address);
             if(!Wire.endTransmission(true)) {
                 if((read8(TSL2561_ID) & 0xf0) == 0x50) {
@@ -811,7 +849,7 @@ bool lightSensor::begin(bool skipLast)
             _st = _addrArr[i+1];
             
             #ifdef TC_DBG
-            const char *tpArr[3] = { "TSL2561", "BH1750", "VEML7700/6030" };
+            const char *tpArr[4] = { "TSL2561", "BH1750", "VEML7700/6030", "LTR3xx" };
             Serial.print("Light sensor: Detected ");
             Serial.println(tpArr[_st]);
             #endif
@@ -821,6 +859,15 @@ bool lightSensor::begin(bool skipLast)
     }
 
     switch(_st) {
+    case LST_LTR3xx:
+        write8(LTR303_CTRL, 0x02);  // Reset
+        (*_customDelayFunc)(10);    // ?
+        // Set IT; MRate 2000ms
+        write8(LTR303_MRATE, (ltr3xxITs[LTR303_USE_IT] << 3) | 0x03); 
+        // Set gain, activate
+        write8(LTR303_CTRL, (ltr3xxGains[LTR303_USE_GAIN] << 2) | 0x01);  
+        break;
+
     case LST_TSL2561:
         write8(TSL2561_CTRL, 0x03); // Power up
         write8(TSL2561_ICTRL, 0);   // no interrupts
@@ -864,21 +911,15 @@ int32_t lightSensor::readLux()
     return _lux;
 }
 
-#ifdef TC_DBG
-int32_t lightSensor::readDebug()
-{
-    return (_lux << 16) | (_AITIdx << 4) | _gainIdx;
-}
-#endif
-
 void lightSensor::loop()
 {
     uint16_t temp;
     uint32_t temp1;
+    unsigned long elapsed = millis() - _lastAccess;
 
     switch(_st) {
     case LST_TSL2561:
-        if(millis() - _lastAccess < 500)
+        if(elapsed < 500)
             return;
 
         temp  = read16(TSL2561_ADC0, true);
@@ -893,8 +934,26 @@ void lightSensor::loop()
         }
         break;
 
+    case LST_LTR3xx:
+        if(elapsed < 500)
+            return;
+
+        write8(LTR303_DUMMY, LTR303_DATA1);
+        if(Wire.requestFrom(_address, (uint8_t)4) == 4) {
+            temp1 = Wire.read();
+            temp1 |= (Wire.read() << 8);
+            temp  = Wire.read();
+            temp  |= (Wire.read() << 8);
+            if(temp + temp1 == 0) {
+                _lux = -1;
+            } else {
+                _lux = LTR3xxCalcLux(LTR303_USE_GAIN, 1, temp, temp1);
+            }
+        }
+        break;
+
     case LST_BH1750:
-        if(millis() - _lastAccess < (unsigned long)bh1750Arr[_gainIdx][1])
+        if(elapsed < (unsigned long)bh1750Arr[_gainIdx][1])
             return;
 
         temp = read16(BH1750_DUMMY);
@@ -903,7 +962,7 @@ void lightSensor::loop()
         break;
 
     case LST_VEML7700:
-        if(millis() - _lastAccess < (unsigned long)AITArr[_AITIdx][1] * 8)
+        if(elapsed < (unsigned long)AITArr[_AITIdx][1] * 8)
             return;
 
         // Re-write control register now and then; if there was an i2c
@@ -1000,6 +1059,33 @@ void lightSensor::VEML7700OnOff(bool enable, bool doWait)
     if(enable && doWait) (*_customDelayFunc)(5);
 }
 
+int32_t lightSensor::LTR3xxCalcLux(uint8_t iGain, uint8_t tInt, uint32_t ch0, uint32_t ch1)
+{
+    double gains[]   = {   1.0,   2.0,   4.0,  8.0, 48.0, 96.0 };
+    int32_t maxLux[] = { 64000, 32000, 16000, 8000, 1300, 600 };
+    double its[]     = { 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0 };
+    //                   50   100  150  200  250  300  350  400
+    int32_t lux = -1;
+    double dch0 = (double)ch0;
+    double dch1 = (double)ch1;
+    
+    double ratio = dch1 / (dch0 + dch1);
+    
+    if(ratio < 0.45)
+        lux = (int32_t)((1.7743 * dch0 + 1.1059 * dch1) / gains[iGain] / its[tInt]);
+    else if (ratio < 0.64)
+        lux = (int32_t)((4.2785 * dch0 - 1.9548 * dch1) / gains[iGain] / its[tInt]);
+    else if (ratio < 0.85)
+        lux = (int32_t)((0.5926 * dch0 + 0.1185 * dch1) / gains[iGain] / its[tInt]);
+    else
+        return -1;
+        
+     lux = min(lux, maxLux[iGain]);
+     if(lux == 0) lux = -1;
+
+     return lux;
+}
+
 // TSL2561
 // Reference implementation
 // taken from TLS2560/1 data sheet (April 2007, p22+)
@@ -1060,7 +1146,7 @@ uint32_t lightSensor::TSL2561CalcLux(uint8_t iGain, uint8_t tInt, uint32_t ch0, 
     channel0 = (ch0 * chScale) >> TSL2561_CH_SCALE;
     channel1 = (ch1 * chScale) >> TSL2561_CH_SCALE;
 
-    if(channel0 != 0) 
+    if(channel0 != 0)
         ratio1 = (channel1 << (TSL2561_RATIO_SCALE+1)) / channel0;
 
     ratio = (ratio1 + 1) >> 1;

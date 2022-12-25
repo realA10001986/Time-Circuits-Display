@@ -9,7 +9,7 @@
  * This is designed for 
  * - MCP9808, TMP117, BMx820, SHT4x, SI7012, AHT20/AM2315C, HTU31D 
  *   temperature/humidity sensors,
- * - BH1750, TSL2561 and VEML7700/VEML6030 light sensors.
+ * - BH1750, TSL2561, LTR3xx and VEML7700/VEML6030 light sensors.
  * -------------------------------------------------------------------
  * License: MIT
  * 
@@ -123,7 +123,8 @@ class tempSensor : tcSensor {
 enum {
     LST_TSL2561 = 0,  // 0x29 (unsupported: 0x39, 0x49)
     LST_BH1750,       // 0x23 (unsupported: 0x5c)
-    LST_VEML7700      // 0x48, 0x10 (also used for VEML6030)
+    LST_VEML7700,     // 0x48, 0x10 (also used for VEML6030)
+    LST_LTR3xx,       // 0x29
 };
 
 class lightSensor : tcSensor {
@@ -131,15 +132,12 @@ class lightSensor : tcSensor {
     public:
 
         lightSensor(int numTypes, uint8_t addrArr[]);
-        bool begin(bool skipLast);
+        bool begin(bool skipLast, unsigned long powerupTime);
 
         // Setter for custom delay function
         void setCustomDelayFunc(void (*myDelay)(unsigned int));
 
         int32_t readLux();
-        #ifdef TC_DBG
-        int32_t readDebug();
-        #endif
         
         void loop();
 
@@ -148,6 +146,7 @@ class lightSensor : tcSensor {
         void VEML7700SetAIT(uint16_t ait, bool doWrite = true);
         void VEML7700OnOff(bool enable, bool doWait = true);
 
+        int32_t  LTR3xxCalcLux(uint8_t iGain, uint8_t tInt, uint32_t ch0, uint32_t ch1);
         uint32_t TSL2561CalcLux(uint8_t iGain, uint8_t tInt, uint32_t ch0, uint32_t ch1);
 
         int     _numTypes = 0;

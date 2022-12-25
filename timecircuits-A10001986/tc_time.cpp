@@ -62,6 +62,7 @@
 #define HTU31_ADDR     0x41 // [non-default]
 
                             // light sensors 
+#define LTR3xx_ADDR    0x29 // [default]                            
 #define TSL2561_ADDR   0x29 // [default]
 #define BH1750_ADDR    0x23 // [default]
 #define VEML6030_ADDR  0x48 // [non-default] (can also be 0x10 but then conflicts with GPS)
@@ -278,8 +279,9 @@ tempSensor tempSens(7,
 static bool tempOldNM = false;
 #endif
 #ifdef TC_HAVELIGHT
-lightSensor lightSens(4, 
-            (uint8_t[4*2]){ TSL2561_ADDR, LST_TSL2561,
+lightSensor lightSens(5, 
+            (uint8_t[5*2]){ LTR3xx_ADDR,  LST_LTR3xx,   // must be before TSL2651
+                            TSL2561_ADDR, LST_TSL2561,  // must be after LTR3xx
                             BH1750_ADDR,  LST_BH1750,
                             VEML6030_ADDR,LST_VEML7700,
                             VEML7700_ADDR,LST_VEML7700  // must be last
@@ -1027,7 +1029,7 @@ void time_setup()
     useLight = ((int)atoi(settings.useLight) > 0);
     luxLimit = atoi(settings.luxLimit);
     if(useLight) {
-        if(lightSens.begin(haveGPS)) {
+        if(lightSens.begin(haveGPS, powerupMillis)) {
             lightSens.setCustomDelayFunc(myCustomDelay);
         } else {
             useLight = false;
