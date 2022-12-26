@@ -6,7 +6,7 @@ This folder holds all files necessary for immediate installation on your Time Ci
 
 If a previous version of the Time Circuits firmware was installed on your device, you can upload the provided binary to update to the current version: Go to the Config Portal, click on "Update" and select the binary file provided here ("timecircuits-A10001986.ino.nodemcu-32s.bin").
 
-For a fresh installation, the provided binary is not usable. You'll need to use the Arduino IDE or PlatformIO and download the sketch source code, all required libraries (info in the .ino file) and compile it. Then upload the sketch to the device. This method is the one for fresh ESP32 boards and/or folks familiar with Arduino programming.
+For a fresh installation, the provided binary is not usable. You'll need to use the Arduino IDE or PlatformIO, download the sketch source code, all required libraries (info in the .ino file) and compile it. Then upload the sketch to the device. This method is the one for fresh ESP32 boards and/or folks familiar with Arduino programming.
 
 ### Audio file installation
 
