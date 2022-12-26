@@ -60,7 +60,9 @@
 
 /*  Changelog
  *
- *  2022/12/25 (A10001986)
+ *  2022/12/26 (A10001986)
+ *    - Fix reading BME820 sensor (burst read all data registers for consistency)
+ *    - Disable WiFi-power-save when user initiates firmware update
  *    - Display "wait" if Flash-FS is being formatted upon boot
  *    - Add support for LTR3xx light sensor [untested]
  *    - [All supported temperature sensors verified working]
