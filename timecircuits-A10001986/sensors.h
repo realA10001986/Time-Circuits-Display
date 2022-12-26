@@ -45,7 +45,6 @@ class tcSensor {
         void     prepareRead(uint16_t regno);
         uint16_t read16(uint16_t regno, bool LSBfirst = false);
         uint8_t  read8(uint16_t regno);
-        uint32_t read24(uint16_t regno);
         void     write16(uint16_t regno, uint16_t value, bool LSBfirst = false);
         void     write8(uint16_t regno, uint8_t value);
 

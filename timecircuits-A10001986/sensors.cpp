@@ -95,24 +95,6 @@ uint16_t tcSensor::read16(uint16_t regno, bool LSBfirst)
     return value;
 }
 
-uint32_t tcSensor::read24(uint16_t regno)
-{
-    uint32_t value = 0;
-    size_t i2clen = 0;
-
-    prepareRead(regno);
-
-    i2clen = Wire.requestFrom(_address, (uint8_t)3);
-
-    if(i2clen > 0) {
-        value = Wire.read() << 16;
-        value |= (Wire.read() << 8);
-        value |= Wire.read();
-    }
-
-    return value;
-}
-
 uint8_t tcSensor::read8(uint16_t regno)
 {
     uint16_t value = 0;
@@ -203,6 +185,7 @@ uint8_t tcSensor::crc8(uint8_t initVal, uint8_t poly, uint8_t len, uint8_t *buf)
 #define TC_TEMP_RES_MCP9808 3
 //static const uint16_t wakeDelayMCP9808[4] = { 30, 65, 130, 250 };
 
+#define BMx820_DUMMY      0x100
 #define BMx280_REG_DIG_T1 0x88
 #define BMx280_REG_DIG_T2 0x8a
 #define BMx280_REG_DIG_T3 0x8c
@@ -510,6 +493,7 @@ double tempSensor::readTemp(bool celsius)
 {
     double temp = NAN;
     uint16_t t = 0;
+    
 
     if(_delayNeeded > 0) {
         unsigned long elapsed = millis() - _tempReadNow;
@@ -527,8 +511,17 @@ double tempSensor::readTemp(bool celsius)
         break;
 
     case BMx820:
-        if(_haveHum) t = read16(BMx820_REG_HUM);
-        temp = BMx280_CalcTemp(read24(BMx820_REG_TEMP), t);
+        write8(BMx820_DUMMY, BMx820_REG_TEMP);
+        t = _haveHum ? 5 : 3;
+        if(Wire.requestFrom(_address, (uint8_t)t) == t) {
+            uint8_t buf[5];
+            uint32_t t1; 
+            uint16_t t2 = 0;
+            for(uint8_t i = 0; i < t; i++) buf[i] = Wire.read();
+            t1 = (buf[0] << 16) | (buf[1] << 8) | buf[2];
+            if(_haveHum) t2 = (buf[3] << 8) | buf[4];
+            temp = BMx280_CalcTemp(t1, t2);
+        }
         break;
 
     case SHT40:

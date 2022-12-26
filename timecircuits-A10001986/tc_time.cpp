@@ -554,6 +554,8 @@ void time_setup()
     bool haveAuthTimeGPS = false;
     #endif
 
+    Serial.println(F("Time Circuits Display version " TC_VERSION " " TC_VERSION_EXTRA));
+
     // Power management: Set CPU speed
     // to maximum and start timer
     #ifdef TC_DBG

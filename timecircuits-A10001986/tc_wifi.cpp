@@ -257,6 +257,7 @@ unsigned long origWiFiOffDelay = 0;
 static void wifiConnect(bool deferConfigPortal = false);
 static void saveParamsCallback();
 static void saveConfigCallback();
+static void preUpdateCallback();
 static void preSaveConfigCallback();
 
 static void setupStaticIP();
@@ -293,6 +294,7 @@ void wifi_setup()
     wm.setPreSaveConfigCallback(preSaveConfigCallback);
     wm.setSaveConfigCallback(saveConfigCallback);
     wm.setSaveParamsCallback(saveParamsCallback);
+    wm.setPreOtaUpdateCallback(preUpdateCallback);
     wm.setHostname(settings.hostName);
     wm.setCaptivePortalEnable(false);
 
@@ -881,6 +883,14 @@ static void saveConfigCallback()
 static void saveParamsCallback()
 {
     shouldSaveConfig = 2;
+}
+
+// This is called before a firmware updated is initiated.
+// Disable WiFi-off-timers.
+static void preUpdateCallback()
+{
+    wifiAPOffDelay = 0;
+    origWiFiOffDelay = 0;
 }
 
 // Grab static IP parameters from WiFiManager's server.
