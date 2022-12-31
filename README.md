@@ -98,13 +98,13 @@ Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed afte
     <td align="center" colspan="3">Firmware from 2022</td>
  </tr>
     <tr>
-        <td align="center">1<br>Enable Alarm </td>
+        <td align="center">1<br>Enable Alarm</td>
         <td align="center">2<br>Disable Alarm</td>
         <td align="center">3<br>Play "key3.mp3"</td>
     </tr>
     <tr>
-        <td align="center">4<br>Enable Night-Mode</td>
-        <td align="center">5<br>Disable Night-Mode</td>
+        <td align="center">4<br>Enable [Night mode](#night-mode)</td>
+        <td align="center">5<br>Disable [Night mode](#night-mode)</td>
         <td align="center">6<br>Play "key6.mp3"</td>
     </tr>
     <tr>
