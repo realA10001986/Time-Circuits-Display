@@ -98,24 +98,24 @@ Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed afte
     <td align="center" colspan="3">Firmware from 2022</td>
  </tr>
     <tr>
-        <td align="center">1<br>Enable Alarm</td>
-        <td align="center">2<br>Disable Alarm</td>
-        <td align="center">3<br>Play "key3.mp3"</td>
+     <td align="center">1<br>Enable <a href="#how-to-set-up-the-alarm">Alarm</a></td>
+     <td align="center">2<br>Disable <a href="#how-to-set-up-the-alarm">Alarm</a></td>
+     <td align="center">3<br><a href="#additional-custom-sounds">Play "key3.mp3"</a></td>
     </tr>
     <tr>
-        <td align="center">4<br>Enable <a href="#night-mode">Night mode</td>
-        <td align="center">5<br>Disable <a href="#night-mode">Night mode</td>
-        <td align="center">6<br>Play "key6.mp3"</td>
+     <td align="center">4<br>Enable <a href="#night-mode">Night mode</a></td>
+     <td align="center">5<br>Disable <a href="#night-mode">Night mode</a></td>
+     <td align="center">6<br><a href="#additional-custom-sounds">Play "key6.mp3"</a></td>
     </tr>
     <tr>
-        <td align="center">7<br>Re-enable WiFi</td>
-        <td align="center">8<br>n/a</td>
-        <td align="center">9<br>Return from Time Travel</td>
+     <td align="center">7<br><a href="#wifi-power-saving-features">Re-enable WiFi</a></td>
+     <td align="center">8<br>n/a</td>
+     <td align="center">9<br><a href="#time-travel">Return from Time Travel</a></td>
     </tr>
     <tr>
-        <td align="center"></td>
-        <td align="center">0<br>Time Travel</td>
-        <td align="center"></td>
+     <td align="center"></td>
+     <td align="center">0<br><a href="#time-travel">Time Travel</a></td>
+     <td align="center"></td>
     </tr>
 </table>
 
