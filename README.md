@@ -95,7 +95,7 @@ Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed afte
 
 |A|B|C|
 |:--:|:--:|:--:|
-| Enable Alarm | Disable Alarm | Play "key3.mp3" |
+| 1<br>Enable Alarm | Disable Alarm | Play "key3.mp3" |
 | Enable Night-Mode | Disable Night-Mode | Play "key6.mp3" |
 | Re-enable WiFi | n/a      |  Return from Time Travel |
 |   | Time Travel      |   |
