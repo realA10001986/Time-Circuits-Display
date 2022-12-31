@@ -249,6 +249,7 @@ Data entry, such as for dates and times, is done through the keypad's number key
 After invoking the keypad menu, the first step is to choose a menu item. The available items are   
 - set the alarm ("ALA-RM"),
 - set the audio volume (VOL-UME),
+- set the Music Player folder number ("MUSIC FOLDER NUMBER")
 - select the Time-rotation Interval ("TIME-ROTATION-INT"),
 - select the brightness for the three displays ("BRIGHTNESS"),
 - show network information ("NET-WORK"),
@@ -287,6 +288,16 @@ Basically, and by default, the device uses the hardware volume knob to determine
 - Hold ENTER to proceed
 - If you chose "SW", you can now select the desired level by pressing ENTER repeatedly. There are 16 levels available. The volume knob is now ignored.
 - Hold ENTER to save and quit the menu
+
+#### How to select the music folder number:
+
+- Hold ENTER to invoke main menu
+- Press ENTER repeatedly until "MUSIC FOLDER NUMBER" is shown
+- Hold ENTER, "NUM" is displayed
+- Press ENTER repeatedly to cycle through the possible values.              
+- Hold ENTER to select the value shown and exit the menu ("SAVING" is displayed briefly)
+
+If shuffle was enabled before, the new folder is also played in shuffled order.
 
 #### How to select the Time-rotation Interval:
 
@@ -354,16 +365,22 @@ Note that when entering dates/times into the *destination time* or *last time de
  
 ## SD card
 
-The provided audio files are, after [proper installation](#audio-file-installation), part of the firmware and stored in the device's flash memory. 
+Preface note on SD cards: For unknown reasons, some SD cards simply do not work with this device. For instance, I had no luck with a Sandisk Ultra 32GB card. If your SD card is not recognized, check if it is formatted in FAT32 format (not exFAT!). Also, the size must not exceed 32GB (as larger cards cannot be formatted with FAT32).
+
+The SD card, apart from being used to [install](#audio-file-installation) the default audio files, can be used for substitute default sounds, some additional custom sounds, and for music played back by the [Music player](#the-music-player).
+
+### Sound file substitution
+
+The provided audio files ("sound-pack") are, after [proper installation](#audio-file-installation), part of the firmware and stored in the device's flash memory. 
 
 These sounds can be substituted by your own sound files on a FAT32-formatted SD card. These files will be played back directly from the SD card during operation, so the SD card has to remain in the slot. The built-in [Audio file installer](#audio-file-installation) cannot be used to replace default sounds in the device's flash memory with custom sounds. 
 
-Your replacements need to be put in the root directoy of the SD card, be in mp3 format (128kbps) and named as follows:
+Your replacements need to be put in the root (top-most) directoy of the SD card, be in mp3 format (128kbps) and named as follows:
 - "alarm.mp3". Played when the alarm sounds.
-- "alarmon.mp3". Played when enabling the alarm by holding "1"
-- "alarmoff.mp3". Played when disabling the alarm by holding "2"
-- "nmon.mp3". Played when manually enabling night mode by holding "4"
-- "nmoff.mp3". Played when manually disabling night mode by holding "5"
+- "alarmon.mp3". Played when enabling the alarm
+- "alarmoff.mp3". Played when disabling the alarm
+- "nmon.mp3". Played when manually enabling night mode
+- "nmoff.mp3". Played when manually disabling night mode
 
 The following sounds are time-sync'd to display action. If you decide to substitute these with your own, be prepared to lose synchronicity:
 - "enter.mp3". Played when a date was entered and ENTER was pressed
@@ -376,9 +393,9 @@ The following sounds are time-sync'd to display action. If you decide to substit
 
 If you intend to use the very same SD card that you used for installing the default sound files, please remove the file "TCD_def_snd.txt" from the SD card first.
 
-## Additional Custom Sounds
+### Additional Custom Sounds
 
-The firmware supports some additional user-provided sounds, which must reside on the SD card. If the respective file is present, it will be used. If that file is absent, no sound will be played.
+The firmware supports some additional user-provided sound effects, which must reside on the SD card. If the respective file is present, it will be used. If that file is absent, no sound will be played.
 
 - "hour.mp3": Will be played every hour, on the hour. This feature is disabled in night mode.
 - "hour-xx.mp3", xx being 00 through 23: Sounds-on-the-hour for specific hours that will be played instead of "hour.mp3". If a sound for a specific hour is not present, "hour.mp3" will be played, if that one exists.
@@ -641,3 +658,11 @@ This selects whether a GPIO pin is activated upon a time-travel in order to cont
 #### Play time travel sounds
 
 If other props are connected, they might bring their own time travel sound effects. In this case, you can uncheck this to disable the Time Circuit's own time travel sounds. Note that this only covers sounds played during time travel, not for other sound effects.
+
+#### Music folder number
+
+Selects the folder number for the Music Player. The folders are named "music0" through "music9"; this config option selects the digit in the folder name.
+
+#### 4MHz SD clock speed
+
+By default, the clock speed for SD card access is set to 16MHz. If you experience problems with your SD card, such as sound cut-offs or the card inaccessible or not being recognized, try setting the clock speed to 4MHz by checking this option. (General note: Not all SD cards work with the device. If the SD card is inaccessible with both clock speed settings, try another SD card brand. For instance, I had no luck with a Sandisk Ultra 32GB.)
