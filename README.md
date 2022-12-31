@@ -18,7 +18,8 @@ Features include
 - Option to make time travels [persistent](#persistent--non-persistent-time-travels) over reboots
 - [Alarm function](#how-to-set-up-the-alarm)
 - [Night mode](#night-mode) (displays off or dimmed; manual, scheduled or sensor-controlled)
-- [SD card](#sd-card) support for custom audio files
+- &#127381; (coming soon) Music player
+- [SD card](#sd-card) support for custom audio files for effects, &#127381; and music for the Music Player
 - Advanced network-accessible [Config Portal](#short-summary-of-first-steps) for setup &#127381; with mDNS support for easy access (http://timecircuits.local, hostname configurable)
 - [Keypad menu](#the-keypad-menu) for adjusting various settings and viewing IP address and WiFi status
 - 24-hour clock mode for non-Americans
@@ -92,6 +93,32 @@ There is also a "decorative" mode where the device cycles through a list of pre-
 The clock only supports the [Gregorian Calendar](https://en.wikipedia.org/wiki/Gregorian_calendar), of which it pretends to have been used since year 1. The [Julian Calendar](https://en.wikipedia.org/wiki/Julian_calendar) is not taken into account. As a result, some years that, in the then-used Julian Calendar, were leap years between years 1 and 1582 in most of today's Europe, 1700 in DK/NO/NL(except Holland and Zeeland), 1752 in the British Empire, 1753 in Sweden, 1760 in Lorraine, 1872 in Japan, 1912 in China, 1915 in Bulgaria, 1917 in the Ottoman Empire, 1918 in Russia and Serbia and 1923 in Greece, are normal years in the Gregorian one. As a result, dates do not match in those two calender systems, the Julian calendar is currently 13 days behind. I wonder if Doc's TC took all this into account. (Then again, he wanted to see Christ's birth on Dec 25, 0. Luckily, he didn't actually try to travel to that date. Assuming a negative roll-over, he might have ended up in eternity.)
 
 Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed after 1BC. Nevertheless, it is possible to travel to year 0. In good old Hollywood tradition, I won't let facts and science stand in the way of an authentic movie experience.
+
+<table>
+    <tr>
+     <td align="center" colspan="3">Keypad reference: Holding keys for 2 seconds<br>(Firmware from 2023)</td>
+    </tr>
+    <tr>
+     <td align="center">1<br>Toggle <a href="#how-to-set-up-the-alarm">Alarm</a> on/off</td>
+     <td align="center">2<br><a href="#the-music-player">Music Player</a>: Previous song</td>
+     <td align="center">3<br><a href="#additional-custom-sounds">Play "key3.mp3"</a></td>
+    </tr>
+    <tr>
+     <td align="center">4<br>Toggle <a href="#night-mode">Night mode</a> on/off</td>
+     <td align="center">5<br><a href="#the-music-player">Music Player</a>: Play/Stop</a></td>
+     <td align="center">6<br><a href="#additional-custom-sounds">Play "key6.mp3"</a></td>
+    </tr>
+    <tr>
+     <td align="center">7<br><a href="#wifi-power-saving-features">Re-enable WiFi</a></td>
+     <td align="center">8<br><a href="#the-music-player">Music Player</a>: Next song</td>
+     <td align="center">9<br><a href="#time-travel">Return from Time Travel</a></td>
+    </tr>
+    <tr>
+     <td align="center"></td>
+     <td align="center">0<br><a href="#time-travel">Time Travel</a></td>
+     <td align="center"></td>
+    </tr>
+</table>
 
 <table>
     <tr>
@@ -170,6 +197,10 @@ Finally, you can connect a light sensor to the device. If the measured lux level
 If both a schedule is enabled and the light sensor option is checked in the Config Portal, the sensor will overrule the schedule only in non-night-mode hours; ie it will never switch off night mode when night mode is active according to the schedule.
 
 Switching on/off night mode manually (4 or 5 on the keypad) deactivates any schedule and the light sensor for 30 minutes. Afterwards, a programmed schedule and/or the light sensor will overrule the manual setting.
+
+## The Music Player
+
+Coming soon
 
 ## The keypad menu
  
