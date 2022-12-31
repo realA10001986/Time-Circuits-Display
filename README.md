@@ -148,10 +148,10 @@ Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed afte
 
 <table>
     <tr>
-     <td align="center" colspan="2">Keypad reference: Key sequences</td>
+     <td align="center" colspan="2">Keypad reference: Special key sequences</td>
     </tr>
     <tr>
-     <td align="center">11hhmm</td>
+     <td align="center">11hhmm<ENTER></td>
      <td align="center">Set alarm to hh:mm</td>
     </tr>
     <tr>
