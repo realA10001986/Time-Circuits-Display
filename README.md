@@ -96,12 +96,14 @@ Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed afte
 
 In the following, "pressing" means briefly pressing a key, "holding" means keeping the key pressed for 2 seconds or longer.
 
+mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits); hh = hour (00-23, 2 digits); MM = minute (00-59, 2 digits)
+
 <table>
     <tr>
      <td align="center" colspan="2">Keypad reference: Destination time programming<br>(&#9166; = ENTER key)</td>
     </tr>
     <tr>
-     <td align="center">mmyddyyyhhmm&#9166;</td>
+     <td align="center">mmddyyyyhhMM&#9166;</td>
      <td align="center">Set complete date/time for <a href="#time-travel">Time Travel</a></td>
     </tr>
     <tr>
@@ -109,7 +111,7 @@ In the following, "pressing" means briefly pressing a key, "holding" means keepi
      <td align="center">Set date for <a href="#time-travel">Time Travel</a></td>
     </tr>
     <tr>
-     <td align="center">hhmm&#9166;</td>
+     <td align="center">hhMM&#9166;</td>
      <td align="center">Set time for <a href="#time-travel">Time Travel</a></td>
     </tr>
 </table>
@@ -119,8 +121,8 @@ In the following, "pressing" means briefly pressing a key, "holding" means keepi
      <td align="center" colspan="2">Keypad reference: Special key sequences<br>(&#9166; = ENTER key)</td>
     </tr>
     <tr>
-     <td align="center">11hhmm&#9166;</td>
-     <td align="center">Set <a href="#how-to-set-up-the-alarm">alarm</a> to hh:mm</td>
+     <td align="center">11hhMM&#9166;</td>
+     <td align="center">Set <a href="#how-to-set-up-the-alarm">alarm</a> to hh:MM</td>
     </tr>
     <tr>
      <td align="center">111&#9166;</td>
@@ -204,7 +206,7 @@ In the following, "pressing" means briefly pressing a key, "holding" means keepi
 
 To travel through time, hold "0" for 2 seconds. The *destination time*, as shown in the red display, will be your new *present time*, the old *present time* will be the *last time departed*. The new *present time* will continue to run like a normal clock.
 
-Before holding "0", you can also first quickly set a new destination time by entering a date on the keypad: mmddyyyy, mmddyyyyhhmm or hhmm, then press ENTER. While typing, there is no visual feedback, but the date is then shown on the *destination time* display after pressing ENTER. 
+Before holding "0", you can also first quickly set a new destination time by entering a date on the keypad: mmddyyyy, mmddyyyyhhMM or hhMM, then press ENTER. While typing, there is no visual feedback, but the date is then shown on the *destination time* display after pressing ENTER.
 
 To travel back to actual present time, hold "9" for 2 seconds.
 
@@ -215,12 +217,12 @@ Beware that the alarm function, by default, is based on the real actual present 
 On the Config Portal's "Setup" page, there is an option item named "Make time travels persistent". The default is yes.
 
 If time travels are persistent
-- a user-programmed *destination time* is always stored in flash memory, and retrieved from there after a power-loss. It can be programmed through the keypad menu, or ahead of a time travel by typing mmddyyyy/mmddyyyyhhmm/hhmm plus ENTER. In both cases, the time is stored in flash memory and retrieved upon power-on.
+- a user-programmed *destination time* is always stored in flash memory, and retrieved from there after a power-loss. It can be programmed through the keypad menu, or ahead of a time travel by typing mmddyyyyhhMM/mmddyyyy/hhMM plus ENTER. In both cases, the time is stored in flash memory and retrieved upon power-on.
 - *last time departed* as displayed at any given point is always stored in flash memory, and retrieved upon power-on.
 - *present time*, be it actual present time or "fake" after time travelling, will continue to run while the device is not powered, as long as its battery lasts, and displayed on power-up.
 
 If time travels are non-persistent
-- a user-programmed *destination time* is only stored to flash memory when programmed through the keypad menu, but not if entered ahead of a time travel (ie outside of the keypad menu, just by typing mmddyyyy/mmddyyyyhhmm/hhmm plus ENTER).
+- a user-programmed *destination time* is only stored to flash memory when programmed through the keypad menu, but not if entered ahead of a time travel (ie outside of the keypad menu, just by typing mmddyyyyhhMM/mmddyyyy/hhMM plus ENTER).
 - a user-programmed *last time departed* is only stored to flash memory when programmed through the keypad menu, but not if the result of a time travel.
 - *present time* is always reset to actual present time upon power-up.
 
@@ -334,7 +336,7 @@ Under normal operation (ie outside of the menu), holding "1" toggles the alarm o
 
 When the alarm is set and enabled, the dot in the present time's minute field will light up. 
 
-The alarm time can also quickly be set by typing 11hhmm (eg. 110645 for 6:45am, or 112300 for 11:00pm) and pressing ENTER, just like when setting a time travel destination time. (The weekday selection has still to be done via the keypad menu.)
+The alarm time can also quickly be set by typing 11hhMM (eg. 110645 for 6:45am, or 112300 for 11:00pm) and pressing ENTER, just like when setting a time travel destination time. (The weekday selection has still to be done via the keypad menu.)
 
 Note that the alarm is recurring, ie it rings at the programmed time, unless disabled. Also note, as mentioned, that the alarm is by default relative to your actual *present time*, not the time displayed (eg after a time travel). It can, however, be configured to be based on the time displayed, in the Config Portal.
 
