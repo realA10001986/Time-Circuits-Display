@@ -152,27 +152,27 @@ Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed afte
     </tr>
     <tr>
      <td align="center">11hhmm&#9166;</td>
-     <td align="center">Set alarm to hh:mm</td>
+     <td align="center">Set <a href="#how-to-set-up-the-alarm">alarm</a> to hh:mm</td>
     </tr>
     <tr>
      <td align="center">111&#9166;</td>
-     <td align="center">Toggle Room Condition mode</td>
+     <td align="center">Toggle <a href="#room-condition-mode-temperaturehumidity-sensor">Room condition mode</a></td>
     </tr>
     <tr>
      <td align="center">222&#9166;</td>
-     <td align="center">MusicPlayer: Shuffle off</td>
+     <td align="center"><a href="#the-music-player">Music Player</a>: Shuffle off</td>
     </tr>
     <tr>
      <td align="center">555&#9166;</td>
-     <td align="center">MusicPlayer: Shuffle on</td>
+     <td align="center"><a href="#the-music-player">Music Player</a>: Shuffle on</td>
     </tr>
     <tr>
      <td align="center">888&#9166;</td>
-     <td align="center">MusicPlayer: Goto song 0</td>
+     <td align="center"><a href="#the-music-player">Music Player</a>: Goto song 0</td>
     </tr>
     <tr>
      <td align="center">888xxx&#9166;</td>
-     <td align="center">MusicPlayer: Goto song xxx</td>
+     <td align="center"><a href="#the-music-player">Music Player</a>: Goto song xxx</td>
     </tr>
     <tr>
      <td align="center">64738&#9166;</td>
