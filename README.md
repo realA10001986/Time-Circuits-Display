@@ -103,8 +103,8 @@ Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed afte
         <td align="center">3<br>Play "key3.mp3"</td>
     </tr>
     <tr>
-        <td align="center">4<br>Enable [Night mode](#night-mode)</td>
-        <td align="center">5<br>Disable [Night mode](#night-mode)</td>
+        <td align="center">4<br>Enable <a href="#night-mode">Night mode</td>
+        <td align="center">5<br>Disable <a href="#night-mode">Night mode</td>
         <td align="center">6<br>Play "key6.mp3"</td>
     </tr>
     <tr>
