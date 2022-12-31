@@ -342,13 +342,13 @@ Note that the alarm is recurring, ie it rings at the programmed time, unless dis
 
 #### How to set the audio volume:
 
-Basically, and by default, the device uses the hardware volume knob to determine the desired volume. You can change this to a software setting as follows:
+Basically, and by default, the device uses the hardware volume knob to determine the desired volume. You can change this to a fixed-level setting as follows:
 - Hold ENTER to invoke main menu
 - Press ENTER repeatedly until "VOL-UME" is shown
 - Hold ENTER
-- Press ENTER to toggle between "HW" (volume knob) or "SW" (software)
+- Press ENTER to toggle between "USE VOLUME KNOB" (formerly "HW VOLUME KNOB") and "FIXED LEVEL" (formerly "SW")
 - Hold ENTER to proceed
-- If you chose "SW", you can now select the desired level by pressing ENTER repeatedly. There are 16 levels available. The volume knob is now ignored.
+- If you chose "FIXED LEVEL/"SW", you can now select the desired level by pressing ENTER repeatedly. There are 16 levels available. The volume knob is now ignored.
 - Hold ENTER to save and quit the menu
 
 #### How to select the music folder number:
