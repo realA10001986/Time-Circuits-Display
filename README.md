@@ -666,4 +666,4 @@ Selects the folder number for the Music Player. The folders are named "music0" t
 
 #### 4MHz SD clock speed
 
-By default, the clock speed for SD card access is set to 16MHz. If you experience problems with your SD card, such as sound cut-offs or the card inaccessible or not being recognized, try setting the clock speed to 4MHz by checking this option. (General note: Not all SD cards work with the device. If the SD card is inaccessible with both clock speed settings, try another SD card brand. For instance, I had no luck with a Sandisk Ultra 32GB.)
+By default, the clock speed for SD card access is set to 16MHz. If you experience problems with your SD card, such as sound cut-offs or the card being inaccessible, try setting the clock speed to 4MHz by checking this option. (General note: Not all SD cards work with the device. If the SD card is inaccessible with both clock speed settings, try another SD card brand. For instance, I had no luck with a Sandisk Ultra 32GB.)
