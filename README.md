@@ -312,7 +312,7 @@ After invoking the keypad menu, the first step is to choose a menu item. The ava
 - set the alarm ("ALA-RM"),
 - set the audio volume (VOL-UME),
 - set the Music Player folder number ("MUSIC FOLDER NUMBER")
-- select the Time-rotation Interval ("TIME-ROTATION-INT"),
+- select the Time-rotation Interval ("TIME-ROTATION-INTERVAL"),
 - select the brightness for the three displays ("BRIGHTNESS"),
 - show network information ("NET-WORK"),
 - enter dates/times for the three displays (and set the RTC),
