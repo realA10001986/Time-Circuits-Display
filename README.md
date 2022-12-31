@@ -93,10 +93,10 @@ The clock only supports the [Gregorian Calendar](https://en.wikipedia.org/wiki/G
 
 Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed after 1BC. Nevertheless, it is possible to travel to year 0. In good old Hollywood tradition, I won't let facts and science stand in the way of an authentic movie experience.
 
-<table style="table-layout: fixed;  width: 100%;">
-   <tr>
-    <td align="center" colspan="3">Keypad reference: Holding keys for 2 seconds<br>(Firmware from 2022)</td>
- </tr>
+<table>
+    <tr>
+     <td align="center" colspan="3">Keypad reference: Holding keys for 2 seconds<br>(Firmware from 2022)</td>
+    </tr>
     <tr>
      <td align="center">1<br>Enable <a href="#how-to-set-up-the-alarm">Alarm</a></td>
      <td align="center">2<br>Disable <a href="#how-to-set-up-the-alarm">Alarm</a></td>
