@@ -94,6 +94,60 @@ Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed afte
 
 ### Keypad reference
 
+In the following, "pressing" means briefly pressing a key, "holding" means keeping the key pressed for 2 seconds or longer.
+
+<table>
+    <tr>
+     <td align="center" colspan="2">Keypad reference: Destination time programming<br>(&#9166; = ENTER key)</td>
+    </tr>
+    <tr>
+     <td align="center">mmyddyyyhhmm&#9166;</td>
+     <td align="center">Set complete date/time for <a href="#time-travel">Time Travel</a></td>
+    </tr>
+    <tr>
+     <td align="center">mmddyyyy&#9166;</td>
+     <td align="center">Set date for <a href="#time-travel">Time Travel</a></td>
+    </tr>
+    <tr>
+     <td align="center">hhmm&#9166;</td>
+     <td align="center">Set time for <a href="#time-travel">Time Travel</a></td>
+    </tr>
+</table>
+
+<table>
+    <tr>
+     <td align="center" colspan="2">Keypad reference: Special key sequences<br>(&#9166; = ENTER key)</td>
+    </tr>
+    <tr>
+     <td align="center">11hhmm&#9166;</td>
+     <td align="center">Set <a href="#how-to-set-up-the-alarm">alarm</a> to hh:mm</td>
+    </tr>
+    <tr>
+     <td align="center">111&#9166;</td>
+     <td align="center">Toggle <a href="#room-condition-mode-temperaturehumidity-sensor">Room Condition mode</a></td>
+    </tr>
+    <tr>
+     <td align="center">222&#9166;</td>
+     <td align="center"><a href="#the-music-player">Music Player</a>: Shuffle off</td>
+    </tr>
+    <tr>
+     <td align="center">555&#9166;</td>
+     <td align="center"><a href="#the-music-player">Music Player</a>: Shuffle on</td>
+    </tr>
+    <tr>
+     <td align="center">888&#9166;</td>
+     <td align="center"><a href="#the-music-player">Music Player</a>: Goto song 0</td>
+    </tr>
+    <tr>
+     <td align="center">888xxx&#9166;</td>
+     <td align="center"><a href="#the-music-player">Music Player</a>: Goto song xxx</td>
+    </tr>
+    <tr>
+     <td align="center">64738&#9166;</td>
+     <td align="center">Reboot the device</td>
+    </tr>
+</table>
+
 <table>
     <tr>
      <td align="center" colspan="3">Keypad reference: Holding keys for 2 seconds<br>(Firmware from 2023)</td>
@@ -143,40 +197,6 @@ Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed afte
      <td align="center"></td>
      <td align="center">0<br><a href="#time-travel">Time Travel</a></td>
      <td align="center"></td>
-    </tr>
-</table>
-
-<table>
-    <tr>
-     <td align="center" colspan="2">Keypad reference: Special key sequences<br>(&#9166; = ENTER key)</td>
-    </tr>
-    <tr>
-     <td align="center">11hhmm&#9166;</td>
-     <td align="center">Set <a href="#how-to-set-up-the-alarm">alarm</a> to hh:mm</td>
-    </tr>
-    <tr>
-     <td align="center">111&#9166;</td>
-     <td align="center">Toggle <a href="#room-condition-mode-temperaturehumidity-sensor">Room Condition mode</a></td>
-    </tr>
-    <tr>
-     <td align="center">222&#9166;</td>
-     <td align="center"><a href="#the-music-player">Music Player</a>: Shuffle off</td>
-    </tr>
-    <tr>
-     <td align="center">555&#9166;</td>
-     <td align="center"><a href="#the-music-player">Music Player</a>: Shuffle on</td>
-    </tr>
-    <tr>
-     <td align="center">888&#9166;</td>
-     <td align="center"><a href="#the-music-player">Music Player</a>: Goto song 0</td>
-    </tr>
-    <tr>
-     <td align="center">888xxx&#9166;</td>
-     <td align="center"><a href="#the-music-player">Music Player</a>: Goto song xxx</td>
-    </tr>
-    <tr>
-     <td align="center">64738&#9166;</td>
-     <td align="center">Reboot the device</td>
     </tr>
 </table>
 
