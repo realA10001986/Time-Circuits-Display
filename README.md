@@ -95,7 +95,7 @@ Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed afte
 
 <table align="center">
    <tr>
-    <td colspan="3">Firmware from 2022</td>
+    <td align="center" colspan="3">Firmware from 2022</td>
  </tr>
     <tr>
         <td align="center">1<br>Enable Alarm </td>
