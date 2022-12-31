@@ -542,7 +542,7 @@ Selects 24-hour clock mode, ie hours go from 0 to 23, "AM" and "PM" are permanen
 
 In "decorative" mode the device cycles through a list of pre-programmed, movie-accurate *destination* and *last time departed* times. This mode is enabled by setting the "Time-rotation Interval" to anything but "off". The device will cycle through named list every 5th, 10th, 15th, 30th or 60th minute, and thereby change the displays. Set the interval to "off" to disable "decorative" mode. See [here](#operation-basics)
 
-### Network & time synchronization
+### Network & time synchronization settings
 
 #### Hostname
 
@@ -612,7 +612,7 @@ Enables or disables schedules night mode, as configured by the following options
 
 #### Schedule
 
-See [here](#night-mode)
+Selects a schedule for night-mode. See [here](#night-mode)
 
 #### Daily night-mode start hour (0-23)
 
@@ -688,7 +688,7 @@ Selects a delay (in millisconds) from when pressing the external time travel but
 
 For externally triggered time travels, this selects if the entire sequence (including acceleration, if a speedo is available) should be played, or the only the short re-entry sequence. See [here](#fake-power-onoff-switch-external-time-travel-trigger)
 
-### Other peripherals settings
+### Settings for other peripherals
 
 #### Use compatible external props
 
