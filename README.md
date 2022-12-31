@@ -48,7 +48,7 @@ There are different alternative ways to install this firmware:
 
 ### Audio file installation
 
-While the sound files are part of this software, they need to be installed separately. However, the sound files are not updated as often as the firmware itself. If you have previously installed the latest version of the sound-pack, you normally don't have to re-install the audio files when you update the firmware. Only if either a new version of the sound-pack is released, or your clock is quiet after a firmware update, a re-installation is needed.
+The firmware comes with a number of sound files which need to be installed separately. These sound files are not updated as often as the firmware itself. If you have previously installed the latest version of the sound-pack, you normally don't have to re-install the audio files when you update the firmware. Only if either a new version of the sound-pack is released, or your clock is quiet after a firmware update, a re-installation is needed.
 
 - Download "install/sound-pack-xxxxxxxx.zip" and extract it to the root directory of of a FAT32 formatted SD card
 - power down the clock,
@@ -58,8 +58,6 @@ While the sound files are part of this software, they need to be installed separ
 If (and only if) the **exact and complete contents of sound-pack archive** is found on the SD card during boot, the keypad will have an "INSTALL AUDIO FILES" menu item, and the Config portal will show an "Audio file installation" option at the bottom of the "Setup" page.
 
 If you choose to use the Config Portal, trigger the audio file installation process by writing "COPY" (without the quotation marks) into the empty text field in the "Audio file installation" section, and clicking on "Save". The device will then copy all the default audio files from the SD card to its internal flash file system. The SD card can - and should - be removed afterwards. The keypad menu method is described [here](#how-to-install-the-default-audio-files).
-
-(Expert way: If you are familiar with the Arduino IDE (1.8), you could use "Tools"->"ESP32 Sketch Data Upload" to upload the sound files; you can use the files of the "data"-folder of this repo, or the extracted contents of "install/sound-pack.zip". Version 2.x of the IDE lacks that data upload menu item and/or plug-ins; in this case go the way described above, using an SD card.)
 
 ## Short summary of first steps
 
@@ -242,9 +240,9 @@ The SD card, apart from being used to [install](#audio-file-installation) the de
 
 ### Sound file substitution
 
-The provided audio files ("sound-pack") are, after [proper installation](#audio-file-installation), part of the firmware and stored in the device's flash memory. 
+The provided audio files ("sound-pack") are, after [proper installation](#audio-file-installation), integral part of the firmware and stored in the device's flash memory. 
 
-These sounds can be substituted by your own sound files on a FAT32-formatted SD card. These files will be played back directly from the SD card during operation, so the SD card has to remain in the slot. The built-in [Audio file installer](#audio-file-installation) cannot be used to replace default sounds in the device's flash memory with custom sounds. 
+These sounds can be substituted by your own sound files on a FAT32-formatted SD card. These files will be played back directly from the SD card during operation, so the SD card has to remain in the slot. The built-in [Audio file installer](#audio-file-installation) cannot be used to replace default sounds in the device's flash memory with custom sounds.
 
 Your replacements need to be put in the root (top-most) directoy of the SD card, be in mp3 format (128kbps) and named as follows:
 - "alarm.mp3". Played when the alarm sounds.
