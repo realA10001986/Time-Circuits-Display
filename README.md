@@ -520,6 +520,8 @@ More here: [Link](https://github.com/realA10001986/Time-Circuits-Display/wiki/Ti
 
 ## Appendix: The Config Portal
 
+### Basic settings
+
 #### Make time travels persistent
 
 See [here](#persistent--non-persistent-time-travels)
@@ -539,6 +541,8 @@ Selects 24-hour clock mode, ie hours go from 0 to 23, "AM" and "PM" are permanen
 #### Time-rotation interval
 
 In "decorative" mode the device cycles through a list of pre-programmed, movie-accurate *destination* and *last time departed* times. This mode is enabled by setting the "Time-rotation Interval" to anything but "off". The device will cycle through named list every 5th, 10th, 15th, 30th or 60th minute, and thereby change the displays. Set the interval to "off" to disable "decorative" mode. See [here](#operation-basics)
+
+### Network & time synchronization
 
 #### Hostname
 
@@ -574,6 +578,8 @@ Name of your preferred NTP (network time protocol) server for time synchronizati
 
 If a [GPS receiver](#gps-receiver) is connected, this selects whether GPS time is used for time synchronization.
 
+### Display preferences
+
 #### Destination Time display brightness
 
 Selects the brightness of the *destination time* display. Ranges from 0 (darkest) to 15 (brightest).
@@ -585,6 +591,8 @@ Selects the brightness of the *present time* display. Ranges from 0 (darkest) to
 #### Last Time Dep. display brightness
 
 Selects the brightness of the *last time departed* display. Ranges from 0 (darkest) to 15 (brightest).
+
+### Night-mode
 
 #### Destination time off in night mode
 
@@ -622,6 +630,8 @@ Select whether to use a light sensor's data to enable night-mode. See [here](#ni
 
 If the light sensor reports a number of lux below or equal to this value, night-mode is activated. See [here](#night-mode)
 
+### Temperature/humidity sensor settings
+
 #### Use temperature sensor
 
 Select whether to use a temperature/humidity sensor. The sensor data is used for room condition mode, and the temperature is optionally displayed on a connected Speedo display. See [here](#room-condition-mode-temperaturehumidity-sensor)
@@ -633,6 +643,8 @@ Selects between Fahrenheit and Celsius for temperature display.
 #### Temperature offset
 
 This offset, which can range from -3.0 to 3.0, is added to the sensor measurement, in order to compensate sensor inaccuracy or suboptimal sensor placement.
+
+### Speedometer settings
 
 #### Use speedometer display
 
@@ -662,6 +674,8 @@ Selects whether temperature as received from a suitable sensor is displayed on t
 
 Brightness of speedo display when displaying temperature.
 
+### External switches/buttons
+
 #### Use fake power switch
 
 Check this if you want to use a fake power switch. See [here](#fake-power-onoff-switch-external-time-travel-trigger)
@@ -674,6 +688,8 @@ Selects a delay (in millisconds) from when pressing the external time travel but
 
 For externally triggered time travels, this selects if the entire sequence (including acceleration, if a speedo is available) should be played, or the only the short re-entry sequence. See [here](#fake-power-onoff-switch-external-time-travel-trigger)
 
+### Other peripherals settings
+
 #### Use compatible external props
 
 This selects whether a GPIO pin is activated upon a time-travel in order to control external props. See [here](#controlling-other-props)
@@ -682,6 +698,8 @@ This selects whether a GPIO pin is activated upon a time-travel in order to cont
 
 If other props are connected, they might bring their own time travel sound effects. In this case, you can uncheck this to disable the Time Circuit's own time travel sounds. Note that this only covers sounds played during time travel, not for other sound effects.
 
+### Music Player settings
+
 #### Music folder number
 
 Selects the folder number for the Music Player. The folders are named "music0" through "music9"; this config option selects the digit in the folder name.
@@ -689,6 +707,8 @@ Selects the folder number for the Music Player. The folders are named "music0" t
 #### Shuffle at startup
 
 When checked, songs are shuffled when the device is booted. When unchecked, songs will be played in order.
+
+### Other settings
 
 #### 4MHz SD clock speed
 
