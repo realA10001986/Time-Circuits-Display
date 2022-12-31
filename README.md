@@ -686,6 +686,10 @@ If other props are connected, they might bring their own time travel sound effec
 
 Selects the folder number for the Music Player. The folders are named "music0" through "music9"; this config option selects the digit in the folder name.
 
+#### Shuffle at startup
+
+When checked, songs are shuffled when the device is booted. When unchecked, songs will be played in order.
+
 #### 4MHz SD clock speed
 
 By default, the clock speed for SD card access is set to 16MHz. If you experience problems with your SD card, such as sound cut-offs or the card being inaccessible, try setting the clock speed to 4MHz by checking this option. (General note: Not all SD cards work with the device. If the SD card is inaccessible with both clock speed settings, try another SD card brand. For instance, I had no luck with a Sandisk Ultra 32GB.)
