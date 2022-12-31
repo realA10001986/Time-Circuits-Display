@@ -155,27 +155,27 @@ Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed afte
      <td align="center">Set alarm to hh:mm</td>
     </tr>
     <tr>
-     <td align="center">111</td>
+     <td align="center">111&#9166;</td>
      <td align="center">Toggle Room Condition mode</td>
     </tr>
     <tr>
-     <td align="center">222</td>
+     <td align="center">222&#9166;</td>
      <td align="center">MusicPlayer: Shuffle off</td>
     </tr>
     <tr>
-     <td align="center">555</td>
+     <td align="center">555&#9166;</td>
      <td align="center">MusicPlayer: Shuffle on</td>
     </tr>
     <tr>
-     <td align="center">888</td>
+     <td align="center">888&#9166;</td>
      <td align="center">MusicPlayer: Goto song 0</td>
     </tr>
     <tr>
-     <td align="center">888xxx</td>
+     <td align="center">888xxx&#9166;</td>
      <td align="center">MusicPlayer: Goto song xxx</td>
     </tr>
     <tr>
-     <td align="center">64738</td>
+     <td align="center">64738&#9166;</td>
      <td align="center">Reboot the device</td>
     </tr>
 </table>
