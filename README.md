@@ -152,7 +152,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
 
 <table>
     <tr>
-     <td align="center" colspan="3">Keypad reference: Holding keys for 2 seconds<br>(Firmware from 2023)</td>
+     <td align="center" colspan="3">Keypad reference: Holding keys for 2 seconds<br>(Firmware versions from 2023 and later)</td>
     </tr>
     <tr>
      <td align="center">1<br>Toggle <a href="#how-to-set-up-the-alarm">Alarm</a> on/off</td>
@@ -178,7 +178,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
 
 <table>
     <tr>
-     <td align="center" colspan="3">Keypad reference: Holding keys for 2 seconds<br>(Firmware from 2022)</td>
+     <td align="center" colspan="3">Keypad reference: Holding keys for 2 seconds<br>(Firmware versions from 2022)</td>
     </tr>
     <tr>
      <td align="center">1<br>Enable <a href="#how-to-set-up-the-alarm">Alarm</a></td>
