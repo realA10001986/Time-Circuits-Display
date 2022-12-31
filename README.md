@@ -234,6 +234,46 @@ If both a schedule is enabled and the light sensor option is checked in the Conf
 
 Switching on/off night mode manually deactivates any schedule and the light sensor for 30 minutes. Afterwards, a programmed schedule and/or the light sensor will overrule the manual setting.
 
+## SD card
+
+Preface note on SD cards: For unknown reasons, some SD cards simply do not work with this device. For instance, I had no luck with a Sandisk Ultra 32GB card. If your SD card is not recognized, check if it is formatted in FAT32 format (not exFAT!). Also, the size must not exceed 32GB (as larger cards cannot be formatted with FAT32).
+
+The SD card, apart from being used to [install](#audio-file-installation) the default audio files, can be used for substituting default sounds, some additional custom sounds, and for music played back by the [Music player](#the-music-player).
+
+### Sound file substitution
+
+The provided audio files ("sound-pack") are, after [proper installation](#audio-file-installation), part of the firmware and stored in the device's flash memory. 
+
+These sounds can be substituted by your own sound files on a FAT32-formatted SD card. These files will be played back directly from the SD card during operation, so the SD card has to remain in the slot. The built-in [Audio file installer](#audio-file-installation) cannot be used to replace default sounds in the device's flash memory with custom sounds. 
+
+Your replacements need to be put in the root (top-most) directoy of the SD card, be in mp3 format (128kbps) and named as follows:
+- "alarm.mp3". Played when the alarm sounds.
+- "alarmon.mp3". Played when enabling the alarm
+- "alarmoff.mp3". Played when disabling the alarm
+- "nmon.mp3". Played when manually enabling night mode
+- "nmoff.mp3". Played when manually disabling night mode
+
+The following sounds are time-sync'd to display action. If you decide to substitute these with your own, be prepared to lose synchronicity:
+- "enter.mp3". Played when a date was entered and ENTER was pressed
+- "baddate.mp3". Played when a bad (too short or too long) date was entered and ENTER was pressed
+- "intro.mp3": Played during the power-up intro
+- "travelstart.mp3". Played when a time travel starts.
+- "timetravel.mp3". Played when re-entry of a time travel takes place.
+- "shutdown.mp3". Played when the device is fake "powered down" using an external switch (see below)
+- "startup.mp3". Played when the clock is connected to power and finished booting
+
+If you intend to use the very same SD card that you used for installing the default sound files, please remove the file "TCD_def_snd.txt" from the SD card first.
+
+### Additional Custom Sounds
+
+The firmware supports some additional user-provided sound effects, which must reside on the SD card. If the respective file is present, it will be used. If that file is absent, no sound will be played.
+
+- "hour.mp3": Will be played every hour, on the hour. This feature is disabled in night mode.
+- "hour-xx.mp3", xx being 00 through 23: Sounds-on-the-hour for specific hours that will be played instead of "hour.mp3". If a sound for a specific hour is not present, "hour.mp3" will be played, if that one exists.
+- "key3.mp3" and/or "key6.mp3": Will be played if you hold the "3"/"6" key for 2 seconds.
+
+"hour.mp3"/"hour-xx.mp3", "key3.mp3" and "key6.mp3" are not provided here. You can use any mp3, with 128kpbs or less.
+
 ## The Music Player
 
 Coming soon
@@ -364,46 +404,7 @@ Note that when entering dates/times into the *destination time* or *last time de
  
  - While the menu is active, press ENTER repeatedly until "END" is displayed.
  - Hold ENTER to leave the menu
- 
-## SD card
 
-Preface note on SD cards: For unknown reasons, some SD cards simply do not work with this device. For instance, I had no luck with a Sandisk Ultra 32GB card. If your SD card is not recognized, check if it is formatted in FAT32 format (not exFAT!). Also, the size must not exceed 32GB (as larger cards cannot be formatted with FAT32).
-
-The SD card, apart from being used to [install](#audio-file-installation) the default audio files, can be used for substitute default sounds, some additional custom sounds, and for music played back by the [Music player](#the-music-player).
-
-### Sound file substitution
-
-The provided audio files ("sound-pack") are, after [proper installation](#audio-file-installation), part of the firmware and stored in the device's flash memory. 
-
-These sounds can be substituted by your own sound files on a FAT32-formatted SD card. These files will be played back directly from the SD card during operation, so the SD card has to remain in the slot. The built-in [Audio file installer](#audio-file-installation) cannot be used to replace default sounds in the device's flash memory with custom sounds. 
-
-Your replacements need to be put in the root (top-most) directoy of the SD card, be in mp3 format (128kbps) and named as follows:
-- "alarm.mp3". Played when the alarm sounds.
-- "alarmon.mp3". Played when enabling the alarm
-- "alarmoff.mp3". Played when disabling the alarm
-- "nmon.mp3". Played when manually enabling night mode
-- "nmoff.mp3". Played when manually disabling night mode
-
-The following sounds are time-sync'd to display action. If you decide to substitute these with your own, be prepared to lose synchronicity:
-- "enter.mp3". Played when a date was entered and ENTER was pressed
-- "baddate.mp3". Played when a bad (too short or too long) date was entered and ENTER was pressed
-- "intro.mp3": Played during the power-up intro
-- "travelstart.mp3". Played when a time travel starts.
-- "timetravel.mp3". Played when re-entry of a time travel takes place.
-- "shutdown.mp3". Played when the device is fake "powered down" using an external switch (see below)
-- "startup.mp3". Played when the clock is connected to power and finished booting
-
-If you intend to use the very same SD card that you used for installing the default sound files, please remove the file "TCD_def_snd.txt" from the SD card first.
-
-### Additional Custom Sounds
-
-The firmware supports some additional user-provided sound effects, which must reside on the SD card. If the respective file is present, it will be used. If that file is absent, no sound will be played.
-
-- "hour.mp3": Will be played every hour, on the hour. This feature is disabled in night mode.
-- "hour-xx.mp3", xx being 00 through 23: Sounds-on-the-hour for specific hours that will be played instead of "hour.mp3". If a sound for a specific hour is not present, "hour.mp3" will be played, if that one exists.
-- "key3.mp3" and/or "key6.mp3": Will be played if you hold the "3"/"6" key for 2 seconds.
-
-"hour.mp3"/"hour-xx.mp3", "key3.mp3" and "key6.mp3" are not provided here. You can use any mp3, with 128kpbs or less.
 
 ## Fake "power on/off" Switch; External Time Travel Trigger
 
