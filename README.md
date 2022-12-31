@@ -546,7 +546,7 @@ In "decorative" mode the device cycles through a list of pre-programmed, movie-a
 
 #### Hostname
 
-The device's hostname in the WiFi network. Defaults to 'timecircuits'. This also is the domain name at which the Config Portal is accessible from a browser in the same local network. The URL of the Config Portal then is http://<i>hostname</i>.local (the default is http://timecircuits.local )
+The device's hostname in the WiFi network. Defaults to 'timecircuits'. This also is the domain name at which the Config Portal is accessible from a browser in the same local network. The URL of the Config Portal then is http://<i>hostname</i>.local (the default is http://timecircuits.local)
 
 If you have more than one clock in your local network, please give them unique hostnames.
 
