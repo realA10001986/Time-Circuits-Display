@@ -93,6 +93,32 @@ The clock only supports the [Gregorian Calendar](https://en.wikipedia.org/wiki/G
 
 Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed after 1BC. Nevertheless, it is possible to travel to year 0. In good old Hollywood tradition, I won't let facts and science stand in the way of an authentic movie experience.
 
+<table align="center">
+   <tr rowspan="3">
+    <td>Firmware from 2022</td>
+ </tr>
+    <tr>
+        <td align="center">1<br>Enable Alarm </td>
+        <td align="center">2<br>Disable Alarm</td>
+        <td align="center">3<br>Play "key3.mp3"</td>
+    </tr>
+    <tr>
+        <td align="center">4<br>Enable Night-Mode</td>
+        <td align="center">5<br>Disable Night-Mode</td>
+        <td align="center">6<br>Play "key6.mp3"</td>
+    </tr>
+    <tr>
+        <td align="center">7<br>Re-enable WiFi</td>
+        <td align="center">8<br>n/a</td>
+        <td align="center">9<br>Return from Time Travel</td>
+    </tr>
+    <tr>
+        <td align="center"></td>
+        <td align="center">8<br>n/a</td>
+        <td align="center">0<br>Time Travel</td>
+    </tr>
+</table>
+
 |A|B|C|
 |:---:|:---:|:---:|
 | 1<br>Enable Alarm | 2<br>Disable Alarm | 3<br>Play "key3.mp3" |
