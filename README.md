@@ -18,7 +18,7 @@ Features include
 - Option to make time travels [persistent](#persistent--non-persistent-time-travels) over reboots
 - [Alarm function](#how-to-set-up-the-alarm)
 - [Night mode](#night-mode) (displays off or dimmed; manual, scheduled or sensor-controlled)
-- &#127381; (coming soon) Music player
+- &#127381; (coming soon) [Music player](#the-music-player)
 - [SD card](#sd-card) support for custom audio files for effects, &#127381; and music for the Music Player
 - Advanced network-accessible [Config Portal](#short-summary-of-first-steps) for setup &#127381; with mDNS support for easy access (http://timecircuits.local, hostname configurable)
 - [Keypad menu](#the-keypad-menu) for adjusting various settings and viewing IP address and WiFi status
