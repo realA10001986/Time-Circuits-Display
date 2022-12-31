@@ -146,6 +146,40 @@ Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed afte
     </tr>
 </table>
 
+<table>
+    <tr>
+     <td align="center" colspan="2">Keypad reference: Key sequences</td>
+    </tr>
+    <tr>
+     <td align="center">11hhmm</td>
+     <td align="center">Set alarm to hh:mm</td>
+    </tr>
+    <tr>
+     <td align="center">111</td>
+     <td align="center">Toggle Room Condition mode</td>
+    </tr>
+    <tr>
+     <td align="center">222</td>
+     <td align="center">MusicPlayer: Shuffle off</td>
+    </tr>
+    <tr>
+     <td align="center">555</td>
+     <td align="center">MusicPlayer: Shuffle on</td>
+    </tr>
+    <tr>
+     <td align="center">888</td>
+     <td align="center">MusicPlayer: Goto song 0</td>
+    </tr>
+    <tr>
+     <td align="center">888xxx</td>
+     <td align="center">MusicPlayer: Goto song xxx</td>
+    </tr>
+    <tr>
+     <td align="center">64738</td>
+     <td align="center">Reboot the device</td>
+    </tr>
+</table>
+
 ## Time travel
 
 To travel through time, hold "0" for 2 seconds. The *destination time*, as shown in the red display, will be your new *present time*, the old *present time* will be the *last time departed*. The new *present time* will continue to run like a normal clock.
@@ -180,7 +214,7 @@ Note that a non-zero Time-rotation Interval will force the device to cycle throu
 
 Night mode will, by default, switch off the *destination time* and *last time departed* displays, dim the *present time* display to a minimum, and reduce the volume of sound playback (except alarm). Apart from considerably increasing the displays' lifetime, night-mode reduces the power consumption of the device from around 4.5W to around 2.5W.
 
-To switch on night-mode manually, hold "4". To switch off night-mode, hold "5".
+To switch night-mode on/off manually, hold "4". (For firmware from 2022: To switch on night-mode manually, hold "4". To switch off night-mode, hold "5".)
 
 In the Config Portal, you can configure the displays' behavior in night-mode, as well as "scheduled night mode": You can choose from currently four time schedule presets, or enter daily start and end hour manually.
 
@@ -196,7 +230,7 @@ Finally, you can connect a light sensor to the device. If the measured lux level
 
 If both a schedule is enabled and the light sensor option is checked in the Config Portal, the sensor will overrule the schedule only in non-night-mode hours; ie it will never switch off night mode when night mode is active according to the schedule.
 
-Switching on/off night mode manually (4 or 5 on the keypad) deactivates any schedule and the light sensor for 30 minutes. Afterwards, a programmed schedule and/or the light sensor will overrule the manual setting.
+Switching on/off night mode manually deactivates any schedule and the light sensor for 30 minutes. Afterwards, a programmed schedule and/or the light sensor will overrule the manual setting.
 
 ## The Music Player
 
@@ -235,9 +269,11 @@ Pressing ENTER cycles through the list, holding ENTER selects an item, ie a mode
 - Choose the weekday(s) by repeatedly pressing ENTER
 - Hold ENTER to finalize your weekday selection. "SAVING" is displayed briefly.
 
-Under normal operation (ie outside of the menu), holding "1" enables the alarm, holding "2" disables it. When the alarm is set and enabled, the dot in the present time's minute field will light up. 
+Under normal operation (ie outside of the menu), holding "1" toggles the alarm on/off. (For firmware from 2022: Holding "1" enables the alarm, holding "2" disables it.) 
 
-The alarm time can also quickly be set by typing 11hhmm (eg 110645 for 6:45am, or 112300 for 11:00pm) and pressing ENTER, just like when setting a time travel destination time. (The weekday selection has still to be done via the keypad menu.)
+When the alarm is set and enabled, the dot in the present time's minute field will light up. 
+
+The alarm time can also quickly be set by typing 11hhmm (eg. 110645 for 6:45am, or 112300 for 11:00pm) and pressing ENTER, just like when setting a time travel destination time. (The weekday selection has still to be done via the keypad menu.)
 
 Note that the alarm is recurring, ie it rings at the programmed time, unless disabled. Also note, as mentioned, that the alarm is by default relative to your actual *present time*, not the time displayed (eg after a time travel). It can, however, be configured to be based on the time displayed, in the Config Portal.
 
