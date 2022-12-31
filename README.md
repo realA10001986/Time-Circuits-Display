@@ -93,6 +93,11 @@ The clock only supports the [Gregorian Calendar](https://en.wikipedia.org/wiki/G
 
 Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed after 1BC. Nevertheless, it is possible to travel to year 0. In good old Hollywood tradition, I won't let facts and science stand in the way of an authentic movie experience.
 
+| Enable Alarm | Disable Alarm | Play "key3.mp3" |
+| Enable Night-Mode | Disable Night-Mode | Play "key6.mp3" |
+| Re-enable WiFi | n/a      |  Return from Time Travel |
+|   | Time Travel      |   |
+
 ## Time travel
 
 To travel through time, hold "0" for 2 seconds. The *destination time*, as shown in the red display, will be your new *present time*, the old *present time* will be the *last time departed*. The new *present time* will continue to run like a normal clock.
