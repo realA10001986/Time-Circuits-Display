@@ -156,7 +156,7 @@ Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed afte
     </tr>
     <tr>
      <td align="center">111&#9166;</td>
-     <td align="center">Toggle <a href="#room-condition-mode-temperaturehumidity-sensor">Room condition mode</a></td>
+     <td align="center">Toggle <a href="#room-condition-mode-temperaturehumidity-sensor">Room Condition mode</a></td>
     </tr>
     <tr>
      <td align="center">222&#9166;</td>
@@ -212,25 +212,25 @@ Note that a non-zero Time-rotation Interval will force the device to cycle throu
 
 ## Night mode
 
-Night mode will, by default, switch off the *destination time* and *last time departed* displays, dim the *present time* display to a minimum, and reduce the volume of sound playback (except alarm). Apart from considerably increasing the displays' lifetime, night-mode reduces the power consumption of the device from around 4.5W to around 2.5W.
+In Night-mode, by default, the *destination time* and *last time departed* displays are switched off, the *present time* display is dimmed to a minimum, and the volume of sound playback is reduced (except the alarm). Apart from considerably increasing the displays' lifetime, night-mode reduces the power consumption of the device from around 4.5W to around 2.5W.
 
-To switch night-mode on/off manually, hold "4". (For firmware from 2022: To switch on night-mode manually, hold "4". To switch off night-mode, hold "5".)
+To toggle night-mode on/off manually, hold "4". (For firmware from 2022: To switch on night-mode manually, hold "4". To switch off night-mode, hold "5".)
 
 In the Config Portal, you can configure the displays' behavior in night-mode, as well as "scheduled night mode": You can choose from currently four time schedule presets, or enter daily start and end hour manually.
 
-The presets are for (hopefully) typical home, office and shop setups, and they assume the clock to be in use (ie night mode off) at the following times:
+The presets are for (hopefully) typical home, office and shop setups, and they assume the clock to be in use (ie night-mode off) at the following times:
 - Home: Mon-Thu 5pm-11pm, Fri 1pm-1am, Sat 9am-1am, Sun 9am-11pm
 - Office (1): Mon-Fri 9am-5pm
 - Office (2): Mon-Thu 7am-5pm, Fri 7am-2pm
 - Shop: Mon-Wed 8am-8pm, Thu-Fri 8am-9pm, Sat 8am-5pm
 
-The "daily schedule" works by entering start and end in the text fields below. The clock will go into night mode at the defined start hour (xx:00), and return to normal operation at the end hour (yy:00). 
+The "daily schedule" works by entering start and end in the text fields below. The clock will go into night-mode at the defined start hour (xx:00), and return to normal operation at the end hour (yy:00). 
 
-Finally, you can connect a light sensor to the device. If the measured lux level is below the configured threshold, the device will go into night mode. Three sensor types are supported: TSL2561, BH1750, VEML7700/VEML6030, connected through i2c with their respective default slave address. The VEML7700 can only be connected if no GPS receiver is connected at the same time; the 6030 needs its address to be set to 0x48 if a GPS receiver is present at the same time. All these sensor types are readily available from Adafruit or Seeed (Grove). Only one light sensor can be used at the same time.
+Finally, you can also connect a light sensor to the device. If the measured lux level is below or equal the configured threshold, the device will go into night-mode. Three sensor types are supported: TSL2561, BH1750, VEML7700/VEML6030, connected through i2c with their respective default slave address. The VEML7700 can only be connected if no GPS receiver is connected at the same time; the 6030 needs its address to be set to 0x48 if a GPS receiver is present at the same time. All these sensor types are readily available from Adafruit or Seeed (Grove). Only one light sensor can be used at the same time.
 
-If both a schedule is enabled and the light sensor option is checked in the Config Portal, the sensor will overrule the schedule only in non-night-mode hours; ie it will never switch off night mode when night mode is active according to the schedule.
+If both a schedule is enabled and the light sensor option is checked in the Config Portal, the sensor will overrule the schedule only in non-night-mode hours; ie it will never switch off night-mode when night-mode is active according to the schedule.
 
-Switching on/off night mode manually deactivates any schedule and the light sensor for 30 minutes. Afterwards, a programmed schedule and/or the light sensor will overrule the manual setting.
+Switching on/off night-mode manually deactivates any schedule and the light sensor for 30 minutes. Afterwards, a programmed schedule and/or the light sensor will overrule the manual setting.
 
 ## SD card
 
