@@ -113,44 +113,6 @@ void settings_setup()
     EEPROM.begin(512);
 
     #ifdef TC_DBG
-    Serial.println(F("settings_setup: Mounting SD..."));
-    #endif
-
-    // Set up SD card
-    SPI.begin(SPI_SCK_PIN, SPI_MISO_PIN, SPI_MOSI_PIN);
-
-    haveSD = false;
-
-    if (!SD.begin(SD_CS_PIN)) {
-
-        #ifdef TC_DBG
-        Serial.println(F("No SD card found"));
-        #endif
-
-    } else {
-
-        #ifdef TC_DBG
-        Serial.println(F("SD card initialized"));
-        #endif
-
-        uint8_t cardType = SD.cardType();
-        if(cardType == CARD_NONE) {
-
-            Serial.println(F("No SD card inserted"));
-
-        } else {
-
-            #ifdef TC_DBG
-            Serial.print(F("SD card type "));
-            Serial.println(cardType, DEC);
-            #endif
-
-            haveSD = true;
-
-        }
-    }
-
-    #ifdef TC_DBG
     Serial.println(F("settings_setup: Mounting flash FS..."));
     #endif
 
@@ -192,11 +154,6 @@ void settings_setup()
             digitalWrite(WHITE_LED_PIN, HIGH);
             while(digitalRead(ENTER_BUTTON_PIN)) { }
             digitalWrite(WHITE_LED_PIN, LOW);
-        }
-
-        // Check if SD contains our default sound files
-        if(haveSD) {
-            allowCPA = check_if_default_audio_present();
         }
 
         // Read our main config file
@@ -329,7 +286,7 @@ void settings_setup()
                     } else writedefault = true;
                     if(json["luxLimit"]) {
                         strcpy(settings.luxLimit, json["luxLimit"]);
-                        writedefault |= checkValidNumParm(settings.luxLimit, 0, 100000, DEF_LUX_LIMIT);
+                        writedefault |= checkValidNumParm(settings.luxLimit, 0, 50000, DEF_LUX_LIMIT);
                     } else writedefault = true;
                     #endif
 
@@ -412,6 +369,20 @@ void settings_setup()
                         writedefault |= checkValidNumParm(settings.playTTsnds, 0, 1, DEF_PLAY_TT_SND);
                     } else writedefault = true;
 
+                    if(json["musSfx"]) {
+                        strcpy(settings.musSfx, json["musSfx"]);
+                        writedefault |= checkValidNumParm(settings.musSfx, 0, 9, DEF_MUS_SFX);
+                    } else writedefault = true;
+                    if(json["shuffle"]) {
+                        strcpy(settings.shuffle, json["shuffle"]);
+                        writedefault |= checkValidNumParm(settings.shuffle, 0, 1, DEF_SHUFFLE);
+                    } else writedefault = true;
+
+                    if(json["sdFreq"]) {
+                        strcpy(settings.sdFreq, json["sdFreq"]);
+                        writedefault |= checkValidNumParm(settings.sdFreq, 0, 1, DEF_SD_FREQ);
+                    } else writedefault = true;
+
                 } else {
 
                     Serial.println(F("settings_setup: Failed to parse settings file"));
@@ -448,6 +419,54 @@ void settings_setup()
 
         Serial.println(F("settings_setup: Failed to mount flash FS"));
 
+    }
+
+    #ifdef TC_DBG
+    Serial.println(F("settings_setup: Mounting SD..."));
+    #endif
+
+    // Set up SD card
+    SPI.begin(SPI_SCK_PIN, SPI_MISO_PIN, SPI_MOSI_PIN);
+
+    haveSD = false;
+
+    uint32_t sdfreq = (settings.sdFreq[0] == '0') ? 16000000 : 4000000;
+    #ifdef TC_DBG
+    Serial.print(F("settings_setup: SD/SPI frequency "));
+    Serial.print(sdfreq / 1000000);
+    Serial.println(F("MHz"));
+    #endif
+
+    if(!SD.begin(SD_CS_PIN, SPI, sdfreq)) {
+
+        Serial.println(F("No SD card found"));
+
+    } else {
+
+        #ifdef TC_DBG
+        Serial.println(F("SD card initialized"));
+        #endif
+
+        uint8_t cardType = SD.cardType();
+        if(cardType == CARD_NONE) {
+
+            Serial.println(F("No SD card inserted"));
+
+        } else {
+
+            #ifdef TC_DBG
+            Serial.print(F("SD card type "));
+            Serial.println(cardType, DEC);
+            #endif
+
+            haveSD = true;
+
+            // Check if SD contains our default sound files
+            if(haveFS) {
+                allowCPA = check_if_default_audio_present();
+            }
+
+        }
     }
 }
 
@@ -532,6 +551,11 @@ void write_settings()
     json["useETTO"] = settings.useETTO;
     #endif
     json["playTTsnds"] = settings.playTTsnds;
+
+    json["musSfx"] = settings.musSfx;
+    json["shuffle"] = settings.shuffle;
+
+    json["sdFreq"] = settings.sdFreq;
 
     File configFile = SPIFFS.open("/config.json", FILE_WRITE);
 

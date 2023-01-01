@@ -50,6 +50,7 @@
  *
  *     - set an alarm ("ALA-RM"),
  *     - set the audio volume (VOL-UME),
+ *     - select the music folder number ("MUSIC FOLDER NUMBER")
  *     - select the Time-rotation Interval ("TIME ROTATION INTERVAL"),
  *     - select the brightness for the three displays ("BRIGHTNESS"),
  *     - show network information ("NET-WORK"),
@@ -72,34 +73,45 @@
  *       available options.
  *     - Hold ENTER. "SAVING" is displayed briefly.
  *
- *    Under normal operation (ie outside of the menu), holding "1" enables 
- *    the alarm, holding "2" disables it. When the alarm is set and enabled, 
- *    the dot in the present time's minute field will light up.
+ *    Under normal operation (ie outside of the menu), holding "1" toggles 
+ *    the alarm on/off. When the alarm is set and enabled, the dot in the 
+ *    present time's minute field will light up.
  *    
- *    This quickly set the alarm time outside of the menu, enter "11hhmm" and 
+ *    This quickly set the alarm time outside of the menu, enter "11hhMM" and 
  *    press ENTER. (Weekday selection must be done through the menu.)
  *
  *    Note that the alarm is recurring, ie it rings at the programmed time
- *    unless disabled. Also note, as mentioned, that the alarm is by default
- *    relative to your actual present time, not the time displayed (eg after
- *    a time travel). It can, however, be configured to be based on the time
- *    displayed, in the Config Portal.
+ *    unless disabled. Also note that the alarm is by default relative to your 
+ *    actual present time, not the time displayed (eg after a time travel). 
+ *    It can, however, be configured to be based on the time displayed, in 
+ *    the Config Portal.
  *
  * How to set the audio volume:
  *
  *     Basically, and by default, the device uses the hardware volume knob to 
- *     determine the desired volume. You can change this to a software setting 
- *     as follows:
+ *     determine the desired volume. You can change this to a fixed level as 
+ *     follows:
  *
  *     - Hold ENTER to invoke main menu
  *     - Press ENTER until "VOL-UME" is shown
  *     - Hold ENTER
- *     - Press ENTER to toggle between "HW" (volume knob) or "SW" (software)
+ *     - Press ENTER to toggle between "USE VOLUME KNOB" and "FIXED LEVEL"
  *     - Hold ENTER to proceed
- *     - If you chose "SW", you can now select the desired level by pressing
- *       ENTER repeatedly. There are 16 levels available.
- *     - Hold ENTER to save and quit the menu
+ *     - If you chose "FIXED LEVEL", you can now select the desired level by 
+ *       pressing ENTER repeatedly. There are 16 levels available.
+ *     - Hold ENTER to save and quit the menu ("SAVING" is displayed
+ *       briefly)
  *
+ * How to select the Music Folder Number:
+ * 
+ *     - Hold ENTER to invoke main menu
+ *     - Press ENTER until "MUSIC FOLDER NUMBER" is shown
+ *     - Hold ENTER, "NUM" is displayed
+ *     - Press ENTER to cycle through the possible settings (0-9)
+ *       values.
+ *     - Hold ENTER to save and quit the menu ("SAVING" is displayed
+ *       briefly)
+ * 
  * How to select the Time-rotation Interval:
  *
  *     - Hold ENTER to invoke main menu
@@ -169,7 +181,7 @@
  *       no light and/or temperature sensors were detected during boot.
  *     - Hold ENTER to proceed
  *     - Sensor data is shown; if both light and temperature sensors are present,
- *       press ENTER to toggle between them.
+ *       press ENTER to toggle between their data.
  *     - Hold ENTER to leave the menu
  *
  * How to install the default audio files:
@@ -194,6 +206,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <EEPROM.h>
+#include <WiFi.h> 
 
 #include "clockdisplay.h"
 #include "tc_keypad.h"
@@ -206,16 +219,17 @@
 
 #define MODE_ALRM 0
 #define MODE_VOL  1
-#define MODE_AINT 2
-#define MODE_BRI  3
-#define MODE_NET  4
-#define MODE_DEST 5
-#define MODE_PRES 6
-#define MODE_DEPT 7
-#define MODE_SENS  8
-#define MODE_VER  9
-#define MODE_CPA  10
-#define MODE_END  11
+#define MODE_MSFX 2
+#define MODE_AINT 3
+#define MODE_BRI  4
+#define MODE_NET  5
+#define MODE_DEST 6
+#define MODE_PRES 7
+#define MODE_DEPT 8
+#define MODE_SENS 9
+#define MODE_VER  10
+#define MODE_CPA  11
+#define MODE_END  12
 #define MODE_MIN  MODE_ALRM
 #define MODE_MAX  MODE_END
 
@@ -263,6 +277,7 @@ static bool loadCurVolume();
 static void showCurVolHWSW();
 static void showCurVol();
 static void doSetVolume();
+static void doSetMSfx();
 static void doSetAlarm();
 static void saveAutoInterval();
 static void doSetAutoInterval();
@@ -311,6 +326,7 @@ void enter_menu()
     presentTime.setNightMode(false);
     departedTime.setNightMode(false);
 
+    mp_stop();
     stopAudio();
 
     // start with first menu item
@@ -516,6 +532,17 @@ void enter_menu()
 
         // Set volume
         doSetVolume();
+
+        allOff();
+        waitForEnterRelease();
+
+    } else if(menuItemNum == MODE_MSFX) {
+
+        allOff();
+        waitForEnterRelease();
+
+        // Set folder suffix (folder number)
+        doSetMSfx();
 
         allOff();
         waitForEnterRelease();
@@ -751,6 +778,14 @@ static void menuShow(int number)
         #endif
         destinationTime.on();
         departedTime.off();
+        break;
+    case MODE_MSFX:
+        destinationTime.showTextDirect("MUSIC");
+        presentTime.showTextDirect("FOLDER");
+        departedTime.showTextDirect("NUMBER");
+        presentTime.on();
+        destinationTime.on();
+        departedTime.on();
         break;
     case MODE_ALRM:   // Alarm
         #ifdef IS_ACAR_DISPLAY
@@ -1022,16 +1057,17 @@ static bool loadCurVolume()
 static void showCurVolHWSW()
 {
     if(curVolume == 255) {
-        destinationTime.showTextDirect("HW");
+        destinationTime.showTextDirect("USE");
         presentTime.showTextDirect("VOLUME");
         departedTime.showTextDirect("KNOB");
         destinationTime.on();
         presentTime.on();
         departedTime.on();
     } else {
-        destinationTime.showTextDirect("SW");
+        destinationTime.showTextDirect("FIXED");
+        presentTime.showTextDirect("LEVEL");
         destinationTime.on();
-        presentTime.off();
+        presentTime.on();
         departedTime.off();
     }
 }
@@ -1153,7 +1189,7 @@ static void doSetVolume()
             } else {
 
                 if(triggerPlay && (millis() - playNow >= 1*1000)) {
-                    play_file("/alarm.mp3", 1.0, true, 0);
+                    play_file("/alarm.mp3", 1.0, false, true);
                     triggerPlay = false;
                 }
 
@@ -1185,6 +1221,91 @@ static void doSetVolume()
     }
 }
 
+/*  
+ *   Music Folder Number ########################################
+ */
+
+static void doSetMSfx()
+{
+    bool msfxDone = false;
+    int msfx = atoi(settings.musSfx);
+
+    #ifdef IS_ACAR_DISPLAY
+    destinationTime.showSettingValDirect("NO", msfx, true);
+    #else
+    destinationTime.showSettingValDirect("NUM", msfx, true);
+    #endif
+    destinationTime.on();
+
+    presentTime.off();
+    departedTime.off();
+
+    isEnterKeyHeld = false;
+
+    timeout = 0;  // reset timeout
+
+    // Wait for enter
+    while(!checkTimeOut() && !msfxDone) {
+
+        // If pressed
+        if(checkEnterPress()) {
+
+            // wait for release
+            while(!checkTimeOut() && checkEnterPress()) {
+                // If hold threshold is passed, return false */
+                myloop();
+                if(isEnterKeyHeld) {
+                    isEnterKeyHeld = false;
+                    msfxDone = true;
+                    break;
+                }
+                delay(10);
+            }
+
+            if(!checkTimeOut() && !msfxDone) {
+
+                timeout = 0;  // button pressed, reset timeout
+
+                msfx++;
+                if(msfx > 9)
+                    msfx = 0;
+
+                #ifdef IS_ACAR_DISPLAY
+                destinationTime.showSettingValDirect("NO", msfx, true);
+                #else
+                destinationTime.showSettingValDirect("NUM", msfx, true);
+                #endif
+                
+            }
+
+        } else {
+
+            mydelay(50);
+
+        }
+
+    }
+
+    if(!checkTimeOut()) {  // only if there wasn't a timeout
+
+        presentTime.off();
+        departedTime.off();
+
+        destinationTime.showTextDirect(StrSaving);
+
+        // Save it
+        sprintf(settings.musSfx, "%d", msfx);
+        write_settings();
+        
+        updateConfigPortalValues();
+
+        mydelay(1000);
+
+        mp_init();
+
+    }
+}
+
 /*
  *  Alarm ######################################################
  */
@@ -1205,6 +1326,15 @@ bool alarmOn()
     }
 
     return true;
+}
+
+int toggleAlarm()
+{
+    if(alarmOnOff) {
+        alarmOff();
+        return 0;
+    }
+    return alarmOn() ? 1 : -1;
 }
 
 // Set Alarm

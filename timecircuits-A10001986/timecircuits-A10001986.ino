@@ -60,6 +60,28 @@
 
 /*  Changelog
  *
+ *  2023/01/01 (A10001986)
+ *    - Audio: Add mp3 music player. Music files must reside on the SD card in
+ *      /musicX (X being 0-9) folder(s), be named 000.mp3 up to 999.mp3
+ *      (starting at 000.mp3 in each folder), and be of max 128kpbs. Up to 
+ *      ten folders (music0-music9) are supported; the folder number is 
+ *      selected in the Config Portal or the keypad menu (default: 0, hence
+ *      /music0).
+ *      Keypad layout changed as follows:
+ *      Holding 1 now toggles the alarm on/off (formerly: Switch alarm on)
+ *      Holding 4 now toggles night-mode on/off (formerly: Switch nm on)
+ *      Holding 2 goes to previous song (formerly: Switch alarm off)
+ *      Holding 5 starts/stops the mp3 player (formerly: Switch nm off)
+ *      Holding 8 goes to next song
+ *      222+ENTER    disables shuffle (played in order 000->999)
+ *      555+ENTER    enables shuffle (played in random order)
+ *      888+ENTER    goes to start of playlist (000 or start of shuffled list)
+ *      888xxx+ENTER goes to position xxx in the playlist
+ *    - Audio: Skip ID3 tags before starting playback. This fixes a freeze when
+ *      attempting to play mp3 files with large tags, eg cover art.
+ *    - Increase SD/SPI frequency to 16Mhz (with option to reduce back to 4Mhz in
+ *      Config Portal)
+ *    - Light sensor: Allowed lux level range is now 0-50000
  *  2022/12/26 (A10001986)
  *    - Fix reading BME820 sensor (burst read all data registers for consistency)
  *    - Disable WiFi-power-save when user initiates firmware update
@@ -493,7 +515,6 @@
  *    - Support for time zones and automatic DST
  *    - More stable sound playback
  *    - various bug fixes
- *
  */
 
 #include "tc_global.h"

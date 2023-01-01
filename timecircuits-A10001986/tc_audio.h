@@ -25,16 +25,28 @@
 #ifndef _TC_AUDIO_H
 #define _TC_AUDIO_H
 
+extern bool audioInitDone;
 extern bool audioMute;
 
 extern uint8_t curVolume;
+
+extern bool haveMusic;
+extern bool mpActive;
 
 void audio_setup();
 void play_keypad_sound(char key);
 void play_hour_sound(int hour);
 void audio_loop();
-void play_file(const char *audio_file, double volumeFactor = 1.0, bool checkNightMode = true, int channel = 0, bool allowSD = true);
+void play_file(const char *audio_file, double volumeFactor = 1.0, bool checkNightMode = true, bool interruptMusic = false, bool allowSD = true, int channel = 0);
 bool checkAudioDone();
 void stopAudio();
+
+void mp_init();
+void mp_play(bool forcePlay = true);
+bool mp_stop();
+void mp_next(bool forcePlay = false);
+void mp_prev(bool forcePlay = false);
+int  mp_gotonum(int num, bool force = false);
+void mp_makeShuffle(bool enable);
 
 #endif

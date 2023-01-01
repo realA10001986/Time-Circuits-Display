@@ -46,6 +46,8 @@ void saveAlarm();
 
 void alarmOff();
 bool alarmOn();
+int  toggleAlarm();
+
 bool loadAutoInterval();
 
 void waitAudioDone();
