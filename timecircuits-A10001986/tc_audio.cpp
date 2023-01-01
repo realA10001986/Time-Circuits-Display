@@ -361,7 +361,7 @@ int mp_gotonum(int num, bool forcePlay)
 
     mp_play(forcePlay);
 
-    return mpCurrIdx;
+    return playList[mpCurrIdx];
 }
 
 static bool mp_play_int(bool force)
