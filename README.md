@@ -306,6 +306,8 @@ By default, the songs are played in order, starting at 000.mp3, followed by 001.
 
 Entering 888 followed by ENTER re-starts the player at song 000, and 888xxx (xxx = three digit number) jumps to song #xxx.
 
+See [here](#keypad-reference) for a list of controls of the music player.
+
 While the music player is playing music, most sound effects are disabled/muted, such as keypad sounds, sound-on-the-hour, sounds for switching on/off the alarm and night-mode. Initiating a time travel stops the music player, as does entering the keypad menu. The alarm will sound as usual and thereby stop the music player.
 
 ## The keypad menu
