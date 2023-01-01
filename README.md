@@ -296,7 +296,17 @@ The firmware supports some additional user-provided sound effects, which must re
 
 ## The Music Player
 
-Coming soon
+The firmware contains a simple music player to play mp3 files located on the SD card. In order to be recognized, your mp3 files need to be organized in music folders named *music0* through *music9* and their filenames must only consist of three-digit numbers, starting at 000.mp3, in consecutive order. No numbers should be left out. Each folder can hold 1000 files (000.mp3-999.mp3). *The maximum bitrate is 128kpbs.*
+
+The folder number is 0 by default, ie the player starts searching for music in folder *music0*. This folder number can be changed in the keypad menu as well as the Config Portal.
+
+To start and stop music playback, hold 5. Holding 2 jumps to the previous song, holding 8 to the next one.
+
+By default, the songs are played in order, starting at 000.mp3, followed by 001.mp3 and so on. By entering 555 and pressing ENTER, you can switch to shuffle mode, in which the songs are played in random order. Enter 222 followed by ENTER to switch back to consecutive mode.
+
+Entering 888 followed by ENTER re-starts the player at song 000, and 888xxx (xxx = three digit number) jumps to song #xxx.
+
+While the music player is playing music, most sound effects are disabled/muted, such as keypad sounds, sound-on-the-hour, sounds for switching on/off the alarm and night-mode. Initiating a time travel stops the music player, as does entering the keypad menu. The alarm will sound as usual and thereby stop the music player.
 
 ## The keypad menu
  
