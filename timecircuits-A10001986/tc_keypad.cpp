@@ -102,7 +102,7 @@ static unsigned long lastKeyPressed = 0;
 #define DATELEN_QALM   6   // 11HHMM       11, hour, min (alarm-set shortcut)
 #define DATELEN_INT    5   // xxxxx        reset
 #define DATELEN_TIME   4   // HHMM         hour, minute
-#define DATELEN_CODE   3   // xxx          (special; todo)
+#define DATELEN_CODE   3   // xxx          (special)
 #define DATELEN_CMIN   DATELEN_CODE
 #define DATELEN_CMAX   DATELEN_QALM
 
@@ -206,6 +206,8 @@ bool scanKeypad()
  */
 static void keypadEvent(char key, KeyState kstate)
 {
+    bool mpWasActive = false;
+    
     if(!FPBUnitIsOn || startup || timeTraveled || timeTravelP0 || timeTravelP1)
         return;
 
@@ -232,47 +234,96 @@ static void keypadEvent(char key, KeyState kstate)
             doKey = false;
             resetPresentTime();
             break;
-        case '1':    // "1" held down -> turn alarm on
+        case '1':    // "1" held down -> toggle alarm on/off [ex: turn alarm on]
             doKey = false;
-            if(alarmOn()) {
-                play_file("/alarmon.mp3", 1.0, true, 0);
-            } else {
-                play_file("/baddate.mp3", 1.0, true, 0);
+            switch(toggleAlarm()) {
+            case -1:
+                play_file("/baddate.mp3", 1.0, true, false);
+                break;
+            case 0:
+                play_file("/alarmoff.mp3", 1.0, true, false);
+                break;
+            case 1:
+                play_file("/alarmon.mp3", 1.0, true, false);
+                break;
             }
+            /*
+            if(alarmOn()) {
+                play_file("/alarmon.mp3", 1.0, true, false);
+            } else {
+                play_file("/baddate.mp3", 1.0, true, false);
+            }
+            */
             break;
-        case '2':    // "2" held down -> turn alarm off
+        case '2':    // "2" held down -> musicplayer prev [ex: turn alarm off]
             doKey = false;
+            if(haveMusic) {
+                mp_prev(mpActive);
+            }
+            /*
             alarmOff();
-            play_file("/alarmoff.mp3", 1.0, true, 0);
+            play_file("/alarmoff.mp3", 1.0, true, false);
+            */
             break;
-        case '4':    // "4" held down -> nightmode on
+        case '4':    // "4" held down -> toggle night-mode on/off [ex:nightmode on]
             doKey = false;
+            if(toggleNightMode()) {
+                manualNightMode = 1;
+                play_file("/nmon.mp3", 1.0, false, false);
+            } else {
+                manualNightMode = 0;
+                play_file("/nmoff.mp3", 1.0, false, false);
+            }
+            manualNMNow = millis();
+            /*
             nightModeOn();
             manualNightMode = 1;
             manualNMNow = millis();
-            play_file("/nmon.mp3", 1.0, false, 0);
+            play_file("/nmon.mp3", 1.0, false, false);
+            */
             break;
-        case '5':    // "5" held down -> nightmode off
+        case '5':    // "5" held down -> musicplayer start/stop [ex: nightmode off]
             doKey = false;
+            if(haveMusic) {
+                if(mpActive) {
+                    mp_stop();
+                } else {
+                    mp_play();
+                }
+            }
+            /*
             nightModeOff();
             manualNightMode = 0;
             manualNMNow = millis();
-            play_file("/nmoff.mp3", 1.0, false, 0);
+            play_file("/nmoff.mp3", 1.0, false, false);
+            */
             break;
-        case '3':    // "3" held down -> play audio file "key3"
+        case '3':    // "3" held down -> play audio file "key3.mp3"
             doKey = false;
-            play_file("/key3.mp3", 1.0, true, 0);
+            play_file("/key3.mp3", 1.0, true, true);
             break;
-        case '6':    // "6" held down -> play audio file "key6"
+        case '6':    // "6" held down -> play audio file "key6.mp3"
             doKey = false;
-            play_file("/key6.mp3", 1.0, true, 0);
+            play_file("/key6.mp3", 1.0, true, true);
             break;
         case '7':    // "7" held down -> re-enable WiFi if in PowerSave mode
             doKey = false;
-            play_file("/ping.mp3", 1.0, true, 0);
-            waitAudioDone();
-            // Enable WiFi even if in AP mode, with CP
-            wifiOn(0, true, false);    
+            if(wifiIsOn()) {
+                play_file("/ping.mp3", 1.0, true, false);
+            } else {
+                if(haveMusic) mpWasActive = mp_stop();
+                play_file("/ping.mp3", 1.0, true, true);
+                waitAudioDone();
+            }
+            // Enable WiFi / even if in AP mode / with CP
+            wifiOn(0, true, false);
+            // Restart mp if it was active before
+            if(mpWasActive) mp_play();   
+            break;
+        case '8':   // "8" held down -> musicplayer next
+            if(haveMusic) {
+                mp_next(mpActive);
+            }
             break;
         }
         break;
@@ -430,6 +481,7 @@ void keypad_loop()
         int  strLen = strlen(dateBuffer);
         bool invalidEntry = false;
         bool validEntry = false;
+        bool enterInterruptsMusic = false;
 
         isEnterKeyPressed = false;
         enterWasPressed = true;
@@ -454,21 +506,54 @@ void keypad_loop()
         } else if(strLen == DATELEN_CODE) {
 
             uint16_t code = atoi(dateBuffer);
+            char atxt[16];
+            
             switch(code) {
             #ifdef TC_HAVETEMP
-            case 111:
+            case 111:               // 111+ENTER: Toggle rc-mode
                 if(haveRcMode) {
                     toggleRcMode();
-                    validEntry = true;
                     if(tempSens.haveHum()) {
                         departedTime.off();
                         rcModeDepTime = true;
                     }
+                    validEntry = true;
                 } else {
                     invalidEntry = true;
                 }
                 break;
             #endif
+            case 222:               // 222+ENTER: Turn shuffle off
+            case 555:               // 555+ENTER: Turn shuffle on
+                if(haveMusic) {
+                    mp_makeShuffle((code == 555));
+                    #ifdef IS_ACAR_DISPLAY
+                    sprintf(atxt, "SHUFFLE  %s", (code == 555) ? " ON" : "OFF");
+                    #else
+                    sprintf(atxt, "SHUFFLE   %s", (code == 555) ? " ON" : "OFF");
+                    #endif
+                    destinationTime.showTextDirect(atxt);
+                    specDisp = 10;
+                    validEntry = true;
+                } else {
+                    invalidEntry = true;
+                }
+                break;
+            case 888:
+                if(haveMusic) {
+                    mp_gotonum(0, mpActive);
+                    #ifdef IS_ACAR_DISPLAY
+                    strcpy(atxt, "NEXT     000");
+                    #else
+                    strcpy(atxt, "NEXT      000");
+                    #endif
+                    destinationTime.showTextDirect(atxt);
+                    specDisp = 10;
+                    validEntry = true;
+                } else {
+                    invalidEntry = true;
+                }
+                break;
             default:
                 invalidEntry = true;
             }
@@ -490,28 +575,42 @@ void keypad_loop()
 
             char atxt[16];
             uint8_t aHour, aMin;
+            uint16_t num = 0;
             bool valid = false;
 
             if(dateBuffer[0] == '1' && dateBuffer[1] == '1') {
                 aHour = ((dateBuffer[2] - '0') * 10) + (dateBuffer[3] - '0');
                 aMin  = ((dateBuffer[4] - '0') * 10) + (dateBuffer[5] - '0');
                 if(aHour <= 23 && aMin <= 59) valid = true;
-            }
-            if(!valid) {
-                invalidEntry = true;
-            } else {
-                alarmHour = aHour;
-                alarmMinute = aMin;
-                alarmOnOff = true;
-                saveAlarm();
+                if(!valid) {
+                    invalidEntry = true;
+                } else {
+                    alarmHour = aHour;
+                    alarmMinute = aMin;
+                    alarmOnOff = true;
+                    saveAlarm();
+                    #ifdef IS_ACAR_DISPLAY
+                    sprintf(atxt, "ALARM   %02d%02d", alarmHour, alarmMinute);
+                    #else
+                    sprintf(atxt, "ALARM    %02d%02d", alarmHour, alarmMinute);
+                    #endif
+                    destinationTime.showTextDirect(atxt);
+                    specDisp = 10;
+                    validEntry = true;
+                }
+            } else if(haveMusic && dateBuffer[0] == '8' && dateBuffer[1] == '8' && dateBuffer[2] == '8') {
+                num = ((dateBuffer[3] - '0') * 100) + ((dateBuffer[4] - '0') * 10) + (dateBuffer[5] - '0');
+                num = mp_gotonum(num, mpActive);
                 #ifdef IS_ACAR_DISPLAY
-                sprintf(atxt, "ALARM   %02d%02d", alarmHour, alarmMinute);
+                sprintf(atxt, "NEXT     %03d", num);
                 #else
-                sprintf(atxt, "ALARM    %02d%02d", alarmHour, alarmMinute);
+                sprintf(atxt, "NEXT      %03d", num);
                 #endif
                 destinationTime.showTextDirect(atxt);
                 specDisp = 10;
                 validEntry = true;
+            } else {
+                invalidEntry = true;
             }
 
         } else {
@@ -589,6 +688,9 @@ void keypad_loop()
 
             // hour and min are checked in clockdisplay
 
+            // Normal date/time: ENTER-sound interrupts musicplayer
+            enterInterruptsMusic = true;
+
             switch(special) {
             case 1:
                 destinationTime.showTextDirect(spTxt);
@@ -596,15 +698,15 @@ void keypad_loop()
                 validEntry = true;
                 break;
             case 2:
-                play_file("/ee2.mp3", 1.0, true, 0, false);
+                play_file("/ee2.mp3", 1.0, true, true, false);
                 enterDelay = EE2_DELAY;
                 break;
             case 3:
-                play_file("/ee3.mp3", 1.0, true, 0, false);
+                play_file("/ee3.mp3", 1.0, true, true, false);
                 enterDelay = EE3_DELAY;
                 break;
             case 4:
-                play_file("/ee4.mp3", 1.0, true, 0, false);
+                play_file("/ee4.mp3", 1.0, true, true, false);
                 enterDelay = EE4_DELAY;
                 break;
             default:
@@ -633,12 +735,12 @@ void keypad_loop()
         }
 
         if(validEntry) {
-            play_file("/enter.mp3", 1.0, true, 0);
+            play_file("/enter.mp3", 1.0, true, enterInterruptsMusic);
             enterDelay = ENTER_DELAY;
         } else if(invalidEntry) {
-            play_file("/baddate.mp3", 1.0, true, 0);
+            play_file("/baddate.mp3", 1.0, true, enterInterruptsMusic);
             enterDelay = BADDATE_DELAY;
-        } 
+        }
 
         // Prepare for next input
         dateIndex = 0;
@@ -671,7 +773,7 @@ void keypad_loop()
                 timeNow = millis();
                 enterWasPressed = true;
                 enterDelay = EE1_DELAY3;
-                play_file("/ee1.mp3", 1.0, true, 0, false);
+                play_file("/ee1.mp3", 1.0, true, true, false);
                 break;
             case 4:
             case 11:
@@ -811,4 +913,14 @@ void nightModeOn()
 void nightModeOff()
 {
     setNightMode(false);
+}
+
+bool toggleNightMode()
+{
+    if(destinationTime.getNightMode()) {
+        setNightMode(false);
+        return false;
+    }
+    setNightMode(true);
+    return true;
 }

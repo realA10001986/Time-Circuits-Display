@@ -670,7 +670,7 @@ double tempSensor::BMx280_CalcTemp(uint32_t ival, uint32_t hval)
  * 
  * Sensors are set for indoor conditions and might overflow (in 
  * which case -1 is returned) or report bad lux values outdoors.
- * For TSL2561 and BH1750, their settings can be changed by 
+ * The settings for LTR3xx, TSL2561 and BH1750 can be changed by 
  * #defines below. VEML7700/6030 auto-adjust.
  * 
  ****************************************************************/
@@ -826,11 +826,6 @@ bool lightSensor::begin(bool skipLast, unsigned long powerupTime)
             }
             break;
         case LST_BH1750:
-            Wire.beginTransmission(_address);
-            if(!Wire.endTransmission(true)) {
-                foundSt = true;
-            }
-            break;
         case LST_VEML7700:
             Wire.beginTransmission(_address);
             if(!Wire.endTransmission(true)) {
@@ -1061,9 +1056,9 @@ int32_t lightSensor::LTR3xxCalcLux(uint8_t iGain, uint8_t tInt, uint32_t ch0, ui
     int32_t lux = -1;
     double dch0 = (double)ch0;
     double dch1 = (double)ch1;
-    
+
     double ratio = dch1 / (dch0 + dch1);
-    
+
     if(ratio < 0.45)
         lux = (int32_t)((1.7743 * dch0 + 1.1059 * dch1) / gains[iGain] / its[tInt]);
     else if (ratio < 0.64)
@@ -1072,11 +1067,11 @@ int32_t lightSensor::LTR3xxCalcLux(uint8_t iGain, uint8_t tInt, uint32_t ch0, ui
         lux = (int32_t)((0.5926 * dch0 + 0.1185 * dch1) / gains[iGain] / its[tInt]);
     else
         return -1;
-        
-     lux = min(lux, maxLux[iGain]);
-     if(lux == 0) lux = -1;
 
-     return lux;
+    lux = min(lux, maxLux[iGain]);
+    if(lux == 0) lux = -1;
+
+    return lux;
 }
 
 // TSL2561
@@ -1144,22 +1139,23 @@ uint32_t lightSensor::TSL2561CalcLux(uint8_t iGain, uint8_t tInt, uint32_t ch0, 
 
     ratio = (ratio1 + 1) >> 1;
     
-    if(ratio <= TSL2561_K1T)
-        { b = TSL2561_B1T; m = TSL2561_M1T; }
-    else if (ratio <= TSL2561_K2T)
-        { b = TSL2561_B2T; m = TSL2561_M2T; }
-    else if(ratio <= TSL2561_K3T)
-        { b = TSL2561_B3T; m = TSL2561_M3T; }
-    else if(ratio <= TSL2561_K4T)
-        { b = TSL2561_B4T; m = TSL2561_M4T; }
-    else if(ratio <= TSL2561_K5T)
-        { b = TSL2561_B5T; m = TSL2561_M5T; }
-    else if(ratio <= TSL2561_K6T)
-        { b = TSL2561_B6T; m = TSL2561_M6T; }
-    else if(ratio <= TSL2561_K7T)
-        { b = TSL2561_B7T; m = TSL2561_M7T; }
-    else //if(ratio > TSL2561_K8T)
-        { b = TSL2561_B8T; m = TSL2561_M8T; }
+    if(ratio <= TSL2561_K1T) {
+        b = TSL2561_B1T; m = TSL2561_M1T;
+    } else if (ratio <= TSL2561_K2T) {
+        b = TSL2561_B2T; m = TSL2561_M2T;
+    } else if(ratio <= TSL2561_K3T) {
+        b = TSL2561_B3T; m = TSL2561_M3T;
+    } else if(ratio <= TSL2561_K4T) {
+        b = TSL2561_B4T; m = TSL2561_M4T;
+    } else if(ratio <= TSL2561_K5T) {
+        b = TSL2561_B5T; m = TSL2561_M5T;
+    } else if(ratio <= TSL2561_K6T) {
+        b = TSL2561_B6T; m = TSL2561_M6T;
+    } else if(ratio <= TSL2561_K7T) {
+        b = TSL2561_B7T; m = TSL2561_M7T;
+    } else { //if(ratio > TSL2561_K8T)
+        b = TSL2561_B8T; m = TSL2561_M8T; 
+    }
 
     temp = ((channel0 * b) - (channel1 * m));
     if(temp < 0) temp = 0;

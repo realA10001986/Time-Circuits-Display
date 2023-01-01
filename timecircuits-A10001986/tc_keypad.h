@@ -41,6 +41,7 @@ void cancelETTAnim();
 
 void nightModeOn();
 void nightModeOff();
+bool toggleNightMode();
 
 void enterkeyScan();
 

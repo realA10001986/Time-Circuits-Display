@@ -31,6 +31,8 @@
 #include <ESPmDNS.h>
 #endif
 
+#include <WiFiManager.h>
+
 #include "clockdisplay.h"
 #include "tc_menus.h"
 #include "tc_time.h"
@@ -126,9 +128,9 @@ WiFiManagerParameter custom_timeZone("time_zone", "Timezone (in <a href='https:/
 WiFiManagerParameter custom_ntpServer("ntp_server", "NTP Server (empty to disable NTP)", settings.ntpServer, 63, "pattern='[a-zA-Z0-9.-]+' placeholder='Example: pool.ntp.org'");
 #ifdef TC_HAVEGPS
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
-WiFiManagerParameter custom_useGPS("uGPS", "Use GPS as time source (0=no, 1=yes)", settings.useGPS, 1, "autocomplete='off' title='Enable to use a MT3333-based GPS receiver as a time source'");
+WiFiManagerParameter custom_useGPS("uGPS", "Use GPS as time source (0=no, 1=yes)", settings.useGPS, 1, "autocomplete='off' title='Enable to use a GPS receiver as a time source'");
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_useGPS("uGPS", "Use GPS as time source", settings.useGPS, 1, "autocomplete='off' title='Check to use a MT3333-based GPS receiver as a time source' type='checkbox' style='margin-top:12px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_useGPS("uGPS", "Use GPS as time source", settings.useGPS, 1, "autocomplete='off' title='Check to use a GPS receiver as a time source' type='checkbox' style='margin-top:12px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 #endif
 
@@ -137,9 +139,9 @@ WiFiManagerParameter custom_presTimeBright("pt_bright", "Present Time display br
 WiFiManagerParameter custom_lastTimeBright("lt_bright", "Last Time Dep. display brightness (0-15)", settings.lastTimeBright, 2, "type='number' min='0' max='15' autocomplete='off'");
 
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
-WiFiManagerParameter custom_dtNmOff("dTnMOff", "Destination time off in night mode (0=dimmed, 1=off)", settings.dtNmOff, 1, aco);
-WiFiManagerParameter custom_ptNmOff("pTnMOff", "Present time off in night mode (0=dimmed, 1=off)", settings.ptNmOff, 1, aco);
-WiFiManagerParameter custom_ltNmOff("lTnMOff", "Last time dep. off in night mode (0=dimmed, 1=off)", settings.ltNmOff, 1, aco);
+WiFiManagerParameter custom_dtNmOff("dTnMOff", "Destination time in night mode (0=dimmed, 1=off)", settings.dtNmOff, 1, aco);
+WiFiManagerParameter custom_ptNmOff("pTnMOff", "Present time in night mode (0=dimmed, 1=off)", settings.ptNmOff, 1, aco);
+WiFiManagerParameter custom_ltNmOff("lTnMOff", "Last time dep. in night mode (0=dimmed, 1=off)", settings.ltNmOff, 1, aco);
 WiFiManagerParameter custom_autoNM("anm", "Scheduled night-mode (0=off, 1=on)", settings.autoNM, 1, aco);
 #else // -------------------- Checkbox hack: --------------
 WiFiManagerParameter custom_dtNmOff("dTnMOff", "Destination time off in night mode", settings.dtNmOff, 1, "title='If unchecked, the display will be dimmed' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
@@ -148,23 +150,23 @@ WiFiManagerParameter custom_ltNmOff("lTnMOff", "Last time dep. off in night mode
 WiFiManagerParameter custom_autoNM("anm", "Scheduled night-mode", settings.autoNM, 1, "title='Check to enable scheduled night-mode' type='checkbox' style='margin-top:14px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 WiFiManagerParameter custom_autoNMTimes(anmCustHTML);
-WiFiManagerParameter custom_autoNMOn("anmon", "Daily night-mode start hour (0-23)", settings.autoNMOn, 2, "type='number' min='0' max='23' autocomplete='off' title='Enter hour to switch on night-mode'");
+WiFiManagerParameter custom_autoNMOn("anmon", "Daily night-mode start hour (0-23)", settings.autoNMOn, 2, "type='number' min='0' max='23' title='Enter hour to switch on night-mode'");
 WiFiManagerParameter custom_autoNMOff("anmoff", "Daily night-mode end hour (0-23)", settings.autoNMOff, 2, "type='number' min='0' max='23' autocomplete='off' title='Enter hour to switch off night-mode'");
 #ifdef TC_HAVELIGHT
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
-WiFiManagerParameter custom_uLS("uLS", "Use light sensor (0=no, 1=yes)", settings.useLight, 1, aco);
+WiFiManagerParameter custom_uLS("uLS", "Use light sensor (0=no, 1=yes)", settings.useLight, 1,  "title='If enabled, device will go into night mode if lux level is below or equal the threshold. Supported sensors: BH1750, TSL2561, LTR3xx, VEML7700/VEML6030' autocomplete='off'");
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_uLS("uLS", "Use light sensor", settings.useLight, 1, "title='If checked, device will go into night mode if light level is below threshold' type='checkbox' style='margin-top:14px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_uLS("uLS", "Use light sensor", settings.useLight, 1, "title='If checked, device will go into night mode if lux level is below or equal the threshold. Supported sensors: BH1750, TSL2561, LTR3xx, VEML7700/VEML6030' type='checkbox' style='margin-top:14px'", WFM_LABEL_AFTER);
 #endif
-WiFiManagerParameter custom_lxLim("lxLim", "<br>Light (lux) threshold (0-100000)", settings.luxLimit, 6, "type='number' min='0' max='100000' autocomplete='off'", WFM_LABEL_BEFORE);
+WiFiManagerParameter custom_lxLim("lxLim", "<br>Lux threshold (0-50000)", settings.luxLimit, 6, "title='If the lux level is below or equal the threshold, the device will go into night-mode' type='number' min='0' max='50000' autocomplete='off'", WFM_LABEL_BEFORE);
 #endif
 
 #ifdef TC_HAVETEMP
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
-WiFiManagerParameter custom_useTemp("uTem", "Use temperatur sensor (0=no, 1=yes)", settings.useTemp, 1, "autocomplete='off' title='Enable to use a MCP9808-based temperature sensor to display temperature on speedo display while idle'");
+WiFiManagerParameter custom_useTemp("uTem", "Use temperature/humidity sensor (0=no, 1=yes)", settings.useTemp, 1, "autocomplete='off' title='Enable to use a temperature/humidity sensor for room condition mode and to display temperature on speedo display while idle. Supported sensors: MCP9808, TMP117, BMx820, SHT4x, SI7012, AHT20/AM2315C, HTU31D'");
 WiFiManagerParameter custom_tempUnit("uTem", "Temperture unit (0=°F, 1=°C)", settings.tempUnit, 1, "autocomplete='off' title='Select unit for temperature'");
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_useTemp("uTem", "Use temperature sensor", settings.useTemp, 1, "title='Check to use a MCP9808-based temperature sensor to display temperature on speedo display while idle' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_useTemp("uTem", "Use temperature/humidity sensor", settings.useTemp, 1, "title='Check to use a temperature/humidity sensor for room condition mode and to display temperature on speedo display while idle. Supported sensors: MCP9808, TMP117, BMx820, SHT4x, SI7012, AHT20/AM2315C, HTU31D' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
 WiFiManagerParameter custom_tempUnit("temUnt", "Display in °Celsius", settings.tempUnit, 1, "title='If unchecked, temperature is displayed in Fahrenheit' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 WiFiManagerParameter custom_tempOffs("tOffs", "<br>Temperature offset (-3.0-3.0)", settings.tempOffs, 4, "type='number' min='-3.0' max='3.0' step='0.1' title='Correction value to add to temperature' autocomplete='off'");
@@ -181,9 +183,9 @@ WiFiManagerParameter custom_speedoBright("speBri", "<br>Speedo brightness (0-15)
 WiFiManagerParameter custom_speedoFact("speFac", "Speedo sequence speed factor (0.5-5.0)", settings.speedoFact, 3, "type='number' min='0.5' max='5.0' step='0.5' title='1.0 means the sequence is played in real-world DMC-12 acceleration time. Higher values make the sequence run faster, lower values slower' autocomplete='off'");
 #ifdef TC_HAVEGPS
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
-WiFiManagerParameter custom_useGPSS("uGPSS", "Display GPS speed (0=no, 1=yes)", settings.useGPSSpeed, 1, "autocomplete='off' title='Enable to use a MT3333-based GPS receiver to display actual speed on speedo display'");
+WiFiManagerParameter custom_useGPSS("uGPSS", "Display GPS speed (0=no, 1=yes)", settings.useGPSSpeed, 1, "autocomplete='off' title='Enable to use a GPS receiver to display actual speed on speedo display'");
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_useGPSS("uGPSS", "Display GPS speed", settings.useGPSSpeed, 1, "autocomplete='off' title='Check to use a MT3333-based GPS receiver to display actual speed on speedo display' type='checkbox' style='margin-top:12px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_useGPSS("uGPSS", "Display GPS speed", settings.useGPSSpeed, 1, "autocomplete='off' title='Check to use a GPS receiver to display actual speed on speedo display' type='checkbox' style='margin-top:12px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 #ifdef TC_HAVETEMP
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
@@ -227,7 +229,20 @@ WiFiManagerParameter custom_playTTSnd("plyTTS", "Play time travel sounds (0=no, 
 WiFiManagerParameter custom_playTTSnd("plyTTS", "Play time travel sounds", settings.playTTsnds, 1, "autocomplete='off' title='Check to have the device play time travel sounds' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 
-WiFiManagerParameter custom_copyAudio("cpAu", "Audio file installation: Write COPY here to copy the original audio files from the SD card to the internal flash file system.", settings.copyAudio, 6, "autocomplete='off'");
+WiFiManagerParameter custom_musSfx("musSfx", "Music folder number (0-9)<br><span style='font-size:80%'>The Music Player searches for mp3 files on the SD card in folder 'musicX', X being the number configured here</span>", settings.musSfx, 1, "title='Music will be searched for in /musicX (X being the number) on SD card' type='number' min='0' max='9' autocomplete='off'");
+#ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
+WiFiManagerParameter custom_shuffle("musShu", "Shuffle at startup (0=no, 1=yes)", settings.shuffle, 1, "autocomplete='off' title='Enable to shuffle playlist at startup'");
+#else // -------------------- Checkbox hack: --------------
+WiFiManagerParameter custom_shuffle("musShu", "Shuffle at startup", settings.shuffle, 1, "title='Check to shuffle playlist at startup' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+#endif // -------------------------------------------------
+
+#ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
+WiFiManagerParameter custom_sdFrq("sdFrq", "SD clock speed (0=16Mhz, 1=4Mhz)<br><span style='font-size:80%'>Slower access might help in case of problems with SD cards</span>", settings.sdFreq, 1, "autocomplete='off'");
+#else // -------------------- Checkbox hack: --------------
+WiFiManagerParameter custom_sdFrq("sdFrq", "4MHz SD clock speed<br><span style='font-size:80%'>Checking this might help in case of SD card problems</span>", settings.sdFreq, 1, "autocomplete='off' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+#endif // -------------------------------------------------
+
+WiFiManagerParameter custom_copyAudio("cpAu", "Audio file installation: Write COPY here to copy the original audio files from the SD card to the internal storage.", settings.copyAudio, 6, "autocomplete='off'");
 WiFiManagerParameter custom_copyHint("<div style='margin:0px;padding:0px;font-size:80%'>If display shows 'ERROR' when finished, write FORMAT instead of COPY on second attempt.</div>");
 WiFiManagerParameter custom_footer("<p></p>");
 WiFiManagerParameter custom_sectstart("<div style='background-color:#eee;border-radius:5px;margin-bottom:20px;padding-bottom:7px;padding-top:7px'>");
@@ -259,6 +274,7 @@ static void saveParamsCallback();
 static void saveConfigCallback();
 static void preUpdateCallback();
 static void preSaveConfigCallback();
+static void waitConnectCallback();
 
 static void setupStaticIP();
 static bool isIp(char *str);
@@ -297,7 +313,7 @@ void wifi_setup()
     wm.setPreOtaUpdateCallback(preUpdateCallback);
     wm.setHostname(settings.hostName);
     wm.setCaptivePortalEnable(false);
-
+    
     // Our style-overrides, the page title
     wm.setCustomHeadElement(myHead);
     wm.setTitle(F("TimeCircuits"));
@@ -326,9 +342,9 @@ void wifi_setup()
 
     wm.setMenu(wifiMenu, TC_MENUSIZE);
 
-    wm.addParameter(&custom_headline);
+    wm.addParameter(&custom_headline);      // 1
     
-    wm.addParameter(&custom_sectstart);
+    wm.addParameter(&custom_sectstart);     // 7
     wm.addParameter(&custom_ttrp);
     wm.addParameter(&custom_alarmRTC);
     wm.addParameter(&custom_playIntro);
@@ -336,7 +352,7 @@ void wifi_setup()
     wm.addParameter(&custom_autoRotateTimes);
     wm.addParameter(&custom_sectend);
     
-    wm.addParameter(&custom_sectstart);
+    wm.addParameter(&custom_sectstart);     // 8
     wm.addParameter(&custom_hostName);
     wm.addParameter(&custom_wifiConRetries);
     wm.addParameter(&custom_wifiConTimeout);
@@ -345,7 +361,7 @@ void wifi_setup()
     wm.addParameter(&custom_wifiHint);
     wm.addParameter(&custom_sectend);
     
-    wm.addParameter(&custom_sectstart);
+    wm.addParameter(&custom_sectstart);     // 5
     wm.addParameter(&custom_timeZone);
     wm.addParameter(&custom_ntpServer);
     #ifdef TC_HAVEGPS
@@ -353,13 +369,13 @@ void wifi_setup()
     #endif
     wm.addParameter(&custom_sectend);
     
-    wm.addParameter(&custom_sectstart);
+    wm.addParameter(&custom_sectstart);     // 5
     wm.addParameter(&custom_destTimeBright);
     wm.addParameter(&custom_presTimeBright);
     wm.addParameter(&custom_lastTimeBright);
     wm.addParameter(&custom_sectend);
     
-    wm.addParameter(&custom_sectstart);
+    wm.addParameter(&custom_sectstart);     // 11
     wm.addParameter(&custom_dtNmOff);
     wm.addParameter(&custom_ptNmOff);
     wm.addParameter(&custom_ltNmOff);
@@ -374,7 +390,7 @@ void wifi_setup()
     wm.addParameter(&custom_sectend);
 
     #ifdef TC_HAVETEMP
-    wm.addParameter(&custom_sectstart);
+    wm.addParameter(&custom_sectstart);     // 5
     wm.addParameter(&custom_useTemp);
     wm.addParameter(&custom_tempUnit);
     wm.addParameter(&custom_tempOffs);
@@ -382,7 +398,7 @@ void wifi_setup()
     #endif
 
     #ifdef TC_HAVESPEEDO
-    wm.addParameter(&custom_sectstart);
+    wm.addParameter(&custom_sectstart);     // 9
     wm.addParameter(&custom_useSpeedo);
     wm.addParameter(&custom_speedoType);
     wm.addParameter(&custom_speedoBright);
@@ -398,34 +414,42 @@ void wifi_setup()
     #endif
 
     #ifdef FAKE_POWER_ON
-    wm.addParameter(&custom_sectstart);
+    wm.addParameter(&custom_sectstart);     // 3
     wm.addParameter(&custom_fakePwrOn);
     wm.addParameter(&custom_sectend);
     #endif
     
     #ifdef EXTERNAL_TIMETRAVEL_IN
-    wm.addParameter(&custom_sectstart);
+    wm.addParameter(&custom_sectstart);     // 4
     wm.addParameter(&custom_ettDelay);
     wm.addParameter(&custom_ettLong);
     wm.addParameter(&custom_sectend);
     #endif
     
-    wm.addParameter(&custom_sectstart);
+    wm.addParameter(&custom_sectstart);     // 4
     #ifdef EXTERNAL_TIMETRAVEL_OUT
     wm.addParameter(&custom_useETTO);
     #endif
     wm.addParameter(&custom_playTTSnd);
     wm.addParameter(&custom_sectend);
     
+    wm.addParameter(&custom_sectstart);     // 4
+    wm.addParameter(&custom_musSfx);
+    wm.addParameter(&custom_shuffle);
+    wm.addParameter(&custom_sectend);
+
+    wm.addParameter(&custom_sectstart);     // 3
+    wm.addParameter(&custom_sdFrq);
+    wm.addParameter(&custom_sectend);
     
     if(check_allow_CPA()) {
-        wm.addParameter(&custom_sectstart);
+        wm.addParameter(&custom_sectstart); // 4
         wm.addParameter(&custom_copyAudio);
         wm.addParameter(&custom_copyHint);
         wm.addParameter(&custom_sectend);
     }
     
-    wm.addParameter(&custom_footer);
+    wm.addParameter(&custom_footer);        // 1
 
     updateConfigPortalValues();
 
@@ -470,6 +494,7 @@ void wifi_loop()
         if(check_allow_CPA()) {
             if(!strcmp(custom_copyAudio.getValue(), "FORMAT")) {
                 pwrNeedFullNow();
+                mp_stop();
                 stopAudio();
                 #ifdef TC_DBG
                 Serial.println("Formatting flash FS....");
@@ -565,6 +590,8 @@ void wifi_loop()
             strcpy(settings.tempBright, custom_tempBright.getValue());
             #endif
             #endif
+
+            strcpy(settings.musSfx, custom_musSfx.getValue());
             
             #ifdef TC_NOCHECKBOXES // --------- Plain text boxes:
 
@@ -612,6 +639,10 @@ void wifi_loop()
             #endif
             strcpy(settings.playTTsnds, custom_playTTSnd.getValue());
 
+            strcpy(settings.shuffle, custom_shuffle.getValue());
+
+            strcpy(settings.sdFreq, custom_sdFrq.getValue());
+
             #else // -------------------------- Checkboxes:
 
             strcpyCB(settings.timesPers, &custom_ttrp);
@@ -658,6 +689,10 @@ void wifi_loop()
             strcpyCB(settings.useETTO, &custom_useETTO);
             #endif
             strcpyCB(settings.playTTsnds, &custom_playTTSnd);
+
+            strcpyCB(settings.shuffle, &custom_shuffle);
+
+            strcpyCB(settings.sdFreq, &custom_sdFrq);
 
             #endif  // -------------------------
 
@@ -857,6 +892,21 @@ void wifiOn(unsigned long newDelay, bool alsoInAPMode, bool deferCP)
     WiFi.mode(WIFI_MODE_STA);
 
     wifiConnect(deferCP);
+}
+
+// Check if WiFi is on; used to determine if a 
+// longer interruption due to a re-connect is to
+// be expected.
+bool wifiIsOn()
+{
+    if(wifiInAPMode) {
+        if(wifiAPOffDelay == 0) return true;
+        if(!wifiAPIsOff) return true;
+    } else {
+        if(origWiFiOffDelay == 0) return true;
+        if(!wifiIsOff) return true;
+    }
+    return false;
 }
 
 void wifiStartCP()
@@ -1070,6 +1120,8 @@ void updateConfigPortalValues()
     #endif
     #endif
 
+    custom_musSfx.setValue(settings.musSfx, 1);
+
     #ifdef TC_NOCHECKBOXES  // Standard text boxes: -------
 
     custom_ttrp.setValue(settings.timesPers, 1);
@@ -1109,6 +1161,8 @@ void updateConfigPortalValues()
     custom_useETTO.setValue(settings.useETTO, 1);
     #endif
     custom_playTTSnd.setValue(settings.playTTsnds, 1);
+    custom_shuffle.setValue(settings.shuffle, 1);
+    custom_sdFrq.setValue(settings.sdFreq, 1);
 
     #else   // For checkbox hack --------------------------
 
@@ -1149,6 +1203,8 @@ void updateConfigPortalValues()
     setCBVal(&custom_useETTO, settings.useETTO);
     #endif
     setCBVal(&custom_playTTSnd, settings.playTTsnds);
+    setCBVal(&custom_shuffle, settings.shuffle);
+    setCBVal(&custom_sdFrq, settings.sdFreq);
 
     #endif // ---------------------------------------------    
 

@@ -16,16 +16,16 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #ifndef IS_ACAR_DISPLAY
 #define TC_VERSION "V2.6.0"           // 13 chars max
-#define TC_VERSION_EXTRA "DEC262022"  // 13 chars max
+#define TC_VERSION_EXTRA "JAN012023"  // 13 chars max
 #else   // A-Car
 #define TC_VERSION "V2.6.0_A-CAR"     // 12 chars max
-#define TC_VERSION_EXTRA "12262022"   // 12 chars max
+#define TC_VERSION_EXTRA "01012023"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
 
 /*************************************************************************
- ***                          mDNS support                             ***
+ ***                     mDNS (Bonjour) support                        ***
  *************************************************************************/
 
 // Supply mDNS service 
@@ -171,30 +171,30 @@
 #define SECS1900_1970 2208988800ULL
 
 #define SECS1970_2022 1640995200ULL
-#define SECS1970_2023 1672527600ULL
-#define SECS1970_2024 1704063600ULL
-#define SECS1970_2025 1735686000ULL
-#define SECS1970_2026 1735686000ULL
-#define SECS1970_2027 1798758000ULL
-#define SECS1970_2028 1830294000ULL
-#define SECS1970_2029 1861916400ULL
-#define SECS1970_2030 1893452400ULL
-#define SECS1970_2031 1924988400ULL
-#define SECS1970_2032 1956524400ULL
-#define SECS1970_2033 1988146800ULL
-#define SECS1970_2034 2019682800ULL
-#define SECS1970_2035 2051218800ULL
-#define SECS1970_2036 2082754800ULL
+#define SECS1970_2023 1672531200ULL
+#define SECS1970_2024 1704067200ULL
+#define SECS1970_2025 1735689600ULL
+#define SECS1970_2026 1767225600ULL
+#define SECS1970_2027 1798761600ULL
+#define SECS1970_2028 1830297600ULL
+#define SECS1970_2029 1861920000ULL
+#define SECS1970_2030 1893456000ULL
+#define SECS1970_2031 1924992000ULL
+#define SECS1970_2032 1956528000ULL
+#define SECS1970_2033 1988150400ULL
+#define SECS1970_2034 2019686400ULL
+#define SECS1970_2035 2051222400ULL
+#define SECS1970_2036 2082758400ULL
 
 // NTP baseline data: Prolong life time of NTP
 // Set this to current year. Stop and leave at 2036.
-#define TCEPOCH       2022
+#define TCEPOCH       2023
 // Set to SECS1970_xxxx, xxxx being current year. Stop at 2036.
-#define TCEPOCH_SECS  SECS1970_2022
+#define TCEPOCH_SECS  SECS1970_2023
 
 // Epoch for general use; increase yearly, no limit
 // Defines the minimum date considered valid
-#define TCEPOCH_GEN   2022
+#define TCEPOCH_GEN   2023
 
 
 #endif

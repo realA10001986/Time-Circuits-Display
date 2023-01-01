@@ -1081,7 +1081,7 @@ void time_setup()
         int oldBriPres = presentTime.getBrightness();
         int oldBriDep = departedTime.getBrightness();
 
-        play_file("/intro.mp3", 1.0, true, 0);
+        play_file("/intro.mp3", 1.0, true, true);
 
         myIntroDelay(1200);
         destinationTime.setBrightness(15);
@@ -1194,7 +1194,8 @@ void time_loop()
                     FPBUnitIsOn = false;
                     cancelEnterAnim(false);
                     cancelETTAnim();
-                    play_file("/shutdown.mp3", 1.0, true, 0);
+                    mp_stop();
+                    play_file("/shutdown.mp3", 1.0, true, true);
                     mydelay(130);
                     allOff();
                     #ifdef TC_HAVESPEEDO
@@ -1228,7 +1229,7 @@ void time_loop()
     // Initiate startup delay, play startup sound
     if(startupSound) {
         startupNow = pauseNow = millis();
-        play_file("/startup.mp3", 1.0, true, 0);
+        play_file("/startup.mp3", 1.0, true, true);
         startupSound = false;
         // Don't let autoInt interrupt us
         autoPaused = true;
@@ -1765,7 +1766,7 @@ void time_loop()
                     if((alarmHour == compHour) && (alarmMinute == compMin) && 
                                   (alarmWDmasks[alarmWeekday] & (1 << weekDay))) {
                         if(!alarmDone) {
-                            play_file("/alarm.mp3", 1.0, false, 0);
+                            play_file("/alarm.mp3", 1.0, false, true);
                             alarmDone = true;
                         }
                     } else {
@@ -2059,6 +2060,9 @@ void timeTravel(bool doComplete, bool withSpeedo)
     cancelEnterAnim();
     cancelETTAnim();
 
+    // Stop music if we are to play time travel sounds
+    if(playTTsounds) mp_stop();
+
     // Pause autoInterval-cycling so user can play undisturbed
     pauseAuto();
 
@@ -2208,7 +2212,7 @@ void timeTravel(bool doComplete, bool withSpeedo)
     timetravelNow = ttUnivNow;
     timeTraveled = true;
 
-    if(playTTsounds) play_file("/timetravel.mp3", 1.0, true, 0);
+    if(playTTsounds) play_file("/timetravel.mp3", 1.0, true, true);
 
     allOff();
 
@@ -2275,7 +2279,7 @@ void timeTravel(bool doComplete, bool withSpeedo)
 
 static void triggerLongTT()
 {
-    if(playTTsounds) play_file("/travelstart.mp3", 1.0, true, 0);
+    if(playTTsounds) play_file("/travelstart.mp3", 1.0, true, true);
     timetravelP1Now = millis();
     timetravelP1Delay = TT_P1_DELAY_P1;
     timeTravelP1 = 1;
@@ -2306,10 +2310,13 @@ void resetPresentTime()
 {
     pwrNeedFullNow();
 
+    // Stop music if we are to play time travel sounds
+    if(playTTsounds) mp_stop();
+
     timetravelNow = millis();
     timeTraveled = true;
     if(timeDifference) {
-        if(playTTsounds) play_file("/timetravel.mp3", 1.0, true, 0);
+        if(playTTsounds) play_file("/timetravel.mp3", 1.0, true, true);
     }
 
     enableRcMode(false);
@@ -3710,6 +3717,11 @@ static void NTPCheckPacket()
 
     // Calculate seconds since 1/1/TCEPOCH (without round-trip correction)
     NTPsecsSinceTCepoch = secsSince1900 - (SECS1900_1970 + TCEPOCH_SECS);
+
+    #ifdef TC_DBG
+    Serial.print(F("NTPCheckPacket: NTPsecsSinceTCepoch "));
+    Serial.println(NTPsecsSinceTCepoch);
+    #endif
 
     // Convert fraction into ms
     NTPmsSinceSecond = (uint32_t)(((uint64_t)fractSec * 1000ULL) >> 32);
