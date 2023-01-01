@@ -3718,11 +3718,6 @@ static void NTPCheckPacket()
     // Calculate seconds since 1/1/TCEPOCH (without round-trip correction)
     NTPsecsSinceTCepoch = secsSince1900 - (SECS1900_1970 + TCEPOCH_SECS);
 
-    #ifdef TC_DBG
-    Serial.print(F("NTPCheckPacket: NTPsecsSinceTCepoch "));
-    Serial.println(NTPsecsSinceTCepoch);
-    #endif
-
     // Convert fraction into ms
     NTPmsSinceSecond = (uint32_t)(((uint64_t)fractSec * 1000ULL) >> 32);
 }
