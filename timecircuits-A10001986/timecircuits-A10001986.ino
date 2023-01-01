@@ -59,14 +59,17 @@
  */
 
 /*  Changelog
- *
+ *    
  *  2023/01/01 (A10001986)
- *    - Audio: Add mp3 music player. Music files must reside on the SD card in
- *      /musicX (X being 0-9) folder(s), be named 000.mp3 up to 999.mp3
- *      (starting at 000.mp3 in each folder), and be of max 128kpbs. Up to 
- *      ten folders (music0-music9) are supported; the folder number is 
- *      selected in the Config Portal or the keypad menu (default: 0, hence
- *      /music0).
+ *    - Have a go at wobbling volume, again: New "noise reduction" from apparently
+ *      totally unstable analog input; knob now always mutes when turned fully off; 
+ *      new fixed-level table with better granularity at lower volumes, also it has
+ *      now 20 levels.
+ *    - Audio: Add mp3 music player. Music files must reside on the SD card in /musicX 
+ *      (X being 0-9) folder(s), be named 000.mp3 up to 999.mp3 (starting at 000.mp3 
+ *      in each folder), and be of max 128kpbs. Up to ten folders (music0-music9) are 
+ *      supported; the folder number is selected in the Config Portal or the keypad 
+ *      menu (default: 0, hence /music0).
  *      Keypad layout changed as follows:
  *      Holding 1 now toggles the alarm on/off (formerly: Switch alarm on)
  *      Holding 4 now toggles night-mode on/off (formerly: Switch nm on)

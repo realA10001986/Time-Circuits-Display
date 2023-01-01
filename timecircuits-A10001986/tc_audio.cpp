@@ -88,10 +88,11 @@ int      mpCurrIdx = 0;
 bool     mpActive = false;
 bool     mpShuffle = false;
 
-static const double volTable[16] = {
-    0.00, 0.03, 0.06, 0.10,
-    0.15, 0.20, 0.25, 0.30,
-    0.35, 0.42, 0.50, 0.60,
+static const float volTable[20] = {
+    0.00, 0.02, 0.04, 0.06,
+    0.08, 0.10, 0.13, 0.16,
+    0.19, 0.22, 0.26, 0.30,
+    0.35, 0.40, 0.50, 0.60,
     0.70, 0.80, 0.90, 1.00
 };
 
@@ -106,7 +107,7 @@ static int sampleCnt = 0;
 static int rawVol[VOL_SMOOTH_SIZE];
 static int rawVolIdx = 0;
 static int anaReadCount = 0;
-static double prev_vol = 10.0;
+long prev_avg, prev_raw, prev_raw2;
 
 // Resolution for pot, 9-12 allowed
 #define POT_RESOLUTION 9
@@ -118,8 +119,8 @@ static void mp_buildFileName(char *fnbuf, int num);
 
 static int skipID3(char *buf);
 
-static double getRawVolume();
-static double getVolume(int channel);
+static float getRawVolume();
+static float getVolume(int channel);
 
 /*
  * audio_setup()
@@ -557,63 +558,100 @@ void play_file(const char *audio_file, double volumeFactor, bool checkNightMode,
 
 // Returns value for volume based on the position of the pot
 // Since the values vary we do some noise reduction
-double getRawVolume()
+static float getRawVolume()
 {
-    double vol_val;
-    unsigned long avg = 0;
+    float vol_val;
+    long avg = 0, avg1 = 0, avg2 = 0;
+    long raw;
 
-    rawVol[rawVolIdx] = analogRead(VOLUME_PIN);
+    raw = analogRead(VOLUME_PIN);
 
     if(anaReadCount > 1) {
-        avg = 0;
-        for(int i = rawVolIdx; i > rawVolIdx - anaReadCount; i--) {
-            avg += rawVol[i & (VOL_SMOOTH_SIZE-1)];
+      
+        rawVol[rawVolIdx] = raw;
+
+        if(anaReadCount < VOL_SMOOTH_SIZE) {
+        
+            avg = 0;
+            for(int i = rawVolIdx; i > rawVolIdx - anaReadCount; i--) {
+                avg += rawVol[i & (VOL_SMOOTH_SIZE-1)];
+            }
+            avg /= anaReadCount;
+            anaReadCount++;
+
+        } else {
+
+            for(int i = rawVolIdx; i > rawVolIdx - anaReadCount; i--) {
+                if(i & 1) { 
+                    avg1 += rawVol[i & (VOL_SMOOTH_SIZE-1)];
+                } else {
+                    avg2 += rawVol[i & (VOL_SMOOTH_SIZE-1)];
+                }
+            }
+            avg1 = round((float)avg1 / (float)(VOL_SMOOTH_SIZE/2));
+            avg2 = round((float)avg2 / (float)(VOL_SMOOTH_SIZE/2));
+            avg = (abs(avg1-prev_avg) < abs(avg2-prev_avg)) ? avg1 : avg2;
+
+            /*
+            Serial.print(raw);
+            Serial.print(" ");
+            Serial.print(avg1);
+            Serial.print(" ");
+            Serial.print(avg2);
+            Serial.print(" ");
+            Serial.print(avg);
+            Serial.print(" ");
+            */
+            
+            prev_avg = avg;
         }
-        avg /= anaReadCount;
-        if(anaReadCount < VOL_SMOOTH_SIZE) anaReadCount++;
+        
     } else {
+      
         anaReadCount++;
-        avg = rawVol[rawVolIdx];
+        rawVol[rawVolIdx] = prev_avg = prev_raw = prev_raw2 = raw;
+        
     }
 
     rawVolIdx++;
     rawVolIdx &= (VOL_SMOOTH_SIZE-1);
 
-    vol_val = (double)avg / (double)((1<<POT_RESOLUTION)-1);
+    vol_val = (float)avg / (float)((1<<POT_RESOLUTION)-1);
 
-    if(fabs(vol_val - prev_vol) <= 0.015) {
-        vol_val = prev_vol;
-    } else {
-        prev_vol = vol_val;
-    }
+    if((raw + prev_raw + prev_raw2 > 0) && vol_val < 0.01) vol_val = 0.01;
 
-    if(vol_val < 0.02) vol_val = 0.0;
+    prev_raw2 = prev_raw;
+    prev_raw = raw;
+
+    //Serial.println(vol_val);
 
     return vol_val;
 }
 
-double getVolume(int channel)
+static float getVolume(int channel)
 {
-    double vol_val;
+    float vol_val;
 
     if(curVolume == 255) {
         vol_val = getRawVolume();
     } else {
-        vol_val = (double)volTable[curVolume];
+        vol_val = volTable[curVolume];
     }
 
     // If user muted, return 0
     if(vol_val == 0.0) return vol_val;
 
     vol_val *= curVolFact[channel];
+    
     // Do not totally mute
-    if(vol_val < 0.03) vol_val = 0.03;
+    // 0.02 is the lowest audible gain
+    if(vol_val < 0.02) vol_val = 0.02;
 
     // Reduce volume in night mode, if requested
     if(curChkNM[channel] && presentTime.getNightMode()) {
         vol_val *= 0.3;
         // Do not totally mute
-        if(vol_val < 0.03) vol_val = 0.03;
+        if(vol_val < 0.02) vol_val = 0.02;
     }
 
     return vol_val;
