@@ -75,8 +75,8 @@
  *      Holding 8 goes to next song
  *      222+ENTER    disables shuffle (played in order 000->999)
  *      555+ENTER    enables shuffle (played in random order)
- *      888+ENTER    goes to start of playlist (000 or start of shuffled list)
- *      888xxx+ENTER goes to position xxx in the playlist
+ *      888+ENTER    goes to song 000
+ *      888xxx+ENTER goes to song xxx
  *    - Audio: Skip ID3 tags before starting playback. This fixes a freeze when
  *      attempting to play mp3 files with large tags, eg cover art.
  *    - Increase SD/SPI frequency to 16Mhz (with option to reduce back to 4Mhz in
