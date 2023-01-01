@@ -609,7 +609,7 @@ static float getRawVolume()
     } else {
       
         anaReadCount++;
-        rawVol[rawVolIdx] = prev_avg = prev_raw = prev_raw2 = raw;
+        rawVol[rawVolIdx] = avg = prev_avg = prev_raw = prev_raw2 = raw;
         
     }
 
