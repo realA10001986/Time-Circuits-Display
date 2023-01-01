@@ -349,7 +349,15 @@ int mp_gotonum(int num, bool forcePlay)
     if(num < 0) num = 0;
     else if(num > maxMusic) num = maxMusic;
 
-    mpCurrIdx = num;
+    if(mpShuffle) {
+        for(int i = 0; i <= maxMusic; i++) {
+            if(playList[i] == num) {
+                mpCurrIdx = i;
+                break;
+            }
+        }
+    } else 
+        mpCurrIdx = num;
 
     mp_play(forcePlay);
 
