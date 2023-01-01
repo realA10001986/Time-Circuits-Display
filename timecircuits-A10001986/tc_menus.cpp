@@ -1043,7 +1043,7 @@ static bool loadCurVolume()
 
     curVolume = loadBuf[0];
 
-    if(curVolume > 15 && curVolume != 255)
+    if(curVolume > 19 && curVolume != 255)
         curVolume = 255;
 
     #ifdef TC_DBG
@@ -1124,7 +1124,7 @@ static void doSetVolume()
 
                 timeout = 0;  // button pressed, reset timeout
 
-                if(curVolume <= 15)
+                if(curVolume <= 19)
                     curVolume = 255;
                 else
                     curVolume = 0;
@@ -1176,7 +1176,7 @@ static void doSetVolume()
                     timeout = 0;  // button pressed, reset timeout
 
                     curVolume++;
-                    if(curVolume == 16) curVolume = 0;
+                    if(curVolume == 20) curVolume = 0;
 
                     showCurVol();
 
