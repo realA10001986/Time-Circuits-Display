@@ -121,6 +121,10 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="center" colspan="2">Keypad reference: Special key sequences<br>(&#9166; = ENTER key)</td>
     </tr>
     <tr>
+     <td align="center">11&#9166;</td>
+     <td align="center">Show current <a href="#how-to-set-up-the-alarm">alarm</a> time/weekday</td>
+    </tr>
+    <tr>
      <td align="center">11hhMM&#9166;</td>
      <td align="center">Set <a href="#how-to-set-up-the-alarm">alarm</a> to hh:MM</td>
     </tr>
