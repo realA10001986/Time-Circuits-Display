@@ -37,7 +37,7 @@ void audio_setup();
 void play_keypad_sound(char key);
 void play_hour_sound(int hour);
 void audio_loop();
-void play_file(const char *audio_file, double volumeFactor = 1.0, bool checkNightMode = true, bool interruptMusic = false, bool allowSD = true, int channel = 0);
+void play_file(const char *audio_file, float volumeFactor = 1.0, bool checkNightMode = true, bool interruptMusic = false, bool allowSD = true, int channel = 0);
 bool checkAudioDone();
 void stopAudio();
 

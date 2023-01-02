@@ -98,8 +98,8 @@ static const float volTable[20] = {
 
 uint8_t curVolume = 4;
 
-static double curVolFact[2] = { 1.0, 1.0 };
-static bool   curChkNM[2]   = { true, true };
+static float curVolFact[2] = { 1.0, 1.0 };
+static bool  curChkNM[2]   = { true, true };
 
 static int sampleCnt = 0;
 
@@ -464,7 +464,7 @@ static int skipID3(char *buf)
     return 0;
 }
 
-void play_file(const char *audio_file, double volumeFactor, bool checkNightMode, bool interruptMusic, bool allowSD, int channel)
+void play_file(const char *audio_file, float volumeFactor, bool checkNightMode, bool interruptMusic, bool allowSD, int channel)
 {
     char buf[10];
     
