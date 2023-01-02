@@ -94,7 +94,7 @@ class clockDisplay {
 
         void showOnlyMonth(int monthNum);
         void showOnlyDay(int dayNum);
-        void showOnlyHour(int hourNum);
+        void showOnlyHour(int hourNum, bool force24 = false);
         void showOnlyMinute(int minuteNum);
         void showOnlyYear(int yearNum);
 

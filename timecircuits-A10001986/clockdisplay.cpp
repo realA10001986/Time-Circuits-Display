@@ -563,11 +563,11 @@ void clockDisplay::showOnlyYear(int yearNum)
 }
 
 // clears the display RAM and only shows the provided hour
-void clockDisplay::showOnlyHour(int hourNum)
+void clockDisplay::showOnlyHour(int hourNum, bool force24)
 {
     clearDisplay();
 
-    if(!_mode24) {
+    if(!_mode24 && !force24) {
 
         if(hourNum == 0) {
             directCol(CD_HOUR_POS, makeNum(12));
