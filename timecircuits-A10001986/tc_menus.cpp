@@ -267,11 +267,19 @@ static bool yy;
 static uint8_t timeout = 0;
 
 static const char *StrSaving = "SAVING";
+static const char *alarmWD[10] = {
+      #ifdef IS_ACAR_DISPLAY
+      "MON-SUN", "MON-FRI", "SAT-SUN",
+      #else
+      "MON -SUN", "MON -FRI", "SAT -SUN",
+      #endif
+      "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"
+};
 
 static void menuSelect(int& number);
 static void menuShow(int number);
-static void setUpdate(uint16_t number, int field);
-static void setField(uint16_t& number, uint8_t field, int year, int month);
+static void setUpdate(uint16_t number, int field, bool extra = false);
+static void setField(uint16_t& number, uint8_t field, int year = 0, int month = 0, bool extra = false);
 static void saveCurVolume();
 static bool loadCurVolume();
 static void showCurVolHWSW();
@@ -413,7 +421,7 @@ void enter_menu()
         setUpdate(monthSet, FIELD_MONTH);
         prepareInput(monthSet);
         waitForEnterRelease();
-        setField(monthSet, FIELD_MONTH, 0, 0);
+        setField(monthSet, FIELD_MONTH);
 
         if(checkTimeOut())
             goto quitMenu;
@@ -431,7 +439,7 @@ void enter_menu()
         setUpdate(hourSet, FIELD_HOUR);
         prepareInput(hourSet);
         waitForEnterRelease();
-        setField(hourSet, FIELD_HOUR, 0, 0);
+        setField(hourSet, FIELD_HOUR);
 
         if(checkTimeOut())
             goto quitMenu;
@@ -440,11 +448,13 @@ void enter_menu()
         setUpdate(minSet, FIELD_MINUTE);
         prepareInput(minSet);
         waitForEnterRelease();
-        setField(minSet, FIELD_MINUTE, 0, 0);
+        setField(minSet, FIELD_MINUTE);
 
         isSetUpdate = false;
 
         // Have new date & time at this point
+
+        waitAudioDone();
 
         // Do nothing if there was a timeout waiting for button presses
         if(!checkTimeOut()) {
@@ -505,8 +515,6 @@ void enter_menu()
 
             // Show a save message for a brief moment
             displaySet->showTextDirect(StrSaving);
-
-            waitAudioDone();
 
             // update the object
             displaySet->setYear(yearSet);
@@ -878,7 +886,7 @@ static void menuShow(int number)
  * field = field to show it in
  *
  */
-static void setUpdate(uint16_t number, int field)
+static void setUpdate(uint16_t number, int field, bool extra)
 {
     switch(field) {
     case FIELD_MONTH:
@@ -891,7 +899,7 @@ static void setUpdate(uint16_t number, int field)
         displaySet->showOnlyYear(number);
         break;
     case FIELD_HOUR:
-        displaySet->showOnlyHour(number);
+        displaySet->showOnlyHour(number, extra);
         break;
     case FIELD_MINUTE:
         displaySet->showOnlyMinute(number);
@@ -918,7 +926,7 @@ static void prepareInput(uint16_t number)
  * year, month - check checking maximum day number
  *
  */
-static void setField(uint16_t& number, uint8_t field, int year = 0, int month = 0)
+static void setField(uint16_t& number, uint8_t field, int year, int month, bool extra)
 {
     int upperLimit;
     int lowerLimit;
@@ -980,7 +988,7 @@ static void setField(uint16_t& number, uint8_t field, int year = 0, int month = 
         // Show setNum in field
         if(prevNum != setNum) {
             someupddone = true;
-            setUpdate(setNum, field);
+            setUpdate(setNum, field, extra);
             prevNum = setNum;
         }
 
@@ -1004,7 +1012,7 @@ static void setField(uint16_t& number, uint8_t field, int year = 0, int month = 
     number = numVal;
     setNum = numVal;
 
-    setUpdate(setNum, field);
+    setUpdate(setNum, field, extra);
 
     #ifdef TC_DBG
     Serial.print(F("Setfield: number: "));
@@ -1337,6 +1345,19 @@ int toggleAlarm()
     return alarmOn() ? 1 : -1;
 }
 
+int getAlarm()
+{
+    if(alarmHour <= 23 && alarmMinute <= 59) {
+        return (alarmHour << 8) | alarmMinute;
+    }
+    return -1;
+}
+
+const char *getAlWD(int wd)
+{
+    return alarmWD[wd];
+}
+
 // Set Alarm
 static void doSetAlarm()
 {
@@ -1346,14 +1367,6 @@ static void doSetAlarm()
     uint16_t newAlarmHour = (alarmHour <= 23) ? alarmHour : 0;
     uint16_t newAlarmMinute = (alarmMinute <= 59) ? alarmMinute : 0;
     uint16_t newAlarmWeekday = alarmWeekday;
-    const char *alarmWD[10] = {
-      #ifdef IS_ACAR_DISPLAY
-      "MON-SUN", "MON-FRI", "SAT-SUN",
-      #else
-      "MON -SUN", "MON -FRI", "SAT -SUN",
-      #endif
-      "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"
-    };
     #ifdef IS_ACAR_DISPLAY
     const char *almFmt = "%s     %02d%02d";
     #else
@@ -1411,10 +1424,10 @@ static void doSetAlarm()
     }
 
     // Get hour
-    setUpdate(newAlarmHour, FIELD_HOUR);
+    setUpdate(newAlarmHour, FIELD_HOUR, true);  // force24 here
     prepareInput(newAlarmHour);
     waitForEnterRelease();
-    setField(newAlarmHour, FIELD_HOUR, 0, 0);
+    setField(newAlarmHour, FIELD_HOUR, 0, 0, true);
 
     if(checkTimeOut()) {
         return;
@@ -1424,11 +1437,11 @@ static void doSetAlarm()
     setUpdate(newAlarmMinute, FIELD_MINUTE);
     prepareInput(newAlarmMinute);
     waitForEnterRelease();
-    setField(newAlarmMinute, FIELD_MINUTE, 0, 0);
+    setField(newAlarmMinute, FIELD_MINUTE);
 
     // Weekday(s)
     waitForEnterRelease();
-    displaySet->showTextDirect(alarmWD[newAlarmWeekday]);
+    displaySet->showTextDirect(getAlWD(newAlarmWeekday));
 
     isEnterKeyHeld = false;
     alarmDone = false;
@@ -1458,7 +1471,7 @@ static void doSetAlarm()
                 newAlarmWeekday++;
                 if(newAlarmWeekday > 9) newAlarmWeekday = 0;
 
-                displaySet->showTextDirect(alarmWD[newAlarmWeekday]);
+                displaySet->showTextDirect(getAlWD(newAlarmWeekday));
 
             }
 

@@ -60,6 +60,12 @@
 
 /*  Changelog
  *    
+ *  2023/01/02 (A10001986)
+ *    - Night-mode: Treat daily schedule like other schedules with regard to hourly
+ *      checks; this fixes returning to nm after manual override.
+ *    - Add 11+ENTER short-cut to quickly show alarm settings
+ *    - Alarm times are ALWAYS shown in 24-hour mode, regardless of Config Portal
+ *      24hr setting.
  *  2023/01/01 (A10001986)
  *    - Have a go at wobbling volume, again: New "noise reduction" from apparently
  *      totally unstable analog input; knob now always mutes when turned fully off; 

@@ -97,13 +97,14 @@ static unsigned long timeNow = 0;
 
 static unsigned long lastKeyPressed = 0;
 
-#define DATELEN_ALL   12   // mmddyyyyHHMM month, day, year, hour, min
-#define DATELEN_DATE   8   // mmddyyyy     month, day, year
-#define DATELEN_QALM   6   // 11HHMM       11, hour, min (alarm-set shortcut)
-#define DATELEN_INT    5   // xxxxx        reset
-#define DATELEN_TIME   4   // HHMM         hour, minute
-#define DATELEN_CODE   3   // xxx          (special)
-#define DATELEN_CMIN   DATELEN_CODE
+#define DATELEN_ALL   12   // mmddyyyyHHMM  dt: month, day, year, hour, min
+#define DATELEN_DATE   8   // mmddyyyy      dt: month, day, year
+#define DATELEN_QALM   6   // 11HHMM/888xxx 11, hour, min (alarm-set shortcut); 888xxx (mp)
+#define DATELEN_INT    5   // xxxxx         reset
+#define DATELEN_TIME   4   // HHMM          dt: hour, minute
+#define DATELEN_CODE   3   // xxx           special codes
+#define DATELEN_ALSH   2   // 11            show alarm time/wd
+#define DATELEN_CMIN   DATELEN_ALSH
 #define DATELEN_CMAX   DATELEN_QALM
 
 static char dateBuffer[DATELEN_ALL + 2];
@@ -503,6 +504,34 @@ void keypad_loop()
 
             invalidEntry = true;
 
+        } else if(strLen == DATELEN_ALSH) {
+
+            if(dateBuffer[0] == '1' && dateBuffer[1] == '1') {
+
+                char atxt[16];
+                int al = getAlarm();
+                if(al >= 0) {
+                    const char *alwd = getAlWD(alarmWeekday);
+                    #ifdef IS_ACAR_DISPLAY
+                    sprintf(atxt, "%-7s %02d%02d", alwd, al >> 8, al & 0xff);
+                    #else
+                    sprintf(atxt, "%-8s %02d%02d", alwd, al >> 8, al & 0xff);
+                    #endif
+                    destinationTime.showTextDirect(atxt);
+                    validEntry = true;
+                } else {
+                    #ifdef IS_ACAR_DISPLAY
+                    destinationTime.showTextDirect("ALARM  UNSET");
+                    #else
+                    destinationTime.showTextDirect("ALARM   UNSET");
+                    #endif
+                    invalidEntry = true;
+                }
+                specDisp = 10;
+
+            } else 
+                invalidEntry = true;
+
         } else if(strLen == DATELEN_CODE) {
 
             uint16_t code = atoi(dateBuffer);
@@ -585,14 +614,15 @@ void keypad_loop()
                 if(!valid) {
                     invalidEntry = true;
                 } else {
+                    const char *alwd = getAlWD(alarmWeekday);
                     alarmHour = aHour;
                     alarmMinute = aMin;
                     alarmOnOff = true;
                     saveAlarm();
                     #ifdef IS_ACAR_DISPLAY
-                    sprintf(atxt, "ALARM   %02d%02d", alarmHour, alarmMinute);
+                    sprintf(atxt, "%-7s %02d%02d", alwd, alarmHour, alarmMinute);
                     #else
-                    sprintf(atxt, "ALARM    %02d%02d", alarmHour, alarmMinute);
+                    sprintf(atxt, "%-8s %02d%02d", alwd, alarmHour, alarmMinute);
                     #endif
                     destinationTime.showTextDirect(atxt);
                     specDisp = 10;

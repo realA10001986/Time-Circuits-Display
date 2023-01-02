@@ -81,12 +81,12 @@ static AudioOutputMixerStub *stub[2];
 bool audioInitDone = false;
 bool audioMute = false;
 
-bool     haveMusic = false;
-uint16_t maxMusic = 0;
-uint16_t *playList = NULL;
-int      mpCurrIdx = 0;
-bool     mpActive = false;
-bool     mpShuffle = false;
+bool haveMusic = false;
+bool mpActive = false;
+static uint16_t maxMusic = 0;
+static uint16_t *playList = NULL;
+static int  mpCurrIdx = 0;
+static bool mpShuffle = false;
 
 static const float volTable[20] = {
     0.00, 0.02, 0.04, 0.06,
@@ -98,8 +98,8 @@ static const float volTable[20] = {
 
 uint8_t curVolume = 4;
 
-double  curVolFact[2] = { 1.0, 1.0 };
-bool    curChkNM[2]   = { true, true };
+static double curVolFact[2] = { 1.0, 1.0 };
+static bool   curChkNM[2]   = { true, true };
 
 static int sampleCnt = 0;
 
@@ -107,7 +107,7 @@ static int sampleCnt = 0;
 static int rawVol[VOL_SMOOTH_SIZE];
 static int rawVolIdx = 0;
 static int anaReadCount = 0;
-long prev_avg, prev_raw, prev_raw2;
+static long prev_avg, prev_raw, prev_raw2;
 
 // Resolution for pot, 9-12 allowed
 #define POT_RESOLUTION 9

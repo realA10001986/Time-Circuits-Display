@@ -47,6 +47,8 @@ void saveAlarm();
 void alarmOff();
 bool alarmOn();
 int  toggleAlarm();
+int  getAlarm();
+const char *getAlWD(int wd);
 
 bool loadAutoInterval();
 

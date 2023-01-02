@@ -405,6 +405,7 @@ static const uint32_t autoNMshopPreset[7] = {     // Mo-We 8am-8pm, Th-Fr 8am-9p
         0b111111110000000000000111,   //Fri
         0b111111110000000001111111    //Sat
 };
+static uint32_t autoNMdailyPreset = 0;
 const uint32_t *autoNMPresets[AUTONM_NUM_PRESETS] = {
     autoNMhomePreset, autoNMofficePreset, 
     autoNMoffice2Preset, autoNMshopPreset
@@ -919,7 +920,16 @@ void time_setup()
     autoNMOffHour = (int)atoi(settings.autoNMOff);
     if(autoNMOffHour > 23) autoNMOffHour = 0;
     if(autoNightMode && (autoNightModeMode == 0)) {
-        autoNightMode = (autoNMOnHour != autoNMOffHour);
+        if((autoNightMode = (autoNMOnHour != autoNMOffHour))) {
+            if(autoNMOnHour < autoNMOffHour) {
+                for(int i = autoNMOnHour; i < autoNMOffHour; i++)
+                    autoNMdailyPreset |= (1 << (23-i));
+            } else {
+                autoNMdailyPreset = 0b111111111111111111111111;
+                for(int i = autoNMOffHour; i < autoNMOnHour; i++)
+                    autoNMdailyPreset &= ~(1 << (23-i));
+            }
+        }
     }
 
     // If using auto times, put up the first one
@@ -1779,35 +1789,24 @@ void time_loop()
                 // Manually switching NM pauses automatic for 30 mins
                 if(manualNightMode >= 0 && (millis() - manualNMNow > 30*60*1000)) {
                     manualNightMode = -1;
+                    // Reset timed nm; give sensor chance to act in the window between
+                    // timer expiry and next hour where timed nm kicks in again
+                    timedNightMode = -1;
                 }
                 
                 if(autoNightMode && (manualNightMode < 0)) {
-                    if(autoNightModeMode == 0) {
-                        if((autoNMOnHour == compHour) && (compMin == 0)) {
-                            if(!autoNMDone) {
+                    if(compMin == 0) {
+                        if(!autoNMDone) {
+                            uint32_t myField;
+                            if(autoNightModeMode == 0) {
+                                myField = autoNMdailyPreset;
+                            } else {
+                                const uint32_t *myFieldPtr = autoNMPresets[autoNightModeMode - 1];
+                                myField = myFieldPtr[weekDay];
+                            }                       
+                            if(myField & (1 << (23 - compHour))) {
                                 nightModeOn();
                                 timedNightMode = 1;
-                                autoNMDone = true;
-                            }
-                        } else if((autoNMOffHour == compHour) && (compMin == 0)) {
-                            if(!autoNMDone) {
-                                #ifdef TC_HAVELIGHT
-                                switchNMoff = true;
-                                #else
-                                nightModeOff();
-                                #endif
-                                timedNightMode = 0;
-                                autoNMDone = true;
-                            }
-                        } else {
-                            autoNMDone = false;
-                        }
-                    } else if(compMin == 0) {
-                        if(!autoNMDone) {
-                            const uint32_t *myField = autoNMPresets[autoNightModeMode - 1];
-                            if(myField[weekDay] & (1 << (23 - compHour))) {
-                                nightModeOn();
-                                timedNightMode = 1; 
                             } else {
                                 #ifdef TC_HAVELIGHT
                                 switchNMoff = true;
