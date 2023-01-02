@@ -348,11 +348,11 @@ Pressing ENTER cycles through the list, holding ENTER selects an item, ie a mode
 - Choose the weekday(s) by repeatedly pressing ENTER
 - Hold ENTER to finalize your weekday selection. "SAVING" is displayed briefly.
 
-Under normal operation (ie outside of the menu), holding "1" toggles the alarm on/off. (For firmware from 2022: Holding "1" enables the alarm, holding "2" disables it.) 
-
 When the alarm is set and enabled, the dot in the present time's minute field will light up. 
 
-The alarm time can also quickly be set by typing 11hhMM (eg. 110645 for 6:45am, or 112300 for 11:00pm) and pressing ENTER, just like when setting a time travel destination time. (The weekday selection has still to be done via the keypad menu.)
+Under normal operation (ie outside of the menu), holding "1" toggles the alarm on/off. (For firmware from 2022: Holding "1" enables the alarm, holding "2" disables it.) 
+
+The alarm time can also quickly be set by typing 11hhMM (eg. 110645 for 6:45am, or 112300 for 11:00pm) and pressing ENTER, just like when setting a time travel destination time. (The weekday selection has still to be done via the keypad menu.) Typing 11 followed by ENTER shows the currently set time and weekday selection briefly.
 
 Note that the alarm is recurring, ie it rings at the programmed time, unless disabled. Also note, as mentioned, that the alarm is by default relative to your actual *present time*, not the time displayed (eg after a time travel). It can, however, be configured to be based on the time displayed, in the Config Portal.
 
