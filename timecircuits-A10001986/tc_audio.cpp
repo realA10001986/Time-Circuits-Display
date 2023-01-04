@@ -382,6 +382,19 @@ static void mp_buildFileName(char *fnbuf, int num)
     sprintf(fnbuf, "/music%1s/%03d.mp3", settings.musSfx, num);
 }
 
+bool mp_checkForFolder(int num)
+{
+    char fnbuf[20];
+
+    if(num < 0 || num > 9) return false;
+
+    sprintf(fnbuf, "/music%1d/000.mp3", num);
+    if(SD.exists(fnbuf)) {
+        return true;
+    }
+    return false;
+}
+
 void play_keypad_sound(char key)
 {
     char buf[16] = "/Dtmf-0.mp3\0";

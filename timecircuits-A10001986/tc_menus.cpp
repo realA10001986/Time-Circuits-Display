@@ -54,7 +54,7 @@
  *     - select the Time-rotation Interval ("TIME ROTATION INTERVAL"),
  *     - select the brightness for the three displays ("BRIGHTNESS"),
  *     - show network information ("NET-WORK"),
- *     - enter dates/times for the three displays,
+ *     - enter dates/times for the three displays/set built-in RTC,
  *     - show currently measured data from connected sensors ("SENSORS"),
  *     - install the default audio files ("INSTALL AUDIO FILES")
  *     - quit the menu ("END").
@@ -285,14 +285,17 @@ static bool loadCurVolume();
 static void showCurVolHWSW();
 static void showCurVol();
 static void doSetVolume();
+static void displayMSfx(int msfx);
 static void doSetMSfx();
 static void doSetAlarm();
 static void saveAutoInterval();
+static void displayAI(int interval);
 static void doSetAutoInterval();
 static void doSetBrightness(clockDisplay* displaySet);
 #if defined(TC_HAVELIGHT) || defined(TC_HAVETEMP)
 static void doShowSensors();
 #endif
+static void displayIP();
 static void doShowNetInfo();
 static void doCopyAudioFiles();
 static void waitForEnterRelease();
@@ -549,7 +552,7 @@ void enter_menu()
         allOff();
         waitForEnterRelease();
 
-        // Set folder suffix (folder number)
+        // Set music folder number
         doSetMSfx();
 
         allOff();
@@ -809,18 +812,11 @@ static void menuShow(int number)
         displaySet = &destinationTime;
         break;
     case MODE_AINT:  // Time Rotation inverval
-        #ifdef IS_ACAR_DISPLAY
-        destinationTime.showTextDirect("ROT INT");
-        presentTime.off();
-        departedTime.off();
-        #else
         destinationTime.showTextDirect("TIME");
-        presentTime.showTextDirect("ROTATION");
-        departedTime.showTextDirect("INTERVAL");
-        presentTime.on();
-        departedTime.on();
-        #endif
+        presentTime.showTextDirect("CYCLING");
         destinationTime.on();
+        presentTime.on();
+        departedTime.off();
         break;
     case MODE_BRI:  // Brightness
         destinationTime.showTextDirect("BRIGHTNESS");
@@ -1082,11 +1078,7 @@ static void showCurVolHWSW()
 
 static void showCurVol()
 {
-    #ifdef IS_ACAR_DISPLAY
-    destinationTime.showSettingValDirect("LV", curVolume, true);
-    #else
-    destinationTime.showSettingValDirect("LVL", curVolume, true);
-    #endif
+    destinationTime.showSettingValDirect("LEVEL", curVolume, true);
     destinationTime.on();
     if(curVolume == 0) {
         presentTime.showTextDirect("MUTE");
@@ -1233,19 +1225,25 @@ static void doSetVolume()
  *   Music Folder Number ########################################
  */
 
+static void displayMSfx(int msfx)
+{
+    destinationTime.showSettingValDirect("NUMBER", msfx, true);
+    destinationTime.on();
+
+    if(mp_checkForFolder(msfx)) {
+        presentTime.off();
+    } else {
+        presentTime.showTextDirect("NOT FOUND");
+        presentTime.on();
+    }
+}
+
 static void doSetMSfx()
 {
     bool msfxDone = false;
     int msfx = atoi(settings.musSfx);
 
-    #ifdef IS_ACAR_DISPLAY
-    destinationTime.showSettingValDirect("NO", msfx, true);
-    #else
-    destinationTime.showSettingValDirect("NUM", msfx, true);
-    #endif
-    destinationTime.on();
-
-    presentTime.off();
+    displayMSfx(msfx);
     departedTime.off();
 
     isEnterKeyHeld = false;
@@ -1278,12 +1276,8 @@ static void doSetMSfx()
                 if(msfx > 9)
                     msfx = 0;
 
-                #ifdef IS_ACAR_DISPLAY
-                destinationTime.showSettingValDirect("NO", msfx, true);
-                #else
-                destinationTime.showSettingValDirect("NUM", msfx, true);
-                #endif
-                
+                displayMSfx(msfx);
+
             }
 
         } else {
@@ -1362,6 +1356,9 @@ const char *getAlWD(int wd)
 static void doSetAlarm()
 {
     char almBuf[16];
+    char almBuf2[16];
+    bool blinkSwitch = false;
+    unsigned long blinkNow;
     bool alarmDone = false;
     bool newAlarmOnOff = alarmOnOff;
     uint16_t newAlarmHour = (alarmHour <= 23) ? alarmHour : 0;
@@ -1374,6 +1371,7 @@ static void doSetAlarm()
     #endif
 
     // On/Off
+    sprintf(almBuf2, almFmt, "   " , newAlarmHour, newAlarmMinute);
     sprintf(almBuf, almFmt, newAlarmOnOff ? "ON " : "OFF", newAlarmHour, newAlarmMinute);
     displaySet->showTextDirect(almBuf);
     displaySet->on();
@@ -1381,6 +1379,7 @@ static void doSetAlarm()
     isEnterKeyHeld = false;
 
     timeout = 0;  // reset timeout
+    blinkNow = millis();
 
     // Wait for enter
     while(!checkTimeOut() && !alarmDone) {
@@ -1414,6 +1413,12 @@ static void doSetAlarm()
         } else {
 
             mydelay(50);
+
+            if(millis() - blinkNow > 500) {
+                blinkSwitch = !blinkSwitch;
+                displaySet->showTextDirect(blinkSwitch ? almBuf2 : almBuf);
+                blinkNow = millis();
+            }
 
         }
 
@@ -1537,26 +1542,28 @@ static void saveAutoInterval()
     write_settings();
 }
 
+static void displayAI(int interval)
+{ 
+    destinationTime.showSettingValDirect("INTERVAL", interval, true);
+
+    if(interval == 0) {
+        presentTime.showTextDirect("OFF");
+    } else {
+        presentTime.showTextDirect("MINUTES");    // Times cycled every xx minutes
+    }
+}
+
 /*
  * Adjust the autoInverval and save
  */
 static void doSetAutoInterval()
 {
     bool autoDone = false;
+    int newAutoInterval = autoInterval;
 
-    #ifdef IS_ACAR_DISPLAY
-    destinationTime.showSettingValDirect("IN", autoTimeIntervals[autoInterval], true);
-    #else
-    destinationTime.showSettingValDirect("INT", autoTimeIntervals[autoInterval], true);
-    #endif
+    displayAI(autoTimeIntervals[newAutoInterval]);
     destinationTime.on();
-
     presentTime.on();
-    if(autoTimeIntervals[autoInterval] == 0) {
-        presentTime.showTextDirect("OFF");
-    } else {
-        presentTime.showTextDirect("MINUTES");    // Times cycled in xx minutes
-    }
     departedTime.off();
 
     isEnterKeyHeld = false;
@@ -1585,22 +1592,11 @@ static void doSetAutoInterval()
 
                 timeout = 0;  // button pressed, reset timeout
 
-                autoInterval++;
-                if(autoInterval > 5)
-                    autoInterval = 0;
+                newAutoInterval++;
+                if(newAutoInterval > 5)
+                    newAutoInterval = 0;
 
-                #ifdef IS_ACAR_DISPLAY
-                destinationTime.showSettingValDirect("IN", autoTimeIntervals[autoInterval], true);
-                #else
-                destinationTime.showSettingValDirect("INT", autoTimeIntervals[autoInterval], true);
-                #endif
-
-                if(autoTimeIntervals[autoInterval] == 0) {
-                    presentTime.showTextDirect("OFF");
-                } else {
-                    presentTime.showTextDirect("MINUTES");
-                }
-                departedTime.off();
+                displayAI(autoTimeIntervals[newAutoInterval]);
             }
 
         } else {
@@ -1619,6 +1615,7 @@ static void doSetAutoInterval()
         destinationTime.showTextDirect(StrSaving);
 
         // Save it
+        autoInterval = newAutoInterval;
         saveAutoInterval();
         updateConfigPortalValues();
 
@@ -1827,24 +1824,30 @@ static void doShowSensors()
  * Show network info ###########################################
  */
 
-static void doShowNetInfo()
+static void displayIP()
 {
     uint8_t a, b, c, d;
+
+    wifi_getIP(a, b, c, d);
+    
+    destinationTime.showTextDirect("IP");
+    presentTime.showHalfIPDirect(a, b, true);
+    departedTime.showHalfIPDirect(c, d, true);
+    
+    destinationTime.on();
+    presentTime.on();
+    departedTime.on();
+}
+
+static void doShowNetInfo()
+{
     int number = 0;
     bool netDone = false;
     char macBuf[16];
 
-    wifi_getIP(a, b, c, d);
     wifi_getMAC(macBuf);
 
-    destinationTime.showTextDirect("IP");
-    destinationTime.on();
-
-    presentTime.showHalfIPDirect(a, b, true);
-    presentTime.on();
-
-    departedTime.showHalfIPDirect(c, d, true);
-    departedTime.on();
+    displayIP();
 
     isEnterKeyHeld = false;
 
@@ -1876,13 +1879,7 @@ static void doShowNetInfo()
                 if(number > 2) number = 0;
                 switch(number) {
                 case 0:
-                    wifi_getIP(a, b, c, d);
-                    destinationTime.showTextDirect("IP");
-                    destinationTime.on();
-                    presentTime.showHalfIPDirect(a, b, true);
-                    presentTime.on();
-                    departedTime.showHalfIPDirect(c, d, true);
-                    departedTime.on();
+                    displayIP();
                     break;
                 case 1:
                     destinationTime.showTextDirect("WIFI");
@@ -1938,7 +1935,7 @@ static void doShowNetInfo()
                 case 2:
                     destinationTime.showTextDirect("MAC");
                     destinationTime.on();
-                    presentTime.showTextDirect(macBuf, true);
+                    presentTime.showTextDirect(macBuf, true, true);
                     presentTime.on();
                     break;
                 }

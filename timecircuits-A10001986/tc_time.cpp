@@ -607,8 +607,8 @@ void time_setup()
     if(rtc.lostPower()) {
       
         // Lost power and battery didn't keep time, so set current time to 
-        // default time 1/1/2022, 0:0
-        rtc.adjust(0, 0, 0, dayOfWeek(1, 1, 2022), 1, 1, 22);
+        // default time 1/1/2023, 0:0
+        rtc.adjust(0, 0, 0, dayOfWeek(1, 1, 2023), 1, 1, 23);
        
         #ifdef TC_DBG
         Serial.println(F("time_setup: RTC lost power, setting default time. Change battery!"));

@@ -47,6 +47,7 @@
  *   (1.9.7 and later for esp32-arduino 2.x.x; 1.9.5 for 1.0.6 and below)
  * - WifiManager (tablatronix, tzapu) https://github.com/tzapu/WiFiManager
  *   (Tested with 2.0.13beta and 2.0.15-rc1)
+ * - ArduinoJSON >= 6.19: https://arduinojson.org/v6/doc/installation/
  *
  * Detailed installation and compilation instructions, while a bit outdated in 
  * library requirements, are here:
@@ -60,6 +61,10 @@
 
 /*  Changelog
  *    
+ *  2023/01/04 (A10001986)
+ *    - Minor enhancements for Keypad menu (Music folder number: Show info if /musicX 
+ *      or /musicX/000.mp3 is not found on SD; Alarm: Blink on/off to indicate which
+ *      field is to be edited; etc); code simplifications.
  *  2023/01/02 (A10001986)
  *    - Night-mode: Treat daily schedule like other schedules with regard to hourly
  *      checks; this fixes returning to nm after manual override.

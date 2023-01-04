@@ -99,7 +99,7 @@ class clockDisplay {
         void showOnlyYear(int yearNum);
 
         void showSettingValDirect(const char* setting, int8_t val = -1, bool clear = false);
-        void showTextDirect(const char *text, bool corr6 = false);
+        void showTextDirect(const char *text, bool clear = true, bool corr6 = false);
         void showHalfIPDirect(int a, int b, bool clear = false);
 
         #ifdef TC_HAVETEMP
@@ -128,7 +128,9 @@ class clockDisplay {
         #endif
 
         uint16_t makeNum(uint8_t num);
+        #if 0
         uint16_t makeNumN0(uint8_t num);
+        #endif
 
         void directCol(int col, int segments);  // directly writes column RAM
 

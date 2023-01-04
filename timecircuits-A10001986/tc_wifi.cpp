@@ -224,9 +224,9 @@ WiFiManagerParameter custom_useETTO("uEtto", "Use compatible external props", se
 #endif // -------------------------------------------------
 #endif // EXTERNAL_TIMETRAVEL_OUT
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
-WiFiManagerParameter custom_playTTSnd("plyTTS", "Play time travel sounds (0=no, 1=yes)", settings.playTTsnds, 1, "autocomplete='off' title='Enable to have the device play time travel sounds'");
+WiFiManagerParameter custom_playTTSnd("plyTTS", "Play time travel sounds (0=no, 1=yes)", settings.playTTsnds, 1, "autocomplete='off' title='Enable to have the device play time travel sounds. Disable if other props provide time travel sound.'");
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_playTTSnd("plyTTS", "Play time travel sounds", settings.playTTsnds, 1, "autocomplete='off' title='Check to have the device play time travel sounds' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_playTTSnd("plyTTS", "Play time travel sounds", settings.playTTsnds, 1, "autocomplete='off' title='Check to have the device play time travel sounds. Uncheck if other props provide time travel sound.' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 
 WiFiManagerParameter custom_musSfx("musSfx", "Music folder number (0-9)<br><span style='font-size:80%'>The Music Player searches for mp3 files on the SD card in folder 'musicX', X being the number configured here</span>", settings.musSfx, 1, "title='Music will be searched for in /musicX (X being the number) on SD card' type='number' min='0' max='9' autocomplete='off'");

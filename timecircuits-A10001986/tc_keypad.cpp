@@ -369,7 +369,7 @@ static void recordKey(char key)
 {
     dateBuffer[dateIndex++] = key;
     dateBuffer[dateIndex] = '\0';
-    // Don't overflow, overwrite end of date instead
+    // Don't wrap around, overwrite end of date instead
     if(dateIndex >= DATELEN_ALL) dateIndex = DATELEN_ALL - 1;  
     lastKeyPressed = millis();
 }

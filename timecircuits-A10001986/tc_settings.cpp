@@ -40,6 +40,9 @@
 #include "tc_menus.h"
 #include "tc_time.h"
 
+// Size of main config JSON
+#define JSON_SIZE 1536
+
 /*
  * Mount SPIFFS/LittleFS, und SD (if available)
  *
@@ -167,8 +170,8 @@ void settings_setup()
                 Serial.println(F("settings_setup: Opened config file"));
                 #endif
 
-                //StaticJsonDocument<1536> json;
-                DynamicJsonDocument json(1536);
+                //StaticJsonDocument<JSON_SIZE> json;
+                DynamicJsonDocument json(JSON_SIZE);
                 DeserializationError error = deserializeJson(json, configFile);
 
                 #ifdef TC_DBG
@@ -472,8 +475,8 @@ void settings_setup()
 
 void write_settings()
 {
-    DynamicJsonDocument json(1536);
-    //StaticJsonDocument<1536> json;
+    DynamicJsonDocument json(JSON_SIZE);
+    //StaticJsonDocument<JSON_SIZE> json;
 
     if(!haveFS) {
         Serial.println(F("write_settings: Cannot write settings, flash FS not mounted"));
