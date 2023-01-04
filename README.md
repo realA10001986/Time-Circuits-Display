@@ -86,7 +86,7 @@ A full reference of the Config Portal is [here](#appendix-the-config-portal).
 
 *Destination time* and *Last time departed* are stale. These, by default, work like in the movie: Upon a time travel, *present time* becomes *last time departed*, and *destination time* becomes *present time*.
 
-There is also a "decorative" mode where the device cycles through a list of pre-programmed *destination* and *last time departed* times. This mode is chosen by setting the "Time-rotation Interval" in the Config Portal (via network) or the [keypad menu](#how-to-select-the-time-rotation-interval) to a non-zero value. The device will then cycle through named list every 5th, 10th, 15th, 30th or 60th minute, and thereby change the displays, regardless of times displayed as a result from a time travel. Set the interval to 0 to disable this "decorative" mode.
+There is also a "decorative" mode where the device cycles through a list of pre-programmed *destination* and *last time departed* times. This mode is chosen by setting the "Time-cycling Interval" in the Config Portal (via network) or the [keypad menu](#how-to-select-the-time-cycling-interval) to a non-zero value. The device will then cycle through named list every 5th, 10th, 15th, 30th or 60th minute, and thereby change the displays, regardless of times displayed as a result from a time travel. Set the interval to 0 to disable this "decorative" mode.
 
 The clock only supports the [Gregorian Calendar](https://en.wikipedia.org/wiki/Gregorian_calendar), of which it pretends to have been used since year 1. The [Julian Calendar](https://en.wikipedia.org/wiki/Julian_calendar) is not taken into account. As a result, some years that, in the then-used Julian Calendar, were leap years between years 1 and 1582 in most of today's Europe, 1700 in DK/NO/NL(except Holland and Zeeland), 1752 in the British Empire, 1753 in Sweden, 1760 in Lorraine, 1872 in Japan, 1912 in China, 1915 in Bulgaria, 1917 in the Ottoman Empire, 1918 in Russia and Serbia and 1923 in Greece, are normal years in the Gregorian one. As a result, dates do not match in those two calender systems, the Julian calendar is currently 13 days behind. I wonder if Doc's TC took all this into account. (Then again, he wanted to see Christ's birth on Dec 25, 0. Luckily, he didn't actually try to travel to that date. Assuming a negative roll-over, he might have ended up in eternity.)
 
@@ -230,11 +230,11 @@ If time travels are non-persistent
 - a user-programmed *last time departed* is only stored to flash memory when programmed through the keypad menu, but not if the result of a time travel.
 - *present time* is always reset to actual present time upon power-up.
 
-If you want your device to display exactly the same after a power loss, choose persistent (and set the Time-rotation Interval to 0). 
+If you want your device to display exactly the same after a power loss, choose persistent (and set the Time-cycling Interval to 0). 
 
-If you want to display your favorite *destination time* and *last time departed* upon power-up, and not have time travels overwrite them in flash memory, choose "non-persistent", and program your times through the keypad menu (and set the Time-rotation Interval to 0). Those times will never be overwritten in flash memory by later time travels. Note, however, that the times displayed might actually change due to time travels.
+If you want to display your favorite *destination time* and *last time departed* upon power-up, and not have time travels overwrite them in flash memory, choose "non-persistent", and program your times through the keypad menu (and set the Time-cycling Interval to 0). Those times will never be overwritten in flash memory by later time travels. Note, however, that the times displayed might actually change due to time travels.
 
-Note that a non-zero Time-rotation Interval will force the device to cycle through the list of pre-programmed times, regardless of your time travel persistence setting. This cycling will, however, be paused for 30 minutes after you entered a new destination time and/or travelled in time.
+Note that a non-zero Time-cycling Interval will force the device to cycle through the list of pre-programmed times, regardless of your time travel persistence setting. This cycling will, however, be paused for 30 minutes after you entered a new destination time and/or travelled in time.
 
 ## Night mode
 
@@ -328,7 +328,7 @@ After invoking the keypad menu, the first step is to choose a menu item. The ava
 - set the alarm ("ALA-RM"),
 - set the audio volume (VOL-UME),
 - set the Music Player folder number ("MUSIC FOLDER NUMBER")
-- select the Time-rotation Interval ("TIME-ROTATION-INTERVAL"),
+- select the Time-cycling Interval ("TIME-CYCLING", formerly "TIME-ROTATION-INTERVAL"),
 - select the brightness for the three displays ("BRIGHTNESS"),
 - show network information ("NET-WORK"),
 - enter dates/times for the three displays (and set the RTC),
@@ -377,12 +377,12 @@ Basically, and by default, the device uses the hardware volume knob to determine
 
 If shuffle was enabled before, the new folder is also played in shuffled order.
 
-#### How to select the Time-rotation Interval:
+#### How to select the Time-cycling Interval:
 
 - Hold ENTER to invoke main menu
-- Press ENTER repeatedly until "TIME-ROTATION-INTERVAL" is shown
-- Hold ENTER, "INT" is displayed
-- Press ENTER repeatedly to cycle through the possible Time-rotation Interval values.
+- Press ENTER repeatedly until "TIME-CYCLING" (formerly "TIME-ROTATION-INTERVAL") is shown
+- Hold ENTER, "INTERVAL" (formerly "INT") is displayed
+- Press ENTER repeatedly to cycle through the possible Time-cycling Interval values.
 - A value of 0 disables automatic time cycling ("OFF").
 - Non-zero values make the device cycle through a number of pre-programmed times. The value means "minutes" (hence "MIN-UTES") between changes.              
 - Hold ENTER to select the value shown and exit the menu ("SAVING" is displayed briefly)
@@ -410,7 +410,7 @@ The [Config Portal](#the-config-portal) offers more granularity as it provides 1
 
 By entering a date/time into the *present time* display, the **RTC (real time clock)** of the device is adjusted, which is useful if you can't use NTP for time keeping, and really helpful when using GPS. Always set the real actual present time here; if you want to display some other time, use the Time Travel function. Note: The time you entered will be overwritten if/when the device has access to network time via NTP or GPS. For DST (daylight saving) and GPS, it is essential that you also set the correct time zone in the [Config Portal](#the-config-portal).
 
-Note that when entering dates/times into the *destination time* or *last time departed* displays, the Time-rotation Interval is automatically set to 0. Your entered date/time(s) are shown until overwritten by time travels (see [here](#how-to-select-the-time-rotation-interval)).
+Note that when entering dates/times into the *destination time* or *last time departed* displays, the Time-cycling Interval is automatically set to 0. Your entered date/time(s) are shown until overwritten by time travels (see [here](#how-to-select-the-time-cycling-interval)).
 
 - Hold ENTER to invoke main menu
 - Press ENTER repeatedly until the desired display is the only one lit and shows a date and time
@@ -554,9 +554,9 @@ Selects whether the animated "Back to the Future" intro should be played upon po
 
 Selects 24-hour clock mode, ie hours go from 0 to 23, "AM" and "PM" are permanently dark.
 
-#### Time-rotation interval
+#### Time-cycling interval
 
-In "decorative" mode the device cycles through a list of pre-programmed, movie-accurate *destination* and *last time departed* times. This mode is enabled by setting the "Time-rotation Interval" to anything but "off". The device will cycle through named list every 5th, 10th, 15th, 30th or 60th minute, and thereby change the displays. Set the interval to "off" to disable "decorative" mode. See [here](#operation-basics)
+In "decorative" mode the device cycles through a list of pre-programmed, movie-accurate *destination* and *last time departed* times. This mode is enabled by setting the "Time-cycling Interval" to anything but "off". The device will cycle through named list every 5th, 10th, 15th, 30th or 60th minute, and thereby change the displays. Set the interval to "off" to disable "decorative" mode. See [here](#operation-basics)
 
 ### Network & time synchronization settings
 
