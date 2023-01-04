@@ -601,7 +601,7 @@ void clockDisplay::showOnlyMinute(int minuteNum)
 
 
 // Shows the given text
-void clockDisplay::showTextDirect(const char *text, bool corr6)
+void clockDisplay::showTextDirect(const char *text, bool clear, bool corr6)
 {
     int idx = 0, pos = CD_MONTH_POS;
     int temp = 0;
@@ -644,9 +644,11 @@ void clockDisplay::showTextDirect(const char *text, bool corr6)
         pos++;
     }
 
-    while(pos <= CD_MIN_POS) {
-        directCol(pos, 0);
-        pos++;
+    if(clear) {
+        while(pos <= CD_MIN_POS) {
+            directCol(pos, 0);
+            pos++;
+        }
     }
     
     _corr6 = false;
@@ -655,54 +657,33 @@ void clockDisplay::showTextDirect(const char *text, bool corr6)
 // clears the display RAM and only shows the provided 2 numbers (parts of IP)
 void clockDisplay::showHalfIPDirect(int a, int b, bool clear)
 {
-    char buf[6];
+    char buf[16];
+    #ifdef IS_ACAR_DISPLAY
+    const char *fmt1 = "%3d  %3d";
+    const char *fmt2 = "%2d   %3d";
+    #else
+    const char *fmt = "%3d   %3d";
+    #endif
 
-    if(clear)
-          clearDisplay();
-
-#ifdef IS_ACAR_DISPLAY
-    if(a >= 100) {
-        directCol(CD_MONTH_POS, makeNum(a / 10));
-        directCol(CD_DAY_POS, numDigs[(a % 10)]);
-    } else {
-        directCol(CD_MONTH_POS, makeNumN0(a));
-    }
-#else
-    sprintf(buf, "%3d", a);
-    directCol(CD_MONTH_POS, getLEDAlphaChar(buf[0]));
-    directCol(CD_MONTH_POS + 1, getLEDAlphaChar(buf[1]));
-    directCol(CD_MONTH_POS + 2, getLEDAlphaChar(buf[2]));
-#endif
-
-    if(b >= 100) {
-        directCol(CD_YEAR_POS, makeNumN0(b / 100));
-    }
-    directCol(CD_YEAR_POS + 1, ((b / 100) ? makeNum(b % 100) : makeNumN0(b % 100)));
+    #ifdef IS_ACAR_DISPLAY
+    sprintf(buf, (a >= 100) ? fmt1 : fmt2, a, b);
+    #else
+    sprintf(buf, fmt, a, b);
+    #endif
+    showTextDirect(buf, clear);
 }
 
 // Shows a text part and a number
 void clockDisplay::showSettingValDirect(const char* setting, int8_t val, bool clear)
 {
-    if(clear)
-        clearDisplay();
+    showTextDirect(setting, clear);
 
-#ifdef IS_ACAR_DISPLAY
-    directCol(CD_MONTH_POS, getLED7AlphaChar(setting[0]) |
-             ((setting[1] ? getLED7AlphaChar(setting[1]) : 0) << 8));
-#else
-    directCol(CD_MONTH_POS, getLEDAlphaChar(setting[0]));
-    if(setting[1]) {
-        directCol(CD_MONTH_POS + 1, getLEDAlphaChar(setting[1]));
-        if(setting[2]) {
-            directCol(CD_MONTH_POS + 2, getLEDAlphaChar(setting[2]));
-        }
-    }
-#endif
+    int field = (strlen(setting) <= CD_MONTH_DIGS) ? CD_DAY_POS : CD_MIN_POS;
 
     if(val >= 0 && val < 100)
-        directCol(CD_DAY_POS, makeNum(val));
+         directCol(field, makeNum(val));
     else
-        directCol(CD_DAY_POS, 0x00);
+         directCol(field, 0x00);
 }
 
 #ifdef TC_HAVETEMP
@@ -1185,6 +1166,7 @@ uint16_t clockDisplay::makeNum(uint8_t num)
 
 // Make a 2 digit number from the array and return the segment data
 // (no leading 0s)
+#if 0
 uint16_t clockDisplay::makeNumN0(uint8_t num)
 {
     uint16_t segments = 0;
@@ -1198,6 +1180,7 @@ uint16_t clockDisplay::makeNumN0(uint8_t num)
 
     return segments;
 }
+#endif
 
 // Directly write to a column with supplied segments
 // (leave buffer intact, directly write to display)

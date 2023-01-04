@@ -48,5 +48,6 @@ void mp_next(bool forcePlay = false);
 void mp_prev(bool forcePlay = false);
 int  mp_gotonum(int num, bool force = false);
 void mp_makeShuffle(bool enable);
+bool mp_checkForFolder(int num);
 
 #endif
