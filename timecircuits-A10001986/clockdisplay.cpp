@@ -33,20 +33,14 @@
 #include "clockdisplay.h"
 #include "tc_font.h"
 
+#define CD_MONTH_POS  0
 #ifdef IS_ACAR_DISPLAY      // A-Car (2-digit-month) ---------------------
-
-#define CD_MONTH_POS  0     //      possibly needs to be adapted
 #define CD_MONTH_SIZE 1     //      number of words
 #define CD_MONTH_DIGS 2     //      number of digits/letters
-
 #else                       // All others (3-char month) -----------------
-
-#define CD_MONTH_POS  0
 #define CD_MONTH_SIZE 3     //      number of words
 #define CD_MONTH_DIGS 3     //      number of digits/letters
-
 #endif                      // -------------------------------------------
-
 #define CD_DAY_POS    3
 #define CD_YEAR_POS   4
 #define CD_HOUR_POS   6
@@ -627,7 +621,7 @@ void clockDisplay::showTextDirect(const char *text, bool clear, bool corr6)
     }
 #endif
 
-    while(pos < (CD_MONTH_POS+CD_MONTH_SIZE)) {
+    while(pos < CD_DAY_POS) {
         directCol(pos, 0);
         pos++;
     }

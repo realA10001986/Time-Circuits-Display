@@ -51,7 +51,7 @@
  *     - set an alarm ("ALA-RM"),
  *     - set the audio volume (VOL-UME),
  *     - select the music folder number ("MUSIC FOLDER NUMBER")
- *     - select the Time-rotation Interval ("TIME ROTATION INTERVAL"),
+ *     - select the Time-Cycling Interval ("TIME CYCLING"),
  *     - select the brightness for the three displays ("BRIGHTNESS"),
  *     - show network information ("NET-WORK"),
  *     - enter dates/times for the three displays/set built-in RTC,
@@ -79,6 +79,7 @@
  *    
  *    This quickly set the alarm time outside of the menu, enter "11hhMM" and 
  *    press ENTER. (Weekday selection must be done through the menu.)
+ *    To see the current time/weekday settings, type 11 and press ENTER.
  *
  *    Note that the alarm is recurring, ie it rings at the programmed time
  *    unless disabled. Also note that the alarm is by default relative to your 
@@ -98,7 +99,7 @@
  *     - Press ENTER to toggle between "USE VOLUME KNOB" and "FIXED LEVEL"
  *     - Hold ENTER to proceed
  *     - If you chose "FIXED LEVEL", you can now select the desired level by 
- *       pressing ENTER repeatedly. There are 16 levels available.
+ *       pressing ENTER repeatedly. There are 20 levels available.
  *     - Hold ENTER to save and quit the menu ("SAVING" is displayed
  *       briefly)
  *
@@ -106,18 +107,18 @@
  * 
  *     - Hold ENTER to invoke main menu
  *     - Press ENTER until "MUSIC FOLDER NUMBER" is shown
- *     - Hold ENTER, "NUM" is displayed
+ *     - Hold ENTER, "NUMBER" is displayed
  *     - Press ENTER to cycle through the possible settings (0-9)
  *       values.
  *     - Hold ENTER to save and quit the menu ("SAVING" is displayed
  *       briefly)
  * 
- * How to select the Time-rotation Interval:
+ * How to select the Time-cycling Interval:
  *
  *     - Hold ENTER to invoke main menu
- *     - Press ENTER until "TIME ROTATION INTERVAL" is shown
- *     - Hold ENTER, "INT" is displayed
- *     - Press ENTER to cycle through the possible Time-rotation Interval 
+ *     - Press ENTER until "TIME CYCLING" is shown
+ *     - Hold ENTER, "INTERVAL" is displayed
+ *     - Press ENTER to cycle through the possible Time-cycling Interval 
  *       values.
  *
  *       A value of 0 disables automatic time cycling ("OFF").
@@ -327,6 +328,7 @@ void enter_menu()
     bool desNM = destinationTime.getNightMode();
     bool preNM = presentTime.getNightMode();
     bool depNM = departedTime.getNightMode();
+    bool mpActive;
 
     pwrNeedFullNow();
 
@@ -337,7 +339,7 @@ void enter_menu()
     presentTime.setNightMode(false);
     departedTime.setNightMode(false);
 
-    mp_stop();
+    mpActive = mp_stop();
     stopAudio();
 
     // start with first menu item
@@ -582,6 +584,10 @@ void enter_menu()
 
     } else if(menuItemNum == MODE_BRI) {   // Adjust brightness
 
+        uint8_t dtbri = destinationTime.getBrightness();
+        uint8_t ptbri = presentTime.getBrightness();
+        uint8_t ltbri = departedTime.getBrightness();
+
         allOff();
         waitForEnterRelease();
 
@@ -597,19 +603,28 @@ void enter_menu()
 
             presentTime.showTextDirect(StrSaving);
 
-            // (Re)Set current brightness as "initial" brightness
-            destinationTime.setBrightness(destinationTime.getBrightness(), true);
-            presentTime.setBrightness(presentTime.getBrightness(), true);
-            departedTime.setBrightness(departedTime.getBrightness(), true);
+            uint8_t dtbri2 = destinationTime.getBrightness();
+            uint8_t ptbri2 = presentTime.getBrightness();
+            uint8_t ltbri2 = departedTime.getBrightness();
+
+            if( (dtbri2 != dtbri) ||
+                (ptbri2 != ptbri) || 
+                (ltbri2 != ltbri) ) {
+
+                // (Re)Set current brightness as "initial" brightness
+                destinationTime.setBrightness(dtbri2, true);
+                presentTime.setBrightness(ptbri2, true);
+                departedTime.setBrightness(ltbri2, true);
+
+                // Convert bri values to strings, write to settings, write settings file
+                sprintf(settings.destTimeBright, "%d", dtbri2);
+                sprintf(settings.presTimeBright, "%d", ptbri2);
+                sprintf(settings.lastTimeBright, "%d", ltbri2);
+                write_settings();
+                updateConfigPortalValues();
+            }
 
             mydelay(1000);
-
-            // Convert bri values to strings, write to settings, write settings file
-            sprintf(settings.destTimeBright, "%d", destinationTime.getBrightness());
-            sprintf(settings.presTimeBright, "%d", presentTime.getBrightness());
-            sprintf(settings.lastTimeBright, "%d", departedTime.getBrightness());
-            write_settings();
-            updateConfigPortalValues();
 
         }
 
@@ -690,6 +705,9 @@ quitMenu:
     destinationTime.setNightMode(desNM);
     presentTime.setNightMode(preNM);
     departedTime.setNightMode(depNM);
+
+    // Restart mp if it was active before entering the menu
+    if(mpActive) mp_play();
 }
 
 /*
@@ -1020,19 +1038,37 @@ static void setField(uint16_t& number, uint8_t field, int year, int month, bool 
  *  Volume #####################################################
  */
 
+static void readEEPROMVol(uint8_t *loadBuf)
+{
+    loadBuf[0] = EEPROM.read(SWVOL_PREF);
+    loadBuf[1] = EEPROM.read(SWVOL_PREF + 1) ^ 0xff;
+}
+
 static void saveCurVolume()
 {
-    EEPROM.write(SWVOL_PREF, (uint8_t)curVolume);
-    EEPROM.write(SWVOL_PREF + 1, (uint8_t)((curVolume ^ 0xff) & 0xff));
-    EEPROM.commit();
+    uint8_t loadBuf[2];
+    
+    readEEPROMVol(loadBuf);
+    
+    if( (loadBuf[0] != loadBuf[1]) ||
+        (loadBuf[0] != curVolume) ) {
+
+        EEPROM.write(SWVOL_PREF, (uint8_t)curVolume);
+        EEPROM.write(SWVOL_PREF + 1, (uint8_t)((curVolume ^ 0xff) & 0xff));
+        EEPROM.commit();
+
+        #ifdef TC_DBG
+        Serial.print("saveVolume: Saved volume ");
+        Serial.println(curVolume);
+        #endif
+    }
 }
 
 static bool loadCurVolume()
 {
     uint8_t loadBuf[2];
 
-    loadBuf[0] = EEPROM.read(SWVOL_PREF);
-    loadBuf[1] = EEPROM.read(SWVOL_PREF + 1) ^ 0xff;
+    readEEPROMVol(loadBuf);
 
     if(loadBuf[0] != loadBuf[1]) {
 
@@ -1210,13 +1246,15 @@ static void doSetVolume()
         destinationTime.showTextDirect(StrSaving);
 
         // Save it
-        saveCurVolume();
+        if(curVolume != oldVol) {
+            saveCurVolume();
+        }
 
         mydelay(1000);
 
     } else {
 
-        oldVol = curVolume;
+        curVolume = oldVol;
 
     }
 }
@@ -1241,7 +1279,9 @@ static void displayMSfx(int msfx)
 static void doSetMSfx()
 {
     bool msfxDone = false;
-    int msfx = atoi(settings.musSfx);
+    int oldmsfx, msfx = atoi(settings.musSfx);
+    
+    oldmsfx = msfx;
 
     displayMSfx(msfx);
     departedTime.off();
@@ -1295,15 +1335,15 @@ static void doSetMSfx()
 
         destinationTime.showTextDirect(StrSaving);
 
-        // Save it
-        sprintf(settings.musSfx, "%d", msfx);
-        write_settings();
-        
-        updateConfigPortalValues();
+        // Save it (if changed)
+        if(oldmsfx != msfx) {
+            sprintf(settings.musSfx, "%d", msfx);
+            write_settings();
+            mp_init();
+            updateConfigPortalValues();
+        }
 
         mydelay(1000);
-
-        mp_init();
 
     }
 }
@@ -1386,6 +1426,12 @@ static void doSetAlarm()
 
         // If pressed
         if(checkEnterPress()) {
+
+            if(blinkSwitch) {
+                displaySet->showTextDirect(almBuf);
+                blinkSwitch = false;
+                blinkNow = millis();
+            }
 
             // wait for release
             while(!checkTimeOut() && checkEnterPress()) {
@@ -1495,13 +1541,19 @@ static void doSetAlarm()
 
         waitAudioDone();
 
-        alarmOnOff = newAlarmOnOff;
-        alarmHour = newAlarmHour;
-        alarmMinute = newAlarmMinute;
-        alarmWeekday = newAlarmWeekday;
+        // Save it (if changed)
+        if( (alarmOnOff != newAlarmOnOff)   ||
+            (alarmHour != newAlarmHour)     ||
+            (alarmMinute != newAlarmMinute) ||
+            (alarmWeekday != newAlarmWeekday) ) {
+        
+            alarmOnOff = newAlarmOnOff;
+            alarmHour = newAlarmHour;
+            alarmMinute = newAlarmMinute;
+            alarmWeekday = newAlarmWeekday;
 
-        // Save it
-        saveAlarm();
+            saveAlarm();
+        }
 
         mydelay(1000);
     }
@@ -1614,10 +1666,12 @@ static void doSetAutoInterval()
 
         destinationTime.showTextDirect(StrSaving);
 
-        // Save it
-        autoInterval = newAutoInterval;
-        saveAutoInterval();
-        updateConfigPortalValues();
+        // Save it (if changed)
+        if(autoInterval != newAutoInterval) {
+            autoInterval = newAutoInterval;
+            saveAutoInterval();
+            updateConfigPortalValues();
+        }
 
         mydelay(1000);
 
