@@ -61,6 +61,10 @@
 
 /*  Changelog
  *    
+ *  2023/01/05 (A10001986)
+ *    - Keypad menu: Save settings only if they were changed to reduce flash wear.
+ *    - Fix "8" being written to typing buffer despite being held
+ *    - Fix restoring volumg in case of timeout in keypad menu
  *  2023/01/04 (A10001986)
  *    - Minor enhancements for Keypad menu (Music folder number: Show info if /musicX 
  *      or /musicX/000.mp3 is not found on SD; Alarm: Blink on/off to indicate which

@@ -235,7 +235,7 @@ static void keypadEvent(char key, KeyState kstate)
             doKey = false;
             resetPresentTime();
             break;
-        case '1':    // "1" held down -> toggle alarm on/off [ex: turn alarm on]
+        case '1':    // "1" held down -> toggle alarm on/off
             doKey = false;
             switch(toggleAlarm()) {
             case -1:
@@ -248,25 +248,8 @@ static void keypadEvent(char key, KeyState kstate)
                 play_file("/alarmon.mp3", 1.0, true, false);
                 break;
             }
-            /*
-            if(alarmOn()) {
-                play_file("/alarmon.mp3", 1.0, true, false);
-            } else {
-                play_file("/baddate.mp3", 1.0, true, false);
-            }
-            */
             break;
-        case '2':    // "2" held down -> musicplayer prev [ex: turn alarm off]
-            doKey = false;
-            if(haveMusic) {
-                mp_prev(mpActive);
-            }
-            /*
-            alarmOff();
-            play_file("/alarmoff.mp3", 1.0, true, false);
-            */
-            break;
-        case '4':    // "4" held down -> toggle night-mode on/off [ex:nightmode on]
+        case '4':    // "4" held down -> toggle night-mode on/off
             doKey = false;
             if(toggleNightMode()) {
                 manualNightMode = 1;
@@ -276,28 +259,6 @@ static void keypadEvent(char key, KeyState kstate)
                 play_file("/nmoff.mp3", 1.0, false, false);
             }
             manualNMNow = millis();
-            /*
-            nightModeOn();
-            manualNightMode = 1;
-            manualNMNow = millis();
-            play_file("/nmon.mp3", 1.0, false, false);
-            */
-            break;
-        case '5':    // "5" held down -> musicplayer start/stop [ex: nightmode off]
-            doKey = false;
-            if(haveMusic) {
-                if(mpActive) {
-                    mp_stop();
-                } else {
-                    mp_play();
-                }
-            }
-            /*
-            nightModeOff();
-            manualNightMode = 0;
-            manualNMNow = millis();
-            play_file("/nmoff.mp3", 1.0, false, false);
-            */
             break;
         case '3':    // "3" held down -> play audio file "key3.mp3"
             doKey = false;
@@ -321,7 +282,24 @@ static void keypadEvent(char key, KeyState kstate)
             // Restart mp if it was active before
             if(mpWasActive) mp_play();   
             break;
+        case '2':    // "2" held down -> musicplayer prev
+            doKey = false;
+            if(haveMusic) {
+                mp_prev(mpActive);
+            }
+            break;
+        case '5':    // "5" held down -> musicplayer start/stop
+            doKey = false;
+            if(haveMusic) {
+                if(mpActive) {
+                    mp_stop();
+                } else {
+                    mp_play();
+                }
+            }
+            break;
         case '8':   // "8" held down -> musicplayer next
+            doKey = false;
             if(haveMusic) {
                 mp_next(mpActive);
             }
@@ -615,10 +593,14 @@ void keypad_loop()
                     invalidEntry = true;
                 } else {
                     const char *alwd = getAlWD(alarmWeekday);
-                    alarmHour = aHour;
-                    alarmMinute = aMin;
-                    alarmOnOff = true;
-                    saveAlarm();
+                    if( (alarmHour != aHour)  ||
+                        (alarmMinute != aMin) ||
+                        !alarmOnOff ) {
+                        alarmHour = aHour;
+                        alarmMinute = aMin;
+                        alarmOnOff = true;
+                        saveAlarm();
+                    }
                     #ifdef IS_ACAR_DISPLAY
                     sprintf(atxt, "%-7s %02d%02d", alwd, alarmHour, alarmMinute);
                     #else
