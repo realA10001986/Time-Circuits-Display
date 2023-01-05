@@ -364,7 +364,7 @@ Basically, and by default, the device uses the hardware volume knob to determine
 - Hold ENTER
 - Press ENTER to toggle between "USE VOLUME KNOB" (formerly "HW VOLUME KNOB") and "FIXED LEVEL" (formerly "SW")
 - Hold ENTER to proceed
-- If you chose "FIXED LEVEL/"SW", you can now select the desired level by pressing ENTER repeatedly. There are 16 levels available. The volume knob is now ignored.
+- If you chose "FIXED LEVEL/"SW", you can now select the desired level by pressing ENTER repeatedly. There are 20 levels available. The volume knob is now ignored.
 - Hold ENTER to save and quit the menu
 
 #### How to select the music folder number:
