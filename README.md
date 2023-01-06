@@ -302,7 +302,7 @@ The firmware supports some additional user-provided sound effects, which must re
 
 The firmware contains a simple music player to play mp3 files located on the SD card. In order to be recognized, your mp3 files need to be organized in music folders named *music0* through *music9* and their filenames must only consist of three-digit numbers, starting at 000.mp3, in consecutive order. No numbers should be left out. Each folder can hold 1000 files (000.mp3-999.mp3). *The maximum bitrate is 128kpbs.*
 
-The folder number is 0 by default, ie the player starts searching for music in folder *music0*. This folder number can be changed in the keypad menu as well as the Config Portal.
+The folder number is 0 by default, ie the player starts searching for music in folder *music0*. This folder number can be changed in the keypad menu.
 
 To start and stop music playback, hold 5. Holding 2 jumps to the previous song, holding 8 to the next one.
 
@@ -376,6 +376,8 @@ Basically, and by default, the device uses the hardware volume knob to determine
 - Hold ENTER to select the value shown and exit the menu ("SAVING" is displayed briefly)
 
 If shuffle was enabled before, the new folder is also played in shuffled order.
+
+Note that the Music Folder Number is saved in a config file on the SD card.
 
 #### How to select the Time-cycling Interval:
 
@@ -716,15 +718,15 @@ If other props are connected, they might bring their own time travel sound effec
 
 ### Music Player settings
 
-#### Music folder number
-
-Selects the folder number for the Music Player. The folders are named "music0" through "music9"; this config option selects the digit in the folder name.
-
 #### Shuffle at startup
 
 When checked, songs are shuffled when the device is booted. When unchecked, songs will be played in order.
 
 ### Other settings
+
+#### Save alarm/volume settings on SD
+
+TODO
 
 #### 4MHz SD clock speed
 
