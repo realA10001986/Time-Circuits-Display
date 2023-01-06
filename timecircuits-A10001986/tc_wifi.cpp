@@ -289,6 +289,7 @@ static IPAddress stringToIp(char *str);
 static void getParam(String name, char *destBuf, size_t length);
 static bool myisspace(char mychar);
 static char* strcpytrim(char* destination, const char* source, bool doFilter = false);
+static void mystrcpy(char *sv, WiFiManagerParameter *el);
 #ifndef TC_NOCHECKBOXES
 static void strcpyCB(char *sv, WiFiManagerParameter *el);
 static void setCBVal(WiFiManagerParameter *el, char *sv);
@@ -558,32 +559,32 @@ void wifi_loop()
                 char *s = settings.hostName;
                 for ( ; *s; ++s) *s = tolower(*s);
             }
-            strcpy(settings.wifiConRetries, custom_wifiConRetries.getValue());
-            strcpy(settings.wifiConTimeout, custom_wifiConTimeout.getValue());
-            strcpy(settings.wifiOffDelay, custom_wifiOffDelay.getValue());
-            strcpy(settings.wifiAPOffDelay, custom_wifiAPOffDelay.getValue());
+            mystrcpy(settings.wifiConRetries, &custom_wifiConRetries);
+            mystrcpy(settings.wifiConTimeout, &custom_wifiConTimeout);
+            mystrcpy(settings.wifiOffDelay, &custom_wifiOffDelay);
+            mystrcpy(settings.wifiAPOffDelay, &custom_wifiAPOffDelay);
             strcpytrim(settings.ntpServer, custom_ntpServer.getValue());
             strcpytrim(settings.timeZone, custom_timeZone.getValue());
             
-            strcpy(settings.destTimeBright, custom_destTimeBright.getValue());
-            strcpy(settings.presTimeBright, custom_presTimeBright.getValue());
-            strcpy(settings.lastTimeBright, custom_lastTimeBright.getValue());
+            mystrcpy(settings.destTimeBright, &custom_destTimeBright);
+            mystrcpy(settings.presTimeBright, &custom_presTimeBright);
+            mystrcpy(settings.lastTimeBright, &custom_lastTimeBright);
             getParam("autonmtimes", settings.autoNMPreset, 1);
             if(strlen(settings.autoNMPreset) == 0) {
                 sprintf(settings.autoNMPreset, "%d", DEF_AUTONM_PRESET);
             }
-            strcpy(settings.autoNMOn, custom_autoNMOn.getValue());
-            strcpy(settings.autoNMOff, custom_autoNMOff.getValue());
+            mystrcpy(settings.autoNMOn, &custom_autoNMOn);
+            mystrcpy(settings.autoNMOff, &custom_autoNMOff);
             #ifdef TC_HAVELIGHT
-            strcpy(settings.luxLimit, custom_lxLim.getValue());
+            mystrcpy(settings.luxLimit, &custom_lxLim);
             #endif
             
             #ifdef EXTERNAL_TIMETRAVEL_IN
-            strcpy(settings.ettDelay, custom_ettDelay.getValue());
+            mystrcpy(settings.ettDelay, &custom_ettDelay);
             #endif
 
             #ifdef TC_HAVETEMP
-            strcpy(settings.tempOffs, custom_tempOffs.getValue());
+            mystrcpy(settings.tempOffs, &custom_tempOffs);
             #endif
             
             #ifdef TC_HAVESPEEDO
@@ -591,64 +592,64 @@ void wifi_loop()
             if(strlen(settings.speedoType) == 0) {
                 sprintf(settings.speedoType, "%d", DEF_SPEEDO_TYPE);
             }
-            strcpy(settings.speedoBright, custom_speedoBright.getValue());
-            strcpy(settings.speedoFact, custom_speedoFact.getValue());
+            mystrcpy(settings.speedoBright, &custom_speedoBright);
+            mystrcpy(settings.speedoFact, &custom_speedoFact);
             #ifdef TC_HAVETEMP
-            strcpy(settings.tempBright, custom_tempBright.getValue());
+            mystrcpy(settings.tempBright, &custom_tempBright);
             #endif
             #endif
             
             #ifdef TC_NOCHECKBOXES // --------- Plain text boxes:
 
-            strcpy(settings.timesPers, custom_ttrp.getValue());
-            strcpy(settings.alarmRTC, custom_alarmRTC.getValue());
-            strcpy(settings.playIntro, custom_playIntro.getValue());
-            strcpy(settings.mode24, custom_mode24.getValue()); 
+            mystrcpy(settings.timesPers, &custom_ttrp);
+            mystrcpy(settings.alarmRTC, &custom_alarmRTC);
+            mystrcpy(settings.playIntro, &custom_playIntro);
+            mystrcpy(settings.mode24, &custom_mode24); 
                        
             #ifdef TC_HAVEGPS
-            strcpy(settings.useGPS, custom_useGPS.getValue());
+            mystrcpy(settings.useGPS, &custom_useGPS);
             #endif
             
-            strcpy(settings.autoNM, custom_autoNM.getValue());
-            strcpy(settings.dtNmOff, custom_dtNmOff.getValue());
-            strcpy(settings.ptNmOff, custom_ptNmOff.getValue());
-            strcpy(settings.ltNmOff, custom_ltNmOff.getValue());
+            mystrcpy(settings.autoNM, &custom_autoNM);
+            mystrcpy(settings.dtNmOff, &custom_dtNmOff);
+            mystrcpy(settings.ptNmOff, &custom_ptNmOff);
+            mystrcpy(settings.ltNmOff, &custom_ltNmOff);
             #ifdef TC_HAVELIGHT
-            strcpy(settings.useLight, custom_uLS.getValue());
+            mystrcpy(settings.useLight, &custom_uLS);
             #endif
             
             #ifdef TC_HAVETEMP
-            strcpy(settings.useTemp, custom_useTemp.getValue());
-            strcpy(settings.tempUnit, custom_tempUnit.getValue());
+            mystrcpy(settings.useTemp, &custom_useTemp);
+            mystrcpy(settings.tempUnit, &custom_tempUnit);
             #endif
             
             #ifdef TC_HAVESPEEDO
-            strcpy(settings.useSpeedo, custom_useSpeedo.getValue());
+            mystrcpy(settings.useSpeedo, &custom_useSpeedo);
             #ifdef TC_HAVEGPS
-            strcpy(settings.useGPSSpeed, custom_useGPSS.getValue());
+            mystrcpy(settings.useGPSSpeed, &custom_useGPSS);
             #endif
             #ifdef TC_HAVETEMP
-            strcpy(settings.dispTemp, custom_useDpTemp.getValue());
+            mystrcpy(settings.dispTemp, &custom_useDpTemp);
             #endif
             #endif
             
             #ifdef EXTERNAL_TIMETRAVEL_IN
-            strcpy(settings.ettLong, custom_ettLong.getValue());
+            mystrcpy(settings.ettLong, &custom_ettLong);
             #endif
             #ifdef FAKE_POWER_ON
-            strcpy(settings.fakePwrOn, custom_fakePwrOn.getValue());
+            mystrcpy(settings.fakePwrOn, &custom_fakePwrOn);
             #endif
             
             #ifdef EXTERNAL_TIMETRAVEL_OUT
-            strcpy(settings.useETTO, custom_useETTO.getValue());
+            mystrcpy(settings.useETTO, &custom_useETTO);
             #endif
-            strcpy(settings.playTTsnds, custom_playTTSnd.getValue());
+            mystrcpy(settings.playTTsnds, &custom_playTTSnd);
 
-            strcpy(settings.shuffle, custom_shuffle.getValue());
+            mystrcpy(settings.shuffle, &custom_shuffle);
 
             oldCfgOnSD = settings.CfgOnSD[0];
-            strcpy(settings.CfgOnSD, custom_CfgOnSD.getValue());
-            strcpy(settings.sdFreq, custom_sdFrq.getValue());
+            mystrcpy(settings.CfgOnSD, &custom_CfgOnSD);
+            mystrcpy(settings.sdFreq, &custom_sdFrq);
 
             #else // -------------------------- Checkboxes:
 
@@ -1358,6 +1359,11 @@ static char* strcpytrim(char* destination, const char* source, bool doFilter)
     *destination = 0;
     
     return ret;
+}
+
+static void mystrcpy(char *sv, WiFiManagerParameter *el)
+{
+    strcpy(sv, el->getValue());
 }
 
 #ifndef TC_NOCHECKBOXES

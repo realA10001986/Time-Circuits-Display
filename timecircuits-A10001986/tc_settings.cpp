@@ -6,6 +6,10 @@
  * https://github.com/realA10001986/Time-Circuits-Display-A10001986
  *
  * Settings handling
+ * 
+ * Main and IP settings are stored on flash FS only
+ * Alarm and volume either on SD or on flash FS
+ * Music Folder number always on SD
  *
  * -------------------------------------------------------------------
  * This program is free software: you can redistribute it and/or modify
@@ -100,8 +104,10 @@ static const char *ipCfgName  = "/ipconfig.json";
 
 static bool read_settings(File configFile);
 
+static bool CopyCheckValidNumParm(const char *json, char *text, int lowerLim, int upperLim, int setDefault);
+static bool CopyCheckValidNumParmF(const char *json, char *text, float lowerLim, float upperLim, float setDefault);
 static bool checkValidNumParm(char *text, int lowerLim, int upperLim, int setDefault);
-static bool checkValidNumParmF(char *text, double lowerLim, double upperLim, double setDefault);
+static bool checkValidNumParmF(char *text, float lowerLim, float upperLim, float setDefault);
 
 static void open_and_copy(const char *fn, int& haveErr);
 static bool filecopy(File source, File dest);
@@ -168,7 +174,7 @@ void settings_setup()
 
         if(writedefault) {
             // config file does not exist or is incomplete - create one
-            Serial.println(F("settings_setup: Settings missing or incomplete; writing new file"));
+            Serial.println(F("settings_setup: Settings bad/missing/incomplete; writing new file"));
             write_settings();
         }
 
@@ -221,7 +227,7 @@ void settings_setup()
         }
     }
 
-    // Determine if alarm/volume settings are stored on SD
+    // Determine if alarm/volume settings are to be stored on SD
     configOnSD = (haveSD && settings.CfgOnSD[0] != '0');
 
     // Check if SD contains our default sound files
@@ -261,46 +267,19 @@ static bool read_settings(File configFile)
 
     if(!error) {
 
-        if(json["timeTrPers"]) {
-            strcpy(settings.timesPers, json["timeTrPers"]);
-            writedefault |= checkValidNumParm(settings.timesPers, 0, 1, DEF_TIMES_PERS);
-        } else writedefault = true;
-        if(json["alarmRTC"]) {
-            strcpy(settings.alarmRTC, json["alarmRTC"]);
-            writedefault |= checkValidNumParm(settings.alarmRTC, 0, 1, DEF_ALARM_RTC);
-        } else writedefault = true;
-        if(json["playIntro"]) {
-            strcpy(settings.playIntro, json["playIntro"]);
-            writedefault |= checkValidNumParm(settings.playIntro, 0, 1, DEF_PLAY_INTRO);
-        } else writedefault = true;
-        if(json["mode24"]) {
-            strcpy(settings.mode24, json["mode24"]);
-            writedefault |= checkValidNumParm(settings.mode24, 0, 1, DEF_MODE24);
-        } else writedefault = true;
-        if(json["autoRotateTimes"]) {
-            strcpy(settings.autoRotateTimes, json["autoRotateTimes"]);
-            writedefault |= checkValidNumParm(settings.autoRotateTimes, 0, 5, DEF_AUTOROTTIMES);
-        } else writedefault = true;
+        writedefault |= CopyCheckValidNumParm(json["timeTrPers"], settings.timesPers, 0, 1, DEF_TIMES_PERS);
+        writedefault |= CopyCheckValidNumParm(json["alarmRTC"], settings.alarmRTC, 0, 1, DEF_ALARM_RTC);
+        writedefault |= CopyCheckValidNumParm(json["playIntro"], settings.playIntro, 0, 1, DEF_PLAY_INTRO);
+        writedefault |= CopyCheckValidNumParm(json["mode24"], settings.mode24, 0, 1, DEF_MODE24);
+        writedefault |= CopyCheckValidNumParm(json["autoRotateTimes"], settings.autoRotateTimes, 0, 5, DEF_AUTOROTTIMES);
 
         if(json["hostName"]) {
             strcpy(settings.hostName, json["hostName"]);
         } else writedefault = true;
-        if(json["wifiConRetries"]) {
-            strcpy(settings.wifiConRetries, json["wifiConRetries"]);
-            writedefault |= checkValidNumParm(settings.wifiConRetries, 1, 15, DEF_WIFI_RETRY);
-        } else writedefault = true;
-        if(json["wifiConTimeout"]) {
-            strcpy(settings.wifiConTimeout, json["wifiConTimeout"]);
-            writedefault |= checkValidNumParm(settings.wifiConTimeout, 7, 25, DEF_WIFI_TIMEOUT);
-        } else writedefault = true;
-        if(json["wifiOffDelay"]) {
-            strcpy(settings.wifiOffDelay, json["wifiOffDelay"]);
-            writedefault |= checkValidNumParm(settings.wifiOffDelay, 0, 99, DEF_WIFI_OFFDELAY);
-        } else writedefault = true;
-        if(json["wifiAPOffDelay"]) {
-            strcpy(settings.wifiAPOffDelay, json["wifiAPOffDelay"]);
-            writedefault |= checkValidNumParm(settings.wifiAPOffDelay, 0, 99, DEF_WIFI_APOFFDELAY);
-        } else writedefault = true;
+        writedefault |= CopyCheckValidNumParm(json["wifiConRetries"], settings.wifiConRetries, 1, 15, DEF_WIFI_RETRY);
+        writedefault |= CopyCheckValidNumParm(json["wifiConTimeout"], settings.wifiConTimeout, 7, 25, DEF_WIFI_TIMEOUT);
+        writedefault |= CopyCheckValidNumParm(json["wifiOffDelay"], settings.wifiOffDelay, 0, 99, DEF_WIFI_OFFDELAY);
+        writedefault |= CopyCheckValidNumParm(json["wifiAPOffDelay"], settings.wifiAPOffDelay, 0, 99, DEF_WIFI_APOFFDELAY);
         
         if(json["timeZone"]) {
             strcpy(settings.timeZone, json["timeZone"]);
@@ -309,156 +288,63 @@ static bool read_settings(File configFile)
             strcpy(settings.ntpServer, json["ntpServer"]);
         } else writedefault = true;
         #ifdef TC_HAVEGPS
-        if(json["useGPS"]) {
-            strcpy(settings.useGPS, json["useGPS"]);
-            writedefault |= checkValidNumParm(settings.useGPS, 0, 1, DEF_USE_GPS);
-        } else writedefault = true;
+        writedefault |= CopyCheckValidNumParm(json["useGPS"], settings.useGPS, 0, 1, DEF_USE_GPS);
         #endif
 
-        if(json["destTimeBright"]) {
-            strcpy(settings.destTimeBright, json["destTimeBright"]);
-            writedefault |= checkValidNumParm(settings.destTimeBright, 0, 15, DEF_BRIGHT_DEST);
-        } else writedefault = true;
-        if(json["presTimeBright"]) {
-            strcpy(settings.presTimeBright, json["presTimeBright"]);
-            writedefault |= checkValidNumParm(settings.presTimeBright, 0, 15, DEF_BRIGHT_PRES);
-        } else writedefault = true;
-        if(json["lastTimeBright"]) {
-            strcpy(settings.lastTimeBright, json["lastTimeBright"]);
-            writedefault |= checkValidNumParm(settings.lastTimeBright, 0, 15, DEF_BRIGHT_DEPA);
-        } else writedefault = true;
+        writedefault |= CopyCheckValidNumParm(json["destTimeBright"], settings.destTimeBright, 0, 15, DEF_BRIGHT_DEST);
+        writedefault |= CopyCheckValidNumParm(json["presTimeBright"], settings.presTimeBright, 0, 15, DEF_BRIGHT_PRES);
+        writedefault |= CopyCheckValidNumParm(json["lastTimeBright"], settings.lastTimeBright, 0, 15, DEF_BRIGHT_DEPA);
 
-        if(json["dtNmOff"]) {
-            strcpy(settings.dtNmOff, json["dtNmOff"]);
-            writedefault |= checkValidNumParm(settings.dtNmOff, 0, 1, DEF_DT_OFF);
-        } else writedefault = true;
-        if(json["ptNmOff"]) {
-            strcpy(settings.ptNmOff, json["ptNmOff"]);
-            writedefault |= checkValidNumParm(settings.ptNmOff, 0, 1, DEF_PT_OFF);
-        } else writedefault = true;
-        if(json["ltNmOff"]) {
-            strcpy(settings.ltNmOff, json["ltNmOff"]);
-            writedefault |= checkValidNumParm(settings.ltNmOff, 0, 1, DEF_LT_OFF);
-        } else writedefault = true;
-        if(json["autoNM"]) {
-            strcpy(settings.autoNM, json["autoNM"]);
-            writedefault |= checkValidNumParm(settings.autoNM, 0, 1, DEF_AUTONM);
-        } else writedefault = true;
-        if(json["autoNMPreset"]) {
-            strcpy(settings.autoNMPreset, json["autoNMPreset"]);
-            writedefault |= checkValidNumParm(settings.autoNMPreset, 0, AUTONM_NUM_PRESETS, DEF_AUTONM_PRESET);
-        } else writedefault = true;
-        if(json["autoNMOn"]) {
-            strcpy(settings.autoNMOn, json["autoNMOn"]);
-            writedefault |= checkValidNumParm(settings.autoNMOn, 0, 23, DEF_AUTONM_ON);
-        } else writedefault = true;
-        if(json["autoNMOff"]) {
-            strcpy(settings.autoNMOff, json["autoNMOff"]);
-            writedefault |= checkValidNumParm(settings.autoNMOff, 0, 23, DEF_AUTONM_OFF);
-        } else writedefault = true;
+        writedefault |= CopyCheckValidNumParm(json["dtNmOff"], settings.dtNmOff, 0, 1, DEF_DT_OFF);
+        writedefault |= CopyCheckValidNumParm(json["ptNmOff"], settings.ptNmOff, 0, 1, DEF_PT_OFF);
+        writedefault |= CopyCheckValidNumParm(json["ltNmOff"], settings.ltNmOff, 0, 1, DEF_LT_OFF);
+        writedefault |= CopyCheckValidNumParm(json["autoNM"], settings.autoNM, 0, 1, DEF_AUTONM);
+        writedefault |= CopyCheckValidNumParm(json["autoNMPreset"], settings.autoNMPreset, 0, AUTONM_NUM_PRESETS, DEF_AUTONM_PRESET);
+        writedefault |= CopyCheckValidNumParm(json["autoNMOn"], settings.autoNMOn, 0, 23, DEF_AUTONM_ON);
+        writedefault |= CopyCheckValidNumParm(json["autoNMOff"], settings.autoNMOff, 0, 23, DEF_AUTONM_OFF);
         #ifdef TC_HAVELIGHT
-        if(json["useLight"]) {
-            strcpy(settings.useLight, json["useLight"]);
-            writedefault |= checkValidNumParm(settings.useLight, 0, 1, DEF_USE_LIGHT);
-        } else writedefault = true;
-        if(json["luxLimit"]) {
-            strcpy(settings.luxLimit, json["luxLimit"]);
-            writedefault |= checkValidNumParm(settings.luxLimit, 0, 50000, DEF_LUX_LIMIT);
-        } else writedefault = true;
+        writedefault |= CopyCheckValidNumParm(json["useLight"], settings.useLight, 0, 1, DEF_USE_LIGHT);
+        writedefault |= CopyCheckValidNumParm(json["luxLimit"], settings.luxLimit, 0, 50000, DEF_LUX_LIMIT);
         #endif
 
         #ifdef TC_HAVETEMP
-        if(json["useTemp"]) {
-            strcpy(settings.useTemp, json["useTemp"]);
-            writedefault |= checkValidNumParm(settings.useTemp, 0, 1, DEF_USE_TEMP);
-        } else writedefault = true;
-        if(json["tempUnit"]) {
-            strcpy(settings.tempUnit, json["tempUnit"]);
-            writedefault |= checkValidNumParm(settings.tempUnit, 0, 1, DEF_TEMP_UNIT);
-        } else writedefault = true;
-        if(json["tempOffs"]) {
-            strcpy(settings.tempOffs, json["tempOffs"]);
-            writedefault |= checkValidNumParmF(settings.tempOffs, -3.0, 3.0, DEF_TEMP_OFFS);
-        } else writedefault = true;
+        writedefault |= CopyCheckValidNumParm(json["useTemp"], settings.useTemp, 0, 1, DEF_USE_TEMP);
+        writedefault |= CopyCheckValidNumParm(json["tempUnit"], settings.tempUnit, 0, 1, DEF_TEMP_UNIT);
+        writedefault |= CopyCheckValidNumParmF(json["tempOffs"], settings.tempOffs, -3.0, 3.0, DEF_TEMP_OFFS);
         #endif
 
         #ifdef TC_HAVESPEEDO
-        if(json["useSpeedo"]) {
-            strcpy(settings.useSpeedo, json["useSpeedo"]);
-            writedefault |= checkValidNumParm(settings.useSpeedo, 0, 1, DEF_USE_SPEEDO);
-        } else writedefault = true;
-        if(json["speedoType"]) {
-            strcpy(settings.speedoType, json["speedoType"]);
-            writedefault |= checkValidNumParm(settings.speedoType, SP_MIN_TYPE, SP_NUM_TYPES-1, DEF_SPEEDO_TYPE);
-        } else writedefault = true;
-        if(json["speedoBright"]) {
-            strcpy(settings.speedoBright, json["speedoBright"]);
-            writedefault |= checkValidNumParm(settings.speedoBright, 0, 15, DEF_BRIGHT_SPEEDO);
-        } else writedefault = true;
-        if(json["speedoFact"]) {
-            strcpy(settings.speedoFact, json["speedoFact"]);
-            writedefault |= checkValidNumParmF(settings.speedoFact, 0.5, 5.0, DEF_SPEEDO_FACT);
-        } else writedefault = true;
+        writedefault |= CopyCheckValidNumParm(json["useSpeedo"], settings.useSpeedo, 0, 1, DEF_USE_SPEEDO);
+        writedefault |= CopyCheckValidNumParm(json["speedoType"], settings.speedoType, SP_MIN_TYPE, SP_NUM_TYPES-1, DEF_SPEEDO_TYPE);
+        writedefault |= CopyCheckValidNumParm(json["speedoBright"], settings.speedoBright, 0, 15, DEF_BRIGHT_SPEEDO);
+        writedefault |= CopyCheckValidNumParmF(json["speedoFact"], settings.speedoFact, 0.5, 5.0, DEF_SPEEDO_FACT);
         #ifdef TC_HAVEGPS
-        if(json["useGPSSpeed"]) {
-            strcpy(settings.useGPSSpeed, json["useGPSSpeed"]);
-            writedefault |= checkValidNumParm(settings.useGPSSpeed, 0, 1, DEF_USE_GPS_SPEED);
-        } else writedefault = true;
+        writedefault |= CopyCheckValidNumParm(json["useGPSSpeed"], settings.useGPSSpeed, 0, 1, DEF_USE_GPS_SPEED);
         #endif
         #ifdef TC_HAVETEMP
-        if(json["dispTemp"]) {
-            strcpy(settings.useTemp, json["dispTemp"]);
-            writedefault |= checkValidNumParm(settings.dispTemp, 0, 1, DEF_DISP_TEMP);
-        } else writedefault = true;
-        if(json["tempBright"]) {
-            strcpy(settings.tempBright, json["tempBright"]);
-            writedefault |= checkValidNumParm(settings.tempBright, 0, 15, DEF_TEMP_BRIGHT);
-        } else writedefault = true;
+        writedefault |= CopyCheckValidNumParm(json["dispTemp"], settings.dispTemp, 0, 1, DEF_DISP_TEMP);
+        writedefault |= CopyCheckValidNumParm(json["tempBright"], settings.tempBright, 0, 15, DEF_TEMP_BRIGHT);
         #endif
         #endif // HAVESPEEDO
         
         #ifdef FAKE_POWER_ON
-        if(json["fakePwrOn"]) {
-            strcpy(settings.fakePwrOn, json["fakePwrOn"]);
-            writedefault |= checkValidNumParm(settings.fakePwrOn, 0, 1, DEF_FAKE_PWR);
-        } else writedefault = true;
+        writedefault |= CopyCheckValidNumParm(json["fakePwrOn"], settings.fakePwrOn, 0, 1, DEF_FAKE_PWR);
         #endif
 
         #ifdef EXTERNAL_TIMETRAVEL_IN
-        if(json["ettDelay"]) {
-            strcpy(settings.ettDelay, json["ettDelay"]);
-            writedefault |= checkValidNumParm(settings.ettDelay, 0, ETT_MAX_DEL, DEF_ETT_DELAY);
-        } else writedefault = true;
-        if(json["ettLong"]) {
-            strcpy(settings.ettLong, json["ettLong"]);
-            writedefault |= checkValidNumParm(settings.ettLong, 0, 1, DEF_ETT_LONG);
-        } else writedefault = true;
+        writedefault |= CopyCheckValidNumParm(json["ettDelay"], settings.ettDelay, 0, ETT_MAX_DEL, DEF_ETT_DELAY);
+        writedefault |= CopyCheckValidNumParm(json["ettLong"], settings.ettLong, 0, 1, DEF_ETT_LONG);
         #endif
         
         #ifdef EXTERNAL_TIMETRAVEL_OUT
-        if(json["useETTO"]) {
-            strcpy(settings.useETTO, json["useETTO"]);
-            writedefault |= checkValidNumParm(settings.useETTO, 0, 1, DEF_USE_ETTO);
-        } else writedefault = true;
+        writedefault |= CopyCheckValidNumParm(json["useETTO"], settings.useETTO, 0, 1, DEF_USE_ETTO);
         #endif
-        if(json["playTTsnds"]) {
-            strcpy(settings.playTTsnds, json["playTTsnds"]);
-            writedefault |= checkValidNumParm(settings.playTTsnds, 0, 1, DEF_PLAY_TT_SND);
-        } else writedefault = true;
+        writedefault |= CopyCheckValidNumParm(json["playTTsnds"], settings.playTTsnds, 0, 1, DEF_PLAY_TT_SND);
 
-        if(json["shuffle"]) {
-            strcpy(settings.shuffle, json["shuffle"]);
-            writedefault |= checkValidNumParm(settings.shuffle, 0, 1, DEF_SHUFFLE);
-        } else writedefault = true;
+        writedefault |= CopyCheckValidNumParm(json["shuffle"], settings.shuffle, 0, 1, DEF_SHUFFLE);
 
-        if(json["CfgOnSD"]) {
-            strcpy(settings.CfgOnSD, json["CfgOnSD"]);
-            writedefault |= checkValidNumParm(settings.CfgOnSD, 0, 1, DEF_CFG_ON_SD);
-        } else writedefault = true;
-        if(json["sdFreq"]) {
-            strcpy(settings.sdFreq, json["sdFreq"]);
-            writedefault |= checkValidNumParm(settings.sdFreq, 0, 1, DEF_SD_FREQ);
-        } else writedefault = true;
+        writedefault |= CopyCheckValidNumParm(json["CfgOnSD"], settings.CfgOnSD, 0, 1, DEF_CFG_ON_SD);
+        writedefault |= CopyCheckValidNumParm(json["sdFreq"], settings.sdFreq, 0, 1, DEF_SD_FREQ);
 
     } else {
 
@@ -477,7 +363,7 @@ void write_settings()
     //StaticJsonDocument<JSON_SIZE> json;
 
     if(!haveFS) {
-        Serial.println(F("write_settings: Cannot write settings, FS not available"));
+        Serial.println(F("write_settings: FS not available"));
         return;
     }
 
@@ -582,7 +468,27 @@ bool checkConfigExists()
     return SPIFFS.exists(cfgName);
 }
 
-// Helper for checking validity of numerical user-entered parameters
+
+/*
+ *  Helpers for parm copying & checking
+ */
+
+static bool CopyCheckValidNumParm(const char *json, char *text, int lowerLim, int upperLim, int setDefault)
+{
+    if(!json) return true;
+
+    strcpy(text, json);
+    return checkValidNumParm(text, lowerLim, upperLim, setDefault);
+}
+
+static bool CopyCheckValidNumParmF(const char *json, char *text, float lowerLim, float upperLim, float setDefault)
+{
+    if(!json) return true;
+
+    strcpy(text, json);
+    return checkValidNumParmF(text, lowerLim, upperLim, setDefault);
+}
+
 static bool checkValidNumParm(char *text, int lowerLim, int upperLim, int setDefault)
 {
     int i, len = strlen(text);
@@ -613,10 +519,10 @@ static bool checkValidNumParm(char *text, int lowerLim, int upperLim, int setDef
     return false;
 }
 
-static bool checkValidNumParmF(char *text, double lowerLim, double upperLim, double setDefault)
+static bool checkValidNumParmF(char *text, float lowerLim, float upperLim, float setDefault)
 {
     int i, len = strlen(text);
-    double f;
+    float f;
 
     if(len == 0) {
         sprintf(text, "%1.1f", setDefault);
@@ -630,7 +536,7 @@ static bool checkValidNumParmF(char *text, double lowerLim, double upperLim, dou
         }
     }
 
-    f = (double)(atof(text));
+    f = atof(text);
 
     if(f < lowerLim) {
         sprintf(text, "%1.1f", lowerLim);
@@ -1285,12 +1191,26 @@ void formatFlashFS()
 
 void rewriteSecondarySettings()
 {
+    bool oldconfigOnSD = configOnSD;
+    
     #ifdef TC_DBG
     Serial.println("Re-writing IP settings");
     #endif
-    writeIpSettings();    // re-write IP settings
+    writeIpSettings();
+
+    configOnSD = false;
+    
     #ifdef TC_DBG
     Serial.println("Re-writing alarm settings");
     #endif
-    saveAlarm();          // re-write alarm settings
+    saveAlarm();
+    
+    #ifdef TC_DBG
+    Serial.println("Re-writing volume");
+    #endif
+    saveCurVolume();
+    
+    configOnSD = oldconfigOnSD;
+
+    // Music Folder Number is always on SD only
 }

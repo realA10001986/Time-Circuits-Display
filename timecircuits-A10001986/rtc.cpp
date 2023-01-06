@@ -203,12 +203,7 @@ void tcRTC::adjust(byte second, byte minute, byte hour, byte dayOfWeek, byte day
         buffer[5] = bin2bcd(dayOfWeek);
         buffer[6] = bin2bcd(month);
         buffer[7] = bin2bcd(year);
-
-        Wire.beginTransmission(_address);
-        for(int i = 0; i < 8; i++) {
-            Wire.write(buffer[i]);
-        }
-        Wire.endTransmission();
+        write_bytes(buffer, 8); 
 
         // OSF bit cleared by writing seconds
         break;
@@ -223,12 +218,7 @@ void tcRTC::adjust(byte second, byte minute, byte hour, byte dayOfWeek, byte day
         buffer[5] = bin2bcd(dayOfMonth);
         buffer[6] = bin2bcd(month);
         buffer[7] = bin2bcd(year);
-
-        Wire.beginTransmission(_address);
-        for(int i = 0; i < 8; i++) {
-            Wire.write(buffer[i]);
-        }
-        Wire.endTransmission();   
+        write_bytes(buffer, 8);  
 
         // clear OSF bit
         statreg = read_register(DS3231_STATUS);
@@ -265,14 +255,7 @@ DateTime tcRTC::now()
     switch(_rtcType) {
 
     case RTCT_PCF2129:
-        Wire.beginTransmission(_address);
-        Wire.write(PCF2129_TIME); 
-        Wire.endTransmission();
-        Wire.requestFrom(_address, (uint8_t)7);
-        for(int i = 0; i < 7; i++) {
-            buffer[i] = Wire.read();
-        }
-
+        read_bytes(PCF2129_TIME, buffer, 7);
         return DateTime(bcd2bin(buffer[6]) + 2000U,
                         bcd2bin(buffer[5] & 0x7F),
                         bcd2bin(buffer[3]),
@@ -282,14 +265,7 @@ DateTime tcRTC::now()
 
     case RTCT_DS3231:
     default:
-        Wire.beginTransmission(_address);
-        Wire.write(DS3231_TIME); 
-        Wire.endTransmission();
-        Wire.requestFrom(_address, (uint8_t)7);
-        for(int i = 0; i < 7; i++) {
-            buffer[i] = Wire.read();
-        }
-
+        read_bytes(DS3231_TIME, buffer, 7);
         return DateTime(bcd2bin(buffer[6]) + 2000U,
                         bcd2bin(buffer[5] & 0x7F),
                         bcd2bin(buffer[4]),
@@ -309,40 +285,22 @@ void tcRTC::clockOutEnable()
     switch(_rtcType) {
       
     case RTCT_PCF2129:
-        Wire.beginTransmission(_address);
-        Wire.write((byte)PCF2129_CLKCTRL);  
-        Wire.endTransmission();
-
-        Wire.requestFrom(_address, (uint8_t)1);
-        readValue = Wire.read();
+        readValue = read_register(PCF2129_CLKCTRL);
         // set squarewave to 1Hz
         // Bits 2:0 - 110  sets 1Hz
         readValue &= B11111000;
         readValue |= B11111110;
-
-        Wire.beginTransmission(_address);
-        Wire.write((byte)PCF2129_CLKCTRL);
-        Wire.write(readValue);
-        Wire.endTransmission();
+        write_register(PCF2129_CLKCTRL, readValue);
         break;
 
     case RTCT_DS3231:
     default:
-        Wire.beginTransmission(_address);
-        Wire.write((byte)DS3231_CONTROL);
-        Wire.endTransmission();
-
-        Wire.requestFrom(_address, (uint8_t)1);
-        readValue = Wire.read();
+        readValue = read_register(DS3231_CONTROL);
         // enable squarewave and set to 1Hz
         // Bit 2 INTCN - 0 enables wave output
         // Bit 3 and 4 - 0 0 sets 1Hz
         readValue &= B11100011;
-
-        Wire.beginTransmission(_address);
-        Wire.write((byte)DS3231_CONTROL);
-        Wire.write(readValue);
-        Wire.endTransmission();
+        write_register(DS3231_CONTROL, readValue);
         break;
     }
 }
@@ -396,13 +354,7 @@ float tcRTC::getTemperature()
 
     case RTCT_DS3231:
     default:
-        Wire.beginTransmission(_address);
-        Wire.write(DS3231_TEMP); 
-        Wire.endTransmission();
-        Wire.requestFrom(_address, (uint8_t)2);
-        buffer[0] = Wire.read();
-        buffer[1] = Wire.read();
-  
+        read_bytes(DS3231_TEMP, buffer, 2);
         return (float)buffer[0] + (float)(buffer[1] >> 6) * 0.25f;
     }
 
@@ -430,4 +382,24 @@ uint8_t tcRTC::read_register(uint8_t reg)
     Wire.endTransmission();
     Wire.requestFrom(_address, (uint8_t)1);
     return Wire.read();
+}
+
+void tcRTC::write_bytes(uint8_t *buffer, uint8_t num)
+{
+    Wire.beginTransmission(_address);
+    for(int i = 0; i < num; i++) {
+        Wire.write(buffer[i]);
+    }
+    Wire.endTransmission();   
+}
+
+void tcRTC::read_bytes(uint8_t reg, uint8_t *buffer, uint8_t num)
+{
+    Wire.beginTransmission(_address);
+    Wire.write(reg);
+    Wire.endTransmission();
+    Wire.requestFrom(_address, num);
+    for(int i = 0; i < num; i++) {
+        buffer[i] = Wire.read();
+    }
 }

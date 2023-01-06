@@ -109,6 +109,8 @@ class tcRTC
 
         uint8_t read_register(uint8_t reg);
         void    write_register(uint8_t reg, uint8_t val);
+        void    read_bytes(uint8_t reg, uint8_t *buf, uint8_t num);
+        void    write_bytes(uint8_t *buffer, uint8_t num);
         static uint8_t bcd2bin(uint8_t val) { return val - 6 * (val >> 4); }
         static uint8_t bin2bcd(uint8_t val) { return val + 6 * (val / 10); }
         

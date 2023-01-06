@@ -904,7 +904,7 @@ void time_setup()
         departedTime.save();
     }
 
-    // Load autoInterval ("time rotation interval") from settings
+    // Load autoInterval ("time cycling interval") from settings
     loadAutoInterval();
 
     // Load alarm from alarmconfig file

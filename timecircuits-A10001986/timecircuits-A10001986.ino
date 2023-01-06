@@ -67,6 +67,7 @@
  *      are advised to check/enable this.
  *      Music folder number was removed from Config Portal, and is now always saved 
  *      on the SD card.
+ *    - Code optimizations (mainly settings and rtc)
  *  2023/01/05 (A10001986)
  *    - Keypad menu: Save settings only if they were changed to reduce flash wear.
  *    - Fix "8" being written to typing buffer despite being held
