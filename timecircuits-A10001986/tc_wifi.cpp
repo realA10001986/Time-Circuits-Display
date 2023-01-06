@@ -229,17 +229,22 @@ WiFiManagerParameter custom_playTTSnd("plyTTS", "Play time travel sounds (0=no, 
 WiFiManagerParameter custom_playTTSnd("plyTTS", "Play time travel sounds", settings.playTTsnds, 1, "autocomplete='off' title='Check to have the device play time travel sounds. Uncheck if other props provide time travel sound.' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 
-WiFiManagerParameter custom_musSfx("musSfx", "Music folder number (0-9)<br><span style='font-size:80%'>The Music Player searches for mp3 files on the SD card in folder 'musicX', X being the number configured here</span>", settings.musSfx, 1, "title='Music will be searched for in /musicX (X being the number) on SD card' type='number' min='0' max='9' autocomplete='off'");
+WiFiManagerParameter custom_musHint("<div style='margin:0px;padding:0px'>MusicPlayer</div>");
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
 WiFiManagerParameter custom_shuffle("musShu", "Shuffle at startup (0=no, 1=yes)", settings.shuffle, 1, "autocomplete='off' title='Enable to shuffle playlist at startup'");
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_shuffle("musShu", "Shuffle at startup", settings.shuffle, 1, "title='Check to shuffle playlist at startup' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_shuffle("musShu", "Shuffle at startup", settings.shuffle, 1, "title='Check to shuffle playlist at startup' type='checkbox' style='margin-top:8px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
+WiFiManagerParameter custom_CfgOnSD("CfgOnSD", "Save alarm/volume on SD (0=no, 1=yes)<br><span style='font-size:80%'>Enable this if you often change alarm or volume settings to avoid flash wear</span>", settings.CfgOnSD, 1, "autocomplete='off'");
+#else // -------------------- Checkbox hack: --------------
+WiFiManagerParameter custom_CfgOnSD("CfgOnSD", "Save alarm/volume settings on SD<br><span style='font-size:80%'>Check this if you often change alarm or volume settings to avoid flash wear</span>", settings.CfgOnSD, 1, "autocomplete='off' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+#endif // -------------------------------------------------
+#ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
 WiFiManagerParameter custom_sdFrq("sdFrq", "SD clock speed (0=16Mhz, 1=4Mhz)<br><span style='font-size:80%'>Slower access might help in case of problems with SD cards</span>", settings.sdFreq, 1, "autocomplete='off'");
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_sdFrq("sdFrq", "4MHz SD clock speed<br><span style='font-size:80%'>Checking this might help in case of SD card problems</span>", settings.sdFreq, 1, "autocomplete='off' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_sdFrq("sdFrq", "4MHz SD clock speed<br><span style='font-size:80%'>Checking this might help in case of SD card problems</span>", settings.sdFreq, 1, "autocomplete='off' type='checkbox' style='margin-top:12px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 
 WiFiManagerParameter custom_copyAudio("cpAu", "Audio file installation: Write COPY here to copy the original audio files from the SD card to the internal storage.", settings.copyAudio, 6, "autocomplete='off'");
@@ -434,11 +439,12 @@ void wifi_setup()
     wm.addParameter(&custom_sectend);
     
     wm.addParameter(&custom_sectstart);     // 4
-    wm.addParameter(&custom_musSfx);
+    wm.addParameter(&custom_musHint);
     wm.addParameter(&custom_shuffle);
     wm.addParameter(&custom_sectend);
 
-    wm.addParameter(&custom_sectstart);     // 3
+    wm.addParameter(&custom_sectstart);     // 4
+    wm.addParameter(&custom_CfgOnSD);
     wm.addParameter(&custom_sdFrq);
     wm.addParameter(&custom_sectend);
     
@@ -487,6 +493,7 @@ void wifi_setup()
 void wifi_loop()
 {
     bool forceCopyAudio = false;
+    char oldCfgOnSD = 0;
 
     wm.process();
 
@@ -590,8 +597,6 @@ void wifi_loop()
             strcpy(settings.tempBright, custom_tempBright.getValue());
             #endif
             #endif
-
-            strcpy(settings.musSfx, custom_musSfx.getValue());
             
             #ifdef TC_NOCHECKBOXES // --------- Plain text boxes:
 
@@ -641,6 +646,8 @@ void wifi_loop()
 
             strcpy(settings.shuffle, custom_shuffle.getValue());
 
+            oldCfgOnSD = settings.CfgOnSD[0];
+            strcpy(settings.CfgOnSD, custom_CfgOnSD.getValue());
             strcpy(settings.sdFreq, custom_sdFrq.getValue());
 
             #else // -------------------------- Checkboxes:
@@ -692,13 +699,24 @@ void wifi_loop()
 
             strcpyCB(settings.shuffle, &custom_shuffle);
 
+            oldCfgOnSD = settings.CfgOnSD[0];
+            strcpyCB(settings.CfgOnSD, &custom_CfgOnSD);
             strcpyCB(settings.sdFreq, &custom_sdFrq);
 
             #endif  // -------------------------
 
+            // Copy alarm/volume settings to other medium if
+            // user changed respective option
+            if(oldCfgOnSD != settings.CfgOnSD[0]) {
+                copySettings();
+            }
+
         }
 
-        write_settings();
+        // Write settings if requested, or no settings file exists
+        if(shouldSaveConfig > 1 || !checkConfigExists()) {
+            write_settings();
+        }
 
         if(shouldSaveConfig > 1) {
             if(check_allow_CPA()) {
@@ -1120,8 +1138,6 @@ void updateConfigPortalValues()
     #endif
     #endif
 
-    custom_musSfx.setValue(settings.musSfx, 1);
-
     #ifdef TC_NOCHECKBOXES  // Standard text boxes: -------
 
     custom_ttrp.setValue(settings.timesPers, 1);
@@ -1162,6 +1178,7 @@ void updateConfigPortalValues()
     #endif
     custom_playTTSnd.setValue(settings.playTTsnds, 1);
     custom_shuffle.setValue(settings.shuffle, 1);
+    custom_CfgOnSD.setValue(settings.CfgOnSD, 1);
     custom_sdFrq.setValue(settings.sdFreq, 1);
 
     #else   // For checkbox hack --------------------------
@@ -1204,6 +1221,7 @@ void updateConfigPortalValues()
     #endif
     setCBVal(&custom_playTTSnd, settings.playTTsnds);
     setCBVal(&custom_shuffle, settings.shuffle);
+    setCBVal(&custom_CfgOnSD, settings.CfgOnSD);
     setCBVal(&custom_sdFrq, settings.sdFreq);
 
     #endif // ---------------------------------------------    

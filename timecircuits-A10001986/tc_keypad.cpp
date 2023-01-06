@@ -188,10 +188,6 @@ void keypad_setup()
 
     dateBuffer[0] = '\0';
     timeBuffer[0] = '\0';
-
-    #ifdef TC_DBG
-    Serial.println(F("keypad_setup: Setup Complete"));
-    #endif
 }
 
 /*
@@ -208,6 +204,7 @@ bool scanKeypad()
 static void keypadEvent(char key, KeyState kstate)
 {
     bool mpWasActive = false;
+    bool playBad = false;
     
     if(!FPBUnitIsOn || startup || timeTraveled || timeTravelP0 || timeTravelP1)
         return;
@@ -239,7 +236,7 @@ static void keypadEvent(char key, KeyState kstate)
             doKey = false;
             switch(toggleAlarm()) {
             case -1:
-                play_file("/baddate.mp3", 1.0, true, false);
+                playBad = true;
                 break;
             case 0:
                 play_file("/alarmoff.mp3", 1.0, true, false);
@@ -286,7 +283,7 @@ static void keypadEvent(char key, KeyState kstate)
             doKey = false;
             if(haveMusic) {
                 mp_prev(mpActive);
-            }
+            } else playBad = true;
             break;
         case '5':    // "5" held down -> musicplayer start/stop
             doKey = false;
@@ -296,14 +293,17 @@ static void keypadEvent(char key, KeyState kstate)
                 } else {
                     mp_play();
                 }
-            }
+            } else playBad = true;
             break;
         case '8':   // "8" held down -> musicplayer next
             doKey = false;
             if(haveMusic) {
                 mp_next(mpActive);
-            }
+            } else playBad = true;
             break;
+        }
+        if(playBad) {
+            play_file("/baddate.mp3", 1.0, true, false);
         }
         break;
         

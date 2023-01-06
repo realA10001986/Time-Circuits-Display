@@ -755,10 +755,11 @@ void clockDisplay::showHumDirect(int hum, bool animate)
 bool clockDisplay::save()
 {
     uint8_t savBuf[10];
-    uint16_t sum = 0;
-    int i;
 
-    if(!isRTC() && _saveAddress >= 0) {
+    if(_saveAddress < 0)
+        return false;
+
+    if(!isRTC()) {
 
         // Non-RTC: Save time
 
@@ -776,16 +777,7 @@ bool clockDisplay::save()
         savBuf[7] = _minute;
         savBuf[8] = 0;        // unused
 
-        for(i = 0; i < 9; i++) {
-            sum += savBuf[i];
-            EEPROM.write(_saveAddress + i, savBuf[i]);
-        }
-
-        EEPROM.write(_saveAddress + 9, sum & 0xff);
-
-        EEPROM.commit();
-
-    } else if(isRTC() && _saveAddress >= 0) {
+    } else {
 
         // RTC: Save IsDST, yearoffs, timeDiff
         
@@ -806,13 +798,9 @@ bool clockDisplay::save()
 
         savBuf[8] = timeDiffUp ? 1 : 0;
 
-        saveRTCEPROMData(savBuf);
-
-    } else {
-
-        return false;
-
     }
+
+    saveEPROMData(savBuf);
 
     return true;
 }
@@ -821,7 +809,6 @@ bool clockDisplay::save()
 bool clockDisplay::saveYOffs()
 {
     uint8_t savBuf[10];
-    uint16_t sum = 0;
     int i;
 
     if(!isRTC() || _saveAddress < 0)
@@ -846,7 +833,7 @@ bool clockDisplay::saveYOffs()
 
     savBuf[8] = 0;
 
-    saveRTCEPROMData(savBuf);
+    saveEPROMData(savBuf);
 
     return true;
 }
@@ -889,8 +876,6 @@ bool clockDisplay::saveLastYear(uint16_t theYear)
 bool clockDisplay::load(int initialBrightness)
 {
     uint8_t loadBuf[16];
-    uint16_t sum = 0;
-    int i;
 
     if(_saveAddress < 0)
         return false;
@@ -904,16 +889,7 @@ bool clockDisplay::load(int initialBrightness)
 
     if(!isRTC()) {
 
-        for(i = 0; i < 10; i++) {
-            loadBuf[i] = EEPROM.read(_saveAddress + i);
-            if(i < 9) sum += loadBuf[i];
-        }
-
-        // Non-RTC: Load saved time
-        // 16bit sum cannot be zero; if it is, the data
-        // is clear, which means it is invalid.
-
-        if( (sum != 0) && ((sum & 0xff) == loadBuf[9])) {
+        if(loadEPROMData(loadBuf)) {
 
             #ifdef TC_DBG
             Serial.println(F("Clockdisplay: Loaded non-RTC settings from EEPROM"));
@@ -937,9 +913,7 @@ bool clockDisplay::load(int initialBrightness)
 
         // RTC: IsDST, yearoffs & timeDiff is saved
 
-        sum = loadRTCEPROMData(loadBuf);
-
-        if(sum == loadBuf[9]) {
+        if(loadEPROMData(loadBuf)) {
 
               _isDST = (int8_t)loadBuf[0] - 1;
 
@@ -993,18 +967,12 @@ bool clockDisplay::load(int initialBrightness)
 int16_t clockDisplay::loadYOffs()
 {
     uint8_t loadBuf[10];
-    uint16_t sum = 0;
-    int i;
 
     if(_saveAddress < 0 || !isRTC())
         return -1;
 
-    sum = loadRTCEPROMData(loadBuf);
-
-    if(sum == loadBuf[9]) {
-
-          return ((loadBuf[2] << 8) | loadBuf[1]);
-
+    if(loadEPROMData(loadBuf)) {
+        return ((loadBuf[2] << 8) | loadBuf[1]);
     }
 
     return -1;
@@ -1015,18 +983,12 @@ int16_t clockDisplay::loadYOffs()
 int8_t clockDisplay::loadDST()
 {
     uint8_t loadBuf[10];
-    uint16_t sum = 0;
-    int i;
 
     if(_saveAddress < 0 || !isRTC())
         return -2;
 
-    sum = loadRTCEPROMData(loadBuf);
-
-    if(sum == loadBuf[9]) {
-
-          return (int8_t)loadBuf[0] - 1;
-
+    if(loadEPROMData(loadBuf)) {
+        return (int8_t)loadBuf[0] - 1;
     }
 
     return -1;
@@ -1049,7 +1011,7 @@ int16_t clockDisplay::loadLastYear()
     if( (loadBuf[0] == (loadBuf[2] ^ 0xff)) &&
         (loadBuf[1] == (loadBuf[3] ^ 0xff)) ) {
 
-          return (int16_t)((loadBuf[1] << 8) | loadBuf[0]);
+        return (int16_t)((loadBuf[1] << 8) | loadBuf[0]);
 
     }
 
@@ -1059,30 +1021,45 @@ int16_t clockDisplay::loadLastYear()
 
 // Private functions ###########################################################
 
-void clockDisplay::saveRTCEPROMData(uint8_t *savBuf)
+void clockDisplay::saveEPROMData(uint8_t *savBuf)
 {
     uint16_t sum = 0;
-    
-    for(uint8_t i = 0; i < 9; i++) {
-        sum += savBuf[i] ^ 0x55;
-        EEPROM.write(_saveAddress + i, savBuf[i]);
+    uint8_t loadBuf[10];
+    bool skipSave = false;
+    uint8_t mxor = isRTC() ? 0x55 : 0x00;
+
+    // Read to check if values identical to currently stored (reduce wear)        
+    if(loadEPROMData(loadBuf)) {
+        skipSave = true;
+        for(uint8_t i = 0; i < 9; i++) {
+            if(savBuf[i] != loadBuf[i]) {
+                skipSave = false;
+            }
+        }
     }
-    EEPROM.write(_saveAddress + 9, sum & 0xff);
-    EEPROM.commit();
+
+    if(!skipSave) {
+        for(uint8_t i = 0; i < 9; i++) {
+           sum += (savBuf[i] ^ mxor);
+           EEPROM.write(_saveAddress + i, savBuf[i]);
+        }
+        EEPROM.write(_saveAddress + 9, sum & 0xff);
+        EEPROM.commit();
+    }
 }
 
-uint16_t clockDisplay::loadRTCEPROMData(uint8_t *loadBuf)
+bool clockDisplay::loadEPROMData(uint8_t *loadBuf)
 {
     uint16_t sum = 0;
-    
+    uint8_t  mxor = isRTC() ? 0x55 : 0x00;
+
     for(uint8_t i = 0; i < 10; i++) {
         loadBuf[i] = EEPROM.read(_saveAddress + i);
-        if(i < 9) sum += loadBuf[i] ^ 0x55;
+        if(i < 9) sum += (loadBuf[i] ^ mxor);
     }
 
-    return sum & 0xff;
+    return isRTC() ? ((sum & 0xff) == loadBuf[9]) : ((sum != 0) && ((sum & 0xff) == loadBuf[9]));
 }
-
 
 // Returns bit pattern for provided value 0-9 or number provided as a char '0'-'9'
 // for display on 7 segment display

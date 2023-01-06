@@ -118,8 +118,8 @@ class clockDisplay {
 
     private:
 
-        void     saveRTCEPROMData(uint8_t *savBuf);
-        uint16_t loadRTCEPROMData(uint8_t *loadBuf);
+        void     saveEPROMData(uint8_t *savBuf);
+        bool     loadEPROMData(uint8_t *loadBuf);
 
         uint8_t  getLED7NumChar(uint8_t value);
         uint8_t  getLED7AlphaChar(uint8_t value);

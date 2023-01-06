@@ -27,6 +27,8 @@
 
 extern bool    haveSD;
 
+extern uint8_t musFolderNum;
+
 #define MS(s) XMS(s)
 #define XMS(s) #s
 
@@ -73,8 +75,8 @@ extern bool    haveSD;
 #define DEF_LUX_LIMIT       3     // Default Lux for night mode
 #define DEF_USE_ETTO        0     // 0: No external props
 #define DEF_PLAY_TT_SND     1     // 1: Play time travel sounds (0: Do not; for use with external equipment)
-#define DEF_MUS_SFX         0     // Music folder suffix (/musicX, default 0 -> /music0)
 #define DEF_SHUFFLE         0     // Music Playser: Do not shuffle by default
+#define DEF_CFG_ON_SD       0     // Default: Save alarm/volume settings in flash memory
 #define DEF_SD_FREQ         0     // SD/SPI frequency: Default 16MHz
 
 struct Settings {
@@ -136,8 +138,8 @@ struct Settings {
     char useETTO[4]         = MS(DEF_USE_ETTO);
 #endif
     char playTTsnds[4]      = MS(DEF_PLAY_TT_SND);
-    char musSfx[4]          = MS(DEF_MUS_SFX);
     char shuffle[4]         = MS(DEF_SHUFFLE);
+    char CfgOnSD[4]         = MS(DEF_CFG_ON_SD);
     char sdFreq[4]          = MS(DEF_SD_FREQ);
     char copyAudio[12]      = "";   // never loaded or saved!
 };
@@ -157,9 +159,18 @@ extern struct IPSettings ipsettings;
 
 void settings_setup();
 void write_settings();
+bool checkConfigExists();
 
 bool loadAlarm();
 void saveAlarm();
+
+bool loadCurVolume();
+void saveCurVolume();
+
+bool loadMusFoldNum();
+void saveMusFoldNum();
+
+void copySettings();
 
 bool loadIpSettings();
 void writeIpSettings();

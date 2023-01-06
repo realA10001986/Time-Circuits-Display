@@ -61,10 +61,16 @@
 
 /*  Changelog
  *    
+ *  2023/01/06 (A10001986)
+ *    - Flash wear awareness week continues: Add option to save alarm and volume
+ *      settings on SD card. Folks who often change their alarm or volume settings
+ *      are advised to check/enable this.
+ *      Music folder number was removed from Config Portal, and is now always saved 
+ *      on the SD card.
  *  2023/01/05 (A10001986)
  *    - Keypad menu: Save settings only if they were changed to reduce flash wear.
  *    - Fix "8" being written to typing buffer despite being held
- *    - Fix restoring volumg in case of timeout in keypad menu
+ *    - Fix restoring volume in case of timeout in keypad menu
  *  2023/01/04 (A10001986)
  *    - Minor enhancements for Keypad menu (Music folder number: Show info if /musicX 
  *      or /musicX/000.mp3 is not found on SD; Alarm: Blink on/off to indicate which
@@ -562,7 +568,6 @@ void setup()
     settings_setup();
     wifi_setup();
     audio_setup();
-    menu_setup();
     keypad_setup();
     time_setup();
 }

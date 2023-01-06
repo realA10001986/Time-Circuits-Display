@@ -96,7 +96,7 @@ static const float volTable[20] = {
     0.70, 0.80, 0.90, 1.00
 };
 
-uint8_t curVolume = 4;
+uint8_t curVolume = 255;
 
 static float curVolFact[2] = { 1.0, 1.0 };
 static bool  curChkNM[2]   = { true, true };
@@ -126,7 +126,7 @@ static float getVolume(int channel);
  * audio_setup()
  */
 void audio_setup()
-{   
+{
     audioLogger = &Serial;
 
     // Set resolution for volume pot
@@ -162,6 +162,9 @@ void audio_setup()
     //stub[1] = mixer->NewInput();
     #endif
 
+    loadCurVolume();
+
+    loadMusFoldNum();
     mpShuffle = (settings.shuffle[0] != '0');
 
     // MusicPlayer init
@@ -379,7 +382,7 @@ static bool mp_play_int(bool force)
 
 static void mp_buildFileName(char *fnbuf, int num)
 {
-    sprintf(fnbuf, "/music%1s/%03d.mp3", settings.musSfx, num);
+    sprintf(fnbuf, "/music%1d/%03d.mp3", musFolderNum, num);
 }
 
 bool mp_checkForFolder(int num)

@@ -38,11 +38,7 @@ extern uint8_t alarmHour;
 extern uint8_t alarmMinute;
 extern uint8_t alarmWeekday;
 
-void menu_setup();
 void enter_menu();
-
-bool loadAlarm();
-void saveAlarm();
 
 void alarmOff();
 bool alarmOn();
