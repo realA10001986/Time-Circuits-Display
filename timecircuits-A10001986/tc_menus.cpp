@@ -799,7 +799,7 @@ static void menuShow(int number)
         destinationTime.on();
         departedTime.off();
         break;
-    case MODE_MSFX:
+    case MODE_MSFX:   // Music Folder Number
         destinationTime.showTextDirect("MUSIC");
         presentTime.showTextDirect("FOLDER");
         departedTime.showTextDirect("NUMBER");
@@ -820,7 +820,7 @@ static void menuShow(int number)
         departedTime.off();
         displaySet = &destinationTime;
         break;
-    case MODE_AINT:  // Time Rotation inverval
+    case MODE_AINT:  // Time Cycling inverval
         destinationTime.showTextDirect("TIME");
         presentTime.showTextDirect("CYCLING");
         destinationTime.on();
@@ -1026,16 +1026,14 @@ static void showCurVolHWSW()
         destinationTime.showTextDirect("USE");
         presentTime.showTextDirect("VOLUME");
         departedTime.showTextDirect("KNOB");
-        destinationTime.on();
-        presentTime.on();
         departedTime.on();
     } else {
         destinationTime.showTextDirect("FIXED");
         presentTime.showTextDirect("LEVEL");
-        destinationTime.on();
-        presentTime.on();
         departedTime.off();
     }
+    destinationTime.on();
+    presentTime.on();
 }
 
 static void showCurVol()
@@ -1526,7 +1524,7 @@ static void displayAI(int interval)
     if(interval == 0) {
         presentTime.showTextDirect("OFF");
     } else {
-        presentTime.showTextDirect("MINUTES");    // Times cycled every xx minutes
+        presentTime.showTextDirect("MINUTES");
     }
 }
 
@@ -1993,7 +1991,7 @@ static void doCopyAudioFiles()
         // If copy fails, re-format flash FS
         departedTime.showTextDirect("FORMATTING");
         formatFlashFS();            // Format
-        rewriteSecondarySettings(); // Re-write alarm/ip settings
+        rewriteSecondarySettings(); // Re-write alarm/ip/vol settings
         #ifdef TC_DBG 
         Serial.println("Re-writing general settings");
         #endif
