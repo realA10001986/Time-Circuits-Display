@@ -218,7 +218,7 @@ Beware that the alarm function, by default, is based on the real actual present 
 
 ## Persistent / Non-persistent time travels
 
-On the Config Portal's "Setup" page, there is an option item named "Make time travels persistent". The default is yes.
+On the Config Portal's "Setup" page, there is an option item named "Make time travels persistent". The default is no.
 
 If time travels are persistent
 - a user-programmed *destination time* is always stored in flash memory, and retrieved from there after a power-loss. It can be programmed through the keypad menu, or ahead of a time travel by typing mmddyyyyhhMM/mmddyyyy/hhMM plus ENTER. In both cases, the time is stored in flash memory and retrieved upon power-on.
