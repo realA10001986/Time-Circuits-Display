@@ -734,7 +734,7 @@ When checked, songs are shuffled when the device is booted. When unchecked, song
 
 #### Save alarm/volume settings on SD
 
-TODO
+If this is checked, alarm and volume settings are stored on the SD card. This helps to minimize write operations to the internal flash memory and to prolong the lifetime of your clock. See [Flash Wear](#flash-wear).
 
 #### 4MHz SD clock speed
 
