@@ -302,7 +302,7 @@ The firmware supports some additional user-provided sound effects, which must re
 
 The firmware contains a simple music player to play mp3 files located on the SD card. In order to be recognized, your mp3 files need to be organized in music folders named *music0* through *music9* and their filenames must only consist of three-digit numbers, starting at 000.mp3, in consecutive order. No numbers should be left out. Each folder can hold 1000 files (000.mp3-999.mp3). *The maximum bitrate is 128kpbs.*
 
-The folder number is 0 by default, ie the player starts searching for music in folder *music0*. This folder number can be changed in the keypad menu.
+The folder number is 0 by default, ie the player starts searching for music in folder *music0*. This folder number can be changed in the [keypad menu](#how-to-select-the-music-folder-number).
 
 To start and stop music playback, hold 5. Holding 2 jumps to the previous song, holding 8 to the next one.
 
@@ -529,6 +529,14 @@ The device can tell other props about a time travel, and in essence act as a "ma
  ```
 
 "ETTO lead", ie the lead time between IO14 going high and the actual start of a time travel is defined as 5000ms (ETTO_LEAD_TIME). In this window of time, the prop can play its pre-time-travel (warm-up/acceleration/etc) sequence. The sequence inside the time "tunnel" follows after that lead time, and when IO14 goes LOW, the re-entry into the destination time takes place.
+
+## Flash Wear
+
+Flash memory has a somewhat limited life-time. It can be written to only between 10.000 and 100.000 times before becoming unreliable. The firmware uses flash memory for storing settings and clock data. Every time you change settings through the keypad menu or the Config Portal, data is written to flash memory. The same goes for changing alarm settings (including enabling/disabling the alarm).
+
+In order to reduce the number of write operations and thereby prolonging the life of your clock, it is recommended
+- to disable/uncheck the option *[Make time travels persistent](#persistent--non-persistent-time-travels)* in the Config Portal,
+- use a good-quality SD card and check/enable ["Save alarm/volume settings on SD"](#save-alarmvolume-settings-on-sd) in the Config Portal; alarm and volume settings are then stored on the SD card (which also suffers from wear but is easy to replace). If you want to swap the SD card but preserve your alarm/volume settings, go to the Config Portal while the old SD card is still in place, uncheck the *Save alarm/volume settings on SD* option, click on Save and wait until the clock has rebooted. You can then power down the clock, swap the SD card and power-up again. Then go to the Config Portal, change the option back on and click on Save. Your settings are now on the new SD card.
 
 ## My custom-made Wall Clock
 
