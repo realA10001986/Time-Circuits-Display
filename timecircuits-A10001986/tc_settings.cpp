@@ -38,6 +38,7 @@
 
 #include "tc_settings.h"
 #include "tc_menus.h"
+#include "tc_audio.h"
 #include "tc_time.h"
 
 // Size of main config JSON
@@ -64,6 +65,12 @@ bool haveSD = false;
 /* If SD contains all default audio files */
 static bool allowCPA = false;
 
+/* Music Folder Number */
+uint8_t musFolderNum = 0;
+
+/* Save alarm/volume on SD? */
+static bool configOnSD = false;
+
 #define NUM_AUDIOFILES 17
 static const char *audioFiles[NUM_AUDIOFILES] = {
       "/alarm.mp3\0",
@@ -85,11 +92,16 @@ static const char *audioFiles[NUM_AUDIOFILES] = {
       "/travelstart.mp3\0"
 };
 
+static const char *cfgName    = "/config.json";
+static const char *almCfgName = "/tcdalmcfg.json";
+static const char *volCfgName = "/tcdvolcfg.json";
+static const char *musCfgName = "/tcdmcfg.json";
+static const char *ipCfgName  = "/ipconfig.json";
+
+static bool read_settings(File configFile);
+
 static bool checkValidNumParm(char *text, int lowerLim, int upperLim, int setDefault);
 static bool checkValidNumParmF(char *text, double lowerLim, double upperLim, double setDefault);
-
-static bool loadAlarmEEPROM();
-static void saveAlarmEEPROM();
 
 static void open_and_copy(const char *fn, int& haveErr);
 static bool filecopy(File source, File dest);
@@ -137,285 +149,27 @@ void settings_setup()
     }
 
     if(haveFS) {
-
+      
         #ifdef TC_DBG
-        Serial.println(F("settings_setup: Mounted flash FS"));
+        Serial.println(F("settings_setup: Loading settings from flash FS"));
         #endif
-
-        haveFS = true;
-
-        // Allow user to delete static IP data by holding ENTER
-        // while booting
-        if(digitalRead(ENTER_BUTTON_PIN)) {
-
-            Serial.println(F("settings_setup: ENTER pressed - deleting ipconfig file"));
-
-            deleteIpSettings();
-
-            // Pre-maturely use white led (initialized again in keypad_setup())
-            pinMode(WHITE_LED_PIN, OUTPUT);
-            digitalWrite(WHITE_LED_PIN, HIGH);
-            while(digitalRead(ENTER_BUTTON_PIN)) { }
-            digitalWrite(WHITE_LED_PIN, LOW);
-        }
-
-        // Read our main config file
-        if(SPIFFS.exists("/config.json")) {
-
-            File configFile = SPIFFS.open("/config.json", "r");
-
+        
+        if(SPIFFS.exists(cfgName)) {
+            File configFile = SPIFFS.open(cfgName, "r");
             if(configFile) {
-
-                #ifdef TC_DBG
-                Serial.println(F("settings_setup: Opened config file"));
-                #endif
-
-                //StaticJsonDocument<JSON_SIZE> json;
-                DynamicJsonDocument json(JSON_SIZE);
-                DeserializationError error = deserializeJson(json, configFile);
-
-                #ifdef TC_DBG
-                serializeJson(json, Serial);
-                Serial.println(F(" "));
-                Serial.print(F("Size of JSON: "));
-                Serial.println(json.memoryUsage());
-                #endif
-
-                if(!error) {
-
-                    #ifdef TC_DBG
-                    Serial.println(F("settings_setup: Parsed json"));
-                    #endif
-
-                    if(json["timeTrPers"]) {
-                        strcpy(settings.timesPers, json["timeTrPers"]);
-                        writedefault |= checkValidNumParm(settings.timesPers, 0, 1, DEF_TIMES_PERS);
-                    } else writedefault = true;
-                    if(json["alarmRTC"]) {
-                        strcpy(settings.alarmRTC, json["alarmRTC"]);
-                        writedefault |= checkValidNumParm(settings.alarmRTC, 0, 1, DEF_ALARM_RTC);
-                    } else writedefault = true;
-                    if(json["playIntro"]) {
-                        strcpy(settings.playIntro, json["playIntro"]);
-                        writedefault |= checkValidNumParm(settings.playIntro, 0, 1, DEF_PLAY_INTRO);
-                    } else writedefault = true;
-                    if(json["mode24"]) {
-                        strcpy(settings.mode24, json["mode24"]);
-                        writedefault |= checkValidNumParm(settings.mode24, 0, 1, DEF_MODE24);
-                    } else writedefault = true;
-                    if(json["autoRotateTimes"]) {
-                        strcpy(settings.autoRotateTimes, json["autoRotateTimes"]);
-                        writedefault |= checkValidNumParm(settings.autoRotateTimes, 0, 5, DEF_AUTOROTTIMES);
-                    } else writedefault = true;
-
-                    if(json["hostName"]) {
-                        strcpy(settings.hostName, json["hostName"]);
-                    } else writedefault = true;
-                    if(json["wifiConRetries"]) {
-                        strcpy(settings.wifiConRetries, json["wifiConRetries"]);
-                        writedefault |= checkValidNumParm(settings.wifiConRetries, 1, 15, DEF_WIFI_RETRY);
-                    } else writedefault = true;
-                    if(json["wifiConTimeout"]) {
-                        strcpy(settings.wifiConTimeout, json["wifiConTimeout"]);
-                        writedefault |= checkValidNumParm(settings.wifiConTimeout, 7, 25, DEF_WIFI_TIMEOUT);
-                    } else writedefault = true;
-                    if(json["wifiOffDelay"]) {
-                        strcpy(settings.wifiOffDelay, json["wifiOffDelay"]);
-                        writedefault |= checkValidNumParm(settings.wifiOffDelay, 0, 99, DEF_WIFI_OFFDELAY);
-                    } else writedefault = true;
-                    if(json["wifiAPOffDelay"]) {
-                        strcpy(settings.wifiAPOffDelay, json["wifiAPOffDelay"]);
-                        writedefault |= checkValidNumParm(settings.wifiAPOffDelay, 0, 99, DEF_WIFI_APOFFDELAY);
-                    } else writedefault = true;
-                    
-                    if(json["timeZone"]) {
-                        strcpy(settings.timeZone, json["timeZone"]);
-                    } else writedefault = true;
-                    if(json["ntpServer"]) {
-                        strcpy(settings.ntpServer, json["ntpServer"]);
-                    } else writedefault = true;
-                    #ifdef TC_HAVEGPS
-                    if(json["useGPS"]) {
-                        strcpy(settings.useGPS, json["useGPS"]);
-                        writedefault |= checkValidNumParm(settings.useGPS, 0, 1, DEF_USE_GPS);
-                    } else writedefault = true;
-                    #endif
-
-                    if(json["destTimeBright"]) {
-                        strcpy(settings.destTimeBright, json["destTimeBright"]);
-                        writedefault |= checkValidNumParm(settings.destTimeBright, 0, 15, DEF_BRIGHT_DEST);
-                    } else writedefault = true;
-                    if(json["presTimeBright"]) {
-                        strcpy(settings.presTimeBright, json["presTimeBright"]);
-                        writedefault |= checkValidNumParm(settings.presTimeBright, 0, 15, DEF_BRIGHT_PRES);
-                    } else writedefault = true;
-                    if(json["lastTimeBright"]) {
-                        strcpy(settings.lastTimeBright, json["lastTimeBright"]);
-                        writedefault |= checkValidNumParm(settings.lastTimeBright, 0, 15, DEF_BRIGHT_DEPA);
-                    } else writedefault = true;
-
-                    if(json["dtNmOff"]) {
-                        strcpy(settings.dtNmOff, json["dtNmOff"]);
-                        writedefault |= checkValidNumParm(settings.dtNmOff, 0, 1, DEF_DT_OFF);
-                    } else writedefault = true;
-                    if(json["ptNmOff"]) {
-                        strcpy(settings.ptNmOff, json["ptNmOff"]);
-                        writedefault |= checkValidNumParm(settings.ptNmOff, 0, 1, DEF_PT_OFF);
-                    } else writedefault = true;
-                    if(json["ltNmOff"]) {
-                        strcpy(settings.ltNmOff, json["ltNmOff"]);
-                        writedefault |= checkValidNumParm(settings.ltNmOff, 0, 1, DEF_LT_OFF);
-                    } else writedefault = true;
-                    if(json["autoNM"]) {
-                        strcpy(settings.autoNM, json["autoNM"]);
-                        writedefault |= checkValidNumParm(settings.autoNM, 0, 1, DEF_AUTONM);
-                    } else writedefault = true;
-                    if(json["autoNMPreset"]) {
-                        strcpy(settings.autoNMPreset, json["autoNMPreset"]);
-                        writedefault |= checkValidNumParm(settings.autoNMPreset, 0, AUTONM_NUM_PRESETS, DEF_AUTONM_PRESET);
-                    } else writedefault = true;
-                    if(json["autoNMOn"]) {
-                        strcpy(settings.autoNMOn, json["autoNMOn"]);
-                        writedefault |= checkValidNumParm(settings.autoNMOn, 0, 23, DEF_AUTONM_ON);
-                    } else writedefault = true;
-                    if(json["autoNMOff"]) {
-                        strcpy(settings.autoNMOff, json["autoNMOff"]);
-                        writedefault |= checkValidNumParm(settings.autoNMOff, 0, 23, DEF_AUTONM_OFF);
-                    } else writedefault = true;
-                    #ifdef TC_HAVELIGHT
-                    if(json["useLight"]) {
-                        strcpy(settings.useLight, json["useLight"]);
-                        writedefault |= checkValidNumParm(settings.useLight, 0, 1, DEF_USE_LIGHT);
-                    } else writedefault = true;
-                    if(json["luxLimit"]) {
-                        strcpy(settings.luxLimit, json["luxLimit"]);
-                        writedefault |= checkValidNumParm(settings.luxLimit, 0, 50000, DEF_LUX_LIMIT);
-                    } else writedefault = true;
-                    #endif
-
-                    #ifdef TC_HAVETEMP
-                    if(json["useTemp"]) {
-                        strcpy(settings.useTemp, json["useTemp"]);
-                        writedefault |= checkValidNumParm(settings.useTemp, 0, 1, DEF_USE_TEMP);
-                    } else writedefault = true;
-                    if(json["tempUnit"]) {
-                        strcpy(settings.tempUnit, json["tempUnit"]);
-                        writedefault |= checkValidNumParm(settings.tempUnit, 0, 1, DEF_TEMP_UNIT);
-                    } else writedefault = true;
-                    if(json["tempOffs"]) {
-                        strcpy(settings.tempOffs, json["tempOffs"]);
-                        writedefault |= checkValidNumParmF(settings.tempOffs, -3.0, 3.0, DEF_TEMP_OFFS);
-                    } else writedefault = true;
-                    #endif
-
-                    #ifdef TC_HAVESPEEDO
-                    if(json["useSpeedo"]) {
-                        strcpy(settings.useSpeedo, json["useSpeedo"]);
-                        writedefault |= checkValidNumParm(settings.useSpeedo, 0, 1, DEF_USE_SPEEDO);
-                    } else writedefault = true;
-                    if(json["speedoType"]) {
-                        strcpy(settings.speedoType, json["speedoType"]);
-                        writedefault |= checkValidNumParm(settings.speedoType, SP_MIN_TYPE, SP_NUM_TYPES-1, DEF_SPEEDO_TYPE);
-                    } else writedefault = true;
-                    if(json["speedoBright"]) {
-                        strcpy(settings.speedoBright, json["speedoBright"]);
-                        writedefault |= checkValidNumParm(settings.speedoBright, 0, 15, DEF_BRIGHT_SPEEDO);
-                    } else writedefault = true;
-                    if(json["speedoFact"]) {
-                        strcpy(settings.speedoFact, json["speedoFact"]);
-                        writedefault |= checkValidNumParmF(settings.speedoFact, 0.5, 5.0, DEF_SPEEDO_FACT);
-                    } else writedefault = true;
-                    #ifdef TC_HAVEGPS
-                    if(json["useGPSSpeed"]) {
-                        strcpy(settings.useGPSSpeed, json["useGPSSpeed"]);
-                        writedefault |= checkValidNumParm(settings.useGPSSpeed, 0, 1, DEF_USE_GPS_SPEED);
-                    } else writedefault = true;
-                    #endif
-                    #ifdef TC_HAVETEMP
-                    if(json["dispTemp"]) {
-                        strcpy(settings.useTemp, json["dispTemp"]);
-                        writedefault |= checkValidNumParm(settings.dispTemp, 0, 1, DEF_DISP_TEMP);
-                    } else writedefault = true;
-                    if(json["tempBright"]) {
-                        strcpy(settings.tempBright, json["tempBright"]);
-                        writedefault |= checkValidNumParm(settings.tempBright, 0, 15, DEF_TEMP_BRIGHT);
-                    } else writedefault = true;
-                    #endif
-                    #endif // HAVESPEEDO
-                    
-                    #ifdef FAKE_POWER_ON
-                    if(json["fakePwrOn"]) {
-                        strcpy(settings.fakePwrOn, json["fakePwrOn"]);
-                        writedefault |= checkValidNumParm(settings.fakePwrOn, 0, 1, DEF_FAKE_PWR);
-                    } else writedefault = true;
-                    #endif
-
-                    #ifdef EXTERNAL_TIMETRAVEL_IN
-                    if(json["ettDelay"]) {
-                        strcpy(settings.ettDelay, json["ettDelay"]);
-                        writedefault |= checkValidNumParm(settings.ettDelay, 0, ETT_MAX_DEL, DEF_ETT_DELAY);
-                    } else writedefault = true;
-                    if(json["ettLong"]) {
-                        strcpy(settings.ettLong, json["ettLong"]);
-                        writedefault |= checkValidNumParm(settings.ettLong, 0, 1, DEF_ETT_LONG);
-                    } else writedefault = true;
-                    #endif
-                    
-                    #ifdef EXTERNAL_TIMETRAVEL_OUT
-                    if(json["useETTO"]) {
-                        strcpy(settings.useETTO, json["useETTO"]);
-                        writedefault |= checkValidNumParm(settings.useETTO, 0, 1, DEF_USE_ETTO);
-                    } else writedefault = true;
-                    #endif
-                    if(json["playTTsnds"]) {
-                        strcpy(settings.playTTsnds, json["playTTsnds"]);
-                        writedefault |= checkValidNumParm(settings.playTTsnds, 0, 1, DEF_PLAY_TT_SND);
-                    } else writedefault = true;
-
-                    if(json["musSfx"]) {
-                        strcpy(settings.musSfx, json["musSfx"]);
-                        writedefault |= checkValidNumParm(settings.musSfx, 0, 9, DEF_MUS_SFX);
-                    } else writedefault = true;
-                    if(json["shuffle"]) {
-                        strcpy(settings.shuffle, json["shuffle"]);
-                        writedefault |= checkValidNumParm(settings.shuffle, 0, 1, DEF_SHUFFLE);
-                    } else writedefault = true;
-
-                    if(json["sdFreq"]) {
-                        strcpy(settings.sdFreq, json["sdFreq"]);
-                        writedefault |= checkValidNumParm(settings.sdFreq, 0, 1, DEF_SD_FREQ);
-                    } else writedefault = true;
-
-                } else {
-
-                    Serial.println(F("settings_setup: Failed to parse settings file"));
-
-                    writedefault = true;
-
-                }
-
+                writedefault = read_settings(configFile);
                 configFile.close();
-
             } else {
-
                 writedefault = true;
-
             }
-
         } else {
-
             writedefault = true;
-
         }
 
         if(writedefault) {
-
             // config file does not exist or is incomplete - create one
-
             Serial.println(F("settings_setup: Settings missing or incomplete; writing new file"));
-
             write_settings();
-
         }
 
     } else {
@@ -423,7 +177,7 @@ void settings_setup()
         Serial.println(F("settings_setup: Failed to mount flash FS"));
 
     }
-
+        
     #ifdef TC_DBG
     Serial.println(F("settings_setup: Mounting SD..."));
     #endif
@@ -464,13 +218,257 @@ void settings_setup()
 
             haveSD = true;
 
-            // Check if SD contains our default sound files
-            if(haveFS) {
-                allowCPA = check_if_default_audio_present();
-            }
-
         }
     }
+
+    // Determine if alarm/volume settings are stored on SD
+    configOnSD = (haveSD && settings.CfgOnSD[0] != '0');
+
+    // Check if SD contains our default sound files
+    if(haveFS && haveSD) {
+        allowCPA = check_if_default_audio_present();
+    }
+
+    // Allow user to delete static IP data by holding ENTER
+    // while booting
+    if(digitalRead(ENTER_BUTTON_PIN)) {
+
+        Serial.println(F("settings_setup: ENTER pressed - deleting ipconfig file"));
+
+        deleteIpSettings();
+
+        // Pre-maturely use white led (initialized again in keypad_setup())
+        pinMode(WHITE_LED_PIN, OUTPUT);
+        digitalWrite(WHITE_LED_PIN, HIGH);
+        while(digitalRead(ENTER_BUTTON_PIN)) { }
+        digitalWrite(WHITE_LED_PIN, LOW);
+    }
+}
+
+static bool read_settings(File configFile)
+{
+    bool writedefault = false;
+    //StaticJsonDocument<JSON_SIZE> json;
+    DynamicJsonDocument json(JSON_SIZE);
+    DeserializationError error = deserializeJson(json, configFile);
+
+    #ifdef TC_DBG
+    serializeJson(json, Serial);
+    Serial.println(F(" "));
+    Serial.print(F("Size of JSON: "));
+    Serial.println(json.memoryUsage());
+    #endif
+
+    if(!error) {
+
+        if(json["timeTrPers"]) {
+            strcpy(settings.timesPers, json["timeTrPers"]);
+            writedefault |= checkValidNumParm(settings.timesPers, 0, 1, DEF_TIMES_PERS);
+        } else writedefault = true;
+        if(json["alarmRTC"]) {
+            strcpy(settings.alarmRTC, json["alarmRTC"]);
+            writedefault |= checkValidNumParm(settings.alarmRTC, 0, 1, DEF_ALARM_RTC);
+        } else writedefault = true;
+        if(json["playIntro"]) {
+            strcpy(settings.playIntro, json["playIntro"]);
+            writedefault |= checkValidNumParm(settings.playIntro, 0, 1, DEF_PLAY_INTRO);
+        } else writedefault = true;
+        if(json["mode24"]) {
+            strcpy(settings.mode24, json["mode24"]);
+            writedefault |= checkValidNumParm(settings.mode24, 0, 1, DEF_MODE24);
+        } else writedefault = true;
+        if(json["autoRotateTimes"]) {
+            strcpy(settings.autoRotateTimes, json["autoRotateTimes"]);
+            writedefault |= checkValidNumParm(settings.autoRotateTimes, 0, 5, DEF_AUTOROTTIMES);
+        } else writedefault = true;
+
+        if(json["hostName"]) {
+            strcpy(settings.hostName, json["hostName"]);
+        } else writedefault = true;
+        if(json["wifiConRetries"]) {
+            strcpy(settings.wifiConRetries, json["wifiConRetries"]);
+            writedefault |= checkValidNumParm(settings.wifiConRetries, 1, 15, DEF_WIFI_RETRY);
+        } else writedefault = true;
+        if(json["wifiConTimeout"]) {
+            strcpy(settings.wifiConTimeout, json["wifiConTimeout"]);
+            writedefault |= checkValidNumParm(settings.wifiConTimeout, 7, 25, DEF_WIFI_TIMEOUT);
+        } else writedefault = true;
+        if(json["wifiOffDelay"]) {
+            strcpy(settings.wifiOffDelay, json["wifiOffDelay"]);
+            writedefault |= checkValidNumParm(settings.wifiOffDelay, 0, 99, DEF_WIFI_OFFDELAY);
+        } else writedefault = true;
+        if(json["wifiAPOffDelay"]) {
+            strcpy(settings.wifiAPOffDelay, json["wifiAPOffDelay"]);
+            writedefault |= checkValidNumParm(settings.wifiAPOffDelay, 0, 99, DEF_WIFI_APOFFDELAY);
+        } else writedefault = true;
+        
+        if(json["timeZone"]) {
+            strcpy(settings.timeZone, json["timeZone"]);
+        } else writedefault = true;
+        if(json["ntpServer"]) {
+            strcpy(settings.ntpServer, json["ntpServer"]);
+        } else writedefault = true;
+        #ifdef TC_HAVEGPS
+        if(json["useGPS"]) {
+            strcpy(settings.useGPS, json["useGPS"]);
+            writedefault |= checkValidNumParm(settings.useGPS, 0, 1, DEF_USE_GPS);
+        } else writedefault = true;
+        #endif
+
+        if(json["destTimeBright"]) {
+            strcpy(settings.destTimeBright, json["destTimeBright"]);
+            writedefault |= checkValidNumParm(settings.destTimeBright, 0, 15, DEF_BRIGHT_DEST);
+        } else writedefault = true;
+        if(json["presTimeBright"]) {
+            strcpy(settings.presTimeBright, json["presTimeBright"]);
+            writedefault |= checkValidNumParm(settings.presTimeBright, 0, 15, DEF_BRIGHT_PRES);
+        } else writedefault = true;
+        if(json["lastTimeBright"]) {
+            strcpy(settings.lastTimeBright, json["lastTimeBright"]);
+            writedefault |= checkValidNumParm(settings.lastTimeBright, 0, 15, DEF_BRIGHT_DEPA);
+        } else writedefault = true;
+
+        if(json["dtNmOff"]) {
+            strcpy(settings.dtNmOff, json["dtNmOff"]);
+            writedefault |= checkValidNumParm(settings.dtNmOff, 0, 1, DEF_DT_OFF);
+        } else writedefault = true;
+        if(json["ptNmOff"]) {
+            strcpy(settings.ptNmOff, json["ptNmOff"]);
+            writedefault |= checkValidNumParm(settings.ptNmOff, 0, 1, DEF_PT_OFF);
+        } else writedefault = true;
+        if(json["ltNmOff"]) {
+            strcpy(settings.ltNmOff, json["ltNmOff"]);
+            writedefault |= checkValidNumParm(settings.ltNmOff, 0, 1, DEF_LT_OFF);
+        } else writedefault = true;
+        if(json["autoNM"]) {
+            strcpy(settings.autoNM, json["autoNM"]);
+            writedefault |= checkValidNumParm(settings.autoNM, 0, 1, DEF_AUTONM);
+        } else writedefault = true;
+        if(json["autoNMPreset"]) {
+            strcpy(settings.autoNMPreset, json["autoNMPreset"]);
+            writedefault |= checkValidNumParm(settings.autoNMPreset, 0, AUTONM_NUM_PRESETS, DEF_AUTONM_PRESET);
+        } else writedefault = true;
+        if(json["autoNMOn"]) {
+            strcpy(settings.autoNMOn, json["autoNMOn"]);
+            writedefault |= checkValidNumParm(settings.autoNMOn, 0, 23, DEF_AUTONM_ON);
+        } else writedefault = true;
+        if(json["autoNMOff"]) {
+            strcpy(settings.autoNMOff, json["autoNMOff"]);
+            writedefault |= checkValidNumParm(settings.autoNMOff, 0, 23, DEF_AUTONM_OFF);
+        } else writedefault = true;
+        #ifdef TC_HAVELIGHT
+        if(json["useLight"]) {
+            strcpy(settings.useLight, json["useLight"]);
+            writedefault |= checkValidNumParm(settings.useLight, 0, 1, DEF_USE_LIGHT);
+        } else writedefault = true;
+        if(json["luxLimit"]) {
+            strcpy(settings.luxLimit, json["luxLimit"]);
+            writedefault |= checkValidNumParm(settings.luxLimit, 0, 50000, DEF_LUX_LIMIT);
+        } else writedefault = true;
+        #endif
+
+        #ifdef TC_HAVETEMP
+        if(json["useTemp"]) {
+            strcpy(settings.useTemp, json["useTemp"]);
+            writedefault |= checkValidNumParm(settings.useTemp, 0, 1, DEF_USE_TEMP);
+        } else writedefault = true;
+        if(json["tempUnit"]) {
+            strcpy(settings.tempUnit, json["tempUnit"]);
+            writedefault |= checkValidNumParm(settings.tempUnit, 0, 1, DEF_TEMP_UNIT);
+        } else writedefault = true;
+        if(json["tempOffs"]) {
+            strcpy(settings.tempOffs, json["tempOffs"]);
+            writedefault |= checkValidNumParmF(settings.tempOffs, -3.0, 3.0, DEF_TEMP_OFFS);
+        } else writedefault = true;
+        #endif
+
+        #ifdef TC_HAVESPEEDO
+        if(json["useSpeedo"]) {
+            strcpy(settings.useSpeedo, json["useSpeedo"]);
+            writedefault |= checkValidNumParm(settings.useSpeedo, 0, 1, DEF_USE_SPEEDO);
+        } else writedefault = true;
+        if(json["speedoType"]) {
+            strcpy(settings.speedoType, json["speedoType"]);
+            writedefault |= checkValidNumParm(settings.speedoType, SP_MIN_TYPE, SP_NUM_TYPES-1, DEF_SPEEDO_TYPE);
+        } else writedefault = true;
+        if(json["speedoBright"]) {
+            strcpy(settings.speedoBright, json["speedoBright"]);
+            writedefault |= checkValidNumParm(settings.speedoBright, 0, 15, DEF_BRIGHT_SPEEDO);
+        } else writedefault = true;
+        if(json["speedoFact"]) {
+            strcpy(settings.speedoFact, json["speedoFact"]);
+            writedefault |= checkValidNumParmF(settings.speedoFact, 0.5, 5.0, DEF_SPEEDO_FACT);
+        } else writedefault = true;
+        #ifdef TC_HAVEGPS
+        if(json["useGPSSpeed"]) {
+            strcpy(settings.useGPSSpeed, json["useGPSSpeed"]);
+            writedefault |= checkValidNumParm(settings.useGPSSpeed, 0, 1, DEF_USE_GPS_SPEED);
+        } else writedefault = true;
+        #endif
+        #ifdef TC_HAVETEMP
+        if(json["dispTemp"]) {
+            strcpy(settings.useTemp, json["dispTemp"]);
+            writedefault |= checkValidNumParm(settings.dispTemp, 0, 1, DEF_DISP_TEMP);
+        } else writedefault = true;
+        if(json["tempBright"]) {
+            strcpy(settings.tempBright, json["tempBright"]);
+            writedefault |= checkValidNumParm(settings.tempBright, 0, 15, DEF_TEMP_BRIGHT);
+        } else writedefault = true;
+        #endif
+        #endif // HAVESPEEDO
+        
+        #ifdef FAKE_POWER_ON
+        if(json["fakePwrOn"]) {
+            strcpy(settings.fakePwrOn, json["fakePwrOn"]);
+            writedefault |= checkValidNumParm(settings.fakePwrOn, 0, 1, DEF_FAKE_PWR);
+        } else writedefault = true;
+        #endif
+
+        #ifdef EXTERNAL_TIMETRAVEL_IN
+        if(json["ettDelay"]) {
+            strcpy(settings.ettDelay, json["ettDelay"]);
+            writedefault |= checkValidNumParm(settings.ettDelay, 0, ETT_MAX_DEL, DEF_ETT_DELAY);
+        } else writedefault = true;
+        if(json["ettLong"]) {
+            strcpy(settings.ettLong, json["ettLong"]);
+            writedefault |= checkValidNumParm(settings.ettLong, 0, 1, DEF_ETT_LONG);
+        } else writedefault = true;
+        #endif
+        
+        #ifdef EXTERNAL_TIMETRAVEL_OUT
+        if(json["useETTO"]) {
+            strcpy(settings.useETTO, json["useETTO"]);
+            writedefault |= checkValidNumParm(settings.useETTO, 0, 1, DEF_USE_ETTO);
+        } else writedefault = true;
+        #endif
+        if(json["playTTsnds"]) {
+            strcpy(settings.playTTsnds, json["playTTsnds"]);
+            writedefault |= checkValidNumParm(settings.playTTsnds, 0, 1, DEF_PLAY_TT_SND);
+        } else writedefault = true;
+
+        if(json["shuffle"]) {
+            strcpy(settings.shuffle, json["shuffle"]);
+            writedefault |= checkValidNumParm(settings.shuffle, 0, 1, DEF_SHUFFLE);
+        } else writedefault = true;
+
+        if(json["CfgOnSD"]) {
+            strcpy(settings.CfgOnSD, json["CfgOnSD"]);
+            writedefault |= checkValidNumParm(settings.CfgOnSD, 0, 1, DEF_CFG_ON_SD);
+        } else writedefault = true;
+        if(json["sdFreq"]) {
+            strcpy(settings.sdFreq, json["sdFreq"]);
+            writedefault |= checkValidNumParm(settings.sdFreq, 0, 1, DEF_SD_FREQ);
+        } else writedefault = true;
+
+    } else {
+
+        Serial.println(F("read_settings: Failed to parse settings file"));
+
+        writedefault = true;
+
+    }
+
+    return writedefault;
 }
 
 void write_settings()
@@ -479,7 +477,7 @@ void write_settings()
     //StaticJsonDocument<JSON_SIZE> json;
 
     if(!haveFS) {
-        Serial.println(F("write_settings: Cannot write settings, flash FS not mounted"));
+        Serial.println(F("write_settings: Cannot write settings, FS not available"));
         return;
     }
 
@@ -555,24 +553,33 @@ void write_settings()
     #endif
     json["playTTsnds"] = settings.playTTsnds;
 
-    json["musSfx"] = settings.musSfx;
     json["shuffle"] = settings.shuffle;
 
+    json["CfgOnSD"] = settings.CfgOnSD;
     json["sdFreq"] = settings.sdFreq;
 
-    File configFile = SPIFFS.open("/config.json", FILE_WRITE);
-
-    #ifdef TC_DBG
-    serializeJson(json, Serial);
-    Serial.println(F(" "));
-    #endif
+    File configFile = SPIFFS.open(cfgName, FILE_WRITE);
 
     if(configFile) {
+
+        #ifdef TC_DBG
+        serializeJson(json, Serial);
+        Serial.println(F(" "));
+        #endif
+        
         serializeJson(json, configFile);
         configFile.close();
+
     } else {
+
         Serial.println(F("write_settings: Failed to open file for writing"));
+
     }
+}
+
+bool checkConfigExists()
+{
+    return SPIFFS.exists(cfgName);
 }
 
 // Helper for checking validity of numerical user-entered parameters
@@ -638,89 +645,71 @@ static bool checkValidNumParmF(char *text, double lowerLim, double upperLim, dou
 }
 
 /*
- *  Load the Alarm time and settings from alarmconfig
+ *  Load/save the Alarm time and settings
  */
 
 bool loadAlarm()
 {
-    bool writedefault = false;
+    bool writedefault = true;
+    bool haveConfigFile = false;
+    File configFile;
 
-    if(!haveFS) {
-
-        Serial.println(F("loadAlarm(): flash FS not mounted, using EEPROM"));
-
-        return loadAlarmEEPROM();
-
+    if( (!configOnSD && !haveFS) ||
+        (configOnSD && !haveSD) ) {
+        Serial.println(F("loadAlarm: FS not available"));
+        return false;
     }
 
-    if(SPIFFS.exists("/alarmconfig.json")) {
-
-        File configFile = SPIFFS.open("/alarmconfig.json", "r");
-
-        if(configFile) {
-
-            #ifdef TC_DBG
-            Serial.println(F("loadAlarm: Opened alarmconfig file"));
-            #endif
-
-            StaticJsonDocument<512> json;
-            DeserializationError error = deserializeJson(json, configFile);
-
-            #ifdef TC_DBG
-            serializeJson(json, Serial);
-            Serial.println(F(" "));
-            #endif
-
-            if(!error) {
-
-                #ifdef TC_DBG
-                Serial.println(F("loadAlarm: Parsed json"));
-                #endif
-
-                if(json["alarmonoff"]) {
-                    int aoo = atoi(json["alarmonoff"]);
-                    alarmOnOff = ((aoo & 0x0f) != 0);
-                    alarmWeekday = (aoo & 0xf0) >> 4;
-                    if(alarmWeekday > 9) alarmWeekday = 0;
-                } else {
-                    writedefault = true;
-                }
-                if(json["alarmhour"]) {
-                    alarmHour = atoi(json["alarmhour"]);
-                } else {
-                    writedefault = true;
-                }
-                if(json["alarmmin"]) {
-                    alarmMinute = atoi(json["alarmmin"]);
-                } else {
-                    writedefault = true;
-                }
-
-            } else {
-
-                Serial.println(F("loadAlarm: Failed to parse alarm settings file"));
-
-                writedefault = true;
-
-            }
-
-            configFile.close();
-
-        } else {
-
-            writedefault = true;
-
+    if(configOnSD) {
+        #ifdef TC_DBG
+        Serial.println(F("loadAlarm: Loading from SD"));
+        #endif
+        if(SD.exists(almCfgName)) {
+            haveConfigFile = (configFile = SD.open(almCfgName, "r"));
         }
-
     } else {
+        #ifdef TC_DBG
+        Serial.println(F("loadAlarm: Loading from flash FS"));
+        #endif
+        if(SPIFFS.exists("/alarmconfig.json")) {
+            SPIFFS.rename("/alarmconfig.json", almCfgName);
+        }
+        if(SPIFFS.exists(almCfgName)) {
+            haveConfigFile = (configFile = SPIFFS.open(almCfgName, "r"));
+        }
+    }
 
-        writedefault = true;
+    if(haveConfigFile) {
+        StaticJsonDocument<512> json;
+        DeserializationError error = deserializeJson(json, configFile);
 
+        #ifdef TC_DBG
+        serializeJson(json, Serial);
+        Serial.println(F(" "));
+        #endif
+
+        if(!error) {
+            if(json["alarmonoff"] && json["alarmhour"] && json["alarmmin"]) {
+                int aoo = atoi(json["alarmonoff"]);
+                alarmHour = atoi(json["alarmhour"]);
+                alarmMinute = atoi(json["alarmmin"]);
+                alarmOnOff = ((aoo & 0x0f) != 0);
+                alarmWeekday = (aoo & 0xf0) >> 4;
+                if(alarmWeekday > 9) alarmWeekday = 0;
+                if(((alarmHour   == 255) || (alarmHour   >= 0 && alarmHour   <= 23)) &&
+                   ((alarmMinute == 255) || (alarmMinute >= 0 && alarmMinute <= 59))) {
+                    writedefault = false;
+                }
+            }
+        } 
+        configFile.close();
     }
 
     if(writedefault) {
 
-        // alarmconfig file does not exist or is incomplete - create one
+        alarmHour = alarmMinute = 255;
+        alarmOnOff = false;
+        alarmWeekday = 0;
 
         Serial.println(F("loadAlarm: Alarm settings missing or incomplete; writing new file"));
 
@@ -731,58 +720,18 @@ bool loadAlarm()
     return true;
 }
 
-static bool loadAlarmEEPROM()
-{
-    #ifdef TC_DBG
-    Serial.println(F("Load Alarm EEPROM"));
-    #endif
-
-    uint8_t loadBuf[4];    // on/off, hour, minute, checksum
-    uint16_t sum = 0;
-    int i;
-
-    for(i = 0; i < 4; i++) {
-        loadBuf[i] = EEPROM.read(ALARM_PREF + i);
-        if(i < 3) sum += (loadBuf[i] ^ 0x55);
-    }
-
-    if((sum & 0xff) != loadBuf[3]) {
-
-        Serial.println(F("loadAlarm: Invalid alarm data in EEPROM"));
-
-        alarmOnOff = false;
-        alarmHour = alarmMinute = 255;    // means "unset"
-        alarmWeekday = 0;
-
-        return false;
-    }
-
-    alarmOnOff = ((loadBuf[0] & 0x0f) != 0);
-    alarmWeekday = (loadBuf[0] & 0xf0) >> 4;
-    if(alarmWeekday > 9) alarmWeekday = 0;
-    alarmHour = loadBuf[1];
-    alarmMinute = loadBuf[2];
-
-    return true;
-}
-
 void saveAlarm()
 {
     char aooBuf[8];
     char hourBuf[8];
     char minBuf[8];
-
+    bool haveConfigFile = false;
+    File configFile;
     StaticJsonDocument<512> json;
 
-    #ifdef TC_DBG
-    Serial.println(F("Save Alarm"));
-    #endif
-
-    if(!haveFS) {
-        Serial.println(F("saveAlarm(): flash FS not mounted, using EEPROM"));
-
-        saveAlarmEEPROM();
-
+    if( (!configOnSD && !haveFS) ||
+        (configOnSD && !haveSD) ) {
+        Serial.println(F("saveAlarm: FS not available"));
         return;
     }
 
@@ -795,9 +744,217 @@ void saveAlarm()
     json["alarmhour"] = (char *)hourBuf;
     json["alarmmin"] = (char *)minBuf;
 
-    File configFile = SPIFFS.open("/alarmconfig.json", FILE_WRITE);
+    if(configOnSD) {
+        haveConfigFile = (configFile = SD.open(almCfgName, FILE_WRITE));
+    } else {
+        haveConfigFile = (configFile = SPIFFS.open(almCfgName, FILE_WRITE));
+    }
 
     #ifdef TC_DBG
+    serializeJson(json, Serial);
+    Serial.println(F(" "));
+    #endif
+
+    if(haveConfigFile) {
+        serializeJson(json, configFile);
+        configFile.close();
+    } else {
+        Serial.println(F("saveAlarm: Failed to open file for writing"));
+    }
+}
+
+/*
+ *  Load/save the Volume
+ */
+
+bool loadCurVolume()
+{
+    uint8_t loadBuf[2];
+    bool writedefault = true;
+    bool haveConfigFile = false;
+    File configFile;
+
+    if( (!configOnSD && !haveFS) ||
+        (configOnSD && !haveSD) ) {
+        Serial.println(F("loadCurVolume: FS not available"));
+        return false;
+    }
+
+    if(configOnSD) {
+        #ifdef TC_DBG
+        Serial.println(F("loadCurVolume: Loading from SD"));
+        #endif
+        if(SD.exists(volCfgName)) {
+            haveConfigFile = (configFile = SD.open(volCfgName, "r"));
+        }
+    } else {
+        #ifdef TC_DBG
+        Serial.println(F("loadCurVolume: Loading from flash FS"));
+        #endif
+        if(SPIFFS.exists(volCfgName)) {
+            haveConfigFile = (configFile = SPIFFS.open(volCfgName, "r"));
+        } else {
+            loadBuf[0] = EEPROM.read(SWVOL_PREF);
+            loadBuf[1] = EEPROM.read(SWVOL_PREF + 1) ^ 0xff;
+            if(loadBuf[0] == loadBuf[1]) {
+                curVolume = loadBuf[0];
+            }
+        }
+    }
+
+    if(haveConfigFile) {
+        StaticJsonDocument<512> json;
+        DeserializationError error = deserializeJson(json, configFile);
+
+        #ifdef TC_DBG
+        serializeJson(json, Serial);
+        Serial.println(F(" "));
+        #endif
+
+        if(!error) {
+            if(json["volume"]) {
+                curVolume = atoi(json["volume"]);
+                if((curVolume >= 0 && curVolume <= 19) || curVolume == 255) {
+                    writedefault = false;
+                }
+            }
+        } 
+        configFile.close();
+    }
+
+    if(writedefault) {
+        Serial.println(F("loadCurVolume: Settings missing or incomplete; writing new file"));
+        saveCurVolume();
+    }
+
+    return true;
+}
+
+void saveCurVolume()
+{
+    char buf[6];
+    bool haveConfigFile = false;
+    File configFile;
+    StaticJsonDocument<512> json;
+
+    if( (!configOnSD && !haveFS) ||
+        (configOnSD && !haveSD) ) {
+        Serial.println(F("saveCurVolume: FS not available"));
+        return;
+    }
+
+    sprintf(buf, "%d", curVolume);
+    json["volume"] = (char *)buf;
+
+    if(configOnSD) {
+        haveConfigFile = (configFile = SD.open(volCfgName, FILE_WRITE));
+    } else {
+        haveConfigFile = (configFile = SPIFFS.open(volCfgName, FILE_WRITE));
+    }
+
+    #ifdef TC_DBG
+    serializeJson(json, Serial);
+    Serial.println(F(" "));
+    #endif
+
+    if(haveConfigFile) {
+        serializeJson(json, configFile);
+        configFile.close();
+    } else {
+        Serial.println(F("saveCurVolume: Failed to open file for writing"));
+    }
+}
+
+/* Copy alarm/volume settings from/to SD if user
+ * changed "save to SD"-option in CP
+ */
+
+void copySettings()
+{   
+    if(!haveSD) return;
+
+    #ifdef TC_DBG
+    Serial.println(F("copySettings: Copying alarm/vol settings to other medium"));
+    #endif
+
+    configOnSD = !configOnSD;
+
+    saveCurVolume();
+    saveAlarm();
+
+    configOnSD = !configOnSD;
+}
+
+/*
+ * Load/save Music Folder Number
+ */
+bool loadMusFoldNum()
+{
+    bool writedefault = true;
+
+    if(!haveSD) {
+        return false;
+    }
+
+    if(SD.exists(musCfgName)) {
+
+        File configFile = SD.open(musCfgName, "r");
+
+        if(configFile) {
+
+            StaticJsonDocument<512> json;
+            DeserializationError error = deserializeJson(json, configFile);
+
+            #ifdef TC_DBG
+            serializeJson(json, Serial);
+            Serial.println(F(" "));
+            #endif
+
+            if(!error) {
+
+                if(json["folder"]) {
+                    musFolderNum = atoi(json["folder"]);
+                    if(musFolderNum >= 0 && musFolderNum <= 9) {
+                        writedefault = false;
+                    }
+                }
+                
+            } else {
+
+                Serial.println(F("loadMusFoldNum: Failed to parse file"));
+
+            }
+
+            configFile.close();
+
+        }
+
+    }
+
+    if(writedefault) {
+        musFolderNum = 0;
+        saveMusFoldNum();
+    }
+
+    return true;
+}
+
+void saveMusFoldNum()
+{
+    StaticJsonDocument<512> json;
+    char buf[4];
+
+    if(!haveSD) {
+        return;
+    }
+
+    sprintf(buf, "%1d", musFolderNum);
+    json["folder"] = buf;
+    
+    File configFile = SD.open(musCfgName, FILE_WRITE);
+
+    #ifdef TC_DBG
+    Serial.println(F("saveMusFoldNum: Writing file"));
     serializeJson(json, Serial);
     Serial.println(F(" "));
     #endif
@@ -806,27 +963,8 @@ void saveAlarm()
         serializeJson(json, configFile);
         configFile.close();
     } else {
-        Serial.println(F("saveAlarm: Failed to open alarm settings file for writing"));
+        Serial.println(F("saveMusFoldNum: Failed to open file for writing"));
     }
-}
-
-static void saveAlarmEEPROM()
-{
-    uint8_t savBuf[4];    // on/off/wd, hour, minute, checksum
-    uint16_t sum = 0;
-    int i;
-
-    savBuf[0] = (alarmWeekday * 16) + (alarmOnOff ? 1 : 0);
-    savBuf[1] = alarmHour;
-    savBuf[2] = alarmMinute;
-
-    for(i = 0; i < 3; i++) {
-        EEPROM.write(ALARM_PREF + i, savBuf[i]);
-        sum += (savBuf[i] ^ 0x55);
-    }
-    EEPROM.write(ALARM_PREF + 3, (sum & 0xff));
-
-    EEPROM.commit();
 }
 
 /*
@@ -842,9 +980,9 @@ bool loadIpSettings()
         return false;
     }
 
-    if(SPIFFS.exists("/ipconfig.json")) {
+    if(SPIFFS.exists(ipCfgName)) {
 
-        File configFile = SPIFFS.open("/ipconfig.json", "r");
+        File configFile = SPIFFS.open(ipCfgName, "r");
 
         if(configFile) {
 
@@ -918,12 +1056,12 @@ void writeIpSettings()
     StaticJsonDocument<512> json;
 
     if(!haveFS) {
-        Serial.println(F("writeIpSettings: Cannot write ip settings, flash FS not mounted"));
+        Serial.println(F("writeIpSettings: FS not mounted"));
         return;
     }
 
     #ifdef TC_DBG
-    Serial.println(F("writeIpSettings: Writing ipconfig file"));
+    Serial.println(F("writeIpSettings: Writing file"));
     #endif
 
     json["IpAddress"] = ipsettings.ip;
@@ -931,7 +1069,7 @@ void writeIpSettings()
     json["Netmask"] = ipsettings.netmask;
     json["DNS"] = ipsettings.dns;
 
-    File configFile = SPIFFS.open("/ipconfig.json", FILE_WRITE);
+    File configFile = SPIFFS.open(ipCfgName, FILE_WRITE);
 
     #ifdef TC_DBG
     serializeJson(json, Serial);
@@ -956,7 +1094,7 @@ void deleteIpSettings()
     Serial.println(F("deleteIpSettings: Deleting ipconfig.json"));
     #endif
 
-    SPIFFS.remove("/ipconfig.json");
+    SPIFFS.remove(ipCfgName);
 }
 
 /*

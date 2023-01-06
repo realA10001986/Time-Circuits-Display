@@ -281,8 +281,6 @@ static void menuSelect(int& number);
 static void menuShow(int number);
 static void setUpdate(uint16_t number, int field, bool extra = false);
 static void setField(uint16_t& number, uint8_t field, int year = 0, int month = 0, bool extra = false);
-static void saveCurVolume();
-static bool loadCurVolume();
 static void showCurVolHWSW();
 static void showCurVol();
 static void doSetVolume();
@@ -307,17 +305,6 @@ static bool checkTimeOut();
 
 static void myssdelay(unsigned long mydel);
 static void myloop();
-
-/*
- * menu_setup()
- *
- */
-void menu_setup() {
-
-    // Load volume settings from EEPROM
-    loadCurVolume();
-
-}
 
 /*
  * enter_menu() - the real thing
@@ -513,8 +500,11 @@ void enter_menu()
 
                 displaySet->setYearOffset(0);
 
-                autoInterval = 0;
-                saveAutoInterval();
+                if(autoInterval) {
+                    autoInterval = 0;
+                    saveAutoInterval();
+                    updateConfigPortalValues();
+                }
 
             }
 
@@ -571,7 +561,7 @@ void enter_menu()
         allOff();
         waitForEnterRelease();
 
-    } else if(menuItemNum == MODE_AINT) {  // Select autoInterval
+    } else if(menuItemNum == MODE_AINT) {
 
         allOff();
         waitForEnterRelease();
@@ -582,7 +572,7 @@ void enter_menu()
         allOff();
         waitForEnterRelease();
 
-    } else if(menuItemNum == MODE_BRI) {   // Adjust brightness
+    } else if(menuItemNum == MODE_BRI) {
 
         uint8_t dtbri = destinationTime.getBrightness();
         uint8_t ptbri = presentTime.getBrightness();
@@ -742,6 +732,7 @@ static void menuSelect(int& number)
             timeout = 0;  // button pressed, reset timeout
 
             number++;
+            if(number == MODE_MSFX && !haveSD) number++;
             #if defined(TC_HAVELIGHT) || defined(TC_HAVETEMP)
             if(number == MODE_SENS && !useLight && !useTemp) number++;
             #else
@@ -978,10 +969,6 @@ static void setField(uint16_t& number, uint8_t field, int year, int month, bool 
         break;
     }
 
-    #ifdef TC_DBG
-    Serial.println(F("setField: Awaiting digits or ENTER..."));
-    #endif
-
     // Force keypad to send keys to our buffer (and block key holding)
     isSetUpdate = true;
 
@@ -1027,72 +1014,11 @@ static void setField(uint16_t& number, uint8_t field, int year, int month, bool 
     setNum = numVal;
 
     setUpdate(setNum, field, extra);
-
-    #ifdef TC_DBG
-    Serial.print(F("Setfield: number: "));
-    Serial.println(number);
-    #endif
 }
 
 /*
  *  Volume #####################################################
  */
-
-static void readEEPROMVol(uint8_t *loadBuf)
-{
-    loadBuf[0] = EEPROM.read(SWVOL_PREF);
-    loadBuf[1] = EEPROM.read(SWVOL_PREF + 1) ^ 0xff;
-}
-
-static void saveCurVolume()
-{
-    uint8_t loadBuf[2];
-    
-    readEEPROMVol(loadBuf);
-    
-    if( (loadBuf[0] != loadBuf[1]) ||
-        (loadBuf[0] != curVolume) ) {
-
-        EEPROM.write(SWVOL_PREF, (uint8_t)curVolume);
-        EEPROM.write(SWVOL_PREF + 1, (uint8_t)((curVolume ^ 0xff) & 0xff));
-        EEPROM.commit();
-
-        #ifdef TC_DBG
-        Serial.print("saveVolume: Saved volume ");
-        Serial.println(curVolume);
-        #endif
-    }
-}
-
-static bool loadCurVolume()
-{
-    uint8_t loadBuf[2];
-
-    readEEPROMVol(loadBuf);
-
-    if(loadBuf[0] != loadBuf[1]) {
-
-        Serial.println(F("loadVolume: Invalid volume data in EEPROM"));
-
-        curVolume = 255;
-
-        saveCurVolume();
-
-        return false;
-    }
-
-    curVolume = loadBuf[0];
-
-    if(curVolume > 19 && curVolume != 255)
-        curVolume = 255;
-
-    #ifdef TC_DBG
-    Serial.print("loadVolume: Loaded volume ");
-    Serial.println(curVolume);
-    #endif
-
-    return true;
-}
 
 static void showCurVolHWSW()
 {
@@ -1245,11 +1171,10 @@ static void doSetVolume()
 
         destinationTime.showTextDirect(StrSaving);
 
-        // Save it
-        if(curVolume != oldVol) {
+        // Save it (if changed)
+        if(oldVol != curVolume) {
             saveCurVolume();
         }
-
         mydelay(1000);
 
     } else {
@@ -1279,11 +1204,9 @@ static void displayMSfx(int msfx)
 static void doSetMSfx()
 {
     bool msfxDone = false;
-    int oldmsfx, msfx = atoi(settings.musSfx);
-    
-    oldmsfx = msfx;
+    int oldmsfx = musFolderNum;
 
-    displayMSfx(msfx);
+    displayMSfx(musFolderNum);
     departedTime.off();
 
     isEnterKeyHeld = false;
@@ -1312,11 +1235,11 @@ static void doSetMSfx()
 
                 timeout = 0;  // button pressed, reset timeout
 
-                msfx++;
-                if(msfx > 9)
-                    msfx = 0;
+                musFolderNum++;
+                if(musFolderNum > 9)
+                    musFolderNum = 0;
 
-                displayMSfx(msfx);
+                displayMSfx(musFolderNum);
 
             }
 
@@ -1336,15 +1259,17 @@ static void doSetMSfx()
         destinationTime.showTextDirect(StrSaving);
 
         // Save it (if changed)
-        if(oldmsfx != msfx) {
-            sprintf(settings.musSfx, "%d", msfx);
-            write_settings();
+        if(oldmsfx != musFolderNum) {
+            saveMusFoldNum();
             mp_init();
-            updateConfigPortalValues();
         }
 
         mydelay(1000);
 
+    } else {
+
+        musFolderNum = oldmsfx;
+        
     }
 }
 
