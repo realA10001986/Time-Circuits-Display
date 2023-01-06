@@ -236,6 +236,8 @@ If you want to display your favorite *destination time* and *last time departed*
 
 Note that a non-zero Time-cycling Interval will force the device to cycle through the list of pre-programmed times, regardless of your time travel persistence setting. This cycling will, however, be paused for 30 minutes after you entered a new destination time and/or travelled in time.
 
+Persistent time travels, if done often, will cause [Flash Wear](#flash-wear).
+
 ## Night mode
 
 In Night-mode, by default, the *destination time* and *last time departed* displays are switched off, the *present time* display is dimmed to a minimum, and the volume of sound playback is reduced (except the alarm). Apart from considerably increasing the displays' lifetime, night-mode reduces the power consumption of the device from around 4.5W to around 2.5W.
