@@ -86,11 +86,19 @@ A full reference of the Config Portal is [here](#appendix-the-config-portal).
 
 *Destination time* and *Last time departed* are stale. These, by default, work like in the movie: Upon a time travel, *present time* becomes *last time departed*, and *destination time* becomes *present time*.
 
-There is also a "decorative" mode where the device cycles through a list of pre-programmed *destination* and *last time departed* times. This mode is chosen by setting the "Time-cycling Interval" in the Config Portal (via network) or the [keypad menu](#how-to-select-the-time-cycling-interval) to a non-zero value. The device will then cycle through named list every 5th, 10th, 15th, 30th or 60th minute, and thereby change the displays, regardless of times displayed as a result from a time travel. Set the interval to 0 to disable this "decorative" mode.
-
 The clock only supports the [Gregorian Calendar](https://en.wikipedia.org/wiki/Gregorian_calendar), of which it pretends to have been used since year 1. The [Julian Calendar](https://en.wikipedia.org/wiki/Julian_calendar) is not taken into account. As a result, some years that, in the then-used Julian Calendar, were leap years between years 1 and 1582 in most of today's Europe, 1700 in DK/NO/NL(except Holland and Zeeland), 1752 in the British Empire, 1753 in Sweden, 1760 in Lorraine, 1872 in Japan, 1912 in China, 1915 in Bulgaria, 1917 in the Ottoman Empire, 1918 in Russia and Serbia and 1923 in Greece, are normal years in the Gregorian one. As a result, dates do not match in those two calender systems, the Julian calendar is currently 13 days behind. I wonder if Doc's TC took all this into account. (Then again, he wanted to see Christ's birth on Dec 25, 0. Luckily, he didn't actually try to travel to that date. Assuming a negative roll-over, he might have ended up in eternity.)
 
 Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed after 1BC. Nevertheless, it is possible to travel to year 0. In good old Hollywood tradition, I won't let facts and science stand in the way of an authentic movie experience.
+
+### Time-cycling
+
+"Time cycling" is a kind of "decorative" mode in which the device cycles through a list of pre-programmed *destination* and *last time departed* times. These pre-programmed times match the dates/times of all time-travels that take place in the three movies.
+
+Time-cycling is enabled by setting the "Time-cycling Interval" in the Config Portal (via network) or the [keypad menu](#how-to-select-the-time-cycling-interval) to a non-zero value. The device will then cycle through named list every 5th, 10th, 15th, 30th or 60th minute. 
+
+Time-cycling will, if enabled, change the *Destination* and *Last Time Departed* displays regardless of times displayed, for instance as a result from an earlier time travel. Triggering a time-travel will, however, pause time-cycling for 30 minutes.
+
+Set the interval to OFF (0) to disable Time-cycling.
 
 ### Common usage scenarios
 
@@ -99,6 +107,8 @@ Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed afte
 In this case, head to the Config Portal and
 - set the *Time Cycling Interval* to OFF
 - check or uncheck *Make time travels persistent* depending on whether you care about keeping your times across reboots
+
+Note that *actual* time travel is not supported.
 
 #### I want my clock to show/cycle movie times
 
@@ -244,23 +254,23 @@ Beware that the alarm function, by default, is based on the real actual present 
 
 ### Persistent / Non-persistent time travels
 
-On the Config Portal's "Setup" page, there is an option item named "Make time travels persistent". The default is no.
+On the Config Portal's "Setup" page, there is an option item named "Make time travels persistent". The default is off.
 
 If time travels are persistent
-- a user-programmed *destination time* is always stored in flash memory, and retrieved from there after a power-loss. It can be programmed through the keypad menu, or ahead of a time travel by typing mmddyyyyhhMM/mmddyyyy/hhMM plus ENTER. In both cases, the time is stored in flash memory and retrieved upon power-on.
-- *last time departed* as displayed at any given point is always stored in flash memory, and retrieved upon power-on.
-- *present time*, be it actual present time or "fake" after time travelling, will continue to run while the device is not powered, as long as its battery lasts, and displayed on power-up.
+- a user-programmed *destination time* is always stored in flash memory, and retrieved from there after a reboot. It can be programmed through the keypad menu, or ahead of a time travel by typing mmddyyyyhhMM/mmddyyyy/hhMM plus ENTER. In both cases, the time is stored in flash memory and retrieved upon power-up/reboot.
+- *last time departed* as displayed at any given point is always stored in flash memory, and retrieved upon power-up/reboot.
+- *present time*, be it actual present time or "fake" after time travelling, will continue to run while the device is not powered, as long as its battery lasts, and displayed on power-up/reboot.
 
 If time travels are non-persistent
 - a user-programmed *destination time* is only stored to flash memory when programmed through the keypad menu, but not if entered ahead of a time travel (ie outside of the keypad menu, just by typing mmddyyyyhhMM/mmddyyyy/hhMM plus ENTER).
 - a user-programmed *last time departed* is only stored to flash memory when programmed through the keypad menu, but not if the result of a time travel.
 - *present time* is always reset to actual present time upon power-up.
 
-If you want your device to display exactly the same after a power loss, choose persistent (and set the Time-cycling Interval to 0). 
+If you want your device to display exactly the same after a power loss, choose persistent (and disable [Time-cycling](#time--cycling)). 
 
 If you want to display your favorite *destination time* and *last time departed* upon power-up, and not have time travels overwrite them in flash memory, choose "non-persistent", and program your times through the keypad menu (and set the Time-cycling Interval to 0). Those times will never be overwritten in flash memory by later time travels. Note, however, that the times displayed might actually change due to time travels.
 
-Note that a non-zero Time-cycling Interval will force the device to cycle through the list of pre-programmed times, regardless of your time travel persistence setting. This cycling will, however, be paused for 30 minutes after you entered a new destination time and/or travelled in time.
+Note that Time-cycling, if enabled, will force the device to cycle through the list of pre-programmed times, regardless of your time travel persistence setting. This cycling will, however, be paused for 30 minutes after you entered a new destination time and/or travelled in time.
 
 Persistent time travels, if done often, will cause [Flash Wear](#flash-wear).
 
