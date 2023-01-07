@@ -96,7 +96,7 @@ Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed afte
 
 Time-cycling is enabled by setting the "Time-cycling Interval" in the Config Portal (via network) or the [keypad menu](#how-to-select-the-time-cycling-interval) to a non-zero value. The device will then cycle through named list every 5th, 10th, 15th, 30th or 60th minute. 
 
-Time-cycling will, if enabled, change the *Destination* and *Last Time Departed* displays regardless of times displayed, for instance as a result from an earlier time travel. Triggering a time-travel will, however, pause time-cycling for 30 minutes.
+Time-cycling will, if enabled, change the *Destination* and *Last Time Departed* displays regardless of the times displayed, for instance as a result from an earlier time travel. Triggering a time-travel will, however, pause time-cycling for 30 minutes.
 
 Set the interval to OFF (0) to disable Time-cycling.
 
@@ -264,13 +264,13 @@ If time travels are persistent
 If time travels are non-persistent
 - a user-programmed *destination time* is only stored to flash memory when programmed through the keypad menu, but not if entered ahead of a time travel (ie outside of the keypad menu, just by typing mmddyyyyhhMM/mmddyyyy/hhMM plus ENTER).
 - a user-programmed *last time departed* is only stored to flash memory when programmed through the keypad menu, but not if the result of a time travel.
-- *present time* is always reset to actual present time upon power-up.
+- *present time* is always reset to actual present time upon power-up/reboot.
 
-If you want your device to display exactly the same after a power loss, choose persistent (and disable [Time-cycling](#time--cycling)). 
+If you want your device to display exactly the same after a power loss, choose persistent (and disable [Time-cycling](#time-cycling)).
 
-If you want to display your favorite *destination time* and *last time departed* upon power-up, and not have time travels overwrite them in flash memory, choose "non-persistent", and program your times through the keypad menu (and set the Time-cycling Interval to 0). Those times will never be overwritten in flash memory by later time travels. Note, however, that the times displayed might actually change due to time travels.
+If you want to display your favorite *destination time* and *last time departed* upon power-up, and not have time travels overwrite them in flash memory, choose "non-persistent", and program your times through the [keypad menu](#how-to-enter-datestimes-for-the-destination-and-last-time-departed-displays) (and disable [Time-cycling](#time-cycling)). Those times will never be overwritten in flash memory by later time travels. Note, however, that the times displayed might actually change due to time travels.
 
-Note that Time-cycling, if enabled, will force the device to cycle through the list of pre-programmed times, regardless of your time travel persistence setting. This cycling will, however, be paused for 30 minutes after you entered a new destination time and/or travelled in time.
+Note that Time-cycling, if enabled, will force the device to cycle through the list of pre-programmed times, regardless of your time travel persistence setting. So, if Time-cycling is enabled, the only effect of persistence is that *Present Time* is kept at what it was before vs. reset to actual present time after power loss.
 
 Persistent time travels, if done often, will cause [Flash Wear](#flash-wear).
 
@@ -302,7 +302,7 @@ Preface note on SD cards: For unknown reasons, some SD cards simply do not work 
 
 The SD card, apart from being used to [install](#audio-file-installation) the default audio files, can be used for substituting default sounds, some additional custom sounds, and for music played back by the [Music player](#the-music-player).
 
-Note that the SD card must be inserted before powering up the clock. It is not recognized when inserted while the clock is running.
+Note that the SD card must be inserted before powering up the clock. It is not recognized if inserted while the clock is running.
 
 ### Sound file substitution
 
