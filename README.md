@@ -534,11 +534,11 @@ The device can tell other props about a time travel, and in essence act as a "ma
 
 ## Flash Wear
 
-Flash memory has a somewhat limited life-time. It can be written to only between 10.000 and 100.000 times before becoming unreliable. The firmware uses flash memory for storing settings and clock data. Every time you change settings through the keypad menu or the Config Portal, data is written to flash memory. The same goes for changing alarm settings (including enabling/disabling the alarm).
+Flash memory has a somewhat limited life-time. It can be written to only between 10.000 and 100.000 times before becoming unreliable. The firmware writes to the internal flash memory when saving settings and other data. Every time you change settings through the keypad menu or the Config Portal, data is written to flash memory. The same goes for changing alarm settings (including enabling/disabling the alarm), and time travelling if time travels are [persistent](#persistent--non-persistent-time-travels).
 
 In order to reduce the number of write operations and thereby prolonging the life of your clock, it is recommended
-- to disable/uncheck the option *[Make time travels persistent](#persistent--non-persistent-time-travels)* in the Config Portal,
-- use a good-quality SD card and check/enable ["Save alarm/volume settings on SD"](#save-alarmvolume-settings-on-sd) in the Config Portal; alarm and volume settings are then stored on the SD card (which also suffers from wear but is easy to replace). If you want to swap the SD card but preserve your alarm/volume settings, go to the Config Portal while the old SD card is still in place, uncheck the *Save alarm/volume settings on SD* option, click on Save and wait until the clock has rebooted. You can then power down the clock, swap the SD card and power-up again. Then go to the Config Portal, change the option back on and click on Save. Your settings are now on the new SD card.
+- to uncheck the option *[Make time travels persistent](#persistent--non-persistent-time-travels)* in the Config Portal,
+- to use a good-quality SD card and to check ["Save alarm/volume settings on SD"](#save-alarmvolume-settings-on-sd) in the Config Portal; alarm and volume settings are then stored on the SD card (which also suffers from wear but is easy to replace). If you want to swap the SD card but preserve your alarm/volume settings, go to the Config Portal while the old SD card is still in place, uncheck the *Save alarm/volume settings on SD* option, click on Save and wait until the clock has rebooted. You can then power down the clock, swap the SD card and power-up again. Then go to the Config Portal, change the option back on and click on Save. Your settings are now on the new SD card.
 
 ## My custom-made Wall Clock
 
