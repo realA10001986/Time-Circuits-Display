@@ -56,7 +56,7 @@ The firmware comes with a number of sound files which need to be installed separ
  
 If (and only if) the **exact and complete contents of sound-pack archive** is found on the SD card during boot, the keypad will have an "INSTALL AUDIO FILES" menu item, and the Config portal will show an "Audio file installation" option at the bottom of the "Setup" page.
 
-If you choose to use the Config Portal, trigger the audio file installation process by writing "COPY" (without the quotation marks) into the empty text field in the "Audio file installation" section, and clicking on "Save". The device will then copy all the default audio files from the SD card to its internal flash file system. The SD card can - and should - be removed afterwards. The keypad menu method is described [here](#how-to-install-the-default-audio-files).
+If you choose to use the Config Portal, trigger the audio file installation process by writing "COPY" (without the quotation marks) into the empty text field in the "Audio file installation" section, and clicking on "Save". The device will then copy all the default audio files from the SD card to its internal memory. The keypad menu method for installation is described [here](#how-to-install-the-default-audio-files). The SD card can - and should - be removed afterwards; it can be re-used for [other purposes](#sd-card) after deleting the files of the sound-pack.
 
 ## Short summary of first steps
 
