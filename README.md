@@ -461,7 +461,7 @@ Adjusting the RTC is useful if you can't use NTP for time keeping, and really he
 - Data entry works as described [above](#the-keypad-menu); remember that months need to be entered numerically (01-12), and hours in 24-hour notation (0-23).
 - After entering data into all fields, the data is saved and the menu is left automatically.
 
-#### How to enter dates/times for the *Destination" and *Last Time Departed* displays:
+#### How to enter dates/times for the *Destination* and *Last Time Departed* displays:
 
 Note that when entering dates/times into the *destination time* or *last time departed* displays, the Time-cycling Interval is automatically set to 0. Your entered date/time(s) are shown until overwritten by time travels.
 
