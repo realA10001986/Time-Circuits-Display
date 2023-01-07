@@ -361,7 +361,8 @@ After invoking the keypad menu, the first step is to choose a menu item. The ava
 - select the Time-cycling Interval ("TIME-CYCLING", formerly "TIME-ROTATION-INTERVAL"),
 - select the brightness for the three displays ("BRIGHTNESS"),
 - show network information ("NET-WORK"),
-- enter dates/times for the three displays (and set the RTC),
+- set the internal Real Time Clock (RTC) ("SET RTC"),
+- enter dates/times for the *Destination* and *Last Time Departed* displays,
 - show light/temperature/humidity sensor info (if such a sensor is connected) ("SENSORS"),
 - install the default audio files ("INSTALL AUDIO FILES")
 - quit the menu ("END").
@@ -440,14 +441,23 @@ The [Config Portal](#the-config-portal) offers more granularity as it provides 1
 - Repeatedly press ENTER to cycle between IP address, WiFi status and MAC address (in station mode)
 - Hold ENTER to leave the menu
 
-#### How to enter dates/times for the three displays:
+#### How to set the Real Time Clock (RTC):
 
-By entering a date/time into the *present time* display, the **RTC (real time clock)** of the device is adjusted, which is useful if you can't use NTP for time keeping, and really helpful when using GPS. Always set the real actual present time here; if you want to display some other time, use the Time Travel function. Note: The time you entered will be overwritten if/when the device has access to network time via NTP or GPS. For DST (daylight saving) and GPS, it is essential that you also set the correct time zone in the [Config Portal](#the-config-portal).
+Adjusting the RTC is useful if you can't use NTP for time keeping, and really helpful when using GPS. Always set your actual local present time here; if you want to display some other time, use the Time Travel function. Note: The time you entered will be overwritten if/when the device has access to network time via NTP or GPS. For DST (daylight saving) and GPS, it is essential that you also set the correct time zone in the [Config Portal](#the-config-portal).
+
+- Hold ENTER to invoke main menu
+- Press ENTER repeatedly until "SET RTC" or "RTC" is displayed and the *Present Time* display shows a date and time 
+- Hold ENTER until the *Present Time* display goes off except for the first field to enter data into
+- The field to enter data into is shown (exclusively), pre-set with its current value
+- Data entry works as described [above](#the-keypad-menu); remember that months need to be entered numerically (01-12), and hours in 24-hour notation (0-23).
+- After entering data into all fields, the data is saved and the menu is left automatically.
+
+#### How to enter dates/times for the *Destination" and *Last Time Departed* displays:
 
 Note that when entering dates/times into the *destination time* or *last time departed* displays, the Time-cycling Interval is automatically set to 0. Your entered date/time(s) are shown until overwritten by time travels.
 
 - Hold ENTER to invoke main menu
-- Press ENTER repeatedly until the desired display is the only one lit and shows a date and time (in case of *present time*, "RTC" is displayed additionally)
+- Press ENTER repeatedly until the desired display is the only one lit and shows a date and time
 - Hold ENTER until the display goes off except for the first field to enter data into
 - The field to enter data into is shown (exclusively), pre-set with its current value
 - Data entry works as described [above](#the-keypad-menu); remember that months need to be entered numerically (01-12), and hours in 24-hour notation (0-23).
