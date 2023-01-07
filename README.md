@@ -444,13 +444,13 @@ The [Config Portal](#the-config-portal) offers more granularity as it provides 1
 
 By entering a date/time into the *present time* display, the **RTC (real time clock)** of the device is adjusted, which is useful if you can't use NTP for time keeping, and really helpful when using GPS. Always set the real actual present time here; if you want to display some other time, use the Time Travel function. Note: The time you entered will be overwritten if/when the device has access to network time via NTP or GPS. For DST (daylight saving) and GPS, it is essential that you also set the correct time zone in the [Config Portal](#the-config-portal).
 
-Note that when entering dates/times into the *destination time* or *last time departed* displays, the Time-cycling Interval is automatically set to 0. Your entered date/time(s) are shown until overwritten by time travels (see [here](#how-to-select-the-time-cycling-interval)).
+Note that when entering dates/times into the *destination time* or *last time departed* displays, the Time-cycling Interval is automatically set to 0. Your entered date/time(s) are shown until overwritten by time travels.
 
 - Hold ENTER to invoke main menu
-- Press ENTER repeatedly until the desired display is the only one lit and shows a date and time
+- Press ENTER repeatedly until the desired display is the only one lit and shows a date and time (in case of *present time*, "RTC" is displayed additionally)
 - Hold ENTER until the display goes off except for the first field to enter data into
 - The field to enter data into is shown (exclusively), pre-set with its current value
-- Data entry works as described above; remember that months need to be entered numerically (01-12), and hours in 24-hour notation (0-23).
+- Data entry works as described [above](#the-keypad-menu); remember that months need to be entered numerically (01-12), and hours in 24-hour notation (0-23).
 - After entering data into all fields, the data is saved and the menu is left automatically.
 
 #### How to view sensor info
