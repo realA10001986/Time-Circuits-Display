@@ -66,7 +66,7 @@ If you choose to use the Config Portal, trigger the audio file installation proc
 - In order to connect the device to your WiFi network, click on "Configure WiFi" and configure your Wifi network. The bare minimum is to select an SSID and a WiFi password. Note that the device requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). (If the device is inaccessible as a result of wrong static IPs, hold ENTER when powering it up until the white LED lits; static IP data will be deleted and the device will return to DHCP.)
 - After saving the WiFi network settings, the device reboots and tries to connect to your configured WiFi network. If it fails to connect to your network, the device will again start in access point mode. 
 
-NTP (time synchronization over the internet) is only possible if the clock is connected to a WiFi network. If no WiFi network is available, please set your local time through the [keypad menu](#how-to-enter-datestimes-for-the-three-displays) after first power-up.
+NTP (time synchronization over the internet) is only possible if the clock is connected to a WiFi network. If no WiFi network is available, please set your local time through the [keypad menu](#how-to-set-the-real-time-clock-rtc) after first power-up.
 
 ### The Config Portal
 
@@ -82,7 +82,7 @@ A full reference of the Config Portal is [here](#appendix-the-config-portal).
 
 ## Basic Operation
 
-*Present time* is a clock and normally shows the actual local present time, as received from the network or set up through the [keypad menu](#how-to-enter-datestimes-for-the-three-displays).
+*Present time* is a clock and normally shows the actual local present time, as received from the network or set up through the [keypad menu](#how-to-set-the-real-time-clock-rtc).
 
 *Destination time* and *Last time departed* are stale. These, by default, work like in the movie: Upon a time travel, *present time* becomes *last time departed*, and *destination time* becomes *present time*.
 
@@ -114,7 +114,7 @@ In this case, head to the Config Portal and
 - set the *Time Cycling Interval* to OFF
 - uncheck *Make time travels persistent*
 
-Then enter the [keypad menu](#how-to-enter-datestimes-for-the-three-displays) and set your favorite *Destination* and *Last time departed* times.
+Then enter the [keypad menu](#how-to-enter-datestimes-for-the-destination-and-last-time-departed-displays) and set your favorite *Destination* and *Last time departed* times.
 
 Note that time-travelling will naturally lead to the displays showing other times. After a reboot, your times will be displayed again.
 
@@ -521,7 +521,7 @@ The firmware supports an MT(K)3333-based GPS receiver, connected through i2c (sl
 GPS receivers receive signals from satellites, but in order to do so, they need to be "tuned in" (aka get a "fix"). This "tuning" process can take a long time; after first power up, it can take 30 minutes or more for a receiver to be able to determine its position. In order to speed up this process, modern GPS receivers have special "assisting" features. One key element is knowledge of current time, as this helps identifying satellite signals quicker. So, in other words, initially, you need to tell the receiver, what it is supposed to tell you. However, as soon as the receiver has received satellite signals for 15-20 minutes, it saves the data it collected to its battery-backed memory and will find a fix within seconds after power-up in the future.
 
 For using GPS effectively as a long term source of accurate time, it is therefore essential, that 
-- the TimeCircuit's RTC (real time clock) is initially [set to correct local time](#how-to-enter-datestimes-for-the-three-displays), 
+- the TimeCircuit's RTC (real time clock) is initially [set to correct local time](#how-to-set-the-real-time-clock-rtc), 
 - the correct time zone is defined in the Config Portal,
 - the GPS receiver has a battery
 - and has been receiving data for 15-20 mins at least once a month.
