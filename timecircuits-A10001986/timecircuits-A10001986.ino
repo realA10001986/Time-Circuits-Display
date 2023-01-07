@@ -61,6 +61,9 @@
 
 /*  Changelog
  *    
+ *  2023/01/07 (A10001986)
+ *    - Change "Time-rotation" to "Time-cycling" in CP
+ *    - Re-order keypad menu (SET RTC before other displays)
  *  2023/01/06 (A10001986)
  *    - Flash wear awareness week continues: Add option to save alarm and volume
  *      settings on SD card. Folks who often change their alarm or volume settings

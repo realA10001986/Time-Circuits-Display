@@ -224,8 +224,8 @@
 #define MODE_AINT 3
 #define MODE_BRI  4
 #define MODE_NET  5
-#define MODE_DEST 6
-#define MODE_PRES 7
+#define MODE_PRES 6
+#define MODE_DEST 7
 #define MODE_DEPT 8
 #define MODE_SENS 9
 #define MODE_VER  10
@@ -359,7 +359,7 @@ void enter_menu()
     if(checkTimeOut())
         goto quitMenu;
 
-    if(menuItemNum >= MODE_DEST && menuItemNum <= MODE_DEPT) {
+    if(menuItemNum >= MODE_PRES && menuItemNum <= MODE_DEPT) {
 
         // Enter display times
 
@@ -771,7 +771,7 @@ static void menuShow(int number)
         displaySet = &destinationTime;
         break;
     case MODE_PRES:  // Present Time (RTC)
-        destinationTime.showTextDirect("RTC");
+        destinationTime.showTextDirect("SET RTC");
         destinationTime.on();
         presentTime.on();
         presentTime.setColon(false);

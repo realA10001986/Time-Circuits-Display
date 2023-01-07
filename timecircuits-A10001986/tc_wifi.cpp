@@ -51,7 +51,7 @@ IPSettings ipsettings;
 WiFiManager wm;
 
 static char aintCustHTML[768] = "";
-static const char aintCustHTML1[] = "<div style='margin:0;padding:0;'><label for='rotate_times'>Time-rotation interval</label><select style='width:auto;margin-left:10px;vertical-align:baseline;' value='";
+static const char aintCustHTML1[] = "<div style='margin:0;padding:0;'><label for='rotate_times'>Time-cycling interval</label><select style='width:auto;margin-left:10px;vertical-align:baseline;' value='";
 static const char aintCustHTML2[] = "' name='rotate_times' id='rotate_times' autocomplete='off' title='Selects the interval for automatic time-cycling when idle'><option value='0'";
 static const char aintCustHTML3[] = ">Off</option><option value='1'";
 static const char aintCustHTML4[] = ">Every 5th minute</option><option value='2'";
