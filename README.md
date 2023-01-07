@@ -80,7 +80,7 @@ In the main menu, click on "Setup" to configure your clock, first and foremost y
 
 A full reference of the Config Portal is [here](#appendix-the-config-portal).
 
-## Operation basics
+## Basic Operation
 
 *Present time* is a clock and normally shows the actual local present time, as received from the network or set up through the [keypad menu](#how-to-enter-datestimes-for-the-three-displays).
 
@@ -91,6 +91,32 @@ There is also a "decorative" mode where the device cycles through a list of pre-
 The clock only supports the [Gregorian Calendar](https://en.wikipedia.org/wiki/Gregorian_calendar), of which it pretends to have been used since year 1. The [Julian Calendar](https://en.wikipedia.org/wiki/Julian_calendar) is not taken into account. As a result, some years that, in the then-used Julian Calendar, were leap years between years 1 and 1582 in most of today's Europe, 1700 in DK/NO/NL(except Holland and Zeeland), 1752 in the British Empire, 1753 in Sweden, 1760 in Lorraine, 1872 in Japan, 1912 in China, 1915 in Bulgaria, 1917 in the Ottoman Empire, 1918 in Russia and Serbia and 1923 in Greece, are normal years in the Gregorian one. As a result, dates do not match in those two calender systems, the Julian calendar is currently 13 days behind. I wonder if Doc's TC took all this into account. (Then again, he wanted to see Christ's birth on Dec 25, 0. Luckily, he didn't actually try to travel to that date. Assuming a negative roll-over, he might have ended up in eternity.)
 
 Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed after 1BC. Nevertheless, it is possible to travel to year 0. In good old Hollywood tradition, I won't let facts and science stand in the way of an authentic movie experience.
+
+### Common usage scenarios
+
+#### I want my clock to work like in the movie
+
+In this case, head to the Config Portal and
+- set the *Time Cycling Interval* to OFF
+- check or uncheck *Make time travels persistent* depending on whether you care about keeping your times across reboots
+
+#### I want my clock to show/cycle movie times
+
+In this case, head to the Config Portal and
+- set the *Time Cycling Interval* to the desired interval
+- uncheck *Make time travels persistent*
+
+Time-travelling will interrupt the cycling of movie times for 30 minutes.
+
+#### I want my clock to always show my favorite *Destination* and *last time departed* times
+
+In this case, head to the Config Portal and
+- set the *Time Cycling Interval* to OFF
+- uncheck *Make time travels persistent*
+
+Then enter the [keypad menu](#how-to-enter-datestimes-for-the-three-displays) and set your favorite *Destination* and *Last time departed* times.
+
+Note that time-travelling will naturally lead to the displays showing other times. After a reboot, your times will be displayed again.
 
 ### Keypad reference
 
