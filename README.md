@@ -216,7 +216,7 @@ To travel back to actual present time, hold "9" for 2 seconds.
 
 Beware that the alarm function, by default, is based on the real actual present time, not the time displayed. This can be changed in the Config Portal.
 
-## Persistent / Non-persistent time travels
+### Persistent / Non-persistent time travels
 
 On the Config Portal's "Setup" page, there is an option item named "Make time travels persistent". The default is no.
 
