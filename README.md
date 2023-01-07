@@ -15,7 +15,6 @@ Features include
 - Movie-accurate [time travel](#time-travel) function with *Present time* always running as a clock (as opposed to being stale)
 - ["Return from Time Travel"](#time-travel) (hold "9" for 2 seconds)
 - ["Decorative mode"](#basic-operation): Movie-accurate time travel times displayed in *destination time* and *last time departed* displays, and cycled in configurable interval
-- Option to make time travels [persistent](#persistent--non-persistent-time-travels) over reboots
 - [Alarm function](#how-to-set-up-the-alarm)
 - [Night mode](#night-mode) (displays off or dimmed; manual, scheduled or sensor-controlled)
 - &#127381; [Music player](#the-music-player): Play mp3 files located on an SD card
