@@ -266,6 +266,8 @@ Preface note on SD cards: For unknown reasons, some SD cards simply do not work 
 
 The SD card, apart from being used to [install](#audio-file-installation) the default audio files, can be used for substituting default sounds, some additional custom sounds, and for music played back by the [Music player](#the-music-player).
 
+Note that the SD card must be inserted before powering up the clock. It is not recognized when inserted while the clock is running.
+
 ### Sound file substitution
 
 The provided audio files ("sound-pack") are, after [proper installation](#audio-file-installation), integral part of the firmware and stored in the device's flash memory. 
@@ -370,6 +372,8 @@ Basically, and by default, the device uses the hardware volume knob to determine
 - Hold ENTER to save and quit the menu
 
 #### How to select the music folder number:
+
+In order for this menu item to show up, an SD card is required.
 
 - Hold ENTER to invoke main menu
 - Press ENTER repeatedly until "MUSIC FOLDER NUMBER" is shown
