@@ -309,7 +309,7 @@ The provided audio files ("sound-pack") are, after [proper installation](#audio-
 
 These sounds can be substituted by your own sound files on a FAT32-formatted SD card. These files will be played back directly from the SD card during operation, so the SD card has to remain in the slot. The built-in [Audio file installer](#audio-file-installation) cannot be used to replace default sounds in the device's flash memory with custom sounds.
 
-Your replacements need to be put in the root (top-most) directoy of the SD card, be in mp3 format (128kbps) and named as follows:
+Your replacements need to be put in the root (top-most) directory of the SD card, be in mp3 format (128kbps) and named as follows:
 - "alarm.mp3". Played when the alarm sounds.
 - "alarmon.mp3". Played when enabling the alarm
 - "alarmoff.mp3". Played when disabling the alarm
@@ -347,7 +347,7 @@ To start and stop music playback, hold 5. Holding 2 jumps to the previous song, 
 
 By default, the songs are played in order, starting at 000.mp3, followed by 001.mp3 and so on. By entering 555 and pressing ENTER, you can switch to shuffle mode, in which the songs are played in random order. Enter 222 followed by ENTER to switch back to consecutive mode.
 
-Entering 888 followed by ENTER re-starts the player at song 000, and 888xxx (xxx = three digit number) jumps to song #xxx.
+Entering 888 followed by ENTER re-starts the player at song 000, and 888xxx (xxx = three-digit number) jumps to song #xxx.
 
 See [here](#keypad-reference) for a list of controls of the music player.
 
@@ -359,9 +359,9 @@ The menu is controlled by "pressing" or "holding" the ENTER key on the keypad.
 
 A "press" is shorter than 2 seconds, a "hold" is 2 seconds or longer.
 
-The menu is involked by holding the ENTER button.
+The menu is invoked by holding the ENTER button.
 
-Data entry, such as for dates and times, is done through the keypad's number keys and works as follows: Whenever a data entry is requested, the field for that data is lit (while the rest of the display is dark) and a pre-set value is shown. If you want to keep that pre-set, press ENTER to proceed to next field. Otherwise press a digit on the keypad; the pre-set is then overwritten by the value entered. 2 digits can be entered (4 for years), upon which the new value is stored and the next field is activated. You can also enter less than 2 digits (4 for years) and press ENTER when done with the field. Note that a month needs to be entered numerically (1-12), and hours need to be entered in 24 hour notation (0-23), regardless of 12-hour or 24-hour mode as per the Config Portal setting.
+Data entry, such as for dates and times, is done through the keypad's number keys and works as follows: Whenever a data entry is requested, the field for that data is lit (while the rest of the display is dark) and a pre-set value is shown. If you want to keep that pre-set, press ENTER to proceed to next field. Otherwise press a digit on the keypad; the pre-set is then overwritten by the value entered. 2 digits can be entered (4 for years), upon which the new value is stored and the next field is activated. You can also enter less than 2 digits (4 for years) and press ENTER when done with the field. Note that a month needs to be entered numerically (1-12), and hours need to be entered in 24-hour notation (0-23), regardless of 12-hour or 24-hour mode as per the Config Portal setting.
 
 After invoking the keypad menu, the first step is to choose a menu item. The available items are   
 - set the alarm ("ALA-RM"),
@@ -515,7 +515,7 @@ Luckily, there is a row of solder pads right next to the socket on the control b
 
 ## Speedometer
 
-The firmware supports a speedometer display connected via i2c (slave address 0x70) as part of the time travel sequence. Unfortunately, CircuitSetup have not yet designed such a speedometer, so you are on your own to build one for the time being. There are, however, various readily available LED segment displays from Adafruit and Seeed (Grove), that can be used as a basis. Adafruit 878, 1270 and 1922, as well as Grove 0.54" 14-segment 2 or 4 digit alphanumeric displays are supported. (The product numbers vary with color, the numbers here are the red ones.)
+The firmware supports a speedometer display connected via i2c (slave address 0x70) as part of the time travel sequence. Unfortunately, CircuitSetup have not yet designed such a speedometer, so you are on your own to build one for the time being. There are, however, various readily available LED segment displays from Adafruit and Seeed (Grove), that can be used as a basis. Adafruit 878, 1270 and 1922, as well as Grove 0.54" 14-segment 2- or 4-digit alphanumeric displays are supported. (The product numbers vary with color, the numbers here are the red ones.)
 
 [![Watch the video](https://img.youtube.com/vi/FRRecGxAONc/0.jpg)](https://youtu.be/FRRecGxAONc)
 
@@ -529,7 +529,7 @@ The firmware supports an MT(K)3333-based GPS receiver, connected through i2c (sl
 
 GPS receivers receive signals from satellites, but in order to do so, they need to be "tuned in" (aka get a "fix"). This "tuning" process can take a long time; after first power up, it can take 30 minutes or more for a receiver to be able to determine its position. In order to speed up this process, modern GPS receivers have special "assisting" features. One key element is knowledge of current time, as this helps identifying satellite signals quicker. So, in other words, initially, you need to tell the receiver, what it is supposed to tell you. However, as soon as the receiver has received satellite signals for 15-20 minutes, it saves the data it collected to its battery-backed memory and will find a fix within seconds after power-up in the future.
 
-For using GPS effectively as a long term source of accurate time, it is therefore essential, that 
+For using GPS effectively as a long-term source of accurate time, it is therefore essential, that 
 - the TimeCircuit's RTC (real time clock) is initially [set to correct local time](#how-to-set-the-real-time-clock-rtc), 
 - the correct time zone is defined in the Config Portal,
 - the GPS receiver has a battery
@@ -566,7 +566,7 @@ After WiFi has been switched off due to timer expiry, it can be re-enabled by ho
 The device can tell other props about a time travel, and in essence act as a "master controller" for several props. It does so via IO14, see diagram below.
 
 ```
-|<---------- speedo accleration ---------->|                         |<-speedo de-acceleration->|
+|<---------- speedo acceleration --------->|                         |<-speedo de-acceleration->|
 0....10....20....................xx....87..88------------------------88...87....................0
                                            |<--Actual Time Travel -->|
                                            |  (Display disruption)   |
@@ -643,9 +643,9 @@ See [here](#wifi-power-saving-features)
 
 See [here](#wifi-power-saving-features)
 
-#### Timezone
+#### Time zone
 
-The time zone of the place where the device is operated. Has to be in POSIX format. Needs to be set in order to use NTP or GPS, and for DST (daylight saving). Defaults to UTC0.
+The time zone of the place where the device is operated. Has to be in POSIX format. Needs to be set in order to use NTP or GPS, and for DST (daylight saving). Defaults to UTC0. See [here](https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv) or [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/timeszones.csv) for a list of valid time zones.
 
 #### NTP Server
 
@@ -729,7 +729,7 @@ Check this if you have an external speedo display connected and want to use it. 
 
 #### Display type
 
-Type of speedo display. Several types are supported, mostly Adafruit or Seeed/Grove LED segement displays. See [here](#speedometer)
+Type of speedo display. Several types are supported, mostly Adafruit or Seeed/Grove LED segment displays. See [here](#speedometer)
 
 #### Speedo brightness
 
@@ -759,7 +759,7 @@ Check this if you want to use a fake power switch. See [here](#fake-power-onoff-
 
 #### External time travel button: Delay
 
-Selects a delay (in millisconds) from when pressing the external time travel button until the time travel sequence starts. See [here](#fake-power-onoff-switch-external-time-travel-trigger)
+Selects a delay (in milliseconds) from when pressing the external time travel button until the time travel sequence starts. See [here](#fake-power-onoff-switch-external-time-travel-trigger)
 
 #### Play complete time travel sequence
 
