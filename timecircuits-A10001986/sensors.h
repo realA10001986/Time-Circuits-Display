@@ -77,10 +77,10 @@ class tempSensor : tcSensor {
         // Setter for custom delay function
         void setCustomDelayFunc(void (*myDelay)(unsigned int));
 
-        double readTemp(bool celsius = true);
-        double readLastTemp() { return _lastTemp; };
+        float readTemp(bool celsius = true);
+        float readLastTemp() { return _lastTemp; };
 
-        void setOffset(double myOffs);
+        void setOffset(float myOffs);
 
         bool haveHum() { return _haveHum; };
         int  readHum() { return _hum; };
@@ -94,9 +94,9 @@ class tempSensor : tcSensor {
         bool    _haveHum = false;
         unsigned long _delayNeeded = 0;
 
-        double  _lastTemp = NAN;
+        float  _lastTemp = NAN;
 
-        double  _userOffset = 0.0;
+        float  _userOffset = 0.0;
 
         uint32_t _BMx280_CD_T1;
         int32_t  _BMx280_CD_T2;
@@ -110,7 +110,7 @@ class tempSensor : tcSensor {
 
         unsigned long _tempReadNow = 0;
 
-        double BMx280_CalcTemp(uint32_t ival, uint32_t hval);
+        float BMx280_CalcTemp(uint32_t ival, uint32_t hval);
 
         // Ptr to custom delay function
         void (*_customDelayFunc)(unsigned int) = NULL;

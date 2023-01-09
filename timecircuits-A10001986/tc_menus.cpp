@@ -484,6 +484,7 @@ void enter_menu()
 
                 // Avoid immediate re-adjustment in time_loop
                 lastYear = yearSet;
+                presentTime.saveLastYear(lastYear);
 
                 // Resetting the RTC invalidates our timeDifference, ie
                 // fake present time. Make the user return to present
@@ -1683,7 +1684,7 @@ static void doShowSensors()
     uint8_t numberArr[3];
     uint8_t numIdx = 0, maxIdx = 0;
     int hum;
-    double temp;
+    float temp;
 
     #ifdef TC_HAVELIGHT
     if(useLight) numberArr[numIdx++] = 0;

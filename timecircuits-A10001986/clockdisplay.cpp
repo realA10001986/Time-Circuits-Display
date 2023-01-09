@@ -64,9 +64,18 @@ extern void     minsToDate(uint64_t total, int& year, int& month, int& day, int&
 
 extern int      daysInMonth(int month, int year);
 
+extern bool FlashROMode;
+extern bool readFileFromSD(const char *fn, uint8_t *buf, int len);
+extern bool writeFileToSD(const char *fn, uint8_t *buf, int len);
+
 static const char months[12][4] = {
       "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
       "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
+};
+
+static const char *fnLastYear = "/tcdly";
+static const char *fnEEPROM[3] = {
+    "/tcddt", "/tcdpt", "/tcdlt"
 };
 
 // Store i2c address and eeprom data location
@@ -681,7 +690,7 @@ void clockDisplay::showSettingValDirect(const char* setting, int8_t val, bool cl
 }
 
 #ifdef TC_HAVETEMP
-void clockDisplay::showTempDirect(double temp, bool tempUnit, bool animate)
+void clockDisplay::showTempDirect(float temp, bool tempUnit, bool animate)
 {
     char buf[32];
     const char *ttem = animate ? "    " : "TEMP";
@@ -754,7 +763,7 @@ void clockDisplay::showHumDirect(int hum, bool animate)
  */
 bool clockDisplay::save()
 {
-    uint8_t savBuf[10];
+    uint8_t savBuf[10]; // Sic! Sum written to last byte by saveEPROMData
 
     if(_saveAddress < 0)
         return false;
@@ -764,7 +773,7 @@ bool clockDisplay::save()
         // Non-RTC: Save time
 
         #ifdef TC_DBG
-        Serial.println(F("Clockdisplay: Saving non-RTC settings to EEPROM"));
+        Serial.println(F("Clockdisplay: Saving non-RTC settings"));
         #endif
 
         savBuf[0] = _year & 0xff;
@@ -782,7 +791,7 @@ bool clockDisplay::save()
         // RTC: Save IsDST, yearoffs, timeDiff
         
         #ifdef TC_DBG
-        Serial.println(F("Clockdisplay: Saving RTC settings to EEPROM"));
+        Serial.println(F("Clockdisplay: Saving RTC settings"));
         #endif
 
         savBuf[0] = _isDST + 1;
@@ -808,7 +817,7 @@ bool clockDisplay::save()
 // Save YOffs and isDST, and clear timeDifference in EEPROM
 bool clockDisplay::saveYOffs()
 {
-    uint8_t savBuf[10];
+    uint8_t savBuf[10];  // Sic! Sum written to last byte by saveEPROMData
     int i;
 
     if(!isRTC() || _saveAddress < 0)
@@ -817,21 +826,15 @@ bool clockDisplay::saveYOffs()
     // RTC: Save yearoffs; zero timeDifference
 
     #ifdef TC_DBG
-    Serial.println(F("Clockdisplay: Saving RTC/YOffs setting to EEPROM"));
+    Serial.println(F("Clockdisplay: Saving RTC/YOffs setting"));
     #endif
 
+    memset(savBuf, 0, 10);
+    
     savBuf[0] = _isDST + 1;
     
     savBuf[1] = _yearoffset & 0xff;
     savBuf[2] = (_yearoffset >> 8) & 0xff;
-
-    savBuf[3] = 0;
-    savBuf[4] = 0;
-    savBuf[5] = 0;
-    savBuf[6] = 0;
-    savBuf[7] = 0;
-
-    savBuf[8] = 0;
 
     saveEPROMData(savBuf);
 
@@ -842,29 +845,44 @@ bool clockDisplay::saveYOffs()
 bool clockDisplay::saveLastYear(uint16_t theYear)
 {
     uint8_t savBuf[4];
-    int i;
 
     if(!isRTC())
         return false;
 
-    // Read to check if value identical to currently stored (reduce wear)
-    int16_t testFirst = loadLastYear();
-    if(testFirst == theYear) return true;
+    // Check if value identical to last one written
+    if(_lastWrittenLY == theYear)
+        return true;
+
+    // If not, read to check if identical to stored
+    _lastWrittenLY = loadLastYear();
+    if(_lastWrittenLY == theYear)
+        return true;
 
     #ifdef TC_DBG
-    Serial.println(F("Clockdisplay: Saving RTC/LastYear to EEPROM"));
+    Serial.print(F("Clockdisplay: Saving RTC/LastYear "));
     #endif
     
     savBuf[0] = theYear & 0xff;
     savBuf[1] = (theYear >> 8) & 0xff;    
     savBuf[2] = savBuf[0] ^ 0xff;
     savBuf[3] = savBuf[1] ^ 0xff;
-    
-    for(i = 0; i < 4; i++) {
-        EEPROM.write(PRES_LY + i, savBuf[i]);
+
+    if(FlashROMode) {
+        writeFileToSD(fnLastYear, savBuf, 4);
+        #ifdef TC_DBG
+        Serial.print(F("to SD"));
+        #endif
+    } else {
+        for(uint8_t i = 0; i < 4; i++) {
+            EEPROM.write(PRES_LY_PREF + i, savBuf[i]);
+        }
+        EEPROM.commit();
+        #ifdef TC_DBG
+        Serial.print(F("to EEPROM"));
+        #endif
     }
 
-    EEPROM.commit();
+    _lastWrittenLY = theYear;
 
     return true;
 }
@@ -875,7 +893,7 @@ bool clockDisplay::saveLastYear(uint16_t theYear)
  */
 bool clockDisplay::load(int initialBrightness)
 {
-    uint8_t loadBuf[16];
+    uint8_t loadBuf[10];
 
     if(_saveAddress < 0)
         return false;
@@ -892,7 +910,7 @@ bool clockDisplay::load(int initialBrightness)
         if(loadEPROMData(loadBuf)) {
 
             #ifdef TC_DBG
-            Serial.println(F("Clockdisplay: Loaded non-RTC settings from EEPROM"));
+            Serial.println(F("Clockdisplay: Loaded non-RTC settings"));
             #endif
 
             setYearOffset((loadBuf[3] << 8) | loadBuf[2]);
@@ -928,7 +946,7 @@ bool clockDisplay::load(int initialBrightness)
               timeDiffUp = loadBuf[8] ? true : false;
 
               #ifdef TC_DBG
-              Serial.println(F("Clockdisplay: Loaded RTC settings from EEPROM"));
+              Serial.println(F("Clockdisplay: Loaded RTC settings"));
               #endif
 
         } else {
@@ -940,7 +958,7 @@ bool clockDisplay::load(int initialBrightness)
               timeDifference = 0;
 
               #ifdef TC_DBG
-              Serial.println(F("Clockdisplay: Invalid RTC EEPROM data"));
+              Serial.println(F("Clockdisplay: Invalid RTC data"));
               #endif
 
         }
@@ -952,7 +970,7 @@ bool clockDisplay::load(int initialBrightness)
     }
 
     #ifdef TC_DBG
-    Serial.println(F("Clockdisplay: Invalid EEPROM data"));
+    Serial.println(F("Clockdisplay: Invalid Non-RTC data"));
     #endif
 
     // Do NOT clear EEPROM if data is invalid.
@@ -964,22 +982,26 @@ bool clockDisplay::load(int initialBrightness)
 
 // Only load yearOffset from EEPROM
 // !!! Does not *SET* yearOffs, just returns it !!!
+// Returns impossible values in case of error to make
+// comparisons fail orderly
 int16_t clockDisplay::loadYOffs()
 {
     uint8_t loadBuf[10];
 
     if(_saveAddress < 0 || !isRTC())
-        return -1;
+        return -11111;
 
     if(loadEPROMData(loadBuf)) {
         return ((loadBuf[2] << 8) | loadBuf[1]);
     }
 
-    return -1;
+    return -11111;
 }
 
 // Only load isDST from EEPROM
 // !!! Does not *SET* it, just returns it !!!
+// Returns <= -1 in case of error (which makes
+// comparisons fail orderly)
 int8_t clockDisplay::loadDST()
 {
     uint8_t loadBuf[10];
@@ -999,13 +1021,18 @@ int8_t clockDisplay::loadDST()
 int16_t clockDisplay::loadLastYear()
 {
     uint8_t loadBuf[4];
-    int i;
 
     if(!isRTC())
         return -2;
 
-    for(i = 0; i < 4; i++) {
-        loadBuf[i] = EEPROM.read(PRES_LY + i);
+    memset(loadBuf, 0, 4);
+
+    if(FlashROMode) {
+        readFileFromSD(fnLastYear, loadBuf, 4);
+    } else {
+        for(uint8_t i = 0; i < 4; i++) {
+            loadBuf[i] = EEPROM.read(PRES_LY_PREF + i);
+        }
     }
 
     if( (loadBuf[0] == (loadBuf[2] ^ 0xff)) &&
@@ -1034,17 +1061,33 @@ void clockDisplay::saveEPROMData(uint8_t *savBuf)
         for(uint8_t i = 0; i < 9; i++) {
             if(savBuf[i] != loadBuf[i]) {
                 skipSave = false;
+                break;
             }
         }
     }
 
     if(!skipSave) {
+        #ifdef TC_DBG
+        Serial.print(F("saveEPROMData to "));
+        #endif
         for(uint8_t i = 0; i < 9; i++) {
-           sum += (savBuf[i] ^ mxor);
-           EEPROM.write(_saveAddress + i, savBuf[i]);
+            sum += (savBuf[i] ^ mxor);
         }
-        EEPROM.write(_saveAddress + 9, sum & 0xff);
-        EEPROM.commit();
+        savBuf[9] = sum & 0xff;
+        if(FlashROMode) {
+            writeFileToSD(fnEEPROM[_did], savBuf, 10);
+            #ifdef TC_DBG
+            Serial.println(F("SD"));
+            #endif
+        } else {
+            for(uint8_t i = 0; i < 10; i++) {
+                EEPROM.write(_saveAddress + i, savBuf[i]);
+            }
+            EEPROM.commit();
+            #ifdef TC_DBG
+            Serial.println(F("EEPROM"));
+            #endif
+        }
     }
 }
 
@@ -1053,11 +1096,29 @@ bool clockDisplay::loadEPROMData(uint8_t *loadBuf)
     uint16_t sum = 0;
     uint8_t  mxor = isRTC() ? 0x55 : 0x00;
 
-    for(uint8_t i = 0; i < 10; i++) {
-        loadBuf[i] = EEPROM.read(_saveAddress + i);
-        if(i < 9) sum += (loadBuf[i] ^ mxor);
-    }
+    memset(loadBuf, 0, 10);
 
+    #ifdef TC_DBG
+    Serial.print(F("loadEPROMData from "));
+    #endif
+        
+    if(FlashROMode) {
+        readFileFromSD(fnEEPROM[_did], loadBuf, 10);
+        #ifdef TC_DBG
+        Serial.println(F("SD"));
+        #endif
+    } else {
+        for(uint8_t i = 0; i < 10; i++) {
+            loadBuf[i] = EEPROM.read(_saveAddress + i);
+        }
+        #ifdef TC_DBG
+        Serial.println(F("EEPROM"));
+        #endif
+    }
+    for(uint8_t i = 0; i < 9; i++) {
+        sum += (loadBuf[i] ^ mxor);
+    }
+    
     return isRTC() ? ((sum & 0xff) == loadBuf[9]) : ((sum != 0) && ((sum & 0xff) == loadBuf[9]));
 }
 

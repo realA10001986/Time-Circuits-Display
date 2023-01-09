@@ -16,10 +16,10 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #ifndef IS_ACAR_DISPLAY
 #define TC_VERSION "V2.6.0"           // 13 chars max
-#define TC_VERSION_EXTRA "JAN072023"  // 13 chars max
+#define TC_VERSION_EXTRA "JAN092023"  // 13 chars max
 #else   // A-Car
 #define TC_VERSION "V2.6.0_A-CAR"     // 12 chars max
-#define TC_VERSION_EXTRA "01072023"   // 12 chars max
+#define TC_VERSION_EXTRA "01092023"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -152,14 +152,16 @@
  ***                             EEPROM map                            ***
  *************************************************************************/
  
-#define SWVOL_PREF        0x00    // volume save location         (2 bytes, padded to 8)
-#define DEST_TIME_PREF    0x08    // destination time prefs       (10 bytes)
-#define PRES_TIME_PREF    0x12    // present time prefs           (10 bytes)
-#define DEPT_TIME_PREF    0x1c    // departure time prefs         (10 bytes)
-#define ALARM_PREF        0x26    // alarm prefs                  (4 bytes; only used if fs unavailable)
-#define PRES_LY           0x2A    // present time's "lastYear"    (4 bytes)
+#define SWVOL_PREF        0x00    // volume save location       (2 bytes) [deprecated]
+#define DEST_TIME_PREF    0x08    // destination time prefs     (10 bytes)
+#define PRES_TIME_PREF    0x12    // present time prefs         (10 bytes)
+#define DEPT_TIME_PREF    0x1c    // departure time prefs       (10 bytes)
+#define PRES_LY_PREF      0x2A    // present time's "lastYear"  (4 bytes)
 
-// Display IDs
+/*************************************************************************
+ ***             Display IDs (Do not change, used as index)            ***
+ *************************************************************************/
+
 #define DISP_DEST     0
 #define DISP_PRES     1
 #define DISP_LAST     2

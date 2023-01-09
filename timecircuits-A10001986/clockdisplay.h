@@ -103,7 +103,7 @@ class clockDisplay {
         void showHalfIPDirect(int a, int b, bool clear = false);
 
         #ifdef TC_HAVETEMP
-        void showTempDirect(double temp, bool tempUnit, bool animate = false);
+        void showTempDirect(float temp, bool tempUnit, bool animate = false);
         void showHumDirect(int hum, bool animate = false);
         #endif
 
@@ -154,24 +154,26 @@ class clockDisplay {
         uint8_t  _did = 0;
         uint8_t  _address = 0;
         int      _saveAddress = -1;
-        uint16_t _displayBuffer[8]; // Segments to make current time
+        uint16_t _displayBuffer[8];     // Segments to make current time
 
-        uint16_t _year = 2021;      // keep track of these
-        int16_t  _yearoffset = 0;   // Offset for faking years < 2000, > 2098
+        uint16_t _year = 2021;          // keep track of these
+        int16_t  _yearoffset = 0;       // Offset for faking years < 2000, > 2098
 
-        int8_t  _isDST = 0;        // DST active? -1:dunno 0:no 1:yes
+        int16_t  _lastWrittenLY = -333; // Not to be confused with possible results from loadLastYear
+
+        int8_t  _isDST = 0;             // DST active? -1:dunno 0:no 1:yes
 
         uint8_t _month = 1;
         uint8_t _day = 1;
         uint8_t _hour = 0;
         uint8_t _minute = 0;
-        bool _colon = false;        // should colon be on?
-        bool _rtc = false;          // will this be displaying real time
-        uint8_t _brightness = 15;   // current display brightness
+        bool _colon = false;          // should colon be on?
+        bool _rtc = false;            // will this be displaying real time
+        uint8_t _brightness = 15;     // current display brightness
         uint8_t _origBrightness = 15; // value from settings
-        bool _mode24 = false;       // true = 24 hour mode, false = 12 hour mode
-        bool _nightmode = false;    // true = dest/dept times off
-        bool _NmOff = false;        // true = off during night mode, false = dimmed
+        bool _mode24 = false;         // true = 24 hour mode, false = 12 hour mode
+        bool _nightmode = false;      // true = dest/dept times off
+        bool _NmOff = false;          // true = off during night mode, false = dimmed
         int _oldnm = -1;
         bool _corr6 = false;
         bool _yearDot = false;

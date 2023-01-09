@@ -528,7 +528,7 @@ void play_file(const char *audio_file, float volumeFactor, bool checkNightMode, 
     #endif
 
     //if(channel == 0) {
-        if(haveSD && allowSD && mySD0->open(audio_file)) {
+        if(haveSD && (allowSD || FlashROMode) && mySD0->open(audio_file)) {
 
             buf[0] = 0;
             mySD0->read((void *)buf, 10);

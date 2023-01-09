@@ -25,7 +25,8 @@
 #ifndef _TC_SETTINGS_H
 #define _TC_SETTINGS_H
 
-extern bool    haveSD;
+extern bool haveSD;
+extern bool FlashROMode;   
 
 extern uint8_t musFolderNum;
 
@@ -183,5 +184,9 @@ bool check_allow_CPA();
 void formatFlashFS();
 
 void rewriteSecondarySettings();
+
+bool readFileFromSD(const char *fn, uint8_t *buf, int len);
+bool writeFileToSD(const char *fn, uint8_t *buf, int len);
+
 
 #endif

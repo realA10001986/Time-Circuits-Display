@@ -489,9 +489,9 @@ void tempSensor::setCustomDelayFunc(void (*myDelay)(unsigned int))
 }
 
 // Read temperature
-double tempSensor::readTemp(bool celsius)
+float tempSensor::readTemp(bool celsius)
 {
-    double temp = NAN;
+    float temp = NAN;
     uint16_t t = 0;
     
 
@@ -505,7 +505,7 @@ double tempSensor::readTemp(bool celsius)
     case MCP9808:
         t = read16(MCP9808_REG_AMBIENT_TEMP);
         if(t != 0xffff) {
-            temp = ((double)(t & 0x0fff)) / 16.0;
+            temp = ((float)(t & 0x0fff)) / 16.0;
             if(t & 0x1000) temp = 256.0 - temp;
         }
         break;
@@ -530,11 +530,11 @@ double tempSensor::readTemp(bool celsius)
             for(uint8_t i = 0; i < 6; i++) buf[i] = Wire.read();
             if(crc8(SHT40_CRC_INIT, SHT40_CRC_POLY, 2, buf) == buf[2]) {
                 t = (buf[0] << 8) | buf[1];
-                temp = ((175.0 * (double)t) / 65535.0) - 45.0;
+                temp = ((175.0 * (float)t) / 65535.0) - 45.0;
             }
             if(crc8(SHT40_CRC_INIT, SHT40_CRC_POLY, 2, buf+3) == buf[5]) {
                 t = (buf[3] << 8) | buf[4];
-                _hum = (int8_t)(((125.0 * (double)t) / 65535.0) - 6.0);
+                _hum = (int8_t)(((125.0 * (float)t) / 65535.0) - 6.0);
                 if(_hum < 0) _hum = 0;
             }
         }
@@ -547,7 +547,7 @@ double tempSensor::readTemp(bool celsius)
             for(uint8_t i = 0; i < 3; i++) buf[i] = Wire.read();
             if(crc8(SI7021_CRC_INIT, SI7021_CRC_POLY, 2, buf) == buf[2]) {
                 t = (buf[0] << 8) | buf[1];
-                _hum = (int8_t)(((125.0 * (double)t) / 65536.0) - 6.0);
+                _hum = (int8_t)(((125.0 * (float)t) / 65536.0) - 6.0);
                 if(_hum < 0) _hum = 0;
             }
         }
@@ -556,7 +556,7 @@ double tempSensor::readTemp(bool celsius)
             uint8_t buf[2];
             for(uint8_t i = 0; i < 2; i++) buf[i] = Wire.read();
             t = (buf[0] << 8) | buf[1];
-            temp = ((175.72 * (double)t) / 65536.0) - 46.85;
+            temp = ((175.72 * (float)t) / 65536.0) - 46.85;
         }
         write8(SI7021_DUMMY, SI7021_CMD_RHUM);    // Trigger new measurement
         break;
@@ -564,7 +564,7 @@ double tempSensor::readTemp(bool celsius)
     case TMP117:
         t = read16(TMP117_REG_TEMP);
         if(t != 0x8000) {
-            temp = (double)((int16_t)t) / 128.0;
+            temp = (float)((int16_t)t) / 128.0;
         }
         break;
 
@@ -575,7 +575,7 @@ double tempSensor::readTemp(bool celsius)
             if(crc8(AHT20_CRC_INIT, AHT20_CRC_POLY, 6, buf) == buf[6]) {
                 _hum = ((uint32_t)((buf[1] << 12) | (buf[2] << 4) | (buf[3] >> 4))) * 100 / 1048576;
                 if(_hum < 0) _hum = 0;
-                temp = ((double)((uint32_t)(((buf[3] & 0x0f) << 16) | (buf[4] << 8) | buf[5]))) * 200.0 / 1048576.0 - 50.0;
+                temp = ((float)((uint32_t)(((buf[3] & 0x0f) << 16) | (buf[4] << 8) | buf[5]))) * 200.0 / 1048576.0 - 50.0;
             }
         }
         write16(0xac, 0x3300);    // Trigger new measurement
@@ -588,11 +588,11 @@ double tempSensor::readTemp(bool celsius)
             for(uint8_t i = 0; i < 6; i++) buf[i] = Wire.read();
             if(crc8(HTU31_CRC_INIT, HTU31_CRC_POLY, 2, buf) == buf[2]) {
                 t = (buf[0] << 8) | buf[1];
-                temp = ((165.0 * (double)t) / 65535.0) - 40.0;
+                temp = ((165.0 * (float)t) / 65535.0) - 40.0;
             }
             if(crc8(HTU31_CRC_INIT, HTU31_CRC_POLY, 2, buf+3) == buf[5]) {
                 t = (buf[3] << 8) | buf[4];
-                _hum = (int8_t)((100.0 * (double)t) / 65535.0);
+                _hum = (int8_t)((100.0 * (float)t) / 65535.0);
                 if(_hum < 0) _hum = 0;
             }
         }
@@ -624,14 +624,14 @@ double tempSensor::readTemp(bool celsius)
     return temp;
 }
 
-void tempSensor::setOffset(double myOffs)
+void tempSensor::setOffset(float myOffs)
 {
     _userOffset = myOffs;
 }
 
 // Private functions ###########################################################
 
-double tempSensor::BMx280_CalcTemp(uint32_t ival, uint32_t hval)
+float tempSensor::BMx280_CalcTemp(uint32_t ival, uint32_t hval)
 {
     int32_t var1, var2, fine_t, temp;
 
@@ -657,7 +657,7 @@ double tempSensor::BMx280_CalcTemp(uint32_t ival, uint32_t hval)
         _hum = temp >> 22;
     }
     
-    return (double)((fine_t * 5 + 128) / 256) / 100.0;
+    return (float)((fine_t * 5 + 128) / 256) / 100.0;
 }
 
 #endif // TC_HAVETEMP
