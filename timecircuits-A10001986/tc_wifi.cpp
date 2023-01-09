@@ -542,7 +542,7 @@ void wifi_loop()
         // Save settings and restart esp32
 
         #ifdef TC_DBG
-        Serial.println(F("WiFi: Saving config"));
+        Serial.println(F("Config Portal: Saving config"));
         #endif
 
         // Only read parms if the user actually clicked SAVE on the params page
@@ -723,7 +723,7 @@ void wifi_loop()
             if(check_allow_CPA()) {
                 if(forceCopyAudio || (!strcmp(custom_copyAudio.getValue(), "COPY"))) {
                     #ifdef TC_DBG
-                    Serial.println(F("WiFi: Copying audio files...."));
+                    Serial.println(F("Config Portal: Copying audio files...."));
                     #endif
                     pwrNeedFullNow();
                     if(!copy_audio_files()) {
@@ -743,7 +743,7 @@ void wifi_loop()
         destinationTime.on();
 
         #ifdef TC_DBG
-        Serial.println(F("WiFi: Restarting ESP...."));
+        Serial.println(F("Config Portal: Restarting ESP...."));
         #endif
 
         Serial.flush();
@@ -1046,7 +1046,6 @@ static void setupStaticIP()
         dns = stringToIp(ipsettings.dns);
 
         wm.setSTAStaticIPConfig(ip, gw, sn, dns);
-
     }
 }
 
@@ -1327,7 +1326,7 @@ static IPAddress stringToIp(char *str)
 }
 
 /*
- * read parameter from server, for customhmtl input
+ * Read parameter from server, for customhmtl input
  */
 static void getParam(String name, char *destBuf, size_t length)
 {
@@ -1371,7 +1370,6 @@ static void strcpyCB(char *sv, WiFiManagerParameter *el)
 {
     strcpy(sv, ((int)atoi(el->getValue()) > 0) ? "1" : "0");
 }
-
 
 static void setCBVal(WiFiManagerParameter *el, char *sv)
 {

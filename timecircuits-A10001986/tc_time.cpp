@@ -149,7 +149,7 @@ static unsigned long ttP0Now = 0;
 static uint8_t       timeTravelP0Speed = 0;
 static long          pointOfP1 = 0;
 static bool          didTriggerP1 = false;
-static double        ttP0TimeFactor = 1.0;
+static float         ttP0TimeFactor = 1.0;
 #ifdef TC_HAVEGPS
 static unsigned long dispGPSnow = 0;
 #endif
@@ -821,7 +821,7 @@ void time_setup()
     if(!(parseTZ(settings.timeZone, rtcYear))) {
         tzbad = true;
     }
-
+ 
     // If we are switched on after a year switch, re-do
     // RTC year-translation.
     if(lastYear != rtcYear) {
@@ -953,13 +953,13 @@ void time_setup()
         speedo.setDot(true);
 
         // Speed factor for acceleration curve
-        ttP0TimeFactor = (double)atof(settings.speedoFact);
+        ttP0TimeFactor = (float)atof(settings.speedoFact);
         if(ttP0TimeFactor < 0.5) ttP0TimeFactor = 0.5;
         if(ttP0TimeFactor > 5.0) ttP0TimeFactor = 5.0;
 
         // Calculate start point of P1 sequence
         for(int i = 1; i < 88; i++) {
-            pointOfP1 += (unsigned long)(((double)(tt_p0_delays[i])) / ttP0TimeFactor);
+            pointOfP1 += (unsigned long)(((float)(tt_p0_delays[i])) / ttP0TimeFactor);
         }
         #ifdef EXTERNAL_TIMETRAVEL_OUT
         ettoLeadPoint = pointOfP1 - ettoLeadTime;   // Can be negative!
@@ -972,7 +972,7 @@ void time_setup()
             // (in order to time P0/P1 relative to current actual speed)
             long totDelay = 0;
             for(int i = 0; i < 88; i++) {
-                totDelay += (long)(((double)(tt_p0_delays[i])) / ttP0TimeFactor);
+                totDelay += (long)(((float)(tt_p0_delays[i])) / ttP0TimeFactor);
                 tt_p0_totDelays[i] = totDelay;
             }
         }
@@ -1011,7 +1011,7 @@ void time_setup()
         if(tempSens.begin(powerupMillis)) {
             tempSens.setCustomDelayFunc(myCustomDelay);
             tempUnit = ((int)atoi(settings.tempUnit) > 0);
-            tempSens.setOffset((double)atof(settings.tempOffs));
+            tempSens.setOffset((float)atof(settings.tempOffs));
             #ifdef TC_HAVESPEEDO
             tempBrightness = (int)atoi(settings.tempBright);
             if(!useSpeedo || useGPSSpeed) dispTemp = false;
@@ -1301,10 +1301,10 @@ void time_loop()
             long ttP0LDOver = 0, ttP0LastDelay = ttP0NowT - ttP0Now;
             ttP0Now = ttP0NowT;
             ttP0LDOver = ttP0LastDelay - timetravelP0Delay;
-            timetravelP0DelayT = (long)(((double)(tt_p0_delays[timeTravelP0Speed])) / ttP0TimeFactor) - ttP0LDOver;
+            timetravelP0DelayT = (long)(((float)(tt_p0_delays[timeTravelP0Speed])) / ttP0TimeFactor) - ttP0LDOver;
             while(timetravelP0DelayT <= 0 && timeTravelP0Speed < 88) {
                 timeTravelP0Speed++;
-                timetravelP0DelayT += (long)(((double)(tt_p0_delays[timeTravelP0Speed])) / ttP0TimeFactor);
+                timetravelP0DelayT += (long)(((float)(tt_p0_delays[timeTravelP0Speed])) / ttP0TimeFactor);
             }
         }
 

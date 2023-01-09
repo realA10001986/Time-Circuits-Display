@@ -101,7 +101,7 @@ class speedDisplay {
         void setText(const char *text);
         void setSpeed(int8_t speedNum);
         #ifdef TC_HAVETEMP
-        void setTemperature(double temp);
+        void setTemperature(float temp);
         #endif
         void setDot(bool dot01 = true);
         void setColon(bool colon);

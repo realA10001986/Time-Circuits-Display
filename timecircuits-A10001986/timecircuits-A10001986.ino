@@ -24,46 +24,89 @@
 
 /*
  * Build instructions (for Arduino IDE)
+ * 
+ * - Install the Arduino IDE
+ *   https://www.arduino.cc/en/software
+ *    
+ * - This firmware requires the "ESP32-Arduino" framework. To install this framework, 
+ *   in the Arduino IDE, go to "File" > "Preferences" and add the URL   
+ *   https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+ *   to "Additional Boards Manager URLs". The list is comma-separated.
+ *   
+ * - Go to "Tools" > "Board" > "Boards Manager", then search for "esp32", and install 
+ *   the latest version by Espressif Systems.
+ *   Detailed instructions for this step:
+ *   https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html
+ *   (Personal note: I am still running on 1.0.6 and the pre-compiled binaries
+ *   on my github do as well; from what I read, the 2.x.x branch has a lot of
+ *   issues even as of 2.0.5; I honestly can't say whether or not any of those
+ *   issues have an influence on the stability of this firmware.
+ *   CircuitSetup.us and their pre-compiled binaries, however, use 2.0.x.)
+ *   
+ * - Go to "Tools" > "Board: ..." -> "ESP32 Arduino" and select your board model (the
+ *   CircuitSetup original boards are "NodeMCU-32S")
+ *   
+ * - Connect your ESP32 board.
+ *   Note that NodeMCU ESP32 boards come in two flavors that differ in which serial 
+ *   communications chip is used: Either SLAB CP210x USB-to-UART or CH340. Installing
+ *   a driver might be required.
+ *   Mac: 
+ *   For the SLAB CP210x (which is used by NodeMCU-boards distributed by CircuitSetup)
+ *   installing a driver is required:
+ *   https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers?tab=downloads
+ *   The port ("Tools -> "Port") is named /dev/cu.SLAB_USBtoUART, and the maximum
+ *   upload speed ("Tools" -> "Upload Speed") can be used.
+ *   The CH340 is supported out-of-the-box since Mojave. The port is named 
+ *   /dev/cu.usbserial-XXXX (XXXX being some random number), and the maximum upload 
+ *   speed is 460800.
+ *   Windows: No idea. Not been using Windows since 1999.
  *
- * This software requires the "ESP32-Arduino" framework: 
- * https://github.com/espressif/arduino-esp32
- *  - In the Arduino IDE, go to File > Preferences
- *  - Add the URL
- *    https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
- *    to Additional Boards Manager URLs. The list is comma-separated.
- *  - Go to Tools > Board > Boards Manager, then search for "esp32", and install 
- *    the latest version by Espressif Systems.
- *    Detailed instructions for this step:
- *    https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html
- *    (Personal note: I am still running on 1.0.6 and the pre-compiled binaries
- *    on my github do as well; from what I read, the 2.x.x branch has a lot of
- *    issues even as of 2.0.5; I honestly can't say whether or not any of those
- *    issues have an influence on the stability of this firmware.
- *    CircuitSetup.us and their pre-compiled binaries, however, use 2.0.x.)
- *  - Go to Tools > Board: "..." -> ESP32 Arduino and select "NodeMCU-32S".
+ * - Install required libraries. In the Arduino IDE, go to "Tools" -> "Manage Libraries" 
+ *   and install the following libraries:
+ *   - ESP8266Audio: https://github.com/earlephilhower/ESP8266Audio
+ *     (1.9.7 and later for esp32-arduino 2.x.x; 1.9.5 for 1.0.6 and below)
+ *   - WifiManager (tablatronix, tzapu) https://github.com/tzapu/WiFiManager
+ *     (Tested with 2.0.13beta and 2.0.15-rc1)
+ *   - ArduinoJSON >= 6.19: https://arduinojson.org/v6/doc/installation/
  *
- * Library dependencies: (Tools -> Manage Libraries)
- * - ESP8266Audio: https://github.com/earlephilhower/ESP8266Audio
- *   (1.9.7 and later for esp32-arduino 2.x.x; 1.9.5 for 1.0.6 and below)
- * - WifiManager (tablatronix, tzapu) https://github.com/tzapu/WiFiManager
- *   (Tested with 2.0.13beta and 2.0.15-rc1)
- * - ArduinoJSON >= 6.19: https://arduinojson.org/v6/doc/installation/
+ * - Download the complete firmware source code:
+ *   https://github.com/realA10001986/Time-Circuits-Display/archive/refs/heads/main.zip
+ *   Extract this file somewhere. Enter the "timecircuits-A10001986" folder and 
+ *   double-click on "timecircuits-A10001986.ino". This opens the firmware in the
+ *   Arduino IDE.
+ *
+ * - Go to "Sketch" -> "Upload" to compile and upload the firmware to your ESP32 board.
+ *
+ * - Install the audio files: 
+ *   - Copy the contents of install/sound-pack-xxxxxxxx.zip in the top folder of a fresh 
+ *     and FAT32 (not ExFAT!) formatted SD card (max 32GB) and put this card into the slot 
+ *     while the clock is powered down. Now power-up the device.
+ *   - Wait until the clock shows the time.
+ *   - Hold ENTER for 2 seconds to invoke the keypad menu
+ *   - Repeatedly (briefly) press ENTER until "INSTALL AUDIO FILES" is shown. If this 
+ *     menu does not appear, the SD card isn't configured properly.
+ *   - Hold ENTER for 2 seconds to proceed
+ *   - (Briefly) press ENTER to toggle between "CANCEL" and "COPY", select "COPY".
+ *   - Hold ENTER for 2 seconds to proceed. When finished, the clock will reboot.
+ *   - After reboot, remove the SD card and delete the files that were copied to it
+ *     in the first step.
  *
  * Detailed installation and compilation instructions, while a bit outdated in 
- * library requirements, are here:
+ * library requirements, are also here and additionally cover PlatformIO:
  * https://github.com/CircuitSetup/Time-Circuits-Display/wiki/9.-Programming-&-Upgrading-the-Firmware-(ESP32)
- * See here for info on the data uploader (for sound files):
- * https://randomnerdtutorials.com/install-esp32-filesystem-uploader-arduino-ide/
- * (The sound files can also be uploaded using an SD card and the built-in 
- * installer, so the uploader is optional. See Changelog entry 2022/08/25 and 
- * README.md)
  */
 
 /*  Changelog
  *    
+ *  2023/01/09 (A10001986)
+ *    - Settings: Add some more checks for validity, code simplifications
+ *    - Clockdisplay: Make loadLastYear() return impossible values on error to force 
+ *      comparisons to fail
+ *    - [Prepare Flash-RO (read-only) mode]
  *  2023/01/07 (A10001986)
  *    - Change "Time-rotation" to "Time-cycling" in CP
  *    - Re-order keypad menu (SET RTC before other displays)
+ *    - Replace double by float almost everywhere, precision not needed
  *  2023/01/06 (A10001986)
  *    - Flash wear awareness week continues: Add option to save alarm and volume
  *      settings on SD card. Folks who often change their alarm or volume settings
@@ -560,7 +603,7 @@
 void setup()
 {
     powerupMillis = millis();
-  
+
     Serial.begin(115200);
 
     // PCF8574 only supports 100kHz, can't go to 400 here.
