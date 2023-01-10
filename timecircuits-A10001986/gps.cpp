@@ -289,8 +289,7 @@ bool tcGPS::setDateTime(struct tm *timeinfo)
     strcat(pkt740, temp);
     
     #ifdef TC_DBG
-    Serial.print("GPS setDateTime(): ");
-    Serial.println(pkt740);    
+    Serial.printf("GPS setDateTime(): %s\n", pkt740);  
     #endif
 
     sendCommand(pkt740);
@@ -398,13 +397,7 @@ bool tcGPS::parseNMEA(char *nmea, unsigned long nmeaTS)
 
     if(!checkNMEA(nmea)) {
         #ifdef TC_DBG
-        Serial.print(F("parseNMEA: Bad NMEA "));
-        Serial.print(nmea);
-        //for(int i = 0; i < strlen(nmea); i++) {
-        //    Serial.print(nmea[i], HEX);
-        //    Serial.print(" ");
-        //}
-        //Serial.println(" ");
+        Serial.printf("parseNMEA: Bad NMEA %s", nmea);
         #endif
         return false;
     }
@@ -490,14 +483,17 @@ bool tcGPS::checkNMEA(char *nmea)
     if(*nmea != '$')
         return false;
 
+    char *ast = nmea;
+    while(*ast)
+        ast++;
+
+    if(ast - nmea < 16)
+        return false;
+
     if((strncmp(nmea+3, "RMC", 3)) && (strncmp(nmea+3, "ZDA", 3)))
         return false;
 
     // check checksum
-
-    char *ast = nmea;
-    while(*ast)
-        ast++;
 
     while(*ast != '*' && ast > nmea)
         ast--;

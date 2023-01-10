@@ -340,8 +340,7 @@ bool tempSensor::begin(unsigned long powerupTime)
 
             #ifdef TC_DBG
             const char *tpArr[7] = { "MCP9808", "BMx820", "SHT4x", "SI7021", "TMP117", "AHT20/AM2315C", "HTU31D" };
-            Serial.print("Temperature sensor: Detected ");
-            Serial.println(tpArr[_st]);
+            Serial.printf("Temperature sensor: Detected %s\n", tpArr[_st]);
             #endif
 
             break;
@@ -387,17 +386,11 @@ bool tempSensor::begin(unsigned long powerupTime)
         }
 
         #ifdef TC_DBG
-        Serial.println("BMx820 calib values");
-        Serial.println(_BMx280_CD_T1);
-        Serial.println(_BMx280_CD_T2);
-        Serial.println(_BMx280_CD_T3);
+        Serial.printf("BMx820 T calib values: %d %d %d\n", _BMx280_CD_T1, _BMx280_CD_T2, _BMx280_CD_T3);
         if(_haveHum) {
-            Serial.println(_BMx280_CD_H1);
-            Serial.println(_BMx280_CD_H2);
-            Serial.println(_BMx280_CD_H3);
-            Serial.println(_BMx280_CD_H4 / 1048576);
-            Serial.println(_BMx280_CD_H5);
-            Serial.println(_BMx280_CD_H6);
+            Serial.printf("BMx820 H calib values: %d %d %d %d %d %d\n", 
+                _BMx280_CD_H1, _BMx280_CD_H2, _BMx280_CD_H3,
+                _BMx280_CD_H4 / 1048576, _BMx280_CD_H5, _BMx280_CD_H6);
         }
         #endif
 
@@ -611,11 +604,9 @@ float tempSensor::readTemp(bool celsius)
     if(_hum > 99) _hum = 99;
     
     #ifdef TC_DBG
-    Serial.print("Sensor temp+offset: ");
-    Serial.println(temp);
+    Serial.printf("Sensor temp+offset: %f\n", temp);
     if(_haveHum) {
-        Serial.print("Sensor humidity: ");
-        Serial.println(_hum);
+        Serial.printf("Sensor humidity: %d\n", _hum);
     }
     #endif
 
@@ -838,8 +829,7 @@ bool lightSensor::begin(bool skipLast, unsigned long powerupTime)
             
             #ifdef TC_DBG
             const char *tpArr[4] = { "TSL2561", "BH1750", "VEML7700/6030", "LTR3xx" };
-            Serial.print("Light sensor: Detected ");
-            Serial.println(tpArr[_st]);
+            Serial.printf("Light sensor: Detected %s\n", tpArr[_st]);
             #endif
             
             break;

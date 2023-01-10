@@ -213,8 +213,7 @@ void mp_init()
             
             maxMusic = i;
             #ifdef TC_DBG
-            Serial.print("MusicPlayer: last file num ");
-            Serial.println(maxMusic);
+            Serial.printf("MusicPlayer: last file num %d\n", maxMusic);
             #endif
 
             playList = (uint16_t *)malloc((maxMusic + 1) * 2);
@@ -235,8 +234,7 @@ void mp_init()
 
         } else {
             #ifdef TC_DBG
-            Serial.print("MusicPlayer: Failed to open ");
-            Serial.println(fnbuf);
+            Serial.printf("MusicPlayer: Failed to open %s\n", fnbuf);
             #endif
         }
     }
@@ -276,9 +274,8 @@ void mp_makeShuffle(bool enable)
         }
         #ifdef TC_DBG
         for(int i = 0; i <= maxMusic; i++) {
-            Serial.print(playList[i]);
-            Serial.print(" ");
-            if((i+1) % 16 == 0 || i == maxMusic) Serial.println(" ");
+            Serial.printf("%d ", playList[i]);
+            if((i+1) % 16 == 0 || i == maxMusic) Serial.printf("\n");
         }
         #endif
     }
@@ -422,6 +419,7 @@ void play_hour_sound(int hour)
     
     play_file("/hour.mp3", 1.0, false, false);
 }
+
 /*
  * audio_loop()
  *
@@ -472,8 +470,7 @@ static int skipID3(char *buf)
                        (buf[8] << (8-1))  |
                        (buf[9])) + 10;
         #ifdef TC_DBG
-        Serial.print(F("Skipping ID3 tags, seeking to "));
-        Serial.println(pos);
+        Serial.printf("Skipping ID3 tags, seeking to %d (0x%x)\n", pos, pos);
         #endif
         return pos;
     }
@@ -497,10 +494,7 @@ void play_file(const char *audio_file, float volumeFactor, bool checkNightMode, 
     pwrNeedFullNow();
 
     #ifdef TC_DBG
-    Serial.print(F("CH:"));
-    Serial.print(channel);
-    Serial.print(F("  Playing "));
-    Serial.println(audio_file);
+    Serial.printf("Audio: Playing %s (channel %d)\n", audio_file, channel);
     #endif
 
     // If something is currently on, kill it
@@ -609,14 +603,7 @@ static float getRawVolume()
             avg = (abs(avg1-prev_avg) < abs(avg2-prev_avg)) ? avg1 : avg2;
 
             /*
-            Serial.print(raw);
-            Serial.print(" ");
-            Serial.print(avg1);
-            Serial.print(" ");
-            Serial.print(avg2);
-            Serial.print(" ");
-            Serial.print(avg);
-            Serial.print(" ");
+            Serial.printf("%d %d %d %d\n", raw, avg1, avg2, avg);
             */
             
             prev_avg = avg;

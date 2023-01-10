@@ -329,8 +329,7 @@ void speedDisplay::begin(int dispType)
 {
     if(dispType < SP_MIN_TYPE || dispType >= SP_NUM_TYPES) {
         #ifdef TC_DBG
-        Serial.print("Bad speedo display type: ");
-        Serial.println(dispType, DEC);
+        Serial.printf("Bad speedo display type: %d\n", dispType);
         #endif
         dispType = SP_MIN_TYPE;
     }

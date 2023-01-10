@@ -327,8 +327,7 @@ void clockDisplay::setYearOffset(int16_t yearOffs)
 
     #ifdef TC_DBG
     if(isRTC()) {
-        Serial.print("ClockDisplay: _yearoffset set to ");
-        Serial.println(yearOffs, DEC);
+        Serial.printf("ClockDisplay: _yearoffset set to %d\n", yearOffs);
     }
     #endif
 }
@@ -338,10 +337,7 @@ void clockDisplay::setYear(uint16_t yearNum)
 {
     if((int16_t)yearNum - _yearoffset < 0) {    // ny0: < 1
         #ifdef TC_DBG
-        Serial.print(F("Clockdisplay: setYear: Bad year: "));
-        Serial.print(yearNum, DEC);
-        Serial.print(F(" / yearoffset: "));
-        Serial.println(_yearoffset, DEC);
+        Serial.printf("Clockdisplay: setYear: Bad year: %d / yearOffset %d\n", yearNum, _yearoffset);
         #endif
         
         yearNum = _yearoffset;                  // ny0: yo+1
@@ -369,8 +365,7 @@ void clockDisplay::setMonth(int monthNum)
 {
     if(monthNum < 1 || monthNum > 12) {
         #ifdef TC_DBG
-        Serial.print(F("Clockdisplay: setMonth: Bad month: "));
-        Serial.println(monthNum, DEC);
+        Serial.printf("Clockdisplay: setMonth: Bad month: %d\n", monthNum);
         #endif
         monthNum = (monthNum > 12) ? 12 : 1;
     }
@@ -397,8 +392,7 @@ void clockDisplay::setDay(int dayNum)
 
     if(dayNum < 1 || dayNum > maxDay) {
         #ifdef TC_DBG
-        Serial.print(F("Clockdisplay: setDay: Bad day: "));
-        Serial.println(dayNum, DEC);
+        Serial.printf("Clockdisplay: setDay: Bad day: %d\n", dayNum);
         #endif
         dayNum = (dayNum < 1) ? 1 : maxDay;
     }
@@ -413,8 +407,7 @@ void clockDisplay::setHour(uint16_t hourNum)
 {
     if(hourNum > 23) {
         #ifdef TC_DBG
-        Serial.print(F("Clockdisplay: setHour: Bad hour: "));
-        Serial.println(hourNum, DEC);
+        Serial.printf("Clockdisplay: setHour: Bad hour: %d\n", hourNum);
         #endif
         hourNum = 23;
     }
@@ -447,8 +440,7 @@ void clockDisplay::setMinute(int minNum)
 {
     if(minNum < 0 || minNum > 59) {
         #ifdef TC_DBG
-        Serial.print(F("Clockdisplay: setMinute: Bad Minute: "));
-        Serial.println(minNum, DEC);
+        Serial.printf("Clockdisplay: setMinute: Bad Minute: %d\n", minNum);
         #endif
         minNum = (minNum > 59) ? 59 : 0;
     }
@@ -859,7 +851,7 @@ bool clockDisplay::saveLastYear(uint16_t theYear)
         return true;
 
     #ifdef TC_DBG
-    Serial.print(F("Clockdisplay: Saving RTC/LastYear "));
+    Serial.printf("Clockdisplay: Saving RTC/LastYear to %s\n", FlashROMode ? "SD" : "EEPROM");
     #endif
     
     savBuf[0] = theYear & 0xff;
@@ -869,17 +861,11 @@ bool clockDisplay::saveLastYear(uint16_t theYear)
 
     if(FlashROMode) {
         writeFileToSD(fnLastYear, savBuf, 4);
-        #ifdef TC_DBG
-        Serial.print(F("to SD"));
-        #endif
     } else {
         for(uint8_t i = 0; i < 4; i++) {
             EEPROM.write(PRES_LY_PREF + i, savBuf[i]);
         }
         EEPROM.commit();
-        #ifdef TC_DBG
-        Serial.print(F("to EEPROM"));
-        #endif
     }
 
     _lastWrittenLY = theYear;
@@ -1068,7 +1054,7 @@ void clockDisplay::saveEPROMData(uint8_t *savBuf)
 
     if(!skipSave) {
         #ifdef TC_DBG
-        Serial.print(F("saveEPROMData to "));
+        Serial.printf("saveEPROMData to %s\n", FlashROMode ? "SD" : "EEPROM");
         #endif
         for(uint8_t i = 0; i < 9; i++) {
             sum += (savBuf[i] ^ mxor);
@@ -1076,17 +1062,11 @@ void clockDisplay::saveEPROMData(uint8_t *savBuf)
         savBuf[9] = sum & 0xff;
         if(FlashROMode) {
             writeFileToSD(fnEEPROM[_did], savBuf, 10);
-            #ifdef TC_DBG
-            Serial.println(F("SD"));
-            #endif
         } else {
             for(uint8_t i = 0; i < 10; i++) {
                 EEPROM.write(_saveAddress + i, savBuf[i]);
             }
             EEPROM.commit();
-            #ifdef TC_DBG
-            Serial.println(F("EEPROM"));
-            #endif
         }
     }
 }
@@ -1099,21 +1079,15 @@ bool clockDisplay::loadEPROMData(uint8_t *loadBuf)
     memset(loadBuf, 0, 10);
 
     #ifdef TC_DBG
-    Serial.print(F("loadEPROMData from "));
+    Serial.printf("loadEPROMData from %s\n", FlashROMode ? "SD" : "EEPROM");
     #endif
         
     if(FlashROMode) {
         readFileFromSD(fnEEPROM[_did], loadBuf, 10);
-        #ifdef TC_DBG
-        Serial.println(F("SD"));
-        #endif
     } else {
         for(uint8_t i = 0; i < 10; i++) {
             loadBuf[i] = EEPROM.read(_saveAddress + i);
         }
-        #ifdef TC_DBG
-        Serial.println(F("EEPROM"));
-        #endif
     }
     for(uint8_t i = 0; i < 9; i++) {
         sum += (loadBuf[i] ^ mxor);
