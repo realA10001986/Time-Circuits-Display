@@ -525,7 +525,7 @@ Since the I2C bus is already quite long from the control board to the last displ
 
 ## GPS receiver
 
-The firmware supports an MT(K)3333-based GPS receiver, connected through i2c (slave address 0x10). The CircuitSetup-designed speedo display will have such a chip built-in, but since this gadget is not yet available, in the meantime, you can use alternatives such as the Adafruit Mini GPS PA1010D (product id 4415) or the Pimoroni P1010D GPS Breakout (PIM525). The GPS receiver can be used as a source of authoritative time (like NTP), and/or speed of movement (to be displayed on a [speedo display](#speedometer)).
+The firmware supports an MT(K)3333-based GPS receiver, connected through i2c (slave address 0x10). The CircuitSetup-designed speedo display will have such a chip built-in, but since this gadget is not yet available, in the meantime, you can use alternatives such as the Adafruit Mini GPS PA1010D (product id [4415](https://www.adafruit.com/product/4415)) or the Pimoroni P1010D GPS Breakout ([PIM525](https://shop.pimoroni.com/products/pa1010d-gps-breakout?variant=32257258881107)). The GPS receiver can be used as a source of authoritative time (like NTP), and/or speed of movement (to be displayed on a [speedo display](#speedometer)).
 
 GPS receivers receive signals from satellites, but in order to do so, they need to be "tuned in" (aka get a "fix"). This "tuning" process can take a long time; after first power up, it can take 30 minutes or more for a receiver to be able to determine its position. In order to speed up this process, modern GPS receivers have special "assisting" features. One key element is knowledge of current time, as this helps identifying satellite signals quicker. So, in other words, initially, you need to tell the receiver, what it is supposed to tell you. However, as soon as the receiver has received satellite signals for 15-20 minutes, it saves the data it collected to its battery-backed memory and will find a fix within seconds after power-up in the future.
 
@@ -803,7 +803,7 @@ Important: The TCD control board delivers 5V, and drives the i2c bus on 5V. Most
 
 I am no electronics expert and therefore only used readily available sensor PCBs for testing and in my production pieces.
 
-On most sensor boards the pins are named as follows:
+On most sensor boards the pins are named as follows, and need to be connected to the corresponding pins on the control board:
 
 <table>
     <tr>
