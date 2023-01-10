@@ -799,7 +799,7 @@ On the TCD control board, there are currently three i2c bus headers/break-outs; 
 
 ![i2c](https://user-images.githubusercontent.com/76924199/211664121-92c39627-cd74-43cf-ab2d-526b111b5873.jpg)
 
-Important: The TCD control board delivers 5V, and drives the i2c bus on 5V. Most sensors/GPS receivers operate on 3.3V. Therefore, you cannot connect the sensor chips directly to the TCD control board without a DC-converter/power-shifter. This goes for the power supply as well as the i2c bus signals (SDA, SCL).
+Important: The TCD control board delivers 5V, and drives the i2c bus on 5V. Most sensors/GPS receivers operate on 3.3V. Therefore, you cannot connect the sensor chips directly to the TCD control board without a DC-converter/level-shifter. This goes for the power supply as well as the i2c bus signals (SDA, SCL).
 
 I am no electronics expert and therefore only used readily available sensor PCBs for testing and in my production pieces.
 
@@ -829,15 +829,21 @@ On most sensor boards the pins are named as follows, and need to be connected to
 
 Do not connect anything to "3Vo".
 
+#### i2c addresses
+
+Most sensors either only support one i2c address, or are recognized by the firmware (only) by their default address. For those, nothing must be done in order to use them with the Time Circuits Display.
+
 For the TMP117 and HTU31D sensors, their address needs to changed in order to be recognized by the firmware. On the Adafruit break-outs, this is done by connecting two solder pads on the back side of the PCB:
 
 <img src="https://user-images.githubusercontent.com/76924199/211666279-c578566f-e517-4d70-b50c-929b12c57c86.png">
 
-This image shows the HTU31D PCB's back side. Connect (shorten) those two pads in order to change the address.
+This image shows the HTU31D PCB's back side. Connect (shorten) those two pads in order to change the address. It looks similar on the TMP117.
 
-#### Multiple sensors
+#### Multiple i2c devices
 
-If going by the book, multiple sensors should be daisy chained; however, I had sensors run in parallel without issues for months.
+If going by the book, multiple i2c devices should be daisy chained; however, I had sensors and GPS receivers run in parallel without issues for months.
+
+Note that you can only use one per device type (temperature/humidity sensor, light sensor, GPS receiver, Speedo display) at a time.
 
 
 
