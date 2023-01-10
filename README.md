@@ -793,4 +793,36 @@ By default, the clock speed for SD card access is set to 16MHz. If you experienc
 
 ## Appendix B: Sensor wiring
 
-coming soon
+The light and temperature sensors as well as the GPS receiver are to be wired as follows:
+
+On the TCD control board, there are currently three i2c bus headers/break-outs:
+
+![i2c](https://user-images.githubusercontent.com/76924199/211664121-92c39627-cd74-43cf-ab2d-526b111b5873.jpg)
+
+Important: The TCD control board delivers 5V, and drives the i2c bus on 5V. Therefore, you cannot connect the sensor chips directly to the TCD control board. For using the sensors, a dc converter/power-shifter is required. I am no electronics expert and therefore only used readily available sensor PCBs for testing and in my production pieces.
+
+On most Adafruit sensor boards the pins are named as follows:
+
+VIN: Connect this to 5V on the TCD control board
+GND: Connect this to GND on the TCD control board
+SDA: Connect this to SDA on the TCD control board
+SCL: Connect this to SCL on the TCD control board
+
+On the BME280, instead of "SDA"/"SCL" the pins are
+SDI: Connect this to SDA on the TCD control board
+SCK: Connect this to SCL on the TCD control board
+
+Do not connect anything to "3Vo".
+
+For the TMP117 and HTU31D sensors, the address needs to changed. This is done by connecting two solder pads on the backside of the PCB:
+
+<img width="87" alt="Screenshot 2023-01-10 at 22 28 46" src="https://user-images.githubusercontent.com/76924199/211666279-c578566f-e517-4d70-b50c-929b12c57c86.png">
+
+This image shows the HTU31D PCD's back side. Connect those two pads in order to change the address.
+
+#### Multiple sensors
+
+If going by the book, multiple sensors should be daisy chained; however, I had sensors run in parallel without issues for months.
+
+
+
