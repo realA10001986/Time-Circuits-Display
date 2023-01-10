@@ -795,20 +795,22 @@ By default, the clock speed for SD card access is set to 16MHz. If you experienc
 
 The light and temperature sensors as well as the GPS receiver are to be wired as follows:
 
-On the TCD control board, there are currently three i2c bus headers/break-outs:
+On the TCD control board, there are currently three i2c bus headers/break-outs; it does not matter which one you use to connect your sensors/GPS:
 
 ![i2c](https://user-images.githubusercontent.com/76924199/211664121-92c39627-cd74-43cf-ab2d-526b111b5873.jpg)
 
-Important: The TCD control board delivers 5V, and drives the i2c bus on 5V. Therefore, you cannot connect the sensor chips directly to the TCD control board. For using the sensors, a dc converter/power-shifter is required. I am no electronics expert and therefore only used readily available sensor PCBs for testing and in my production pieces.
+Important: The TCD control board delivers 5V, and drives the i2c bus on 5V. Most sensors/GPS receivers operate on 3.3V. Therefore, you cannot connect the sensor chips directly to the TCD control board without a DC-converter/power-shifter. This goes for the power supply as well as the i2c bus signals (SDA, SCL).
 
-On most Adafruit sensor boards the pins are named as follows:
+I am no electronics expert and therefore only used readily available sensor PCBs for testing and in my production pieces.
+
+On most sensor boards the pins are named as follows:
 
 <table>
     <tr>
      <td align="center">Sensor PCB</td><td align="center">TCD control board</td>
     </tr>
     <tr>
-     <td align="center">VIN</a></td>
+     <td align="center">VIN or 5V</a></td>
      <td align="center">5V</td>
     </tr>
     <tr>
@@ -816,8 +818,8 @@ On most Adafruit sensor boards the pins are named as follows:
      <td align="center">GND</td>
     </tr>
     <tr>
-     <td align="center">SDA<br>(SDA on BME280)</td>
-     <td align="center">SDA/td>
+     <td align="center">SDA<br>(SDI on BME280)</td>
+     <td align="center">SDA</td>
     </tr>
     <tr>
      <td align="center">SCL<br>(SCK on BME280)</td>
@@ -827,11 +829,11 @@ On most Adafruit sensor boards the pins are named as follows:
 
 Do not connect anything to "3Vo".
 
-For the TMP117 and HTU31D sensors, the address needs to changed. This is done by connecting two solder pads on the backside of the PCB:
+For the TMP117 and HTU31D sensors, their address needs to changed in order to be recognized by the firmware. This is done by connecting two solder pads on the backside of the PCB:
 
 <img src="https://user-images.githubusercontent.com/76924199/211666279-c578566f-e517-4d70-b50c-929b12c57c86.png">
 
-This image shows the HTU31D PCD's back side. Connect those two pads in order to change the address.
+This image shows the HTU31D PCD's back side. Connect (shorten) those two pads in order to change the address.
 
 #### Multiple sensors
 
