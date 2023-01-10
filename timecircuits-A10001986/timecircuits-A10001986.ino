@@ -157,7 +157,7 @@
  *      Config Portal)
  *    - Light sensor: Allowed lux level range is now 0-50000
  *  2022/12/26 (A10001986)
- *    - Fix reading BME820 sensor (burst read all data registers for consistency)
+ *    - Fix reading BME280 sensor (burst read all data registers for consistency)
  *    - Disable WiFi-power-save when user initiates firmware update
  *    - Display "wait" if Flash-FS is being formatted upon boot
  *    - Add support for LTR3xx light sensor [untested]
@@ -181,7 +181,7 @@
  *      IP address.
  *  2022/12/16 (A10001986)
  *    - Add support for SI7021, SHT40, TMP117, AHT20/AM2315C, HTU31D temperature sensors 
- *    - Add reading humidity from BME820, SI7021, SHT40, AHT20, HTU31D sensors 
+ *    - Add reading humidity from BME280, SI7021, SHT40, AHT20, HTU31D sensors 
  *    - Add "room condition" mode, where destination and departed time are replaced
  *      by temperature and humidity, respectively. Toggle normal and rc mode by entering
  *      "111" and pressing ENTER. Sensor values are updated every 30 seconds in this
@@ -194,7 +194,7 @@
  *      the "modern"/common segment pattern here to distinguish it from "b".
  *    - Fix formatting bug in tc_font.h leading to font missing one character
  *  2022/12/02 (A10001986) [2.5]
- *    - Add support for BMx820 sensor (temperature only).
+ *    - Add support for BMx280 sensor (temperature only).
  *    - Modify former "light sensor" keypad menu to not only show measured lux level
  *      from a light sensor, but also current ambient temperature as measured by
  *      a connected temperature sensor. Rename menu to "Sensors" accordingly.

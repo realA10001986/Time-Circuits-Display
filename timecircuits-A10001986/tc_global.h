@@ -52,7 +52,7 @@
 #define SP_NUM_TYPES    10  // Number of speedo display types supported
 #define SP_MIN_TYPE     1   // Change to 0 when CircuitSetup speedo prop exists
 
-// Uncomment for support of a temperature/humidity sensor (MCP9808, BMx820, 
+// Uncomment for support of a temperature/humidity sensor (MCP9808, BMx280, 
 // SI7021, SHT40, TMP117, AHT20, HTU31D) connected via i2c. Will be used for 
 // room condition mode and to display ambient temperature on speedometer  
 // display when idle (GPS speed has higher priority, ie if GPS speed is 
