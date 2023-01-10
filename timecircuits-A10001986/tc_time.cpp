@@ -54,7 +54,7 @@
 
                             // temperature sensors
 #define MCP9808_ADDR   0x18 // [default]
-#define BMx820_ADDR    0x77 // [default]
+#define BMx280_ADDR    0x77 // [default]
 #define SHT40_ADDR     0x44 // [default]
 #define SI7021_ADDR    0x40 // [default]
 #define TMP117_ADDR    0x49 // [non-default]
@@ -269,7 +269,7 @@ speedDisplay speedo(SPEEDO_ADDR);
 #ifdef TC_HAVETEMP
 tempSensor tempSens(7, 
             (uint8_t[7*2]){ MCP9808_ADDR, MCP9808,
-                            BMx820_ADDR,  BMx820,
+                            BMx280_ADDR,  BMx280,
                             SHT40_ADDR,   SHT40,
                             SI7021_ADDR,  SI7021,
                             TMP117_ADDR,  TMP117,

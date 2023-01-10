@@ -7,14 +7,14 @@
  * Sensor Class: Temperature/humidty and Light Sensor handling
  *
  * This is designed for 
- * - MCP9808, TMP117, BMx820, SHT4x, SI7012, AHT20/AM2315C, HTU31D 
+ * - MCP9808, TMP117, BMx280, SHT4x, SI7012, AHT20/AM2315C, HTU31D 
  *   temperature/humidity sensors,
  * - BH1750, TSL2561, LTR3xx and VEML7700/VEML6030 light sensors.
  *                             
  * The i2c slave addresses need to be:
  * MCP9808:       0x18                [temperature only]
  * TMP117:        0x49 [non-default]  [temperature only]
- * BMx820:        0x77                ['P' t only, 'E' t+h]
+ * BMx280:        0x77                ['P' t only, 'E' t+h]
  * SHT40:         0x44                [temperature, humidity]
  * SI7021:        0x40                [temperature, humidity]
  * AHT20/AM2315C: 0x38                [temperature, humidity]
@@ -152,7 +152,7 @@ uint8_t tcSensor::crc8(uint8_t initVal, uint8_t poly, uint8_t len, uint8_t *buf)
 /*****************************************************************
  * tempSensor Class
  * 
- * Supports MCP9808 and BMx820 temperature sensors
+ * Supports MCP9808 and BMx280 temperature sensors
  * 
  ****************************************************************/
 
@@ -185,7 +185,7 @@ uint8_t tcSensor::crc8(uint8_t initVal, uint8_t poly, uint8_t len, uint8_t *buf)
 #define TC_TEMP_RES_MCP9808 3
 //static const uint16_t wakeDelayMCP9808[4] = { 30, 65, 130, 250 };
 
-#define BMx820_DUMMY      0x100
+#define BMx280_DUMMY      0x100
 #define BMx280_REG_DIG_T1 0x88
 #define BMx280_REG_DIG_T2 0x8a
 #define BMx280_REG_DIG_T3 0x8c
@@ -197,12 +197,12 @@ uint8_t tcSensor::crc8(uint8_t initVal, uint8_t poly, uint8_t len, uint8_t *buf)
 #define BMx280_REG_DIG_H6 0xe7
 #define BMx280_REG_ID     0xd0
 #define BME280_REG_RESET  0xe0
-#define BMx820_REG_CTRLH  0xf2
+#define BMx280_REG_CTRLH  0xf2
 #define BMx280_REG_STATUS 0xf3
-#define BMx820_REG_CTRLM  0xf4
-#define BMx820_REG_CONF   0xf5
-#define BMx820_REG_TEMP   0xfa
-#define BMx820_REG_HUM    0xfd
+#define BMx280_REG_CTRLM  0xf4
+#define BMx280_REG_CONF   0xf5
+#define BMx280_REG_TEMP   0xfa
+#define BMx280_REG_HUM    0xfd
 
 #define SHT40_DUMMY       0x100
 #define SHT40_CMD_RTEMPL  0xe0    // 1.3ms
@@ -289,7 +289,7 @@ bool tempSensor::begin(unsigned long powerupTime)
                 foundSt = true;
             }
             break;
-        case BMx820:
+        case BMx280:
             temp = read8(BMx280_REG_ID);
             if(temp == 0x60 || temp == 0x58) {
                 foundSt = true;
@@ -339,7 +339,7 @@ bool tempSensor::begin(unsigned long powerupTime)
             _st = _addrArr[i+1];
 
             #ifdef TC_DBG
-            const char *tpArr[7] = { "MCP9808", "BMx820", "SHT4x", "SI7021", "TMP117", "AHT20/AM2315C", "HTU31D" };
+            const char *tpArr[7] = { "MCP9808", "BMx280", "SHT4x", "SI7021", "TMP117", "AHT20/AM2315C", "HTU31D" };
             Serial.printf("Temperature sensor: Detected %s\n", tpArr[_st]);
             #endif
 
@@ -357,7 +357,7 @@ bool tempSensor::begin(unsigned long powerupTime)
         write8(MCP9808_REG_RESOLUTION, TC_TEMP_RES_MCP9808 & 0x03);
         break;
         
-    case BMx820:
+    case BMx280:
         // Reset
         write8(BME280_REG_RESET, 0xb6);
         (*_customDelayFunc)(10);
@@ -386,21 +386,21 @@ bool tempSensor::begin(unsigned long powerupTime)
         }
 
         #ifdef TC_DBG
-        Serial.printf("BMx820 T calib values: %d %d %d\n", _BMx280_CD_T1, _BMx280_CD_T2, _BMx280_CD_T3);
+        Serial.printf("BMx280 T calib values: %d %d %d\n", _BMx280_CD_T1, _BMx280_CD_T2, _BMx280_CD_T3);
         if(_haveHum) {
-            Serial.printf("BMx820 H calib values: %d %d %d %d %d %d\n", 
+            Serial.printf("BMx280 H calib values: %d %d %d %d %d %d\n", 
                 _BMx280_CD_H1, _BMx280_CD_H2, _BMx280_CD_H3,
                 _BMx280_CD_H4 / 1048576, _BMx280_CD_H5, _BMx280_CD_H6);
         }
         #endif
 
         // setup sensor parameters
-        write8(BMx820_REG_CTRLM, 0x20);     // Temp OSx1; Pres skipped; "sleep mode"
+        write8(BMx280_REG_CTRLM, 0x20);     // Temp OSx1; Pres skipped; "sleep mode"
         if(_haveHum) {
-            write8(BMx820_REG_CTRLH, 0x01); // Hum OSx1
+            write8(BMx280_REG_CTRLH, 0x01); // Hum OSx1
         }
-        write8(BMx820_REG_CONF,  0xa0);     // t_sb 1000ms; filter off, SPI3w off
-        write8(BMx820_REG_CTRLM, 0x23);     // Temp OSx1; Pres skipped; "normal mode"
+        write8(BMx280_REG_CONF,  0xa0);     // t_sb 1000ms; filter off, SPI3w off
+        write8(BMx280_REG_CTRLM, 0x23);     // Temp OSx1; Pres skipped; "normal mode"
         break;
 
     case SHT40:
@@ -503,8 +503,8 @@ float tempSensor::readTemp(bool celsius)
         }
         break;
 
-    case BMx820:
-        write8(BMx820_DUMMY, BMx820_REG_TEMP);
+    case BMx280:
+        write8(BMx280_DUMMY, BMx280_REG_TEMP);
         t = _haveHum ? 5 : 3;
         if(Wire.requestFrom(_address, (uint8_t)t) == t) {
             uint8_t buf[5];

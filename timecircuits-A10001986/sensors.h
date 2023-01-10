@@ -7,7 +7,7 @@
  * Sensor Class: Temperature/humidity and Light Sensor handling
  *
  * This is designed for 
- * - MCP9808, TMP117, BMx820, SHT4x, SI7012, AHT20/AM2315C, HTU31D 
+ * - MCP9808, TMP117, BMx280, SHT4x, SI7012, AHT20/AM2315C, HTU31D 
  *   temperature/humidity sensors,
  * - BH1750, TSL2561, LTR3xx and VEML7700/VEML6030 light sensors.
  * -------------------------------------------------------------------
@@ -59,7 +59,7 @@ class tcSensor {
 
 enum {
     MCP9808 = 0,      // 0x18 (unsupported: 0x19-0x1f)
-    BMx820,           // 0x77 (unsupported: 0x76)
+    BMx280,           // 0x77 (unsupported: 0x76)
     SHT40,            // 0x44 (unsupported: 0x45)
     SI7021,           // 0x40
     TMP117,           // 0x49 [non-default] (unsupported: 0x48)
