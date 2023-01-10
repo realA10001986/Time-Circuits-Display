@@ -829,11 +829,11 @@ On most sensor boards the pins are named as follows:
 
 Do not connect anything to "3Vo".
 
-For the TMP117 and HTU31D sensors, their address needs to changed in order to be recognized by the firmware. This is done by connecting two solder pads on the backside of the PCB:
+For the TMP117 and HTU31D sensors, their address needs to changed in order to be recognized by the firmware. On the Adafruit break-outs, this is done by connecting two solder pads on the back side of the PCB:
 
 <img src="https://user-images.githubusercontent.com/76924199/211666279-c578566f-e517-4d70-b50c-929b12c57c86.png">
 
-This image shows the HTU31D PCD's back side. Connect (shorten) those two pads in order to change the address.
+This image shows the HTU31D PCB's back side. Connect (shorten) those two pads in order to change the address.
 
 #### Multiple sensors
 
