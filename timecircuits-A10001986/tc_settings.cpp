@@ -268,7 +268,7 @@ void settings_setup()
     // while booting
     if(digitalRead(ENTER_BUTTON_PIN)) {
 
-        Serial.printf("%s: Deleting ip config", funcName);
+        Serial.printf("%s: Deleting ip config\n", funcName);
 
         deleteIpSettings();
 
