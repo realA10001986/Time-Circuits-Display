@@ -661,7 +661,7 @@ If a [GPS receiver](#gps-receiver) is connected, this selects whether GPS time i
 
 Selects the brightness of the *destination time* display. Ranges from 0 (darkest) to 15 (brightest).
 
-#### Present Time display brightness (0-15)
+#### Present Time display brightness
 
 Selects the brightness of the *present time* display. Ranges from 0 (darkest) to 15 (brightest).
 
