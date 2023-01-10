@@ -77,7 +77,7 @@ In the main menu, click on "Setup" to configure your clock, first and foremost y
 |:--:| 
 | *The Config Portal's Setup page* |
 
-A full reference of the Config Portal is [here](#appendix-the-config-portal).
+A full reference of the Config Portal is [here](#appendix-a-the-config-portal).
 
 ## Basic Operation
 
