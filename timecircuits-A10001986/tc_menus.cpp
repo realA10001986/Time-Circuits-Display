@@ -1493,14 +1493,9 @@ static void doSetAlarm()
  */
 bool loadAutoInterval()
 {
-    #ifdef TC_DBG
-    Serial.println(F("Load Auto Interval"));
-    #endif
-
     autoInterval = (uint8_t)atoi(settings.autoRotateTimes);
     if(autoInterval > 5) {
         autoInterval = DEF_AUTOROTTIMES;
-        Serial.println(F("loadAutoInterval: Bad autoInterval, resetting to default"));
         return false;
     }
     return true;

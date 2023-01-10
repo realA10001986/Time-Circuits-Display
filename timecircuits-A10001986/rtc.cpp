@@ -149,8 +149,7 @@ bool tcRTC::begin()
 
             #ifdef TC_DBG
             const char *tpArr[2] = { "DS3231", "PCF2129" };
-            Serial.print(F("RTC: Detected "));
-            Serial.println(tpArr[_rtcType]);
+            Serial.printf("RTC: Detected %s\n", tpArr[_rtcType]);
             #endif
 
             return true;
@@ -228,20 +227,8 @@ void tcRTC::adjust(byte second, byte minute, byte hour, byte dayOfWeek, byte day
     }
 
     #ifdef TC_DBG
-    Serial.print("RTC: Adjusted to ");
-    Serial.print(dayOfMonth, DEC);
-    Serial.print("-");
-    Serial.print(month, DEC);
-    Serial.print("-");
-    Serial.print(year+2000, DEC);
-    Serial.print(" ");
-    Serial.print(hour, DEC);
-    Serial.print(":");
-    Serial.print(minute, DEC);
-    Serial.print(":");
-    Serial.print(second, DEC);
-    Serial.print(" ");
-    Serial.println(dayOfWeek);
+    Serial.printf("RTC: Adjusted to %d-%02d-%02d %02d:%02d:%02d DOW %d\n",
+          year+2000, month, dayOfMonth, hour, minute, second, dayOfWeek);
     #endif
 }
 

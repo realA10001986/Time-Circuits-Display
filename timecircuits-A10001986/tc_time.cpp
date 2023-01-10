@@ -1231,8 +1231,7 @@ void time_loop()
         pwrLow = true;
 
         #ifdef TC_DBG
-        Serial.print(F("Reduced CPU speed to "));
-        Serial.println(getCpuFrequencyMhz());
+        Serial.printf("Reduced CPU speed to %d\n", getCpuFrequencyMhz());
         #endif
     }
 
@@ -1653,10 +1652,7 @@ void time_loop()
                     int16_t  yOffs = 0;
 
                     #ifdef TC_DBG
-                    Serial.print("time_loop: DST change detected: ");
-                    Serial.print(presentTime.getDST(), DEC);
-                    Serial.print("->");
-                    Serial.println(myDST, DEC);
+                    Serial.printf("time_loop: DST change detected: %d -> %d\n", presentTime.getDST(), myDST);
                     #endif
 
                     presentTime.setDST(myDST);
@@ -1720,14 +1716,12 @@ void time_loop()
             // Debug log beacon
             #ifdef TC_DBG
             if((dt.second() == 0) && (dt.minute() != dbgLastMin)) {
-                char dbgBuf[128];
                 dbgLastMin = dt.minute();
-                sprintf(dbgBuf, "%d[%d-(%d)]/%02d/%02d %02d:%02d:00 (Chip Temp %.2f) / WD of PT: %d (%d)",
+                Serial.printf("%d[%d-(%d)]/%02d/%02d %02d:%02d:00 (Chip Temp %.2f) / WD of PT: %d (%d)\n",
                       lastYear, dt.year(), presentTime.getYearOffset(), dt.month(), dt.day(), dt.hour(), dbgLastMin,
                       rtc.getTemperature(),
                       dayOfWeek(presentTime.getDay(), presentTime.getMonth(), presentTime.getDisplayYear()),
                       dayOfWeek(dt.day(), dt.month(), dt.year() - presentTime.getYearOffset()));
-                Serial.println(dbgBuf);
             }
             #endif
 
@@ -2474,9 +2468,7 @@ DateTime myrtcnow()
     }
 
     if(retries > 0) {
-        Serial.print(F("myrtcnow: "));
-        Serial.print(retries, DEC);
-        Serial.println(F(" retries needed to read RTC"));
+        Serial.printf("myrtcnow: %d retries needed to read RTC\n", retries);
     }
 
     return dt;
@@ -2681,20 +2673,8 @@ static bool getNTPTime(bool weHaveAuthTime)
             handleDSTFlag(NULL, nisDST);
     
             #ifdef TC_DBG
-            Serial.print(F("getNTPTime: New time "));
-            Serial.print(nyear);
-            Serial.print("-");
-            Serial.print(nmonth);
-            Serial.print("-");
-            Serial.print(nday);
-            Serial.print(" ");
-            Serial.print(nhour);
-            Serial.print(":");
-            Serial.print(nmin);
-            Serial.print(":");
-            Serial.print(nsecond);
-            Serial.print(" DST:");
-            Serial.println(nisDST, DEC);
+            Serial.printf("getNTPTime: New time %d-%02d-%02d %02d:%02d:%02d DST: %d\n", 
+                      nyear, nmonth, nday, nhour, nmin, nsecond, nisDST);
             #endif
     
             return true;
@@ -2797,20 +2777,8 @@ static bool getGPStime()
     handleDSTFlag(NULL, isDST);
 
     #ifdef TC_DBG
-    Serial.print(F("getGPStime: New time "));
-    Serial.print(nyear);
-    Serial.print("-");
-    Serial.print(nmonth);
-    Serial.print("-");
-    Serial.print(nday);
-    Serial.print(" ");
-    Serial.print(nhour);
-    Serial.print(":");
-    Serial.print(nminute);
-    Serial.print(":");
-    Serial.print(nsecond);
-    Serial.print(" DST:");
-    Serial.println(isDST, DEC);
+    Serial.printf("getGPStime: New time %d-%02d-%02d %02d:%02d:%02d DST: %d\n", 
+                      nyear, nmonth, nday, nhour, nminute, nsecond, isDST);
     #endif
         
     return true;
@@ -3412,15 +3380,10 @@ bool parseTZ(char *tz, int currYear, bool doparseDST)
             DSToffMins = mins2Date(currYear, DSToffMonth, DSToffDay, DSToffHour, DSToffMinute);
 
         #ifdef TC_DBG
-        Serial.print(F("parseTZ: DST dates/times: "));
-        {
-            char buf[128];
-            sprintf(buf, "%d/%d Start: %d-%d-%d/%02d:%02d End: %d-%d-%d/%02d:%02d",
+        Serial.printf("parseTZ: DST dates/times: %d/%d Start: %d-%02d-%02d/%02d:%02d End: %d-%02d-%02d/%02d:%02d\n",
                     tzDiffGMT, tzDiffGMTDST, 
                     DSTonYear, DSTonMonth, DSTonDay, DSTonHour, DSTonMinute,
                     DSToffYear, DSToffMonth, DSToffDay, DSToffHour, DSToffMinute);
-            Serial.println(buf);
-        }
         #endif
 
     }
@@ -3546,11 +3509,8 @@ static void handleDSTFlag(struct tm *ti, int nisDST)
         
         if(presentTime.getDST() != myDST) {
             #ifdef TC_DBG
-            Serial.print(F("handleDSTFlag: Updating isDST from "));
-            Serial.print(presentTime.getDST(), DEC);
-            Serial.print(F(" to "));
-            if(isAuth) Serial.print(F("[authoritative] "));
-            Serial.println(myDST, DEC);
+            Serial.printf("handleDSTFlag: Updating isDST from %d to %s%d\n", 
+                  presentTime.getDST(), isAuth ? "[authoritative] " : "", myDST);
             #endif
             presentTime.setDST(myDST);
         }

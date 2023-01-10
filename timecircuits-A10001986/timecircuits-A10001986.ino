@@ -98,6 +98,9 @@
 
 /*  Changelog
  *    
+ *  2023/01/10 (A10001986)
+ *    - Simplify debug and other output (printf)
+ *    - GPS: Check NMEA length before other tests
  *  2023/01/09 (A10001986)
  *    - Settings: Add some more checks for validity, code simplifications
  *    - Clockdisplay: Make loadLastYear() return impossible values on error to force 
@@ -131,8 +134,8 @@
  *  2023/01/01 (A10001986)
  *    - Have a go at wobbling volume, again: New "noise reduction" from apparently
  *      totally unstable analog input; knob now always mutes when turned fully off; 
- *      new fixed-level table with better granularity at lower volumes, also it has
- *      now 20 levels.
+ *      new fixed-level table with better granularity at lower volumes, also it now
+ *      has 20 levels.
  *    - Audio: Add mp3 music player. Music files must reside on the SD card in /musicX 
  *      (X being 0-9) folder(s), be named 000.mp3 up to 999.mp3 (starting at 000.mp3 
  *      in each folder), and be of max 128kpbs. Up to ten folders (music0-music9) are 
