@@ -595,7 +595,7 @@ In order to reduce the number of write operations and thereby prolonging the lif
 
 More here: [Link](https://github.com/realA10001986/Time-Circuits-Display/wiki/Time-Circuits-Wall-Clock)
 
-## Appendix: The Config Portal
+## Appendix A: The Config Portal
 
 ### Basic settings
 
@@ -790,3 +790,7 @@ If this is checked, alarm and volume settings are stored on the SD card. This he
 #### 4MHz SD clock speed
 
 By default, the clock speed for SD card access is set to 16MHz. If you experience problems with your SD card, such as sound cut-offs or the card being inaccessible, try setting the clock speed to 4MHz by checking this option. (General note: Not all SD cards work with the device. If the SD card is inaccessible with both clock speed settings, try another SD card brand. For instance, I had no luck with a Sandisk Ultra 32GB.)
+
+## Appendix B: Sensor wiring
+
+coming soon
