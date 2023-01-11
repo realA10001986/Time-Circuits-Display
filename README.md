@@ -289,7 +289,7 @@ The presets are for (hopefully) typical home, office and shop setups, and they a
 
 The "daily schedule" works by entering start and end in the text fields below. The clock will go into night-mode at the defined start hour (xx:00), and return to normal operation at the end hour (yy:00). 
 
-Finally, you can also connect a light sensor to the device. If the measured lux level is below or equal the threshold set in the Config Portal, the device will go into night-mode. Three sensor types are supported: TSL2561, BH1750, VEML7700/VEML6030, connected through i2c with their respective default slave address. The VEML7700 can only be connected if no GPS receiver is connected at the same time; the 6030 needs its address to be set to address 0x48 if a GPS receiver is present at the same time. All these sensor types are readily available from Adafruit or Seeed (Grove). Only one light sensor can be used at the same time. *Note: You cannot connect the sensor chip directly to the TCD control board; most sensors need at least a power converter/stabilzer/level-shifter.* This is why I exclusively used Adafruit or Seeed break-outs ([TSL2561](https://www.adafruit.com/product/439), [BH1750](https://www.adafruit.com/product/4681), [VEML7700](https://www.adafruit.com/product/4162)), which all allow connecting named sensors to the 5V the TCD board operates on. For wiring information, see [here](#appendix-b-sensor-wiring).
+Finally, you can also connect a light sensor to the device. If the measured lux level is below or equal the threshold set in the Config Portal, the device will go into night-mode. Three sensor types are supported: TSL2561, BH1750, VEML7700/VEML6030, connected through i2c with their respective default slave address. The VEML7700 can only be connected if no GPS receiver is connected at the same time; the 6030 needs its address to be set to address 0x48 if a GPS receiver is present at the same time. All these sensor types are readily available from Adafruit or Seeed (Grove). Only one light sensor can be used at the same time. *Note: You cannot connect the sensor chip directly to the TCD control board; most sensors need at least a power converter/stabilzer/level-shifter.* This is why I exclusively used Adafruit or Seeed breakouts ([TSL2561](https://www.adafruit.com/product/439), [BH1750](https://www.adafruit.com/product/4681), [VEML7700](https://www.adafruit.com/product/4162)), which all allow connecting named sensors to the 5V the TCD board operates on. For wiring information, see [here](#appendix-b-sensor-wiring).
 
 If both a schedule is enabled and the light sensor option is checked in the Config Portal, the sensor will overrule the schedule only in non-night-mode hours; ie it will never switch off night-mode when night-mode is active according to the schedule.
 
@@ -549,7 +549,7 @@ The firmware supports connecting a temperature/humidity sensor for "room conditi
 
 Furthermore, unless you do time travelling on a regular basis, the [speedo display](#speedometer) is idle most of the time in a typical home setup. To give it more of a purpose, the firmware can display ambient temperature on the speedo while idle.
 
-Seven sensor types are supported: MCP9808 (i2c address 0x18), BMx280 (0x77), SI7021 (0x40), SHT40 (0x44), TMP117 (0x49), AHT20/AM2315C (0x38), HTU31D (0x41). All of those are readily available from Adafruit or Seeed (Grove). Note that BMP280 (unlike BME280), MCP9808 and TMP117 are pure temperature sensors, the others deliver temperature and humidity. *Note: You cannot connect the sensor chip directly to the TCD control board; most sensors need at least a power converter/stabilzer/level-shifter.* This is why I exclusively used Adafruit or Seeed break-outs ([MCP9808](https://www.adafruit.com/product/1782), [BME280](https://www.adafruit.com/product/2652), [SI7021](https://www.adafruit.com/product/3251), [SHT40](https://www.adafruit.com/product/4885), [TMP117](https://www.adafruit.com/product/4821), [AHT20](https://www.adafruit.com/product/4566), [HTU31D](https://www.adafruit.com/product/4832)), which all allow connecting named sensors to the 5V the TCD board operates on. For wiring information, see [here](#appendix-b-sensor-wiring).
+Seven sensor types are supported: MCP9808 (i2c address 0x18), BMx280 (0x77), SI7021 (0x40), SHT40 (0x44), TMP117 (0x49), AHT20/AM2315C (0x38), HTU31D (0x41). All of those are readily available from Adafruit or Seeed (Grove). Note that BMP280 (unlike BME280), MCP9808 and TMP117 are pure temperature sensors, the others deliver temperature and humidity. *Note: You cannot connect the sensor chip directly to the TCD control board; most sensors need at least a power converter/stabilzer/level-shifter.* This is why I exclusively used Adafruit or Seeed breakouts ([MCP9808](https://www.adafruit.com/product/1782), [BME280](https://www.adafruit.com/product/2652), [SI7021](https://www.adafruit.com/product/3251), [SHT40](https://www.adafruit.com/product/4885), [TMP117](https://www.adafruit.com/product/4821), [AHT20](https://www.adafruit.com/product/4566), [HTU31D](https://www.adafruit.com/product/4832)), which all allow connecting named sensors to the 5V the TCD board operates on. For wiring information, see [here](#appendix-b-sensor-wiring).
 
 ## WiFi power saving features
 
@@ -795,13 +795,13 @@ By default, the clock speed for SD card access is set to 16MHz. If you experienc
 
 The light and temperature sensors as well as the GPS receiver are to be wired as follows:
 
-On the TCD control board, there are currently three i2c bus headers/break-outs; it does not matter which one you use to connect your sensors/GPS:
+On the TCD control board, there are currently three i2c bus breakouts, one of which has a JST-XH header soldered on; it does not matter which one you use to connect your sensors/GPS. To avoid soldering wires directly to the board, I recommend to solder on JST-XH 4-pin headers to the other two i2c breakouts as well.
 
 ![i2c](https://user-images.githubusercontent.com/76924199/211664121-92c39627-cd74-43cf-ab2d-526b111b5873.jpg)
 
-Important: The TCD control board delivers 5V, and drives the i2c bus on 5V. Most sensors/GPS receivers operate on 3.3V. Therefore, you cannot connect the sensor chips directly to the TCD control board without a DC-converter/level-shifter. This goes for the power supply as well as the i2c bus signals (SDA, SCL).
+Important: The TCD control board delivers and drives the i2c bus on 5V. Most sensors/GPS receivers operate on 3.3V. Therefore, you cannot connect the sensor chips directly to the TCD control board without a level-shifter. This goes for the power supply as well as the i2c bus signals (SDA, SCL).
 
-I am no electronics expert and therefore only used readily available sensor PCBs for testing and in my production pieces.
+I am no electronics expert and therefore only used readily available sensor breakout PCBs for testing and in my production pieces.
 
 On most sensor boards the pins are named as follows, and need to be connected to the corresponding pins on the control board:
 
@@ -833,7 +833,7 @@ Do not connect anything to "3Vo".
 
 Most sensors either only support one i2c address, or are recognized by the firmware (only) by their default address. For those, nothing must be done in order to use them with the Time Circuits Display.
 
-For the TMP117 and HTU31D sensors, their address needs to changed in order to be recognized by the firmware. On the Adafruit break-outs, this is done by connecting two solder pads on the back side of the PCB:
+For the TMP117 and HTU31D sensors, their address needs to changed in order to be recognized by the firmware. On the Adafruit breakouts, this is done by connecting two solder pads on the back side of the PCB:
 
 <img src="https://user-images.githubusercontent.com/76924199/211666279-c578566f-e517-4d70-b50c-929b12c57c86.png">
 
