@@ -98,6 +98,10 @@
 
 /*  Changelog
  *    
+ *  2023/01/11 (A10001986)
+ *    - Fix minor logic error in loadCurVolume()
+ *    - Really disable night-mode when entering keypad menu
+ *    - Fix LR303/329 light sensor lux calculation; sensor now officially supported
  *  2023/01/10 (A10001986)
  *    - Simplify debug and other output (printf)
  *    - GPS: Check NMEA length before other tests

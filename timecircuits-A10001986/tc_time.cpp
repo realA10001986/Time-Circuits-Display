@@ -48,6 +48,11 @@
 #define PRES_TIME_ADDR 0x72
 #define DEPT_TIME_ADDR 0x74
 
+#define KEYPAD_ADDR    0x20 // PCF8574 port expander (keypad) (redefined in keypad.cpp, here only for completeness)
+
+#define DS3231_ADDR    0x68 // DS3231 RTC
+#define PCF2129_ADDR   0x51 // PCF2129 RTC
+
 #define SPEEDO_ADDR    0x70 // speedo display
 
 #define GPS_ADDR       0x10 // GPS receiver
@@ -67,9 +72,6 @@
 #define BH1750_ADDR    0x23 // [default]
 #define VEML6030_ADDR  0x48 // [non-default] (can also be 0x10 but then conflicts with GPS)
 #define VEML7700_ADDR  0x10 // [default] (conflicts with GPS!)
-
-#define DS3231_ADDR    0x68 // DS3231 RTC
-#define PCF2129_ADDR   0x51 // PCF2129 RTC
 
 // The time between reentry sound being started and the display coming on
 // Must be sync'd to the sound file used! (startup.mp3/timetravel.mp3)
