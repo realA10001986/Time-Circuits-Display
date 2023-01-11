@@ -101,7 +101,7 @@ Set the interval to OFF (0) to disable Time-cycling.
 
 ### Common usage scenarios
 
-####  &#8226;I want my clock to work like in the movie
+####  &#9654; I want my clock to work like in the movie
 
 In this case, head to the Config Portal and
 - set the *Time Cycling Interval* to OFF
@@ -109,7 +109,7 @@ In this case, head to the Config Portal and
 
 Note that *actual* time travel is not supported.
 
-#### 	&#8226;I want my clock to show/cycle movie times
+#### 	&#9654; I want my clock to show/cycle movie times
 
 In this case, head to the Config Portal and
 - set the *Time Cycling Interval* to the desired interval
@@ -117,7 +117,7 @@ In this case, head to the Config Portal and
 
 Time-travelling will interrupt the cycling of movie times for 30 minutes.
 
-#### 	&#8226;I want my clock to always show my favorite *Destination* and *last time departed* times
+#### 	&#9654; I want my clock to always show my favorite *Destination* and *last time departed* times
 
 In this case, head to the Config Portal and
 - set the *Time Cycling Interval* to OFF
