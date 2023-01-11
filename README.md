@@ -19,7 +19,7 @@ Features include
 - [Night mode](#night-mode) (displays off or dimmed; manual, scheduled or sensor-controlled)
 - &#127381; [Music player](#the-music-player): Play mp3 files located on an SD card
 - [SD card](#sd-card) support for custom audio files for effects, &#127381; and music for the Music Player
-- Advanced network-accessible [Config Portal](#short-summary-of-first-steps) for setup &#127381; with mDNS support for easy access (http://timecircuits.local, hostname configurable)
+- Advanced network-accessible [Config Portal](#the-config-portal) for setup &#127381; with mDNS support for easy access (http://timecircuits.local, hostname configurable)
 - [Keypad menu](#the-keypad-menu) for adjusting various settings and viewing IP address and WiFi status
 - 24-hour clock mode for non-Americans
 - &#127381; [Room condition mode](#room-condition-mode-temperaturehumidity-sensor): Display temperature and humidity instead of destination/departed time (requires suitable sensor)
