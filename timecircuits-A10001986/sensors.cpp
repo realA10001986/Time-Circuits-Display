@@ -21,7 +21,7 @@
  * HTU31D:        0x41 [non-default]  [temperature, humidity]
  * 
  * TSL2561:       0x29 
- * LTR3xx:        0x29
+ * LTR303/329:    0x29
  * BH1750:        0x23
  * VEML6030:      0x10, 0x48 [non-default]
  * VEML7700:      0x10
@@ -839,7 +839,7 @@ bool lightSensor::begin(bool skipLast, unsigned long powerupTime)
     switch(_st) {
     case LST_LTR3xx:
         write8(LTR303_CTRL, 0x02);  // Reset
-        (*_customDelayFunc)(10);    // ?
+        (*_customDelayFunc)(10);
         // Set IT; MRate 2000ms
         write8(LTR303_MRATE, (ltr3xxITs[LTR303_USE_IT] << 3) | 0x03); 
         // Set gain, activate
@@ -908,6 +908,7 @@ void lightSensor::loop()
         } else if( ((temp1 << 1) <= temp) && (temp <= 4900)) {
             _lux = TSL2561CalcLux(TLS_USE_GAIN, TLS_USE_IT, temp, temp1);
         } else {
+            // IR-overload, human eye light level not determinable
             _lux = -1;
         }
         break;
@@ -923,9 +924,9 @@ void lightSensor::loop()
             temp  = Wire.read();
             temp  |= (Wire.read() << 8);
             if(temp + temp1 == 0) {
-                _lux = -1;
+                _lux = 0;
             } else {
-                _lux = LTR3xxCalcLux(LTR303_USE_GAIN, 1, temp, temp1);
+                _lux = LTR3xxCalcLux(LTR303_USE_GAIN, LTR303_USE_IT, temp, temp1);
             }
         }
         break;
@@ -1055,13 +1056,12 @@ int32_t lightSensor::LTR3xxCalcLux(uint8_t iGain, uint8_t tInt, uint32_t ch0, ui
         lux = (int32_t)((4.2785 * dch0 - 1.9548 * dch1) / gains[iGain] / its[tInt]);
     else if (ratio < 0.85)
         lux = (int32_t)((0.5926 * dch0 + 0.1185 * dch1) / gains[iGain] / its[tInt]);
-    else
+    else {
+        // IR-overload, human eye light level not determinable
         return -1;
+    }
 
-    lux = min(lux, maxLux[iGain]);
-    if(lux == 0) lux = -1;
-
-    return lux;
+    return min(lux, maxLux[iGain]);
 }
 
 // TSL2561

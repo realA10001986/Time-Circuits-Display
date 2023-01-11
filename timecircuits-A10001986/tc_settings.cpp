@@ -770,10 +770,11 @@ bool loadCurVolume()
 
         if(!error) {
             if(json["volume"]) {
-                curVolume = atoi(json["volume"]);
-                if((curVolume >= 0 && curVolume <= 19) || curVolume == 255) {
+                uint8_t ncv = atoi(json["volume"]);
+                if((ncv >= 0 && ncv <= 19) || ncv == 255) {
+                    curVolume = ncv;
                     writedefault = false;
-                }
+                } 
             }
         } 
         configFile.close();

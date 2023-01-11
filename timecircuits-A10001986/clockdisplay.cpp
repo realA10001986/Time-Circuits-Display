@@ -171,6 +171,11 @@ uint8_t clockDisplay::setBrightness(uint8_t level, bool setInitial)
     return _brightness;
 }
 
+void clockDisplay::resetBrightness()
+{
+    _brightness = setBrightnessDirect(_origBrightness);
+}
+
 uint8_t clockDisplay::setBrightnessDirect(uint8_t level)
 {
     if(level > 15)

@@ -325,6 +325,9 @@ void enter_menu()
     destinationTime.setNightMode(false);
     presentTime.setNightMode(false);
     departedTime.setNightMode(false);
+    destinationTime.resetBrightness();
+    presentTime.resetBrightness();
+    departedTime.resetBrightness();
 
     mpActive = mp_stop();
     stopAudio();
