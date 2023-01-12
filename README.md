@@ -311,7 +311,7 @@ Preface note on SD cards: For unknown reasons, some SD cards simply do not work 
 
 The SD card, apart from being used to [install](#audio-file-installation) the default audio files, can be used for substituting default sounds, some additional custom sounds, and for music played back by the [Music player](#the-music-player).
 
-Note that the SD card must be inserted before powering up the clock. It is not recognized if inserted while the clock is running.
+Note that the SD card must be inserted before powering up the clock. It is not recognized if inserted while the clock is running. Furthermore, do not remove the SD card while the clock is powered.
 
 ### Sound file substitution
 
