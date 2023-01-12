@@ -67,6 +67,7 @@ extern tcRTC rtc;
 
 extern int8_t        manualNightMode;
 extern unsigned long manualNMNow;
+extern bool          forceReEvalANM;
 
 #define NUM_AUTOTIMES 11
 extern dateStruct destinationTimes[NUM_AUTOTIMES];

@@ -98,6 +98,9 @@
 
 /*  Changelog
  *    
+ *  2023/01/12 (A10001986)
+ *    - Disable NM and stop music player before copying audio files
+ *    - More NM logic fixes
  *  2023/01/11 (A10001986)
  *    - Fix minor logic error in loadCurVolume()
  *    - Really disable night-mode when entering keypad menu

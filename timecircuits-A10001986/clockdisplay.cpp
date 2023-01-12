@@ -174,6 +174,9 @@ uint8_t clockDisplay::setBrightness(uint8_t level, bool setInitial)
 void clockDisplay::resetBrightness()
 {
     _brightness = setBrightnessDirect(_origBrightness);
+    // This forces handleNM to reset NM-brightness if
+    // this is called while NM is active.
+    if(!_NmOff) _oldnm = 0;
 }
 
 uint8_t clockDisplay::setBrightnessDirect(uint8_t level)
@@ -715,7 +718,8 @@ void clockDisplay::showTempDirect(float temp, bool tempUnit, bool animate)
     showTextDirect(buf);
     _yearDot = false;
 
-    if(_NmOff && (_oldnm > 0)) on();
+    if(animate || (_NmOff && (_oldnm > 0)) ) on();
+
     if(_NmOff) _oldnm = 0;
 }
 
@@ -743,7 +747,8 @@ void clockDisplay::showHumDirect(int hum, bool animate)
 
     showTextDirect(buf);
 
-    if(_NmOff && (_oldnm > 0)) on();
+    if(animate || (_NmOff && (_oldnm > 0)) ) on();
+
     if(_NmOff) _oldnm = 0;
 }
 #endif

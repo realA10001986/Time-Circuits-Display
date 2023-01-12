@@ -356,14 +356,14 @@ static void recordSetTimeKey(char key)
 {
     timeBuffer[timeIndex++] = key;
     timeBuffer[timeIndex] = '\0';
-    if(timeIndex == 2) timeIndex = 0;
+    timeIndex &= 0x1;
 }
 
 static void recordSetYearKey(char key)
 {
     timeBuffer[yearIndex++] = key;
     timeBuffer[yearIndex] = '\0';
-    if(yearIndex == 4) yearIndex = 0;
+    yearIndex &= 0x3;
 }
 
 void resetTimebufIndices()
@@ -546,7 +546,7 @@ void keypad_loop()
                     invalidEntry = true;
                 }
                 break;
-            case 888:
+            case 888:               // 888+ENTER: Goto song #0
                 if(haveMusic) {
                     mp_gotonum(0, mpActive);
                     #ifdef IS_ACAR_DISPLAY
@@ -568,7 +568,10 @@ void keypad_loop()
         } else if(strLen == DATELEN_INT) {
 
             if(!(strncmp(dateBuffer, "64738", 5))) {
+                mp_stop();
+                stopAudio();
                 allOff();
+                destinationTime.resetBrightness();
                 destinationTime.showTextDirect("REBOOTING");
                 destinationTime.on();
                 delay(ENTER_DELAY);
@@ -770,7 +773,7 @@ void keypad_loop()
             case 2:
             case 10:
                 if(specDisp == 3) destinationTime.onCond();
-                else              destinationTime.on();
+                else              { destinationTime.resetBrightness(); destinationTime.on(); }
                 digitalWrite(WHITE_LED_PIN, LOW);
                 timeNow = millis();
                 enterWasPressed = true;
@@ -803,10 +806,6 @@ void keypad_loop()
                 destinationTime.showTempDirect(tempSens.readLastTemp(), tempUnit, true);
                 if(rcModeDepTime) {
                     departedTime.showHumDirect(tempSens.readHum(), true);
-                }
-                destinationTime.onCond();
-                if(rcModeDepTime) {
-                    departedTime.onCond();
                 }
                 mydelay(80);                      // Wait 80ms
                 destinationTime.showTempDirect(tempSens.readLastTemp(), tempUnit);

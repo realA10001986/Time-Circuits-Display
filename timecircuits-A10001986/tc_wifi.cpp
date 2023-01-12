@@ -507,7 +507,12 @@ void wifi_loop()
                 #ifdef TC_DBG
                 Serial.println("Formatting flash FS....");
                 #endif
+                allOff();
+                destinationTime.resetBrightness();
+                destinationTime.showTextDirect("FORMATTING");
+                destinationTime.on();
                 formatFlashFS();      // Format
+                allOff();
                 rewriteSecondarySettings();
                 // all others written below
                 forceCopyAudio = true;
@@ -739,6 +744,7 @@ void wifi_loop()
         // Reset esp32 to load new settings
 
         allOff();
+        destinationTime.resetBrightness();
         destinationTime.showTextDirect("REBOOTING");
         destinationTime.on();
 
