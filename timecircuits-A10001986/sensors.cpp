@@ -183,7 +183,6 @@ uint8_t tcSensor::crc8(uint8_t initVal, uint8_t poly, uint8_t len, uint8_t *buf)
 //  2    0.125°C     130 ms
 //  3    0.0625°C    250 ms
 #define TC_TEMP_RES_MCP9808 3
-//static const uint16_t wakeDelayMCP9808[4] = { 30, 65, 130, 250 };
 
 #define BMx280_DUMMY      0x100
 #define BMx280_REG_DIG_T1 0x88
@@ -660,7 +659,8 @@ float tempSensor::BMx280_CalcTemp(uint32_t ival, uint32_t hval)
  * Supports TSL2561, LTR3xx, BH1750, VEML7700/6030 light sensors
  * 
  * Sensors are set for indoor conditions and might overflow (in 
- * which case -1 is returned) or report bad lux values outdoors.
+ * which case -1 is returned) or report bad lux values outdoors
+ * or if subject to intensive IR light (from eg cameras).
  * The settings for LTR3xx, TSL2561 and BH1750 can be changed by 
  * #defines below. VEML7700/6030 auto-adjust.
  * 
@@ -828,7 +828,7 @@ bool lightSensor::begin(bool skipLast, unsigned long powerupTime)
             _st = _addrArr[i+1];
             
             #ifdef TC_DBG
-            const char *tpArr[4] = { "TSL2561", "BH1750", "VEML7700/6030", "LTR3xx" };
+            const char *tpArr[4] = { "TSL2561", "BH1750", "VEML7700/6030", "LTR303/329" };
             Serial.printf("Light sensor: Detected %s\n", tpArr[_st]);
             #endif
             

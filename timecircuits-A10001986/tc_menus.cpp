@@ -682,7 +682,9 @@ quitMenu:
     // Done, turn off displays
     allOff();
 
-    mydelay(1000);
+    mydelay(500);
+
+    waitForEnterRelease();
 
     // Restore present time
     presentTime.setDateTimeDiff(myrtcnow());
@@ -693,12 +695,14 @@ quitMenu:
 
     myloop();
 
-    waitForEnterRelease();
-
     // Restore night mode
     destinationTime.setNightMode(desNM);
     presentTime.setNightMode(preNM);
     departedTime.setNightMode(depNM);
+
+    // make time_loop immediately re-eval auto-nm
+    // unless manual-override
+    if(manualNightMode < 0) forceReEvalANM = true;
 
     // Restart mp if it was active before entering the menu
     if(mpActive) mp_play();
@@ -2016,7 +2020,6 @@ void animate()
     #ifdef TC_HAVETEMP
     if(isRcMode()) {
         destinationTime.showTempDirect(tempSens.readLastTemp(), tempUnit, true);
-        destinationTime.onCond();
     } else
     #endif
         destinationTime.showAnimate1();
@@ -2026,7 +2029,6 @@ void animate()
     #ifdef TC_HAVETEMP
     if(isRcMode() && tempSens.haveHum()) {
         departedTime.showHumDirect(tempSens.readHum(), true);
-        departedTime.onCond();
     } else
     #endif
         departedTime.showAnimate1();
@@ -2070,14 +2072,19 @@ void allOff()
 
 void start_file_copy()
 {
+    mp_stop();
     stopAudio();
   
-    destinationTime.on();
-    presentTime.on();
-    departedTime.on();
     destinationTime.showTextDirect("COPYING");
     presentTime.showTextDirect("FILES");
     departedTime.showTextDirect("PLEASE");
+    destinationTime.on();
+    presentTime.on();
+    departedTime.on();
+    destinationTime.resetBrightness();
+    presentTime.resetBrightness();
+    departedTime.resetBrightness();
+    
     fcprog = false;
     fcstart = millis();
 }

@@ -362,6 +362,7 @@ static const uint8_t alarmWDmasks[10] = {
 };
                 
 // Night mode
+bool           forceReEvalANM = false;
 static bool    autoNightMode = false;
 static uint8_t autoNightModeMode = 0;   // 0 = daily hours, 1-4 presets
 static uint8_t autoNMOnHour  = 0;
@@ -933,6 +934,7 @@ void time_setup()
             }
         }
     }
+    if(autoNightMode) forceReEvalANM = true;
 
     // If using auto times, put up the first one
     if(autoTimeIntervals[autoInterval]) {
@@ -1785,13 +1787,12 @@ void time_loop()
                 // Manually switching NM pauses automatic for 30 mins
                 if(manualNightMode >= 0 && (millis() - manualNMNow > 30*60*1000)) {
                     manualNightMode = -1;
-                    // Reset timed nm; give sensor chance to act in the window between
-                    // timer expiry and next hour where timed nm kicks in again
-                    timedNightMode = -1;
+                    // Re-evaluate auto-nm immediately
+                    forceReEvalANM = true;
                 }
                 
                 if(autoNightMode && (manualNightMode < 0)) {
-                    if(compMin == 0) {
+                    if(compMin == 0 || forceReEvalANM) {
                         if(!autoNMDone) {
                             uint32_t myField;
                             if(autoNightModeMode == 0) {
@@ -1816,6 +1817,7 @@ void time_loop()
                     } else {
                         autoNMDone = false;
                     }
+                    forceReEvalANM = false;
                 }
                 #ifdef TC_HAVELIGHT
                 // Light sensor overrules scheduled NM only in non-NightMode periods
@@ -1843,7 +1845,7 @@ void time_loop()
 
             }
 
-            // Handle autoInterval ("decorative mode")
+            // Handle Time Cycling ("decorative mode")
 
             // Do this on previous minute:59
             minNext = (dt.minute() == 59) ? 0 : dt.minute() + 1;
