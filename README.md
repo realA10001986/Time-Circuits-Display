@@ -744,7 +744,7 @@ This offset, which can range from -3.0 to 3.0, is added to the sensor measuremen
 
 #### Use speedometer display
 
-Check this if you have an external speedo display connected and want to use it. See [here]()
+Check this if you have an external speedo display connected and want to use it. See [here](#speedometer)
 
 #### Display type
 
