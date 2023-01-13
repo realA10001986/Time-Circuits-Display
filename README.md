@@ -504,16 +504,23 @@ Note that when entering dates/times into the *destination time* or *last time de
  - While the menu is active, press ENTER repeatedly until "END" is displayed.
  - Hold ENTER to leave the menu
 
+## Fake power Switch 
 
-## Fake "power on/off" Switch; External Time Travel Trigger
+You probably noticed that the device takes longer to boot than would be required to re-create the movie experience where Doc turns the knob and the Time Circuits immediately turn on. As a remedy, the firmware supports a fake "power switch": 
 
-The firmware supports a switch connected to IO13 (active low) to act as a fake "power switch". If corresponding option is enabled in the Config Portal ("Use fake power switch"), the device will power-up, initialize everything, but stay quiet and dark. Only when the fake "power switch" is activated (IO13 is connected to GND), the device will visually "power up". You can also fake "power off" the device using this switch. Fake "off" disables the displays, all audio (except the alarm) and the keypad.
+If corresponding option is enabled in the Config Portal (*Use fake power switch*), the device will power-up, initialize everything, but stay quiet and dark. Only when the fake "power switch" is activated, the device will visually "power up". Likewise, you can also fake "power off" the device using this switch. Fake "off" disables the displays, all audio (except the alarm) and the keypad. Just like in the movie.
 
-The switch needs to be connected to these two solder pads on the TC control board:
+The switch needs shorten "IO13" and "GND", and therefore to be connected to these two solder pads on the TC control board:
 
 ![access_to_io13](https://user-images.githubusercontent.com/76924199/194283241-3bee5fef-f51a-4b1a-a158-ed92292bcf32.jpg)
 
-Furthermore, a time travel can be triggered from a button switch or another prop. This switch/prop must be connected to IO27 (active low; before Oct 5, 2022, IO14 was used instead of IO27). The IO and GND pins must be shorted for 200ms to be recognized. The Config Portal allows configuring a delay and the type of sequence played, in order match the device to another prop.
+Note that the switch actually needs to be a switch with a maintained contact; the pins need to remain connected for as long as the device is fake-switched-on.
+
+## External Time Travel Trigger
+
+As mentioned above, a time travel can be triggered by holding "0" on the keypad. Since this doesn't really allow for an authentic movie-like experience, the firmware also supports an external trigger, such as a button switch or even another prop to trigger a time travel.
+
+This switch/prop must be connected to IO27 and GND. In order to trigger a time-travel sequence on the Time Circuits, IO27 and GND must be shortened for 200ms or longer. Note that, unlike the [Fake Power Switch](), this trigger must be a momentary toggle.
 
 Unfortunately, there is no header and no break out for IO27 on existing TC control boards. Some soldering is required. The button needs to be connected to the two marked pins in the image below:
 
@@ -522,6 +529,8 @@ Unfortunately, there is no header and no break out for IO27 on existing TC contr
 Luckily, there is a row of solder pads right next to the socket on the control board, where a pin header or cable can easily be soldered on:
 
 ![tcboard_io27](https://user-images.githubusercontent.com/76924199/194284336-2fe9fa9b-d5e5-49f5-b1cd-b0fd2abdff53.jpg)
+
+The Config Portal allows configuring a delay and the type of sequence played, in order match the device to another prop.
 
 ## Speedometer
 
