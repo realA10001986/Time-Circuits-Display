@@ -534,7 +534,7 @@ The Config Portal allows configuring a delay and the type of sequence played, in
 
 ## Speedometer
 
-The firmware supports a speedometer display connected via i2c (slave address 0x70) as part of the time travel sequence. Unfortunately, CircuitSetup have not yet designed such a speedometer, so you are on your own to build one for the time being. There are, however, various readily available LED segment displays with i2c break-outs from Adafruit and Seeed (Grove), that can be used as a basis. Adafruit 878, 1270 and 1922, as well as Grove 0.54" 14-segment 2- or 4-digit alphanumeric displays are supported. (The product numbers vary with color, the numbers here are the red ones.)
+The firmware supports a speedometer display connected via i2c (slave address 0x70) as part of the time travel sequence. Unfortunately, CircuitSetup's upcoming Speedo display is yet in the design stage, so you are on your own to build one for the time being. There are, however, various readily available LED segment displays with i2c break-outs from Adafruit and Seeed (Grove), that can be used as a basis. Adafruit 878, 1270 and 1922, as well as Grove 0.54" 14-segment 2- or 4-digit alphanumeric displays are supported. (The product numbers vary with color, the numbers here are the red ones.)
 
 [![Watch the video](https://img.youtube.com/vi/FRRecGxAONc/0.jpg)](https://youtu.be/FRRecGxAONc)
 
