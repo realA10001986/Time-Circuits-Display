@@ -820,7 +820,7 @@ The light and temperature sensors as well as the GPS receiver are to be wired as
 
 On the TCD control board, there are currently three i2c bus breakouts, one of which has a JST-XH header soldered on; it does not matter which one you use to connect your sensors/GPS. To avoid soldering wires directly to the board, I recommend to solder on [JST-XH](https://www.amazon.com/s?k=jst+xh) 4-pin headers to the other two i2c breakouts as well (like in the second picture).
 
-![i2c](https://user-images.githubusercontent.com/76924199/211664121-92c39627-cd74-43cf-ab2d-526b111b5873.jpg)
+![i2c](https://user-images.githubusercontent.com/76924199/212406576-fbd71836-1862-4632-a3ac-decbfa6b7eb2.jpg)
 
 ![i2c](https://user-images.githubusercontent.com/76924199/212406002-c6887b39-8bac-49b1-8318-35838fba44d0.jpg)
 
