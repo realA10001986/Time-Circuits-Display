@@ -25,11 +25,11 @@ Features include
 - &#127381; [Room condition mode](#room-condition-mode-temperaturehumidity-sensor): Display temperature and humidity instead of destination/departed time (requires suitable sensor)
 - Optional power-up intro
 - Optional [sound on the hour](#additional-custom-sounds)
-- Support for external [fake "power switch"](#fake-power-onoff-switch-external-time-travel-trigger)
+- Support for external [fake "power switch"](#fake-power-switch)
 - Support for external display acting as [Speedometer](#speedometer)
 - Support for external [GPS receiver](#gps-receiver), used as time source, and for speed to be displayed on speedo display
 - &#127381; Support for external [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for "room condition mode" and to display temperature on speedo display while idle
-- Support for time travel [triggered by external source](#fake-power-onoff-switch-external-time-travel-trigger), with selectable delay
+- Support for time travel [triggered by external source](#external-time-travel-trigger), with selectable delay
 - Support for triggering time travels on [other props](#controlling-other-props); TCD can act as master controller for SID, flux capacitor, etc.
 - Built-in installer for default audio files in addition to OTA firmware updates
 
@@ -520,7 +520,7 @@ Note that the switch actually needs to be a switch with a maintained contact; th
 
 As mentioned above, a time travel can be triggered by holding "0" on the keypad. Since this doesn't really allow for an authentic movie-like experience, the firmware also supports an external trigger, such as a button switch or even another prop to trigger a time travel.
 
-This switch/prop must be connected to IO27 and GND. In order to trigger a time-travel sequence on the Time Circuits, IO27 and GND must be shortened for 200ms or longer. Note that, unlike the [Fake Power Switch](), this trigger must be a momentary toggle.
+This button/prop must be connected to IO27 and GND. In order to trigger a time-travel sequence on the Time Circuits, IO27 and GND must be shortened for 200ms or longer. Note that, unlike the [Fake Power Switch](#fake-power-switch), this trigger must be a momentary toggle.
 
 Unfortunately, there is no header and no break out for IO27 on existing TC control boards. Some soldering is required. The button needs to be connected to the two marked pins in the image below:
 
@@ -774,15 +774,15 @@ Brightness of speedo display when displaying temperature.
 
 #### Use fake power switch
 
-Check this if you want to use a fake power switch. See [here](#fake-power-onoff-switch-external-time-travel-trigger)
+Check this if you want to use a fake power switch. See [here](#fake-power-switch)
 
 #### External time travel button: Delay
 
-Selects a delay (in milliseconds) from when pressing the external time travel button until the time travel sequence starts. See [here](#fake-power-onoff-switch-external-time-travel-trigger)
+Selects a delay (in milliseconds) from when pressing the external time travel button until the time travel sequence starts. See [here](#external-time-travel-trigger)
 
 #### Play complete time travel sequence
 
-For externally triggered time travels, this selects if the entire sequence (including acceleration, if a speedo is available) should be played, or the only the short re-entry sequence. See [here](#fake-power-onoff-switch-external-time-travel-trigger)
+For externally triggered time travels, this selects if the entire sequence (including acceleration, if a speedo is available) should be played, or the only the short re-entry sequence. See [here](#external-time-travel-trigger)
 
 ### Settings for other peripherals
 
