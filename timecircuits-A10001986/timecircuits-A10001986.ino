@@ -98,6 +98,8 @@
 
 /*  Changelog
  *    
+ *  2023/01/13 (A10001986)
+ *    - Minor fixes and enhancement (settings, alarm, etc)
  *  2023/01/12 (A10001986)
  *    - Disable NM and stop music player before copying audio files
  *    - More NM logic fixes

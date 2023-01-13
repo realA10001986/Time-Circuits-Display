@@ -49,17 +49,6 @@
 // Needs to be adapted when config grows
 #define JSON_SIZE 1600
 
-/*
- * Mount SPIFFS/LittleFS and SD (if available)
- *
- * Read configuration from JSON config file
- * If config file not found, create one with default settings
- *
- * If the device is powered on or reset while ENTER is held down, 
- * the IP settings file will be deleted and the device will use DHCP.
- *
- */
-
 /* If SPIFFS/LittleFS is mounted */
 static bool haveFS = false;
 
@@ -129,7 +118,13 @@ extern void file_copy_error();
 
 /*
  * settings_setup()
+ * 
+ * Mount SPIFFS/LittleFS and SD (if available).
+ * Read configuration from JSON config file
+ * If config file not found, create one with default settings
  *
+ * If the device is powered on or reset while ENTER is held down, 
+ * the IP settings file will be deleted and the device will use DHCP.
  */
 void settings_setup()
 {
@@ -635,14 +630,8 @@ bool loadAlarm()
 
     if(haveConfigFile) {
         StaticJsonDocument<512> json;
-        DeserializationError error = deserializeJson(json, configFile);
-
-        #ifdef TC_DBG
-        serializeJson(json, Serial);
-        Serial.println(F(" "));
-        #endif
-
-        if(!error) {
+        
+        if(!deserializeJson(json, configFile)) {
             if(json["alarmonoff"] && json["alarmhour"] && json["alarmmin"]) {
                 int aoo = atoi(json["alarmonoff"]);
                 alarmHour = atoi(json["alarmhour"]);
@@ -660,15 +649,11 @@ bool loadAlarm()
     }
 
     if(writedefault) {
-
+        Serial.printf("%s: %s\n", funcName, badConfig);
         alarmHour = alarmMinute = 255;
         alarmOnOff = false;
         alarmWeekday = 0;
-
-        Serial.printf("%s: %s\n", funcName, badConfig);
-
         saveAlarm();
-
     }
 
     return true;
@@ -708,11 +693,6 @@ void saveAlarm()
         haveConfigFile = (configFile = SPIFFS.open(almCfgName, FILE_WRITE));
     }
 
-    #ifdef TC_DBG
-    serializeJson(json, Serial);
-    Serial.println(F(" "));
-    #endif
-
     if(haveConfigFile) {
         serializeJson(json, configFile);
         configFile.close();
@@ -728,10 +708,12 @@ void saveAlarm()
 bool loadCurVolume()
 {
     const char *funcName = "loadCurVolume";
-    uint8_t loadBuf[2];
+    char temp[6];
     bool writedefault = true;
     bool haveConfigFile = false;
     File configFile;
+
+    curVolume = DEFAULT_VOLUME;
 
     if(!haveFS && !configOnSD) {
         Serial.printf("%s: %s\n", funcName, fsNoAvail);
@@ -751,26 +733,22 @@ bool loadCurVolume()
             haveConfigFile = (configFile = SPIFFS.open(volCfgName, "r"));
         } else {
             // Transitional, no longer saved to EEPROM
+            uint8_t loadBuf[2];
             loadBuf[0] = EEPROM.read(SWVOL_PREF);
             loadBuf[1] = EEPROM.read(SWVOL_PREF + 1) ^ 0xff;
             if(loadBuf[0] == loadBuf[1]) {
-                curVolume = loadBuf[0];
+                if((loadBuf[0] >= 0 && loadBuf[0] <= 19) || loadBuf[0] == 255) {
+                    curVolume = loadBuf[0];
+                }
             }
         }
     }
 
     if(haveConfigFile) {
         StaticJsonDocument<512> json;
-        DeserializationError error = deserializeJson(json, configFile);
-
-        #ifdef TC_DBG
-        serializeJson(json, Serial);
-        Serial.println(F(" "));
-        #endif
-
-        if(!error) {
-            if(json["volume"]) {
-                uint8_t ncv = atoi(json["volume"]);
+        if(!deserializeJson(json, configFile)) {
+            if(!CopyCheckValidNumParm(json["volume"], temp, sizeof(temp), 0, 255, 255)) {
+                uint8_t ncv = atoi(temp);
                 if((ncv >= 0 && ncv <= 19) || ncv == 255) {
                     curVolume = ncv;
                     writedefault = false;
@@ -782,6 +760,8 @@ bool loadCurVolume()
 
     if(writedefault) {
         Serial.printf("%s: %s\n", funcName, badConfig);
+        // Do not set a default here, EEPROM-loaded value
+        // might be saved to new file here.
         saveCurVolume();
     }
 
@@ -852,9 +832,11 @@ void copySettings()
 /*
  * Load/save Music Folder Number
  */
+
 bool loadMusFoldNum()
 {
     bool writedefault = true;
+    char temp[4];
 
     if(!haveSD)
         return false;
@@ -862,30 +844,15 @@ bool loadMusFoldNum()
     if(SD.exists(musCfgName)) {
 
         File configFile = SD.open(musCfgName, "r");
-
         if(configFile) {
-
             StaticJsonDocument<512> json;
-            DeserializationError error = deserializeJson(json, configFile);
-
-            #ifdef TC_DBG
-            serializeJson(json, Serial);
-            Serial.println(F(" "));
-            #endif
-
-            if(!error) {
-
-                if(json["folder"]) {
-                    musFolderNum = atoi(json["folder"]);
-                    if(musFolderNum >= 0 && musFolderNum <= 9) {
-                        writedefault = false;
-                    }
+            if(!deserializeJson(json, configFile)) {
+                if(!CopyCheckValidNumParm(json["folder"], temp, sizeof(temp), 0, 9, 0)) {
+                    musFolderNum = atoi(temp);
+                    writedefault = false;
                 }
-                
             } 
-
             configFile.close();
-
         }
 
     }
@@ -911,12 +878,6 @@ void saveMusFoldNum()
     json["folder"] = buf;
     
     File configFile = SD.open(musCfgName, FILE_WRITE);
-
-    #ifdef TC_DBG
-    Serial.printf("%s: Writing file\n", funcName);
-    serializeJson(json, Serial);
-    Serial.println(F(" "));
-    #endif
 
     if(configFile) {
         serializeJson(json, configFile);
@@ -996,6 +957,9 @@ static bool CopyIPParm(const char *json, char *text, uint8_t psize)
 {
     if(!json) return true;
 
+    if(strlen(json) == 0) 
+        return true;
+
     memset(text, 0, psize);
     strncpy(text, json, psize-1);
     return false;
@@ -1008,10 +972,13 @@ void writeIpSettings()
     if(!haveFS && !FlashROMode)
         return;
 
+    if(strlen(ipsettings.ip) == 0)
+        return;
+
     #ifdef TC_DBG
     Serial.println(F("writeIpSettings: Writing file"));
     #endif
-
+    
     json["IpAddress"] = ipsettings.ip;
     json["Gateway"] = ipsettings.gateway;
     json["Netmask"] = ipsettings.netmask;
@@ -1218,6 +1185,10 @@ static bool filecopy(File source, File dest)
 
     return true;
 }
+
+/*
+ * Various helpers
+ */
 
 void formatFlashFS()
 {

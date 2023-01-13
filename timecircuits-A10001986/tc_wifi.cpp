@@ -504,9 +504,6 @@ void wifi_loop()
                 pwrNeedFullNow();
                 mp_stop();
                 stopAudio();
-                #ifdef TC_DBG
-                Serial.println("Formatting flash FS....");
-                #endif
                 allOff();
                 destinationTime.resetBrightness();
                 destinationTime.showTextDirect("FORMATTING");

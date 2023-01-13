@@ -50,4 +50,7 @@ int  mp_gotonum(int num, bool force = false);
 void mp_makeShuffle(bool enable);
 bool mp_checkForFolder(int num);
 
+// By default, use the volume knob
+#define DEFAULT_VOLUME 255
+
 #endif

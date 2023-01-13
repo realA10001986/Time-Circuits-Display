@@ -96,7 +96,7 @@ static const float volTable[20] = {
     0.70, 0.80, 0.90, 1.00
 };
 
-uint8_t curVolume = 255;
+uint8_t curVolume = DEFAULT_VOLUME;
 
 static float curVolFact[2] = { 1.0, 1.0 };
 static bool  curChkNM[2]   = { true, true };

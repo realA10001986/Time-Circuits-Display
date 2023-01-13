@@ -586,15 +586,11 @@ void keypad_loop()
             char atxt[16];
             uint8_t aHour, aMin;
             uint16_t num = 0;
-            bool valid = false;
 
             if(dateBuffer[0] == '1' && dateBuffer[1] == '1') {
                 aHour = ((dateBuffer[2] - '0') * 10) + (dateBuffer[3] - '0');
                 aMin  = ((dateBuffer[4] - '0') * 10) + (dateBuffer[5] - '0');
-                if(aHour <= 23 && aMin <= 59) valid = true;
-                if(!valid) {
-                    invalidEntry = true;
-                } else {
+                if(aHour <= 23 && aMin <= 59) {
                     const char *alwd = getAlWD(alarmWeekday);
                     if( (alarmHour != aHour)  ||
                         (alarmMinute != aMin) ||
@@ -612,6 +608,8 @@ void keypad_loop()
                     destinationTime.showTextDirect(atxt);
                     specDisp = 10;
                     validEntry = true;
+                } else {
+                    invalidEntry = true;
                 }
             } else if(haveMusic && dateBuffer[0] == '8' && dateBuffer[1] == '8' && dateBuffer[2] == '8') {
                 num = ((dateBuffer[3] - '0') * 100) + ((dateBuffer[4] - '0') * 10) + (dateBuffer[5] - '0');
