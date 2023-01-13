@@ -514,6 +514,10 @@ The switch needs shorten "IO13" and "GND", and therefore to be connected to thes
 
 ![access_to_io13](https://user-images.githubusercontent.com/76924199/194283241-3bee5fef-f51a-4b1a-a158-ed92292bcf32.jpg)
 
+Here is a close-up of one of my boards; I have soldered some headers on the io ports.
+
+![io13neu](https://user-images.githubusercontent.com/76924199/212369689-f945dcf1-55f9-41e9-8fd7-fc0dbc69906c.jpg)
+
 Note that the switch actually needs to be a switch with a maintained contact; the pins need to remain connected for as long as the device is fake-switched-on.
 
 ## External Time Travel Trigger
