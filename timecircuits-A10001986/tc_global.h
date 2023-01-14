@@ -49,7 +49,7 @@
 // Uncomment for support of speedo-display connected via i2c (0x70).
 // See speeddisplay.h for details
 #define TC_HAVESPEEDO
-#define SP_NUM_TYPES    10  // Number of speedo display types supported
+#define SP_NUM_TYPES    12  // Number of speedo display types supported
 #define SP_MIN_TYPE     1   // Change to 0 when CircuitSetup speedo prop exists
 
 // Uncomment for support of a temperature/humidity sensor (MCP9808, BMx280, 
@@ -113,8 +113,6 @@
 #ifdef TWPRIVATE
 #undef TC_VERSION
 #define TC_VERSION "A10001986P"
-#undef SP_NUM_TYPES
-#define SP_NUM_TYPES 12
 #elif defined(TWSOUND)
 #undef TC_VERSION
 #define TC_VERSION "A10001986"

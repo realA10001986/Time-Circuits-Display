@@ -88,7 +88,10 @@ static const char *dispTypeNames[SP_NUM_TYPES] = {
   "Grove 0.54\" 2x14\0",
   "Grove 0.54\" 4x14\0",
   "Grove 0.54\" 4x14 (left)\0"
-#ifdef TWPRIVATE
+#ifndef TWPRIVATE
+  ,"Ada 1911 (left tube)\0"
+  ,"Ada 878 (left tube)\0"
+#else
   ,"A10001986 wallclock\0"
   ,"A10001986 speedo replica\0"
 #endif
