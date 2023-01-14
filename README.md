@@ -544,7 +544,7 @@ The firmware supports a speedometer display connected via i2c (slave address 0x7
 
 The speedo display shown in this video is based on a fairly well-designed stand-alone replica purchased on ebay. I removed the Arduino Uno inside and wired the LED segments to an Adafruit i2c backpack (from the Adafruit 878 product). The strange look of the speedo's LEDs in the video is due to camera limitations in combination with the layer of semi-clear plastic covering the LED display to make it like the originally used Stanley Readout displays plus the originally used diffusers; in real life it looks much better.
 
-There are two special options in the Speedo Display Type drop-down in the Config Portal: *Ada 1911 (left tube)* and *Ada 878 (left tube)*. These two can be used if you connect only one 2-digit-tube to the respective Adafruit i2c backpack, as I did in case of my speedo replica as well as my Wall Clock. 
+There are two special options in the Speedo Display Type drop-down in the Config Portal: *Ada 1911 (left tube)* and *Ada 878 (left tube)*. These two can be used if you connect only one 2-digit-tube to the respective Adafruit i2c backpack, as I did in case of my speedo replica as well as my [Wall Clock](#my-custom-made-time-circuits-wall-clock).
 
 Since the I2C bus is already quite long from the control board to the last display in the chain, I recommend soldering another JST XH 4pin plug onto the control board (there are two additional i2c break-outs available), and to connect the speedometer there.
 
@@ -754,7 +754,9 @@ Check this if you have an external speedo display connected and want to use it. 
 
 #### Display type
 
-Type of speedo display. Several types are supported, mostly Adafruit or Seeed/Grove LED segment displays. See [here](#speedometer)
+Type of speedo display. Several types are supported, mostly Adafruit or Seeed/Grove LED segment displays. For 4-digit-displays there are options to display speed left- or right-aligned. Two special options for Adafruit 828 and 1911 are at the end of the list; use these of you connect only one 2-digit-tube to the i2c backpack.
+
+See [here](#speedometer)
 
 #### Speedo brightness
 
