@@ -16,10 +16,10 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #ifndef IS_ACAR_DISPLAY
 #define TC_VERSION "V2.6.0"           // 13 chars max
-#define TC_VERSION_EXTRA "JAN132023"  // 13 chars max
+#define TC_VERSION_EXTRA "JAN142023"  // 13 chars max
 #else   // A-Car
 #define TC_VERSION "V2.6.0_A-CAR"     // 12 chars max
-#define TC_VERSION_EXTRA "01132023"   // 12 chars max
+#define TC_VERSION_EXTRA "01142023"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -60,8 +60,8 @@
 // See sensors.cpp for supported i2c slave addresses
 #define TC_HAVETEMP
 
-// Uncomment for support of a light sensor (TLS2561, BH1750, VEML7700 or
-// VEML6030) connected via i2c. Used for night-mode-switching. VEML7700  
+// Uncomment for support of a light sensor (TLS2561, BH1750, VEML7700/6030
+// or LTR303/329) connected via i2c. Used for night-mode-switching. VEML7700  
 // and GPS cannot be present at the same time since they share the same 
 // i2c slave address. VEML6030 needs to be set to 0x48 if GPS is present.
 // See sensors.cpp for supported i2c slave addresses

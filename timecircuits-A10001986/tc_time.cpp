@@ -550,7 +550,6 @@ void time_boot()
  */
 void time_setup()
 {
-    bool validLoad = true;
     bool rtcbad = false;
     bool tzbad = false;
     bool haveGPS = false;
@@ -614,7 +613,7 @@ void time_setup()
         rtc.adjust(0, 0, 0, dayOfWeek(1, 1, 2023), 1, 1, 23);
        
         #ifdef TC_DBG
-        Serial.println(F("time_setup: RTC lost power, setting default time. Change battery!"));
+        Serial.println(F("time_setup: RTC lost power, setting default time."));
         #endif
 
         rtcbad = true;
@@ -891,7 +890,6 @@ void time_setup()
 
     // Load destination time (and set to default if invalid)
     if(!destinationTime.load((int)atoi(settings.destTimeBright))) {
-        validLoad = false;
         destinationTime.setYearOffset(0);
         destinationTime.setFromStruct(&destinationTimes[0]);
         destinationTime.setBrightness((int)atoi(settings.destTimeBright));
@@ -900,7 +898,6 @@ void time_setup()
 
     // Load departed time (and set to default if invalid)
     if(!departedTime.load((int)atoi(settings.lastTimeBright))) {
-        validLoad = false;
         departedTime.setYearOffset(0);
         departedTime.setFromStruct(&departedTimes[0]);
         departedTime.setBrightness((int)atoi(settings.lastTimeBright));
@@ -1059,14 +1056,6 @@ void time_setup()
     #ifdef EXTERNAL_TIMETRAVEL_OUT
     useETTO = ((int)atoi(settings.useETTO) > 0);
     #endif
-    
-    // Show "RESET" message if data loaded was invalid somehow
-    if(!validLoad) {
-        destinationTime.showTextDirect("RESET");
-        destinationTime.on();
-        myIntroDelay(1000);
-        allOff();
-    }
 
     // Show "REPLACE BATTERY" message if RTC battery is low or depleted
     if(rtcbad || rtc.battLow()) {
@@ -1080,7 +1069,7 @@ void time_setup()
 
     if(tzbad) {
         destinationTime.showTextDirect("BAD");
-        presentTime.showTextDirect("TIMEZONE");
+        presentTime.showTextDirect("TIME ZONE");
         destinationTime.on();
         presentTime.on();
         myIntroDelay(3000);
@@ -1091,16 +1080,13 @@ void time_setup()
         const char *t1 = "             BACK";
         const char *t2 = "TO";
         const char *t3 = "THE FUTURE";
-        int oldBriDest = destinationTime.getBrightness();
-        int oldBriPres = presentTime.getBrightness();
-        int oldBriDep = departedTime.getBrightness();
-
+        
         play_file("/intro.mp3", 1.0, true, true);
 
         myIntroDelay(1200);
-        destinationTime.setBrightness(15);
-        presentTime.setBrightness(0);
-        departedTime.setBrightness(0);
+        destinationTime.setBrightnessDirect(15);
+        presentTime.setBrightnessDirect(0);
+        departedTime.setBrightnessDirect(0);
         presentTime.off();
         departedTime.off();
         destinationTime.showTextDirect(t1);
@@ -1115,21 +1101,21 @@ void time_setup()
         presentTime.on();
         departedTime.on();
         for(int i = 0; i <= 15; i++) {
-            presentTime.setBrightness(i);
-            departedTime.setBrightness(i);
+            presentTime.setBrightnessDirect(i);
+            departedTime.setBrightnessDirect(i);
             myIntroDelay(100, false);
         }
         myIntroDelay(1500);
         for(int i = 15; i >= 0; i--) {
-            destinationTime.setBrightness(i);
-            presentTime.setBrightness(i);
-            departedTime.setBrightness(i);
+            destinationTime.setBrightnessDirect(i);
+            presentTime.setBrightnessDirect(i);
+            departedTime.setBrightnessDirect(i);
             myIntroDelay(20, false);
         }
         allOff();
-        destinationTime.setBrightness(oldBriDest);
-        presentTime.setBrightness(oldBriPres);
-        departedTime.setBrightness(oldBriDep);
+        destinationTime.setBrightness(255);
+        presentTime.setBrightness(255);
+        departedTime.setBrightness(255);
 
         waitAudioDoneIntro();
         stopAudio();
@@ -1793,7 +1779,7 @@ void time_loop()
                 
                 if(autoNightMode && (manualNightMode < 0)) {
                     if(compMin == 0 || forceReEvalANM) {
-                        if(!autoNMDone) {
+                        if(!autoNMDone || forceReEvalANM) {
                             uint32_t myField;
                             if(autoNightModeMode == 0) {
                                 myField = autoNMdailyPreset;
@@ -2021,7 +2007,7 @@ void time_loop()
  *  - Speed de-acceleration (if applicable; if GPS is in use, counts down to actual speed)
  *  - ETTO lead time period (trigger external props, if applicable)
  *
- *  |<---------- P0: speedo accleration ------>|                         |<P2:speedo de-accleration>|
+ *  |<--------- P0: speedo acceleration ------>|                         |<P2:speedo de-accleration>|
  *  0....10....20....................xx....87..88------------------------88...87....................0
  *                                   |<-------- travelstart.mp3 -------->|<-tt.mp3>|
  *                                   11111111111111111111111111111111111122222222222

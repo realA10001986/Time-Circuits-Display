@@ -6,8 +6,9 @@
  *
  * speedDisplay Class: Speedo Display
  *
- * This is designed for HT16K33-based displays, like the "Grove - 0.54"
- * Dual/Quad Alphanumeric Display" or some displays with the Adafruit
+ * This is designed for CircuitSetup's Speedo display and other 
+ * HT16K33-based displays, like the "Grove - 0.54" Dual/Quad 
+ * Alphanumeric Display" or some displays with the Adafruit
  * i2c backpack (878, 1911, 1270; product numbers vary with color).
  * The i2c slave address must be 0x70.
  * -------------------------------------------------------------------

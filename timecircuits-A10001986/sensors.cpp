@@ -9,7 +9,7 @@
  * This is designed for 
  * - MCP9808, TMP117, BMx280, SHT4x, SI7012, AHT20/AM2315C, HTU31D 
  *   temperature/humidity sensors,
- * - BH1750, TSL2561, LTR3xx and VEML7700/VEML6030 light sensors.
+ * - BH1750, TSL2561, LTR303/329 and VEML7700/VEML6030 light sensors.
  *                             
  * The i2c slave addresses need to be:
  * MCP9808:       0x18                [temperature only]
