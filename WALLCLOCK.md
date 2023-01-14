@@ -26,7 +26,7 @@ As for the 3D-printed parts: The three inner enclosures were glued together usin
 
 ![processed-bc73fc63-353f-4a4d-8bca-9e554d9c6c18_i36KguoN](https://user-images.githubusercontent.com/76924199/204100473-c9e49008-bbae-47dd-92e0-0d3a165799e0.jpg)
 
-The clock has an additional speedo display top left, a temperature and a light sensor. The speedo display is an Adafruit 14-segment LED Alphanumeric Backpack (1910) with only two segments soldered on; the temperature sensor is an Adafruit MCP9808 (1782), and the light sensor is an Adafruit VEML7700 (4162).
+The clock has an additional speedo display top left, a temperature and a light sensor. The speedo display is an [Adafruit 14-segment LED Alphanumeric Backpack](https://www.adafruit.com/product/1911) (1911) with only one tube (two segments) soldered on; the temperature sensor is an [Adafruit MCP9808](https://www.adafruit.com/product/1782) (1782), and the light sensor is an [Adafruit VEML7700](https://www.adafruit.com/product/4162) (4162).
 
 ![IMG_9624](https://user-images.githubusercontent.com/76924199/204110092-ad91ce4b-b1c7-4c77-a561-90c64fdc7aaf.jpg)
 
