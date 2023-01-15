@@ -339,7 +339,7 @@ If you intend to use the very same SD card that you used for installing the defa
 
 ### Additional Custom Sounds
 
-The firmware supports some additional user-provided sound effects, which must reside on the SD card. If the respective file is present, it will be used. If that file is absent, no sound will be played.
+The firmware supports some additional user-provided sound effects, which it will load from the SD card. If the respective file is present, it will be used. If that file is absent, no sound will be played.
 
 - "hour.mp3": Will be played every hour, on the hour. This feature is disabled in night mode.
 - "hour-xx.mp3", xx being 00 through 23: Sounds-on-the-hour for specific hours that will be played instead of "hour.mp3". If a sound for a specific hour is not present, "hour.mp3" will be played, if that one exists.
