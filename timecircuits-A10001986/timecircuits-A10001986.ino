@@ -98,6 +98,8 @@
 
 /*  Changelog
  *    
+ *  2023/01/15 (A10001986)
+ *    - More style for the Config Portal
  *  2023/01/14 (A10001986)
  *    - Another NM logic fix (when forced if min == 0)
  *  2023/01/13 (A10001986)
