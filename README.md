@@ -800,7 +800,7 @@ This selects whether a GPIO pin is activated upon a time-travel in order to cont
 
 #### Play time travel sounds
 
-If other props are connected, they might bring their own time travel sound effects. In this case, you can uncheck this to disable the Time Circuit's own time travel sounds. Note that this only covers sounds played during time travel, not for other sound effects.
+If other props are connected, they might bring their own time travel sound effects. In this case, you can uncheck this to disable the Time Circuit's own time travel sounds. Note that this only covers sounds played during time travel, not other sound effects.
 
 ### Music Player settings
 
