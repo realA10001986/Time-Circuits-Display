@@ -626,11 +626,11 @@ More here: [Link](https://github.com/realA10001986/Time-Circuits-Display/wiki/Ti
 
 ##### &#9654; Config WiFi
 
-Clicking this leads the WiFi Config page. On this page, you can connect your clock to your WiFi network by selecting/entering the SSID (WiFi network name) as well as a password (WPA2). Furthermore, you can configure a static IP for the clock by entering the IP, netmask, gateway and DNS server. All four fields must be filled for a valid static IP configuration.
+Clicking this leads the WiFi Config page. On this page, you can connect your clock to your WiFi network by selecting/entering the SSID (WiFi network name) as well as a password (WPA2). By default, the clock's IP address is requested via DHCP. However, on this page, you can also configure a static IP for the clock by entering the IP, netmask, gateway and DNS server. All four fields must be filled for a valid static IP configuration. If you want to stick to DHCP, leave those four fields empty.
 
 ##### &#9654; Setup
 
-This leads to the [Setup page](#setup)
+This leads to the [Setup page](#setup).
 
 ##### &#9654; Restart
 
@@ -638,11 +638,11 @@ This reboots the clock. No confirmation dialog is displayed.
 
 ##### &#9654; Update
 
-This leads to the firmware update page. On this page, you can select a locally stored firmware image file to upload (such as the ones published here in the install/ folder).
+This leads to the firmware update page. You can select a locally stored firmware image file to upload (such as the ones published here in the install/ folder).
 
 ##### &#9654; Erase WiFi Config
 
-Clicking this (and saying "yes" in the confirmation dialog) erases the WiFi configuration (WiFi network and password) and reboots the device; it will restart in AP mode.
+Clicking this (and saying "yes" in the confirmation dialog) erases the WiFi configuration (WiFi network and password) and reboots the device; it will restart in AP mode. See [here](#short-summary-of-first-steps).
 
 ---
 
