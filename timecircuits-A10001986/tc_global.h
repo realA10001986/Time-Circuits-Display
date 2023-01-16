@@ -16,10 +16,10 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #ifndef IS_ACAR_DISPLAY
 #define TC_VERSION "V2.6.0"           // 13 chars max
-#define TC_VERSION_EXTRA "JAN152023"  // 13 chars max
+#define TC_VERSION_EXTRA "JAN162023"  // 13 chars max
 #else   // A-Car
 #define TC_VERSION "V2.6.0_A-CAR"     // 12 chars max
-#define TC_VERSION_EXTRA "01152023"   // 12 chars max
+#define TC_VERSION_EXTRA "01162023"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -102,8 +102,7 @@
 //#define GTE_KEYPAD 
 
 // Use SPIFFS (if defined) or LittleFS (if undefined; esp32-arduino >= 2.x)
-// As long as SPIFFS is around, and LittleFS does not support wear leveling,
-// we go with SPIFFS.
+// Since I am on esp32-arduino 1.x, I use SPIFFS.
 #define USE_SPIFFS
 
 // Custom stuff -----

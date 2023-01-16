@@ -98,6 +98,9 @@
 
 /*  Changelog
  *    
+ *  2023/01/16 (A10001986)
+ *    - Use files for clock states instead of the EEPROM API
+ *    - Some more CP eye-candy
  *  2023/01/15 (A10001986)
  *    - More style for the Config Portal
  *  2023/01/14 (A10001986)

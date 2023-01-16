@@ -5,7 +5,7 @@
  * (C) 2022-2023 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display-A10001986
  *
- * Settings handling
+ * Settings & file handling
  * 
  * Main and IP settings are stored on flash FS only
  * Alarm and volume either on SD or on flash FS
@@ -1253,6 +1253,41 @@ bool writeFileToSD(const char *fn, uint8_t *buf, int len)
         return false;
 
     File myFile = SD.open(fn, FILE_WRITE);
+    if(myFile) {
+        bytesw = myFile.write(buf, len);
+        myFile.close();
+        return (bytesw == len);
+    } else
+        return false;
+}
+
+bool readFileFromFS(const char *fn, uint8_t *buf, int len)
+{
+    size_t bytesr;
+    
+    if(!haveFS)
+        return false;
+
+    if(!SPIFFS.exists(fn))
+        return false;
+
+    File myFile = SPIFFS.open(fn, FILE_READ);
+    if(myFile) {
+        bytesr = myFile.read(buf, len);
+        myFile.close();
+        return (bytesr == len);
+    } else
+        return false;
+}
+
+bool writeFileToFS(const char *fn, uint8_t *buf, int len)
+{
+    size_t bytesw;
+    
+    if(!haveFS)
+        return false;
+
+    File myFile = SPIFFS.open(fn, FILE_WRITE);
     if(myFile) {
         bytesw = myFile.write(buf, len);
         myFile.close();

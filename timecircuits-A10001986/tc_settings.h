@@ -187,6 +187,8 @@ void rewriteSecondarySettings();
 
 bool readFileFromSD(const char *fn, uint8_t *buf, int len);
 bool writeFileToSD(const char *fn, uint8_t *buf, int len);
+bool readFileFromFS(const char *fn, uint8_t *buf, int len);
+bool writeFileToFS(const char *fn, uint8_t *buf, int len);
 
 
 #endif

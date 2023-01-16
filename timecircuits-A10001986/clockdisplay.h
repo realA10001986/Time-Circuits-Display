@@ -119,8 +119,8 @@ class clockDisplay {
 
     private:
 
-        void     saveEPROMData(uint8_t *savBuf);
-        bool     loadEPROMData(uint8_t *loadBuf);
+        void     saveNVMData(uint8_t *savBuf, bool noReadChk = false);
+        bool     loadNVMData(uint8_t *loadBuf);
 
         uint8_t  getLED7NumChar(uint8_t value);
         uint8_t  getLED7AlphaChar(uint8_t value);
