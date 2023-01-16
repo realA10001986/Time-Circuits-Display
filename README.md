@@ -752,11 +752,11 @@ If "Daily" is chosen in the "Schedule"-drop-down, enter night-mode end hour here
 
 ##### &#9654; Use light sensor
 
-Select whether to use a light sensor's data to enable night-mode. See [here](#night-mode)
+Select whether to use a light sensor's data to enable night-mode. See [here](#night-mode).
 
 ##### &#9654; Light (lux) threshold
 
-If the light sensor reports a number of lux below or equal to this value, night-mode is activated. See [here](#night-mode)
+If the light sensor reports a number of lux below or equal to this value, night-mode is activated. See [here](#night-mode).
 
 #### Temperature/humidity sensor settings
 
@@ -780,9 +780,9 @@ Check this if you have an external speedo display connected and want to use it. 
 
 ##### &#9654; Display type
 
-Type of speedo display. Several types are supported, mostly Adafruit or Seeed/Grove LED segment displays. For 4-digit-displays there are options to display speed left- or right-aligned. Two special options for Adafruit 828 and 1911 are at the end of the list; use these of you connect only one 2-digit-tube to the i2c backpack.
+Type of speedo display. Several types are supported, mostly Adafruit or Seeed/Grove LED segment displays. For 4-digit-displays there are options to display speed left- or right-aligned. Two special options for Adafruit 828 and 1911 are at the end of the list; use these if you connect only one 2-digit-tube to the respective i2c backpack.
 
-See [here](#speedometer)
+See [here](#speedometer).
 
 ##### &#9654; Speedo brightness
 
