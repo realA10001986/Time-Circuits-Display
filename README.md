@@ -642,7 +642,7 @@ This leads to the firmware update page. You can select a locally stored firmware
 
 ##### &#9654; Erase WiFi Config
 
-Clicking this (and saying "yes" in the confirmation dialog) erases the WiFi configuration (WiFi network and password) and reboots the device; it will restart in AP mode. See [here](#short-summary-of-first-steps).
+Clicking this (and saying "yes" in the confirmation dialog) erases the WiFi configuration (WiFi network and password) and reboots the device; it will restart in "access point" mode. See [here](#short-summary-of-first-steps).
 
 ---
 
