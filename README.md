@@ -177,11 +177,11 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
     </tr>
     <tr>
      <td align="center">888&#9166;</td>
-     <td align="center"><a href="#the-music-player">Music Player</a>: Goto song 0</td>
+     <td align="center"><a href="#the-music-player">Music Player</a>: Go to song 0</td>
     </tr>
     <tr>
      <td align="center">888xxx&#9166;</td>
-     <td align="center"><a href="#the-music-player">Music Player</a>: Goto song xxx</td>
+     <td align="center"><a href="#the-music-player">Music Player</a>: Go to song xxx</td>
     </tr>
     <tr>
      <td align="center">64738&#9166;</td>
