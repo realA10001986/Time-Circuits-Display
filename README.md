@@ -624,7 +624,7 @@ More here: [Link](https://github.com/realA10001986/Time-Circuits-Display/wiki/Ti
 
 ### Basic settings
 
-#### Make time travels persistent
+##### Make time travels persistent
 
 See [here](#persistent--non-persistent-time-travels)
 
