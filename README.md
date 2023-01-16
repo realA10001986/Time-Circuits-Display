@@ -644,6 +644,8 @@ This leads to the firmware update page. On this page, you can select a locally s
 
 Clicking this (and saying "yes" in the confirmation dialog) erases the WiFi configuration (WiFi network and password) and reboots the device; it will restart in AP mode.
 
+---
+
 ### Setup
 
 #### Basic settings
