@@ -742,7 +742,7 @@ Enables or disables schedules night mode, as configured by the following options
 
 Selects a schedule for night-mode. See [here](#night-mode)
 
-##### Daily night-mode start hour
+##### &#9654; Daily night-mode start hour
 
 If "Daily" is chosen in the "Schedule"-drop-down, enter night-mode start hour here.
 
