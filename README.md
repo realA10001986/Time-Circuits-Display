@@ -630,7 +630,7 @@ Clicking this leads the WiFi Config page. On this page, you can connect your clo
 
 ##### &#9654; Setup
 
-This leads to the [Setup page](#setup-1)
+This leads to the [Setup page](#setup)
 
 ##### &#9654; Restart
 
