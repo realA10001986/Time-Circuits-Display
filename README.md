@@ -648,7 +648,7 @@ Clicking this (and saying "yes" in the confirmation dialog) erases the WiFi conf
 
 #### Basic settings
 
-##### Make time travels persistent
+##### &#9654; Make time travels persistent
 
 See [here](#persistent--non-persistent-time-travels)
 
