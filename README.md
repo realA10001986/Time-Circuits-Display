@@ -616,7 +616,7 @@ In order to reduce the number of write operations and thereby prolonging the lif
 
 ## My custom-made Time Circuits Wall Clock
 
-![204099461-6499d8a4-4c8f-446c-b0a8-7ef13b558c67](https://user-images.githubusercontent.com/76924199/206280615-e466c2ab-8670-4ff2-a055-6dfec356a966.jpg)
+![Back to the Future Wall Clock](https://user-images.githubusercontent.com/76924199/206280615-e466c2ab-8670-4ff2-a055-6dfec356a966.jpg)
 
 More here: [Link](https://github.com/realA10001986/Time-Circuits-Display/wiki/Time-Circuits-Wall-Clock)
 
