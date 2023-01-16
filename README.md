@@ -630,7 +630,7 @@ Clicking this leads the WiFi Config page. On this page, you can connect your clo
 
 ##### Setup
 
-This leads to the [Setup page](#setup)
+This leads to the [Setup page](#setup-1)
 
 ##### Restart
 
@@ -828,17 +828,17 @@ If other props are connected, they might bring their own time travel sound effec
 
 #### Music Player settings
 
-##### Shuffle at startup
+##### &#9654; Shuffle at startup
 
 When checked, songs are shuffled when the device is booted. When unchecked, songs will be played in order.
 
 #### Other settings
 
-##### Save alarm/volume settings on SD
+##### &#9654; Save alarm/volume settings on SD
 
 If this is checked, alarm and volume settings are stored on the SD card. This helps to minimize write operations to the internal flash memory and to prolong the lifetime of your clock. See [Flash Wear](#flash-wear).
 
-##### 4MHz SD clock speed
+##### &#9654; 4MHz SD clock speed
 
 By default, the clock speed for SD card access is set to 16MHz. If you experience problems with your SD card, such as sound cut-offs or the card being inaccessible, try setting the clock speed to 4MHz by checking this option. (General note: Not all SD cards work with the device. If the SD card is inaccessible with both clock speed settings, try another SD card brand. For instance, I had no luck with a Sandisk Ultra 32GB.)
 
