@@ -624,23 +624,23 @@ More here: [Link](https://github.com/realA10001986/Time-Circuits-Display/wiki/Ti
 
 ### Main page
 
-##### Config WiFi
+##### &#9654; Config WiFi
 
 Clicking this leads the WiFi Config page. On this page, you can connect your clock to your WiFi network by selecting/entering the SSID (WiFi network name) as well as a password (WPA2). Furthermore, you can configure a static IP for the clock by entering the IP, netmask, gateway and DNS server. All four fields must be filled for a valid static IP configuration.
 
-##### Setup
+##### &#9654; Setup
 
 This leads to the [Setup page](#setup-1)
 
-##### Restart
+##### &#9654; Restart
 
 This reboots the clock. No confirmation dialog is displayed.
 
-##### Update
+##### &#9654; Update
 
 This leads to the firmware update page. On this page, you can select a locally stored firmware image file to upload (such as the ones published here in the install/ folder).
 
-##### Erase WiFi Config
+##### &#9654; Erase WiFi Config
 
 Clicking this (and saying "yes" in the confirmation dialog) erases the WiFi configuration (WiFi network and password) and reboots the device; it will restart in AP mode.
 
@@ -652,177 +652,177 @@ Clicking this (and saying "yes" in the confirmation dialog) erases the WiFi conf
 
 See [here](#persistent--non-persistent-time-travels)
 
-##### Alarm base is real present time
+##### &#9654; Alarm base is real present time
 
 Selects whether the alarm, sound-on-the-hour and night-mode schedules are based on real, actual present time, or "present" time as displayed (eg after a time travel).
 
-##### Play intro
+##### &#9654; Play intro
 
 Selects whether the animated "Back to the Future" intro should be played upon power-up.
 
-##### 24-hour clock mode
+##### &#9654; 24-hour clock mode
 
 Selects 24-hour clock mode, ie hours go from 0 to 23, "AM" and "PM" are permanently dark.
 
-##### Time-cycling interval
+##### &#9654; Time-cycling interval
 
 In "decorative" mode the device cycles through a list of pre-programmed, movie-accurate *destination* and *last time departed* times. This mode is enabled by setting the "Time-cycling Interval" to anything but "off". The device will cycle through named list every 5th, 10th, 15th, 30th or 60th minute, and thereby change the displays. Set the interval to "off" to disable "decorative" mode. See [here](#time-cycling)
 
 #### Network & time synchronization settings
 
-##### Hostname
+##### &#9654; Hostname
 
 The device's hostname in the WiFi network. Defaults to 'timecircuits'. This also is the domain name at which the Config Portal is accessible from a browser in the same local network. The URL of the Config Portal then is http://<i>hostname</i>.local (the default is http://timecircuits.local)
 
 If you have more than one clock in your local network, please give them unique hostnames.
 
-##### WiFi connection attempts
+##### &#9654; WiFi connection attempts
 
 Number of times the firmware tries to reconnect to a WiFi network, before falling back to AP-mode. See [here](#short-summary-of-first-steps)
 
-##### WiFi connection timeout
+##### &#9654; WiFi connection timeout
 
 Number of seconds before a timeout occurs when connecting to a WiFi network. When a timeout happens, another attempt is made (see immediately above), and if all attempts fail, the device falls back to AP-mode. See [here](#short-summary-of-first-steps)
 
-##### WiFi power save timer
+##### &#9654; WiFi power save timer
 
 See [here](#wifi-power-saving-features)
 
-##### WiFi power save timer (AP-mode)
+##### &#9654; WiFi power save timer (AP-mode)
 
 See [here](#wifi-power-saving-features)
 
-##### Time zone
+##### &#9654; Time zone
 
 The time zone of the place where the device is operated. Has to be in POSIX format. Needs to be set in order to use NTP or GPS, and for DST (daylight saving). Defaults to UTC0. See [here](https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv) or [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/timeszones.csv) for a list of valid time zones.
 
-##### NTP Server
+##### &#9654; NTP Server
 
 Name of your preferred NTP (network time protocol) server for time synchronization. Leave this empty to disable NTP.
 
-##### Use GPS as time source
+##### &#9654; Use GPS as time source
 
 If a [GPS receiver](#gps-receiver) is connected, this selects whether GPS time is used for time synchronization.
 
 #### Display preferences
 
-##### Destination Time display brightness
+##### &#9654; Destination Time display brightness
 
 Selects the brightness of the *destination time* display. Ranges from 0 (darkest) to 15 (brightest).
 
-##### Present Time display brightness
+##### &#9654; Present Time display brightness
 
 Selects the brightness of the *present time* display. Ranges from 0 (darkest) to 15 (brightest).
 
-##### Last Time Dep. display brightness
+##### &#9654; Last Time Dep. display brightness
 
 Selects the brightness of the *last time departed* display. Ranges from 0 (darkest) to 15 (brightest).
 
 #### Night-mode
 
-##### Destination time off in night mode
+##### &#9654; Destination time off in night mode
 
 Selects whether the *destination time* display is dimmed or switched of in night mode.
 
-##### Present time off in night mode
+##### &#9654; Present time off in night mode
 
 Selects whether the *present time* display is dimmed or switched of in night mode.
 
-##### Last time dep. off in night mode
+##### &#9654; Last time dep. off in night mode
 
 Selects whether the *last time departed* display is dimmed or switched of in night mode.
 
-##### Scheduled night-mode
+##### &#9654; Scheduled night-mode
 
 Enables or disables schedules night mode, as configured by the following options. See [here](#night-mode)
 
-##### Schedule
+##### &#9654; Schedule
 
 Selects a schedule for night-mode. See [here](#night-mode)
 
-##### Daily night-mode start hour (0-23)
+##### Daily night-mode start hour
 
 If "Daily" is chosen in the "Schedule"-drop-down, enter night-mode start hour here.
 
-##### Daily night-mode end hour (0-23)
+##### &#9654; Daily night-mode end hour
 
 If "Daily" is chosen in the "Schedule"-drop-down, enter night-mode end hour here.
 
-##### Use light sensor
+##### &#9654; Use light sensor
 
 Select whether to use a light sensor's data to enable night-mode. See [here](#night-mode)
 
-##### Light (lux) threshold
+##### &#9654; Light (lux) threshold
 
 If the light sensor reports a number of lux below or equal to this value, night-mode is activated. See [here](#night-mode)
 
 #### Temperature/humidity sensor settings
 
-##### Use temperature sensor
+##### &#9654; Use temperature sensor
 
 Select whether to use a temperature/humidity sensor. The sensor data is used for room condition mode, and the temperature is optionally displayed on a connected Speedo display. See [here](#room-condition-mode-temperaturehumidity-sensor)
 
-##### Display in °Celsius
+##### &#9654; Display in °Celsius
 
 Selects between Fahrenheit and Celsius for temperature display.
 
-##### Temperature offset
+##### &#9654; Temperature offset
 
 This offset, which can range from -3.0 to 3.0, is added to the sensor measurement, in order to compensate sensor inaccuracy or suboptimal sensor placement.
 
 #### Speedometer settings
 
-##### Use speedometer display
+##### &#9654; Use speedometer display
 
 Check this if you have an external speedo display connected and want to use it. See [here](#speedometer)
 
-##### Display type
+##### &#9654; Display type
 
 Type of speedo display. Several types are supported, mostly Adafruit or Seeed/Grove LED segment displays. For 4-digit-displays there are options to display speed left- or right-aligned. Two special options for Adafruit 828 and 1911 are at the end of the list; use these of you connect only one 2-digit-tube to the i2c backpack.
 
 See [here](#speedometer)
 
-##### Speedo brightness
+##### &#9654; Speedo brightness
 
 Brightness of speedo display when displaying speed.
 
-##### Speedo sequence speed factor
+##### &#9654; Speedo sequence speed factor
 
 Since the DMC-12 wasn't the world's fastest car, it's acceleration figures might soon cause boredom if played in real-time as part of the time travel sequence with a speedo display. This factor speeds up the acceleration. 2.0 means twice as fast as the real car.
 
-##### Display GPS speed
+##### &#9654; Display GPS speed
 
 If a GPS receiver is connected, this selects whether to display GPS speed on the speedo display. This only makes sense if the Time Circuits are mounted in a car. See [here](#gps-receiver)
 
-##### Display temperature
+##### &#9654; Display temperature
 
 Selects whether temperature as received from a suitable sensor is displayed on the speedo display, when it is idle (ie no time travel is in progress).
 
-##### Temperature brightness
+##### &#9654; Temperature brightness
 
 Brightness of speedo display when displaying temperature.
 
 #### External switches/buttons
 
-##### Use fake power switch
+##### &#9654; Use fake power switch
 
 Check this if you want to use a fake power switch. See [here](#fake-power-switch)
 
-##### External time travel button: Delay
+##### &#9654; External time travel button: Delay
 
 Selects a delay (in milliseconds) from when pressing the external time travel button until the time travel sequence starts. See [here](#external-time-travel-trigger)
 
-##### Play complete time travel sequence
+##### &#9654; Play complete time travel sequence
 
 For externally triggered time travels, this selects if the entire sequence (including acceleration, if a speedo is available) should be played, or the only the short re-entry sequence. See [here](#external-time-travel-trigger)
 
 #### Settings for other peripherals
 
-##### Use compatible external props
+##### &#9654; Use compatible external props
 
 This selects whether a GPIO pin is activated upon a time-travel in order to control external props. See [here](#controlling-other-props)
 
-##### Play time travel sounds
+##### &#9654; Play time travel sounds
 
 If other props are connected, they might bring their own time travel sound effects. In this case, you can uncheck this to disable the Time Circuit's own time travel sounds. Note that this only covers sounds played during time travel, not other sound effects.
 
