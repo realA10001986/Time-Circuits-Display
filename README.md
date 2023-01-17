@@ -861,7 +861,7 @@ By default, the clock speed for SD card access is set to 16MHz. If you experienc
 
 ## Appendix B: Sensor wiring
 
-The light and temperature sensors as well as the GPS receiver are to be wired as follows:
+The light and temperature sensors, the speedo display as well as the GPS receiver are to be wired as follows:
 
 On the TCD control board, there are currently three i2c bus breakouts, one of which has a JST-XH header soldered on; it does not matter which one you use to connect your sensors/GPS. To avoid soldering wires directly to the board, I recommend to solder on [JST-XH](https://www.amazon.com/s?k=jst+xh) 4-pin headers to the other two i2c breakouts as well (like in the second picture).
 
@@ -911,7 +911,7 @@ This image shows the HTU31D PCB's back side. Connect (shorten) those two pads in
 
 #### Multiple i2c devices
 
-If going by the book, multiple i2c devices should be daisy chained; however, I had sensors and GPS receivers run in parallel without issues for months.
+If going by the book, multiple i2c devices should be daisy chained; however, I had sensors, speedo and GPS receivers run in parallel without issues for months.
 
 Note that you can only use one per device type (temperature/humidity sensor, light sensor, GPS receiver, Speedo display) at a time.
 
