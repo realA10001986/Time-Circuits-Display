@@ -41,7 +41,7 @@ There are different alternative ways to install this firmware:
 
 1) If a previous version of the Time Circuits firmware was installed on your device, you can upload the provided pre-compiled binary to update to the current version: Enter the [Config Portal](#the-config-portal), click on "Update" and select the pre-compiled binary file provided in this repository ("install/timecircuits-A10001986.ino.nodemcu-32s.bin").
 
-2) Using the Arduino IDE or PlatformIO: Download the sketch source code, all required libraries (see info in timecircuits-A10001986.ino) and compile it. Then upload the sketch to the device. This method is the one for fresh ESP32 boards and/or folks familiar with the programming tool chain.
+2) Using the Arduino IDE or PlatformIO: Download the sketch source code, all required libraries, compile and upload it. This method is the one for fresh ESP32 boards and/or folks familiar with the programming tool chain. Detailed build information is in timecircuits-A10001986.ino.
 
  *Important: After a firmware update, the displays might stay dark or display "WAIT" for up to a minute after reboot. Do NOT unplug the clock during this time.*
 
