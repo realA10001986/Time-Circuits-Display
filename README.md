@@ -60,16 +60,25 @@ If you choose to use the Config Portal, trigger the audio file installation proc
 
 ## Short summary of first steps
 
-- As long as the device is unconfigured or later for some reason fails to connect to a configured WiFi network, it starts in "access point" mode, i.e. it creates a WiFi network of its own named "TCD-AP".
-- Using your computer or handheld device, connect to the WiFi network "TCD-AP" and navigate your browser to http://timecircuits.local or http://192.168.4.1 to enter the Config Portal.
-- In order to connect the device to your WiFi network, click on "Configure WiFi" and configure your Wifi network. The bare minimum is to select an SSID and a WiFi password. Note that the device requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). (If the device is inaccessible as a result of wrong static IPs, hold ENTER when powering it up until the white LED lits; static IP data will be deleted and the device will return to DHCP.)
-- After saving the WiFi network settings, the device reboots and tries to connect to your configured WiFi network. If it fails to connect to your network, the device will again start in access point mode. 
+The first step is to establish access to the Config Portal in order to configure your clock. This might involve connecting the clock to your WiFi network, if applicable and desired. 
 
-NTP (time synchronization over the internet) is only possible if the clock is connected to a WiFi network. If no WiFi network is available, please set your local time through the [keypad menu](#how-to-set-the-real-time-clock-rtc) after first power-up.
+As long as the device is unconfigured or later for some reason fails to connect to a configured WiFi network, it starts in "access point" mode, i.e. it creates a WiFi network of its own named "TCD-AP". This is what your brand new clock is going to do.
+
+- Connect your computer or handheld device to the WiFi network "TCD-AP".
+- Navigate your browser to http://timecircuits.local or http://192.168.4.1 to enter the Config Portal.
+- If you want your clock to connect to your WiFi network, click on "Configure WiFi" and configure your Wifi network. The bare minimum is to select an SSID and a WiFi password. Note that the device requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). (If the device is inaccessible as a result of wrong static IPs, hold ENTER when powering it up until the white LED lits; static IP data will be deleted and the device will return to DHCP.) After saving the WiFi network settings, the device reboots and tries to connect to your configured WiFi network. If it fails to connect to your network, the device will again start in access point mode. 
+
+The next step is to set the clock's ... clock and time zone.
+
+If your clock is connected to a WiFi network with internet access, it will receive time information through NTP (network time protocol). If the internet is inaccessible, please set your local time through the [keypad menu](#how-to-set-the-real-time-clock-rtc). In both cases it is important to set the clock's time zone. This is done in the Config Portal, so read on.
 
 ### The Config Portal
 
-The Config Portal is accessible in two ways: As outlined above, if the device is not connected to a WiFi network, it creates its own WiFi network, to which your WiFi-enabled hand held device or computer can connect ("TCD-AP", http://timecircuits.local or http://192.168.4.1) to enter the Config Portal. If the clock is connected to your WiFi network, direct your browser to http://timecircuits.local. If that fails, hold ENTER on the keypad for 2 seconds, then repeatedly press ENTER until "NET-WORK" is shown, then hold ENTER for 2 seconds. The device will then show its current IP address. Then, on your handheld or computer, navigate to http://a.b.c.d (a.b.c.d being the Ip address as shown on the display) in order to enter the Config Portal.
+The Config Portal is accessible exclusively through WiFi. As outlined above, if the device is not connected to a WiFi network, it creates its own WiFi network (named "TCD-AP"), to which your WiFi-enabled hand held device or computer first needs to connect in order to access the Config Portal.
+
+If the operating system on your handheld or computer supports Bonjour (or "mDNS"), you can connect to the Config Portal by directing your browser to http://timecircuits.local. (Windows 10 supports mDNS as of version TH2 (1511), all earlier versions of Windows do not. MacOS does since around 2002.)
+
+If that fails, the way to connect to the Config Portal depends on whether the clock is in access point mode or not. If it is in access point mode, nagivate to http://192.168.4.1. If the device is connected to your WiFi network, you need to find out its IP address first: Hold ENTER on the keypad for 2 seconds, then repeatedly press ENTER until "NET-WORK" is shown, then hold ENTER for 2 seconds. The device will then show its current IP address. Then, on your handheld or computer, navigate to http://a.b.c.d (a.b.c.d being the IP address as shown on the display) in order to enter the Config Portal.
 
 In the main menu, click on "Setup" to configure your clock, first and foremost your time zone. If the time zone isn't set correctly, the clock might show a wrong time, and DST (daylight saving) will not be switched on/off correctly.
 
