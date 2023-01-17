@@ -68,9 +68,13 @@ As long as the device is unconfigured or later for some reason fails to connect 
 - Navigate your browser to http://timecircuits.local or http://192.168.4.1 to enter the Config Portal.
 - If you want your clock to connect to your WiFi network, click on "Configure WiFi" and configure your Wifi network. The bare minimum is to select an SSID and a WiFi password. Note that the device requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). (If the device is inaccessible as a result of wrong static IPs, hold ENTER when powering it up until the white LED lits; static IP data will be deleted and the device will return to DHCP.) After saving the WiFi network settings, the device reboots and tries to connect to your configured WiFi network. If it fails to connect to your network, the device will again start in access point mode. 
 
-The next step is to set the clock's ... clock and time zone.
+The next step is to set the clock's ... clock (and time zone).
 
-If your clock is connected to a WiFi network with internet access, it will receive time information through NTP (network time protocol). If the internet is inaccessible, please set your local time through the [keypad menu](#how-to-set-the-real-time-clock-rtc). In both cases it is important to set the clock's time zone. This is done in the Config Portal, so read on.
+If your clock is connected to a WiFi network with internet access, it will receive time information through NTP (network time protocol). If the clock shows a wrong time initially, don't worry: This is due to a wrong time zone.
+
+If the internet is inaccessible, please set your local time through the [keypad menu](#how-to-set-the-real-time-clock-rtc). 
+
+In both cases it is, again, important to set the clock's time zone. This is done in the Config Portal, so read on.
 
 ### The Config Portal
 
