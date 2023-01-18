@@ -1045,7 +1045,11 @@ int16_t clockDisplay::loadLastYear()
             #ifdef TC_DBG
             Serial.println("loadLastYear: Transitioning to flash FS");
             #endif
-            writeFileToFS(fnLastYear, loadBuf, 4);
+            if(writeFileToFS(fnLastYear, loadBuf, 4)) {
+                // Invalidate EEPROM contents
+                EEPROM.write(PRES_LY_PREF, loadBuf[0] + 1);
+                EEPROM.commit();
+            }
         }
 
         return (int16_t)((loadBuf[1] << 8) | loadBuf[0]);
@@ -1058,7 +1062,7 @@ int16_t clockDisplay::loadLastYear()
 
 // Private functions ###########################################################
 
-void clockDisplay::saveNVMData(uint8_t *savBuf, bool noReadChk)
+bool clockDisplay::saveNVMData(uint8_t *savBuf, bool noReadChk)
 {
     uint16_t sum = 0;
     uint8_t loadBuf[10];
@@ -1084,9 +1088,9 @@ void clockDisplay::saveNVMData(uint8_t *savBuf, bool noReadChk)
         }
         savBuf[9] = sum & 0xff;
         if(FlashROMode) {
-            writeFileToSD(fnEEPROM[_did], savBuf, 10);
+            return writeFileToSD(fnEEPROM[_did], savBuf, 10);
         } else {
-            writeFileToFS(fnEEPROM[_did], savBuf, 10);
+            return writeFileToFS(fnEEPROM[_did], savBuf, 10);
             /*
             for(uint8_t i = 0; i < 10; i++) {
                EEPROM.write(_saveAddress + i, savBuf[i]);
@@ -1095,6 +1099,7 @@ void clockDisplay::saveNVMData(uint8_t *savBuf, bool noReadChk)
             */
         }
     }
+    return true;
 }
 
 bool clockDisplay::loadNVMData(uint8_t *loadBuf)
@@ -1135,7 +1140,11 @@ bool clockDisplay::loadNVMData(uint8_t *loadBuf)
         #ifdef TC_DBG
         Serial.println("loadNVMData: Transitioning to flash FS");
         #endif
-        saveNVMData(loadBuf, true);
+        if(saveNVMData(loadBuf, true)) {
+            // Invalidate EEPROM contents
+            EEPROM.write(_saveAddress, loadBuf[0] + 1);
+            EEPROM.commit();
+        }
     }
     
     return sumOK;

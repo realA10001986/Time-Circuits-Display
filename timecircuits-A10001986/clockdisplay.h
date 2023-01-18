@@ -119,7 +119,7 @@ class clockDisplay {
 
     private:
 
-        void     saveNVMData(uint8_t *savBuf, bool noReadChk = false);
+        bool     saveNVMData(uint8_t *savBuf, bool noReadChk = false);
         bool     loadNVMData(uint8_t *loadBuf);
 
         uint8_t  getLED7NumChar(uint8_t value);
