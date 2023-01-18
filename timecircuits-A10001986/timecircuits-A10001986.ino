@@ -102,6 +102,7 @@
  *    - Invalidate EEPROM contents after migrating to flash FS
  *    - Patch the living daylights out of the CP's WiFi Config Page (new JS with 
  *      corrected logic for Password-placeholder, uniform look, etc)
+ *    - Fix regression on WiFi Config page (clicking on SSID-Link)
  *  2023/01/16-17 (A10001986)
  *    - Use files for clock states instead of the EEPROM API
  *    - Some more CP eye-candy, plus an easter egg
