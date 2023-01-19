@@ -13,15 +13,15 @@ Features include
 - Support for time zones and automatic DST
 - Time synchronization via NTP or [GPS](#gps-receiver)
 - Movie-accurate [time travel](#time-travel) function with *Present time* always running as a clock (as opposed to being stale)
-- ["Return from Time Travel"](#time-travel) (hold "9" for 2 seconds)
+- ["Return from Time Travel"](#time-travel): Return to real present time easily
 - ["Decorative mode"](#time-cycling): Movie-accurate time travel times displayed in *destination time* and *last time departed* displays, and cycled in configurable interval
 - [Alarm function](#how-to-set-up-the-alarm)
 - [Night mode](#night-mode) (displays off or dimmed; manual, scheduled or sensor-controlled)
 - &#127381; [Music player](#the-music-player): Play mp3 files located on an SD card
 - [SD card](#sd-card) support for custom audio files for effects, &#127381; and music for the Music Player
 - Advanced network-accessible [Config Portal](#the-config-portal) for setup &#127381; with mDNS support for easy access (http://timecircuits.local, hostname configurable)
-- [Keypad menu](#the-keypad-menu) for adjusting various settings and viewing IP address and WiFi status
-- 24-hour clock mode for non-Americans
+- [Keypad-controlled menu](#the-keypad-menu) for adjusting various settings and viewing network status via the three displays
+- 24-hour clock mode
 - &#127381; [Room condition mode](#room-condition-mode-temperaturehumidity-sensor): Display temperature and humidity instead of destination/departed time (requires suitable sensor)
 - Optional power-up intro
 - Optional [sound on the hour](#additional-custom-sounds)
@@ -39,7 +39,7 @@ The code here is based on rudimentary code from/by circuitsetup.us, who in the m
 
 There are different alternative ways to install this firmware:
 
-1) If a previous version of the Time Circuits firmware was installed on your device, you can upload the provided pre-compiled binary to update to the current version: Enter the [Config Portal](#the-config-portal), click on "Update" and select the pre-compiled binary file provided in this repository ("install/timecircuits-A10001986.ino.nodemcu-32s.bin").
+1) If a previous version of the Time Circuits firmware was installed on your device, you can upload the provided pre-compiled binary to update to the current version: Enter the [Config Portal](#the-config-portal), click on "Update" and select the pre-compiled binary file provided in this repository ("install/timecircuits-A10001986.ino.nodemcu-32s.bin"). *Note: If the previously installed firmware was from CircuitSetup, you need to re-install the sound-files using the sound-pack from this very repo.*
 
 2) Using the Arduino IDE or PlatformIO: Download the sketch source code, all required libraries, compile and upload it. This method is the one for fresh ESP32 boards and/or folks familiar with the programming tool chain. Detailed build information is in [timecircuits-A10001986.ino](https://github.com/realA10001986/Time-Circuits-Display/blob/main/timecircuits-A10001986/timecircuits-A10001986.ino).
 
@@ -54,9 +54,9 @@ The firmware comes with a number of sound files which need to be installed separ
 - insert this SD card into the device's slot and 
 - power up the clock.
  
-If (and only if) the **exact and complete contents of sound-pack archive** is found on the SD card during boot, the keypad will have an "INSTALL AUDIO FILES" menu item, and the Config portal will show an "Audio file installation" option at the bottom of the "Setup" page.
+If (and only if) the **exact and complete contents of sound-pack archive** is found on the SD card during boot, the keypad menu will have an "INSTALL AUDIO FILES" menu item, and the Config portal will show an "Audio file installation" option at the bottom of the "Setup" page.
 
-If you choose to use the Config Portal, trigger the audio file installation process by writing "COPY" (without the quotation marks) into the empty text field in the "Audio file installation" section, and clicking on "Save". The device will then copy all the default audio files from the SD card to its internal memory. The keypad menu method for installation is described [here](#how-to-install-the-default-audio-files). The SD card can - and should - be removed afterwards; it can be re-used for [other purposes](#sd-card) after deleting the files of the sound-pack.
+If you choose to use the Config Portal, trigger the audio file installation process by writing "COPY" (in caps, without the quotation marks) into the empty text field in the "Audio file installation" section, and clicking on "Save". The device will then copy all the default audio files from the SD card to its internal memory. The keypad menu method for installation is described [here](#how-to-install-the-default-audio-files). The SD card can - and should - be removed afterwards; it can be re-used for [other purposes](#sd-card) after deleting the files of the sound-pack.
 
 ## Short summary of first steps
 
@@ -108,9 +108,9 @@ Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed afte
 
 "Time cycling" is a kind of "decorative" mode in which the device cycles through a list of pre-programmed *destination* and *last time departed* times. These pre-programmed times match the dates/times of all time-travels that take place in the three movies.
 
-Time-cycling is enabled by setting the "Time-cycling Interval" in the Config Portal (via network) or the [keypad menu](#how-to-select-the-time-cycling-interval) to a non-zero value. The device will then cycle through named list every 5th, 10th, 15th, 30th or 60th minute. 
+Time-cycling is enabled by setting the "Time-cycling Interval" in the Config Portal or the [keypad menu](#how-to-select-the-time-cycling-interval) to a non-zero value. The device will then cycle through named list every 5th, 10th, 15th, 30th or 60th minute. 
 
-Time-cycling will, if enabled, change the *Destination* and *Last Time Departed* displays regardless of the times displayed, for instance as a result from an earlier time travel. Triggering a time-travel will, however, pause time-cycling for 30 minutes.
+Time-cycling will, if enabled, change the *Destination* and *Last Time Departed* displays regardless of the times already displayed, for instance as a result from an earlier time travel. Triggering a time-travel will, however, pause time-cycling for 30 minutes.
 
 Set the interval to OFF (0) to disable Time-cycling.
 
@@ -284,13 +284,13 @@ If you want your device to display exactly the same after a power loss, choose p
 
 If you want to display your favorite *destination time* and *last time departed* upon power-up, and not have time travels overwrite them in flash memory, choose "non-persistent", and program your times through the [keypad menu](#how-to-enter-datestimes-for-the-destination-and-last-time-departed-displays) (and disable [Time-cycling](#time-cycling)). Those times will never be overwritten in flash memory by later time travels. Note, however, that the times displayed might actually change due to time travels.
 
-Note that Time-cycling, if enabled, will force the device to cycle through the list of pre-programmed times, regardless of your time travel persistence setting. So, if Time-cycling is enabled, the only effect of persistence is that *Present Time* is kept at what it was before vs. reset to actual present time after power loss.
+Note that Time-cycling, if enabled, will force the device to cycle through the list of pre-programmed times, regardless of your time travel persistence setting. So, if Time-cycling is enabled, the only effect of persistence is that *Present Time* is kept at what it was before vs. reset to actual present time after a power loss.
 
 Persistent time travels, if done often, will cause [Flash Wear](#flash-wear).
 
 ## Night mode
 
-In Night-mode, by default, the *destination time* and *last time departed* displays are switched off, the *present time* display is dimmed to a minimum, and the volume of sound playback is reduced (except the alarm). Apart from considerably increasing the displays' lifetime, night-mode reduces the power consumption of the device from around 4.5W to around 2.5W.
+In night-mode, by default, the *destination time* and *last time departed* displays are switched off, the *present time* display is dimmed to a minimum, and the volume of sound playback is reduced (except the alarm). Apart from considerably increasing the displays' lifetime, night-mode reduces the power consumption of the device from around 4.5W to around 2.5W.
 
 You can configure the displays' behavior in night-mode in the Config Portal: They can individually be dimmed or switched off in night-mode.
 
@@ -334,7 +334,7 @@ The provided audio files ("sound-pack") are, after [proper installation](#audio-
 
 These sounds can be substituted by your own sound files on a FAT32-formatted SD card. These files will be played back directly from the SD card during operation, so the SD card has to remain in the slot. The built-in [Audio file installer](#audio-file-installation) cannot be used to replace default sounds in the device's flash memory with custom sounds.
 
-Your replacements need to be put in the root (top-most) directory of the SD card, be in mp3 format (128kbps) and named as follows:
+Your replacements need to be put in the root (top-most) directory of the SD card, be in mp3 format (128kbps max) and named as follows:
 - "alarm.mp3". Played when the alarm sounds.
 - "alarmon.mp3". Played when enabling the alarm
 - "alarmoff.mp3". Played when disabling the alarm
@@ -350,7 +350,7 @@ The following sounds are time-sync'd to display action. If you decide to substit
 - "shutdown.mp3". Played when the device is fake "powered down" using an external switch (see below)
 - "startup.mp3". Played when the clock is connected to power and finished booting
 
-If you intend to use the very same SD card that you used for installing the default sound files, please remove the file "TCD_def_snd.txt" from the SD card first.
+If you intend to use the very same SD card that you used for installing the default sound files, please remove the file "TCD_def_snd.txt" and the other files from the sound-pack from the SD card first.
 
 ### Additional Custom Sounds
 
@@ -380,7 +380,7 @@ While the music player is playing music, most sound effects are disabled/muted, 
 
 ## The keypad menu
  
-The menu is controlled by "pressing" or "holding" the ENTER key on the keypad.
+The keypad menu is an additional way to configure your clock; it only involves the three displays and the keypad. It is controlled by "pressing" or "holding" the ENTER key on the keypad.
 
 A "press" is shorter than 2 seconds, a "hold" is 2 seconds or longer.
 
@@ -401,7 +401,7 @@ After invoking the keypad menu, the first step is to choose a menu item. The ava
 - install the default audio files ("INSTALL AUDIO FILES")
 - quit the menu ("END").
  
-Pressing ENTER cycles through the list, holding ENTER selects an item, ie a mode.
+Pressing ENTER cycles through the list, holding ENTER selects an item.
 
 #### How to set up the alarm:
 
