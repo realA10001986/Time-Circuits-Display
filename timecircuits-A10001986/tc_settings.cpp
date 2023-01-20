@@ -67,7 +67,7 @@ static bool configOnSD = false;
 /* Paranoia: No writes Flash-FS  */
 bool FlashROMode = false;
 
-#define NUM_AUDIOFILES 17
+#define NUM_AUDIOFILES 18
 static const char *audioFiles[NUM_AUDIOFILES] = {
       "/alarm.mp3\0",
       "/alarmoff.mp3\0",
@@ -84,6 +84,7 @@ static const char *audioFiles[NUM_AUDIOFILES] = {
       "/ping.mp3\0",
       "/shutdown.mp3",
       "/startup.mp3\0",
+      "/timer.mp3\0",
       "/timetravel.mp3\0",
       "/travelstart.mp3\0"
 };
@@ -1039,16 +1040,16 @@ static bool check_if_default_audio_present()
     size_t sizes[10+NUM_AUDIOFILES] = {
 #ifndef TWSOUND
       4178, 4178, 4178, 4178, 4178, 4178, 3760, 3760, 4596, 3760, // DTMF
-      70664, 71500, 60633, 10478,           // alarm, alarmoff, alarmon, baddate
-      15184, 22983, 33364, 51701,           // ee1, ee2, ee3, ee4
-      13374, 125804, 33853, 47228,          // enter, intro, nmoff, nmon
-      16747, 3790, 21907, 38899, 135447     // ping, shutdown, startup, timetravel, travelstart
+      65230, 71500, 60633, 10478,               // alarm, alarmoff, alarmon, baddate
+      15184, 22983, 33364, 51701,               // ee1, ee2, ee3, ee4
+      13374, 125804, 33853, 47228,              // enter, intro, nmoff, nmon
+      16747, 3790, 21907, 84894, 38899, 135447  // ping, shutdown, startup, timer, timetravel, travelstart
 #else
       4178, 4178, 4178, 4178, 4178, 4178, 3760, 3760, 4596, 3760, //DTMF
-      70664, 71500, 60633, 10478,           // alarm, alarmoff, alarmon, baddate
-      15184, 22983, 33364, 51701,           // ee1, ee2, ee3, ee4
-      12149, 125804, 33853, 47228,          // enter, intro, nmoff, nmon
-      16747, 3790, 18419, 38899, 135447     // ping, shutdown, startup, timetravel, travelstart
+      65230, 71500, 60633, 10478,               // alarm, alarmoff, alarmon, baddate
+      15184, 22983, 33364, 51701,               // ee1, ee2, ee3, ee4
+      12149, 125804, 33853, 47228,              // enter, intro, nmoff, nmon
+      16747, 3790, 18419, 84894, 38899, 135447  // ping, shutdown, startup, timer, timetravel, travelstart
 #endif
     };
 

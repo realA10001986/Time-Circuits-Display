@@ -98,6 +98,12 @@
 
 /*  Changelog
  *    
+ *  2023/01/20 (A10001986)
+ *    - Add count-down timer function: To start, type 44xxENTER, xx being the number
+ *      of minutes (2 digits). Type 44ENTER to see the time remaining.
+ *    - Update for sound-pack: Add "timer.mp3" sound, changed "alarm.mp3" sound.
+ *  2023/01/19 (A10001986)
+ *    - CP: All sub-pages are now uniform (redo logo on Update-page)
  *  2023/01/18 (A10001986)
  *    - Invalidate EEPROM contents after migrating to flash FS
  *    - Patch the living daylights out of the CP's WiFi Config Page (new JS with 

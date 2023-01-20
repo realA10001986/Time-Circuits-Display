@@ -69,6 +69,9 @@ extern int8_t        manualNightMode;
 extern unsigned long manualNMNow;
 extern bool          forceReEvalANM;
 
+extern unsigned long ctDown;
+extern unsigned long ctDownNow;
+
 #define NUM_AUTOTIMES 11
 extern dateStruct destinationTimes[NUM_AUTOTIMES];
 extern dateStruct departedTimes[NUM_AUTOTIMES];

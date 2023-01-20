@@ -418,6 +418,9 @@ bool useLight = false;
 static unsigned long lastLoopLight = 0;
 #endif
 
+unsigned long ctDown = 0;
+unsigned long ctDownNow = 0;
+
 // State flags
 static bool DSTcheckDone = false;
 static bool autoIntDone = false;
@@ -1715,7 +1718,7 @@ void time_loop()
             }
             #endif
 
-            // Alarm & Sound on the Hour
+            // Alarm, count-down timer, Sound-on-the-Hour
 
             {
                 #ifdef TC_HAVELIGHT
@@ -1752,6 +1755,18 @@ void time_loop()
                     }
                 } else {
                     hourlySoundDone = false;
+                }
+
+                // Handle count-down timer
+
+                if(ctDown) {
+                    if(millis() - ctDownNow > ctDown) {
+                        if( (!(alarmOnOff && (alarmHour == compHour) && (alarmMinute == compMin))) ||
+                            (alarmDone && checkAudioDone()) ) {
+                            play_file("/timer.mp3", 1.0, false, true);
+                            ctDown = 0;
+                        }
+                    }
                 }
 
                 // Handle alarm

@@ -389,6 +389,7 @@ void keypad_loop()
     char spTxt[16];
     #define EE1_KL2 12
     char spTxtS2[EE1_KL2] = { 181, 224, 179, 231, 199, 140, 197, 129, 197, 140, 194, 133 };
+    const char *tmr = "TIMER   ";
 
     enterkeyScan();
 
@@ -484,9 +485,10 @@ void keypad_loop()
 
         } else if(strLen == DATELEN_ALSH) {
 
+            char atxt[16];
+            
             if(dateBuffer[0] == '1' && dateBuffer[1] == '1') {
 
-                char atxt[16];
                 int al = getAlarm();
                 if(al >= 0) {
                     const char *alwd = getAlWD(alarmWeekday);
@@ -505,6 +507,30 @@ void keypad_loop()
                     #endif
                     invalidEntry = true;
                 }
+                specDisp = 10;
+
+            } else if(dateBuffer[0] == '4' && dateBuffer[1] == '4') {
+
+                if(!ctDown) {
+                    #ifdef IS_ACAR_DISPLAY
+                    sprintf(atxt, "%s OFF", tmr);
+                    #else
+                    sprintf(atxt, "%s  OFF", tmr);
+                    #endif
+                    invalidEntry = true;
+                } else {
+                    unsigned long el = ctDown - (millis()-ctDownNow);
+                    uint8_t mins = el/(1000*60);
+                    uint8_t secs = (el-(mins*1000*60))/1000;
+                    if((long)el < 0) mins = secs = 0;
+                    #ifdef IS_ACAR_DISPLAY
+                    sprintf(atxt, "%s%02d%02d", tmr, mins, secs);
+                    #else
+                    sprintf(atxt, "%s %02d%02d", tmr, mins, secs);
+                    #endif
+                    validEntry = true;
+                }
+                destinationTime.showTextDirect(atxt);
                 specDisp = 10;
 
             } else 
@@ -625,6 +651,34 @@ void keypad_loop()
             } else {
                 invalidEntry = true;
             }
+
+        } else if(strLen == DATELEN_TIME && 
+                  dateBuffer[0] == '4' && dateBuffer[1] == '4') {
+
+            char atxt[16];
+            uint8_t mins;
+            
+            mins = ((dateBuffer[2] - '0') * 10) + (dateBuffer[3] - '0');
+            if(!mins) {
+                #ifdef IS_ACAR_DISPLAY
+                sprintf(atxt, "%s OFF", tmr);
+                #else
+                sprintf(atxt, "%s  OFF", tmr);
+                #endif
+                ctDown = 0;
+            } else {
+                #ifdef IS_ACAR_DISPLAY
+                sprintf(atxt, "%s%02d00", tmr, mins);
+                #else
+                sprintf(atxt, "%s %02d00", tmr, mins);
+                #endif
+                ctDown = mins * 60 * 1000;
+                ctDownNow = millis();
+            }
+
+            destinationTime.showTextDirect(atxt);
+            specDisp = 10;
+            validEntry = true;
 
         } else {
 
