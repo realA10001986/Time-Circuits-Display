@@ -291,7 +291,8 @@ static struct dispConf {
     uint8_t  bufPosArr[4];   //   The buffer positions of each of the digits from left to right
     const uint16_t *fontSeg; //   Pointer to font
 } displays[SP_NUM_TYPES] = {
-  { true,  0, 1, 0, 0, 1, 0, 255,      0, 8, 2, 0, { 0, 1 },       font7segGeneric },  // CircuitSetup TCD add-on (TODO)
+  { true,  0, 1, 0, 0, 1, 0, 255,      0, 8, 2, 0, { 0, 1 },       font7segGeneric },  // CircuitSetup Speedo add-on (in design stage; non-multiplexed)
+//{ true,  0, 0, 0, 8, 0, 8, 255,      0, 8, 2, 1, { 0 },          font7segGeneric },  // CircuitSetup Speedo add-on (in design stage; multiplexed)
   { true,  3, 4, 0, 0, 4, 0,   2, 0x0002, 8, 4, 0, { 0, 1, 3, 4 }, font7segGeneric },  // SP_ADAF_7x4   0.56" (right)
   { true,  0, 1, 0, 0, 1, 0,   2, 0x0002, 8, 4, 0, { 0, 1, 3, 4 }, font7segGeneric },  // SP_ADAF_7x4L  0.56" (left)
   { true,  3, 4, 0, 0, 4, 0,   2, 0x0002, 8, 4, 0, { 0, 1, 3, 4 }, font7segGeneric },  // SP_ADAF_B7x4  1.2" (right)
