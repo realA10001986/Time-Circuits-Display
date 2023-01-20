@@ -16,7 +16,7 @@ Features include
 - ["Return from Time Travel"](#time-travel): Return to real present time easily
 - ["Decorative mode"](#time-cycling): Movie-accurate time travel times displayed in *destination time* and *last time departed* displays, and cycled in configurable interval
 - [Alarm function](#how-to-set-up-the-alarm)
-- &#127381; [Count-down timer](#xxx)
+- &#127381; [Count-down timer](#count-down-timer)
 - [Night mode](#night-mode) (displays off or dimmed; manual, scheduled or sensor-controlled)
 - &#127381; [Music player](#the-music-player): Play mp3 files located on an SD card
 - [SD card](#sd-card) support for custom audio files for effects, &#127381; and music for the Music Player
@@ -187,11 +187,11 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
     </tr>
     <tr>
      <td align="center">44&#9166;</td>
-     <td align="center"><a href="#xxx">Timer</a>: Show remaining time</td>
+     <td align="center"><a href="#count-down-timer">Timer</a>: Show remaining time</td>
     </tr>
     <tr>
      <td align="center">44MM&#9166;</td>
-     <td align="center"><a href="#xxx">Timer</a>: Set timer to MM minutes</td>
+     <td align="center"><a href="#count-down-timer">Timer</a>: Set timer to MM minutes</td>
     </tr>
     <tr>
      <td align="center">222&#9166;</td>
