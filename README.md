@@ -182,16 +182,16 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="center">Set <a href="#how-to-set-up-the-alarm">alarm</a> to hh:MM</td>
     </tr>
     <tr>
-     <td align="center">111&#9166;</td>
-     <td align="center">Toggle <a href="#room-condition-mode-temperaturehumidity-sensor">Room Condition mode</a></td>
-    </tr>
-    <tr>
      <td align="center">44&#9166;</td>
      <td align="center"><a href="#count-down-timer">Timer</a>: Show remaining time</td>
     </tr>
     <tr>
      <td align="center">44MM&#9166;</td>
      <td align="center"><a href="#count-down-timer">Timer</a>: Set timer to MM minutes</td>
+    </tr>
+    <tr>
+     <td align="center">111&#9166;</td>
+     <td align="center">Toggle <a href="#room-condition-mode-temperaturehumidity-sensor">Room Condition mode</a></td>
     </tr>
     <tr>
      <td align="center">222&#9166;</td>
