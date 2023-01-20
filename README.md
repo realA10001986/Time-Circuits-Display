@@ -382,6 +382,8 @@ While the music player is playing music, most sound effects are disabled/muted, 
  
 The keypad menu is an additional way to configure your clock; it only involves the three displays and the keypad. It is controlled by "pressing" or "holding" the ENTER key on the keypad.
 
+*Note that while the clock is in the keypad menu, the alarm, count-down timer or sound-on-the-hour will not sound.*
+
 A "press" is shorter than 2 seconds, a "hold" is 2 seconds or longer.
 
 The menu is invoked by holding the ENTER button.
@@ -420,6 +422,8 @@ Under normal operation (ie outside of the menu), holding "1" toggles the alarm o
 The alarm time can also quickly be set by typing 11hhMM (eg. 110645 for 6:45am, or 112300 for 11:00pm) and pressing ENTER, just like when setting a time travel destination time. (The weekday selection has still to be done via the keypad menu.) Typing 11 followed by ENTER shows the currently set time and weekday selection briefly.
 
 Note that the alarm is recurring, ie it rings at the programmed time, unless disabled. Also note, as mentioned, that the alarm is by default relative to your actual *present time*, not the time displayed (eg after a time travel). It can, however, be configured to be based on the time displayed, in the Config Portal.
+
+*Important: The alarm will not sound when the keypad menu is active at the programmed alarm time.*
 
 #### How to set the audio volume:
 
