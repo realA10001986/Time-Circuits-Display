@@ -16,6 +16,7 @@ Features include
 - ["Return from Time Travel"](#time-travel): Return to real present time easily
 - ["Decorative mode"](#time-cycling): Movie-accurate time travel times displayed in *destination time* and *last time departed* displays, and cycled in configurable interval
 - [Alarm function](#how-to-set-up-the-alarm)
+- &#127381; [Count-down timer](#xxx)
 - [Night mode](#night-mode) (displays off or dimmed; manual, scheduled or sensor-controlled)
 - &#127381; [Music player](#the-music-player): Play mp3 files located on an SD card
 - [SD card](#sd-card) support for custom audio files for effects, &#127381; and music for the Music Player
@@ -185,6 +186,14 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="center">Toggle <a href="#room-condition-mode-temperaturehumidity-sensor">Room Condition mode</a></td>
     </tr>
     <tr>
+     <td align="center">44&#9166;</td>
+     <td align="center"><a href="#xxx">Timer</a>: Show remaining time</td>
+    </tr>
+    <tr>
+     <td align="center">44MM&#9166;</td>
+     <td align="center"><a href="#xxx">Timer</a>: Set timer to MM minutes</td>
+    </tr>
+    <tr>
      <td align="center">222&#9166;</td>
      <td align="center"><a href="#the-music-player">Music Player</a>: Shuffle off</td>
     </tr>
@@ -322,6 +331,14 @@ If both a schedule is enabled and the light sensor option is checked in the Conf
 
 Switching on/off night-mode manually deactivates any schedule and the light sensor for 30 minutes. Afterwards, a programmed schedule and/or the light sensor will overrule the manual setting.
 
+## Count-down timer
+
+The firmware features a simple count-down timer. This timer can count down from max 99 minutes and plays a sound when expired.
+
+To set the timer to MM minutes, type 44MM and press ENTER. Note that for minutes, 2 digits must be entered.
+
+The check the remaining time, type 44 and press ENTER.
+
 ## SD card
 
 Preface note on SD cards: For unknown reasons, some SD cards simply do not work with this device. For instance, I had no luck with a Sandisk Ultra 32GB card. If your SD card is not recognized, check if it is formatted in FAT32 format (not exFAT!). Also, the size must not exceed 32GB (as larger cards cannot be formatted with FAT32).
@@ -342,6 +359,7 @@ Your replacements need to be put in the root (top-most) directory of the SD card
 - "alarmoff.mp3". Played when disabling the alarm
 - "nmon.mp3". Played when manually enabling night mode
 - "nmoff.mp3". Played when manually disabling night mode
+- "timer.mp3". Playeed when the count-down timer expires.
 
 The following sounds are time-sync'd to display action. If you decide to substitute these with your own, be prepared to lose synchronicity:
 - "enter.mp3". Played when a date was entered and ENTER was pressed
