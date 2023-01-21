@@ -50,18 +50,18 @@ There are different alternative ways to install this firmware:
 
 The firmware comes with a number of sound files which need to be installed separately. These sound files are not updated as often as the firmware itself. If you have previously installed the latest version of the sound-pack, you normally don't have to re-install the audio files when you update the firmware. Only if either a new version of the sound-pack is released, or your clock is quiet after a firmware update (what will the case if you see "WAIT" during boot), a re-installation is needed.
 
-*If your clock previously ran a firmware from CircuitSetup, a re-installation of the audio files _from this repository_ is required. You cannot use CircuitSetup's sound files with the firmware here.*
+*If your clock previously ran a firmware from CircuitSetup, a re-installation of the audio files **from this repository** is required. You cannot use CircuitSetup's audio files with the firmware available here.*
 
 - Download "install/sound-pack-xxxxxxxx.zip" and extract it to the root directory of of a FAT32 formatted SD card
 - power down the clock,
 - insert this SD card into the device's slot and 
 - power up the clock.
  
-If (and only if) the **exact and complete contents of sound-pack archive** is found on the SD card during boot, the clock will show "INSTALL AUDIO FILES?" during boot. Press ENTER briefly to toggle between "CANCEL" and "PROCEED". Choose "PROCEED" and hold the ENTER key for 2 seconds.
+If (and only if) the **exact and complete contents of sound-pack archive** is found on the SD card, the clock will show "INSTALL AUDIO FILES?" after power-up. Press ENTER briefly to toggle between "CANCEL" and "PROCEED". Choose "PROCEED" and hold the ENTER key for 2 seconds.
 
 If you, for whatever reason, chose "CANCEL", you can still invoke the installer through the [keypad menu](#how-to-install-the-default-audio-files), or by rebooting the clock.
 
-The SD card can be re-used for [other purposes](#sd-card) then.
+After installation, the SD card can be re-used for [other purposes](#sd-card).
 
 ## Short summary of first steps
 
