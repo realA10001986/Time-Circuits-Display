@@ -530,6 +530,8 @@ Note that when entering dates/times into the *destination time* or *last time de
 - Press ENTER to toggle between light sensor and temperature sensor info (if both are connected)
 - Hold ENTER to exit the menu
 
+Note: Sometimes, light sensors report a lux value of -1. This is mostly due to the fact that all the supported sensors are adjusted for indoor usage and might overload in broad daylight. Also, some sensors might have issues with halogen lamps (reportedly TSL2561), and most sensors also "overload" if too much IR light is directed at them, for instance from surveillance cameras.
+
 #### How to install the default audio files:
 
 - Hold ENTER to invoke main menu
