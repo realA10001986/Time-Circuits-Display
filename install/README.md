@@ -12,11 +12,12 @@ For a fresh installation, the provided binary is not usable. You'll need to use 
 
 The sound pack is not updated as often as the firmware itself. If you have previously installed the latest version of the sound-pack, you normally don't have to re-install the audio files when you update the firmware. Only if either a new version of the sound-pack is released here, or your clock is quiet after a firmware update, a re-installation is needed.
 
+**You cannot mix firmwares and audio files from this repository and CircuitSetup's. If you install the firmware available here, you need to install the audio files from this repository as well.**
+
 - Download "sound-pack-xxxxxxxx.zip" and extract it to the root directory of of a FAT32 formatted SD card
 - power down the clock,
 - insert this SD card into the device's slot and 
 - power up the clock.
 
-The keypad will have an "INSTALL AUDIO FILES" menu item, and the Config portal will show an "Audio file installation" option at the bottom of the "Setup" page.
 
 Please see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/README.md#audio-file-installation) for further information.
