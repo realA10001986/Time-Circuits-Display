@@ -787,7 +787,7 @@ void keypad_loop()
             if(_setHour >= 0) destinationTime.setHour(_setHour);
             if(_setMin >= 0)  destinationTime.setMinute(_setMin);
 
-            // We only save the new time to the EEPROM if user wants persistence.
+            // We only save the new time to NVM if user wants persistence.
             // Might not be preferred; first, this messes with the user's custom
             // times. Secondly, it wears the flash memory.
             if(timetravelPersistent) {

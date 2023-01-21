@@ -1187,6 +1187,17 @@ static bool filecopy(File source, File dest)
     return true;
 }
 
+bool audio_files_present()
+{
+    if(FlashROMode) 
+      return true;
+
+    if(SPIFFS.exists("/Dtmf-0.mp3"))
+      return true;
+
+    return false;
+}
+
 /*
  * Various helpers
  */

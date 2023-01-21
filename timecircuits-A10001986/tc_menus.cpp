@@ -206,7 +206,6 @@
 
 #include <Arduino.h>
 #include <Wire.h>
-#include <EEPROM.h>
 #include <WiFi.h> 
 
 #include "clockdisplay.h"
@@ -335,7 +334,7 @@ void enter_menu()
     // start with first menu item
     menuItemNum = MODE_MIN;
 
-    // Load the custom times from EEPROM
+    // Load the custom times from NVM
     // This means that when the user activates the menu while
     // autoInterval was > 0 or after time travels, there will
     // be different times shown in the menu than were outside
@@ -388,7 +387,7 @@ void enter_menu()
         } else {
 
             // non RTC, get the time info from the object
-            // Remember: These are the ones saved in the EEPROM
+            // Remember: These are the ones saved in NVM
             // NOT the ones that were possibly shown on the
             // display before invoking the menu
             yearSet = displaySet->getYear();
@@ -522,7 +521,7 @@ void enter_menu()
             displaySet->setHour(hourSet);
             displaySet->setMinute(minSet);
 
-            // save to eeprom (regardless of persistence mode)
+            // save to NVM (regardless of persistence mode)
             displaySet->save();
 
             mydelay(1000);
@@ -1491,7 +1490,7 @@ static void doSetAlarm()
 }
 
 /*
- *  Time-rotation Interval (aka "autoInterval") #################
+ *  Time-cycling Interval (aka "autoInterval") #################
  */
 
 /*

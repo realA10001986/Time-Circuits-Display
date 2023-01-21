@@ -181,6 +181,8 @@ bool copy_audio_files();
 
 bool check_allow_CPA();
 
+bool audio_files_present();
+
 void formatFlashFS();
 
 void rewriteSecondarySettings();

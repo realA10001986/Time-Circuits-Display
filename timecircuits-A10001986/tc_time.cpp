@@ -200,8 +200,8 @@ uint64_t timeDifference = 0;
 bool     timeDiffUp = false;  // true = add difference, false = subtract difference
 
 // Persistent time travels:
-// This controls the app's behavior as regards saving times to the EEPROM.
-// If this is true, times are saved to the EEPROM, whenever
+// This controls the app's behavior as regards saving times to NVM.
+// If this is true, times are saved to NVM, whenever
 //  - the user enters a destination time for time travel and presses ENTER
 //  - the user activates time travel (hold "0")
 //  - the user returns from a time travel (hold "9")
@@ -786,7 +786,7 @@ void time_setup()
     }
 
     if(haveAuthTime) {
-        // Save YearOffs & isDST to EEPROM if change is detected
+        // Save YearOffs & isDST to NVM if change is detected
         if( (presentTime.getYearOffset() != presentTime.loadYOffs()) ||
             (presentTime.getDST()        != presentTime.loadDST()) ) {
             presentTime.save();
@@ -814,7 +814,7 @@ void time_setup()
 
     // lastYear: The year when the RTC was adjusted for the last time.
     // If the RTC was just updated, everything is in place.
-    // Otherwise load from EEPROM, and make required re-calculations.
+    // Otherwise load from NVM, and make required re-calculations.
     if(haveAuthTime) {
         lastYear = rtcYear;
     } else {
@@ -852,7 +852,7 @@ void time_setup()
 
             presentTime.setYearOffset(yOffs);
 
-            // Save YearOffs to EEPROM if change is detected
+            // Save YearOffs to NVM if change is detected
             if(presentTime.getYearOffset() != presentTime.loadYOffs()) {
                 if(timetravelPersistent) {
                     presentTime.save();
@@ -1076,6 +1076,17 @@ void time_setup()
         destinationTime.on();
         presentTime.on();
         myIntroDelay(3000);
+        allOff();
+    }
+
+    if(!audio_files_present()) {
+        destinationTime.showTextDirect("PLEASE");
+        presentTime.showTextDirect("INSTALL");
+        departedTime.showTextDirect("AUDIO FILES");
+        destinationTime.on();
+        presentTime.on();
+        departedTime.on();
+        myIntroDelay(5000);
         allOff();
     }
 
@@ -1504,7 +1515,7 @@ void time_loop()
                             if(wasFakeRTC) timeDifference = 0;
                         }
 
-                        // Save to EEPROM if change is detected, or if RTC was way off
+                        // Save to NVM if change is detected, or if RTC was way off
                         if( (presentTime.getYearOffset() != presentTime.loadYOffs()) || 
                             wasFakeRTC                                               ||
                             (presentTime.getDST() != presentTime.loadDST()) ) {
@@ -1607,7 +1618,7 @@ void time_loop()
     
                         presentTime.setYearOffset(yOffs);
     
-                        // Save YearOffs to EEPROM if change is detected
+                        // Save YearOffs to NVM if change is detected
                         if(yOffs != presentTime.loadYOffs()) {
                             if(timetravelPersistent) {
                                 presentTime.save();
@@ -1682,7 +1693,7 @@ void time_loop()
 
                     }
 
-                    // Save yearOffset & isDTS to EEPROM
+                    // Save yearOffset & isDTS to NVM
                     if(timetravelPersistent) {
                         presentTime.save();
                     } else {
@@ -1702,7 +1713,7 @@ void time_loop()
             // Write time to presentTime display
             presentTime.setDateTimeDiff(dt);
 
-            // Update "lastYear" and save to EEPROM
+            // Update "lastYear" and save to NVM
             lastYear = dt.year() - presentTime.getYearOffset();
             presentTime.saveLastYear(lastYear);
 
@@ -2222,7 +2233,7 @@ void timeTravel(bool doComplete, bool withSpeedo)
     departedTime.setMinute(presentTime.getMinute());
     departedTime.setYearOffset(0);
 
-    // We only save the new time to the EEPROM if user wants persistence.
+    // We only save the new time to NVM if user wants persistence.
     // Might not be preferred; first, this messes with the user's custom
     // times. Secondly, it wears the flash memory.
     if(timetravelPersistent) {
@@ -2308,13 +2319,12 @@ void resetPresentTime()
 {
     pwrNeedFullNow();
 
-    // Stop music if we are to play time travel sounds
-    if(playTTsounds) mp_stop();
-
     timetravelNow = millis();
     timeTraveled = true;
-    if(timeDifference) {
-        if(playTTsounds) play_file("/timetravel.mp3", 1.0, true, true);
+    
+    if(timeDifference && playTTsounds) {
+        mp_stop();
+        play_file("/timetravel.mp3", 1.0, true, true);
     }
 
     enableRcMode(false);
@@ -2332,9 +2342,9 @@ void resetPresentTime()
     departedTime.setMinute(presentTime.getMinute());
     departedTime.setYearOffset(0);
 
-    // We only save the new time to the EEPROM if user wants persistence.
-    // Might not be preferred; first, this messes with the user's custom
-    // times. Secondly, it wears the flash memory.
+    // We only save the new time if user wants persistence.
+    // Might not be preferred; first, this messes with the user's 
+    // custom times. Secondly, it wears the flash memory.
     if(timetravelPersistent) {
         departedTime.save();
     }
@@ -2619,7 +2629,7 @@ static bool getNTPOrGPSTime(bool weHaveAuthTime)
 /*
  * Get time from NTP
  * 
- * Saves time to RTC; does not save YOffs/isDST to EEPROM.
+ * Saves time to RTC; does not save YOffs/isDST to NVM.
  * 
  * Does no re-tries in case NTPGetLocalTime() fails; this is
  * called repeatedly within a certain time window, so we can 
@@ -2707,7 +2717,7 @@ static bool getNTPTime(bool weHaveAuthTime)
 /*
  * Get time from GPS
  * 
- * Saves time to RTC; does not save YOffs/isDST to EEPROM.
+ * Saves time to RTC; does not save YOffs/isDST to NVM.
  * 
  */
 #ifdef TC_HAVEGPS

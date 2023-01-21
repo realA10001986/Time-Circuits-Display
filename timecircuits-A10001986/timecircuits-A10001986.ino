@@ -98,6 +98,11 @@
 
 /*  Changelog
  *    
+ *  2023/01/21 (A10001986)
+ *    - Return from tt: Don't stop music player if we were on actual present time
+ *      already.
+ *    - Show hint to install audio files during boot if files not present on flash
+ *      FS
  *  2023/01/20 (A10001986)
  *    - Add count-down timer function: To start, type 44xxENTER, xx being the number
  *      of minutes (2 digits). Type 44ENTER to see the time remaining.

@@ -972,14 +972,14 @@ bool clockDisplay::load(int initialBrightness)
     Serial.println(F("Clockdisplay: Invalid Non-RTC data"));
     #endif
 
-    // Do NOT clear EEPROM if data is invalid.
-    // All 0s are as bad, wait for EEPROM to be
+    // Do NOT clear NVM if data is invalid.
+    // All 0s are as bad, wait for NVM to be
     // written by application on purpose
 
     return false;
 }
 
-// Only load yearOffset from EEPROM
+// Only load yearOffset from NVM
 // !!! Does not *SET* yearOffs, just returns it !!!
 // Returns impossible values in case of error to make
 // comparisons fail orderly
@@ -997,7 +997,7 @@ int16_t clockDisplay::loadYOffs()
     return -11111;
 }
 
-// Only load isDST from EEPROM
+// Only load isDST from NVM
 // !!! Does not *SET* it, just returns it !!!
 // Returns <= -1 in case of error (which makes
 // comparisons fail orderly)
@@ -1015,7 +1015,7 @@ int8_t clockDisplay::loadDST()
     return -1;
 }
 
-// Load lastYear from EEPROM
+// Load lastYear from NVM
 // !!! Does not *SET* it, just returns it !!!
 int16_t clockDisplay::loadLastYear()
 {
