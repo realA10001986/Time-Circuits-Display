@@ -177,11 +177,15 @@ bool loadIpSettings();
 void writeIpSettings();
 void deleteIpSettings();
 
+void doCopyAudioFiles();
 bool copy_audio_files();
 
 bool check_allow_CPA();
+void delete_ID_file();
 
 bool audio_files_present();
+
+void waitForEnterRelease();
 
 void formatFlashFS();
 

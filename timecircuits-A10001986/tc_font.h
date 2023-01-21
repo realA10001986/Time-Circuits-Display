@@ -124,7 +124,7 @@ static const uint16_t alphaChars[128-32] = {
     0b0011111111111111   // DEL
 };
 
-static const uint8_t numDigs[43] = {
+static const uint8_t numDigs[44] = {
     0b00111111, // 0
     0b00000110, // 1
     0b01011011, // 2
@@ -167,7 +167,8 @@ static const uint8_t numDigs[43] = {
     0b00001000, // _/. 39
     0b01100011, // °   40 (encoded as ~)
     0b01101011, // %1  41 (encoded as %)
-    0b01011101  // %2  42 (encoded as &)
+    0b01011101, // %2  42 (encoded as &)
+    0b01001011  // ?   43
 };
 
 #endif

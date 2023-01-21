@@ -1079,6 +1079,21 @@ void time_setup()
         allOff();
     }
 
+    // Invoke audio file installer if SD qualifies
+    if(check_allow_CPA()) {
+        destinationTime.showTextDirect("INSTALL");
+        destinationTime.on();
+        presentTime.showTextDirect("AUDIO FILES?");
+        presentTime.on();
+        doCopyAudioFiles();
+        // We return here only if user cancelled or
+        // if the menu timed-out
+        allOff();
+        waitForEnterRelease();
+        isEnterKeyHeld = false;
+        isEnterKeyPressed = false;
+    }
+
     if(!audio_files_present()) {
         destinationTime.showTextDirect("PLEASE");
         presentTime.showTextDirect("INSTALL");

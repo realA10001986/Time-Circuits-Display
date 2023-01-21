@@ -99,10 +99,15 @@
 /*  Changelog
  *    
  *  2023/01/21 (A10001986)
- *    - Return from tt: Don't stop music player if we were on actual present time
- *      already.
+ *    - Audio installer change: The installer is now invoked automatically during
+ *      boot. If the user cancels, the installer is still available as the first menu 
+ *      item in the keypad menu. It was, however, removed from the Config Portal.
+ *      The installer now removes the ID file after successfully copying the files
+ *      so that it is not shown again on reboot.
  *    - Show hint to install audio files during boot if files not present on flash
  *      FS
+ *    - Return from tt: Don't stop music player if we were on actual present time
+ *      already.
  *  2023/01/20 (A10001986)
  *    - Add count-down timer function: To start, type 44xxENTER, xx being the number
  *      of minutes (2 digits). Type 44ENTER to see the time remaining.

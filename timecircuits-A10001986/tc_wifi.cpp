@@ -44,6 +44,11 @@
 // If defined, go back to standard text boxes
 //#define TC_NOCHECKBOXES
 
+// If defined, show the audio file installer field
+// Since we invoke the installer now automatically,
+// this is no longer needed.
+//#define CP_AUDIO_INSTALLER
+
 Settings settings;
 
 IPSettings ipsettings;
@@ -250,8 +255,11 @@ WiFiManagerParameter custom_sdFrq("sdFrq", "SD clock speed (0=16Mhz, 1=4Mhz)<br>
 WiFiManagerParameter custom_sdFrq("sdFrq", "4MHz SD clock speed<br><span style='font-size:80%'>Checking this might help in case of SD card problems</span>", settings.sdFreq, 1, "autocomplete='off' type='checkbox' style='margin-top:12px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 
+#ifdef CP_AUDIO_INSTALLER
 WiFiManagerParameter custom_copyAudio("cpAu", "Audio file installation: Write COPY here to copy the original audio files from the SD card to the internal storage.", settings.copyAudio, 6, "autocomplete='off'");
 WiFiManagerParameter custom_copyHint("<div style='margin:0px;padding:0px;font-size:80%'>If display shows 'ERROR' when finished, write FORMAT instead of COPY on second attempt.</div>");
+#endif
+
 WiFiManagerParameter custom_footer("<p></p>");
 WiFiManagerParameter custom_sectstart("<div class='sects'>");
 WiFiManagerParameter custom_sectend("</div>");
@@ -453,13 +461,15 @@ void wifi_setup()
     wm.addParameter(&custom_CfgOnSD);
     wm.addParameter(&custom_sdFrq);
     wm.addParameter(&custom_sectend);
-    
+
+    #ifdef CP_AUDIO_INSTALLER
     if(check_allow_CPA()) {
         wm.addParameter(&custom_sectstart); // 4
         wm.addParameter(&custom_copyAudio);
         wm.addParameter(&custom_copyHint);
         wm.addParameter(&custom_sectend);
     }
+    #endif
     
     wm.addParameter(&custom_footer);        // 1
 
@@ -497,11 +507,14 @@ void wifi_setup()
  */
 void wifi_loop()
 {
-    bool forceCopyAudio = false;
     char oldCfgOnSD = 0;
-
+    #ifdef CP_AUDIO_INSTALLER
+    bool forceCopyAudio = false;
+    #endif
+    
     wm.process();
 
+    #ifdef CP_AUDIO_INSTALLER
     if(shouldSaveConfig > 1) {
         if(check_allow_CPA()) {
             if(!strcmp(custom_copyAudio.getValue(), "FORMAT")) {
@@ -520,7 +533,8 @@ void wifi_loop()
             }
         }
     }
-
+    #endif
+    
     if(shouldSaveIPConfig) {
 
         #ifdef TC_DBG
@@ -725,6 +739,7 @@ void wifi_loop()
             write_settings();
         }
 
+        #ifdef CP_AUDIO_INSTALLER
         if(shouldSaveConfig > 1) {
             if(check_allow_CPA()) {
                 if(forceCopyAudio || (!strcmp(custom_copyAudio.getValue(), "COPY"))) {
@@ -739,7 +754,8 @@ void wifi_loop()
                 }
             }
         }
-
+        #endif
+        
         shouldSaveConfig = 0;
 
         // Reset esp32 to load new settings
@@ -1233,7 +1249,9 @@ void updateConfigPortalValues()
 
     #endif // ---------------------------------------------    
 
+    #ifdef CP_AUDIO_INSTALLER
     custom_copyAudio.setValue("", 6);   // Always clear
+    #endif
 }
 
 int wifi_getStatus()

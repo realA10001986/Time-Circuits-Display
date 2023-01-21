@@ -1192,6 +1192,8 @@ uint8_t clockDisplay::getLED7AlphaChar(uint8_t value)
         return numDigs[41];
     case '&':   // right part of double-digit "%"
         return numDigs[42];
+    case '?':
+        return numDigs[43];
     }
 
     return 0;

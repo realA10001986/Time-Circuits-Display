@@ -88,6 +88,7 @@ static const char *audioFiles[NUM_AUDIOFILES] = {
       "/timetravel.mp3\0",
       "/travelstart.mp3\0"
 };
+static const char *IDFN = "/TCD_def_snd.txt";
 
 static const char *cfgName    = "/config.json";     // Main config (flash)
 static const char *almCfgName = "/tcdalmcfg.json";  // Alarm config (flash/SD)
@@ -1057,7 +1058,7 @@ static bool check_if_default_audio_present()
         return false;
 
     // If identifier missing, quit now
-    if(!(SD.exists("/TCD_def_snd.txt"))) {
+    if(!(SD.exists(IDFN))) {
         #ifdef TC_DBG
         Serial.println("SD: ID file not present");
         #endif
@@ -1196,6 +1197,16 @@ bool audio_files_present()
       return true;
 
     return false;
+}
+
+void delete_ID_file()
+{
+    if(!haveSD)
+        return;
+        
+    if(SD.exists(IDFN)) {
+        SD.remove(IDFN);
+    }
 }
 
 /*

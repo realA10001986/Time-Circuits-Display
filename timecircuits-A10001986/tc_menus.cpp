@@ -217,20 +217,19 @@
 
 #include "tc_menus.h"
 
-#define MODE_ALRM 0
-#define MODE_VOL  1
-#define MODE_MSFX 2
-#define MODE_AINT 3
-#define MODE_BRI  4
-#define MODE_NET  5
-#define MODE_PRES 6
-#define MODE_DEST 7
-#define MODE_DEPT 8
-#define MODE_SENS 9
-#define MODE_VER  10
-#define MODE_CPA  11
+#define MODE_CPA  0
+#define MODE_ALRM 1
+#define MODE_VOL  2
+#define MODE_MSFX 3
+#define MODE_AINT 4
+#define MODE_BRI  5
+#define MODE_NET  6
+#define MODE_PRES 7
+#define MODE_DEST 8
+#define MODE_DEPT 9
+#define MODE_SENS 10
+#define MODE_VER  11
 #define MODE_END  12
-#define MODE_MIN  MODE_ALRM
 #define MODE_MAX  MODE_END
 
 #define FIELD_MONTH   0
@@ -276,7 +275,7 @@ static const char *alarmWD[10] = {
       "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"
 };
 
-static void menuSelect(int& number);
+static void menuSelect(int& number, int mode_min);
 static void menuShow(int number);
 static void setUpdate(uint16_t number, int field, bool extra = false);
 static void setField(uint16_t& number, uint8_t field, int year = 0, int month = 0, bool extra = false);
@@ -295,8 +294,6 @@ static void doShowSensors();
 #endif
 static void displayIP();
 static void doShowNetInfo();
-static void doCopyAudioFiles();
-static void waitForEnterRelease();
 static bool checkEnterPress();
 static void prepareInput(uint16_t number);
 
@@ -315,6 +312,7 @@ void enter_menu()
     bool preNM = presentTime.getNightMode();
     bool depNM = departedTime.getNightMode();
     bool mpActive;
+    int mode_min;
 
     pwrNeedFullNow();
 
@@ -332,7 +330,8 @@ void enter_menu()
     stopAudio();
 
     // start with first menu item
-    menuItemNum = MODE_MIN;
+    mode_min = check_allow_CPA() ? MODE_CPA : MODE_ALRM;
+    menuItemNum = mode_min;
 
     // Load the custom times from NVM
     // This means that when the user activates the menu while
@@ -356,7 +355,7 @@ void enter_menu()
     // Wait for ENTER to cycle through main menu,
     // HOLDing ENTER selects current menu "item"
     // (Also sets displaySet to selected display, if applicable)
-    menuSelect(menuItemNum);
+    menuSelect(menuItemNum, mode_min);
 
     if(checkTimeOut())
         goto quitMenu;
@@ -711,7 +710,7 @@ quitMenu:
  *  Cycle through main menu
  *
  */
-static void menuSelect(int& number)
+static void menuSelect(int& number, int mode_min)
 {
     isEnterKeyHeld = false;
 
@@ -745,8 +744,7 @@ static void menuSelect(int& number)
             #else
             if(number == MODE_SENS) number++;
             #endif
-            if(number == MODE_CPA && !check_allow_CPA()) number++;
-            if(number > MODE_MAX) number = MODE_MIN;
+            if(number > MODE_MAX) number = mode_min;
 
             // Show only the selected display, or menu item text
             menuShow(number);
@@ -1934,10 +1932,13 @@ static void doShowNetInfo()
  * Install default audio files from SD to flash FS #############
  */
 
-static void doCopyAudioFiles()
+void doCopyAudioFiles()
 {
     bool doCancDone = false;
     bool newCanc = false;
+    bool blinkSwitch = false;
+    unsigned long blinkNow = millis();
+    bool delIDfile = false;
 
     // Cancel/Copy
     destinationTime.on();
@@ -1954,6 +1955,12 @@ static void doCopyAudioFiles()
 
         // If pressed
         if(checkEnterPress()) {
+
+            if(blinkSwitch) {
+                departedTime.on();
+                blinkSwitch = false;
+                blinkNow = millis();
+            }
   
             // wait for release
             while(!checkTimeOut() && checkEnterPress()) {
@@ -1973,13 +1980,19 @@ static void doCopyAudioFiles()
   
                 newCanc = !newCanc;
   
-                departedTime.showTextDirect(newCanc ? "COPY" : "CANCEL");
+                departedTime.showTextDirect(newCanc ? "PROCEED" : "CANCEL");
   
             }
   
         } else {
   
             mydelay(50);
+
+            if(millis() - blinkNow > 500) {
+                blinkSwitch = !blinkSwitch;
+                blinkSwitch ? departedTime.off() : departedTime.on();
+                blinkNow = millis();
+            }
   
         }
 
@@ -2000,8 +2013,16 @@ static void doCopyAudioFiles()
         write_settings();           // Re-write general settings
         if(!copy_audio_files()) {   // Retry copy
             mydelay(3000);
+        } else {
+            delIDfile = true;
         }
+    } else {
+        delIDfile = true;
     }
+
+    if(delIDfile)
+        delete_ID_file();
+    
     mydelay(2000);
 
     allOff();
@@ -2127,7 +2148,7 @@ static bool checkEnterPress()
  * Call myloop() to allow other stuff to proceed
  *
  */
-static void waitForEnterRelease()
+void waitForEnterRelease()
 {
     while(1) {
         while(digitalRead(ENTER_BUTTON_PIN)) {
