@@ -372,7 +372,7 @@ The following sounds are time-sync'd to display action. If you decide to substit
 - "shutdown.mp3". Played when the device is fake "powered down" using an external switch (see below)
 - "startup.mp3". Played when the clock is connected to power and finished booting
 
-If you intend to use the very same SD card that you used for installing the default sound files, please remove the file "TCD_def_snd.txt" and the other files from the sound-pack from the SD card first.
+If you intend to use the very same SD card that you used for installing the default sound files, please remove the files from the sound-pack from the SD card first.
 
 ### Additional Custom Sounds
 
