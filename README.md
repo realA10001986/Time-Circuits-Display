@@ -50,16 +50,18 @@ There are different alternative ways to install this firmware:
 
 The firmware comes with a number of sound files which need to be installed separately. These sound files are not updated as often as the firmware itself. If you have previously installed the latest version of the sound-pack, you normally don't have to re-install the audio files when you update the firmware. Only if either a new version of the sound-pack is released, or your clock is quiet after a firmware update (what will the case if you see "WAIT" during boot), a re-installation is needed.
 
-*If your clock previously ran a firmware from CircuitSetup, a re-installation of the audio files is required.*
+*If your clock previously ran a firmware from CircuitSetup, a re-installation of the audio files _from this repository_ is required. You cannot use CircuitSetup's sound files with the firmware here.*
 
 - Download "install/sound-pack-xxxxxxxx.zip" and extract it to the root directory of of a FAT32 formatted SD card
 - power down the clock,
 - insert this SD card into the device's slot and 
 - power up the clock.
  
-If (and only if) the **exact and complete contents of sound-pack archive** is found on the SD card during boot, the keypad menu will have an "INSTALL AUDIO FILES" menu item, and the Config portal will show an "Audio file installation" option at the bottom of the "Setup" page.
+If (and only if) the **exact and complete contents of sound-pack archive** is found on the SD card during boot, the clock will show "INSTALL AUDIO FILES?" during boot. Press ENTER briefly to toggle between "CANCEL" and "PROCEED". Choose "PROCEED" and hold the ENTER key for 2 seconds.
 
-If you choose to use the Config Portal, trigger the audio file installation process by writing "COPY" (in caps, without the quotation marks) into the empty text field in the "Audio file installation" section, and clicking on "Save". The device will then copy all the default audio files from the SD card to its internal memory. The keypad menu method for installation is described [here](#how-to-install-the-default-audio-files). The SD card can - and should - be removed afterwards; it can be re-used for [other purposes](#sd-card) after deleting the files of the sound-pack.
+If you, for whatever reason, chose "CANCEL", you can still invoke the installer through the [keypad menu](#how-to-install-the-default-audio-files), or by rebooting the clock.
+
+The SD card can be re-used for [other purposes](#sd-card) then.
 
 ## Short summary of first steps
 
@@ -410,7 +412,8 @@ The menu is invoked by holding the ENTER button.
 
 Data entry, such as for dates and times, is done through the keypad's number keys and works as follows: Whenever a data entry is requested, the field for that data is lit (while the rest of the display is dark) and a pre-set value is shown. If you want to keep that pre-set, press ENTER to proceed to next field. Otherwise press a digit on the keypad; the pre-set is then overwritten by the value entered. 2 digits can be entered (4 for years), upon which the new value is stored and the next field is activated. You can also enter less than 2 digits (4 for years) and press ENTER when done with the field. Note that a month needs to be entered numerically (1-12), and hours need to be entered in 24-hour notation (0-23), regardless of 12-hour or 24-hour mode as per the Config Portal setting.
 
-After invoking the keypad menu, the first step is to choose a menu item. The available items are   
+After invoking the keypad menu, the first step is to choose a menu item. The available items are  
+- install the default audio files ("INSTALL AUDIO FILES")
 - set the alarm ("ALA-RM"),
 - set the audio volume (VOL-UME),
 - set the Music Player folder number ("MUSIC FOLDER NUMBER")
@@ -420,11 +423,18 @@ After invoking the keypad menu, the first step is to choose a menu item. The ava
 - set the internal Real Time Clock (RTC) ("SET RTC"),
 - enter dates/times for the *Destination* and *Last Time Departed* displays,
 - show light/temperature/humidity sensor info (if such a sensor is connected) ("SENSORS"),
-- install the default audio files ("INSTALL AUDIO FILES")
 - quit the menu ("END").
  
 Pressing ENTER cycles through the list, holding ENTER selects an item.
 
+#### How to install the default audio files:
+
+- Hold ENTER to invoke main menu
+- If the SD card holds the files of the sound-pack archive from this repo, "INSTALL AUDIO FILES" is shown as the first menu item. See the [Audio file installation](#audio-file-installation) section.
+- Hold ENTER to proceed
+- Press ENTER to toggle between "CANCEL" and "PROCEED"
+- Hold ENTER to proceed. If "PROCEED" was chosen, the audio files fill be installed and the clock will reboot.
+ 
 #### How to set up the alarm:
 
 - Hold ENTER to invoke main menu
@@ -532,14 +542,6 @@ Note that when entering dates/times into the *destination time* or *last time de
 
 Note: Sometimes, light sensors report a lux value of -1. This is mostly due to the fact that all the supported sensors are adjusted for indoor usage and might overload in broad daylight. Also, some sensors might have issues with halogen lamps (reportedly TSL2561), and most sensors also "overload" if too much IR light is directed at them, for instance from surveillance cameras.
 
-#### How to install the default audio files:
-
-- Hold ENTER to invoke main menu
-- Press ENTER repeatedly until "INSTALL AUDIO FILES" is shown. If this menu does not appear, the SD card isn't configured properly; see the [Audio file installation](#audio-file-installation) section.
-- Hold ENTER to proceed
-- Press ENTER to toggle between "CANCEL" and "COPY"
-- Hold ENTER to proceed. If "COPY" was chosen, the display will guide you through the rest of the process. The menu is quit automatically afterwards.
- 
 #### How to leave the menu:
  
  - While the menu is active, press ENTER repeatedly until "END" is displayed.
