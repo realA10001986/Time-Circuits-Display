@@ -86,7 +86,7 @@ static bool enterWasPressed = false;
 static bool rcModeDepTime = false;
 
 #ifdef EXTERNAL_TIMETRAVEL_IN
-static bool          isEttKeyPressed = false;
+bool                 isEttKeyPressed = false;
 static unsigned long ettNow = 0;
 static bool          ettDelayed = false;
 static unsigned long ettDelay = 0; // ms

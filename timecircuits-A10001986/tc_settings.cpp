@@ -68,6 +68,7 @@ static bool configOnSD = false;
 bool FlashROMode = false;
 
 #define NUM_AUDIOFILES 18
+#define SND_ENTER_IDX  8
 static const char *audioFiles[NUM_AUDIOFILES] = {
       "/alarm.mp3\0",
       "/alarmoff.mp3\0",
@@ -1023,7 +1024,7 @@ void deleteIpSettings()
  * Copies our default audio files from SD to flash FS.
  * The is restricted to the original default audio
  * files that came with the software. If you want to
- * customize your sounds, put them on a FAT formatted
+ * customize your sounds, put them on a FAT32 formatted
  * SD card and leave this SD card in the slot.
  */
 
@@ -1032,6 +1033,14 @@ bool check_allow_CPA()
     return allowCPA;
 }
 
+#ifndef TWSOUND
+#define SND_ENTER_LEN   13374
+#define SND_STARTUP_LEN 21907
+#else
+#define SND_ENTER_LEN   12149
+#define SND_STARTUP_LEN 18419
+#endif
+
 static bool check_if_default_audio_present()
 {
     File file;
@@ -1039,19 +1048,12 @@ static bool check_if_default_audio_present()
     int i, idx = 0;
     char dtmf_buf[16] = "/Dtmf-0.mp3\0";
     size_t sizes[10+NUM_AUDIOFILES] = {
-#ifndef TWSOUND
       4178, 4178, 4178, 4178, 4178, 4178, 3760, 3760, 4596, 3760, // DTMF
-      65230, 71500, 60633, 10478,               // alarm, alarmoff, alarmon, baddate
-      15184, 22983, 33364, 51701,               // ee1, ee2, ee3, ee4
-      13374, 125804, 33853, 47228,              // enter, intro, nmoff, nmon
-      16747, 3790, 21907, 84894, 38899, 135447  // ping, shutdown, startup, timer, timetravel, travelstart
-#else
-      4178, 4178, 4178, 4178, 4178, 4178, 3760, 3760, 4596, 3760, //DTMF
-      65230, 71500, 60633, 10478,               // alarm, alarmoff, alarmon, baddate
-      15184, 22983, 33364, 51701,               // ee1, ee2, ee3, ee4
-      12149, 125804, 33853, 47228,              // enter, intro, nmoff, nmon
-      16747, 3790, 18419, 84894, 38899, 135447  // ping, shutdown, startup, timer, timetravel, travelstart
-#endif
+      65230, 71500, 60633, 10478,           // alarm, alarmoff, alarmon, baddate
+      15184, 22983, 33364, 51701,           // ee1, ee2, ee3, ee4
+      SND_ENTER_LEN, 125804, 33853, 47228,  // enter, intro, nmoff, nmon
+      16747, 3790, SND_STARTUP_LEN, 84894,  // ping, shutdown, startup, timer
+      38899, 135447                         // timetravel, travelstart
     };
 
     if(!haveSD)
@@ -1190,19 +1192,35 @@ static bool filecopy(File source, File dest)
 
 bool audio_files_present()
 {
-    if(FlashROMode) 
-      return true;
+    File file;
+    size_t ts;
+    
+    if(FlashROMode)
+        return true;
 
-    if(SPIFFS.exists("/Dtmf-0.mp3"))
-      return true;
+    if(!SPIFFS.exists(audioFiles[SND_ENTER_IDX]))
+        return false;
+      
+    if(!(file = SPIFFS.open(audioFiles[SND_ENTER_IDX])))
+        return false;
+      
+    ts = file.size();
+    file.close();
 
-    return false;
+    if(ts != SND_ENTER_LEN)
+        return false;
+
+    return true;
 }
 
 void delete_ID_file()
 {
     if(!haveSD)
         return;
+
+    #ifdef TC_DBG
+    Serial.printf("Deleting ID file %s\n", IDFN);
+    #endif
         
     if(SD.exists(IDFN)) {
         SD.remove(IDFN);

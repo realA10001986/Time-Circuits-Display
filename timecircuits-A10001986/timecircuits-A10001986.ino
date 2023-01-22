@@ -98,6 +98,8 @@
 
 /*  Changelog
  *    
+ *  2023/01/22 (A10001986)
+ *    - Minor fix (reset flags after audio file installation; better question mark)
  *  2023/01/21 (A10001986)
  *    - Audio installer change: The installer is now invoked automatically during
  *      boot. If the user cancels, the installer is still available as the first menu 

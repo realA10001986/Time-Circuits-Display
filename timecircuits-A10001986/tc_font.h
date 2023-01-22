@@ -168,7 +168,7 @@ static const uint8_t numDigs[44] = {
     0b01100011, // °   40 (encoded as ~)
     0b01101011, // %1  41 (encoded as %)
     0b01011101, // %2  42 (encoded as &)
-    0b01001011  // ?   43
+    0b01010011  // ?   43
 };
 
 #endif

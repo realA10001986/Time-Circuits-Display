@@ -1066,7 +1066,7 @@ void time_setup()
         presentTime.showTextDirect("BATTERY");
         destinationTime.on();
         presentTime.on();
-        myIntroDelay(3000);
+        myIntroDelay(5000);
         allOff();
     }
 
@@ -1075,15 +1075,18 @@ void time_setup()
         presentTime.showTextDirect("TIME ZONE");
         destinationTime.on();
         presentTime.on();
-        myIntroDelay(3000);
+        myIntroDelay(5000);
         allOff();
     }
 
-    // Invoke audio file installer if SD qualifies
+    // Invoke audio file installer if SD content qualifies
     if(check_allow_CPA()) {
+        #ifdef TC_DBG
+        Serial.println(F("time_setup: calling doCopyAudioFiles()"));
+        #endif
         destinationTime.showTextDirect("INSTALL");
-        destinationTime.on();
         presentTime.showTextDirect("AUDIO FILES?");
+        destinationTime.on();
         presentTime.on();
         doCopyAudioFiles();
         // We return here only if user cancelled or
@@ -1092,6 +1095,9 @@ void time_setup()
         waitForEnterRelease();
         isEnterKeyHeld = false;
         isEnterKeyPressed = false;
+        #ifdef EXTERNAL_TIMETRAVEL_IN
+        isEttKeyPressed = false;
+        #endif
     }
 
     if(!audio_files_present()) {
