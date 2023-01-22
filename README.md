@@ -667,9 +667,9 @@ More here: [Link](https://github.com/realA10001986/Time-Circuits-Display/wiki/Ti
 
 ### Main page
 
-##### &#9654; Config WiFi
+##### &#9654; Configure WiFi
 
-Clicking this leads the WiFi Config page. On this page, you can connect your clock to your WiFi network by selecting/entering the SSID (WiFi network name) as well as a password (WPA2). By default, the clock's IP address is requested via DHCP. However, on this page, you can also configure a static IP for the clock by entering the IP, netmask, gateway and DNS server. All four fields must be filled for a valid static IP configuration. If you want to stick to DHCP, leave those four fields empty.
+Clicking this leads to the WiFi configuration page. On that page, you can connect your clock to your WiFi network by selecting/entering the SSID (WiFi network name) as well as a password (WPA2). By default, the clock's IP address is requested via DHCP. However, you can also configure a static IP for the clock by entering the IP, netmask, gateway and DNS server. All four fields must be filled for a valid static IP configuration. If you want to stick to DHCP, leave those four fields empty.
 
 ##### &#9654; Setup
 
