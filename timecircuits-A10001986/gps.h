@@ -92,11 +92,13 @@ class tcGPS {
 
         char    _curTime[8]   = { 0, 0, 0, 0, 0, 0, 0, 0 };
         char    _curFrac[4]   = { 0, 0, 0, 0 };
+        unsigned long _curFracMult = 0;
         char    _curDay[4]    = { 0, 0, 0, 0 };
         char    _curMonth[4]  = { 0, 0, 0, 0 };
         char    _curYear[6]   = { 0, 0, 0, 0, 0, 0 };
         char    _curTime2[8]  = { 0, 0, 0, 0, 0, 0, 0, 0 };
         char    _curFrac2[4]  = { 0, 0, 0, 0 };
+        unsigned long _curFrac2Mult = 0;
         char    _curDay2[4]   = { 0, 0, 0, 0 };
         char    _curMonth2[4] = { 0, 0, 0, 0 };
         char    _curYear2[6]  = { '2', '0', 0, 0, 0, 0 };

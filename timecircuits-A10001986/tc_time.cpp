@@ -1138,7 +1138,7 @@ void time_setup()
         for(int i = 0; i <= 15; i++) {
             presentTime.setBrightnessDirect(i);
             departedTime.setBrightnessDirect(i);
-            myIntroDelay(100, false);
+            myIntroDelay(100);
         }
         myIntroDelay(1500);
         for(int i = 15; i >= 0; i--) {
@@ -1413,10 +1413,10 @@ void time_loop()
         if(millis() - lastLoopGPS >= GPSupdateFreq) {
             lastLoopGPS = millis();
             myGPS.loop(true);
+            #ifdef TC_HAVESPEEDO
+            dispGPSSpeed(true);
+            #endif
         }
-        #ifdef TC_HAVESPEEDO
-        dispGPSSpeed();
-        #endif
     }
     #endif
 
@@ -2889,6 +2889,9 @@ void gps_loop()
     if(millis() - lastLoopGPS > GPSupdateFreqMin) {
         lastLoopGPS = millis();
         myGPS.loop(false);
+        #ifdef TC_HAVESPEEDO
+        dispGPSSpeed(true);
+        #endif
     }
 }
 #endif

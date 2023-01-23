@@ -45,7 +45,9 @@
 #define GPS_MPH_PER_KNOT  1.15077945
 #define GPS_KMPH_PER_KNOT 1.852
 
-#ifdef TC_DBG
+//#define TC_DBG_GPS
+
+#ifdef TC_DBG_GPS
 static int DBGloopCnt = 0;
 #endif
 
@@ -142,15 +144,23 @@ bool tcGPS::begin(unsigned long powerupTime, bool quickUpdates)
 void tcGPS::loop(bool doDelay)
 {
     unsigned long myNow = millis();
-    #ifdef TC_DBG
+    #ifdef TC_DBG_GPS
     unsigned long myLater;
     #endif
 
     readAndParse(doDelay);
 
-    // Time needed:
+    // readAndParse() takes:
     // read 32 bytes: 9ms
     // read 64 bytes: 12ms
+
+    #ifdef TC_DBG_GPS
+    if( (DBGloopCnt++) % 10 == 0) {
+        myLater = millis();
+        Serial.printf("readAndParse took %d ms\n", myLater-myNow);
+        Serial.printf("curFracs: %s*%d %s*%d\n", _curFrac, _curFracMult, _curFrac2, _curFrac2Mult);
+    }
+    #endif
 
     // Expire time/date info after 15 minutes
     if(_haveDateTime && (myNow - _curTS >= 15*60*1000))
@@ -169,6 +179,8 @@ void tcGPS::loop(bool doDelay)
  */
 int16_t tcGPS::getSpeed()
 {
+    //return 35 + (rand() % 3);  // QQQ
+    
     if(_haveSpeed) return speed;
 
     return -1;
@@ -206,7 +218,7 @@ bool tcGPS::getDateTime(struct tm *timeinfo, unsigned long *fixAge, unsigned lon
 
         timeinfo->tm_wday = 0;
 
-        *fixAge = (unsigned long)(updInt + atoi(_curFrac) + millis() - _curTS);
+        *fixAge = (unsigned long)(updInt + (atoi(_curFrac)*_curFracMult) + millis() - _curTS);
 
         return true;
 
@@ -231,7 +243,7 @@ bool tcGPS::getDateTime(struct tm *timeinfo, unsigned long *fixAge, unsigned lon
 
         timeinfo->tm_wday = 0;
 
-        *fixAge = (unsigned long)(updInt + atoi(_curFrac) + millis() - _curTS2);
+        *fixAge = (unsigned long)(updInt + (atoi(_curFrac2)*_curFrac2Mult) + millis() - _curTS2);
 
         return true;
 
@@ -394,6 +406,8 @@ bool tcGPS::parseNMEA(char *nmea, unsigned long nmeaTS)
     char *t = nmea, *t2;
     char buf[16];
     char *bufp = buf;
+    int templen;
+    const unsigned long fracMult[] = { 100, 10, 1 };
 
     if(!checkNMEA(nmea)) {
         #ifdef TC_DBG
@@ -402,25 +416,31 @@ bool tcGPS::parseNMEA(char *nmea, unsigned long nmeaTS)
         return false;
     }
 
-    #ifdef TC_DBG
+    #ifdef TC_DBG_GPS
     Serial.print(nmea);
     #endif
 
     if(*(t+3) == 'R') {   // RMC
 
         t = strchr(t, ',') + 1;  // Skip to time
+        t2 = strchr(t, ',') + 1; // Skip to validity
         strncpy(_curTime2, t, 6);
         if(*(t+6) == '.') {
-            strncpy(_curFrac2, t+7, 3);
+            templen = (t2-1)-(t+7);
+            if(templen > 0 && templen <= 3) {
+                strncpy(_curFrac2, t+7, templen);
+                _curFrac2[templen] = 0;
+                _curFrac2Mult = fracMult[templen-1];
+            } else
+                _curFrac2[0] = 0;
         } else {
             _curFrac2[0] = 0;
         }
-        t = strchr(t, ',') + 1;  // Skip to validity
-        fix = (*t == 'A');
+        fix = (*t2 == 'A');
 
         if(!fix) return true;
 
-        t = strchr(t, ',') + 1;  // Skip to lat
+        t = strchr(t2, ',') + 1; // Skip to lat
         t = strchr(t, ',') + 1;  // Skip to n/s
         t = strchr(t, ',') + 1;  // Skip to long
         t = strchr(t, ',') + 1;  // Skip to e/w
@@ -452,15 +472,21 @@ bool tcGPS::parseNMEA(char *nmea, unsigned long nmeaTS)
         // the GPS' own RTC.
         if(fix) {
             t = strchr(t, ',') + 1; // Skip to time
+            t2 = strchr(t, ',') + 1;// Skip to day
             strncpy(_curTime, t, 6);
             if(*(t+6) == '.') {
-                strncpy(_curFrac, t+7, 3);
+                templen = (t2-1)-(t+7);
+                if(templen > 0 && templen <= 3) {
+                    strncpy(_curFrac, t+7, templen);
+                    _curFrac[templen] = 0;
+                    _curFracMult = fracMult[templen-1];
+                } else
+                    _curFrac[0] = 0;
             } else {
                 _curFrac[0] = 0;
             }
-            t = strchr(t, ',') + 1; // Skip to day
-            strncpy(_curDay, t, 2);
-            t = strchr(t, ',') + 1; // Skip to month
+            strncpy(_curDay, t2, 2);
+            t = strchr(t2, ',') + 1;// Skip to month
             strncpy(_curMonth, t, 2);
             t = strchr(t, ',') + 1; // Skip to year
             strncpy(_curYear, t, 4);

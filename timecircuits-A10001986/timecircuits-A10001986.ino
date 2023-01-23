@@ -98,6 +98,9 @@
 
 /*  Changelog
  *    
+ *  2023/01/23 (A10001986)
+ *    - GPS speed: Reduce delay between reading speed and displaying it
+ *    - GPS time fix: Fractions are of variable size, not always 3 digits
  *  2023/01/22 (A10001986)
  *    - Minor fix (reset flags after audio file installation; better question mark)
  *  2023/01/21 (A10001986)
