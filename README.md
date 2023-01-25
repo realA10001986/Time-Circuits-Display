@@ -28,7 +28,7 @@ Features include
 - Optional [sound on the hour](#additional-custom-sounds)
 - Support for external [fake "power switch"](#fake-power-switch)
 - Support for external display acting as [Speedometer](#speedometer)
-- Support for external [GPS receiver](#gps-receiver), used as time source, and for speed to be displayed on speedo display
+- Support for external [GPS receiver](#gps-receiver), used as time source, and for [speed](#gps-for-speed) to be displayed on speedo display
 - &#127381; Support for external [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for "room condition mode" and to display temperature on speedo display while idle
 - Support for time travel [triggered by external source](#external-time-travel-trigger), with selectable delay
 - Support for triggering time travels on [other props](#controlling-other-props); TCD can act as master controller for SID, flux capacitor, etc.
