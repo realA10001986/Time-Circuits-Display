@@ -78,18 +78,13 @@
  * - Go to "Sketch" -> "Upload" to compile and upload the firmware to your ESP32 board.
  *
  * - Install the audio files: 
- *   - Copy the contents of install/sound-pack-xxxxxxxx.zip in the top folder of a fresh 
- *     and FAT32 (not ExFAT!) formatted SD card (max 32GB) and put this card into the slot 
- *     while the clock is powered down. Now power-up the device.
- *   - Wait until the clock shows the time.
- *   - Hold ENTER for 2 seconds to invoke the keypad menu
- *   - Repeatedly (briefly) press ENTER until "INSTALL AUDIO FILES" is shown. If this 
- *     menu does not appear, the SD card isn't configured properly.
- *   - Hold ENTER for 2 seconds to proceed
- *   - (Briefly) press ENTER to toggle between "CANCEL" and "COPY", select "COPY".
- *   - Hold ENTER for 2 seconds to proceed. When finished, the clock will reboot.
- *   - After reboot, remove the SD card and delete the files that were copied to it
- *     in the first step.
+ *   - Copy the contents of install/sound-pack-xxxxxxxx.zip in the top folder of a FAT32 
+ *     (not ExFAT!) formatted SD card (max 32GB) and put this card into the slot while
+ *     the clock is powered down. Now power-up the device.
+ *   - When the display shows "INSTALL AUDIO FILES?", press ENTER to toggle between 
+ *     "CANCEL" and "PROCEED". Choose "PROCEED" and hold ENTER for 2 seconds.
+ *   - The audio files will now be installed. When finished, the clock will reboot.
+ *   - After reboot, power-down the clock and remove the SD card.
  *
  * Detailed installation and compilation instructions, while a bit outdated in 
  * library requirements, are also here and additionally cover PlatformIO:
@@ -98,6 +93,10 @@
 
 /*  Changelog
  *    
+ *  2023/01/25 (A10001986)
+ *    - GPS Speed: Fix tt sequence/sound timing when counting up from GPS speed
+ *    - GPS: Soften count-down from 88 back to current GPS speed
+ *    - Turn speedo off when rebooting
  *  2023/01/23 (A10001986)
  *    - GPS speed: Reduce delay between reading speed and displaying it
  *    - GPS time fix: Fractions are of variable size, not always 3 digits

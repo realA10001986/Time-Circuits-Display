@@ -761,6 +761,9 @@ void wifi_loop()
         // Reset esp32 to load new settings
 
         allOff();
+        #ifdef TC_HAVESPEEDO
+        if(useSpeedo) speedo.off();
+        #endif
         destinationTime.resetBrightness();
         destinationTime.showTextDirect("REBOOTING");
         destinationTime.on();

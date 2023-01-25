@@ -45,7 +45,9 @@
 #define GPS_MPH_PER_KNOT  1.15077945
 #define GPS_KMPH_PER_KNOT 1.852
 
+// For deeper debugging
 //#define TC_DBG_GPS
+//#define GPS_SPEED_SIMU
 
 #ifdef TC_DBG_GPS
 static int DBGloopCnt = 0;
@@ -150,6 +152,12 @@ void tcGPS::loop(bool doDelay)
 
     readAndParse(doDelay);
 
+    #ifdef GPS_SPEED_SIMU
+    speed = 0; //(45 + (rand() % 3));
+    _haveSpeed = true;        
+    _curspdTS = myNow;
+    #endif
+
     // readAndParse() takes:
     // read 32 bytes: 9ms
     // read 64 bytes: 12ms
@@ -178,9 +186,7 @@ void tcGPS::loop(bool doDelay)
  *
  */
 int16_t tcGPS::getSpeed()
-{
-    //return 35 + (rand() % 3);  // QQQ
-    
+{   
     if(_haveSpeed) return speed;
 
     return -1;

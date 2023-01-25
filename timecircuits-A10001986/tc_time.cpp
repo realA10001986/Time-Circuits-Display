@@ -200,7 +200,7 @@ uint64_t timeDifference = 0;
 bool     timeDiffUp = false;  // true = add difference, false = subtract difference
 
 // Persistent time travels:
-// This controls the app's behavior as regards saving times to NVM.
+// This controls the firmware's behavior as regards saving times to NVM.
 // If this is true, times are saved to NVM, whenever
 //  - the user enters a destination time for time travel and presses ENTER
 //  - the user activates time travel (hold "0")
@@ -1349,11 +1349,13 @@ void time_loop()
 
     // Time travel animation, phase 2: Speed counts down
     if(timeTravelP2 && (millis() - timetravelP0Now >= timetravelP0Delay)) {
-        if((timeTravelP0Speed == 0)
-            #ifdef TC_HAVEGPS
-                || (useGPSSpeed && (myGPS.getSpeed() >= 0) && (myGPS.getSpeed() >= timeTravelP0Speed))
-            #endif
-                                    ) {
+        #ifdef TC_HAVEGPS
+        bool countToGPSSpeed = (useGPSSpeed && (myGPS.getSpeed() >= 0));
+        uint8_t targetSpeed = countToGPSSpeed ? myGPS.getSpeed() : 0;
+        #else
+        uint8_t targetSpeed = 0;
+        #endif
+        if((timeTravelP0Speed <= targetSpeed) || (targetSpeed >= 88)) {
             timeTravelP2 = 0;
             if(!useGPSSpeed) speedo.off();
             #ifdef TC_HAVEGPS
@@ -1367,7 +1369,21 @@ void time_loop()
             timeTravelP0Speed--;
             speedo.setSpeed(timeTravelP0Speed);
             speedo.show();
-            timetravelP0Delay = (timeTravelP0Speed == 0) ? 4000 : 30;
+            #ifdef TC_HAVEGPS
+            if(countToGPSSpeed) {
+                if(targetSpeed == timeTravelP0Speed) {
+                    timetravelP0Delay = 0;
+                } else {
+                    uint8_t tt = ((timeTravelP0Speed-targetSpeed)*100) / (88 - targetSpeed);
+                    timetravelP0Delay = ((100 - tt) * 150) / 100;
+                    if(timetravelP0Delay < 40) timetravelP0Delay = 40;
+                }
+            } else {
+                timetravelP0Delay = (timeTravelP0Speed == 0) ? 4000 : 40;
+            }
+            #else
+            timetravelP0Delay = (timeTravelP0Speed == 0) ? 4000 : 40;
+            #endif
             timetravelP0Now = millis();
         }
     }
@@ -2114,7 +2130,7 @@ void timeTravel(bool doComplete, bool withSpeedo)
         #ifdef TC_HAVEGPS
         if(useGPSSpeed) {
             int16_t tempSpeed = myGPS.getSpeed();
-            if(tempSpeed > 0) {
+            if(tempSpeed >= 0) {
                 timeTravelP0Speed = tempSpeed;
                 timetravelP0Delay = 0;
                 if(timeTravelP0Speed < 88) {
@@ -2172,9 +2188,11 @@ void timeTravel(bool doComplete, bool withSpeedo)
 
                 } else {
 
-                    triggerP1LeadTime = pointOfP1 - currTotDur;
-                    triggerETTOLeadTime = ettoLeadPoint - currTotDur;
-                    timetravelP0Delay = 0;
+                    //triggerP1LeadTime = pointOfP1 - currTotDur;
+                    //triggerETTOLeadTime = ettoLeadPoint - currTotDur;
+                    //timetravelP0Delay = 0;
+                    triggerP1LeadTime = pointOfP1 - currTotDur + timetravelP0Delay;
+                    triggerETTOLeadTime = ettoLeadPoint - currTotDur + timetravelP0Delay;
 
                 }
 
@@ -2188,7 +2206,7 @@ void timeTravel(bool doComplete, bool withSpeedo)
             } else {
                  triggerP1 = true;
                  triggerP1Now = ttUnivNow;
-                 triggerP1LeadTime = pointOfP1 + timetravelP0Delay;
+                 triggerP1LeadTime = pointOfP1 - currTotDur + timetravelP0Delay;
             }
 
             speedo.setSpeed(timeTravelP0Speed);

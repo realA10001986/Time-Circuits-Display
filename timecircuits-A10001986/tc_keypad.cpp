@@ -597,6 +597,9 @@ void keypad_loop()
                 mp_stop();
                 stopAudio();
                 allOff();
+                #ifdef TC_HAVESPEEDO
+                if(useSpeedo) speedo.off();
+                #endif
                 destinationTime.resetBrightness();
                 destinationTime.showTextDirect("REBOOTING");
                 destinationTime.on();
