@@ -93,9 +93,11 @@
 
 /*  Changelog
  *    
+ *  2023/01/26 (A10001986)
+ *    - GPS: Code optimizations; quicker time-sync if GPS has valid time
  *  2023/01/25 (A10001986)
- *    - GPS Speed: Fix tt sequence/sound timing when counting up from GPS speed
- *    - GPS: Soften count-down from 88 back to current GPS speed
+ *    - GPS speed: Fix tt sequence/sound timing when counting up from GPS speed
+ *    - GPS speed: Soften count-down from 88 back to current GPS speed
  *    - Turn speedo off when rebooting
  *  2023/01/23 (A10001986)
  *    - GPS speed: Reduce delay between reading speed and displaying it

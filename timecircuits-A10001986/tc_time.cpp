@@ -684,10 +684,9 @@ void time_setup()
         
         if(useGPS || useGPSSpeed) {
           
-            // ms between GPS polls
-            // need more updates if speed is to be displayed
-            GPSupdateFreq    = useGPSSpeed ? 250 : 500;
-            GPSupdateFreqMin = useGPSSpeed ? 500 : 500;
+            // Clear so we don't add to stampAge unnecessarily in
+            // boot strap
+            GPSupdateFreq = GPSupdateFreqMin = 0;
             
             // We know now we have a possible source for auth time
             couldHaveAuthTime = true;
@@ -888,6 +887,11 @@ void time_setup()
         if(!haveAuthTimeGPS && (haveAuthTime || !rtcbad)) {
             setGPStime();
         }
+        
+        // Set ms between GPS polls
+        // Need more updates if speed is to be displayed
+        GPSupdateFreq    = useGPSSpeed ? 250 : 500;
+        GPSupdateFreqMin = useGPSSpeed ? 500 : 500;
     }
     #endif
 
@@ -1366,6 +1370,7 @@ void time_loop()
             dispTemperature(true);
             #endif
         } else {
+            timetravelP0Now = millis();
             timeTravelP0Speed--;
             speedo.setSpeed(timeTravelP0Speed);
             speedo.show();
@@ -1384,7 +1389,6 @@ void time_loop()
             #else
             timetravelP0Delay = (timeTravelP0Speed == 0) ? 4000 : 40;
             #endif
-            timetravelP0Now = millis();
         }
     }
     #endif  // TC_HAVESPEEDO
@@ -1445,8 +1449,8 @@ void time_loop()
     
     #ifdef TC_HAVELIGHT
     if(useLight && (millis() - lastLoopLight >= 3000)) {
-        lightSens.loop();
         lastLoopLight = millis();
+        lightSens.loop();
     }
     #endif
 
@@ -1491,7 +1495,10 @@ void time_loop()
                              (dt.minute() == 2) ||
                              (!haveAuthTime && 
                               ( ((dt.minute() % resyncInt) == 1) || 
-                                ((dt.minute() % resyncInt) == 2)) )
+                                ((dt.minute() % resyncInt) == 2) ||
+                                GPShasTime 
+                              ) 
+                             )
                            );
             
             if( couldHaveAuthTime                       &&
@@ -2774,15 +2781,18 @@ static bool getGPStime()
 
     if(!myGPS.getDateTime(&timeinfo, &stampAge, GPSupdateFreq))
         return false;
+
+    #ifdef TC_DBG
+    Serial.printf("getGPStime: stamp age %d\n", stampAge);
+    #endif
             
     // Convert UTC to local (non-DST) time
     utcMins = dateToMins(timeinfo.tm_year + 1900, timeinfo.tm_mon + 1, timeinfo.tm_mday, 
                          timeinfo.tm_hour, timeinfo.tm_min);
 
-    // Correct seconds by stampAge plus one (because the second had 
-    // already begun when the time was written to the buffer and we 
-    // lost some time through our delayed polling)
-    nsecond = timeinfo.tm_sec + (stampAge / 1000) + 1;
+    // Correct seconds by stampAge
+    nsecond = timeinfo.tm_sec + (stampAge / 1000);
+    if((stampAge % 1000) > 500) nsecond++;
     
     utcMins += (uint64_t)(nsecond / 60);
     nsecond %= 60;
