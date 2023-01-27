@@ -109,6 +109,8 @@ The clock only supports the [Gregorian Calendar](https://en.wikipedia.org/wiki/G
 
 Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed after 1BC. Nevertheless, it is possible to travel to year 0. In good old Hollywood tradition, I won't let facts and science stand in the way of an authentic movie experience.
 
+If "REPLACE BATTERY" is shown upon boot, the onboard CR2032 battery is depleted and needs to be replaced. Note that, for technical reasons, "REPLACE BATTERY" will also show up at the very first power-up *after* you replaced the battery. You can, of course, disregard that message in this case.
+
 ### Time-cycling
 
 "Time cycling" is a kind of "decorative" mode in which the device cycles through a list of pre-programmed *destination* and *last time departed* times. These pre-programmed times match the dates/times of all time-travels that take place in the three movies.
