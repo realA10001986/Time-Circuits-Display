@@ -135,8 +135,15 @@ tcRTC::tcRTC(int numTypes, uint8_t addrArr[])
 /*
  *  Test i2c connection and detect chip type
  */
-bool tcRTC::begin()
+bool tcRTC::begin(unsigned long powerupTime)
 {
+
+    // Give the RTC some time to boot
+    unsigned long millisNow = millis();
+    if(millisNow - powerupTime < 2000) {
+        delay(2000 - (millisNow - powerupTime));
+    }
+    
     for(int i = 0; i < _numTypes * 2; i += 2) {
 
         // Check for RTC on i2c bus
@@ -276,7 +283,7 @@ void tcRTC::clockOutEnable()
         // set squarewave to 1Hz
         // Bits 2:0 - 110  sets 1Hz
         readValue &= B11111000;
-        readValue |= B11111110;
+        readValue |= B00000110;
         write_register(PCF2129_CLKCTRL, readValue);
         break;
 
@@ -290,6 +297,37 @@ void tcRTC::clockOutEnable()
         write_register(DS3231_CONTROL, readValue);
         break;
     }
+}
+
+/*
+ * OTP refresh (PCF2129 only)
+ */
+bool tcRTC::NeedOTPRefresh()
+{
+    if(_rtcType == RTCT_PCF2129)
+        return true;
+
+    return false;
+}
+
+bool tcRTC::OTPRefresh(bool start)
+{
+    uint8_t readValue = 0;
+
+    switch(_rtcType) {
+      
+    case RTCT_PCF2129:
+        readValue = read_register(PCF2129_CLKCTRL);
+        // set squarewave to 1Hz
+        // Bits 2:0 - 110  sets 1Hz
+        readValue &= B11011111;
+        if(!start) readValue |= B00100000;
+        write_register(PCF2129_CLKCTRL, readValue);
+        return true;
+
+    }
+
+    return false;
 }
 
 /*

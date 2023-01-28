@@ -93,6 +93,8 @@
 
 /*  Changelog
  *    
+ *  2023/01/28 (A10001986)
+ *    - PCF2129 RTC: Fix obvious copy/paste error; add OTP refresh
  *  2023/01/26 (A10001986)
  *    - GPS: Code optimizations; quicker time-sync if GPS has valid time
  *  2023/01/25 (A10001986)

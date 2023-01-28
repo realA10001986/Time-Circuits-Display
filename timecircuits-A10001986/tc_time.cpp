@@ -250,6 +250,10 @@ static uint8_t       NTPUDPID[4] = { 0, 0, 0, 0};
 // The RTC object
 tcRTC rtc(2, (uint8_t[2*2]){ PCF2129_ADDR, RTCT_PCF2129, 
                              DS3231_ADDR,  RTCT_DS3231 });
+static unsigned long OTPRDoneNow = 0;
+static bool          RTCNeedsOTPR = false;
+static bool          OTPRinProgress = false;
+static unsigned long OTPRStarted = 0;
 
 // The GPS object
 #ifdef TC_HAVEGPS
@@ -595,7 +599,7 @@ void time_setup()
     #endif
 
     // RTC setup
-    if(!rtc.begin()) {
+    if(!rtc.begin(powerupMillis)) {
 
         Serial.println(F("time_setup: Couldn't find RTC. Panic!"));
 
@@ -609,8 +613,10 @@ void time_setup()
         }
     }
 
+    RTCNeedsOTPR = rtc.NeedOTPRefresh();
+
     if(rtc.lostPower()) {
-      
+
         // Lost power and battery didn't keep time, so set current time to 
         // default time 1/1/2023, 0:0
         rtc.adjust(0, 0, 0, dayOfWeek(1, 1, 2023), 1, 1, 23);
@@ -620,6 +626,14 @@ void time_setup()
         #endif
 
         rtcbad = true;
+    }
+
+    if(RTCNeedsOTPR) {
+        rtc.OTPRefresh(true);
+        delay(100);
+        rtc.OTPRefresh(false);
+        delay(100);
+        OTPRDoneNow = millis();
     }
 
     // Turn on the RTC's 1Hz clock output
@@ -1065,6 +1079,8 @@ void time_setup()
     #endif
 
     // Show "REPLACE BATTERY" message if RTC battery is low or depleted
+    // Note: This also shows up the first time you power-up the clock
+    // AFTER a battery change.
     if(rtcbad || rtc.battLow()) {
         destinationTime.showTextDirect("REPLACE");
         presentTime.showTextDirect("BATTERY");
@@ -1262,6 +1278,14 @@ void time_loop()
         #ifdef TC_DBG
         Serial.printf("Reduced CPU speed to %d\n", getCpuFrequencyMhz());
         #endif
+    }
+
+    if(OTPRinProgress) {
+        if(millis() - OTPRStarted > 100) {
+            rtc.OTPRefresh(false);
+            OTPRinProgress = false;
+            OTPRDoneNow = millis();
+        }
     }
 
     // Initiate startup delay, play startup sound
@@ -1589,7 +1613,7 @@ void time_loop()
                 }
 
             } else {
-
+                
                 autoReadjust = false;
 
                 // If GPS is used for time, resyncInt is possibly set to 2 during boot;
@@ -1946,9 +1970,18 @@ void time_loop()
 
         } else {
 
+            unsigned long millisNow = millis();
+
             destinationTime.setColon(false);
             presentTime.setColon(false);
             departedTime.setColon(false);
+
+            // OTPR for PCF2129 every two weeks
+            if(RTCNeedsOTPR && (millisNow - OTPRDoneNow > 2*7*24*60*60*1000)) {
+                rtc.OTPRefresh(true);
+                OTPRinProgress = true;
+                OTPRStarted = millisNow;
+            }
 
             if(autoIntAnimRunning)
                 autoIntAnimRunning++;

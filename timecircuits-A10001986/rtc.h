@@ -89,7 +89,7 @@ class tcRTC
 
         tcRTC(int numTypes, uint8_t addrArr[]);
 
-        bool begin();
+        bool begin(unsigned long powerupTime);
 
         void adjust(const DateTime &dt);
         void adjust(byte second, byte minute, byte hour, byte dayOfWeek, byte dayOfMonth, byte month, byte year);
@@ -97,6 +97,9 @@ class tcRTC
         DateTime now();
 
         void clockOutEnable();
+
+        bool NeedOTPRefresh();
+        bool OTPRefresh(bool start);
 
         bool lostPower(void);
         bool battLow(void);
