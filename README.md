@@ -497,11 +497,9 @@ Note that the Music Folder Number is saved in a config file on the SD card.
 - Hold ENTER to invoke main menu
 - Press ENTER repeatedly until "BRIGHTNESS" is shown
 - Hold ENTER, the displays show all elements, the top-most display says "LVL"
-- Press ENTER repeatedly to cycle through the possible levels (1-5)
+- Press ENTER repeatedly to cycle through the possible levels (1-15)
 - Hold ENTER to use current value and proceed to next display
 - After the third display, "SAVING" is displayed briefly and the menu is left automatically.
-
-The [Config Portal](#the-config-portal) offers more granularity as it provides 16 levels to choose from.
  
 #### How to find out the IP address and WiFi status:
 
