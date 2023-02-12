@@ -89,7 +89,9 @@ The Config Portal is accessible exclusively through WiFi. As outlined above, if 
 
 If the operating system on your handheld or computer supports Bonjour (or "mDNS"), you can connect to the Config Portal by directing your browser to http://timecircuits.local. (mDNS is supported on Windows 10 version TH2 (1511) [other sources say 1703] and later, Android 13 and later, MacOS, iOS)
 
-If that fails, the way to connect to the Config Portal depends on whether the clock is in access point mode or not. If it is in access point mode, nagivate to http://192.168.4.1. If the device is connected to your WiFi network, you need to find out its IP address first: Hold ENTER on the keypad for 2 seconds, then repeatedly press ENTER until "NET-WORK" is shown, then hold ENTER for 2 seconds. The device will then show its current IP address. Then, on your handheld or computer, navigate to http://a.b.c.d (a.b.c.d being the IP address as shown on the display) in order to enter the Config Portal.
+If that fails, the way to connect to the Config Portal depends on whether the clock is in access point mode or not. 
+- If it is in access point mode (and your handheld/computer is connected to the WiFi network "TCP-AP"), nagivate your browser to http://192.168.4.1 
+- If the device is connected to your WiFi network, you need to find out its IP address first: Hold ENTER on the keypad for 2 seconds, then repeatedly press ENTER until "NET-WORK" is shown, then hold ENTER for 2 seconds. The device will then show its current IP address. Then, on your handheld or computer, navigate to http://a.b.c.d (a.b.c.d being the IP address as shown on the display) in order to enter the Config Portal.
 
 In the main menu, click on "Setup" to configure your clock, first and foremost your time zone. If the time zone isn't set correctly, the clock might show a wrong time, and DST (daylight saving) will not be switched on/off correctly.
 
