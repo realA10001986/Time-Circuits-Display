@@ -974,19 +974,34 @@ static void setNightMode(bool nm)
 void nightModeOn()
 {
     setNightMode(true);
+    leds_off();
 }
 
 void nightModeOff()
 {
     setNightMode(false);
+    leds_on();
 }
 
 bool toggleNightMode()
 {
     if(destinationTime.getNightMode()) {
         setNightMode(false);
+        leds_on();
         return false;
     }
     setNightMode(true);
+    leds_off();
     return true;
+}
+
+
+void leds_on()
+{
+    digitalWrite(LEDS_PIN, HIGH);
+}
+
+void leds_off()
+{
+    digitalWrite(LEDS_PIN, LOW);
 }

@@ -92,8 +92,11 @@
  */
 
 /*  Changelog
- *    
- *  2023/01/28 (A10001986)
+ *   
+ *  2023/02/21 (A10001986)
+ *    - Prepare for TCD CB 1.3 with switchable LEDs. LEDs are off when fake power
+ *      is off, and in night mode.
+ *  2023/01/28 (A10001986) [CS 2.6 Release]
  *    - PCF2129 RTC: Fix obvious copy/paste error; add OTP refresh
  *  2023/01/26 (A10001986)
  *    - GPS: Code optimizations; quicker time-sync if GPS has valid time
@@ -238,7 +241,7 @@
  *      network modes (AP, STA, etc). The digit "6" as part of the MAC is shown using
  *      the "modern"/common segment pattern here to distinguish it from "b".
  *    - Fix formatting bug in tc_font.h leading to font missing one character
- *  2022/12/02 (A10001986) [2.5]
+ *  2022/12/02 (A10001986) [CS 2.5 release]
  *    - Add support for BMx280 sensor (temperature only).
  *    - Modify former "light sensor" keypad menu to not only show measured lux level
  *      from a light sensor, but also current ambient temperature as measured by
@@ -248,7 +251,7 @@
  *      sensor placement. In order to calibrate the offset, use the keypad menu 
  *      "SENSORS" since the temperature shown there is not rounded (unlike what is
  *      shown on a speedo display if it has less than three digits).
- *  2022/11/22 (A10001986) [2.4]
+ *  2022/11/22 (A10001986) [CS 2.4 release]
  *    - Audio: SPIFFS does not adhere to POSIX standards and returns a file object
  *      even if a file does not exist. Fix by work-around (SPIFFS only).
  *    - clockdisplay: lampTest(), as part of the display disruption sequence, might 
@@ -272,7 +275,7 @@
  *  2022/11/10 (A10001986)
  *    - Minor optimizations (wifi)
  *    - Soft-reset the clock by entering 64738 and ENTER
- *  2022/11/08 (A10001986) [2.3]
+ *  2022/11/08 (A10001986) [CS 2.3 release]
  *    - Allow time travel to (non-existing) year 0, so users can simulate the movie
  *      error (Dec 25, 0000).
  *    - RTC can no longer be set to a date below TCEPOCH_GEN (which is 2022 currently)

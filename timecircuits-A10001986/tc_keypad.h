@@ -46,6 +46,9 @@ void nightModeOn();
 void nightModeOff();
 bool toggleNightMode();
 
+void leds_on();
+void leds_off();
+
 void enterkeyScan();
 
 #endif

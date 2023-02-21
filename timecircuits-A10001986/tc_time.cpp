@@ -549,6 +549,10 @@ void time_boot()
     presentTime.begin();
     destinationTime.begin();
     departedTime.begin();
+
+    // Switch LEDs on
+    pinMode(LEDS_PIN, OUTPUT);
+    leds_on();
 }
 
 /*
@@ -1181,6 +1185,7 @@ void time_setup()
         digitalWrite(WHITE_LED_PIN, HIGH);
         myIntroDelay(500);
         digitalWrite(WHITE_LED_PIN, LOW);
+        leds_off();
         isFPBKeyChange = false;
         FPBUnitIsOn = false;
 
@@ -1220,6 +1225,7 @@ void time_loop()
                     startup = true;
                     startupSound = true;
                     FPBUnitIsOn = true;
+                    leds_on();
                     destinationTime.setBrightness(255); // restore brightnesses
                     presentTime.setBrightness(255);     // in case we got switched
                     departedTime.setBrightness(255);    // off during time travel
@@ -1253,6 +1259,7 @@ void time_loop()
                     play_file("/shutdown.mp3", 1.0, true, true);
                     mydelay(130);
                     allOff();
+                    leds_off();
                     #ifdef TC_HAVESPEEDO
                     if(useSpeedo && !useGPSSpeed) speedo.off();
                     #endif

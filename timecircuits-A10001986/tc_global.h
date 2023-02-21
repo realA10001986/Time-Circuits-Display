@@ -15,11 +15,11 @@
 // These must not contain any characters other than
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION "V2.6.0"           // 13 chars max
-#define TC_VERSION_EXTRA "JAN282023"  // 13 chars max
+#define TC_VERSION "V2.7.0"           // 13 chars max
+#define TC_VERSION_EXTRA "FEB212023"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION "V2.6.0_A-CAR"     // 12 chars max
-#define TC_VERSION_EXTRA "01282023"   // 12 chars max
+#define TC_VERSION "V2.7.0_A-CAR"     // 12 chars max
+#define TC_VERSION_EXTRA "02212023"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -126,6 +126,7 @@
 #define SECONDS_IN_PIN    15      // SQW Monitor 1Hz from the DS3231
 #define ENTER_BUTTON_PIN  16      // enter key
 #define WHITE_LED_PIN     17      // white led
+#define LEDS_PIN          12      // Red/amber/green LEDs (TCD-Control V1.3+)
 
 // I2S audio pins
 #define I2S_BCLK_PIN      26
