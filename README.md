@@ -567,11 +567,11 @@ Note that the switch actually needs to be a switch with a maintained contact; th
 
 ## External Time Travel Trigger
 
-As mentioned above, a time travel can be triggered by holding "0" on the keypad. Since this doesn't really allow for an authentic movie-like experience, the firmware also supports an external trigger, such as a button switch or even another prop to trigger a time travel.
+As mentioned above, a time travel can be triggered by holding "0" on the keypad. Since this doesn't really allow for an authentic movie-like experience, the firmware also supports an external trigger, such as a button switch or even another prop to trigger a time travel. Note that, unlike the [Fake Power Switch](#fake-power-switch), this trigger must be a momentary toggle.
 
-This button/prop must be connected to IO27 and GND. In order to trigger a time-travel sequence on the Time Circuits, IO27 and GND must be shortened for 200ms or longer. Note that, unlike the [Fake Power Switch](#fake-power-switch), this trigger must be a momentary toggle.
+This button/prop must be connected to IO27 and GND. In order to trigger a time-travel sequence on the Time Circuits, IO27 and GND must be shortened for at least 200ms and then opened; the time travel is triggered upon release of the button. If the button is pressed for 3000ms, a ["Return from Time Travel"](#time-travel) is triggered.
 
-Unfortunately, there is no header and no break out for IO27 on existing TC control boards. Some soldering is required. The button needs to be connected to the two marked pins in the image below:
+Unfortunately, there is no header and no break out for IO27 on TC control boards V1.2 and below. Some soldering is required. The button needs to be connected to the two marked pins in the image below:
 
 ![nodemcuio27](https://user-images.githubusercontent.com/76924199/194284838-635419f9-5eb7-4480-8693-2bf7cfc7c744.jpg)
 
