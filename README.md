@@ -16,20 +16,20 @@ Features include
 - ["Return from Time Travel"](#time-travel): Return to real present time easily
 - ["Decorative mode"](#time-cycling): Movie-accurate time travel times displayed in *destination time* and *last time departed* displays, and cycled in configurable interval
 - [Alarm function](#how-to-set-up-the-alarm)
-- &#127381; [Count-down timer](#count-down-timer)
+- [Count-down timer](#count-down-timer)
 - [Night mode](#night-mode) (displays off or dimmed; manual, scheduled or sensor-controlled)
-- &#127381; [Music player](#the-music-player): Play mp3 files located on an SD card
-- [SD card](#sd-card) support for custom audio files for effects, &#127381; and music for the Music Player
-- Advanced network-accessible [Config Portal](#the-config-portal) for setup &#127381; with mDNS support for easy access (http://timecircuits.local, hostname configurable)
+- [Music player](#the-music-player): Play mp3 files located on an SD card
+- [SD card](#sd-card) support for custom audio files for effects, and music for the Music Player
+- Advanced network-accessible [Config Portal](#the-config-portal) for setup with mDNS support for easy access (http://timecircuits.local, hostname configurable)
 - [Keypad-controlled menu](#the-keypad-menu) for adjusting various settings and viewing network status via the three displays
 - 24-hour clock mode
-- &#127381; [Room condition mode](#room-condition-mode-temperaturehumidity-sensor): Display temperature and humidity instead of destination/departed time (requires suitable sensor)
+- [Room condition mode](#room-condition-mode-temperaturehumidity-sensor): Display temperature and humidity instead of destination/departed time (requires suitable sensor)
 - Optional power-up intro
 - Optional [sound on the hour](#additional-custom-sounds)
 - Support for external [fake "power switch"](#fake-power-switch)
 - Support for external display acting as [Speedometer](#speedometer)
 - Support for external [GPS receiver](#gps-receiver), used as time source, and for [speed](#gps-for-speed) to be displayed on speedo display
-- &#127381; Support for external [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for "room condition mode" and to display temperature on speedo display while idle
+- Support for external [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for "room condition mode" and to display temperature on speedo display while idle
 - Support for time travel [triggered by external source](#external-time-travel-trigger), with selectable delay
 - Support for triggering time travels on [other props](#controlling-other-props); TCD can act as master controller for SID, flux capacitor, etc.
 - Built-in installer for default audio files in addition to OTA firmware updates
