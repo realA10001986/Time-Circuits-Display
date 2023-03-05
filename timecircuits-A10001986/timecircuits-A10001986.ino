@@ -93,6 +93,13 @@
 
 /*  Changelog
  *   
+ *  2023/02/26 (A10001986)
+ *    - External time travel button: When held for 3 seconds, a "return from time
+ *      travel" is triggered. This brings a change in external time travel triggering:
+ *      Up until now, a time travel was issued when the button was pressed for 200ms, 
+ *      regardless of when it was released. Now, the tt will be triggered upon release 
+ *      of the button, as long it is released in under 3000ms. If a delay is 
+ *      configured, it, too, will start running upon release.
  *  2023/02/21 (A10001986)
  *    - Prepare for TCD CB 1.3 with switchable LEDs. LEDs are off when fake power
  *      is off, and in night mode.

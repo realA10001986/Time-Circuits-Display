@@ -1121,6 +1121,7 @@ void time_setup()
         isEnterKeyPressed = false;
         #ifdef EXTERNAL_TIMETRAVEL_IN
         isEttKeyPressed = false;
+        isEttKeyHeld = false;
         #endif
     }
 

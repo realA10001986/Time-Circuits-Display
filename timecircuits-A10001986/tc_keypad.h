@@ -29,6 +29,7 @@ extern bool isEnterKeyPressed;
 extern bool isEnterKeyHeld;
 #ifdef EXTERNAL_TIMETRAVEL_IN
 extern bool isEttKeyPressed;
+extern bool isEttKeyHeld;
 #endif
 
 extern char timeBuffer[];
