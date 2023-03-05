@@ -639,7 +639,7 @@ After WiFi has been switched off due to timer expiry, it can be re-enabled by ho
 
 ## Controlling other props
 
-The device can tell other props about a time travel, and in essence act as a "master controller" for several props. It does so via IO14, see diagram below.
+The device can tell other props about a time travel, and in essence act as a "master controller" for several props. It does so via IO14 (labeled "TT OUT" on Control Boards 1.3 and later), see diagram below.
 
 ```
 |<---------- speedo acceleration --------->|                         |<-speedo de-acceleration->|
