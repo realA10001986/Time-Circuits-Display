@@ -93,7 +93,9 @@
 
 /*  Changelog
  *   
- *  2023/02/26 (A10001986)
+ *  2023/03/16 (A10001986)
+ *    - Fixes for CircuitSetup's speedo display
+ *  2023/03/05 (A10001986)
  *    - External time travel button: When held for 3 seconds, a "return from time
  *      travel" is triggered. This brings a change in external time travel triggering:
  *      Up until now, a time travel was issued when the button was pressed for 200ms, 
