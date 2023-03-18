@@ -671,6 +671,12 @@ In order to reduce the number of write operations and thereby prolonging the lif
 
 More here: [Link](https://github.com/realA10001986/Time-Circuits-Display/wiki/Time-Circuits-Wall-Clock)
 
+## Custom made TFC switch
+
+![TFC switch](https://user-images.githubusercontent.com/76924199/226100404-8bccf8d5-33b0-4025-97d0-78f2b734931a.jpg)
+
+More here: [Link](https://github.com/realA10001986/Time-Circuits-Display/wiki/TFC-Switch)
+
 ## Appendix A: The Config Portal
 
 ### Main page
