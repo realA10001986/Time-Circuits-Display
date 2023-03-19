@@ -671,7 +671,7 @@ In order to reduce the number of write operations and thereby prolonging the lif
 
 More here: [Link](https://github.com/realA10001986/Time-Circuits-Display/wiki/Time-Circuits-Wall-Clock)
 
-## Custom made TFC switch
+## Custom made Time Circuits switch
 
 ![TFC Switch](https://user-images.githubusercontent.com/76924199/226126053-e939cc47-04ea-42c7-86d2-dc32a88b9f99.jpg)
 
