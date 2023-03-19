@@ -675,7 +675,7 @@ More here: [Link](https://github.com/realA10001986/Time-Circuits-Display/wiki/Ti
 
 ![TFC Switch](https://user-images.githubusercontent.com/76924199/226126053-e939cc47-04ea-42c7-86d2-dc32a88b9f99.jpg)
 
-More here: [Link](https://github.com/realA10001986/Time-Circuits-Display/wiki/TFC-Switch)
+More here: [Link](https://github.com/realA10001986/Time-Circuits-Display/wiki/Time-Circuits-Switch)
 
 ## Appendix A: The Config Portal
 
