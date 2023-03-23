@@ -26,6 +26,7 @@ Features include
 - [Room condition mode](#room-condition-mode-temperaturehumidity-sensor): Display temperature and humidity instead of destination/departed time (requires suitable sensor)
 - Optional power-up intro
 - Optional [sound on the hour](#additional-custom-sounds)
+- Optional beep every second
 - Support for external [fake "power switch"](#fake-power-switch)
 - Support for external display acting as [Speedometer](#speedometer)
 - Support for external [GPS receiver](#gps-receiver), used as time source, and for [speed](#gps-for-speed) to be displayed on speedo display
