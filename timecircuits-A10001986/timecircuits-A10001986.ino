@@ -93,6 +93,9 @@
 
 /*  Changelog
  *   
+ *  2023/03/27 (A10001986)
+ *    - Add (annoying) beep sound. Enabled/disabled by 000+ENTER. Disabled by default.
+ *      Requires new sound-pack.
  *  2023/03/16 (A10001986)
  *    - Fixes for CircuitSetup's speedo display
  *  2023/03/05 (A10001986)

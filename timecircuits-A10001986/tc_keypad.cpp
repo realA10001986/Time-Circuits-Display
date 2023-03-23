@@ -600,6 +600,9 @@ void keypad_loop()
                     invalidEntry = true;
                 }
                 break;
+            case 000:
+                muteBeep = !muteBeep;
+                break;
             default:
                 invalidEntry = true;
             }

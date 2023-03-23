@@ -1994,6 +1994,8 @@ void time_loop()
             if(autoIntAnimRunning)
                 autoIntAnimRunning++;
 
+            play_beep();
+
         }
 
         x = y;
