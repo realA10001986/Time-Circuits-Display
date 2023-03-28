@@ -202,6 +202,11 @@ WiFiManagerParameter custom_useDpTemp("dpTemp", "Display temperature (0=no, 1=ye
 WiFiManagerParameter custom_useDpTemp("dpTemp", "Display temperature", settings.useGPSSpeed, 1, "autocomplete='off' title='Check to display temperature on speedo display when idle (needs temperature sensor)' type='checkbox' style='margin-top:12px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 WiFiManagerParameter custom_tempBright("temBri", "<br>Temperature brightness (0-15)", settings.tempBright, 2, "type='number' min='0' max='15' autocomplete='off'");
+#ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
+WiFiManagerParameter custom_tempOffNM("toffNM", "Temperature in night mode (0=dimmed, 1=off)", settings.tempOffNM, 1, "autocomplete='off'");
+#else // -------------------- Checkbox hack: --------------
+WiFiManagerParameter custom_tempOffNM("toffNM", "Temperature off in night mode", settings.tempOffNM, 1, "autocomplete='off' title='If unchecked, the display will be dimmed' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+#endif // -------------------------------------------------
 #endif
 #endif // TC_HAVEGPS
 
@@ -417,7 +422,7 @@ void wifi_setup()
     #endif
 
     #ifdef TC_HAVESPEEDO
-    wm.addParameter(&custom_sectstart);     // 9
+    wm.addParameter(&custom_sectstart);     // 10
     wm.addParameter(&custom_useSpeedo);
     wm.addParameter(&custom_speedoType);
     wm.addParameter(&custom_speedoBright);
@@ -428,6 +433,7 @@ void wifi_setup()
     #ifdef TC_HAVETEMP
     wm.addParameter(&custom_useDpTemp);
     wm.addParameter(&custom_tempBright);
+    wm.addParameter(&custom_tempOffNM);
     #endif
     wm.addParameter(&custom_sectend);
     #endif
@@ -650,6 +656,7 @@ void wifi_loop()
             #endif
             #ifdef TC_HAVETEMP
             mystrcpy(settings.dispTemp, &custom_useDpTemp);
+            mystrcpy(settings.tempOffNM, &custom_tempOffNM);
             #endif
             #endif
             
@@ -702,6 +709,7 @@ void wifi_loop()
             #endif
             #ifdef TC_HAVETEMP
             strcpyCB(settings.dispTemp, &custom_useDpTemp);
+            strcpyCB(settings.tempOffNM, &custom_tempOffNM);
             #endif
             #endif
             
@@ -1191,6 +1199,7 @@ void updateConfigPortalValues()
     #endif
     #ifdef TC_HAVETEMP
     custom_useDpTemp.setValue(settings.dispTemp, 1);
+    custom_tempOffNM.setValue(settings.tempOffNM, 1);
     #endif
     #endif
     #ifdef FAKE_POWER_ON
@@ -1234,6 +1243,7 @@ void updateConfigPortalValues()
     #endif
     #ifdef TC_HAVETEMP
     setCBVal(&custom_useDpTemp, settings.dispTemp);
+    setCBVal(&custom_tempOffNM, settings.tempOffNM);
     #endif
     #endif
     #ifdef FAKE_POWER_ON

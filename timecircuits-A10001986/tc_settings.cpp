@@ -365,6 +365,7 @@ static bool read_settings(File configFile)
         #ifdef TC_HAVETEMP
         wd |= CopyCheckValidNumParm(json["dispTemp"], settings.dispTemp, sizeof(settings.dispTemp), 0, 1, DEF_DISP_TEMP);
         wd |= CopyCheckValidNumParm(json["tempBright"], settings.tempBright, sizeof(settings.tempBright), 0, 15, DEF_TEMP_BRIGHT);
+        wd |= CopyCheckValidNumParm(json["tempOffNM"], settings.tempOffNM, sizeof(settings.tempOffNM), 0, 1, DEF_TEMP_OFF_NM);
         #endif
         #endif // HAVESPEEDO
         
@@ -462,6 +463,7 @@ void write_settings()
     #ifdef TC_HAVETEMP
     json["dispTemp"] = settings.dispTemp;
     json["tempBright"] = settings.tempBright;
+    json["tempOffNM"] = settings.tempOffNM;
     #endif
     #endif // HAVESPEEDO
     

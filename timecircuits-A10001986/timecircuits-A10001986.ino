@@ -93,7 +93,9 @@
 
 /*  Changelog
  *   
- *  2023/03/27 (A10001986)
+ *  2023/03/28 (A10001986)
+ *    - Add option to keep temperature display on (and dimmed) in night mode
+ *  2023/03/23 (A10001986)
  *    - Add (annoying) beep sound. Enabled/disabled by 000+ENTER. Disabled by default.
  *      Requires new sound-pack.
  *  2023/03/16 (A10001986)

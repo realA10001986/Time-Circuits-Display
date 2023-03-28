@@ -70,6 +70,7 @@ extern uint8_t musFolderNum;
 #define DEF_USE_TEMP        0     // 0: No i2c temperature/humidity sensor
 #define DEF_DISP_TEMP       1     // 1: Display temperature (if available) on speedo
 #define DEF_TEMP_BRIGHT     3     // Default temp brightness
+#define DEF_TEMP_OFF_NM     1     // Default: temp off in night mode
 #define DEF_TEMP_UNIT       0     // Default: temp unit Fahrenheit
 #define DEF_TEMP_OFFS       0.0   // Default temp offset 0.0
 #define DEF_USE_LIGHT       0     // Default: No i2c light sensor
@@ -133,6 +134,7 @@ struct Settings {
 #ifdef TC_HAVETEMP
     char dispTemp[4]        = MS(DEF_DISP_TEMP);
     char tempBright[4]      = MS(DEF_TEMP_BRIGHT);
+    char tempOffNM[4]       = MS(DEF_TEMP_OFF_NM);
 #endif
 #endif // HAVESPEEDO
 #ifdef EXTERNAL_TIMETRAVEL_OUT

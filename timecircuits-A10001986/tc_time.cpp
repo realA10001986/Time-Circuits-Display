@@ -161,6 +161,7 @@ static int           tempBrightness = DEF_TEMP_BRIGHT;
 #endif // HAVESPEEDO
 bool                 useTemp = false;
 bool                 dispTemp = true;
+bool                 tempOffNM = true;
 #ifdef TC_HAVETEMP
 bool                 tempUnit = DEF_TEMP_UNIT;
 static unsigned long tempReadNow = 0;
@@ -1040,6 +1041,7 @@ void time_setup()
             tempSens.setOffset((float)atof(settings.tempOffs));
             #ifdef TC_HAVESPEEDO
             tempBrightness = (int)atoi(settings.tempBright);
+            tempOffNM = ((int)atoi(settings.tempOffNM) > 0);
             if(!useSpeedo || useGPSSpeed) dispTemp = false;
             if(dispTemp) {
                 #ifdef FAKE_POWER_ON
@@ -1919,7 +1921,6 @@ void time_loop()
                             sensorNightMode = 1;
                             nightModeOn();
                         }
-                    } else {
                         // Bad lux (probably by sensor overload), switch NM off
                         sensorNightMode = -1;
                         switchNMoff = true;
@@ -2648,7 +2649,8 @@ static void dispGPSSpeed(bool force)
 #ifdef TC_HAVETEMP
 static void dispTemperature(bool force)
 {
-    int temp;
+    bool tempNM = speedo.getNightMode();
+    bool tempChgNM = false;
 
     if(!dispTemp)
         return;
@@ -2656,18 +2658,20 @@ static void dispTemperature(bool force)
     if(!FPBUnitIsOn || startup || timeTraveled || timeTravelP0 || timeTravelP1 || timeTravelP2)
         return;
 
-    if(speedo.getNightMode()) {
-        speedo.off();
-        tempOldNM = true;
-        return;
-    }
+    tempChgNM = (tempNM != tempOldNM);
+    tempOldNM = tempNM;
 
-    if(tempOldNM || (force || (millis() - tempDispNow >= 2*60*1000))) {
-        tempOldNM = false;
-        speedo.setTemperature(tempSens.readLastTemp());
-        speedo.show();
-        speedo.setBrightnessDirect(tempBrightness); // after show b/c brightness
-        speedo.on();
+    if(tempChgNM || force || (millis() - tempDispNow >= 2*60*1000)) {
+        if(tempNM && tempOffNM) {
+            speedo.off();
+        } else {
+            speedo.setTemperature(tempSens.readLastTemp());
+            speedo.show();
+            if(!tempNM) {
+                speedo.setBrightnessDirect(tempBrightness); // after show b/c brightness
+            }
+            speedo.on();
+        }
         tempDispNow = millis();
     }
 }

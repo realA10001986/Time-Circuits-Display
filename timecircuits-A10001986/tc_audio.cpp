@@ -129,7 +129,9 @@ static float getVolume(int channel);
  */
 void audio_setup()
 {
+    #ifdef TC_DBG
     audioLogger = &Serial;
+    #endif
 
     // Set resolution for volume pot
     analogReadResolution(POT_RESOLUTION);
