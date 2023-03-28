@@ -1921,6 +1921,7 @@ void time_loop()
                             sensorNightMode = 1;
                             nightModeOn();
                         }
+                    } else {
                         // Bad lux (probably by sensor overload), switch NM off
                         sensorNightMode = -1;
                         switchNMoff = true;
