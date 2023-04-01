@@ -228,7 +228,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
 
 <table>
     <tr>
-     <td align="center" colspan="3">Keypad reference: Holding keys for 2 seconds<br>(Firmware versions from 2023 and later)</td>
+     <td align="center" colspan="3">Keypad reference: Holding keys for 2 seconds</td>
     </tr>
     <tr>
      <td align="center">1<br>Toggle <a href="#how-to-set-up-the-alarm">Alarm</a> on/off</td>
@@ -243,32 +243,6 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
     <tr>
      <td align="center">7<br><a href="#wifi-power-saving-features">Re-enable WiFi</a></td>
      <td align="center">8<br><a href="#the-music-player">Music Player</a>: Next song</td>
-     <td align="center">9<br><a href="#time-travel">Return from Time Travel</a></td>
-    </tr>
-    <tr>
-     <td align="center"></td>
-     <td align="center">0<br><a href="#time-travel">Time Travel</a></td>
-     <td align="center"></td>
-    </tr>
-</table>
-
-<table>
-    <tr>
-     <td align="center" colspan="3">Keypad reference: Holding keys for 2 seconds<br>(Firmware versions from 2022)</td>
-    </tr>
-    <tr>
-     <td align="center">1<br>Enable <a href="#how-to-set-up-the-alarm">Alarm</a></td>
-     <td align="center">2<br>Disable <a href="#how-to-set-up-the-alarm">Alarm</a></td>
-     <td align="center">3<br><a href="#additional-custom-sounds">Play "key3.mp3"</a></td>
-    </tr>
-    <tr>
-     <td align="center">4<br>Enable <a href="#night-mode">Night mode</a></td>
-     <td align="center">5<br>Disable <a href="#night-mode">Night mode</a></td>
-     <td align="center">6<br><a href="#additional-custom-sounds">Play "key6.mp3"</a></td>
-    </tr>
-    <tr>
-     <td align="center">7<br><a href="#wifi-power-saving-features">Re-enable WiFi</a></td>
-     <td align="center">8<br>n/a</td>
      <td align="center">9<br><a href="#time-travel">Return from Time Travel</a></td>
     </tr>
     <tr>
