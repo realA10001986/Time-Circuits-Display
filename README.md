@@ -728,6 +728,10 @@ Selects whether the animated "Back to the Future" intro should be played upon po
 
 Selects 24-hour clock mode, ie hours go from 0 to 23, "AM" and "PM" are permanently dark.
 
+##### &#9654; Beep by default
+
+If checked, the "beep" on every second is enabled after power-up. (Can be enabled and disabled anytime by typing 000 followed by ENTER.)
+
 ##### &#9654; Time-cycling interval
 
 In "decorative" mode the device cycles through a list of pre-programmed, movie-accurate *destination* and *last time departed* times. This mode is enabled by setting the "Time-cycling Interval" to anything but "off". The device will cycle through named list every 5th, 10th, 15th, 30th or 60th minute, and thereby change the displays. Set the interval to "off" to disable "decorative" mode. See [here](#time-cycling)
@@ -865,6 +869,10 @@ Selects whether temperature as received from a suitable sensor is displayed on t
 ##### &#9654; Temperature brightness
 
 Brightness of speedo display when displaying temperature.
+
+##### &#9654; Temperature off in night mode
+
+Selects whether the temperature display is dimmed or switched of in night mode.
 
 #### External switches/buttons
 
