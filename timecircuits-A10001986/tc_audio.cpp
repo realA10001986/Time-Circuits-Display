@@ -426,7 +426,7 @@ void play_hour_sound(int hour)
 
 void play_beep()
 {
-    if(muteBeep || mpActive || mp3->isRunning())
+    if(!FPBUnitIsOn || muteBeep || mpActive || presentTime.getNightMode() || mp3->isRunning())
         return;
 
     play_file("/beep.mp3", 0.3, true, false, false);
