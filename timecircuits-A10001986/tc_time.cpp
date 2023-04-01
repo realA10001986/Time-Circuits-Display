@@ -970,6 +970,9 @@ void time_setup()
 
     // Set up option to play/mute time travel sounds
     playTTsounds = ((int)atoi(settings.playTTsnds) > 0);
+
+    // Set power-up setting for beep
+    muteBeep = ((int)atoi(settings.beep) == 0);
     
     // Set up speedo display
     #ifdef TC_HAVESPEEDO

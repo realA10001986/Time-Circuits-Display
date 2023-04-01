@@ -309,6 +309,7 @@ static bool read_settings(File configFile)
         wd |= CopyCheckValidNumParm(json["alarmRTC"], settings.alarmRTC, sizeof(settings.alarmRTC), 0, 1, DEF_ALARM_RTC);
         wd |= CopyCheckValidNumParm(json["playIntro"], settings.playIntro, sizeof(settings.playIntro), 0, 1, DEF_PLAY_INTRO);
         wd |= CopyCheckValidNumParm(json["mode24"], settings.mode24, sizeof(settings.mode24), 0, 1, DEF_MODE24);
+        wd |= CopyCheckValidNumParm(json["beep"], settings.beep, sizeof(settings.beep), 0, 1, DEF_BEEP);
         wd |= CopyCheckValidNumParm(json["autoRotateTimes"], settings.autoRotateTimes, sizeof(settings.autoRotateTimes), 0, 5, DEF_AUTOROTTIMES);
 
         if(json["hostName"]) {
@@ -415,6 +416,7 @@ void write_settings()
     json["timeTrPers"] = settings.timesPers;
     json["alarmRTC"] = settings.alarmRTC;
     json["mode24"] = settings.mode24;
+    json["beep"] = settings.beep;
     json["playIntro"] = settings.playIntro;
     json["autoRotateTimes"] = settings.autoRotateTimes;
 

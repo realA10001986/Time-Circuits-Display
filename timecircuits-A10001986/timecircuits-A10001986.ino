@@ -97,6 +97,7 @@
  *    - Fix beep: Off in nightmode and when unit is fake-powered off
  *    - Fix CB1.3 LED logic: On only if unit is NOT fake powered off, and NOT
  *      in night mode.
+ *    - Add beep option to setup page
  *  2023/03/28 (A10001986)
  *    - Add option to keep temperature display on (and dimmed) in night mode
  *  2023/03/23 (A10001986) [CS 2.7 Release]
