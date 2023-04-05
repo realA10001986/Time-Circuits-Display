@@ -93,6 +93,8 @@
 
 /*  Changelog
  *   
+ *  2023/04/04 (A10001986)
+ *    - NTP: Do not overwrite previous packet age in case of a bad(outdated) new packet
  *  2023/04/01 (A10001986)
  *    - Fix beep: Off in nightmode and when unit is fake-powered off
  *    - Fix CB1.3 LED logic: On only if unit is NOT fake powered off, and NOT

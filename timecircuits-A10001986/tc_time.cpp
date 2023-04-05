@@ -353,8 +353,8 @@ dateStruct departedTimes[NUM_AUTOTIMES] = {
     {1970,  5, 26,  8, 22},
     {2021,  5,  5, 10,  9},
     {2012,  8, 16, 19, 49},
-    {2015, 12, 24, 19, 30},
     {2004,  8, 30, 19, 39},
+    {2015, 12, 24, 19, 30},
     {2014,  4, 12, 12,  0}
 };
 
@@ -534,10 +534,11 @@ static void handleDSTFlag(struct tm *ti, int nisDST = -1);
 static void ntp_setup();
 static bool NTPHaveTime();
 static bool NTPTriggerUpdate();
+static void NTPSendPacket();
 static void NTPCheckPacket();
 static uint32_t NTPGetSecsSinceTCepoch();
 static bool NTPGetLocalTime(int& year, int& month, int& day, int& hour, int& minute, int& second, int& isDST);
-static void NTPSendPacket();
+static bool NTPHaveLocalTime();
 
 
 /*
@@ -2750,7 +2751,7 @@ static bool getNTPTime(bool weHaveAuthTime)
     // If we don't have authTime yet, connect for longer to avoid
     // reconnects (aka frozen displays).
     // If WiFi is reconnected here, we won't have a valid time stamp
-    // immediately. This will therefore fail the first time called.
+    // immediately. This will therefore fail the first time called
     wifiOn(weHaveAuthTime ? 3*60*1000 : 21*60*1000, false, true);    
 
     if(WiFi.status() == WL_CONNECTED) {
@@ -3755,14 +3756,9 @@ static void NTPCheckPacket()
         return;
     }
 
-    // Baseline for round-trip correction
-    NTPTSAge = mymillis - ((mymillis - NTPTSRQAge) / 2);
-
     NTPfailCount = 0;
     
     myUDP->read(NTPUDPBuf, NTP_PACKET_SIZE);
-
-    NTPPacketDue = false;
 
     // Basic validity check
     if((NTPUDPBuf[0] & 0x3f) != 0x24) return;
@@ -3771,10 +3767,16 @@ static void NTPCheckPacket()
        NTPUDPBuf[26] != NTPUDPID[2] || 
        NTPUDPBuf[27] != NTPUDPID[3]) {
         #ifdef TC_DBG
-        Serial.print("NTPCheckPacket: Bad packet ID (outdated packet?)");
+        Serial.println("NTPCheckPacket: Bad packet ID (outdated packet?)");
         #endif
         return;
     }
+
+    // If it's our expected packet, no other is due for now
+    NTPPacketDue = false;
+
+    // Baseline for round-trip correction
+    NTPTSAge = mymillis - ((mymillis - NTPTSRQAge) / 2);
 
     // Evaluate data
     uint64_t secsSince1900 = ((uint32_t)NTPUDPBuf[40] << 24) |
@@ -3816,7 +3818,7 @@ static bool NTPGetLocalTime(int& year, int& month, int& day, int& hour, int& min
     uint32_t temp, c;
 
     // Fail if no time received, or stamp is older than 10 mins
-    if((!NTPsecsSinceTCepoch) || ((millis() - NTPTSAge) > 10*60*1000)) return false;
+    if(!NTPHaveLocalTime()) return false;
 
     isDST = 0;
     
@@ -3865,6 +3867,15 @@ static bool NTPGetLocalTime(int& year, int& month, int& day, int& hour, int& min
 
     // Determine DST from local nonDST time
     localToDST(year, month, day, hour, minute, isDST);
+
+    return true;
+}
+
+static bool NTPHaveLocalTime()
+{
+    // Have no time if no time stamp received, or stamp is older than 10 mins
+    if((!NTPsecsSinceTCepoch) || ((millis() - NTPTSAge) > 10*60*1000)) 
+        return false;
 
     return true;
 }
