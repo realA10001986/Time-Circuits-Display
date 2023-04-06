@@ -602,6 +602,9 @@ void keypad_loop()
                 break;
             case 000:
                 muteBeep = !muteBeep;
+                // do not set (in)validEntry, we
+                // don't want sound
+                enterDelay = 0;
                 break;
             default:
                 invalidEntry = true;
