@@ -96,6 +96,7 @@
  *  2023/04/12 (A10001986)
  *    - Make "periodic reconnection attempts" a config option; might be undesired in
  *      car setups.
+ *    - Don't reconnect WiFi for NTP if mp3 is played back.
  *  2023/04/11 (A10001986)
  *    - Add World Clock mode. User can now configure a separate time zone for each the 
  *      red and yellow displays. 112+ENTER toggles World Clock (WC) mode. Red/yellow 

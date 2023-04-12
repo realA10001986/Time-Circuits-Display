@@ -1602,11 +1602,14 @@ void time_loop()
                            );
 
             bool doWiFi = wifiHaveSTAConf &&                        // if WiFi network is configured AND
-                          ( (!wifiIsOff && !wifiInAPMode)     ||    //   if WiFi-STA is on, OR
-                            ( wifiIsOff && !haveAuthTime)     ||    //   if WiFi-STA is off (after being connected), but no authtime, OR
-                            ( (wifiIsOff ||                         //   if WiFi-STA is off 
-                               (doAPretry && wifiInAPMode)) &&      //                      or in AP-mode
+                          ( (!wifiIsOff && !wifiInAPMode)     ||    //   if WiFi-STA is on,                           OR
+                            ( wifiIsOff      &&                     //   if WiFi-STA is off (after being connected), 
+                              !haveAuthTime  &&                     //      but no authtime, 
+                              checkMP3Done())                 ||    //      and no mp3                                OR
+                            ( (wifiIsOff ||                         //   if WiFi-STA is off (after being connected),
+                               (wifiInAPMode && doAPretry)) &&      //                      or in AP-mode
                               authTimeExpired               &&      //      and authtime expired
+                              checkMP3Done()                &&      //      and no mp3 being played
                               (dt.hour() <= 6)                      //      during night-time
                             )
                           );

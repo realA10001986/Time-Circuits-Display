@@ -42,6 +42,7 @@ void play_beep();
 void audio_loop();
 void play_file(const char *audio_file, float volumeFactor = 1.0, bool checkNightMode = true, bool interruptMusic = false, bool allowSD = true, bool dynvolume = true);
 bool checkAudioDone();
+bool checkMP3Done();
 void stopAudio();
 
 void mp_init();

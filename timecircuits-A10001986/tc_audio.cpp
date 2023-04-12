@@ -644,6 +644,12 @@ bool checkAudioDone()
     return true;
 }
 
+bool checkMP3Done()
+{
+    if(mp3->isRunning()) return false;
+    return true;
+}
+
 void stopAudio()
 {
     if(mp3->isRunning()) {
