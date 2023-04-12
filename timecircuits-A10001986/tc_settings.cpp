@@ -319,6 +319,7 @@ static bool read_settings(File configFile)
         wd |= CopyCheckValidNumParm(json["wifiConTimeout"], settings.wifiConTimeout, sizeof(settings.wifiConTimeout), 7, 25, DEF_WIFI_TIMEOUT);
         wd |= CopyCheckValidNumParm(json["wifiOffDelay"], settings.wifiOffDelay, sizeof(settings.wifiOffDelay), 0, 99, DEF_WIFI_OFFDELAY);
         wd |= CopyCheckValidNumParm(json["wifiAPOffDelay"], settings.wifiAPOffDelay, sizeof(settings.wifiAPOffDelay), 0, 99, DEF_WIFI_APOFFDELAY);
+        wd |= CopyCheckValidNumParm(json["wifiPRetry"], settings.wifiPRetry, sizeof(settings.wifiPRetry), 0, 1, DEF_WIFI_PRETRY);
         
         if(json["timeZone"]) {
             memset(settings.timeZone, 0, sizeof(settings.timeZone));
@@ -433,6 +434,7 @@ void write_settings()
     json["wifiConTimeout"] = settings.wifiConTimeout;
     json["wifiOffDelay"] = settings.wifiOffDelay;
     json["wifiAPOffDelay"] = settings.wifiAPOffDelay;
+    json["wifiPRetry"] = settings.wifiPRetry;
     
     json["timeZone"] = settings.timeZone;
     json["ntpServer"] = settings.ntpServer;

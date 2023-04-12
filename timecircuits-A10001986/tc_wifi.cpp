@@ -133,6 +133,11 @@ WiFiManagerParameter custom_wifiConTimeout("wificon", "WiFi connection timeout (
 WiFiManagerParameter custom_wifiOffDelay("wifioff", "WiFi power save timer<br>(10-99[minutes];0=off)", settings.wifiOffDelay, 2, "type='number' min='0' max='99' title='If in station mode, WiFi will be shut down after chosen number of minutes after power-on. 0 means never.'");
 WiFiManagerParameter custom_wifiAPOffDelay("wifiAPoff", "WiFi power save timer (AP-mode)<br>(10-99[minutes];0=off)", settings.wifiAPOffDelay, 2, "type='number' min='0' max='99' title='If in AP mode, WiFi will be shut down after chosen number of minutes after power-on. 0 means never.'");
 WiFiManagerParameter custom_wifiHint("<div style='margin:0px;padding:0px'>Hold '7' to re-enable Wifi when in power save mode.</div>");
+#ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
+WiFiManagerParameter custom_wifiPRe("wifiPRet", "Periodic reconnection attempts (0=no, 1=yes)", settings.wifiPRetry, 1, "autocomplete='off' title='Enable to periodically retry WiFi connection after failure'");
+#else // -------------------- Checkbox hack: --------------
+WiFiManagerParameter custom_wifiPRe("wifiPRet", "Periodic reconnection attempts ", settings.wifiPRetry, 1, "autocomplete='off' title='Check to periodically retry WiFi connection after failure' type='checkbox' style='margin-top:12px'", WFM_LABEL_AFTER);
+#endif // -------------------------------------------------
 
 WiFiManagerParameter custom_timeZone("time_zone", "Time zone (in <a href='https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv' target=_blank>Posix</a> format)", settings.timeZone, 63, "placeholder='Example: CST6CDT,M3.2.0,M11.1.0'");
 WiFiManagerParameter custom_ntpServer("ntp_server", "NTP Server (empty to disable NTP)", settings.ntpServer, 63, "pattern='[a-zA-Z0-9.-]+' placeholder='Example: pool.ntp.org'");
@@ -391,13 +396,14 @@ void wifi_setup()
     wm.addParameter(&custom_autoRotateTimes);
     wm.addParameter(&custom_sectend);
     
-    wm.addParameter(&custom_sectstart);     // 8
+    wm.addParameter(&custom_sectstart);     // 9
     wm.addParameter(&custom_hostName);
     wm.addParameter(&custom_wifiConRetries);
     wm.addParameter(&custom_wifiConTimeout);
     wm.addParameter(&custom_wifiOffDelay);
     wm.addParameter(&custom_wifiAPOffDelay);
     wm.addParameter(&custom_wifiHint);
+    wm.addParameter(&custom_wifiPRe);
     wm.addParameter(&custom_sectend);
     
     wm.addParameter(&custom_sectstart);     // 5
@@ -519,6 +525,12 @@ void wifi_setup()
     wifiAPOffDelay = (unsigned long)atoi(settings.wifiAPOffDelay);
     if(wifiAPOffDelay > 0 && wifiAPOffDelay < 10) wifiAPOffDelay = 10;
     wifiAPOffDelay *= (60 * 1000);
+
+    // Read setting for "periodic retries"
+    // This determines if, after a fall-back to AP mode,
+    // the device should periodically retry to connect
+    // to a configured WiFi network; see time_loop().
+    doAPretry = ((int)atoi(settings.wifiPRetry) > 0);
 
     // Configure static IP
     if(loadIpSettings()) {
@@ -669,6 +681,8 @@ void wifi_loop()
             mystrcpy(settings.playIntro, &custom_playIntro);
             mystrcpy(settings.mode24, &custom_mode24);
             mystrcpy(settings.beep, &custom_beep);
+
+            mystrcpy(settings.wifiPRetry, &custom_wifiPRe);
                        
             #ifdef TC_HAVEGPS
             mystrcpy(settings.useGPS, &custom_useGPS);
@@ -723,6 +737,8 @@ void wifi_loop()
             strcpyCB(settings.playIntro, &custom_playIntro);
             strcpyCB(settings.mode24, &custom_mode24);
             strcpyCB(settings.beep, &custom_beep);
+
+            strcpyCB(settings.wifiPRetry, &custom_wifiPRe);
             
             #ifdef TC_HAVEGPS
             strcpyCB(settings.useGPS, &custom_useGPS);
@@ -1372,6 +1388,7 @@ void updateConfigPortalValues()
     custom_playIntro.setValue(settings.playIntro, 1);
     custom_mode24.setValue(settings.mode24, 1);
     custom_beep.setValue(settings.beep, 1);
+    custom_wifiPRe.setValue(settings.wifiPRetry, 1);
     #ifdef TC_HAVEGPS
     custom_useGPS.setValue(settings.useGPS, 1);
     #endif
@@ -1417,6 +1434,7 @@ void updateConfigPortalValues()
     setCBVal(&custom_playIntro, settings.playIntro);
     setCBVal(&custom_mode24, settings.mode24);
     setCBVal(&custom_beep, settings.beep);
+    setCBVal(&custom_wifiPRe, settings.wifiPRetry);
     #ifdef TC_HAVEGPS
     setCBVal(&custom_useGPS, settings.useGPS);
     #endif

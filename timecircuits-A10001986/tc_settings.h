@@ -47,6 +47,7 @@ extern uint8_t musFolderNum;
 #define DEF_WIFI_TIMEOUT    7     // 7-25; Default: 7 seconds
 #define DEF_WIFI_OFFDELAY   0     // 0/10-99; Default 0 = Never power down WiFi in STA-mode
 #define DEF_WIFI_APOFFDELAY 0     // 0/10-99; Default 0 = Never power down WiFi in AP-mode
+#define DEF_WIFI_PRETRY     1     // Default: Nightly, periodic WiFi reconnection attempts for time sync
 #define DEF_NTP_SERVER      "pool.ntp.org"
 #define DEF_TIMEZONE        "UTC0"// Default: UTC; Posix format
 #define DEF_BRIGHT_DEST     15    // 1-15; Default: max brightness
@@ -94,6 +95,7 @@ struct Settings {
     char wifiConTimeout[4]  = MS(DEF_WIFI_TIMEOUT);
     char wifiOffDelay[4]    = MS(DEF_WIFI_OFFDELAY);
     char wifiAPOffDelay[4]  = MS(DEF_WIFI_APOFFDELAY);
+    char wifiPRetry[4]      = MS(DEF_WIFI_PRETRY);
     char ntpServer[64]      = DEF_NTP_SERVER;
     char timeZone[64]       = DEF_TIMEZONE;
     char timeZoneDest[64]   = "";

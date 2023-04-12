@@ -49,6 +49,7 @@ extern bool WcHaveTZ1;
 extern bool WcHaveTZ2;
 
 extern bool syncTrigger;
+extern bool doAPretry;
 
 extern uint64_t lastAuthTime64;
 extern uint64_t millisEpoch;

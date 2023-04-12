@@ -120,6 +120,7 @@ uint16_t       lastYear = 0;
 static uint8_t resyncInt = 5;
 static uint8_t dstChkInt = 5;
 bool           syncTrigger = false;
+bool           doAPretry = true;
 
 // For tracking second changes
 static bool x = false;  
@@ -1603,8 +1604,9 @@ void time_loop()
             bool doWiFi = wifiHaveSTAConf &&                        // if WiFi network is configured AND
                           ( (!wifiIsOff && !wifiInAPMode)     ||    //   if WiFi-STA is on, OR
                             ( wifiIsOff && !haveAuthTime)     ||    //   if WiFi-STA is off (after being connected), but no authtime, OR
-                            ( (wifiIsOff || wifiInAPMode) &&        //   if WiFi-STA is off or in AP-mode
-                              authTimeExpired             &&        //      and authtime expired
+                            ( (wifiIsOff ||                         //   if WiFi-STA is off 
+                               (doAPretry && wifiInAPMode)) &&      //                      or in AP-mode
+                              authTimeExpired               &&      //      and authtime expired
                               (dt.hour() <= 6)                      //      during night-time
                             )
                           );
