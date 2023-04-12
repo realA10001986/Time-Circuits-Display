@@ -15,7 +15,7 @@ Features include
 - Movie-accurate [time travel](#time-travel) function with *Present time* always running as a clock (as opposed to being stale)
 - ["Return from Time Travel"](#time-travel): Return to real present time easily
 - ["Decorative mode"](#time-cycling): Movie-accurate time travel times displayed in *destination time* and *last time departed* displays, and cycled in configurable interval
-- &#x1F195;World Clock mode: Show current time in different time zones in red and yellow displays
+- &#x1F195; [World Clock mode](#world-clock-mode): Show current time in different time zones in *destination time* and *last time departed* displays
 - [Alarm function](#how-to-set-up-the-alarm)
 - [Count-down timer](#count-down-timer)
 - [Night mode](#night-mode) (displays off or dimmed; manual, scheduled or sensor-controlled)
@@ -127,11 +127,16 @@ Set the interval to OFF (0) to disable Time-cycling.
 
 ### World Clock mode
 
-World Clock mode is another kind of "decorative" mode where the red and yellow displays show not some stale times, but current time in other time zones. These time zones need to be configured in Config Portal. At least one time zone (for either the red or yellow display) must be configured in order to use WC mode.
+World Clock (WC) mode is another kind of "decorative" mode where the red and yellow displays show not some stale times, but current time in other time zones. These time zones need to be configured in Config Portal. At least one time zone (for either the red or yellow display) must be configured in order to use WC mode.
 
-World Clock mode is toggled by typing "112" followed by ENTER. 
+WC mode is toggled by typing "112" followed by ENTER. 
 
-Note that "Room Condition mode" has priority over WC mode; also, WC mode will be disabled upon time travels and after entering a Destination Time.
+For logical reasons, WC mode will be automatically disabled in some situations:
+
+- Time travel. The time travel sequence runs like in non-WC mode: If a time travel is triggered while WC mode is enabled (and no new destination time was entered before), the currently shown *Destination Time* will be the travel target, and the *Last Time Departed* display will show your formerly current time. However: Both *Destination Time* as well as *Last Time Departed* become stale after the time travel as per the nature of the sequence.
+- After entering a destination time. WC mode is disabled at this point, because your new *Destination Time* would be overwritten otherwise.
+
+Note that "Room Condition mode" has priority over WC mode.
 
 ### Common usage scenarios
 
