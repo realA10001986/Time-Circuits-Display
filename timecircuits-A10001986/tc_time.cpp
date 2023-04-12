@@ -565,8 +565,10 @@ void time_boot()
     departedTime.begin();
 
     // Switch LEDs on
+    // give user some feedback that the unit is powered
     pinMode(LEDS_PIN, OUTPUT);
-    leds_on();
+    digitalWrite(LEDS_PIN, HIGH);
+    // Do not call leds_on(), is not unconditional
 }
 
 /*
@@ -1224,9 +1226,9 @@ void time_setup()
         digitalWrite(WHITE_LED_PIN, HIGH);
         myIntroDelay(500);
         digitalWrite(WHITE_LED_PIN, LOW);
-        leds_off();
         isFPBKeyChange = false;
         FPBUnitIsOn = false;
+        leds_off();
 
         #ifdef TC_DBG
         Serial.println(F("time_setup: waiting for fake power on"));
@@ -1238,6 +1240,7 @@ void time_setup()
         startup = true;
         startupSound = true;
         FPBUnitIsOn = true;
+        leds_on();
 
 #ifdef FAKE_POWER_ON
     }
