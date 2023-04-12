@@ -15,7 +15,7 @@ Features include
 - Movie-accurate [time travel](#time-travel) function with *Present time* always running as a clock (as opposed to being stale)
 - ["Return from Time Travel"](#time-travel): Return to real present time easily
 - ["Decorative mode"](#time-cycling): Movie-accurate time travel times displayed in *destination time* and *last time departed* displays, and cycled in configurable interval
-- World Clock mode: Show current time in different time zones in red and yellow displays
+- &#x1F195;World Clock mode: Show current time in different time zones in red and yellow displays
 - [Alarm function](#how-to-set-up-the-alarm)
 - [Count-down timer](#count-down-timer)
 - [Night mode](#night-mode) (displays off or dimmed; manual, scheduled or sensor-controlled)
