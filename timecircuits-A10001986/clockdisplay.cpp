@@ -296,6 +296,15 @@ void clockDisplay::setFromStruct(dateStruct* s)
     setMinute(s->minute);
 }
 
+void clockDisplay::setFromParms(int year, int month, int day, int hour, int minute)
+{
+    setYear(year);
+    setMonth(month);
+    setDay(day);
+    setHour(hour);
+    setMinute(minute);
+}
+
 // Show data in display --------------------------------------------------------
 
 

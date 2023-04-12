@@ -110,13 +110,16 @@
 #define NTP_PACKET_SIZE 48
 #define NTP_DEFAULT_LOCAL_PORT 1337
 
-unsigned long  powerupMillis = 0;
+unsigned long        powerupMillis = 0;
+static unsigned long lastMillis = 0;
+uint64_t             millisEpoch = 0;
 
 static bool    couldHaveAuthTime = false;
 static bool    haveAuthTime = false;
 uint16_t       lastYear = 0;
 static uint8_t resyncInt = 5;
 static uint8_t dstChkInt = 5;
+bool           syncTrigger = false;
 
 // For tracking second changes
 static bool x = false;  
@@ -222,16 +225,24 @@ bool useGPS      = false;
 bool useGPSSpeed = false;
 
 // TZ/DST status & data
-static bool useDST       = false; // Do use own DST management (and DST is defined in TZ)
-bool        couldDST     = false; // Could use own DST management (and DST is defined in TZ)
-static int  tzForYear    = 0;     // Parsing done for this very year
-static bool tzIsValid    = false;
-static char *tzDSTpart   = NULL;
-static int  tzDiffGMT    = 0;     // Difference to UTC in nonDST time
-static int  tzDiffGMTDST = 0;     // Difference to UTC in DST time
-static int  tzDiff       = 0;     // difference between DST and non-DST in minutes
-static int  DSTonMins    = -1;    // DST-on date/time in minutes since 1/1 00:00 (in non-DST time)
-static int  DSToffMins   = 600000;// DST-off date/time in minutes since 1/1 00:00 (in DST time)
+static bool useDST          = false; // Do use own DST management (and DST is defined in TZ)
+bool        couldDST[3]     = { false, false, false };   // Could use own DST management (and DST is defined in TZ)
+static int  tzForYear[3]    = { 0, 0, 0 };               // Parsing done for this very year
+static bool tzIsValid[3]    = { false, false, false };
+static char *tzDSTpart[3]   = { NULL, NULL, NULL };
+static int  tzDiffGMT[3]    = { 0, 0, 0 };               // Difference to UTC in nonDST time
+static int  tzDiffGMTDST[3] = { 0, 0, 0 };               // Difference to UTC in DST time
+static int  tzDiff[3]       = { 0, 0, 0 };               // difference between DST and non-DST in minutes
+static int  DSTonMins[3]    = { -1, -1, -1 };            // DST-on date/time in minutes since 1/1 00:00 (in non-DST time)
+static int  DSToffMins[3]   = { 600000, 600000, 600000}; // DST-off date/time in minutes since 1/1 00:00 (in DST time)
+
+/* WC stuff */
+bool        WcHaveTZ1  = false;
+bool        WcHaveTZ2  = false;
+bool        haveWcMode = false;
+static bool wcMode     = false;
+static int  wcLastMin  = -1;
+bool        triggerWC  = false;
 
 // For NTP/GPS
 static struct        tm _timeinfo;
@@ -426,12 +437,13 @@ static unsigned long lastLoopLight = 0;
 unsigned long ctDown = 0;
 unsigned long ctDownNow = 0;
 
-// State flags
+// State flags & co
 static bool DSTcheckDone = false;
 static bool autoIntDone = false;
 static int  autoIntAnimRunning = 0;
 static bool autoReadjust = false;
 static unsigned long lastAuthTime = 0;
+uint64_t    lastAuthTime64 = 0;
 static bool authTimeExpired = false;
 static bool alarmDone = false;
 static bool hourlySoundDone = false;
@@ -527,7 +539,7 @@ static void ettoPulseEnd();
 // Time calculations
 static int  mins2Date(int year, int month, int day, int hour, int mins);
 static bool blockDSTChange(int currTimeMins);
-static void localToDST(int& year, int& month, int& day, int& hour, int& minute, int& isDST);
+static void localToDST(int index, int& year, int& month, int& day, int& hour, int& minute, int& isDST);
 static void handleDSTFlag(struct tm *ti, int nisDST = -1);
 
 /// Native NTP
@@ -731,10 +743,10 @@ void time_setup()
     }
     #endif
 
-    // If NTP server configured and we are not in WiFi-AccessPoint-Mode, 
-    // we might have a source for auth time.
+    // If a WiFi network and an NTP server are configured, we might
+    // have a source for auth time.
     // (Do not involve WiFi connection status here; might change later)
-    if((settings.ntpServer[0] != 0) && (!wifiInAPMode))
+    if((settings.ntpServer[0] != 0) && wifiHaveSTAConf)
         couldHaveAuthTime = true;
     
     // Try to obtain initial authoritative time
@@ -752,19 +764,20 @@ void time_setup()
     // Parse TZ and set TZ parameters
     // Year does not matter at this point. We only parse 
     // the actual time zone for the first calculations.
-    if(!(parseTZ(settings.timeZone, 2022, false))) {
+    if(!(parseTZ(0, 2022, false))) {
         tzbad = true;
         #ifdef TC_DBG
         Serial.println(F("time_setup: Failed to parse TZ"));
         #endif
     }
-
+    
     // Set RTC with NTP time
     if(getNTPTime(true)) {
 
         // So we have authoritative time now
         haveAuthTime = true;
         lastAuthTime = millis();
+        lastAuthTime64 = lastAuthTime;
         
         #ifdef TC_DBG
         Serial.println(F("time_setup: RTC set through NTP"));        
@@ -788,6 +801,7 @@ void time_setup()
                     // So we have authoritative time now
                     haveAuthTime = true;
                     lastAuthTime = millis();
+                    lastAuthTime64 = lastAuthTime;
                     haveAuthTimeGPS = true;
                     #ifdef TC_DBG
                     Serial.println(F("time_setup: RTC set through GPS"));
@@ -842,9 +856,27 @@ void time_setup()
 
     // Parse (complete) TZ and set TZ/DST parameters
     // (sets/clears couldDST)
-    if(!(parseTZ(settings.timeZone, rtcYear))) {
+    if(!(parseTZ(0, rtcYear))) {
         tzbad = true;
     }
+
+    // Parse alternate time zones for WC
+    // Needed at this point for determining
+    // non-DST time difference
+    if(settings.timeZoneDest[0] != 0) {
+        if(parseTZ(1, rtcYear)) {
+            WcHaveTZ1 = true;
+        }
+    }
+    if(settings.timeZoneDep[0] != 0) {
+        if(parseTZ(2, rtcYear)) {
+            WcHaveTZ2 = true;
+        }
+    }
+    haveWcMode = (WcHaveTZ1 || WcHaveTZ2);
+    #ifdef TC_DBG
+    Serial.printf("time_setup: haveWcMode %d\n", haveWcMode);
+    #endif
  
     // If we are switched on after a year switch, re-do
     // RTC year-translation.
@@ -1218,9 +1250,16 @@ void time_setup()
  */
 void time_loop()
 {
+    unsigned long millisNow = millis();
     #ifdef TC_DBG
     int dbgLastMin;
     #endif
+
+    // millisEpoch counter
+    if(millisNow < lastMillis) {
+        millisEpoch += 0x100000000;
+    }
+    lastMillis = millisNow;
 
     #ifdef FAKE_POWER_ON
     if(waitForFakePowerButton) {
@@ -1242,6 +1281,7 @@ void time_loop()
                     dispTemperature(true);
                     #endif
                     #endif
+                    triggerWC = true;
                 }
             } else {
                 if(FPBUnitIsOn) {
@@ -1285,7 +1325,7 @@ void time_loop()
                   #ifdef TC_HAVEGPS
                   !useGPS && !useGPSSpeed &&
                   #endif
-                             (wifiIsOff || wifiAPIsOff) && (millis() - pwrFullNow >= 5*60*1000)) {
+                             (wifiIsOff || wifiAPIsOff) && (millisNow - pwrFullNow >= 5*60*1000)) {
         setCpuFrequencyMhz(80);
         pwrLow = true;
 
@@ -1295,10 +1335,10 @@ void time_loop()
     }
 
     if(OTPRinProgress) {
-        if(millis() - OTPRStarted > 100) {
+        if(millisNow - OTPRStarted > 100) {
             rtc.OTPRefresh(false);
             OTPRinProgress = false;
-            OTPRDoneNow = millis();
+            OTPRDoneNow = millisNow;
         }
     }
 
@@ -1503,11 +1543,14 @@ void time_loop()
             presentTime.setColon(true);
             departedTime.setColon(true);
 
+            // Play "annoying beep"(tm)
             play_beep();
 
             // Prepare for time re-adjustment through NTP/GPS
 
-            if(millis() - lastAuthTime >= 7*24*60*60*1000) {
+            if(!haveAuthTime) {
+                authTimeExpired = true;
+            } else if(millis() - lastAuthTime >= 7*24*60*60*1000) {
                 authTimeExpired = true;
             }
 
@@ -1520,15 +1563,25 @@ void time_loop()
             DateTime dt = myrtcnow();
 
             // Re-adjust time periodically through NTP/GPS
+            //
             // This is normally done hourly between hour:01 and hour:02. However:
-            // - If no GPS time is available and Wifi is in power-save, update only once 
-            //   a week during night hours. We don't want a stalled display due to 
-            //   WiFi re-connect during day time for too often.
-            // - Then again, ignore rule above if we have no authoritative time yet. In 
-            //   that case, try every 5th+1 and 5th+2 (resyncInt) minute. Frozen displays
-            //   are avoided by setting the WiFi off-timer to a period longer than the
-            //   period between two attempts; this in essence defeats WiFi power-save, 
-            //   but accurate time is more important.
+            // - Exception to time rule: If there is no authTime yet, try syncing 
+            //   every resyncInt+1/2 minutes or whenever GPS has time; or if
+            //   syncTrigger is set (keypad "7"). (itstime)
+            // - Try NTP via WiFi (doWiFi) when/if user configured a network AND
+            //   -- WiFi is connected (duh!), or
+            //   -- WiFi was connected and is now in power-save, but no authTime yet;
+            //      this triggers a re-connect (resulting in a frozen display).
+            //      This annoyance is kept to a minimum by setting the WiFi off-timer
+            //      to a period longer than the period between two attempts; this in
+            //      essence defeats WiFi power-save, but accurate time is more important.
+            //   -- or if
+            //          --- WiFi was connected and now off OR currently in AP-mode AND
+            //          --- authTime has expired (after 7 days) AND
+            //          --- it is night (0-6am)
+            //      This also triggers a re-connect (frozen display); in this case only
+            //      once every 15/90 minutes (see wifiOn) during night time until a time
+            //      sync succeeds or the number of attempts exceeds a certain amount.
             // - In any case, do not interrupt any running sequences.
 
             bool itsTime = ( (dt.minute() == 1) || 
@@ -1537,16 +1590,31 @@ void time_loop()
                               ( ((dt.minute() % resyncInt) == 1) || 
                                 ((dt.minute() % resyncInt) == 2) ||
                                 GPShasTime 
-                              ) 
+                              )
+                             )                  ||
+                             (syncTrigger &&
+                              dt.second() == 35
                              )
                            );
+
+            bool doWiFi = wifiHaveSTAConf &&                        // if WiFi network is configured AND
+                          ( (!wifiIsOff && !wifiInAPMode)     ||    //   if WiFi-STA is on, OR
+                            ( wifiIsOff && !haveAuthTime)     ||    //   if WiFi-STA is off (after being connected), but no authtime, OR
+                            ( (wifiIsOff || wifiInAPMode) &&        //   if WiFi-STA is off or in AP-mode
+                              authTimeExpired             &&        //      and authtime expired
+                              (dt.hour() <= 6)                      //      during night-time
+                            )
+                          );
+
+            #ifdef TC_DBG
+            if(dt.second() == 35) {
+                Serial.printf("time_loop: %d %d %d %d %d\n", couldHaveAuthTime, itsTime, doWiFi, haveAuthTime, syncTrigger);
+            }
+            #endif
             
-            if( couldHaveAuthTime                       &&
-                itsTime                                 &&
-                (!haveAuthTime  || 
-                 GPShasTime     || 
-                 !wifiIsOff     || 
-                 (authTimeExpired && (dt.hour() <= 6))) &&
+            if( couldHaveAuthTime       &&
+                itsTime                 &&
+                (GPShasTime || doWiFi)  &&
                 !timeTraveled && !timeTravelP0 && !timeTravelP1 && !timeTravelP2 ) {
 
                 if(!autoReadjust) {
@@ -1569,14 +1637,16 @@ void time_loop()
 
                         autoReadjust = true;
                         resyncInt = 5;
+                        syncTrigger = false;
 
                         // We have current DST determination, skip it below
                         useDST = false;
 
-                        if(couldDST) allowedDiff = abs(tzDiff) + 1;
+                        if(couldDST[0]) allowedDiff = tzDiff[0] + 1;
 
                         haveAuthTime = true;
                         lastAuthTime = millis();
+                        lastAuthTime64 = lastAuthTime + millisEpoch;
                         authTimeExpired = false;
 
                         dt = myrtcnow();
@@ -1613,7 +1683,7 @@ void time_loop()
                     } else {
 
                         // No auth time at this point, do DST check below
-                        useDST = couldDST;
+                        useDST = couldDST[0];
 
                         #ifdef TC_DBG
                         Serial.println(F("time_loop: RTC re-adjustment via NTP/GPS failed"));
@@ -1641,7 +1711,7 @@ void time_loop()
                 }
 
                 // No auth time at this point, do DST check below
-                useDST = couldDST;
+                useDST = couldDST[0];
 
             }
 
@@ -1676,7 +1746,7 @@ void time_loop()
                     }
     
                     // Parse TZ and set up DST data for now current year
-                    if(!(parseTZ(settings.timeZone, thisYear))) {
+                    if(!(parseTZ(0, thisYear))) {
                         #ifdef TC_DBG
                         Serial.println(F("time_loop: [year change] Failed to parse TZ"));
                         #endif
@@ -1724,7 +1794,7 @@ void time_loop()
 
                 int oldDST = presentTime.getDST();
                 int currTimeMins = 0;
-                int myDST = timeIsDST(dt.year() - presentTime.getYearOffset(), dt.month(), 
+                int myDST = timeIsDST(0, dt.year() - presentTime.getYearOffset(), dt.month(), 
                                             dt.day(), dt.hour(), dt.minute(), currTimeMins);
 
                 DSTcheckDone = true;
@@ -1734,7 +1804,7 @@ void time_loop()
                     (!(blockDSTChange(currTimeMins))) ) {
                   
                     int nyear, nmonth, nday, nhour, nminute;
-                    int myDiff = tzDiff;
+                    int myDiff = tzDiff[0];
                     uint64_t rtcTime;
                     uint16_t rtcYear;
                     int16_t  yOffs = 0;
@@ -1796,6 +1866,14 @@ void time_loop()
 
             // Write time to presentTime display
             presentTime.setDateTimeDiff(dt);
+
+            // Handle WC mode (load dates/times for dest/dep display)
+            // (Restoring not needed, done elsewhere)
+            if(isWcMode() && ((dt.minute() != wcLastMin) || triggerWC)) {
+                wcLastMin = dt.minute();
+                setDatesTimesWC(dt);
+            }
+            triggerWC = false;
 
             // Update "lastYear" and save to NVM
             lastYear = dt.year() - presentTime.getYearOffset();
@@ -1952,10 +2030,11 @@ void time_loop()
             }
 
             // Only do this on second 59, check if it's time to do so
-            if(dt.second() == 59  &&
-               (!autoPaused)      &&
-               (!isRcMode())      &&
-               autoTimeIntervals[autoInterval] &&
+            if((dt.second() == 59)                        &&
+               (!autoPaused)                              &&
+               (!isRcMode() || !tempSens.haveHum())       &&    // Skip in rcMode if temp&hum available
+               (!isWcMode() || !WcHaveTZ1 || !WcHaveTZ2)  &&    // Skip in wcMode if both TZs available
+               autoTimeIntervals[autoInterval]            &&
                (minNext % autoTimeIntervals[autoInterval] == 0)) {
 
                 if(!autoIntDone) {
@@ -1967,8 +2046,13 @@ void time_loop()
                     if(autoTime >= NUM_AUTOTIMES) autoTime = 0;
 
                     // Show a preset dest and departed time
-                    destinationTime.setFromStruct(&destinationTimes[autoTime]);
-                    departedTime.setFromStruct(&departedTimes[autoTime]);
+                    // RcMode irrelevant; continue cycle in the background
+                    if(!isWcMode() || !WcHaveTZ1) {
+                        destinationTime.setFromStruct(&destinationTimes[autoTime]);
+                    }
+                    if(!isWcMode() || !WcHaveTZ2) {
+                        departedTime.setFromStruct(&departedTimes[autoTime]);
+                    }
 
                     allOff();
 
@@ -2001,8 +2085,6 @@ void time_loop()
 
             if(autoIntAnimRunning)
                 autoIntAnimRunning++;
-
-            //play_beep();
 
         }
 
@@ -2159,7 +2241,14 @@ void timeTravel(bool doComplete, bool withSpeedo)
 
     pwrNeedFullNow();
 
+    // Disable RC and WC modes
+    // Note that in WC mode, the times in red & yellow
+    // displays work like "normal" times there: The user
+    // travels to whatever time is currently in the red
+    // display, and his current time becomes last time
+    // departed - and both become stale.
     enableRcMode(false);
+    enableWcMode(false);
 
     cancelEnterAnim();
     cancelETTAnim();
@@ -2424,7 +2513,14 @@ void resetPresentTime()
         play_file("/timetravel.mp3", 1.0, true, true);
     }
 
+    // Disable RC and WC modes
+    // Note that in WC mode, the times in red & yellow
+    // displays work like "normal" times there: The user
+    // travels to present time, his current time becomes 
+    // last time departed; destination time is unchanged,
+    // but both dest & last time dep. time become stale.
     enableRcMode(false);
+    enableWcMode(false);
 
     cancelEnterAnim();
     cancelETTAnim();
@@ -2585,6 +2681,29 @@ DateTime myrtcnow()
     }
 
     return dt;
+}
+
+/*
+ * World Clock setters/getters
+ */
+
+void enableWcMode(bool onOff)
+{
+    if(haveWcMode) {
+        wcMode = onOff;
+        triggerWC = true;
+    }
+}
+
+bool toggleWcMode()
+{
+    enableWcMode(!wcMode);
+    return wcMode;
+}
+
+bool isWcMode()
+{
+    return wcMode;
 }
 
 /*
@@ -2750,7 +2869,8 @@ static bool getNTPTime(bool weHaveAuthTime)
 
     pwrNeedFullNow();
 
-    // Reconnect for only 3 mins, but not in AP mode; do not start CP.
+    // Reconnect for only 3 mins, but only if the user configured
+    // a WiFi network to connect to; do not start CP.
     // If we don't have authTime yet, connect for longer to avoid
     // reconnects (aka frozen displays).
     // If WiFi is reconnected here, we won't have a valid time stamp
@@ -2778,8 +2898,8 @@ static bool getNTPTime(bool weHaveAuthTime)
             presentTime.setYearOffset(newYOffs);
     
             // Parse TZ and set up DST data for now current year
-            if((!couldDST) || (tzForYear != nyear)) {
-                if(!(parseTZ(settings.timeZone, nyear))) {
+            if((!couldDST[0]) || (tzForYear[0] != nyear)) {
+                if(!(parseTZ(0, nyear))) {
                     #ifdef TC_DBG
                     Serial.println(F("getNTPTime: Failed to parse TZ"));
                     #endif
@@ -2852,13 +2972,13 @@ static bool getGPStime()
     utcMins += (uint64_t)(nsecond / 60);
     nsecond %= 60;
 
-    utcMins -= tzDiffGMT;
+    utcMins -= tzDiffGMT[0];
 
     minsToDate(utcMins, nyear, nmonth, nday, nhour, nminute);
 
     // DST handling: Parse TZ and setup DST data for now current year
-    if(!couldDST || tzForYear != nyear) {
-        if(!(parseTZ(settings.timeZone, nyear))) {
+    if(!couldDST[0] || tzForYear[0] != nyear) {
+        if(!(parseTZ(0, nyear))) {
             #ifdef TC_DBG
             Serial.println(F("getGPStime: Failed to parse TZ"));
             #endif
@@ -2866,7 +2986,7 @@ static bool getGPStime()
     }
 
     // Determine DST from local nonDST time
-    localToDST(nyear, nmonth, nday, nhour, nminute, isDST);
+    localToDST(0, nyear, nmonth, nday, nhour, nminute, isDST);
 
     // Get RTC-fit year & offs for given real year
     newYOffs = 0;
@@ -2884,8 +3004,8 @@ static bool getGPStime()
     presentTime.setYearOffset(newYOffs);
 
     // Parse TZ and set up DST data for now current year
-    if((!couldDST) || (tzForYear != nyear)) {
-        if(!(parseTZ(settings.timeZone, nyear))) {
+    if((!couldDST[0]) || (tzForYear[0] != nyear)) {
+        if(!(parseTZ(0, nyear))) {
             #ifdef TC_DBG
             Serial.println(F("getGPStime: Failed to parse TZ"));
             #endif
@@ -2927,10 +3047,10 @@ static bool setGPStime()
     utcMins = dateToMins(dt.year() - presentTime.getYearOffset(), dt.month(), dt.day(), 
                          dt.hour(), dt.minute());
 
-    if(couldDST && presentTime.getDST() > 0)
-        utcMins += tzDiffGMTDST;
+    if(couldDST[0] && presentTime.getDST() > 0)
+        utcMins += tzDiffGMTDST[0];
     else
-        utcMins += tzDiffGMT;
+        utcMins += tzDiffGMT[0];
     
     minsToDate(utcMins, nyear, nmonth, nday, nhour, nminute);
     
@@ -3305,7 +3425,7 @@ static int mins2Date(int year, int month, int day, int hour, int mins)
 /*
  * Parse TZ string and setup DST data
  */
-bool parseTZ(char *tz, int currYear, bool doparseDST)
+bool parseTZ(int index, int currYear, bool doparseDST)
 {
     char *t, *u, *v;
     int diffNorm = 0;
@@ -3313,29 +3433,39 @@ bool parseTZ(char *tz, int currYear, bool doparseDST)
     int it;
     int DSTonYear, DSTonMonth, DSTonDay, DSTonHour, DSTonMinute;
     int DSToffYear, DSToffMonth, DSToffDay, DSToffHour, DSToffMinute;
+    char *tz;
 
-    couldDST = false;
-    tzForYear = 0;
-    if(!tzDSTpart) {
-        tzDiffGMT = tzDiffGMTDST = 0;
+    switch(index) {
+    case 0: tz = settings.timeZone;     break;
+    case 1: tz = settings.timeZoneDest; break;
+    case 2: tz = settings.timeZoneDep;  break;
+    default:
+      Serial.printf("parseTZ: Bad index %d\n", index);
+      return false;
+    }
+
+    couldDST[index] = false;
+    tzForYear[index] = 0;
+    if(!tzDSTpart[index]) {
+        tzDiffGMT[index] = tzDiffGMTDST[index] = 0;
     }
 
     // 0) Basic validity check
 
     if(*tz == 0) return true;                         // Empty string. OK, no DST.
 
-    if(!tzIsValid) {
+    if(!tzIsValid[index]) {
         t = tz;
         while((t = strchr(t, '>'))) { t++; diffNorm++; }
         t = tz;
         while((t = strchr(t, '<'))) { t++; diffDST++; }
         if(diffNorm != diffDST) return false;         // Uneven < and >, string is bad. No DST.
-        tzIsValid = true;
+        tzIsValid[index] = true;
     }
 
     // 1) Find difference between nonDST and DST time
 
-    if(!tzDSTpart) {
+    if(!tzDSTpart[index]) {
 
         diffNorm = diffDST = 0;
     
@@ -3390,7 +3520,7 @@ bool parseTZ(char *tz, int currYear, bool doparseDST)
         
         // t = assumed start of DST-diff to GMT
         if(*t != '-' && *t != '+' && (*t < '0' || *t > '9')) {
-            tzDiff = 60;                              // No numerical difference after name -> Assume 1 hr
+            tzDiff[index] = 60;                       // No numerical difference after name -> Assume 1 hr
         } else {
             t = parseInt(t, it);
             if(it >= -24 && it <= 24) diffDST = it * 60;
@@ -3411,24 +3541,24 @@ bool parseTZ(char *tz, int currYear, bool doparseDST)
                     // Ignore seconds
                 }
             }
-            tzDiff = abs(diffDST - diffNorm);
+            tzDiff[index] = abs(diffDST - diffNorm);
         }
     
-        tzDiffGMT = diffNorm;
-        tzDiffGMTDST = tzDiffGMT - tzDiff;
+        tzDiffGMT[index] = diffNorm;
+        tzDiffGMTDST[index] = tzDiffGMT[index] - tzDiff[index];
     
-        tzDSTpart = t;
+        tzDSTpart[index] = t;
 
     } else {
 
-        t = tzDSTpart;
+        t = tzDSTpart[index];
       
     }
 
     if(*t == 0 || *t != ',' || !doparseDST) return true;    // No DST definition. No DST.
     t++;
 
-    tzForYear = currYear;
+    tzForYear[index] = currYear;
 
     // 2) parse DST start
 
@@ -3470,12 +3600,12 @@ bool parseTZ(char *tz, int currYear, bool doparseDST)
     t = u;
 
     if((DSToffMonth == DSTonMonth) && (DSToffDay == DSTonDay)) {
-        couldDST = false;
+        couldDST[index] = false;
         #ifdef TC_DBG
-        Serial.print(F("parseTZ: DST not used"));
+        Serial.printf("parseTZ: (%d) DST not used\n", index);
         #endif
     } else {
-        couldDST = true;
+        couldDST[index] = true;
 
         // If start or end still beyond our current year, set to impossible values
         // to allow a valid comparison.
@@ -3488,22 +3618,23 @@ bool parseTZ(char *tz, int currYear, bool doparseDST)
         // So with this somewhat challenging time zone definition, the entire year 
         // 2023 is DST. Need to set -1/600000 to make comparison right.
         if(DSTonYear < currYear)
-            DSTonMins = -1;
+            DSTonMins[index] = -1;
         else if(DSTonYear > currYear)
-            DSTonMins = 600000;
+            DSTonMins[index] = 600000;
         else 
-            DSTonMins = mins2Date(currYear, DSTonMonth, DSTonDay, DSTonHour, DSTonMinute);
+            DSTonMins[index] = mins2Date(currYear, DSTonMonth, DSTonDay, DSTonHour, DSTonMinute);
     
         if(DSToffYear < currYear)
-            DSToffMins = -1;
+            DSToffMins[index] = -1;
         else if(DSToffYear > currYear)
-            DSToffMins = 600000;
+            DSToffMins[index] = 600000;
         else 
-            DSToffMins = mins2Date(currYear, DSToffMonth, DSToffDay, DSToffHour, DSToffMinute);
+            DSToffMins[index] = mins2Date(currYear, DSToffMonth, DSToffDay, DSToffHour, DSToffMinute);
 
         #ifdef TC_DBG
-        Serial.printf("parseTZ: DST dates/times: %d/%d Start: %d-%02d-%02d/%02d:%02d End: %d-%02d-%02d/%02d:%02d\n",
-                    tzDiffGMT, tzDiffGMTDST, 
+        Serial.printf("parseTZ: (%d) DST dates/times: %d/%d Start: %d-%02d-%02d/%02d:%02d End: %d-%02d-%02d/%02d:%02d\n",
+                    index,
+                    tzDiffGMT[index], tzDiffGMTDST[index], 
                     DSTonYear, DSTonMonth, DSTonDay, DSTonHour, DSTonMinute,
                     DSToffYear, DSToffMonth, DSToffDay, DSToffHour, DSToffMinute);
         #endif
@@ -3518,17 +3649,17 @@ bool parseTZ(char *tz, int currYear, bool doparseDST)
  * "Local" can be non-DST or DST; therefore a change possibly
  * needs to be blocked, see below.
  */
-int timeIsDST(int year, int month, int day, int hour, int mins, int& currTimeMins)
+int timeIsDST(int index, int year, int month, int day, int hour, int mins, int& currTimeMins)
 {
     currTimeMins = mins2Date(year, month, day, hour, mins);
 
-    if(DSTonMins < DSToffMins) {
-        if((currTimeMins >= DSTonMins) && (currTimeMins < DSToffMins))
+    if(DSTonMins[index] < DSToffMins[index]) {
+        if((currTimeMins >= DSTonMins[index]) && (currTimeMins < DSToffMins[index]))
             return 1;
         else 
             return 0;
     } else {
-        if((currTimeMins >= DSToffMins) && (currTimeMins < DSTonMins))
+        if((currTimeMins >= DSToffMins[index]) && (currTimeMins < DSTonMins[index]))
             return 0;
         else
             return 1;
@@ -3549,8 +3680,8 @@ static bool blockDSTChange(int currTimeMins)
 {
     return (
              (presentTime.getDST() <= 0) &&
-             (currTimeMins < DSToffMins) &&
-             (DSToffMins - currTimeMins <= abs(tzDiff))
+             (currTimeMins < DSToffMins[0]) &&
+             (DSToffMins[0] - currTimeMins <= tzDiff[0])
            );
 }
 
@@ -3559,9 +3690,9 @@ static bool blockDSTChange(int currTimeMins)
  * where we get UTC time, and have converted it to local nonDST time.
  * There is no need for blocking as there is no ambiguity.
  */
-static void localToDST(int& year, int& month, int& day, int& hour, int& minute, int& isDST)
+static void localToDST(int index, int& year, int& month, int& day, int& hour, int& minute, int& isDST)
 {
-    if(couldDST) {
+    if(couldDST[index]) {
       
         // Get mins since 1/1 of current year in local (nonDST) time
         int currTimeMins = mins2Date(year, month, day, hour, minute);
@@ -3569,13 +3700,13 @@ static void localToDST(int& year, int& month, int& day, int& hour, int& minute, 
         // Determine DST
         // DSTonMins is in non-DST time
         // DSToffMins is in DST time, so correct it for the comparison
-        if(DSTonMins < DSToffMins) {
-            if((currTimeMins >= DSTonMins) && (currTimeMins < (DSToffMins - abs(tzDiff))))
+        if(DSTonMins[index] < DSToffMins[index]) {
+            if((currTimeMins >= DSTonMins[index]) && (currTimeMins < (DSToffMins[index] - tzDiff[index])))
                 isDST = 1;
             else 
                 isDST = 0;
         } else {
-            if((currTimeMins >= (DSToffMins - abs(tzDiff))) && (currTimeMins < DSTonMins))
+            if((currTimeMins >= (DSToffMins[index] - tzDiff[index])) && (currTimeMins < DSTonMins[index]))
                 isDST = 0;
             else
                 isDST = 1;
@@ -3585,7 +3716,7 @@ static void localToDST(int& year, int& month, int& day, int& hour, int& minute, 
         if(isDST) {
             uint64_t myTime = dateToMins(year, month, day, hour, minute);
 
-            myTime += abs(tzDiff);
+            myTime += tzDiff[index];
 
             minsToDate(myTime, year, month, day, hour, minute);
         }
@@ -3618,10 +3749,10 @@ static void handleDSTFlag(struct tm *ti, int nisDST)
             isAuth = true;
             #endif
             
-        } else if(couldDST && ti) {
+        } else if(couldDST[0] && ti) {
 
             // If authority is unsure, try for ourselves
-            myDST = timeIsDST(ti->tm_year + 1900, ti->tm_mon + 1, ti->tm_mday, 
+            myDST = timeIsDST(0, ti->tm_year + 1900, ti->tm_mon + 1, ti->tm_mday, 
                               ti->tm_hour, ti->tm_min, currTimeMins);
                               
             // If we are within block-period, set to current to prohibit a change
@@ -3637,6 +3768,58 @@ static void handleDSTFlag(struct tm *ti, int nisDST)
             presentTime.setDST(myDST);
         }
         
+    }
+}
+
+/*
+ * World Clock
+ * Convert local time to other time zone, and copy
+ * them to display. If a TW for a display is not
+ * configured, it does not tough that display.
+ */
+void setDatesTimesWC(DateTime dt)
+{
+    uint64_t myTime1, myTime2; 
+    int year = dt.year() - presentTime.getYearOffset();
+    int month = dt.month();
+    int day = dt.day();
+    int hour = dt.hour();
+    int minute = dt.minute();
+    int isDST;
+
+    uint64_t myTime = dateToMins(year, month, day, hour, minute);
+
+    // Convert local time to UTC
+    if(presentTime.getDST() > 0)
+        myTime -= tzDiff[0];
+
+    myTime += tzDiffGMT[0];
+
+    // Convert to new TZ
+    if(WcHaveTZ1) {
+        myTime1 = myTime - tzDiffGMT[1];
+        minsToDate(myTime1, year, month, day, hour, minute);
+
+        if(!couldDST[1] || tzForYear[1] != year) {
+            parseTZ(1, year);
+        }       
+
+        localToDST(1, year, month, day, hour, minute, isDST);
+
+        destinationTime.setFromParms(year, month, day, hour, minute);
+    }
+
+    if(WcHaveTZ2) {
+        myTime2 = myTime - tzDiffGMT[2];
+        minsToDate(myTime2, year, month, day, hour, minute);
+
+        if(!couldDST[2] || tzForYear[2] != year) {
+            parseTZ(2, year);
+        }       
+
+        localToDST(2, year, month, day, hour, minute, isDST);
+
+        departedTime.setFromParms(year, month, day, hour, minute);
     }
 }
 
@@ -3830,7 +4013,7 @@ static bool NTPGetLocalTime(int& year, int& month, int& day, int& hour, int& min
     second = secsSinceTCepoch % 60;
 
     // Calculate minutes since 1/1/TCEpoch for local (nonDST) time zone
-    uint32_t total32 = (secsSinceTCepoch / 60) - tzDiffGMT;
+    uint32_t total32 = (secsSinceTCepoch / 60) - tzDiffGMT[0];
 
     // Calculate current date
     year = c = TCEPOCH;
@@ -3860,8 +4043,8 @@ static bool NTPGetLocalTime(int& year, int& month, int& day, int& hour, int& min
     minute = total32 - (temp * 60);
 
     // DST handling: Parse TZ and setup DST data for now current year
-    if(!couldDST || tzForYear != year) {
-        if(!(parseTZ(settings.timeZone, year))) {
+    if(!couldDST[0] || tzForYear[0] != year) {
+        if(!(parseTZ(0, year))) {
             #ifdef TC_DBG
             Serial.println(F("NTPGetLocalTime: Failed to parse TZ"));
             #endif
@@ -3869,7 +4052,7 @@ static bool NTPGetLocalTime(int& year, int& month, int& day, int& hour, int& min
     }
 
     // Determine DST from local nonDST time
-    localToDST(year, month, day, hour, minute, isDST);
+    localToDST(0, year, month, day, hour, minute, isDST);
 
     return true;
 }

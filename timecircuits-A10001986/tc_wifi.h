@@ -29,11 +29,12 @@ extern bool wifiIsOff;
 extern bool wifiAPIsOff;
 extern bool wifiInAPMode;
 
+extern bool wifiHaveSTAConf;
+
 void wifi_setup();
 void wifi_loop();
-void wifiOff();
 void wifiOn(unsigned long newDelay = 0, bool alsoInAPMode = false, bool deferConfigPortal = false);
-bool wifiIsOn();
+bool wifiOnWillBlock();
 void wifiStartCP();
 
 void updateConfigPortalValues();

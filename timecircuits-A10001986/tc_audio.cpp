@@ -133,10 +133,8 @@ void audio_setup()
 
     #ifdef USE_SPIFFS
     myFS0 = new AudioFileSourceSPIFFS();
-    //myFS1 = new AudioFileSourceSPIFFS();
     #else
     myFS0 = new AudioFileSourceLittleFS();
-    //myFS1 = new AudioFileSourceLittleFS();
     #endif
 
     if(haveSD) {
@@ -505,6 +503,7 @@ void play_file(const char *audio_file, float volumeFactor, bool checkNightMode, 
     dynVol     = dynVolume;
 
     // Reset vol smoothing
+    // (user might have turned the pot while no sound was played)
     rawVolIdx = 0;
     anaReadCount = 0;
 

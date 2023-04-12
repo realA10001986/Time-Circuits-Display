@@ -84,6 +84,7 @@ bool isEnterKeyHeld    = false;
 static bool enterWasPressed = false;
 
 static bool rcModeDepTime = false;
+static bool wcModeDepTime = false;
 
 #ifdef EXTERNAL_TIMETRAVEL_IN
 bool                 isEttKeyPressed = false;
@@ -268,17 +269,18 @@ static void keypadEvent(char key, KeyState kstate)
             doKey = false;
             play_file("/key6.mp3", 1.0, true, true);
             break;
-        case '7':    // "7" held down -> re-enable WiFi if in PowerSave mode
+        case '7':    // "7" held down -> re-enable/re-connect WiFi
             doKey = false;
-            if(wifiIsOn()) {
+            if(!wifiOnWillBlock()) {
                 play_file("/ping.mp3", 1.0, true, false, true, false);
             } else {
                 if(haveMusic) mpWasActive = mp_stop();
-                play_file("/ping.mp3", 1.0, true, true), true, false;
+                play_file("/ping.mp3", 1.0, true, true, true, false);
                 waitAudioDone();
             }
             // Enable WiFi / even if in AP mode / with CP
             wifiOn(0, true, false);
+            syncTrigger = true;
             // Restart mp if it was active before
             if(mpWasActive) mp_play();   
             break;
@@ -556,7 +558,7 @@ void keypad_loop()
             
             switch(code) {
             #ifdef TC_HAVETEMP
-            case 111:               // 111+ENTER: Toggle rc-mode
+            case 111:               // 111+ENTER: Toggle rc-mode (leaves wc mode untouched)
                 if(haveRcMode) {
                     toggleRcMode();
                     if(tempSens.haveHum()) {
@@ -569,6 +571,38 @@ void keypad_loop()
                 }
                 break;
             #endif
+            case 112:               // 112+ENTER: Toggle wc-mode (disables rc mode)
+                if(haveWcMode) {
+                    bool depTimeOff = false;
+                    toggleWcMode();
+                    #ifdef TC_HAVETEMP
+                    if(haveRcMode) {
+                        enableRcMode(false);
+                        if(tempSens.haveHum()) depTimeOff = true;
+                    }
+                    #endif
+                    if(WcHaveTZ2 || depTimeOff) {
+                        departedTime.off();
+                        wcModeDepTime = true;
+                    }
+                    if(isWcMode()) {
+                        DateTime dt = myrtcnow();
+                        setDatesTimesWC(dt);
+                    } else if(autoTimeIntervals[autoInterval] == 0 || (timetravelPersistent && checkIfAutoPaused())) {
+                        // Restore NVM time if either time cycling is off, or
+                        // if paused; latter only if we have the last
+                        // time stored. Otherwise we have no previous time.
+                        if(WcHaveTZ1) destinationTime.load();
+                        if(WcHaveTZ2) departedTime.load();
+                    } else {
+                        if(WcHaveTZ1) destinationTime.setFromStruct(&destinationTimes[autoTime]);
+                        if(WcHaveTZ2) departedTime.setFromStruct(&departedTimes[autoTime]);
+                    }
+                    validEntry = true;
+                } else {
+                    invalidEntry = true;
+                }
+                break;
             case 222:               // 222+ENTER: Turn shuffle off
             case 555:               // 555+ENTER: Turn shuffle on
                 if(haveMusic) {
@@ -816,11 +850,33 @@ void keypad_loop()
                 destinationTime.save();
             }
 
+            // Disable rc&wc modes
+            enableRcMode(false);
+            if(isWcMode() && WcHaveTZ1) {
+                // If WC mode is enabled and we have a TZ for red display,
+                // we need to disable WC mode in order to keep the new dest
+                // time on display. In that case, and if we have a TW for the
+                // yellow display, we also restore the yellow time to either 
+                // the stored value or the current auto-int step, otherwise 
+                // the current yellow wc time would remain but become stale,
+                // which is confusing.
+                // If there is no TZ for red display, no need to disable wc
+                // mode at this time; let timetravel() take care of this.
+                if(WcHaveTZ2) {
+                    // Restore NVM time if either time cycling is off, or
+                    // if paused; latter only if we have the last
+                    // time stored. Otherwise we have no previous time.
+                    if(autoTimeIntervals[autoInterval] == 0 || (timetravelPersistent && checkIfAutoPaused())) {
+                        departedTime.load();
+                    } else {
+                        departedTime.setFromStruct(&departedTimes[autoTime]);
+                    }
+                }
+                enableWcMode(false);
+            }
+
             // Pause autoInterval-cycling so user can play undisturbed
             pauseAuto();
-
-            // Disable rc mode
-            enableRcMode(false);
         }
 
         if(validEntry) {
@@ -891,18 +947,14 @@ void keypad_loop()
             #endif
 
                 destinationTime.showAnimate1();   // Show all but month
-                #ifdef TC_HAVETEMP
-                if(rcModeDepTime) {
+                if(rcModeDepTime || wcModeDepTime) {
                     departedTime.showAnimate1();
                 }
-                #endif
                 mydelay(80);                      // Wait 80ms
                 destinationTime.showAnimate2();   // turn on month
-                #ifdef TC_HAVETEMP
-                if(rcModeDepTime) {
+                if(rcModeDepTime || wcModeDepTime) {
                     departedTime.showAnimate2();
                 }
-                #endif
 
             #ifdef TC_HAVETEMP
             }
@@ -915,6 +967,7 @@ void keypad_loop()
             #ifdef TC_HAVETEMP
             rcModeDepTime = false;
             #endif
+            wcModeDepTime = false;
 
         }
 
@@ -936,21 +989,21 @@ void cancelEnterAnim(bool reenableDT)
             #endif
                 destinationTime.show();
             destinationTime.onCond();
-            #ifdef TC_HAVETEMP
-            if(rcModeDepTime) {
+            if(rcModeDepTime || wcModeDepTime) {
+                #ifdef TC_HAVETEMP
                 if(isRcMode()) {
                     departedTime.showHumDirect(tempSens.readHum());
-                } else {
+                } else
+                #endif
                     departedTime.show();
-                }
                 departedTime.onCond();
             }
-            #endif
         }
         
         #ifdef TC_HAVETEMP
         rcModeDepTime = false;
         #endif
+        wcModeDepTime = false;
         specDisp = 0;
     }
 }

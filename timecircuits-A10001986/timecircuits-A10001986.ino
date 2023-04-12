@@ -93,14 +93,19 @@
 
 /*  Changelog
  *   
+ *  2023/04/11 (A10001986)
+ *    - Add World Clock mode. User can now configure a separate time zone for each the 
+ *      red and yellow displays. 112+ENTER toggles World Clock (WC) mode. Red/yellow 
+ *      displays will show the time in the configured time zones. Entering a destination 
+ *      time, time travel and some other actions disable WC mode.
+ *  2023/04/09 (A10001986)
+ *    - Revisit WiFi reconnection logic: Support case where WiFi network was inaccessible
+ *      during power-up. See comments tc_time.cpp for details.
+ *    - Add keypad menu item "TIME SYNC", shows when last time sync (NTP/GPS) was done.
  *  2023/04/06 (A10001986)
- *    - Audio: Re-do beep; remove all traces of (obsolete) MIXER; Short fx are now played 
- *      without re-scanning the analog input during play-back. Reason: Pot tolerance led to 
- *      "distortions" with very short sounds.
- *    Note that some WiFi activity (key exchange? Re-scan?) might cause distortions 
- *    in mp3 play back. I experienced this when connecting the TCD to a "personal 
- *    hotspot" on an iPhone; every 2 or 3 minutes exactly, there is a small distortion.
- *    Does not happen when the TCD is connected to my home network.
+ *    - Audio: Re-do beep; remove all traces of (obsolete) MIXER; Short fx are now 
+ *      played without re-scanning the analog input during play-back. Reason: Pot 
+ *      tolerance led to audible "distortions" with very short sounds.
  *  2023/04/05 (A10001986)
  *    - WiFi: Reconnect for NTP also if previously in AP-mode, if a WiFi network 
  *      is configured to connect to. This helps for unstable WiFi networks (or ones 
@@ -112,6 +117,12 @@
  *      (both for station as well as AP mode) so non-zero; this causes re-connects for
  *      NTP allowing time synchonization even if some of those reconnecting attempts
  *      fail (because the WiFi network is not found at some attempts).
+ *    - Reset max tx power when connecting to WiFi network (might have been reduced
+ *      when falling-back to AP mode earlier)
+ *    Note that some WiFi activity (key exchange? Re-scan?) might cause distortions 
+ *    in mp3 play back. I experienced this when connecting the TCD to a "personal 
+ *    hotspot" on an iPhone; every 2 or 3 minutes exactly, there is a small distortion.
+ *    Does not happen when the TCD is connected to my home network.
  *  2023/04/04 (A10001986)
  *    - NTP: Do not overwrite previous packet age in case of a bad(outdated) new packet
  *  2023/04/01 (A10001986)

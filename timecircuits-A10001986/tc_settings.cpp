@@ -47,7 +47,7 @@
 
 // Size of main config JSON
 // Needs to be adapted when config grows
-#define JSON_SIZE 1600
+#define JSON_SIZE 1800
 
 /* If SPIFFS/LittleFS is mounted */
 static bool haveFS = false;
@@ -332,6 +332,15 @@ static bool read_settings(File configFile)
         wd |= CopyCheckValidNumParm(json["useGPS"], settings.useGPS, sizeof(settings.useGPS), 0, 1, DEF_USE_GPS);
         #endif
 
+        if(json["timeZoneDest"]) {
+            memset(settings.timeZoneDest, 0, sizeof(settings.timeZoneDest));
+            strncpy(settings.timeZoneDest, json["timeZoneDest"], sizeof(settings.timeZoneDest) - 1);
+        } else wd = true;
+        if(json["timeZoneDep"]) {
+            memset(settings.timeZoneDep, 0, sizeof(settings.timeZoneDep));
+            strncpy(settings.timeZoneDep, json["timeZoneDep"], sizeof(settings.timeZoneDep) - 1);
+        } else wd = true;
+
         wd |= CopyCheckValidNumParm(json["destTimeBright"], settings.destTimeBright, sizeof(settings.destTimeBright), 0, 15, DEF_BRIGHT_DEST);
         wd |= CopyCheckValidNumParm(json["presTimeBright"], settings.presTimeBright, sizeof(settings.presTimeBright), 0, 15, DEF_BRIGHT_PRES);
         wd |= CopyCheckValidNumParm(json["lastTimeBright"], settings.lastTimeBright, sizeof(settings.lastTimeBright), 0, 15, DEF_BRIGHT_DEPA);
@@ -430,6 +439,9 @@ void write_settings()
     #ifdef TC_HAVEGPS
     json["useGPS"] = settings.useGPS;
     #endif
+
+    json["timeZoneDest"] = settings.timeZoneDest;
+    json["timeZoneDep"] = settings.timeZoneDep;
     
     json["destTimeBright"] = settings.destTimeBright;
     json["presTimeBright"] = settings.presTimeBright;

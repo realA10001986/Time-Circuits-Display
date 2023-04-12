@@ -14,12 +14,11 @@
 // Version strings.
 // These must not contain any characters other than
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
-#ifndef IS_ACAR_DISPLAY
 #define TC_VERSION "V2.7.0"           // 13 chars max
-#define TC_VERSION_EXTRA "APR062023"  // 13 chars max
+#ifndef IS_ACAR_DISPLAY
+#define TC_VERSION_EXTRA "APR112023"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION "V2.7.0_A-CAR"     // 12 chars max
-#define TC_VERSION_EXTRA "04062023"   // 12 chars max
+#define TC_VERSION_EXTRA "04112023"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial

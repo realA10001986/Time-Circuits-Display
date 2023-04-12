@@ -228,8 +228,9 @@
 #define MODE_DEST 8
 #define MODE_DEPT 9
 #define MODE_SENS 10
-#define MODE_VER  11
-#define MODE_END  12
+#define MODE_LTS  11
+#define MODE_VER  12
+#define MODE_END  13
 #define MODE_MAX  MODE_END
 
 #define FIELD_MONTH   0
@@ -461,7 +462,7 @@ void enter_menu()
                 int16_t tyroffs = 0;
 
                 // Set up DST data for now current year
-                if(!(parseTZ(settings.timeZone, yearSet))) {
+                if(!(parseTZ(0, yearSet))) {
                     #ifdef TC_DBG
                     Serial.println(F("Menu: Failed to parse TZ"));
                     #endif
@@ -475,9 +476,9 @@ void enter_menu()
                 rtc.adjust(0, minSet, hourSet, dayOfWeek(daySet, monthSet, yearSet), daySet, monthSet, newYear-2000U);
 
                 // User entered current local time; set DST flag to current DST status
-                if(couldDST) {
+                if(couldDST[0]) {
                     int currTimeMins;
-                    presentTime.setDST(timeIsDST(yearSet, monthSet, daySet, hourSet, minSet, currTimeMins));
+                    presentTime.setDST(timeIsDST(0, yearSet, monthSet, daySet, hourSet, minSet, currTimeMins));
                     // Saved below
                 } else {
                     presentTime.setDST(0);
@@ -657,7 +658,7 @@ void enter_menu()
         allOff();
         waitForEnterRelease();
 
-    } else {                              // VERSION, END: Bail out
+    } else {                              // LTS, VERSION, END: Bail out
 
         allOff();
         waitForEnterRelease();
@@ -669,12 +670,19 @@ quitMenu:
     isSetUpdate = false;
 
     // Return dest/dept displays to where they should be
-    if(autoTimeIntervals[autoInterval] == 0 || checkIfAutoPaused()) {
-        destinationTime.load();
-        departedTime.load();
+    if(isWcMode()) {
+        DateTime dt = myrtcnow();
+        setDatesTimesWC(dt);
+    }
+    // Restore NVM time if either time cycling is off, or
+    // if paused; latter only if we have the last
+    // time stored. Otherwise we have no previous time.
+    if(autoTimeIntervals[autoInterval] == 0 || (timetravelPersistent && checkIfAutoPaused())) {
+        if(!isWcMode() || !WcHaveTZ1) destinationTime.load();
+        if(!isWcMode() || !WcHaveTZ2) departedTime.load();
     } else {
-        destinationTime.setFromStruct(&destinationTimes[autoTime]);
-        departedTime.setFromStruct(&departedTimes[autoTime]);
+        if(!isWcMode() || !WcHaveTZ1) destinationTime.setFromStruct(&destinationTimes[autoTime]);
+        if(!isWcMode() || !WcHaveTZ2) departedTime.setFromStruct(&departedTimes[autoTime]);
     }
 
     // Done, turn off displays
@@ -765,6 +773,7 @@ static void menuSelect(int& number, int mode_min)
 static void menuShow(int number)
 {
     displaySet = NULL;
+    char buf[32];
     
     switch (number) {
     case MODE_DEST:  // Destination Time
@@ -870,6 +879,30 @@ static void menuShow(int number)
         #else
         departedTime.off();
         #endif
+        break;
+    case MODE_LTS:  // last time sync info
+        destinationTime.showTextDirect("TIME SYNC");
+        destinationTime.on();
+        if(!lastAuthTime64) {
+            presentTime.showTextDirect("NEVER");
+            presentTime.on();
+            departedTime.off();
+        } else {
+            uint64_t ago = (((uint64_t)millis() + millisEpoch) - lastAuthTime64) / 1000;
+            if(ago > 24*60*60) {
+                sprintf(buf, "%d DAYS", ago / (24*60*60));
+            } else if(ago > 60*60) {
+                sprintf(buf, "%d HOURS", ago / (60*60));
+            } else if(ago > 60) {
+                sprintf(buf, "%d MINS", ago / 60);
+            } else {
+                sprintf(buf, "%d SECS", ago);
+            }
+            presentTime.showTextDirect(buf);
+            presentTime.on();
+            departedTime.showTextDirect("AGO");
+            departedTime.on();
+        }
         break;
     case MODE_CPA:  // Install audio files
         destinationTime.showTextDirect("INSTALL");

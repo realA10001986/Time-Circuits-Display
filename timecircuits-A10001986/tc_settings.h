@@ -26,7 +26,7 @@
 #define _TC_SETTINGS_H
 
 extern bool haveSD;
-extern bool FlashROMode;   
+extern bool FlashROMode;
 
 extern uint8_t musFolderNum;
 
@@ -78,7 +78,7 @@ extern uint8_t musFolderNum;
 #define DEF_LUX_LIMIT       3     // Default Lux for night mode
 #define DEF_USE_ETTO        0     // 0: No external props
 #define DEF_PLAY_TT_SND     1     // 1: Play time travel sounds (0: Do not; for use with external equipment)
-#define DEF_SHUFFLE         0     // Music Playser: Do not shuffle by default
+#define DEF_SHUFFLE         0     // Music Player: Do not shuffle by default
 #define DEF_CFG_ON_SD       0     // Default: Save alarm/volume settings in flash memory
 #define DEF_SD_FREQ         0     // SD/SPI frequency: Default 16MHz
 
@@ -96,6 +96,8 @@ struct Settings {
     char wifiAPOffDelay[4]  = MS(DEF_WIFI_APOFFDELAY);
     char ntpServer[64]      = DEF_NTP_SERVER;
     char timeZone[64]       = DEF_TIMEZONE;
+    char timeZoneDest[64]   = "";
+    char timeZoneDep[64]    = "";
     char destTimeBright[4]  = MS(DEF_BRIGHT_DEST);
     char presTimeBright[4]  = MS(DEF_BRIGHT_PRES);
     char lastTimeBright[4]  = MS(DEF_BRIGHT_DEPA);

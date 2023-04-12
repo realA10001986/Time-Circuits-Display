@@ -39,11 +39,19 @@
 
 #define AUTONM_NUM_PRESETS 4
 
-extern unsigned long  powerupMillis;
+extern unsigned long powerupMillis;
 
 extern uint16_t lastYear;
 
-extern bool couldDST;
+extern bool couldDST[3];
+extern bool haveWcMode;
+extern bool WcHaveTZ1;
+extern bool WcHaveTZ2;
+
+extern bool syncTrigger;
+
+extern uint64_t lastAuthTime64;
+extern uint64_t millisEpoch;
 
 extern clockDisplay destinationTime;
 extern clockDisplay presentTime;
@@ -104,6 +112,10 @@ void resetPresentTime();
 void pauseAuto();
 bool checkIfAutoPaused();
 
+void enableWcMode(bool onOff);
+bool toggleWcMode();
+bool isWcMode();
+
 void enableRcMode(bool onOff);
 bool toggleRcMode();
 bool isRcMode();
@@ -129,8 +141,10 @@ bool gpsHaveFix();
 void gps_loop();
 #endif
 
-bool  parseTZ(char *tz, int currYear, bool doparseDST = true);
-int   timeIsDST(int year, int month, int day, int hour, int mins, int& currTimeMins);
+bool  parseTZ(int index, int currYear, bool doparseDST = true);
+int   timeIsDST(int index, int year, int month, int day, int hour, int mins, int& currTimeMins);
+
+void  setDatesTimesWC(DateTime dt);
 
 void  ntp_loop();
 void  ntp_short_loop();
