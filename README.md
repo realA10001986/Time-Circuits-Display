@@ -767,6 +767,16 @@ Name of your preferred NTP (network time protocol) server for time synchronizati
 
 If a [GPS receiver](#gps-receiver) is connected, this selects whether GPS time is used for time synchronization.
 
+#### World Clock mode
+
+##### &#9654; Time zone for Destination Time display
+
+The time zone for the red display in [World Clock mode](#world-clock-mode). Default: unset. Needs to be in [Posix](https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv) format.
+
+##### Time zone for Last Time Dep. display
+
+The time zone for the yellow display in [World Clock mode](#world-clock-mode). Default: unset. Needs to be in [Posix](https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv) format.
+
 #### Display preferences
 
 ##### &#9654; Destination Time display brightness
