@@ -755,6 +755,12 @@ See [here](#wifi-power-saving-features)
 
 See [here](#wifi-power-saving-features)
 
+##### &#9654; Periodic reconnection attempts
+
+Selects whether periodic re-connection attempts (between 12am and 6am) should be made after a failure to connect to a configured WiFi network.
+
+In typical home setups with 24/7 WiFi, this option hardly matters. However, if you have connected your clock to your WiFi network, but move it between environments (eg home and car) on a regular basis, uncheck this to keep the clock from searching for your configured WiFi network unnecessarily. 
+
 ##### &#9654; Time zone
 
 The time zone of the place where the device is operated. Has to be in POSIX format. Needs to be set in order to use NTP or GPS, and for DST (daylight saving). Defaults to UTC0. See [here](https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv) or [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/timezones.csv) for a list of valid time zones.
