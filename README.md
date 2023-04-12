@@ -15,6 +15,7 @@ Features include
 - Movie-accurate [time travel](#time-travel) function with *Present time* always running as a clock (as opposed to being stale)
 - ["Return from Time Travel"](#time-travel): Return to real present time easily
 - ["Decorative mode"](#time-cycling): Movie-accurate time travel times displayed in *destination time* and *last time departed* displays, and cycled in configurable interval
+- World Clock mode: Show current time in different time zones in red and yellow displays
 - [Alarm function](#how-to-set-up-the-alarm)
 - [Count-down timer](#count-down-timer)
 - [Night mode](#night-mode) (displays off or dimmed; manual, scheduled or sensor-controlled)
@@ -124,6 +125,14 @@ Time-cycling will, if enabled, change the *Destination* and *Last Time Departed*
 
 Set the interval to OFF (0) to disable Time-cycling.
 
+### World Clock mode
+
+World Clock mode is another kind of "decorative" mode where the red and yellow displays show not some stale times, but current time in other time zones. These time zones need to be configured in Config Portal. At least one time zone (for either the red or yellow display) must be configured in order to use WC mode.
+
+World Clock mode is toggled by typing "112" followed by ENTER. 
+
+Note that "Room Condition mode" has priority over WC mode; also, WC mode will be disabled upon time travels and after entering a Destination Time.
+
 ### Common usage scenarios
 
 ####  &#9654; I want my clock to work like in the movie
@@ -199,6 +208,10 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
     <tr>
      <td align="center">111&#9166;</td>
      <td align="center">Toggle <a href="#room-condition-mode-temperaturehumidity-sensor">Room Condition mode</a></td>
+    </tr>
+    <tr>
+     <td align="center">112&#9166;</td>
+     <td align="center">Toggle <a href="#">World Clock mode</a></td>
     </tr>
     <tr>
      <td align="center">222&#9166;</td>
@@ -406,6 +419,7 @@ After invoking the keypad menu, the first step is to choose a menu item. The ava
 - set the internal Real Time Clock (RTC) ("SET RTC"),
 - enter dates/times for the *Destination* and *Last Time Departed* displays,
 - show light/temperature/humidity sensor info (if such a sensor is connected) ("SENSORS"),
+- show when time ways sync'd last ("TIME SYNC"),
 - quit the menu ("END").
  
 Pressing ENTER cycles through the list, holding ENTER selects an item.
