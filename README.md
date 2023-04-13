@@ -236,19 +236,19 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
     </tr>
     <tr>
      <td align="center">000&#9166;</td>
-     <td align="center">Disable [beep](#beep-on-the-second) sound</td>
+     <td align="center">Disable <a href="#beep-on-the-second">beep</a> sound</td>
     </tr>
     <tr>
      <td align="center">001&#9166;</td>
-     <td align="center">Enable [beep](#beep-on-the-second) sound</td>
+     <td align="center">Enable <a href="#beep-on-the-second">beep</a> sound</td>
     </tr>
    <tr>
      <td align="center">002&#9166;</td>
-     <td align="center">Enable [beep](#beep-on-the-second) sound (30 seconds)</td>
+     <td align="center">Enable <a href="#beep-on-the-second">beep</a> sound (30 seconds)</td>
     </tr>
    <tr>
      <td align="center">003&#9166;</td>
-     <td align="center">Enable [beep](#beep-on-the-second) sound (60 seconds)</td>
+     <td align="center">Enable <a href="#beep-on-the-second">beep</a> sound (60 seconds)</td>
     </tr>
     <tr>
      <td align="center">64738&#9166;</td>
