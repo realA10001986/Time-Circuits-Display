@@ -302,6 +302,17 @@ Note that Time-cycling, if enabled, will force the device to cycle through the l
 
 Persistent time travels, if done often, will cause [Flash Wear](#flash-wear).
 
+## Beep on the second
+
+In the movies, the Time Circuits emit a "beep" sound every second, which is only really audible in the scene in which Doc examplains to Marty how the time machine works. The firmware supports that beep, too.
+
+The beep can be permanently disabled, permanently enabled, or enabled for 30 or 60 seconds
+- after a destination time is entered (and ENTER is pressed),
+- upon triggering a time travel,
+- after switching on the clock (real power-up or fake power-up).
+
+The different modes are selected by typing 000 (disabled), 001 (enabled), 002 (enabled for 30 secs) or 003 (enabled for 60 secs), followed by ENTER. The power-up default is selected in the Config Portal.
+
 ## Night mode
 
 In night-mode, by default, the *destination time* and *last time departed* displays are switched off, the *present time* display is dimmed to a minimum, and the volume of sound playback is reduced (except the alarm). Apart from considerably increasing the displays' lifetime, night-mode reduces the power consumption of the device from around 4.5W to around 2.5W.
