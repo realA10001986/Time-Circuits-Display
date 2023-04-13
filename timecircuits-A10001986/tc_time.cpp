@@ -131,6 +131,12 @@ bool                 startup      = false;
 static bool          startupSound = false;
 static unsigned long startupNow   = 0;
 
+// For beep-auto-modes
+uint8_t       beepMode = 0;
+bool          beepTimer = false;
+unsigned long beepTimeout = 30;
+unsigned long beepTimerNow = 0;
+
 // Pause auto-time-cycling if user played with time travel
 static bool          autoPaused = false;
 static unsigned long pauseNow = 0;
@@ -1008,7 +1014,13 @@ void time_setup()
     playTTsounds = ((int)atoi(settings.playTTsnds) > 0);
 
     // Set power-up setting for beep
-    muteBeep = ((int)atoi(settings.beep) == 0);
+    beepMode = (uint8_t)atoi(settings.beep);
+    if(beepMode >= 3) {
+        beepMode = 3;
+        beepTimeout = BEEPM3_SECS*1000;
+    }
+    if(beepMode == 2) beepTimeout = BEEPM2_SECS*1000;
+    muteBeep = true;
     
     // Set up speedo display
     #ifdef TC_HAVESPEEDO
@@ -1242,10 +1254,14 @@ void time_setup()
         startupSound = true;
         FPBUnitIsOn = true;
         leds_on();
+        if(beepMode >= 2)      startBeepTimer();
+        else if(beepMode == 1) muteBeep = false;
 
 #ifdef FAKE_POWER_ON
     }
 #endif
+
+    
 }
 
 /*
@@ -1276,6 +1292,7 @@ void time_loop()
                     startupSound = true;
                     FPBUnitIsOn = true;
                     leds_on();
+                    if(beepMode >= 2) startBeepTimer();
                     destinationTime.setBrightness(255); // restore brightnesses
                     presentTime.setBrightness(255);     // in case we got switched
                     departedTime.setBrightness(255);    // off during time travel
@@ -1344,6 +1361,12 @@ void time_loop()
             OTPRinProgress = false;
             OTPRDoneNow = millisNow;
         }
+    }
+
+    // Beep auto modes
+    if(beepTimer && (millisNow - beepTimerNow > beepTimeout)) {
+        muteBeep = true;
+        beepTimer = false;
     }
 
     // Initiate startup delay, play startup sound
@@ -1605,11 +1628,13 @@ void time_loop()
                           ( (!wifiIsOff && !wifiInAPMode)     ||    //   if WiFi-STA is on,                           OR
                             ( wifiIsOff      &&                     //   if WiFi-STA is off (after being connected), 
                               !haveAuthTime  &&                     //      but no authtime, 
-                              checkMP3Done())                 ||    //      and no mp3                                OR
+                              keypadIsIdle() &&                     //      and keypad is idle (no press for >2mins)
+                              checkMP3Done())                 ||    //      and no mp3 is being played                OR
                             ( (wifiIsOff ||                         //   if WiFi-STA is off (after being connected),
                                (wifiInAPMode && doAPretry)) &&      //                      or in AP-mode
                               authTimeExpired               &&      //      and authtime expired
                               checkMP3Done()                &&      //      and no mp3 being played
+                              keypadIsIdle()                &&      //      and keypad is idle (no press for >2mins)
                               (dt.hour() <= 6)                      //      during night-time
                             )
                           );
@@ -2263,6 +2288,9 @@ void timeTravel(bool doComplete, bool withSpeedo)
 
     // Stop music if we are to play time travel sounds
     if(playTTsounds) mp_stop();
+    
+    // Beep auto mode: Restart timer
+    startBeepTimer();
 
     // Pause autoInterval-cycling so user can play undisturbed
     pauseAuto();
@@ -2557,6 +2585,9 @@ void resetPresentTime()
     if(timetravelPersistent) {
         presentTime.save();
     }
+
+    // Beep auto mode: Restart timer
+    startBeepTimer();
 }
 
 // Pause autoInverval-updating for 30 minutes

@@ -43,6 +43,10 @@ void resetTimebufIndices();
 void cancelEnterAnim(bool reenableDT = true);
 void cancelETTAnim();
 
+bool keypadIsIdle();
+
+void startBeepTimer();
+
 void nightModeOn();
 void nightModeOff();
 bool toggleNightMode();

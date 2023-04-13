@@ -435,6 +435,7 @@ void keypad_loop()
         } else {
             ettNow = millis();
             ettDelayed = true;
+            startBeepTimer();
         }
         isEttKeyPressed = isEttKeyHeld = false;
     }
@@ -635,9 +636,35 @@ void keypad_loop()
                 }
                 break;
             case 000:
-                muteBeep = !muteBeep;
+                muteBeep = true;
+                beepMode = 0;
+                beepTimer = false;
                 // do not set (in)validEntry, we
                 // don't want sound
+                enterDelay = 0;
+                break;
+            case 001:
+                muteBeep = false;
+                beepMode = 1;
+                beepTimer = false;
+                enterDelay = 0;
+                break;
+            case 002:
+                if(beepMode == 1) {
+                    beepTimerNow = millis();
+                    beepTimer = true;
+                }
+                beepMode = 2;
+                beepTimeout = BEEPM2_SECS*1000;
+                enterDelay = 0;
+                break;
+            case 003:
+                if(beepMode == 1) {
+                    beepTimerNow = millis();
+                    beepTimer = true;
+                }
+                beepMode = 3;
+                beepTimeout = BEEPM3_SECS*1000;
                 enterDelay = 0;
                 break;
             default:
@@ -877,6 +904,9 @@ void keypad_loop()
 
             // Pause autoInterval-cycling so user can play undisturbed
             pauseAuto();
+
+            // Beep auto mode: Restart timer
+            startBeepTimer();
         }
 
         if(validEntry) {
@@ -1015,6 +1045,11 @@ void cancelETTAnim()
     #endif
 }
 
+bool keypadIsIdle()
+{
+    return (!lastKeyPressed || (millis() - lastKeyPressed >= 2*60*1000));
+}
+
 /*
  * Custom delay function for key scan in keypad_i2c
  */
@@ -1026,6 +1061,18 @@ static void mykpddelay(unsigned int mydel)
         delay(1);
         ntp_short_loop();
         audio_loop();
+    }
+}
+
+/*
+ * Un-mute beep and start beep timer
+ */
+void startBeepTimer()
+{
+    if(beepMode >= 2) {
+        beepTimer = true;
+        beepTimerNow = millis();
+        muteBeep = false;
     }
 }
 

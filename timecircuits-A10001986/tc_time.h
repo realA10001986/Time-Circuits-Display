@@ -39,6 +39,9 @@
 
 #define AUTONM_NUM_PRESETS 4
 
+#define BEEPM2_SECS 30
+#define BEEPM3_SECS 60
+
 extern unsigned long powerupMillis;
 
 extern uint16_t lastYear;
@@ -104,6 +107,11 @@ extern bool timetravelPersistent;
 #ifdef FAKE_POWER_ON
 extern bool waitForFakePowerButton;
 #endif
+
+extern uint8_t beepMode;
+extern bool beepTimer;
+extern unsigned long beepTimeout;
+extern unsigned long beepTimerNow;
 
 void time_boot();
 void time_setup();

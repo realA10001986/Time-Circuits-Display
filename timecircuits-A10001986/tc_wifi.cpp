@@ -55,6 +55,14 @@ IPSettings ipsettings;
 
 WiFiManager wm;
 
+static char beepCustHTML[512] = "";
+static const char beepCustHTML1[] = "<div style='margin:0;padding:0;'><label for='beepmode'>Default beep mode</label><select style='font-size:90%;width:auto;margin-left:10px;vertical-align:baseline;' value='";
+static const char beepCustHTML2[] = "' name='beepmode' id='beepmode' autocomplete='off' title='Select power-up beep mode'><option value='0'";
+static const char beepCustHTML3[] = ">Off</option><option value='1'";
+static const char beepCustHTML4[] = ">On</option><option value='2'";
+static const char beepCustHTML5[] = ">Auto (30 secs)</option><option value='3'";
+static const char beepCustHTML6[] = ">Auto (60 secs)</option></select></div>";
+
 static char aintCustHTML[768] = "";
 static const char aintCustHTML1[] = "<div style='margin:0;padding:0;'><label for='rotate_times'>Time-cycling interval</label><select style='width:auto;margin-left:10px;vertical-align:baseline;' value='";
 static const char aintCustHTML2[] = "' name='rotate_times' id='rotate_times' autocomplete='off' title='Selects the interval for automatic time-cycling when idle'><option value='0'";
@@ -112,14 +120,13 @@ WiFiManagerParameter custom_ttrp("ttrp", "Make time travels persistent (0=no, 1=
 WiFiManagerParameter custom_alarmRTC("artc", "Alarm base is RTC (1) or displayed \"present\" time (0)", settings.alarmRTC, 1, aco);
 WiFiManagerParameter custom_playIntro("plIn", "Play intro (0=off, 1=on)", settings.playIntro, 1, aco);
 WiFiManagerParameter custom_mode24("md24", "24-hour clock mode: (0=12hr, 1=24hr)", settings.mode24, 1, aco);
-WiFiManagerParameter custom_beep("beep", "Beep by default (0=no, 1=yes)", settings.beep, 1, "autocomplete='off' title='If on, the beep is enabled after power-up'");
 #else // -------------------- Checkbox hack: --------------
 WiFiManagerParameter custom_ttrp("ttrp", "Make time travels persistent", settings.timesPers, 1, "title='If unchecked, the displays are reset after reboot' type='checkbox' style='margin-top:3px'", WFM_LABEL_AFTER);
 WiFiManagerParameter custom_alarmRTC("artc", "Alarm base is real present time", settings.alarmRTC, 1, "title='If unchecked, the alarm base is the displayed \"present\" time' type='checkbox'", WFM_LABEL_AFTER);
 WiFiManagerParameter custom_playIntro("plIn", "Play intro", settings.playIntro, 1, "type='checkbox'", WFM_LABEL_AFTER);
 WiFiManagerParameter custom_mode24("md24", "24-hour clock mode", settings.mode24, 1, "type='checkbox'", WFM_LABEL_AFTER);
-WiFiManagerParameter custom_beep("beep", "Beep by default", settings.beep, 1, "title='If checked, the beep is enabled after power-up' type='checkbox' style='margin-bottom:10px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
+WiFiManagerParameter custom_beep(beepCustHTML);
 WiFiManagerParameter custom_autoRotateTimes(aintCustHTML);
 
 #if defined(TC_MDNS) || defined(TC_WM_HAS_MDNS)
@@ -620,6 +627,10 @@ void wifi_loop()
         // Only read parms if the user actually clicked SAVE on the params page
         if(shouldSaveConfig > 1) {
 
+            getParam("beepmode", settings.beep, 1);
+            if(strlen(settings.beep) == 0) {
+                sprintf(settings.beep, "%d", DEF_BEEP);
+            }
             getParam("rotate_times", settings.autoRotateTimes, 1);
             if(strlen(settings.autoRotateTimes) == 0) {
                 sprintf(settings.autoRotateTimes, "%d", DEF_AUTOROTTIMES);
@@ -680,7 +691,6 @@ void wifi_loop()
             mystrcpy(settings.alarmRTC, &custom_alarmRTC);
             mystrcpy(settings.playIntro, &custom_playIntro);
             mystrcpy(settings.mode24, &custom_mode24);
-            mystrcpy(settings.beep, &custom_beep);
 
             mystrcpy(settings.wifiPRetry, &custom_wifiPRe);
                        
@@ -736,7 +746,6 @@ void wifi_loop()
             strcpyCB(settings.alarmRTC, &custom_alarmRTC);
             strcpyCB(settings.playIntro, &custom_playIntro);
             strcpyCB(settings.mode24, &custom_mode24);
-            strcpyCB(settings.beep, &custom_beep);
 
             strcpyCB(settings.wifiPRetry, &custom_wifiPRe);
             
@@ -1293,6 +1302,7 @@ void updateConfigPortalValues()
 {
     const char custHTMLSel[] = " selected";
     int t = atoi(settings.autoRotateTimes);
+    int tb = atoi(settings.beep);
     int tnm = atoi(settings.autoNMPreset);
     #ifdef TC_HAVESPEEDO
     int tt = atoi(settings.speedoType);
@@ -1300,6 +1310,18 @@ void updateConfigPortalValues()
     #endif
 
     // Make sure the settings form has the correct values
+
+    strcpy(beepCustHTML, beepCustHTML1);
+    strcat(beepCustHTML, settings.beep);
+    strcat(beepCustHTML, beepCustHTML2);
+    if(tb == 0) strcat(beepCustHTML, custHTMLSel);
+    strcat(beepCustHTML, beepCustHTML3);
+    if(tb == 1) strcat(beepCustHTML, custHTMLSel);
+    strcat(beepCustHTML, beepCustHTML4);
+    if(tb == 2) strcat(beepCustHTML, custHTMLSel);
+    strcat(beepCustHTML, beepCustHTML5);
+    if(tb == 3) strcat(beepCustHTML, custHTMLSel);
+    strcat(beepCustHTML, beepCustHTML6);
 
     strcpy(aintCustHTML, aintCustHTML1);
     strcat(aintCustHTML, settings.autoRotateTimes);
@@ -1387,7 +1409,6 @@ void updateConfigPortalValues()
     custom_alarmRTC.setValue(settings.alarmRTC, 1);
     custom_playIntro.setValue(settings.playIntro, 1);
     custom_mode24.setValue(settings.mode24, 1);
-    custom_beep.setValue(settings.beep, 1);
     custom_wifiPRe.setValue(settings.wifiPRetry, 1);
     #ifdef TC_HAVEGPS
     custom_useGPS.setValue(settings.useGPS, 1);
@@ -1433,7 +1454,6 @@ void updateConfigPortalValues()
     setCBVal(&custom_alarmRTC, settings.alarmRTC);
     setCBVal(&custom_playIntro, settings.playIntro);
     setCBVal(&custom_mode24, settings.mode24);
-    setCBVal(&custom_beep, settings.beep);
     setCBVal(&custom_wifiPRe, settings.wifiPRetry);
     #ifdef TC_HAVEGPS
     setCBVal(&custom_useGPS, settings.useGPS);

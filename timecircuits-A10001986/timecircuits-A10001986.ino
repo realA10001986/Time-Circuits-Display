@@ -93,10 +93,17 @@
 
 /*  Changelog
  *   
+ *  2023/04/13 (A10001986)
+ *    - Add beep modes: 000 disables beep, 001 enables beep, 002 and 003 enable beep
+ *      for 30/60 seconds after entering a destination time and/or upon initiating a 
+ *      time travel. If a time travel is triggered by an external button for which a 
+ *      delay is configured, the beep starts when pressing the button and ends 30/60
+ *      seconds after the re-entry.
  *  2023/04/12 (A10001986)
  *    - Make "periodic reconnection attempts" a config option; might be undesired in
  *      car setups.
- *    - Don't reconnect WiFi for NTP if mp3 is played back.
+ *    - Don't reconnect WiFi for NTP if mp3 is played back or user has used the keypad
+ *      within the last 2 minutes.
  *  2023/04/11 (A10001986)
  *    - Add World Clock mode. User can now configure a separate time zone for each the 
  *      red and yellow displays. 112+ENTER toggles World Clock (WC) mode. Red/yellow 
