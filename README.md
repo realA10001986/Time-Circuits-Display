@@ -325,6 +325,8 @@ The beep can be permanently disabled, permanently enabled, or enabled for 30 or 
 
 The different modes are selected by typing 000 (disabled), 001 (enabled), 002 (enabled for 30 secs) or 003 (enabled for 60 secs), followed by ENTER. The power-up default is selected in the Config Portal.
 
+Since the hardware only has one audio channel, the beep is suppressed whenever other sounds are played-back.
+
 ## Night mode
 
 In night-mode, by default, the *destination time* and *last time departed* displays are switched off, the *present time* display is dimmed to a minimum, and the volume of sound playback is reduced (except the alarm). Apart from considerably increasing the displays' lifetime, night-mode reduces the power consumption of the device from around 4.5W to around 2.5W.
