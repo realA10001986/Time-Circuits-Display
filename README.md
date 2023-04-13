@@ -27,7 +27,7 @@ Features include
 - [Room condition mode](#room-condition-mode-temperaturehumidity-sensor): Display temperature and humidity instead of destination/departed time (requires suitable sensor)
 - Optional power-up intro
 - Optional [sound on the hour](#additional-custom-sounds)
-- Optional beep every second
+- Optional [beep](#beep-on-the-second) every second (&#x1F195; 4 modes)
 - Support for external [fake "power switch"](#fake-power-switch)
 - Support for external display acting as [Speedometer](#speedometer)
 - Support for external [GPS receiver](#gps-receiver), used as time source, and for [speed](#gps-for-speed) to be displayed on speedo display
@@ -236,7 +236,19 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
     </tr>
     <tr>
      <td align="center">000&#9166;</td>
-     <td align="center">Enable/disable beep sound played every second</td>
+     <td align="center">Disable [beep](#beep-on-the-second) sound</td>
+    </tr>
+    <tr>
+     <td align="center">001&#9166;</td>
+     <td align="center">Enable [beep](#beep-on-the-second) sound</td>
+    </tr>
+   <tr>
+     <td align="center">002&#9166;</td>
+     <td align="center">Enable [beep](#beep-on-the-second) sound (30 seconds)</td>
+    </tr>
+   <tr>
+     <td align="center">003&#9166;</td>
+     <td align="center">Enable [beep](#beep-on-the-second) sound (60 seconds)</td>
     </tr>
     <tr>
      <td align="center">64738&#9166;</td>
@@ -734,9 +746,9 @@ Selects whether the animated "Back to the Future" intro should be played upon po
 
 Selects 24-hour clock mode, ie hours go from 0 to 23, "AM" and "PM" are permanently dark.
 
-##### &#9654; Beep by default
+##### &#9654; Default beep mode
 
-If checked, the "beep" on every second is enabled after power-up. (Can be enabled and disabled anytime by typing 000 followed by ENTER.)
+Selects the power-up "beep" mode. "Auto: xx secs" enables the beep for xx seconds after entering a destination time, after triggering a time travel, and upon (real or fake) power-on. Can be changed at any time by typing 000 (off), 001 (on), 002 (Auto 30secs) or 003 (Auto 60secs) followed by ENTER.
 
 ##### &#9654; Time-cycling interval
 
