@@ -754,7 +754,7 @@ Selects 24-hour clock mode, ie hours go from 0 to 23, "AM" and "PM" are permanen
 
 ##### &#9654; Default beep mode
 
-Selects the power-up "beep" mode. "Auto: xx secs" enables the beep for xx seconds after entering a destination time, after triggering a time travel, and upon (real or fake) power-on. Can be changed at any time by typing 000 (off), 001 (on), 002 (Auto 30secs) or 003 (Auto 60secs) followed by ENTER.
+Selects the power-up ["beep"](#beep-on-the-second) mode. "Auto: xx secs" enables the beep for xx seconds after entering a destination time, after triggering a time travel, and upon (real or fake) power-on. Can be changed at any time by typing 000 (off), 001 (on), 002 (Auto 30secs) or 003 (Auto 60secs) followed by ENTER.
 
 ##### &#9654; Time-cycling interval
 
