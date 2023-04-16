@@ -313,7 +313,10 @@ void enter_menu()
     bool preNM = presentTime.getNightMode();
     bool depNM = departedTime.getNightMode();
     bool mpActive;
+    bool nonRTCdisplayChanged = false;
     int mode_min;
+    int y1, yo1, m1, d1, h1, mi1;
+    int y2, yo2, m2, d2, h2, mi2;
 
     pwrNeedFullNow();
 
@@ -335,10 +338,10 @@ void enter_menu()
     menuItemNum = mode_min;
 
     // Load the custom times from NVM
-    // This means that when the user activates the menu while
-    // autoInterval was > 0 or after time travels, there will
-    // be different times shown in the menu than were outside
-    // the menu.
+    // Backup current times
+    destinationTime.getToParms(y1, yo1, m1, d1, h1, mi1);
+    departedTime.getToParms(y2, yo2, m2, d2, h2, mi2);
+    // Load NWM times
     destinationTime.load();
     departedTime.load();
 
@@ -509,6 +512,8 @@ void enter_menu()
                     updateConfigPortalValues();
                 }
 
+                nonRTCdisplayChanged = true;
+
             }
 
             // Show a save message for a brief moment
@@ -674,12 +679,20 @@ quitMenu:
         DateTime dt = myrtcnow();
         setDatesTimesWC(dt);
     }
-    // Restore NVM time if either time cycling is off, or
-    // if paused; latter only if we have the last
-    // time stored. Otherwise we have no previous time.
-    if(autoTimeIntervals[autoInterval] == 0 || (timetravelPersistent && checkIfAutoPaused())) {
-        if(!isWcMode() || !WcHaveTZ1) destinationTime.load();
-        if(!isWcMode() || !WcHaveTZ2) departedTime.load();
+    if((autoTimeIntervals[autoInterval] == 0) || checkIfAutoPaused()) {
+        if(nonRTCdisplayChanged) {
+            if(!isWcMode() || !WcHaveTZ1) destinationTime.load();
+            if(!isWcMode() || !WcHaveTZ2) departedTime.load();
+        } else {
+            if(!isWcMode() || !WcHaveTZ1) {
+                  destinationTime.setFromParms(y1, m1, d1, h1, mi1); 
+                  destinationTime.setYearOffset(yo1); 
+            }
+            if(!isWcMode() || !WcHaveTZ2) {
+                  departedTime.setFromParms(y2, m2, d2, h2, mi2);
+                  departedTime.setYearOffset(yo2); 
+            }
+        }
     } else {
         if(!isWcMode() || !WcHaveTZ1) destinationTime.setFromStruct(&destinationTimes[autoTime]);
         if(!isWcMode() || !WcHaveTZ2) departedTime.setFromStruct(&departedTimes[autoTime]);

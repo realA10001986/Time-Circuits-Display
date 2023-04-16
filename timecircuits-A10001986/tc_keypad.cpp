@@ -556,6 +556,7 @@ void keypad_loop()
 
             uint16_t code = atoi(dateBuffer);
             char atxt[16];
+            bool bmchg = false;
             
             switch(code) {
             #ifdef TC_HAVETEMP
@@ -639,15 +640,13 @@ void keypad_loop()
                 muteBeep = true;
                 beepMode = 0;
                 beepTimer = false;
-                // do not set (in)validEntry, we
-                // don't want sound
-                enterDelay = 0;
+                bmchg = true;
                 break;
             case 001:
                 muteBeep = false;
                 beepMode = 1;
                 beepTimer = false;
-                enterDelay = 0;
+                bmchg = true;
                 break;
             case 002:
                 if(beepMode == 1) {
@@ -656,7 +655,7 @@ void keypad_loop()
                 }
                 beepMode = 2;
                 beepTimeout = BEEPM2_SECS*1000;
-                enterDelay = 0;
+                bmchg = true;
                 break;
             case 003:
                 if(beepMode == 1) {
@@ -665,10 +664,21 @@ void keypad_loop()
                 }
                 beepMode = 3;
                 beepTimeout = BEEPM3_SECS*1000;
-                enterDelay = 0;
+                bmchg = true;
                 break;
             default:
                 invalidEntry = true;
+            }
+
+            if(bmchg) {
+                #ifdef IS_ACAR_DISPLAY
+                sprintf(atxt, "BEEP MODE  %1d", beepMode);
+                #else
+                sprintf(atxt, "BEEP MODE   %1d", beepMode);
+                #endif
+                destinationTime.showTextDirect(atxt);
+                enterDelay = ENTER_DELAY;
+                specDisp = 10;
             }
 
         } else if(strLen == DATELEN_INT) {

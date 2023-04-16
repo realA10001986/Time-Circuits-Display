@@ -75,6 +75,8 @@ class clockDisplay {
         void setFromStruct(dateStruct* s);  // Set object date & time from struct; never use this with RTC
         void setFromParms(int year, int month, int day, int hour, int minute);
 
+        void getToParms(int& year, int& yo, int& month, int& day, int& hour, int& minute);
+
         void setMonth(int monthNum);
         void setDay(int dayNum);
         void setYearOffset(int16_t yearOffs);

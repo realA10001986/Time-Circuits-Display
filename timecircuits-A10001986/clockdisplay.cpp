@@ -305,6 +305,16 @@ void clockDisplay::setFromParms(int year, int month, int day, int hour, int minu
     setMinute(minute);
 }
 
+void clockDisplay::getToParms(int& year, int& yo, int& month, int& day, int& hour, int& minute)
+{
+    year = getYear();
+    yo = getYearOffset();
+    month = getMonth();
+    day = getDay();
+    hour = getHour();
+    minute = getMinute();
+}
+
 // Show data in display --------------------------------------------------------
 
 

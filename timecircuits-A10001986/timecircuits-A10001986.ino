@@ -93,6 +93,10 @@
 
 /*  Changelog
  *   
+ *  2023/04/16 (A10001986)
+ *    - Better beep mode change feedback
+ *  2023/04/15 (A10001986)
+ *    - Properly restore dest/dep times on quitting the menu
  *  2023/04/13 (A10001986)
  *    - Add beep modes: 000 disables beep, 001 enables beep, 002 and 003 enable beep
  *      for 30/60 seconds after entering a destination time and/or upon initiating a 
@@ -113,7 +117,7 @@
  *    - Revisit WiFi reconnection logic: Support case where WiFi network was inaccessible
  *      during power-up. See comments tc_time.cpp for details.
  *    - Add keypad menu item "TIME SYNC", shows when last time sync (NTP/GPS) was done.
- *  2023/04/06 (A10001986)
+ *  2023/04/06 (A10001986) [CS 2.7 Release]
  *    - Audio: Re-do beep; remove all traces of (obsolete) MIXER; Short fx are now 
  *      played without re-scanning the analog input during play-back. Reason: Pot 
  *      tolerance led to audible "distortions" with very short sounds.
@@ -143,7 +147,7 @@
  *    - Add beep option to setup page
  *  2023/03/28 (A10001986)
  *    - Add option to keep temperature display on (and dimmed) in night mode
- *  2023/03/23 (A10001986) [CS 2.7 Release]
+ *  2023/03/23 (A10001986)
  *    - Add (annoying) beep sound. Enabled/disabled by 000+ENTER. Disabled by default.
  *      Requires new sound-pack.
  *  2023/03/16 (A10001986)

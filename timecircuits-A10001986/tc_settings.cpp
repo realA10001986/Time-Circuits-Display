@@ -69,6 +69,13 @@ bool FlashROMode = false;
 
 #define NUM_AUDIOFILES 18
 #define SND_ENTER_IDX  8
+#ifndef TWSOUND
+#define SND_ENTER_LEN   13374
+#define SND_STARTUP_LEN 21907
+#else
+#define SND_ENTER_LEN   12149
+#define SND_STARTUP_LEN 18419
+#endif
 static const char *audioFiles[NUM_AUDIOFILES] = {
       "/alarm.mp3\0",
       "/alarmoff.mp3\0",
@@ -1050,14 +1057,6 @@ bool check_allow_CPA()
 {
     return allowCPA;
 }
-
-#ifndef TWSOUND
-#define SND_ENTER_LEN   13374
-#define SND_STARTUP_LEN 21907
-#else
-#define SND_ENTER_LEN   12149
-#define SND_STARTUP_LEN 18419
-#endif
 
 static bool check_if_default_audio_present()
 {

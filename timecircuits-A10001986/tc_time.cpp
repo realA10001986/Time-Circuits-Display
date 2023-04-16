@@ -1014,14 +1014,14 @@ void time_setup()
     playTTsounds = ((int)atoi(settings.playTTsnds) > 0);
 
     // Set power-up setting for beep
+    muteBeep = true;
     beepMode = (uint8_t)atoi(settings.beep);
     if(beepMode >= 3) {
         beepMode = 3;
         beepTimeout = BEEPM3_SECS*1000;
-    }
-    if(beepMode == 2) beepTimeout = BEEPM2_SECS*1000;
-    muteBeep = true;
-    
+    } else if(beepMode == 2) 
+        beepTimeout = BEEPM2_SECS*1000;
+
     // Set up speedo display
     #ifdef TC_HAVESPEEDO
     if(useSpeedo) {
@@ -1236,6 +1236,7 @@ void time_setup()
 
 #ifdef FAKE_POWER_ON
     if(waitForFakePowerButton) {
+
         digitalWrite(WHITE_LED_PIN, HIGH);
         myIntroDelay(500);
         digitalWrite(WHITE_LED_PIN, LOW);
@@ -1292,7 +1293,7 @@ void time_loop()
                     startupSound = true;
                     FPBUnitIsOn = true;
                     leds_on();
-                    if(beepMode >= 2) startBeepTimer();
+                    startBeepTimer();
                     destinationTime.setBrightness(255); // restore brightnesses
                     presentTime.setBrightness(255);     // in case we got switched
                     departedTime.setBrightness(255);    // off during time travel
@@ -1355,6 +1356,7 @@ void time_loop()
         #endif
     }
 
+    // End of OTPR for PCF2129
     if(OTPRinProgress) {
         if(millisNow - OTPRStarted > 100) {
             rtc.OTPRefresh(false);
@@ -1562,8 +1564,8 @@ void time_loop()
     // Actual clock stuff
 
     y = digitalRead(SECONDS_IN_PIN);
-    if(y != x) {      // different on half second
-        if(y == 0) {  // flash colon on half seconds, lit on start of second
+    if(y != x) {
+        if(y == 0) {
 
             // Set colon
             destinationTime.setColon(true);
@@ -2724,6 +2726,7 @@ DateTime myrtcnow()
 
 /*
  * World Clock setters/getters
+ * 
  */
 
 void enableWcMode(bool onOff)
@@ -3814,7 +3817,7 @@ static void handleDSTFlag(struct tm *ti, int nisDST)
  * World Clock
  * Convert local time to other time zone, and copy
  * them to display. If a TW for a display is not
- * configured, it does not tough that display.
+ * configured, it does not touch that display.
  */
 void setDatesTimesWC(DateTime dt)
 {
