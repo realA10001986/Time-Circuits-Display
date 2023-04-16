@@ -449,7 +449,7 @@ After invoking the keypad menu, the first step is to choose a menu item. The ava
 - set the internal Real Time Clock (RTC) ("SET RTC"),
 - enter dates/times for the *Destination* and *Last Time Departed* displays,
 - show light/temperature/humidity sensor info (if such a sensor is connected) ("SENSORS"),
-- show when time ways sync'd last ("TIME SYNC"),
+- show when time was last sync'd with NTP or GPS ("TIME SYNC"),
 - quit the menu ("END").
  
 Pressing ENTER cycles through the list, holding ENTER selects an item.
