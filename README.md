@@ -640,7 +640,9 @@ If/as long as the GPS receiver has a fix and receives data from satellites, the 
 
 One nice feature of GPS is that the receiver can deliver current speed of movement. If the Time Circuits are, for instance, mounted in a car or on a boat, and a [speedo display](#speedometer) is connected, this display will be just that: A real speedometer.
 
-[![Watch the video](https://img.youtube.com/vi/wbeXZJaDLa8/0.jpg)](https://youtu.be/wbeXZJaDLa8)
+| [![Watch the video](https://img.youtube.com/vi/wbeXZJaDLa8/0.jpg)](https://youtu.be/wbeXZJaDLa8) |
+|:--:|
+| Click to watch the video |
 
 ## Room Condition Mode, Temperature/humidity sensor
 
