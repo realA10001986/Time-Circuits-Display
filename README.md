@@ -10,7 +10,7 @@ The hardware is available [here](https://circuitsetup.us/product/complete-time-c
 
 Features include
 - Time keeping for years 1-9999, based on Gregorian Calendar
-- Support for time zones and automatic DST
+- Support for time zones and automatic DST (Daylight Saving adjustment)
 - Time synchronization via NTP or [GPS](#gps-receiver)
 - Movie-accurate [time travel](#time-travel) function with *Present time* always running as a clock (as opposed to being stale)
 - ["Return from Time Travel"](#time-travel): Return to real present time easily
