@@ -283,9 +283,9 @@ static unsigned long GPSupdateFreqMin = 2000;
 #endif
 
 // The TC display objects
-clockDisplay destinationTime(DISP_DEST, DEST_TIME_ADDR, DEST_TIME_PREF);
-clockDisplay presentTime(DISP_PRES, PRES_TIME_ADDR, PRES_TIME_PREF);
-clockDisplay departedTime(DISP_LAST, DEPT_TIME_ADDR, DEPT_TIME_PREF);
+clockDisplay destinationTime(DISP_DEST, DEST_TIME_ADDR);
+clockDisplay presentTime(DISP_PRES, PRES_TIME_ADDR);
+clockDisplay departedTime(DISP_LAST, DEPT_TIME_ADDR);
 
 // The speedo and temp.sensor objects
 #ifdef TC_HAVESPEEDO
@@ -2165,7 +2165,7 @@ void time_loop()
                 while(ii--) {
                     tt = rand() % 10;
                     if(!(ii % 4))   presentTime.setBrightnessDirect(1+(rand() % 8));
-                    if(tt < 3)      { presentTime.setBrightnessDirect(4); presentTime.lampTest(); }
+                    if(tt < 3)      { presentTime.setBrightnessDirect(4); presentTime.lampTest(true); }
                     else if(tt < 7) { presentTime.show(); presentTime.on(); }
                     else            { presentTime.off(); }
                     tt = (rand() + millis()) % 10;
@@ -2173,12 +2173,12 @@ void time_loop()
                     else if(tt < 6) { destinationTime.show(); destinationTime.on(); }
                     else            { if(!(ii % 2)) destinationTime.setBrightnessDirect(1+(rand() % 8)); }
                     tt = (tt + (rand() + millis())) % 10;
-                    if(tt < 4)      { departedTime.setBrightnessDirect(4); departedTime.lampTest(); }
+                    if(tt < 4)      { departedTime.setBrightnessDirect(4); departedTime.lampTest(true); }
                     else if(tt < 7) { departedTime.showTextDirect("R 2 0 1 1 T R "); }
                     else            { departedTime.show(); }
                     mydelay(10);
                     
-                    #if 0 // Code of death for some red displays, seems they don't like (real)LampTest
+                    #if 0 // Code of death for some red displays, seems they don't like realLampTest
                     tt = rand() % 10; 
                     presentTime.setBrightnessDirect(1+(rand() % 8));
                     if(tt < 3)      { presentTime.realLampTest(); }

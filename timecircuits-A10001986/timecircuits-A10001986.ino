@@ -93,8 +93,11 @@
 
 /*  Changelog
  *   
+ *  2023/04/17 (A10001986)
+ *    - Remove deprecated EEPROM stuff
  *  2023/04/16 (A10001986)
  *    - Better beep mode change feedback
+ *    - Randomize lamptest() for time travel
  *  2023/04/15 (A10001986)
  *    - Properly restore dest/dep times on quitting the menu
  *  2023/04/13 (A10001986)
@@ -162,7 +165,7 @@
  *  2023/02/21 (A10001986)
  *    - Prepare for TCD CB 1.3 with switchable LEDs. LEDs are off when fake power
  *      is off, and in night mode.
- *  2023/01/28 (A10001986) [CS 2.6 Release]
+ *  2023/01/28 (A10001986) [released by CS as 2.6]
  *    - PCF2129 RTC: Fix obvious copy/paste error; add OTP refresh
  *  2023/01/26 (A10001986)
  *    - GPS: Code optimizations; quicker time-sync if GPS has valid time
@@ -307,7 +310,7 @@
  *      network modes (AP, STA, etc). The digit "6" as part of the MAC is shown using
  *      the "modern"/common segment pattern here to distinguish it from "b".
  *    - Fix formatting bug in tc_font.h leading to font missing one character
- *  2022/12/02 (A10001986) [CS 2.5 release]
+ *  2022/12/02 (A10001986) [released by CS as 2.5]
  *    - Add support for BMx280 sensor (temperature only).
  *    - Modify former "light sensor" keypad menu to not only show measured lux level
  *      from a light sensor, but also current ambient temperature as measured by
@@ -317,7 +320,7 @@
  *      sensor placement. In order to calibrate the offset, use the keypad menu 
  *      "SENSORS" since the temperature shown there is not rounded (unlike what is
  *      shown on a speedo display if it has less than three digits).
- *  2022/11/22 (A10001986) [CS 2.4 release]
+ *  2022/11/22 (A10001986) [released by CS as 2.4]
  *    - Audio: SPIFFS does not adhere to POSIX standards and returns a file object
  *      even if a file does not exist. Fix by work-around (SPIFFS only).
  *    - clockdisplay: lampTest(), as part of the display disruption sequence, might 
@@ -341,7 +344,7 @@
  *  2022/11/10 (A10001986)
  *    - Minor optimizations (wifi)
  *    - Soft-reset the clock by entering 64738 and ENTER
- *  2022/11/08 (A10001986) [CS 2.3 release]
+ *  2022/11/08 (A10001986) [released by CS as 2.3]
  *    - Allow time travel to (non-existing) year 0, so users can simulate the movie
  *      error (Dec 25, 0000).
  *    - RTC can no longer be set to a date below TCEPOCH_GEN (which is 2022 currently)
@@ -405,7 +408,7 @@
  *    - Enhancements to DST logic
  *    - Fine-tune GPS polling and RTC updating
  *    - Remove unused stuff
- *  2022/10/24 (A10001986)
+ *  2022/10/24 (A10001986) [released by CS as 2.2]
  *    - Defer starting the Config Portal during boot: Starting with 2.0.13beta,
  *      WiFiManager triggers an async WiFi Scan when the CP is started, which 
  *      interferes with our NTP traffic during the boot process. Start CP after NTP 
@@ -435,7 +438,7 @@
  *      This system is only active, if no authoritative time source is available.
  *      As long as NTP or GPS deliver time, we rely on their assessments.
  *    - Clean up declarations & definitions all over
- *  2022/10/11 (A10001986)
+ *  2022/10/11 (A10001986)  [released by CS as 2.1]
  *    - IMPORTANT BUGFIX: Due to some (IMHO) compiler idiocy and my sloppyness, in 
  *      this case presenting itself in trusting Serial output instead of checking 
  *      the actual result of a function, the entire leap-year-detection was de-funct. 
@@ -525,7 +528,7 @@
  *    - Speedo module re-written to make speedo type configurable at run-time
  *    - WiFi Menu: Params over Info
  *    - time: end autopause regardless of autoInt setting (avoid overflow)
- *  2022/09/05-06 (A10001986)
+ *  2022/09/05-06 (A10001986)  [released by CS as 2.0]
  *    - Fix TC settings corruption when changing WiFi settings
  *    - Format flash file system if mounting fails
  *    - Reduce WiFi transmit power in AP mode (to avoid power issues with volume
@@ -693,6 +696,8 @@
  *    - Alarm data is now saved to file system, no longer to EEPROM
  *      (reduces wear on flash memory)
  *  2022/08/03-06 (A10001986)
+ *    - Jun 2022 code base imported from
+ *      https://github.com/CircuitSetup/Time-Circuits-Display/tree/587ec1c56fefe8f2a0e08e9a014dd10b810c217b
  *    - Alarm function added
  *    - 24-hour mode added for non-Americans (though not authentic at all)
  *    - Keypad menu item to show IP address added

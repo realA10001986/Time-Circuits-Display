@@ -38,7 +38,6 @@
 #define SPIFFS LittleFS
 #include <LittleFS.h>
 #endif
-#include <EEPROM.h>
 
 #include "tc_settings.h"
 #include "tc_menus.h"
@@ -144,9 +143,6 @@ void settings_setup()
     // Pre-maturely use ENTER button (initialized again in keypad_setup())
     pinMode(ENTER_BUTTON_PIN, INPUT_PULLUP);
     delay(20);
-
-    // Init our EEPROM
-    EEPROM.begin(512);
 
     #ifdef TC_DBG
     Serial.printf("%s: Mounting flash FS... ", funcName);
@@ -759,16 +755,6 @@ bool loadCurVolume()
     } else {
         if(SPIFFS.exists(volCfgName)) {
             haveConfigFile = (configFile = SPIFFS.open(volCfgName, "r"));
-        } else {
-            // Transitional, no longer saved to EEPROM
-            uint8_t loadBuf[2];
-            loadBuf[0] = EEPROM.read(SWVOL_PREF);
-            loadBuf[1] = EEPROM.read(SWVOL_PREF + 1) ^ 0xff;
-            if(loadBuf[0] == loadBuf[1]) {
-                if((loadBuf[0] >= 0 && loadBuf[0] <= 19) || loadBuf[0] == 255) {
-                    curVolume = loadBuf[0];
-                }
-            }
         }
     }
 
@@ -788,8 +774,6 @@ bool loadCurVolume()
 
     if(writedefault) {
         Serial.printf("%s: %s\n", funcName, badConfig);
-        // Do not set a default here, EEPROM-loaded value
-        // might be saved to new file here.
         saveCurVolume();
     }
 

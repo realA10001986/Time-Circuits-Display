@@ -41,13 +41,13 @@ class clockDisplay {
 
     public:
 
-        clockDisplay(uint8_t did, uint8_t address, int saveAddress);
+        clockDisplay(uint8_t did, uint8_t address);
         void begin();
         void on();
         void onCond();
         void off();
         void realLampTest();
-        void lampTest();
+        void lampTest(bool randomize = false);
 
         void clearBuf();
 
@@ -157,7 +157,6 @@ class clockDisplay {
 
         uint8_t  _did = 0;
         uint8_t  _address = 0;
-        int      _saveAddress = -1;
         uint16_t _displayBuffer[8];     // Segments to make current time
 
         uint16_t _year = 2021;          // keep track of these

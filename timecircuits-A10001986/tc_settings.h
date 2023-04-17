@@ -39,7 +39,7 @@ extern uint8_t musFolderNum;
 #define DEF_TIMES_PERS      0     // 0-1;  Default: 0 = TimeTravel not persistent
 #define DEF_ALARM_RTC       1     // 0-1;  Default: 1 = Alarm is RTC-based (otherwise 0 = presentTime-based)
 #define DEF_PLAY_INTRO      1     // 0-1;  Default: 1 = Play intro
-#define DEF_MODE24          0     // 0-1;  Default: 0=12-hour-mode, 1=24-hour-mode
+#define DEF_MODE24          0     // 0-1;  Default: 0 = 12-hour-mode
 #define DEF_BEEP            0     // 0-1:  Default: 0 = annoying beep(tm) off by default
 #define DEF_AUTOROTTIMES    1     // 0-5;  Default: Auto-rotate every 5th minute
 #define DEF_HOSTNAME        "timecircuits"
@@ -50,9 +50,9 @@ extern uint8_t musFolderNum;
 #define DEF_WIFI_PRETRY     1     // Default: Nightly, periodic WiFi reconnection attempts for time sync
 #define DEF_NTP_SERVER      "pool.ntp.org"
 #define DEF_TIMEZONE        "UTC0"// Default: UTC; Posix format
-#define DEF_BRIGHT_DEST     15    // 1-15; Default: max brightness
-#define DEF_BRIGHT_PRES     15
-#define DEF_BRIGHT_DEPA     15
+#define DEF_BRIGHT_DEST     10    // 1-15; Default: medium brightness
+#define DEF_BRIGHT_PRES     10
+#define DEF_BRIGHT_DEPA     10
 #define DEF_AUTONM          0     // Default: AutoNM disabled
 #define DEF_AUTONM_PRESET   0     
 #define DEF_AUTONM_ON       0     // Default: Both 0
@@ -62,19 +62,19 @@ extern uint8_t musFolderNum;
 #define DEF_LT_OFF          1     // Default: Last dep. time off in night mode
 #define DEF_FAKE_PWR        0     // 0-1;  Default: 0 = Do not use external fake "power" switch
 #define DEF_ETT_DELAY       0     // in ms; Default 0: ETT immediately
-#define DEF_ETT_LONG        0     // 0: Ext. TT short (reentry), 1: long
+#define DEF_ETT_LONG        1     // 0: Ext. TT short (reentry), 1: long
 #define DEF_USE_SPEEDO      0     // 0: Don't use speedo part of time travel sequence
 #define DEF_SPEEDO_TYPE     SP_MIN_TYPE  // Default display type
 #define DEF_SPEEDO_FACT     2.0   // Speedo factor (1.0 actual DeLorean figures; >1.0 faster, <1.0 slower)
-#define DEF_BRIGHT_SPEEDO   15    // Default: Max. brightness
+#define DEF_BRIGHT_SPEEDO   15    // Default: Max. brightness for speed
 #define DEF_USE_GPS         0     // 0: No i2c GPS module
 #define DEF_USE_GPS_SPEED   0     // 0: Do not use GPS speed on speedo display
 #define DEF_USE_TEMP        0     // 0: No i2c temperature/humidity sensor
 #define DEF_DISP_TEMP       1     // 1: Display temperature (if available) on speedo
-#define DEF_TEMP_BRIGHT     3     // Default temp brightness
-#define DEF_TEMP_OFF_NM     1     // Default: temp off in night mode
-#define DEF_TEMP_UNIT       0     // Default: temp unit Fahrenheit
-#define DEF_TEMP_OFFS       0.0   // Default temp offset 0.0
+#define DEF_TEMP_BRIGHT     3     // Default temperature brightness
+#define DEF_TEMP_OFF_NM     1     // Default: temperature off in night mode
+#define DEF_TEMP_UNIT       0     // Default: temperature unit Fahrenheit
+#define DEF_TEMP_OFFS       0.0   // Default: temperature offset 0.0
 #define DEF_USE_LIGHT       0     // Default: No i2c light sensor
 #define DEF_LUX_LIMIT       3     // Default Lux for night mode
 #define DEF_USE_ETTO        0     // 0: No external props
@@ -126,8 +126,8 @@ struct Settings {
     char tempOffs[6]        = MS(DEF_TEMP_OFFS);
 #endif
 #ifdef TC_HAVELIGHT
-    char useLight[4]         = MS(DEF_USE_LIGHT);
-    char luxLimit[8]         = MS(DEF_LUX_LIMIT);
+    char useLight[4]        = MS(DEF_USE_LIGHT);
+    char luxLimit[8]        = MS(DEF_LUX_LIMIT);
 #endif
 #ifdef TC_HAVESPEEDO
     char useSpeedo[4]       = MS(DEF_USE_SPEEDO);
@@ -150,7 +150,6 @@ struct Settings {
     char shuffle[4]         = MS(DEF_SHUFFLE);
     char CfgOnSD[4]         = MS(DEF_CFG_ON_SD);
     char sdFreq[4]          = MS(DEF_SD_FREQ);
-    char copyAudio[12]      = "";   // never loaded or saved!
 };
 
 // Maximum delay for incoming tt trigger

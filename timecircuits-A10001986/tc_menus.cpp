@@ -599,7 +599,9 @@ void enter_menu()
         // Now save
         if(!checkTimeOut()) {
 
-            presentTime.showTextDirect(StrSaving);
+            destinationTime.showTextDirect(StrSaving);
+            presentTime.off();
+            departedTime.off();
 
             uint8_t dtbri2 = destinationTime.getBrightness();
             uint8_t ptbri2 = presentTime.getBrightness();

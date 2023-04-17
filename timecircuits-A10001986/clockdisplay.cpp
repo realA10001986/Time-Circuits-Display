@@ -28,7 +28,6 @@
 
 #include <Arduino.h>
 #include <Wire.h>
-#include <EEPROM.h>
 
 #include "clockdisplay.h"
 #include "tc_font.h"
@@ -80,12 +79,11 @@ static const char *fnEEPROM[3] = {
     "/tcddt", "/tcdpt", "/tcdlt"
 };
 
-// Store i2c address and eeprom data location
-clockDisplay::clockDisplay(uint8_t did, uint8_t address, int saveAddress)
+// Store i2c address and display ID
+clockDisplay::clockDisplay(uint8_t did, uint8_t address)
 {
     _did = did;
     _address = address;
-    _saveAddress = saveAddress;
 }
 
 // Start the display
@@ -127,7 +125,7 @@ void clockDisplay::off()
 void clockDisplay::realLampTest()
 {
     Wire.beginTransmission(_address);
-    Wire.write(0x00);  // start at address 0x0
+    Wire.write(0x00);  // start address
 
     for(int i = 0; i < CD_BUF_SIZE*2; i++) {
         Wire.write(0xff);
@@ -137,14 +135,24 @@ void clockDisplay::realLampTest()
 
 // Turn on some LEDs
 // Used for effects and brightness keypad menu
-void clockDisplay::lampTest()
+void clockDisplay::lampTest(bool randomize)
 {
     Wire.beginTransmission(_address);
-    Wire.write(0x00);  // start at address 0x0
+    Wire.write(0x00);  // start address
 
-    for(int i = 0; i < CD_BUF_SIZE*2; i++) {
-        Wire.write(0x55);
+    if(randomize) {
+        uint32_t rnd = esp_random();
+        for(int i = 0; i < CD_BUF_SIZE; i++) {
+            Wire.write(((rand() % 0x7f) ^ rnd) & 0x7f);
+            Wire.write((((rand() % 0x7f) ^ (rnd >> 8))) & 0x77);
+        }
+    } else {
+        for(int i = 0; i < CD_BUF_SIZE; i++) {
+            Wire.write(0xaa);
+            Wire.write(0x55);
+        }
     }
+    
     Wire.endTransmission();
 }
 
@@ -186,7 +194,7 @@ uint8_t clockDisplay::setBrightnessDirect(uint8_t level)
     if(level > 15)
         level = 15;
 
-    directCmd(0xE0 | level);  // Dimming command
+    directCmd(0xE0 | level);
 
     return level;
 }
@@ -239,7 +247,7 @@ bool clockDisplay::isRTC()
 // Set the displayed time with supplied DateTime object, ignores timeDifference
 void clockDisplay::setDateTime(DateTime dt)
 {
-    // ATTN: DateTime implemention does not work for years < 2000, > 2099!
+    // ATTN: DateTime does not work for years < 2000, > 2099!
 
     setYear(dt.year());
     setMonth(dt.month());
@@ -337,7 +345,7 @@ void clockDisplay::showAnimate2()
         return;
 
     Wire.beginTransmission(_address);
-    Wire.write(0x00);  // start at address 0x0
+    Wire.write(0x00);  // start address
     for(int i = 0; i < CD_BUF_SIZE; i++) {
         Wire.write(_displayBuffer[i] & 0xFF);
         Wire.write(_displayBuffer[i] >> 8);
@@ -348,8 +356,46 @@ void clockDisplay::showAnimate2()
 
 // Set fields in buffer --------------------------------------------------------
 
+void clockDisplay::setMonth(int monthNum)
+{
+    if(monthNum < 1 || monthNum > 12) {
+        #ifdef TC_DBG
+        Serial.printf("Clockdisplay: setMonth: Bad month: %d\n", monthNum);
+        #endif
+        monthNum = (monthNum > 12) ? 12 : 1;
+    }
 
-// Set yearOffset
+    _month = monthNum;
+
+#ifdef IS_ACAR_DISPLAY
+    _displayBuffer[CD_MONTH_POS] = makeNum(monthNum);
+#else
+    monthNum--;
+    _displayBuffer[CD_MONTH_POS]     = getLEDAlphaChar(months[monthNum][0]);
+    _displayBuffer[CD_MONTH_POS + 1] = getLEDAlphaChar(months[monthNum][1]);
+    _displayBuffer[CD_MONTH_POS + 2] = getLEDAlphaChar(months[monthNum][2]);
+#endif
+}
+
+void clockDisplay::setDay(int dayNum)
+{
+    int maxDay = daysInMonth(_month, _year-_yearoffset);
+
+    // It is essential that setDay is called AFTER year
+    // and month have been set!
+
+    if(dayNum < 1 || dayNum > maxDay) {
+        #ifdef TC_DBG
+        Serial.printf("Clockdisplay: setDay: Bad day: %d\n", dayNum);
+        #endif
+        dayNum = (dayNum < 1) ? 1 : maxDay;
+    }
+
+    _day = dayNum;
+
+    _displayBuffer[CD_DAY_POS] = makeNum(dayNum);
+}
+
 void clockDisplay::setYearOffset(int16_t yearOffs)
 {
     _yearoffset = yearOffs;
@@ -361,7 +407,6 @@ void clockDisplay::setYearOffset(int16_t yearOffs)
     #endif
 }
 
-// Place LED pattern in year position in buffer
 void clockDisplay::setYear(uint16_t yearNum)
 {
     if((int16_t)yearNum - _yearoffset < 0) {    // ny0: < 1
@@ -389,49 +434,6 @@ void clockDisplay::setYear(uint16_t yearNum)
     #endif
 }
 
-// Place LED pattern in month position in buffer
-void clockDisplay::setMonth(int monthNum)
-{
-    if(monthNum < 1 || monthNum > 12) {
-        #ifdef TC_DBG
-        Serial.printf("Clockdisplay: setMonth: Bad month: %d\n", monthNum);
-        #endif
-        monthNum = (monthNum > 12) ? 12 : 1;
-    }
-
-    _month = monthNum;
-
-#ifdef IS_ACAR_DISPLAY
-    _displayBuffer[CD_MONTH_POS] = makeNum(monthNum);
-#else
-    monthNum--;
-    _displayBuffer[CD_MONTH_POS]     = getLEDAlphaChar(months[monthNum][0]);
-    _displayBuffer[CD_MONTH_POS + 1] = getLEDAlphaChar(months[monthNum][1]);
-    _displayBuffer[CD_MONTH_POS + 2] = getLEDAlphaChar(months[monthNum][2]);
-#endif
-}
-
-// Place LED pattern in day position in buffer
-void clockDisplay::setDay(int dayNum)
-{
-    int maxDay = daysInMonth(_month, _year-_yearoffset);
-
-    // It is essential that setDay is called AFTER year
-    // and month have been set!
-
-    if(dayNum < 1 || dayNum > maxDay) {
-        #ifdef TC_DBG
-        Serial.printf("Clockdisplay: setDay: Bad day: %d\n", dayNum);
-        #endif
-        dayNum = (dayNum < 1) ? 1 : maxDay;
-    }
-
-    _day = dayNum;
-
-    _displayBuffer[CD_DAY_POS] = makeNum(dayNum);
-}
-
-// Place LED pattern in hour position in buffer.
 void clockDisplay::setHour(uint16_t hourNum)
 {
     if(hourNum > 23) {
@@ -464,7 +466,6 @@ void clockDisplay::setHour(uint16_t hourNum)
     // AM/PM will be set on show() to avoid being overwritten
 }
 
-// Place LED pattern in minute position in buffer
 void clockDisplay::setMinute(int minNum)
 {
     if(minNum < 0 || minNum > 59) {
@@ -484,12 +485,6 @@ void clockDisplay::setMinute(int minNum)
     }
 }
 
-void clockDisplay::setDST(int8_t isDST)
-{
-    if(isRTC()) {
-        _isDST = isDST;
-    }
-}
 
 void clockDisplay::setColon(bool col)
 {
@@ -500,6 +495,13 @@ void clockDisplay::setColon(bool col)
     _colon = col;
 }
 
+
+void clockDisplay::setDST(int8_t isDST)
+{
+    if(isRTC()) {
+        _isDST = isDST;
+    }
+}
 
 // Query data ------------------------------------------------------------------
 
@@ -546,8 +548,6 @@ int8_t clockDisplay::getDST()
 
 // Put data directly on display (bypass buffer) --------------------------------
 
-
-// clears the display RAM and only shows the provided month
 void clockDisplay::showOnlyMonth(int monthNum)
 {
     clearDisplay();
@@ -566,7 +566,6 @@ void clockDisplay::showOnlyMonth(int monthNum)
 #endif
 }
 
-// clears the display RAM and only shows the provided day
 void clockDisplay::showOnlyDay(int dayNum)
 {
     clearDisplay();
@@ -574,7 +573,6 @@ void clockDisplay::showOnlyDay(int dayNum)
     directCol(CD_DAY_POS, makeNum(dayNum));
 }
 
-// clears the display RAM and only shows the provided year
 void clockDisplay::showOnlyYear(int yearNum)
 {
     clearDisplay();
@@ -586,7 +584,6 @@ void clockDisplay::showOnlyYear(int yearNum)
     directCol(CD_YEAR_POS + 1, makeNum(yearNum % 100));
 }
 
-// clears the display RAM and only shows the provided hour
 void clockDisplay::showOnlyHour(int hourNum, bool force24)
 {
     clearDisplay();
@@ -612,7 +609,6 @@ void clockDisplay::showOnlyHour(int hourNum, bool force24)
     }
 }
 
-// clears the display RAM and only shows the provided minute
 void clockDisplay::showOnlyMinute(int minuteNum)
 {
     clearDisplay();
@@ -624,7 +620,7 @@ void clockDisplay::showOnlyMinute(int minuteNum)
 // Special purpose -------------------------------------------------------------
 
 
-// Shows the given text
+// Show the given text
 void clockDisplay::showTextDirect(const char *text, bool clear, bool corr6)
 {
     int idx = 0, pos = CD_MONTH_POS;
@@ -678,7 +674,7 @@ void clockDisplay::showTextDirect(const char *text, bool clear, bool corr6)
     _corr6 = false;
 }
 
-// clears the display RAM and only shows the provided 2 numbers (parts of IP)
+// Clear the display RAM and only show the provided 2 numbers (parts of IP)
 void clockDisplay::showHalfIPDirect(int a, int b, bool clear)
 {
     char buf[16];
@@ -697,7 +693,7 @@ void clockDisplay::showHalfIPDirect(int a, int b, bool clear)
     showTextDirect(buf, clear);
 }
 
-// Shows a text part and a number
+// Show a text part and a number
 void clockDisplay::showSettingValDirect(const char* setting, int8_t val, bool clear)
 {
     showTextDirect(setting, clear);
@@ -786,9 +782,6 @@ bool clockDisplay::save()
 {
     uint8_t savBuf[10]; // Sic! Sum written to last byte by saveNVMData
 
-    if(_saveAddress < 0)
-        return false;
-
     if(!isRTC()) {
 
         // Non-RTC: Save time
@@ -841,7 +834,7 @@ bool clockDisplay::saveYOffs()
     uint8_t savBuf[10];  // Sic! Sum written to last byte by saveNVMData
     int i;
 
-    if(!isRTC() || _saveAddress < 0)
+    if(!isRTC())
         return false;
 
     // RTC: Save yearoffs; zero timeDifference
@@ -892,12 +885,6 @@ bool clockDisplay::saveLastYear(uint16_t theYear)
         writeFileToSD(fnLastYear, savBuf, 4);
     } else {
         writeFileToFS(fnLastYear, savBuf, 4);
-        /*
-        for(uint8_t i = 0; i < 4; i++) {
-            EEPROM.write(PRES_LY_PREF + i, savBuf[i]);
-        }
-        EEPROM.commit();
-        */
     }
 
     _lastWrittenLY = theYear;
@@ -912,9 +899,6 @@ bool clockDisplay::saveLastYear(uint16_t theYear)
 bool clockDisplay::load(int initialBrightness)
 {
     uint8_t loadBuf[10];
-
-    if(_saveAddress < 0)
-        return false;
 
     if(initialBrightness >= 0) {
         if(initialBrightness > 15)
@@ -1006,7 +990,7 @@ int16_t clockDisplay::loadYOffs()
 {
     uint8_t loadBuf[10];
 
-    if(_saveAddress < 0 || !isRTC())
+    if(!isRTC())
         return -11111;
 
     if(loadNVMData(loadBuf)) {
@@ -1024,7 +1008,7 @@ int8_t clockDisplay::loadDST()
 {
     uint8_t loadBuf[10];
 
-    if(_saveAddress < 0 || !isRTC())
+    if(!isRTC())
         return -2;
 
     if(loadNVMData(loadBuf)) {
@@ -1039,7 +1023,6 @@ int8_t clockDisplay::loadDST()
 int16_t clockDisplay::loadLastYear()
 {
     uint8_t loadBuf[4];
-    bool writeNew = false;
 
     if(!isRTC())
         return -2;
@@ -1049,27 +1032,11 @@ int16_t clockDisplay::loadLastYear()
     if(FlashROMode) {
         readFileFromSD(fnLastYear, loadBuf, 4);
     } else {
-        if(!readFileFromFS(fnLastYear, loadBuf, 4)) {
-            for(uint8_t i = 0; i < 4; i++) {
-                loadBuf[i] = EEPROM.read(PRES_LY_PREF + i);
-            }
-            writeNew = true;
-        }
+        readFileFromFS(fnLastYear, loadBuf, 4);
     }
 
     if( (loadBuf[0] == (loadBuf[2] ^ 0xff)) &&
         (loadBuf[1] == (loadBuf[3] ^ 0xff)) ) {
-
-        if(writeNew) {
-            #ifdef TC_DBG
-            Serial.println("loadLastYear: Transitioning to flash FS");
-            #endif
-            if(writeFileToFS(fnLastYear, loadBuf, 4)) {
-                // Invalidate EEPROM contents
-                EEPROM.write(PRES_LY_PREF, loadBuf[0] + 1);
-                EEPROM.commit();
-            }
-        }
 
         return (int16_t)((loadBuf[1] << 8) | loadBuf[0]);
 
@@ -1110,12 +1077,6 @@ bool clockDisplay::saveNVMData(uint8_t *savBuf, bool noReadChk)
             return writeFileToSD(fnEEPROM[_did], savBuf, 10);
         } else {
             return writeFileToFS(fnEEPROM[_did], savBuf, 10);
-            /*
-            for(uint8_t i = 0; i < 10; i++) {
-               EEPROM.write(_saveAddress + i, savBuf[i]);
-            }
-            EEPROM.commit();
-            */
         }
     }
     return true;
@@ -1125,9 +1086,6 @@ bool clockDisplay::loadNVMData(uint8_t *loadBuf)
 {
     uint16_t sum = 0;
     uint8_t  mxor = 0x55;
-    bool     newSum = true;
-    bool     writeNew = false;
-    bool     sumOK = false;
 
     memset(loadBuf, 0, 10);
 
@@ -1138,35 +1096,13 @@ bool clockDisplay::loadNVMData(uint8_t *loadBuf)
     if(FlashROMode) {
         readFileFromSD(fnEEPROM[_did], loadBuf, 10);
     } else {
-        if(!readFileFromFS(fnEEPROM[_did], loadBuf, 10)) {
-            for(uint8_t i = 0; i < 10; i++) {
-                loadBuf[i] = EEPROM.read(_saveAddress + i);
-            }
-            if(!isRTC()) {
-                newSum = false;
-                mxor = 0x00;
-            }
-            writeNew = true;
-        }
+        readFileFromFS(fnEEPROM[_did], loadBuf, 10);
     }
     for(uint8_t i = 0; i < 9; i++) {
         sum += (loadBuf[i] ^ mxor);
     }
 
-    sumOK = newSum ? ((sum & 0xff) == loadBuf[9]) : ((sum != 0) && ((sum & 0xff) == loadBuf[9]));
-
-    if(writeNew && sumOK) {
-        #ifdef TC_DBG
-        Serial.println("loadNVMData: Transitioning to flash FS");
-        #endif
-        if(saveNVMData(loadBuf, true)) {
-            // Invalidate EEPROM contents
-            EEPROM.write(_saveAddress, loadBuf[0] + 1);
-            EEPROM.commit();
-        }
-    }
-    
-    return sumOK;
+    return ((sum & 0xff) == loadBuf[9]);
 }
 
 // Returns bit pattern for provided value 0-9 or number provided as a char '0'-'9'
@@ -1281,7 +1217,7 @@ void clockDisplay::directCol(int col, int segments)
 void clockDisplay::clearDisplay()
 {
     Wire.beginTransmission(_address);
-    Wire.write(0x00);  // start at address 0x0
+    Wire.write(0x00);  // start address
 
     for(int i = 0; i < CD_BUF_SIZE*2; i++) {
         Wire.write(0x0);
@@ -1332,7 +1268,7 @@ void clockDisplay::showInt(bool animate)
     (_colon) ? colonOn() : colonOff();
 
     Wire.beginTransmission(_address);
-    Wire.write(0x00);  // start at address 0x0
+    Wire.write(0x00);  // start address
 
     if(animate) {
         for(i = 0; i < CD_MONTH_SIZE; i++) {

@@ -7,8 +7,7 @@
  * RTC Class (DS3231/PCF2129 RTC handling) and DateTime Class
  * 
  * DateTime mirrors the features of RTC; it only works for dates
- * from 1/1/2000 to 31/12/2099. Idea taken from RTCLib by
- * Adafruit.
+ * from 1/1/2000 to 31/12/2099. Inspired by Adafruit's RTCLib.
  * -------------------------------------------------------------------
  * License: MIT
  *

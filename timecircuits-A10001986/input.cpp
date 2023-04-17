@@ -6,8 +6,8 @@
  *
  * Keypad_I2C Class, TCButton Class: I2C-Keypad and Button handling
  *
- * Parts of this are customized minimizations of parts of the Keypad 
- * and the OneButton libraries.
+ * Parts of this code are customized, minimized derivates of parts 
+ * of the Keypad and the OneButton libraries.
  * Authors of Keypad library: Mark Stanley, Alexander Brevig
  * Author of OneButton library: Matthias Hertel
  * -------------------------------------------------------------------
