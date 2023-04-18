@@ -93,6 +93,8 @@
 
 /*  Changelog
  *   
+ *  2023/04/18 (A10001986)
+ *    - Properly respect beepMode 1
  *  2023/04/17 (A10001986)
  *    - Remove deprecated EEPROM stuff
  *  2023/04/16 (A10001986)
