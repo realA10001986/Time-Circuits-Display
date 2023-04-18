@@ -1293,7 +1293,8 @@ void time_loop()
                     startupSound = true;
                     FPBUnitIsOn = true;
                     leds_on();
-                    startBeepTimer();
+                    if(beepMode >= 2)      startBeepTimer();
+                    else if(beepMode == 1) muteBeep = false;
                     destinationTime.setBrightness(255); // restore brightnesses
                     presentTime.setBrightness(255);     // in case we got switched
                     departedTime.setBrightness(255);    // off during time travel
