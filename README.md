@@ -610,13 +610,15 @@ The Config Portal allows configuring a delay and the type of sequence played, in
 
 ## Speedometer
 
-The firmware supports a speedometer display connected via i2c (slave address 0x70) as part of the time travel sequence. Unfortunately, CircuitSetup's upcoming Speedo display is yet in the design stage, so you are on your own to build one for the time being. There are, however, various readily available LED segment displays with i2c break-outs from Adafruit and Seeed (Grove), that can be used as a basis. Adafruit [878](https://www.adafruit.com/product/878), [1270](https://www.adafruit.com/product/1270) and [1911](https://www.adafruit.com/product/1911), as well as Grove 0.54" 14-segment [2-digit](https://www.seeedstudio.com/Grove-0-54-Red-Dual-Alphanumeric-Display-p-4031.html) or [4-digit](https://www.seeedstudio.com/Grove-0-54-Red-Quad-Alphanumeric-Display-p-4032.html) alphanumeric displays are supported. (The product numbers vary with color, the numbers here are the red ones.)
+The firmware supports a speedometer display connected via i2c (slave address 0x70) as part of the time travel sequence. Unfortunately, CircuitSetup's upcoming Speedo display is yet in the design stage, so you are on your own to build one for the time being.
+
+What you need is a box, the LED segment displays and a HT16K33-based PCB that allows accessing the LED displays via i2c. There are various readily available LED segment displays with suitable i2c break-outs from Adafruit and Seeed (Grove) that can be used as a basis. Adafruit [878](https://www.adafruit.com/product/878), [1270](https://www.adafruit.com/product/1270) and [1911](https://www.adafruit.com/product/1911), as well as Grove 0.54" 14-segment [2-digit](https://www.seeedstudio.com/Grove-0-54-Red-Dual-Alphanumeric-Display-p-4031.html) or [4-digit](https://www.seeedstudio.com/Grove-0-54-Red-Quad-Alphanumeric-Display-p-4032.html) alphanumeric displays are supported. (The product numbers vary with color, the numbers here are the red ones.)
 
 | [![Watch the video](https://img.youtube.com/vi/opAZugb_W1Q/0.jpg)](https://youtu.be/opAZugb_W1Q) |
 |:--:|
 | Click to watch the video |
 
-The speedo display shown in this video is based on a fairly well-designed stand-alone replica purchased on ebay. I removed the Arduino Uno inside and wired the LED segments to an Adafruit i2c backpack (from the Adafruit 878 product). (The switch was made by me, see [here](https://github.com/realA10001986/Time-Circuits-Display/wiki/Time-Circuits-Switch))
+The speedo display shown in this video is based on a fairly well-designed stand-alone replica I purchased on ebay. I removed the electronics inside and wired the LED segments to an Adafruit i2c backpack (from the Adafruit 878 product) and connected it to the TCD. Yes, it is really that simple. (The switch was made by me, see [here](https://github.com/realA10001986/Time-Circuits-Display/wiki/Time-Circuits-Switch), it uses the [Fake Power Switch](#fake-power-switch) feature of the TCD.)
 
 There are two special options in the Speedo Display Type drop-down in the Config Portal: *Ada 1911 (left tube)* and *Ada 878 (left tube)*. These two can be used if you connect only one 2-digit-tube to the respective Adafruit i2c backpack, as I did in case of my speedo replica as well as my [Wall Clock](#my-custom-made-time-circuits-wall-clock).
 
