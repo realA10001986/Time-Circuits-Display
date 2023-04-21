@@ -699,6 +699,7 @@ quitMenu:
         if(!isWcMode() || !WcHaveTZ1) destinationTime.setFromStruct(&destinationTimes[autoTime]);
         if(!isWcMode() || !WcHaveTZ2) departedTime.setFromStruct(&departedTimes[autoTime]);
     }
+    destShowAlt = depShowAlt = 0; // Reset TZ-Name-Animation
 
     // Done, turn off displays
     allOff();

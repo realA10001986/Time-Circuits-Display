@@ -250,6 +250,9 @@ bool        haveWcMode = false;
 static bool wcMode     = false;
 static int  wcLastMin  = -1;
 bool        triggerWC  = false;
+bool        haveTZName1 = false;
+bool        haveTZName2 = false;
+uint8_t     destShowAlt = 0, depShowAlt = 0;
 
 // For NTP/GPS
 static struct        tm _timeinfo;
@@ -882,7 +885,16 @@ void time_setup()
             WcHaveTZ2 = true;
         }
     }
-    haveWcMode = (WcHaveTZ1 || WcHaveTZ2);
+    if((haveWcMode = (WcHaveTZ1 || WcHaveTZ2))) {
+        if(WcHaveTZ1 && settings.timeZoneNDest[0] != 0) {
+            destinationTime.setAltText(settings.timeZoneNDest);
+            haveTZName1 = true;
+        }
+        if(WcHaveTZ2 && settings.timeZoneNDep[0] != 0) {
+            departedTime.setAltText(settings.timeZoneNDep);
+            haveTZName2 = true;
+        }
+    }
     #ifdef TC_DBG
     Serial.printf("time_setup: haveWcMode %d\n", haveWcMode);
     #endif
@@ -1271,7 +1283,7 @@ void time_setup()
  */
 void time_loop()
 {
-    unsigned long millisNow = millis();
+    unsigned long millisNow = millis();    
     #ifdef TC_DBG
     int dbgLastMin;
     #endif
@@ -1905,9 +1917,16 @@ void time_loop()
 
             // Handle WC mode (load dates/times for dest/dep display)
             // (Restoring not needed, done elsewhere)
-            if(isWcMode() && ((dt.minute() != wcLastMin) || triggerWC)) {
-                wcLastMin = dt.minute();
-                setDatesTimesWC(dt);
+            if(isWcMode()) {
+                if((dt.minute() != wcLastMin) || triggerWC) {
+                    wcLastMin = dt.minute();
+                    setDatesTimesWC(dt);
+                }
+                // Put city/loc name on for 3 seconds
+                if(dt.second() % 10 == 3) {
+                    if(haveTZName1) destShowAlt = 3*2;
+                    if(haveTZName2) depShowAlt = 3*2;
+                }
             }
             triggerWC = false;
 
@@ -2223,9 +2242,9 @@ void time_loop()
             } else {
             #endif
                 if(!specDisp) {
-                    destinationTime.show();
+                    destShowAlt ? destinationTime.showAlt() : destinationTime.show();
                 }
-                departedTime.show();
+                depShowAlt ? departedTime.showAlt() : departedTime.show();
             #ifdef TC_HAVETEMP
             }
             #endif
@@ -2233,6 +2252,9 @@ void time_loop()
             presentTime.show();
             
         }
+
+        if(destShowAlt) destShowAlt--;
+        if(depShowAlt) depShowAlt--;
     } 
 }
 

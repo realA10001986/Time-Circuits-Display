@@ -344,6 +344,14 @@ static bool read_settings(File configFile)
             memset(settings.timeZoneDep, 0, sizeof(settings.timeZoneDep));
             strncpy(settings.timeZoneDep, json["timeZoneDep"], sizeof(settings.timeZoneDep) - 1);
         } else wd = true;
+        if(json["timeZoneNDest"]) {
+            memset(settings.timeZoneNDest, 0, sizeof(settings.timeZoneNDest));
+            strncpy(settings.timeZoneNDest, json["timeZoneNDest"], sizeof(settings.timeZoneNDest) - 1);
+        } else wd = true;
+        if(json["timeZoneNDep"]) {
+            memset(settings.timeZoneNDep, 0, sizeof(settings.timeZoneNDep));
+            strncpy(settings.timeZoneNDep, json["timeZoneNDep"], sizeof(settings.timeZoneNDep) - 1);
+        } else wd = true;
 
         wd |= CopyCheckValidNumParm(json["destTimeBright"], settings.destTimeBright, sizeof(settings.destTimeBright), 0, 15, DEF_BRIGHT_DEST);
         wd |= CopyCheckValidNumParm(json["presTimeBright"], settings.presTimeBright, sizeof(settings.presTimeBright), 0, 15, DEF_BRIGHT_PRES);
@@ -447,6 +455,8 @@ void write_settings()
 
     json["timeZoneDest"] = settings.timeZoneDest;
     json["timeZoneDep"] = settings.timeZoneDep;
+    json["timeZoneNDest"] = settings.timeZoneNDest;
+    json["timeZoneNDep"] = settings.timeZoneNDep;
     
     json["destTimeBright"] = settings.destTimeBright;
     json["presTimeBright"] = settings.presTimeBright;

@@ -93,8 +93,21 @@
 
 /*  Changelog
  *   
+ *  2023/04/21 (A10001986)
+ *    - Shrink the header gfx in CP to reduce page data size. WiFiManager builds the
+ *      page blob by concatenating Strings, lots of Strings. The big header was one
+ *      of the first Strings (hence "header"), which apparently lead to massive heap
+ *      fragmentation when repeatedly appending other Strings to it, and as a result, 
+ *      sometimes to a blank page in the browser, assumingly caused by a memory issue 
+ *      somewhere down the line.
+ *  2023/04/20 (A10001986)
+ *    - Add "city" (or location name) for World Clock time zones; will be displayed
+ *      for 3 seconds every 10 seconds. Keep empty to have the time displayed the
+ *      whole time (like before).
+ *    - Add tiny delay between BMx820 sensor read-outs
  *  2023/04/18 (A10001986)
  *    - Properly respect beepMode 1
+ *    - Better "beep" (less hissing)
  *  2023/04/17 (A10001986)
  *    - Remove deprecated EEPROM stuff
  *  2023/04/16 (A10001986)

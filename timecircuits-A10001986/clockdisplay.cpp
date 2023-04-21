@@ -48,8 +48,6 @@
 #define CD_AMPM_POS   CD_DAY_POS
 #define CD_COLON_POS  CD_YEAR_POS
 
-#define CD_BUF_SIZE   8     //      in words (16bit)
-
 extern bool     alarmOnOff;
 #ifdef TC_HAVEGPS
 extern bool     gpsHaveFix();
@@ -353,6 +351,48 @@ void clockDisplay::showAnimate2()
     Wire.endTransmission();
 }
 
+void clockDisplay::showAlt()
+{
+    showInt(false, true);
+}
+
+// Show the given text
+void clockDisplay::setAltText(const char *text)
+{
+    int idx = 0, pos = CD_MONTH_POS;
+    int temp = 0;
+
+#ifdef IS_ACAR_DISPLAY
+    while(text[idx] && pos < (CD_MONTH_POS+CD_MONTH_SIZE)) {
+        temp = getLED7AlphaChar(text[idx++]);
+        if(text[idx]) {
+            temp |= (getLED7AlphaChar(text[idx++]) << 8);
+        }
+        _displayBufferAlt[pos++] = temp;
+    }
+#else
+    while(text[idx] && pos < (CD_MONTH_POS+CD_MONTH_SIZE)) {
+        _displayBufferAlt[pos++] = getLEDAlphaChar(text[idx++]);
+    }
+#endif
+
+    while(pos < CD_DAY_POS) {
+        _displayBufferAlt[pos++] = 0;
+    }
+    
+    pos = CD_DAY_POS;
+    while(text[idx] && pos <= CD_MIN_POS) {
+        temp = getLED7AlphaChar(text[idx++]);
+        if(text[idx]) {
+            temp |= (getLED7AlphaChar(text[idx++]) << 8);
+        }
+        _displayBufferAlt[pos++] = temp;
+    }
+
+    while(pos <= CD_MIN_POS) {
+        _displayBufferAlt[pos++] = 0;
+    }
+}
 
 // Set fields in buffer --------------------------------------------------------
 
@@ -630,44 +670,34 @@ void clockDisplay::showTextDirect(const char *text, bool clear, bool corr6)
 
 #ifdef IS_ACAR_DISPLAY
     while(text[idx] && pos < (CD_MONTH_POS+CD_MONTH_SIZE)) {
-        temp = getLED7AlphaChar(text[idx]);
-        idx++;
+        temp = getLED7AlphaChar(text[idx++]);
         if(text[idx]) {
-            temp |= (getLED7AlphaChar(text[idx]) << 8);
-            idx++;
+            temp |= (getLED7AlphaChar(text[idx++]) << 8);
         }
-        directCol(pos, temp);
-        pos++;
+        directCol(pos++, temp);
     }
 #else
     while(text[idx] && pos < (CD_MONTH_POS+CD_MONTH_SIZE)) {
-        directCol(pos, getLEDAlphaChar(text[idx]));
-        idx++;
-        pos++;
+        directCol(pos++, getLEDAlphaChar(text[idx++]));
     }
 #endif
 
     while(pos < CD_DAY_POS) {
-        directCol(pos, 0);
-        pos++;
+        directCol(pos++, 0);
     }
     
     pos = CD_DAY_POS;
     while(text[idx] && pos <= CD_MIN_POS) {
-        temp = getLED7AlphaChar(text[idx]);
-        idx++;
+        temp = getLED7AlphaChar(text[idx++]);
         if(text[idx]) {
-            temp |= (getLED7AlphaChar(text[idx]) << 8);
-            idx++;
+            temp |= (getLED7AlphaChar(text[idx++]) << 8);
         }
-        directCol(pos, temp);
-        pos++;
+        directCol(pos++, temp);
     }
 
     if(clear) {
         while(pos <= CD_MIN_POS) {
-            directCol(pos, 0);
-            pos++;
+            directCol(pos++, 0);
         }
     }
     
@@ -1098,6 +1128,7 @@ bool clockDisplay::loadNVMData(uint8_t *loadBuf)
     } else {
         readFileFromFS(fnEEPROM[_did], loadBuf, 10);
     }
+
     for(uint8_t i = 0; i < 9; i++) {
         sum += (loadBuf[i] ^ mxor);
     }
@@ -1250,9 +1281,10 @@ bool clockDisplay::handleNM()
 }
 
 // Show the buffer
-void clockDisplay::showInt(bool animate)
+void clockDisplay::showInt(bool animate, bool Alt)
 {
     int i = 0;
+    uint16_t *db = Alt ? _displayBufferAlt : _displayBuffer;
 
     if(!handleNM())
         return;
@@ -1279,8 +1311,8 @@ void clockDisplay::showInt(bool animate)
     }
 
     for(; i < CD_BUF_SIZE; i++) {
-        Wire.write(_displayBuffer[i] & 0xFF);
-        Wire.write(_displayBuffer[i] >> 8);
+        Wire.write(db[i] & 0xFF);
+        Wire.write(db[i] >> 8);
     }
 
     Wire.endTransmission();

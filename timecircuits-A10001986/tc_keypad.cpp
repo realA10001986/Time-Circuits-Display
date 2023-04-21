@@ -600,6 +600,7 @@ void keypad_loop()
                         if(WcHaveTZ1) destinationTime.setFromStruct(&destinationTimes[autoTime]);
                         if(WcHaveTZ2) departedTime.setFromStruct(&departedTimes[autoTime]);
                     }
+                    destShowAlt = depShowAlt = 0; // Reset TZ-Name-Animation
                     validEntry = true;
                 } else {
                     invalidEntry = true;
@@ -995,6 +996,8 @@ void keypad_loop()
                 if(rcModeDepTime || wcModeDepTime) {
                     departedTime.showAnimate2();
                 }
+
+                destShowAlt = depShowAlt = 0; // Reset TZ-Name-Animation
 
             #ifdef TC_HAVETEMP
             }

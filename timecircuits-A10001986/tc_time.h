@@ -50,6 +50,7 @@ extern bool couldDST[3];
 extern bool haveWcMode;
 extern bool WcHaveTZ1;
 extern bool WcHaveTZ2;
+extern uint8_t destShowAlt, depShowAlt;
 
 extern bool syncTrigger;
 extern bool doAPretry;

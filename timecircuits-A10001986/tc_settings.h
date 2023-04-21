@@ -100,6 +100,8 @@ struct Settings {
     char timeZone[64]       = DEF_TIMEZONE;
     char timeZoneDest[64]   = "";
     char timeZoneDep[64]    = "";
+    char timeZoneNDest[16]  = "";
+    char timeZoneNDep[16]   = "";
     char destTimeBright[4]  = MS(DEF_BRIGHT_DEST);
     char presTimeBright[4]  = MS(DEF_BRIGHT_PRES);
     char lastTimeBright[4]  = MS(DEF_BRIGHT_DEPA);

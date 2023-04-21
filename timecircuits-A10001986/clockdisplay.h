@@ -37,6 +37,8 @@ struct dateStruct {
     uint8_t minute;
 };
 
+#define CD_BUF_SIZE   8  // Buffer size in words (16bit)
+
 class clockDisplay {
 
     public:
@@ -69,6 +71,9 @@ class clockDisplay {
         void show();
         void showAnimate1();
         void showAnimate2();
+
+        void showAlt();
+        void setAltText(const char *text);
 
         void setDateTime(DateTime dt);      // Set object date & time using a DateTime ignoring timeDiff
         void setDateTimeDiff(DateTime dt);  // Set object date & time using a DateTime plus/minus timeDiff
@@ -140,7 +145,7 @@ class clockDisplay {
 
         void clearDisplay();                    // clears display RAM
         bool handleNM();
-        void showInt(bool animate = false);
+        void showInt(bool animate = false, bool Alt = false);
 
         void colonOn();
         void colonOff();
@@ -157,7 +162,8 @@ class clockDisplay {
 
         uint8_t  _did = 0;
         uint8_t  _address = 0;
-        uint16_t _displayBuffer[8];     // Segments to make current time
+        uint16_t _displayBuffer[CD_BUF_SIZE];
+        uint16_t _displayBufferAlt[CD_BUF_SIZE];
 
         uint16_t _year = 2021;          // keep track of these
         int16_t  _yearoffset = 0;       // Offset for faking years < 2000, > 2098
