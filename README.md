@@ -127,7 +127,7 @@ Set the interval to OFF (0) to disable Time-cycling.
 
 ### World Clock mode
 
-World Clock (WC) mode is another kind of "decorative" mode where the red and yellow displays show not some stale times, but current time in other time zones. These time zones need to be configured in Config Portal. At least one time zone (for either the red or yellow display) must be configured in order to use WC mode.
+World Clock (WC) mode is another kind of "decorative" mode where the red and yellow displays show not some stale times, but current time in other time zones. These time zones need to be configured in Config Portal. At least one time zone (for either the red or yellow display) must be configured in order to use WC mode. Optionally, also names for cities/locations for these time zones can be entered in the Config Portal; if a name for a time zone is configured, this name and the time will alternately be shown; if no name is configured, time will be shown permanently. Note that names can only contain letters a-z, numbers 0-9, space and minus.
 
 WC mode is toggled by typing "112" followed by ENTER. 
 
