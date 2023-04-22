@@ -8,18 +8,26 @@
  * Time and Main Controller
  *
  * -------------------------------------------------------------------
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * License: MIT
+ * 
+ * Permission is hereby granted, free of charge, to any person 
+ * obtaining a copy of this software and associated documentation 
+ * files (the "Software"), to deal in the Software without restriction, 
+ * including without limitation the rights to use, copy, modify, 
+ * merge, publish, distribute, sublicense, and/or sell copies of the 
+ * Software, and to permit persons to whom the Software is furnished to 
+ * do so, subject to the following conditions:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * The above copyright notice and this permission notice shall be 
+ * included in all copies or substantial portions of the Software.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 #include "tc_global.h"
@@ -323,7 +331,7 @@ int8_t        autoTime = 0;  // Selects date/time from array below
 
 #ifndef TWPRIVATE //  ----------------- OFFICIAL
 
-dateStruct destinationTimes[NUM_AUTOTIMES] = {
+const dateStruct destinationTimes[NUM_AUTOTIMES] = {
     {1985, 10, 26,  1, 21},   // Einstein 1:20 -> 1:21
     {1955, 11,  5,  6,  0},   // Marty -> 1955
     {1985, 10, 26,  1, 24},   // Marty -> 1985
@@ -336,7 +344,7 @@ dateStruct destinationTimes[NUM_AUTOTIMES] = {
     {1885,  9,  2,  8,  0},   // Marty -> 1885
     {1985, 10, 27, 11,  0}    // Marty -> 1985
 };
-dateStruct departedTimes[NUM_AUTOTIMES] = {
+const dateStruct departedTimes[NUM_AUTOTIMES] = {
     {1985, 10, 26,  1, 20},   // Einstein 1:20 -> 1:21
     {1985, 10, 26,  1, 29},   // Marty -> 1955 (time assumed)
     {1955, 11, 12, 22,  4},   // Marty -> 1985
@@ -352,7 +360,7 @@ dateStruct departedTimes[NUM_AUTOTIMES] = {
 
 #else //  --------------------------- TWPRIVATE
 
-dateStruct destinationTimes[NUM_AUTOTIMES] = {
+const dateStruct destinationTimes[NUM_AUTOTIMES] = {
     {1985,  7, 23, 20,  1},
     {1985, 11, 23, 16, 24},
     {1986,  5, 26, 14, 12},
@@ -365,7 +373,7 @@ dateStruct destinationTimes[NUM_AUTOTIMES] = {
     {1993, 12,  5, 23, 49},
     {1984,  9, 15, 17, 11}
 };
-dateStruct departedTimes[NUM_AUTOTIMES] = {
+const dateStruct departedTimes[NUM_AUTOTIMES] = {
     {2017,  7, 11, 10, 11},
     {1943,  3, 15,  7, 47},
     {2016,  6, 22, 16, 11},

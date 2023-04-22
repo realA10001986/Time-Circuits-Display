@@ -10,18 +10,26 @@
  * Based on code by John Monaco, Marmoset Electronics
  * https://www.marmosetelectronics.com/time-circuits-clock
  * -------------------------------------------------------------------
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * License: MIT
+ * 
+ * Permission is hereby granted, free of charge, to any person 
+ * obtaining a copy of this software and associated documentation 
+ * files (the "Software"), to deal in the Software without restriction, 
+ * including without limitation the rights to use, copy, modify, 
+ * merge, publish, distribute, sublicense, and/or sell copies of the 
+ * Software, and to permit persons to whom the Software is furnished to 
+ * do so, subject to the following conditions:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * The above copyright notice and this permission notice shall be 
+ * included in all copies or substantial portions of the Software.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 #include "tc_global.h"
@@ -287,7 +295,7 @@ void clockDisplay::setDateTimeDiff(DateTime dt)
 
 // Set YEAR, MONTH, DAY, HOUR, MIN from structure
 // Never use for RTC!
-void clockDisplay::setFromStruct(dateStruct* s)
+void clockDisplay::setFromStruct(const dateStruct* s)
 {
     #ifdef TC_DBG
     if(isRTC()) {
@@ -1211,24 +1219,6 @@ uint16_t clockDisplay::makeNum(uint8_t num)
 
     return segments;
 }
-
-// Make a 2 digit number from the array and return the segment data
-// (no leading 0s)
-#if 0
-uint16_t clockDisplay::makeNumN0(uint8_t num)
-{
-    uint16_t segments = 0;
-
-    // Each position holds two digits, high byte is 1's, low byte is 10's
-
-    segments = getLED7NumChar(num % 10) << 8;     // Place 1's in upper byte
-    if(num / 10) {
-        segments |= getLED7NumChar(num / 10);     // 10's in lower byte
-    }
-
-    return segments;
-}
-#endif
 
 // Directly write to a column with supplied segments
 // (leave buffer intact, directly write to display)
