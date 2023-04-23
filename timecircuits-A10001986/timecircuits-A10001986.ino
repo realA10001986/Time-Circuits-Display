@@ -99,6 +99,8 @@
 
 /*  Changelog
  *   
+ *  2023/04/23 (A10001986)
+ *    - Further simplify keypad code
  *  2023/04/22 (A10001986)
  *    - Simplify keypad handling
  *    - Global license is now MIT (with exception). Possibly GPL-infe[c|s]ted parts

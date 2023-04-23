@@ -70,7 +70,8 @@
 #define OPEN    false
 #define CLOSED  true
 
-#define KI2C_MAXROWS 5
+#define MAX_ROWS  4
+#define MAX_COLS  3
 
 static void defaultDelay(unsigned int mydelay)
 {
@@ -92,12 +93,16 @@ Keypad_I2C::Keypad_I2C(char *userKeymap, const uint8_t *row, const uint8_t *col,
     _rows = numRows;
     _columns = numCols;
 
+    // Avoid crash if called with bad parms
+    if(_rows > MAX_ROWS) _rows = MAX_ROWS;
+    if(_columns > MAX_COLS) _columns = MAX_COLS;
+
     _i2caddr = address;
     _wire = awire;
 
     setScanInterval(10);
     setHoldTime(500);
-    
+
     _keypadEventListener = NULL;
 
     _customDelayFunc = defaultDelay;
@@ -165,8 +170,7 @@ bool Keypad_I2C::scanKeypad()
 // Hardware scan & update key state
 bool Keypad_I2C::scanKeys()
 {
-    uint16_t pinVals[3][16];
-    uint8_t  myBitMap[KI2C_MAXROWS];
+    uint16_t pinVals[3][MAX_COLS], rm;
     bool     repeat;
     int      maxRetry = 5;
     int      kc;
@@ -175,69 +179,65 @@ bool Keypad_I2C::scanKeys()
     do {
 
         repeat = false;
-      
+
         for(d = 0; d < 3; d++) {
-    
+
             for(c = 0; c < _columns; c++) {
-    
+
                 pin_write(_columnPins[c], LOW);
-    
+
                 _wire->requestFrom(_i2caddr, (int)1);
                 pinVals[d][c] = _wire->read() & _rowMask;
-    
+
                 pin_write(_columnPins[c], HIGH);
-                
+
             }
-    
+
             if(d < 2) (*_customDelayFunc)(5);
-          
+
         }
 
         for(c = 0; c < _columns; c++) {
             if((pinVals[0][c] != pinVals[1][c]) || (pinVals[0][c] != pinVals[2][c])) 
                 repeat = true;
         }
-        
-    } while(maxRetry-- && repeat);
 
-    // Create bitmap for easier handling
-    for(c = 0; c < _columns; c++) {     
-        for(r = 0; r < _rows; r++) {
-            bitWrite(myBitMap[r], c, (pinVals[0][c] & (1 << _rowPins[r])) ? 0 : 1);
-        }
-    }
+    } while(maxRetry-- && repeat);
 
     _key.stateChanged = false;
 
     // If we currently have an active key, advance its state
     if(_key.kCode >= 0) {
-        
-        advanceState(bitRead(myBitMap[_key.kCode / _columns], _key.kCode % _columns));
-        
+
+        advanceState(!(pinVals[0][_key.kCode % _columns] & (1 << _rowPins[_key.kCode / _columns])));
+
     } 
 
-    // If key is idle, scan the bitMap
+    // If _key is idle, evaluate scanning result
     if(_key.kState == TCKS_IDLE) {
 
         for(r = 0; r < _rows; r++) {
-    
+
+            rm = 1 << _rowPins[r];
+
             for(c = 0, kc = r * _columns; c < _columns; c++, kc++) {
-    
-                bool newstate = bitRead(myBitMap[r], c);
-                
+
+                bool newstate = !(pinVals[0][c] & rm);
+
                 if(newstate == CLOSED) {
-    
+
                     // New key pressed, handle it if we're idle
                     _key.kCode = kc;
                     _key.kChar = _keymap[kc];
                     advanceState(newstate);
-                    break;
-                    
+                    goto quitScan;  // bail on first pressed
+
                 }
             }
         }
         
     }
+quitScan:
 
     return _key.stateChanged;
 }
