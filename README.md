@@ -335,7 +335,7 @@ You can configure the displays' behavior in night-mode in the Config Portal: The
 
 #### Manually switching to night-mode
 
-To toggle night-mode on/off manually, hold "4". (For firmware from 2022: To switch on night-mode manually, hold "4". To switch off night-mode, hold "5".)
+To toggle night-mode on/off manually, hold "4".
 
 #### Scheduled night-mode
 
@@ -443,7 +443,7 @@ After invoking the keypad menu, the first step is to choose a menu item. The ava
 - set the alarm ("ALA-RM"),
 - set the audio volume (VOL-UME),
 - set the Music Player folder number ("MUSIC FOLDER NUMBER")
-- select the Time-cycling Interval ("TIME-CYCLING", formerly "TIME-ROTATION-INTERVAL"),
+- select the Time-cycling Interval ("TIME-CYCLING"),
 - select the brightness for the three displays ("BRIGHTNESS"),
 - show network information ("NET-WORK"),
 - set the internal Real Time Clock (RTC) ("SET RTC"),
@@ -474,7 +474,7 @@ Pressing ENTER cycles through the list, holding ENTER selects an item.
 
 When the alarm is set and enabled, the dot in the present time's minute field will light up. 
 
-Under normal operation (ie outside of the menu), holding "1" toggles the alarm on/off. (For firmware from 2022: Holding "1" enables the alarm, holding "2" disables it.) 
+Under normal operation (ie outside of the menu), holding "1" toggles the alarm on/off.
 
 The alarm time can also quickly be set by typing 11hhMM (eg. 110645 for 6:45am, or 112300 for 11:00pm) and pressing ENTER, just like when setting a time travel destination time. (The weekday selection has still to be done via the keypad menu.) Typing 11 followed by ENTER shows the currently set time and weekday selection briefly.
 
@@ -488,7 +488,7 @@ Basically, and by default, the device uses the hardware volume knob to determine
 - Hold ENTER to invoke main menu
 - Press ENTER repeatedly until "VOL-UME" is shown
 - Hold ENTER
-- Press ENTER to toggle between "USE VOLUME KNOB" (formerly "HW VOLUME KNOB") and "FIXED LEVEL" (formerly "SW")
+- Press ENTER to toggle between "USE VOLUME KNOB" and "FIXED LEVEL"
 - Hold ENTER to proceed
 - If you chose "FIXED LEVEL/"SW", you can now select the desired level by pressing ENTER repeatedly. There are 20 levels available. The volume knob is now ignored.
 - Hold ENTER to save and quit the menu
@@ -510,8 +510,8 @@ Note that the Music Folder Number is saved in a config file on the SD card.
 #### How to select the Time-cycling Interval:
 
 - Hold ENTER to invoke main menu
-- Press ENTER repeatedly until "TIME-CYCLING" (formerly "TIME-ROTATION-INTERVAL") is shown
-- Hold ENTER, "INTERVAL" (formerly "INT") is displayed
+- Press ENTER repeatedly until "TIME-CYCLING" is shown
+- Hold ENTER, "INTERVAL" is displayed
 - Press ENTER repeatedly to cycle through the possible Time-cycling Interval values.
 - A value of 0 disables automatic time cycling ("OFF").
 - Non-zero values make the device cycle through a number of pre-programmed times. The value means "minutes" (hence "MIN-UTES") between changes.              
