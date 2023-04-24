@@ -957,19 +957,19 @@ static void setUpdate(uint16_t number, int field, bool extra)
 {
     switch(field) {
     case FIELD_MONTH:
-        displaySet->showOnlyMonth(number);
+        displaySet->showMonthDirect(number);
         break;
     case FIELD_DAY:
-        displaySet->showOnlyDay(number);
+        displaySet->showDayDirect(number);
         break;
     case FIELD_YEAR:
-        displaySet->showOnlyYear(number);
+        displaySet->showYearDirect(number);
         break;
     case FIELD_HOUR:
-        displaySet->showOnlyHour(number, extra);
+        displaySet->showHourDirect(number, extra);
         break;
     case FIELD_MINUTE:
-        displaySet->showOnlyMinute(number);
+        displaySet->showMinuteDirect(number);
         break;
     }
 }

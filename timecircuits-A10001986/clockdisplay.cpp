@@ -351,7 +351,7 @@ void clockDisplay::showAnimate2()
         return;
 
     Wire.beginTransmission(_address);
-    Wire.write(0x00);  // start address
+    Wire.write(0x00);
     for(int i = 0; i < CD_BUF_SIZE; i++) {
         Wire.write(_displayBuffer[i] & 0xFF);
         Wire.write(_displayBuffer[i] >> 8);
@@ -596,7 +596,7 @@ int8_t clockDisplay::getDST()
 
 // Put data directly on display (bypass buffer) --------------------------------
 
-void clockDisplay::showOnlyMonth(int monthNum)
+void clockDisplay::showMonthDirect(int monthNum)
 {
     clearDisplay();
 
@@ -614,14 +614,14 @@ void clockDisplay::showOnlyMonth(int monthNum)
 #endif
 }
 
-void clockDisplay::showOnlyDay(int dayNum)
+void clockDisplay::showDayDirect(int dayNum)
 {
     clearDisplay();
 
     directCol(CD_DAY_POS, makeNum(dayNum));
 }
 
-void clockDisplay::showOnlyYear(int yearNum)
+void clockDisplay::showYearDirect(int yearNum)
 {
     clearDisplay();
 
@@ -632,9 +632,12 @@ void clockDisplay::showOnlyYear(int yearNum)
     directCol(CD_YEAR_POS + 1, makeNum(yearNum % 100));
 }
 
-void clockDisplay::showOnlyHour(int hourNum, bool force24)
+void clockDisplay::showHourDirect(int hourNum, bool force24)
 {
     clearDisplay();
+
+    // This assumes that CD_HOUR_POS is different to
+    // CD_AMPM_POS
 
     if(!_mode24 && !force24) {
 
@@ -657,7 +660,7 @@ void clockDisplay::showOnlyHour(int hourNum, bool force24)
     }
 }
 
-void clockDisplay::showOnlyMinute(int minuteNum)
+void clockDisplay::showMinuteDirect(int minuteNum)
 {
     clearDisplay();
 
@@ -1228,7 +1231,7 @@ void clockDisplay::directCol(int col, int segments)
         segments |= 0x8000;
     }
     Wire.beginTransmission(_address);
-    Wire.write(col * 2);  // 2 bytes per col * position
+    Wire.write(col * 2);
     Wire.write(segments & 0xFF);
     Wire.write(segments >> 8);
     Wire.endTransmission();
@@ -1238,7 +1241,7 @@ void clockDisplay::directCol(int col, int segments)
 void clockDisplay::clearDisplay()
 {
     Wire.beginTransmission(_address);
-    Wire.write(0x00);  // start address
+    Wire.write(0x00);
 
     for(int i = 0; i < CD_BUF_SIZE*2; i++) {
         Wire.write(0x0);
@@ -1290,7 +1293,7 @@ void clockDisplay::showInt(bool animate, bool Alt)
     (_colon) ? colonOn() : colonOff();
 
     Wire.beginTransmission(_address);
-    Wire.write(0x00);  // start address
+    Wire.write(0x00);
 
     if(animate) {
         for(i = 0; i < CD_MONTH_SIZE; i++) {

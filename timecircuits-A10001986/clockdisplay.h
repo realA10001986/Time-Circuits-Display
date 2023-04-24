@@ -109,11 +109,11 @@ class clockDisplay {
         uint8_t  getMinute();
         int8_t   getDST();
 
-        void showOnlyMonth(int monthNum);
-        void showOnlyDay(int dayNum);
-        void showOnlyHour(int hourNum, bool force24 = false);
-        void showOnlyMinute(int minuteNum);
-        void showOnlyYear(int yearNum);
+        void showMonthDirect(int monthNum);
+        void showDayDirect(int dayNum);
+        void showHourDirect(int hourNum, bool force24 = false);
+        void showMinuteDirect(int minuteNum);
+        void showYearDirect(int yearNum);
 
         void showSettingValDirect(const char* setting, int8_t val = -1, bool clear = false);
         void showTextDirect(const char *text, bool clear = true, bool corr6 = false);
