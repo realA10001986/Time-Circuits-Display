@@ -781,19 +781,19 @@ Number of times the firmware tries to reconnect to a WiFi network, before fallin
 
 Number of seconds before a timeout occurs when connecting to a WiFi network. When a timeout happens, another attempt is made (see immediately above), and if all attempts fail, the device falls back to AP-mode. See [here](#short-summary-of-first-steps)
 
-##### &#9654; WiFi power save timer
-
-See [here](#wifi-power-saving-features)
-
-##### &#9654; WiFi power save timer (AP-mode)
-
-See [here](#wifi-power-saving-features)
-
 ##### &#9654; Periodic reconnection attempts
 
 Selects whether periodic re-connection attempts (between 12am and 6am) should be made after a failure to connect to a configured WiFi network.
 
 In typical home setups with 24/7 WiFi, this option hardly matters. However, if you have connected your clock to your WiFi network, but move it between environments (eg home and car) on a regular basis, uncheck this to keep the clock from searching for your configured WiFi network unnecessarily. 
+
+##### &#9654; WiFi power save timer
+
+See [here](#wifi-power-saving-features). Note that a non-zero value here disables Home Assistant support.
+
+##### &#9654; WiFi power save timer (AP-mode)
+
+See [here](#wifi-power-saving-features)
 
 ##### &#9654; Time zone
 
@@ -817,20 +817,6 @@ The time zone for the red display in [World Clock mode](#world-clock-mode). Defa
 
 The time zone for the yellow display in [World Clock mode](#world-clock-mode). Default: unset. Needs to be in [Posix](https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv) format.
 
-#### Display preferences
-
-##### &#9654; Destination Time display brightness
-
-Selects the brightness of the *destination time* display. Ranges from 0 (darkest) to 15 (brightest).
-
-##### &#9654; Present Time display brightness
-
-Selects the brightness of the *present time* display. Ranges from 0 (darkest) to 15 (brightest).
-
-##### &#9654; Last Time Dep. display brightness
-
-Selects the brightness of the *last time departed* display. Ranges from 0 (darkest) to 15 (brightest).
-
 #### Night-mode
 
 ##### &#9654; Destination time off in night mode
@@ -844,10 +830,6 @@ Selects whether the *present time* display is dimmed or switched of in night mod
 ##### &#9654; Last time dep. off in night mode
 
 Selects whether the *last time departed* display is dimmed or switched of in night mode.
-
-##### &#9654; Scheduled night-mode
-
-Enables or disables schedules night mode, as configured by the following options. See [here](#night-mode)
 
 ##### &#9654; Schedule
 
@@ -885,15 +867,9 @@ This offset, which can range from -3.0 to 3.0, is added to the sensor measuremen
 
 #### Speedometer settings
 
-##### &#9654; Use speedometer display
+##### &#9654; Speedo display type
 
-Check this if you have an external speedo display connected and want to use it. See [here](#speedometer)
-
-##### &#9654; Display type
-
-Type of speedo display. Several types are supported, mostly Adafruit or Seeed/Grove LED segment displays. For 4-digit-displays there are options to display speed left- or right-aligned. Two special options for Adafruit 828 and 1911 are at the end of the list; use these if you connect only one 2-digit-tube to the respective i2c backpack.
-
-See [here](#speedometer).
+Type of [speedo](#speedometer) display. Several types are supported, mostly Adafruit or Seeed/Grove LED segment displays. For 4-digit-displays there are options to display speed left- or right-aligned. Two special options for Adafruit 828 and 1911 are at the end of the list; use these if you connect only one 2-digit-tube to the respective i2c backpack.
 
 ##### &#9654; Speedo brightness
 
@@ -929,10 +905,6 @@ Check this if you want to use a fake power switch. See [here](#fake-power-switch
 
 Selects a delay (in milliseconds) from when pressing the external time travel button until the time travel sequence starts. See [here](#external-time-travel-trigger)
 
-##### &#9654; Play complete time travel sequence
-
-For externally triggered time travels, this selects if the entire sequence (including acceleration, if a speedo is available) should be played, or the only the short re-entry sequence. See [here](#external-time-travel-trigger)
-
 #### Settings for other peripherals
 
 ##### &#9654; Use compatible external props
@@ -954,10 +926,6 @@ When checked, songs are shuffled when the device is booted. When unchecked, song
 ##### &#9654; Save alarm/volume settings on SD
 
 If this is checked, alarm and volume settings are stored on the SD card. This helps to minimize write operations to the internal flash memory and to prolong the lifetime of your clock. See [Flash Wear](#flash-wear).
-
-##### &#9654; 4MHz SD clock speed
-
-By default, the clock speed for SD card access is set to 16MHz. If you experience problems with your SD card, such as sound cut-offs or the card being inaccessible, try setting the clock speed to 4MHz by checking this option. (General note: Not all SD cards work with the device. If the SD card is inaccessible with both clock speed settings, try another SD card brand. For instance, I had no luck with a Sandisk Ultra 32GB.)
 
 ## Appendix B: Sensor wiring
 
