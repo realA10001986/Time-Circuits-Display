@@ -124,6 +124,8 @@ static int dateIndex = 0;
 static int timeIndex = 0;
 static int yearIndex = 0;
 
+bool menuActive = false;
+
 static bool doKey = false;
 
 static unsigned long enterDelay = 0;
@@ -218,7 +220,7 @@ static void keypadEvent(char key, KeyState kstate)
     bool mpWasActive = false;
     bool playBad = false;
     
-    if(!FPBUnitIsOn || startup || timeTraveled || timeTravelP0 || timeTravelP1)
+    if(!FPBUnitIsOn || startup || timeTravelP0 || timeTravelP1 || timeTravelRE)
         return;
 
     pwrNeedFullNow();
@@ -232,7 +234,7 @@ static void keypadEvent(char key, KeyState kstate)
         break;
         
     case TCKS_HOLD:
-        if(isSetUpdate) break;    // Don't do anything while in menu
+        if(keypadInMenu) break;    // Don't do anything while in menu
 
         switch(key) {
         case '0':    // "0" held down -> time travel
@@ -322,7 +324,7 @@ static void keypadEvent(char key, KeyState kstate)
         
     case TCKS_RELEASED:
         if(doKey) {
-            if(isSetUpdate) {
+            if(keypadInMenu) {
                 if(isYearUpdate) {
                     recordSetYearKey(key);
                 } else {
@@ -419,7 +421,7 @@ void keypad_loop()
     }
 
     // Bail out if sequence played or device is fake-"off"
-    if(!FPBUnitIsOn || startup || timeTraveled || timeTravelP0 || timeTravelP1) {
+    if(!FPBUnitIsOn || startup || timeTravelP0 || timeTravelP1 || timeTravelRE) {
 
         isEnterKeyHeld = false;
         isEnterKeyPressed = false;
@@ -466,6 +468,8 @@ void keypad_loop()
         timeIndex = yearIndex = 0;
         timeBuffer[0] = '\0';
 
+        menuActive = true;
+
         enter_menu();
 
         isEnterKeyHeld = false;
@@ -476,6 +480,8 @@ void keypad_loop()
         // so reset flag upon menu exit
         isEttKeyPressed = isEttKeyHeld = false;
         #endif
+
+        menuActive = false;
 
     }
 

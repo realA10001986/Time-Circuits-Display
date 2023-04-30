@@ -99,6 +99,9 @@
 
 /*  Changelog
  *   
+ *  2023/05/01 (A10001986)
+ *    - HA/MQTT changes: More commands supported; commands can be in lower case; 
+ *      no commands while keypad menu or sequences are active;
  *  2023/04/29 (A10001986)
  *    - BETA: Add HomeAssitant/MQTT 3.1.1 support. MTQQ code by Nicholas O'Leary; adapted,
  *      optimized and minimized by me. Only unencrypted traffic, no TLS/SSL support.

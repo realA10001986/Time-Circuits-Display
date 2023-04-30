@@ -257,7 +257,7 @@ uint8_t alarmWeekday = 0;
 
 static int menuItemNum;
 
-bool isSetUpdate = false;
+bool keypadInMenu = false;
 bool isYearUpdate = false;
 
 static clockDisplay* displaySet;
@@ -455,7 +455,7 @@ void enter_menu()
         waitForEnterRelease();
         setField(minSet, FIELD_MINUTE);
 
-        isSetUpdate = false;
+        keypadInMenu = false;
 
         // Have new date & time at this point
 
@@ -682,7 +682,7 @@ void enter_menu()
 
 quitMenu:
 
-    isSetUpdate = false;
+    keypadInMenu = false;
 
     // Return dest/dept displays to where they should be
     if(isWcMode()) {
@@ -1032,7 +1032,7 @@ static void setField(uint16_t& number, uint8_t field, int year, int month, bool 
     }
 
     // Force keypad to send keys to our buffer (and block key holding)
-    isSetUpdate = true;
+    keypadInMenu = true;
 
     while( !checkTimeOut() && !checkEnterPress() &&
               ( (!someupddone && number == prevNum) || strlen(timeBuffer) < numChars) ) {
@@ -1060,7 +1060,7 @@ static void setField(uint16_t& number, uint8_t field, int year, int month, bool 
     }
 
     // Force keypad to send keys somewhere else but our buffer
-    isSetUpdate = false;
+    keypadInMenu = false;
 
     if(checkTimeOut())
         return;
@@ -2243,13 +2243,13 @@ static void myssdelay(unsigned long mydel)
 static void myloop()
 {
     audio_loop();
-    enterkeyScan();
+    enterkeyScan();   // >= 19ms
     audio_loop();
     wifi_loop();
     audio_loop();
     ntp_loop();
     audio_loop();
     #ifdef TC_HAVEGPS
-    gps_loop();
+    gps_loop();       // >= 12ms
     #endif
 }

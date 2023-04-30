@@ -67,15 +67,13 @@ WiFiClient mqttWClient;
 PubSubClient mqttClient(mqttWClient);
 #endif
 
-static char beepCustHTML[512] = "";
+static char beepaintCustHTML[820] = "";
 static const char beepCustHTML1[] = "<div class='cmp0'><label for='beepmode'>Default beep mode</label><select class='sel0' value='";
 static const char beepCustHTML2[] = "' name='beepmode' id='beepmode' autocomplete='off' title='Select power-up beep mode'><option value='0'";
 static const char beepCustHTML3[] = ">Off</option><option value='1'";
 static const char beepCustHTML4[] = ">On</option><option value='2'";
 static const char beepCustHTML5[] = ">Auto (30 secs)</option><option value='3'";
 static const char beepCustHTML6[] = ">Auto (60 secs)</option></select></div>";
-
-static char aintCustHTML[768] = "";
 static const char aintCustHTML1[] = "<div class='cmp0'><label for='rotate_times'>Time-cycling interval</label><select class='sel0' value='";
 static const char aintCustHTML2[] = "' name='rotate_times' id='rotate_times' autocomplete='off'><option value='0'";
 static const char aintCustHTML3[] = ">Off</option><option value='1'";
@@ -138,8 +136,7 @@ WiFiManagerParameter custom_alarmRTC("artc", "Alarm base is real present time", 
 WiFiManagerParameter custom_playIntro("plIn", "Play intro", settings.playIntro, 1, "type='checkbox'", WFM_LABEL_AFTER);
 WiFiManagerParameter custom_mode24("md24", "24-hour clock mode", settings.mode24, 1, "type='checkbox'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
-WiFiManagerParameter custom_beep(beepCustHTML);
-WiFiManagerParameter custom_autoRotateTimes(aintCustHTML);
+WiFiManagerParameter custom_beep_aint(beepaintCustHTML);  // beep + aint
 
 #if defined(TC_MDNS) || defined(TC_WM_HAS_MDNS)
 #define HNTEXT "Hostname<br><span style='font-size:80%'>The Config Portal is accessible at http://<i>hostname</i>.local<br>(Valid characters: a-z/0-9/-)</span>"
@@ -431,13 +428,12 @@ void wifi_setup()
 
     wm.setMenu(wifiMenu, TC_MENUSIZE);
     
-    wm.addParameter(&custom_sectstart_head);// 7
+    wm.addParameter(&custom_sectstart_head);// 6
     wm.addParameter(&custom_ttrp);
     wm.addParameter(&custom_alarmRTC);
     wm.addParameter(&custom_playIntro);
     wm.addParameter(&custom_mode24);
-    wm.addParameter(&custom_beep);
-    wm.addParameter(&custom_autoRotateTimes);
+    wm.addParameter(&custom_beep_aint);
     
     wm.addParameter(&custom_sectstart);     // 8
     wm.addParameter(&custom_hostName);
@@ -1392,33 +1388,32 @@ void updateConfigPortalValues()
 
     // Make sure the settings form has the correct values
 
-    strcpy(beepCustHTML, beepCustHTML1);
-    strcat(beepCustHTML, settings.beep);
-    strcat(beepCustHTML, beepCustHTML2);
-    if(tb == 0) strcat(beepCustHTML, custHTMLSel);
-    strcat(beepCustHTML, beepCustHTML3);
-    if(tb == 1) strcat(beepCustHTML, custHTMLSel);
-    strcat(beepCustHTML, beepCustHTML4);
-    if(tb == 2) strcat(beepCustHTML, custHTMLSel);
-    strcat(beepCustHTML, beepCustHTML5);
-    if(tb == 3) strcat(beepCustHTML, custHTMLSel);
-    strcat(beepCustHTML, beepCustHTML6);
-
-    strcpy(aintCustHTML, aintCustHTML1);
-    strcat(aintCustHTML, settings.autoRotateTimes);
-    strcat(aintCustHTML, aintCustHTML2);
-    if(t == 0) strcat(aintCustHTML, custHTMLSel);
-    strcat(aintCustHTML, aintCustHTML3);
-    if(t == 1) strcat(aintCustHTML, custHTMLSel);
-    strcat(aintCustHTML, aintCustHTML4);
-    if(t == 2) strcat(aintCustHTML, custHTMLSel);
-    strcat(aintCustHTML, aintCustHTML5);
-    if(t == 3) strcat(aintCustHTML, custHTMLSel);
-    strcat(aintCustHTML, aintCustHTML6);
-    if(t == 4) strcat(aintCustHTML, custHTMLSel);
-    strcat(aintCustHTML, aintCustHTML7);
-    if(t == 5) strcat(aintCustHTML, custHTMLSel);
-    strcat(aintCustHTML, aintCustHTML8);
+    strcpy(beepaintCustHTML, beepCustHTML1);          // beep mode
+    strcat(beepaintCustHTML, settings.beep);
+    strcat(beepaintCustHTML, beepCustHTML2);
+    if(tb == 0) strcat(beepaintCustHTML, custHTMLSel);
+    strcat(beepaintCustHTML, beepCustHTML3);
+    if(tb == 1) strcat(beepaintCustHTML, custHTMLSel);
+    strcat(beepaintCustHTML, beepCustHTML4);
+    if(tb == 2) strcat(beepaintCustHTML, custHTMLSel);
+    strcat(beepaintCustHTML, beepCustHTML5);
+    if(tb == 3) strcat(beepaintCustHTML, custHTMLSel);
+    strcat(beepaintCustHTML, beepCustHTML6);
+    strcat(beepaintCustHTML, aintCustHTML1);          // aint
+    strcat(beepaintCustHTML, settings.autoRotateTimes);
+    strcat(beepaintCustHTML, aintCustHTML2);
+    if(t == 0) strcat(beepaintCustHTML, custHTMLSel);
+    strcat(beepaintCustHTML, aintCustHTML3);
+    if(t == 1) strcat(beepaintCustHTML, custHTMLSel);
+    strcat(beepaintCustHTML, aintCustHTML4);
+    if(t == 2) strcat(beepaintCustHTML, custHTMLSel);
+    strcat(beepaintCustHTML, aintCustHTML5);
+    if(t == 3) strcat(beepaintCustHTML, custHTMLSel);
+    strcat(beepaintCustHTML, aintCustHTML6);
+    if(t == 4) strcat(beepaintCustHTML, custHTMLSel);
+    strcat(beepaintCustHTML, aintCustHTML7);
+    if(t == 5) strcat(beepaintCustHTML, custHTMLSel);
+    strcat(beepaintCustHTML, aintCustHTML8);
 
     custom_hostName.setValue(settings.hostName, 31);
     custom_wifiConTimeout.setValue(settings.wifiConTimeout, 2);
@@ -1814,40 +1809,90 @@ static void mqttLooper()
 
 static void mqttCallback(char *topic, byte *payload, unsigned int length)
 {
-    int i, j, ml = (length <= 255) ? length : 255;
+    int i = 0, j, ml = (length <= 255) ? length : 255;
     char tempBuf[256];
+    static const char *cmdList[] = {
+      "TIMETRAVEL",       // 0
+      "RETURN",           // 1
+      "ALARM_ON",         // 2
+      "ALARM_OFF",        // 3
+      "NIGHTMODE_ON",     // 4
+      "NIGHTMODE_OFF",    // 5
+      "MP_SHUFFLE_ON",    // 6
+      "MP_SHUFFLE_OFF",   // 7
+      "MP_PLAY",          // 8
+      "MP_STOP",          // 9
+      "MP_NEXT",          // 10
+      "MP_PREV",          // 11
+      NULL
+    };
 
     if(!strcmp(topic, "bttf/tcd/cmd")) {
 
-        #ifdef EXTERNAL_TIMETRAVEL_IN
-        if((length >= 10) && !strncmp((const char *)payload, "TIMETRAVEL", 10)) {
+        // Not taking commands under these circumstances:
+        if(!FPBUnitIsOn || menuActive   || startup || 
+           timeTravelP0 || timeTravelP1 || timeTravelRE)
+            return;
+
+        memcpy(tempBuf, (const char *)payload, length);
+        tempBuf[length] = 0;
+        for(j = 0; j < length; j++) {
+            if(tempBuf[j] >= 'a' && tempBuf[j] <= 'z') tempBuf[j] &= ~0x20;
+        }
+
+        while(cmdList[i]) {
+            j = strlen(cmdList[i]);
+            if((length >= j) && !strncmp((const char *)tempBuf, cmdList[i], j)) {
+                break;
+            }
+            i++;          
+        }
+
+        if(!cmdList[i]) return;
+
+        switch(i) {
+        case 0:
+            #ifdef EXTERNAL_TIMETRAVEL_IN
             isEttKeyPressed = true;
-        } else if((length >= 6) && !strncmp((const char *)payload, "RETURN", 6)) {
+            #endif
+            break;
+        case 1:
+            #ifdef EXTERNAL_TIMETRAVEL_IN
             isEttKeyHeld = true;
-        } else
-        #endif
-        if((length >= 8) && !strncmp((const char *)payload, "ALARM_ON", 8)) {
+            #endif
+            break;
+        case 2:
             alarmOn();
-        } else if((length >= 9) && !strncmp((const char *)payload, "ALARM_OFF", 9)) {
+            break;
+        case 3:
             alarmOff();
-        } else if((length >= 12) && !strncmp((const char *)payload, "NIGHTMODE_ON", 12)) {
+            break;
+        case 4:
             nightModeOn();
             manualNightMode = 1;
             manualNMNow = millis();
-        } else if((length >= 13) && !strncmp((const char *)payload, "NIGHTMODE_OFF", 13)) {
+            break;
+        case 5:
             nightModeOff();
             manualNightMode = 0;
             manualNMNow = millis();
-        } else if(length >= 7) {
-            if(!strncmp((const char *)payload, "MP_PREV", 7)) {
-                if(haveMusic) mp_prev(mpActive);
-            } else if(!strncmp((const char *)payload, "MP_STOP", 7)) {
-                if(haveMusic) mp_stop();
-            } else if(!strncmp((const char *)payload, "MP_PLAY", 7)) {
-                if(haveMusic) mp_play();
-            } else if(!strncmp((const char *)payload, "MP_NEXT", 7)) {
-                if(haveMusic) mp_next(mpActive);
-            }
+            break;
+        case 6:
+        case 7:
+            if(haveMusic) mp_makeShuffle((i == 6));
+            break;
+        case 8:    
+            if(haveMusic) mp_play();
+            break;
+        case 9:
+            if(haveMusic) mp_stop();
+            break;
+        case 10:
+            if(haveMusic) mp_next(mpActive);
+            break;
+        case 11:
+            if(haveMusic) mp_prev(mpActive);
+            break;
         }
             
     } else if(strcmp(topic, "bttf/tcd/pub")) {

@@ -39,6 +39,7 @@ extern bool isEnterKeyHeld;
 extern bool isEttKeyPressed;
 extern bool isEttKeyHeld;
 #endif
+extern bool menuActive;
 
 extern char timeBuffer[];
 

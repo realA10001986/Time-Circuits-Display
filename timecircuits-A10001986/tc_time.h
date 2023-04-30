@@ -101,7 +101,7 @@ extern int8_t     autoTime;
 // These block various events
 extern bool FPBUnitIsOn;
 extern bool startup;
-extern bool timeTraveled;
+extern bool timeTravelRE;
 extern int  timeTravelP0;
 extern int  timeTravelP1;
 extern int  timeTravelP2;

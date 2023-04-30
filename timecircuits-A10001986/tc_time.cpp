@@ -207,7 +207,7 @@ static long          ettoLeadPoint = 0;
 
 // The timetravel re-entry sequence
 static unsigned long timetravelNow = 0;
-bool                 timeTraveled = false;
+bool                 timeTravelRE = false;
 
 int  specDisp = 0;
 
@@ -1348,9 +1348,9 @@ void time_loop()
                 if(FPBUnitIsOn) {
                     startup = false;
                     startupSound = false;
-                    timeTraveled = false;
                     timeTravelP0 = 0;
                     timeTravelP1 = 0;
+                    timeTravelRE = false;
                     timeTravelP2 = 0;
                     triggerP1 = 0;
                     #ifdef EXTERNAL_TIMETRAVEL_OUT
@@ -1572,9 +1572,9 @@ void time_loop()
     }
 
     // Turn display back on after time traveling
-    if(timeTraveled && (millis() - timetravelNow >= TIMETRAVEL_DELAY)) {
+    if(timeTravelRE && (millis() - timetravelNow >= TIMETRAVEL_DELAY)) {
         animate();
-        timeTraveled = false;
+        timeTravelRE = false;
     }
 
     // Read GPS, and display GPS speed or temperature
@@ -1694,7 +1694,7 @@ void time_loop()
             if( couldHaveAuthTime       &&
                 itsTime                 &&
                 (GPShasTime || doWiFi)  &&
-                !timeTraveled && !timeTravelP0 && !timeTravelP1 && !timeTravelP2 ) {
+                !timeTravelP0 && !timeTravelP1 && !timeTravelRE && !timeTravelP2 ) {
 
                 if(!autoReadjust) {
 
@@ -2002,9 +2002,9 @@ void time_loop()
                     if(presentTime.getNightMode() ||
                        !FPBUnitIsOn ||
                        startup      ||
-                       timeTraveled ||
                        timeTravelP0 ||
                        timeTravelP1 ||
+                       timeTravelRE ||
                        (alarmOnOff && (alarmHour == compHour) && (alarmMinute == compMin))) {
                         hourlySoundDone = true;
                     }
@@ -2258,7 +2258,7 @@ void time_loop()
                 autoIntAnimRunning = 0;
             }
                 
-        } else if(!startup && !timeTraveled && FPBUnitIsOn) {
+        } else if(!startup && !timeTravelRE && FPBUnitIsOn) {
 
             #ifdef TC_HAVEMQTT
             if(mqttDisp) { 
@@ -2531,7 +2531,7 @@ void timeTravel(bool doComplete, bool withSpeedo)
      */
 
     timetravelNow = ttUnivNow;
-    timeTraveled = true;
+    timeTravelRE = true;
 
     if(playTTsounds) play_file("/timetravel.mp3", 1.0, true, true);
 
@@ -2636,7 +2636,7 @@ void resetPresentTime()
     pwrNeedFullNow();
 
     timetravelNow = millis();
-    timeTraveled = true;
+    timeTravelRE = true;
     
     if(timeDifference && playTTsounds) {
         mp_stop();
@@ -2760,7 +2760,7 @@ static void waitAudioDoneIntro()
 
 /*
  * Delay function for external modules
- * (gsp, temp sensor). 
+ * (gps, temp sensor, light sensor). 
  * Do not call gps_loop() or wifi_loop() here!
  */
 static void myCustomDelay(unsigned int mydel)
@@ -2771,7 +2771,6 @@ static void myCustomDelay(unsigned int mydel)
         delay(5);
         audio_loop();
         ntp_short_loop();
-        audio_loop();
     }
 }
 
@@ -2813,7 +2812,7 @@ DateTime myrtcnow()
     }
 
     if(retries > 0) {
-        Serial.printf("myrtcnow: %d retries needed to read RTC\n", retries);
+        Serial.printf("myrtcnow: %d retries needed to read RTC. Check your i2c cabling.\n", retries);
     }
 
     return dt;
@@ -2897,7 +2896,7 @@ static void dispGPSSpeed(bool force)
     if(!useSpeedo || !useGPSSpeed)
         return;
 
-    if(timeTraveled || timeTravelP0 || timeTravelP1 || timeTravelP2)
+    if(timeTravelP0 || timeTravelP1 || timeTravelRE || timeTravelP2)
         return;
 
     if(force || (millis() - dispGPSnow >= 500)) {
@@ -2919,7 +2918,7 @@ static void dispTemperature(bool force)
     if(!dispTemp)
         return;
 
-    if(!FPBUnitIsOn || startup || timeTraveled || timeTravelP0 || timeTravelP1 || timeTravelP2)
+    if(!FPBUnitIsOn || startup || timeTravelP0 || timeTravelP1 || timeTravelRE || timeTravelP2)
         return;
 
     tempChgNM = (tempNM != tempOldNM);

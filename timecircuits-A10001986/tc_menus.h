@@ -35,7 +35,7 @@
 #ifndef _TC_MENUS_H
 #define _TC_MENUS_H
 
-extern bool isSetUpdate;
+extern bool keypadInMenu;
 extern bool isYearUpdate;
 
 extern uint8_t        autoInterval;
