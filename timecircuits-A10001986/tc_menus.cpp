@@ -1881,7 +1881,7 @@ static void doShowNetInfo()
     int maxMI = 2;
 
     #ifdef TC_HAVEMQTT
-    if(useMQTT) maxMI = 3;
+    maxMI = 3;
     #endif
 
     wifi_getMAC(macBuf);
