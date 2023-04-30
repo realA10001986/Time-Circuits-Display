@@ -20,6 +20,7 @@ Features include
 - [Count-down timer](#count-down-timer)
 - [Night mode](#night-mode) (displays off or dimmed; manual, scheduled or sensor-controlled)
 - [Music player](#the-music-player): Play mp3 files located on an SD card
+- &#x1F195; HomeAssitant support [documentation coming soon]
 - [SD card](#sd-card) support for custom audio files for effects, and music for the Music Player
 - Advanced network-accessible [Config Portal](#the-config-portal) for setup with mDNS support for easy access (http://timecircuits.local, hostname configurable)
 - [Keypad-controlled menu](#the-keypad-menu) for adjusting various settings and viewing network status via the three displays
