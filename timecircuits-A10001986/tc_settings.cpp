@@ -54,7 +54,7 @@
 
 // Size of main config JSON
 // Needs to be adapted when config grows
-#define JSON_SIZE 1800
+#define JSON_SIZE 2048
 
 /* If SPIFFS/LittleFS is mounted */
 static bool haveFS = false;
@@ -374,8 +374,14 @@ static bool read_settings(File configFile)
         wd |= CopyCheckValidNumParm(json["dtNmOff"], settings.dtNmOff, sizeof(settings.dtNmOff), 0, 1, DEF_DT_OFF);
         wd |= CopyCheckValidNumParm(json["ptNmOff"], settings.ptNmOff, sizeof(settings.ptNmOff), 0, 1, DEF_PT_OFF);
         wd |= CopyCheckValidNumParm(json["ltNmOff"], settings.ltNmOff, sizeof(settings.ltNmOff), 0, 1, DEF_LT_OFF);
-        wd |= CopyCheckValidNumParm(json["autoNM"], settings.autoNM, sizeof(settings.autoNM), 0, 1, DEF_AUTONM);
-        wd |= CopyCheckValidNumParm(json["autoNMPreset"], settings.autoNMPreset, sizeof(settings.autoNMPreset), 0, AUTONM_NUM_PRESETS, DEF_AUTONM_PRESET);
+
+        wd |= CopyCheckValidNumParm(json["autoNMPreset"], settings.autoNMPreset, sizeof(settings.autoNMPreset), 0, 10, DEF_AUTONM_PRESET);
+        if(json["autoNM"]) {    // transition old boolean "autoNM" setting
+            char temp[4] = { '0', 0, 0, 0 };
+            CopyCheckValidNumParm(json["autoNM"], temp, sizeof(temp), 0, 1, 0);
+            if(temp[0] == '0') strcpy(settings.autoNMPreset, "10");
+        }
+        
         wd |= CopyCheckValidNumParm(json["autoNMOn"], settings.autoNMOn, sizeof(settings.autoNMOn), 0, 23, DEF_AUTONM_ON);
         wd |= CopyCheckValidNumParm(json["autoNMOff"], settings.autoNMOff, sizeof(settings.autoNMOff), 0, 23, DEF_AUTONM_OFF);
         #ifdef TC_HAVELIGHT
@@ -390,8 +396,13 @@ static bool read_settings(File configFile)
         #endif
 
         #ifdef TC_HAVESPEEDO
-        wd |= CopyCheckValidNumParm(json["useSpeedo"], settings.useSpeedo, sizeof(settings.useSpeedo), 0, 1, DEF_USE_SPEEDO);
-        wd |= CopyCheckValidNumParm(json["speedoType"], settings.speedoType, sizeof(settings.speedoType), SP_MIN_TYPE, SP_NUM_TYPES-1, DEF_SPEEDO_TYPE);
+        wd |= CopyCheckValidNumParm(json["speedoType"], settings.speedoType, sizeof(settings.speedoType), SP_MIN_TYPE, 99, DEF_SPEEDO_TYPE);
+        if(json["useSpeedo"]) {    // transition old boolean "useSpeedo" setting
+            char temp[4] = { '0', 0, 0, 0 };
+            CopyCheckValidNumParm(json["useSpeedo"], temp, sizeof(temp), 0, 1, 0);
+            if(temp[0] == '0') strcpy(settings.speedoType, "99");
+        }
+        
         wd |= CopyCheckValidNumParm(json["speedoBright"], settings.speedoBright, sizeof(settings.speedoBright), 0, 15, DEF_BRIGHT_SPEEDO);
         wd |= CopyCheckValidNumParmF(json["speedoFact"], settings.speedoFact, sizeof(settings.speedoFact), 0.5, 5.0, DEF_SPEEDO_FACT);
         #ifdef TC_HAVEGPS
@@ -410,7 +421,7 @@ static bool read_settings(File configFile)
 
         #ifdef EXTERNAL_TIMETRAVEL_IN
         wd |= CopyCheckValidNumParm(json["ettDelay"], settings.ettDelay, sizeof(settings.ettDelay), 0, ETT_MAX_DEL, DEF_ETT_DELAY);
-        wd |= CopyCheckValidNumParm(json["ettLong"], settings.ettLong, sizeof(settings.ettLong), 0, 1, DEF_ETT_LONG);
+        //wd |= CopyCheckValidNumParm(json["ettLong"], settings.ettLong, sizeof(settings.ettLong), 0, 1, DEF_ETT_LONG);
         #endif
         
         #ifdef EXTERNAL_TIMETRAVEL_OUT
@@ -418,10 +429,29 @@ static bool read_settings(File configFile)
         #endif
         wd |= CopyCheckValidNumParm(json["playTTsnds"], settings.playTTsnds, sizeof(settings.playTTsnds), 0, 1, DEF_PLAY_TT_SND);
 
+        #ifdef TC_HAVEMQTT
+        wd |= CopyCheckValidNumParm(json["useMQTT"], settings.useMQTT, sizeof(settings.useMQTT), 0, 1, 0);
+        if(json["mqttServer"]) {
+            memset(settings.mqttServer, 0, sizeof(settings.mqttServer));
+            strncpy(settings.mqttServer, json["mqttServer"], sizeof(settings.mqttServer) - 1);
+        } else wd = true;
+        if(json["mqttUser"]) {
+            memset(settings.mqttUser, 0, sizeof(settings.mqttUser));
+            strncpy(settings.mqttUser, json["mqttUser"], sizeof(settings.mqttUser) - 1);
+        } else wd = true;
+        if(json["mqttTopic"]) {
+            memset(settings.mqttTopic, 0, sizeof(settings.mqttTopic));
+            strncpy(settings.mqttTopic, json["mqttTopic"], sizeof(settings.mqttTopic) - 1);
+        } else wd = true;
+        #ifdef EXTERNAL_TIMETRAVEL_OUT
+        wd |= CopyCheckValidNumParm(json["pubMQTT"], settings.pubMQTT, sizeof(settings.pubMQTT), 0, 1, 0);
+        #endif
+        #endif
+
         wd |= CopyCheckValidNumParm(json["shuffle"], settings.shuffle, sizeof(settings.shuffle), 0, 1, DEF_SHUFFLE);
 
         wd |= CopyCheckValidNumParm(json["CfgOnSD"], settings.CfgOnSD, sizeof(settings.CfgOnSD), 0, 1, DEF_CFG_ON_SD);
-        wd |= CopyCheckValidNumParm(json["sdFreq"], settings.sdFreq, sizeof(settings.sdFreq), 0, 1, DEF_SD_FREQ);
+        //wd |= CopyCheckValidNumParm(json["sdFreq"], settings.sdFreq, sizeof(settings.sdFreq), 0, 1, DEF_SD_FREQ);
 
     } else {
 
@@ -479,7 +509,7 @@ void write_settings()
     json["dtNmOff"] = settings.dtNmOff;
     json["ptNmOff"] = settings.ptNmOff;
     json["ltNmOff"] = settings.ltNmOff;
-    json["autoNM"] = settings.autoNM;
+    
     json["autoNMPreset"] = settings.autoNMPreset;
     json["autoNMOn"] = settings.autoNMOn;
     json["autoNMOff"] = settings.autoNMOff;
@@ -494,8 +524,7 @@ void write_settings()
     json["tempOffs"] = settings.tempOffs;
     #endif
 
-    #ifdef TC_HAVESPEEDO
-    json["useSpeedo"] = settings.useSpeedo;
+    #ifdef TC_HAVESPEEDO    
     json["speedoType"] = settings.speedoType;
     json["speedoBright"] = settings.speedoBright;
     json["speedoFact"] = settings.speedoFact;
@@ -515,7 +544,7 @@ void write_settings()
 
     #ifdef EXTERNAL_TIMETRAVEL_IN
     json["ettDelay"] = settings.ettDelay;
-    json["ettLong"] = settings.ettLong;
+    //json["ettLong"] = settings.ettLong;
     #endif
 
     #ifdef EXTERNAL_TIMETRAVEL_OUT
@@ -523,10 +552,20 @@ void write_settings()
     #endif
     json["playTTsnds"] = settings.playTTsnds;
 
+    #ifdef TC_HAVEMQTT
+    json["useMQTT"] = settings.useMQTT;
+    json["mqttServer"] = settings.mqttServer;
+    json["mqttUser"] = settings.mqttUser;
+    json["mqttTopic"] = settings.mqttTopic;
+    #ifdef EXTERNAL_TIMETRAVEL_OUT
+    json["pubMQTT"] = settings.pubMQTT;
+    #endif
+    #endif
+
     json["shuffle"] = settings.shuffle;
 
     json["CfgOnSD"] = settings.CfgOnSD;
-    json["sdFreq"] = settings.sdFreq;
+    //json["sdFreq"] = settings.sdFreq;
 
     File configFile = FlashROMode ? SD.open(cfgName, FILE_WRITE) : SPIFFS.open(cfgName, FILE_WRITE);
 

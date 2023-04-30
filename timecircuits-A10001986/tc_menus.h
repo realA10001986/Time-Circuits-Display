@@ -58,10 +58,6 @@ bool loadAutoInterval();
 
 void waitAudioDone();
 
-void animate();
-void allLampTest();
-void allOff();
-
 void start_file_copy();
 void file_copy_progress();
 void file_copy_done();

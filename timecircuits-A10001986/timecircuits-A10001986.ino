@@ -99,8 +99,34 @@
 
 /*  Changelog
  *   
+ *  2023/04/29 (A10001986)
+ *    - BETA: Add HomeAssitant/MQTT 3.1.1 support. MTQQ code by Nicholas O'Leary; adapted,
+ *      optimized and minimized by me. Only unencrypted traffic, no TLS/SSL support.
+ *      Used in three ways:
+ *      1) User can send messages to configurable subscribed topic, which are displayed 
+ *      on Destination Time display. Only ASCII text messages supported, no UTF8 or 
+ *      binary payload. If the SD card contains "ha-alert.mp3", it will be played upon
+ *      reception of a message.
+ *      2) User can send commands to TCD (topic "bttf/tcd/cmd"), for example TIMETRAVEL
+ *      or RETURN (as in "return from time travel").
+ *      3) TCD can trigger time travel via MTQQ (topic "bttf/tcd/pub"). This works like
+ *      the "external time travel" for wired props.
+ *      Broker can be configured using IP or domain, optionally with :xxxx for port
+ *      number ("192.168.3.5:1234"); the default port is 1883.  User and password are 
+ *      optional; format is "user" (for no password) or "user:pass".
+ *      Configuring a WiFi power save timeout disables HA/MQTT.
+ *      Broker is strongly recommended to be in same local network; network delays
+ *      can cause sound and other timing issues.
+ *    - Add "homeassitant" menu item to keypad "network" menu to view connection
+ *      status.
+ *    - Heavily optimized Config Portal. It grew to big for the available memory, so
+ *      some options had to be removed. Also, the nice title graphics had to go, it's 
+ *      now the Twin Pine Mall all the way.
+ *  2023/04/25 (A10001986)
+ *    - Minor optimizations (keypad, gps)
  *  2023/04/23 (A10001986)
- *    - Further simplify keypad code
+ *    - Further simplify keypad code (and fix [unlikely] problem with several keys
+ *      pressed at the exact same time)
  *  2023/04/22 (A10001986)
  *    - Simplify keypad handling
  *    - Global license is now MIT (with exception). Possibly GPL-infe[c|s]ted parts
@@ -777,4 +803,5 @@ void loop()
     time_loop();
     audio_loop();
     wifi_loop();
+    audio_loop();
 }

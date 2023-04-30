@@ -39,6 +39,12 @@ extern bool wifiInAPMode;
 
 extern bool wifiHaveSTAConf;
 
+#ifdef TC_HAVEMQTT
+extern bool useMQTT;
+extern const char *mqttAudioFile;
+extern bool pubMQTT;
+#endif
+
 void wifi_setup();
 void wifi_loop();
 void wifiOn(unsigned long newDelay = 0, bool alsoInAPMode = false, bool deferConfigPortal = false);
@@ -50,5 +56,10 @@ void updateConfigPortalValues();
 int  wifi_getStatus();
 bool wifi_getIP(uint8_t& a, uint8_t& b, uint8_t& c, uint8_t& d);
 void wifi_getMAC(char *buf);
+
+#ifdef TC_HAVEMQTT
+bool mqttState();
+void mqttPublish(const char *topic, const char *pl, unsigned int len);
+#endif
 
 #endif

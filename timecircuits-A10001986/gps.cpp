@@ -477,7 +477,7 @@ bool tcGPS::checkNMEA(char *nmea)
     if(ast - nmea < 16)
         return false;
 
-    if((strncmp(nmea+3, "RMC", 3)) && (strncmp(nmea+3, "ZDA", 3)))
+    if(mystrcmp3(nmea+3, "RMC") && mystrcmp3(nmea+3, "ZDA"))
         return false;
 
     // check checksum
@@ -488,13 +488,20 @@ bool tcGPS::checkNMEA(char *nmea)
     if(*ast != '*')
         return false;
 
-    sum = parseHex(*(ast + 1)) << 4;
-    sum += parseHex(*(ast + 2));
+    sum = parseHex(*(ast+1)) << 4;
+    sum += parseHex(*(ast+2));
 
     for(char *p1 = p + 1; p1 < ast; p1++)
         sum ^= *p1;
 
     return (sum == 0);
+}
+
+bool tcGPS::mystrcmp3(char *src, const char *cmp)
+{
+    if(*(src++) != *(cmp++)) return true;
+    if(*(src++) != *(cmp++)) return true;
+    return (*src != *cmp);
 }
 
 uint8_t tcGPS::parseHex(char c)

@@ -61,8 +61,7 @@ extern uint8_t musFolderNum;
 #define DEF_BRIGHT_DEST     10    // 1-15; Default: medium brightness
 #define DEF_BRIGHT_PRES     10
 #define DEF_BRIGHT_DEPA     10
-#define DEF_AUTONM          0     // Default: AutoNM disabled
-#define DEF_AUTONM_PRESET   0     
+#define DEF_AUTONM_PRESET   10    // Default: AutoNM disabled
 #define DEF_AUTONM_ON       0     // Default: Both 0
 #define DEF_AUTONM_OFF      0
 #define DEF_DT_OFF          1     // Default: Dest. time off in night mode
@@ -70,9 +69,8 @@ extern uint8_t musFolderNum;
 #define DEF_LT_OFF          1     // Default: Last dep. time off in night mode
 #define DEF_FAKE_PWR        0     // 0-1;  Default: 0 = Do not use external fake "power" switch
 #define DEF_ETT_DELAY       0     // in ms; Default 0: ETT immediately
-#define DEF_ETT_LONG        1     // 0: Ext. TT short (reentry), 1: long
-#define DEF_USE_SPEEDO      0     // 0: Don't use speedo part of time travel sequence
-#define DEF_SPEEDO_TYPE     SP_MIN_TYPE  // Default display type
+#define DEF_ETT_LONG        1     // [removed] 0: Ext. TT short (reentry), 1: long
+#define DEF_SPEEDO_TYPE     99    // Default display type: None
 #define DEF_SPEEDO_FACT     2.0   // Speedo factor (1.0 actual DeLorean figures; >1.0 faster, <1.0 slower)
 #define DEF_BRIGHT_SPEEDO   15    // Default: Max. brightness for speed
 #define DEF_USE_GPS         0     // 0: No i2c GPS module
@@ -113,7 +111,6 @@ struct Settings {
     char destTimeBright[4]  = MS(DEF_BRIGHT_DEST);
     char presTimeBright[4]  = MS(DEF_BRIGHT_PRES);
     char lastTimeBright[4]  = MS(DEF_BRIGHT_DEPA);
-    char autoNM[4]          = MS(DEF_AUTONM);
     char autoNMPreset[4]    = MS(DEF_AUTONM_PRESET);
     char autoNMOn[4]        = MS(DEF_AUTONM_ON);
     char autoNMOff[4]       = MS(DEF_AUTONM_OFF);
@@ -140,7 +137,6 @@ struct Settings {
     char luxLimit[8]        = MS(DEF_LUX_LIMIT);
 #endif
 #ifdef TC_HAVESPEEDO
-    char useSpeedo[4]       = MS(DEF_USE_SPEEDO);
     char speedoType[4]      = MS(DEF_SPEEDO_TYPE);
     char speedoBright[4]    = MS(DEF_BRIGHT_SPEEDO);
     char speedoFact[6]      = MS(DEF_SPEEDO_FACT);
@@ -160,6 +156,13 @@ struct Settings {
     char shuffle[4]         = MS(DEF_SHUFFLE);
     char CfgOnSD[4]         = MS(DEF_CFG_ON_SD);
     char sdFreq[4]          = MS(DEF_SD_FREQ);
+#ifdef TC_HAVEMQTT  
+    char useMQTT[4]         = "0";
+    char mqttServer[64]     = "";  // ip or domain [:port]  
+    char mqttUser[128]      = "";  // user[:pass] (UTF8)
+    char mqttTopic[512]     = "";  // topic (UTF8)
+    char pubMQTT[4]         = "0"; // publish to broker (timetravel)
+#endif    
 };
 
 // Maximum delay for incoming tt trigger

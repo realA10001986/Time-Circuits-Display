@@ -901,7 +901,7 @@ void keypad_loop()
             if(isWcMode() && WcHaveTZ1) {
                 // If WC mode is enabled and we have a TZ for red display,
                 // we need to disable WC mode in order to keep the new dest
-                // time on display. In that case, and if we have a TW for the
+                // time on display. In that case, and if we have a TZ for the
                 // yellow display, we also restore the yellow time to either 
                 // the stored value or the current auto-int step, otherwise 
                 // the current yellow wc time would remain but become stale,
@@ -948,9 +948,10 @@ void keypad_loop()
 
         if(specDisp) {
 
-            switch(specDisp++) {
+            switch(specDisp) {
             case 2:
             case 10:
+                specDisp++;
                 if(specDisp == 3) destinationTime.onCond();
                 else              { destinationTime.resetBrightness(); destinationTime.on(); }
                 digitalWrite(WHITE_LED_PIN, LOW);
@@ -959,6 +960,7 @@ void keypad_loop()
                 enterDelay = (specDisp == 3) ? EE1_DELAY2 : ENTER_DELAY*5;
                 break;
             case 3:
+                specDisp++;
                 spTxt[EE1_KL2] = '\0';
                 for(int i = EE1_KL2-1; i >= 0; i--) {
                     spTxt[i] = spTxtS2[i] ^ (i == 0 ? 0xff : spTxtS2[i-1]);
@@ -978,6 +980,14 @@ void keypad_loop()
         }
 
         if(!specDisp) {
+
+            #ifdef TC_HAVEMQTT
+            // We overwrite dest time display here, so restart 
+            // MQTT message afterwards.
+            if(mqttDisp) { 
+                mqttOldDisp = mqttIdx = 0;
+            }
+            #endif
 
             #ifdef TC_HAVETEMP
             if(isRcMode()) {

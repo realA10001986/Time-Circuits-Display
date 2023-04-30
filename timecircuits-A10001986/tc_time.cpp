@@ -162,7 +162,7 @@ int                  timeTravelP0 = 0;
 int                  timeTravelP2 = 0;
 
 #ifdef TC_HAVESPEEDO
-bool                 useSpeedo = DEF_USE_SPEEDO;
+bool                 useSpeedo = false;
 static unsigned long timetravelP0Now = 0;
 static unsigned long timetravelP0Delay = 0;
 static unsigned long ttP0Now = 0;
@@ -194,6 +194,7 @@ static unsigned long triggerP1Now = 0;
 static long          triggerP1LeadTime = 0;
 #ifdef EXTERNAL_TIMETRAVEL_OUT
 static bool          useETTO = DEF_USE_ETTO;
+static bool          useETTOWired = DEF_USE_ETTO;
 static bool          ettoUsePulse = ETTO_USE_PULSE;
 static long          ettoLeadTime = ETTO_LEAD_TIME;
 static bool          triggerETTO = false;
@@ -208,7 +209,17 @@ static long          ettoLeadPoint = 0;
 static unsigned long timetravelNow = 0;
 bool                 timeTraveled = false;
 
-int specDisp = 0;
+int  specDisp = 0;
+
+uint8_t  mqttDisp = 0;
+#ifdef TC_HAVEMQTT
+uint8_t  mqttOldDisp = 0;
+char     mqttMsg[256];
+uint16_t mqttIdx = 0;
+int16_t  mqttMaxIdx = 0;
+bool     mqttST = false;
+static unsigned long mqttStartNow = 0;
+#endif
 
 // CPU power management
 static bool          pwrLow = false;
@@ -713,7 +724,11 @@ void time_setup()
 
     // See if speedo display is to be used
     #ifdef TC_HAVESPEEDO
-    useSpeedo = ((int)atoi(settings.useSpeedo) > 0);
+    {
+        int temp = (int)atoi(settings.speedoType);
+        if(temp >= SP_NUM_TYPES) temp = 99;
+        useSpeedo = (temp != 99);
+    }
     #endif
 
     // Set up GPS receiver
@@ -1000,9 +1015,9 @@ void time_setup()
     loadAlarm();
 
     // Auto-NightMode
-    autoNightMode = (int)atoi(settings.autoNM);
     autoNightModeMode = (int)atoi(settings.autoNMPreset);
-    if(autoNightModeMode > AUTONM_NUM_PRESETS) autoNightModeMode = 0;
+    if(autoNightModeMode > AUTONM_NUM_PRESETS) autoNightModeMode = 10;
+    autoNightMode = (autoNightModeMode != 10);
     autoNMOnHour = (int)atoi(settings.autoNMOn);
     if(autoNMOnHour > 23) autoNMOnHour = 0;
     autoNMOffHour = (int)atoi(settings.autoNMOff);
@@ -1150,9 +1165,12 @@ void time_setup()
     useLight = false;
     #endif
 
-    // Set up tt trigger for external props
+    // Set up tt trigger for external props (wired & mqtt)
     #ifdef EXTERNAL_TIMETRAVEL_OUT
-    useETTO = ((int)atoi(settings.useETTO) > 0);
+    useETTO = useETTOWired = ((int)atoi(settings.useETTO) > 0);
+    #ifdef TC_HAVEMQTT
+    if(useMQTT && pubMQTT) useETTO = true;
+    #endif
     #endif
 
     // Show "REPLACE BATTERY" message if RTC battery is low or depleted
@@ -1428,6 +1446,11 @@ void time_loop()
     #ifdef EXTERNAL_TIMETRAVEL_OUT
     // Timer for start of ETTO signal/pulse
     if(triggerETTO && (millis() - triggerETTONow >= triggerETTOLeadTime)) {
+        #ifdef TC_HAVEMQTT
+        if(useMQTT && pubMQTT) {
+            mqttPublish("bttf/tcd/pub", "TIMETRAVEL\0", 11);
+        }
+        #endif
         ettoPulseStart();
         triggerETTO = false;
         ettoPulse = true;
@@ -2237,9 +2260,43 @@ void time_loop()
                 
         } else if(!startup && !timeTraveled && FPBUnitIsOn) {
 
+            #ifdef TC_HAVEMQTT
+            if(mqttDisp) { 
+                if(!specDisp) {
+                    destinationTime.showTextDirect(mqttMsg + mqttIdx);
+                    if(mqttST) {
+                        if(!presentTime.getNightMode()) {
+                            play_file(mqttAudioFile,  1.0, true, false, true, false);
+                        }
+                        mqttST = false;
+                    }
+                    if(mqttOldDisp != mqttDisp) {
+                        mqttStartNow = millis();
+                        mqttOldDisp = mqttDisp;
+                    }
+                    if(mqttMaxIdx < 0) {
+                        if(millis() - mqttStartNow > 5000) {
+                            mqttDisp = mqttOldDisp = 0;
+                        }
+                    } else {
+                        if(millis() - mqttStartNow > 200) { // useless actually, we are in .5 second steps here
+                            mqttStartNow = millis();
+                            mqttIdx++;
+                            if(mqttIdx > mqttMaxIdx) {
+                                mqttDisp = mqttOldDisp = 0;
+                            }
+                        }
+                    }
+                } else {
+                    mqttOldDisp = mqttIdx = 0;
+                }
+            }
+            #endif
+
             #ifdef TC_HAVETEMP
             if(isRcMode()) {
-                if(!specDisp) {
+                
+                if(!specDisp && !mqttDisp) {
                     destinationTime.showTempDirect(tempSens.readLastTemp(), tempUnit);
                 }
                 if(tempSens.haveHum()) {
@@ -2249,7 +2306,7 @@ void time_loop()
                 }
             } else {
             #endif
-                if(!specDisp) {
+                if(!specDisp && !mqttDisp) {
                     destShowAlt ? destinationTime.showAlt() : destinationTime.show();
                 }
                 depShowAlt ? departedTime.showAlt() : departedTime.show();
@@ -2552,14 +2609,18 @@ static void triggerLongTT()
 #ifdef EXTERNAL_TIMETRAVEL_OUT
 static void ettoPulseStart()
 {
-    digitalWrite(EXTERNAL_TIMETRAVEL_OUT_PIN, HIGH);
+    if(useETTOWired) {
+        digitalWrite(EXTERNAL_TIMETRAVEL_OUT_PIN, HIGH);
+    }
     #ifdef TC_DBG
     digitalWrite(WHITE_LED_PIN, HIGH);
     #endif
 }
 static void ettoPulseEnd()
 {
-    digitalWrite(EXTERNAL_TIMETRAVEL_OUT_PIN, LOW);
+    if(useETTOWired) {
+        digitalWrite(EXTERNAL_TIMETRAVEL_OUT_PIN, LOW);
+    }
     #ifdef TC_DBG
     digitalWrite(WHITE_LED_PIN, LOW);
     #endif
@@ -2677,6 +2738,7 @@ static void myIntroDelay(unsigned int mydel, bool withGPS)
         #ifdef TC_HAVEGPS
         if(withGPS) gps_loop();
         #endif
+        if(withGPS) wifi_loop();
     }
 }
 
@@ -2690,6 +2752,8 @@ static void waitAudioDoneIntro()
         #ifdef TC_HAVEGPS
         gps_loop();
         #endif
+        wifi_loop();
+        audio_loop();
         delay(10);
     }
 }
@@ -2697,7 +2761,7 @@ static void waitAudioDoneIntro()
 /*
  * Delay function for external modules
  * (gsp, temp sensor). 
- * Do not call gps_loop() here!
+ * Do not call gps_loop() or wifi_loop() here!
  */
 static void myCustomDelay(unsigned int mydel)
 {
@@ -2877,6 +2941,62 @@ static void dispTemperature(bool force)
 }
 #endif
 #endif
+
+// Show all, month after a short delay
+void animate()
+{
+    #ifdef TC_HAVETEMP
+    if(isRcMode()) {
+        destinationTime.showTempDirect(tempSens.readLastTemp(), tempUnit, true);
+    } else
+    #endif
+        destinationTime.showAnimate1();
+
+    presentTime.showAnimate1();
+
+    #ifdef TC_HAVETEMP
+    if(isRcMode() && tempSens.haveHum()) {
+        departedTime.showHumDirect(tempSens.readHum(), true);
+    } else
+    #endif
+        departedTime.showAnimate1();
+        
+    mydelay(80);
+
+    #ifdef TC_HAVETEMP
+    if(isRcMode())
+        destinationTime.showTempDirect(tempSens.readLastTemp(), tempUnit);
+    else
+    #endif
+        destinationTime.showAnimate2();
+        
+    presentTime.showAnimate2();
+
+    #ifdef TC_HAVETEMP
+    if(isRcMode() && tempSens.haveHum()) {
+        departedTime.showHumDirect(tempSens.readHum());
+    } else
+    #endif
+        departedTime.showAnimate2();
+}
+
+// Activate lamp test on all displays and turn on
+void allLampTest()
+{
+    destinationTime.on();
+    presentTime.on();
+    departedTime.on();
+    destinationTime.lampTest();
+    presentTime.lampTest();
+    departedTime.lampTest();
+}
+
+void allOff()
+{
+    destinationTime.off();
+    presentTime.off();
+    departedTime.off();
+}
 
 /**************************************************************
  ***                                                        ***

@@ -16,9 +16,9 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION "V2.8.0"           // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "APR232023"  // 13 chars max
+#define TC_VERSION_EXTRA "APR302023"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "04232023"   // 12 chars max
+#define TC_VERSION_EXTRA "04302023"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -80,13 +80,18 @@
 // If the pin goes low (by connecting it to GND using a button), a time
 // travel is triggered.
 // Uncomment to include support for ett, see below for pin number
+// This is also needed to receive commands via MQTT
 #define EXTERNAL_TIMETRAVEL_IN
 
 // External time travel (output) ("etto")
 // The defined pin is set HIGH on a time travel, and LOW upon re-entry from 
 // a time travel. See tc_time.c for a timing diagram.
 // Uncomment to include support for etto, see below for pin number
+// This is also needed if MQTT is used to trigger external props
 #define EXTERNAL_TIMETRAVEL_OUT
+
+// Uncomment for HomeAssistant MQTT protocol support
+#define TC_HAVEMQTT
 
 // --- end of config options
 
@@ -151,6 +156,12 @@
 #define DISP_DEST     0
 #define DISP_PRES     1
 #define DISP_LAST     2
+
+#ifdef IS_ACAR_DISPLAY
+#define DISP_LEN      12
+#else
+#define DISP_LEN      13
+#endif
 
 /*************************************************************************
  ***                         TimeCircuits Epoch                        ***

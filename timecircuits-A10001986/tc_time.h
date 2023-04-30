@@ -107,6 +107,15 @@ extern int  timeTravelP1;
 extern int  timeTravelP2;
 extern int  specDisp;
 
+extern uint8_t  mqttDisp;
+#ifdef TC_HAVEMQTT
+extern uint8_t  mqttOldDisp;
+extern char mqttMsg[256];
+extern uint16_t mqttIdx;
+extern int16_t  mqttMaxIdx;
+extern bool     mqttST;
+#endif
+
 // Time Travel difference to RTC
 extern uint64_t timeDifference;
 extern bool     timeDiffUp;
@@ -137,6 +146,10 @@ bool isWcMode();
 void enableRcMode(bool onOff);
 bool toggleRcMode();
 bool isRcMode();
+
+void animate();
+void allLampTest();
+void allOff();
 
 bool      isLeapYear(int year);
 int       daysInMonth(int month, int year);

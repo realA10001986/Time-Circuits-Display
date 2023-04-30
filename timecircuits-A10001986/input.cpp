@@ -153,7 +153,8 @@ void Keypad_I2C::setCustomDelayFunc(void (*myDelay)(unsigned int))
 // Scan keypad and update key state
 bool Keypad_I2C::scanKeypad()
 {
-    bool keyChanged = false; 
+    bool keyChanged = false;
+    unsigned long now = millis();
 
     if((millis() - _scanTime) > _scanInterval) {
         keyChanged = scanKeys();
@@ -171,14 +172,14 @@ bool Keypad_I2C::scanKeypad()
 bool Keypad_I2C::scanKeys()
 {
     uint16_t pinVals[3][MAX_COLS], rm;
-    bool     repeat;
+    bool     repeat, haveKey;
     int      maxRetry = 5;
     int      kc;
     uint8_t  c, r, d;
 
     do {
 
-        repeat = false;
+        repeat = haveKey = false;
 
         for(d = 0; d < 3; d++) {
 
@@ -187,7 +188,8 @@ bool Keypad_I2C::scanKeys()
                 pin_write(_columnPins[c], LOW);
 
                 _wire->requestFrom(_i2caddr, (int)1);
-                pinVals[d][c] = _wire->read() & _rowMask;
+                if((pinVals[d][c] = _wire->read() & _rowMask) != _rowMask) 
+                    haveKey = true;
 
                 pin_write(_columnPins[c], HIGH);
 
@@ -214,7 +216,7 @@ bool Keypad_I2C::scanKeys()
     } 
 
     // If _key is idle, evaluate scanning result
-    if(_key.kState == TCKS_IDLE) {
+    if(haveKey && _key.kState == TCKS_IDLE) {
 
         for(r = 0; r < _rows; r++) {
 
@@ -226,11 +228,11 @@ bool Keypad_I2C::scanKeys()
 
                 if(newstate == CLOSED) {
 
-                    // New key pressed, handle it if we're idle
+                    // (New) key pressed, handle it
                     _key.kCode = kc;
                     _key.kChar = _keymap[kc];
                     advanceState(newstate);
-                    goto quitScan;  // bail on first pressed
+                    goto quitScan;  // bail, _key is busy
 
                 }
             }
@@ -267,8 +269,7 @@ void Keypad_I2C::advanceState(bool newstate)
         break;
 
     case TCKS_RELEASED:
-        transitionTo(TCKS_IDLE);
-        _key.kChar = 0;
+        _key.kState = TCKS_IDLE;
         _key.kCode = -1;
         break;
     }

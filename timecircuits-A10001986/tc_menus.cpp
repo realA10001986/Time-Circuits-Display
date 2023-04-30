@@ -1878,6 +1878,11 @@ static void doShowNetInfo()
     int number = 0;
     bool netDone = false;
     char macBuf[16];
+    int maxMI = 2;
+
+    #ifdef TC_HAVEMQTT
+    if(useMQTT) maxMI = 3;
+    #endif
 
     wifi_getMAC(macBuf);
 
@@ -1910,7 +1915,7 @@ static void doShowNetInfo()
                 timeout = 0;  // button pressed, reset timeout
 
                 number++;
-                if(number > 2) number = 0;
+                if(number > maxMI) number = 0;
                 switch(number) {
                 case 0:
                     displayIP();
@@ -1972,6 +1977,16 @@ static void doShowNetInfo()
                     presentTime.showTextDirect(macBuf, true, true);
                     presentTime.on();
                     break;
+                #ifdef TC_HAVEMQTT
+                case 3:
+                    destinationTime.showTextDirect("HOMEASSISTANT");
+                    if(useMQTT) {
+                        presentTime.showTextDirect(mqttState() ? "CONNECTED" : "DISCONNECTED");
+                    } else {
+                        presentTime.showTextDirect("OFF");
+                    }
+                    break;
+                #endif
                 }
 
             }
@@ -2090,62 +2105,6 @@ void doCopyAudioFiles()
 }
 
 /* *** Helpers ################################################### */
-
-// Show all, month after a short delay
-void animate()
-{
-    #ifdef TC_HAVETEMP
-    if(isRcMode()) {
-        destinationTime.showTempDirect(tempSens.readLastTemp(), tempUnit, true);
-    } else
-    #endif
-        destinationTime.showAnimate1();
-
-    presentTime.showAnimate1();
-
-    #ifdef TC_HAVETEMP
-    if(isRcMode() && tempSens.haveHum()) {
-        departedTime.showHumDirect(tempSens.readHum(), true);
-    } else
-    #endif
-        departedTime.showAnimate1();
-        
-    mydelay(80);
-
-    #ifdef TC_HAVETEMP
-    if(isRcMode())
-        destinationTime.showTempDirect(tempSens.readLastTemp(), tempUnit);
-    else
-    #endif
-        destinationTime.showAnimate2();
-        
-    presentTime.showAnimate2();
-
-    #ifdef TC_HAVETEMP
-    if(isRcMode() && tempSens.haveHum()) {
-        departedTime.showHumDirect(tempSens.readHum());
-    } else
-    #endif
-        departedTime.showAnimate2();
-}
-
-// Activate lamp test on all displays and turn on
-void allLampTest()
-{
-    destinationTime.on();
-    presentTime.on();
-    departedTime.on();
-    destinationTime.lampTest();
-    presentTime.lampTest();
-    departedTime.lampTest();
-}
-
-void allOff()
-{
-    destinationTime.off();
-    presentTime.off();
-    departedTime.off();
-}
 
 void start_file_copy()
 {

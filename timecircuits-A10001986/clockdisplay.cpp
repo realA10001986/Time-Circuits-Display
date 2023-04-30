@@ -165,15 +165,13 @@ void clockDisplay::lampTest(bool randomize)
 // Clear the buffer
 void clockDisplay::clearBuf()
 {
-    // must call show() to actually clear display
-
     for(int i = 0; i < CD_BUF_SIZE; i++) {
         _displayBuffer[i] = 0;
     }
 }
 
 // Set display brightness
-// Valid brighness levels are 0 to 15. Default is 15.
+// Valid brighness levels are 0 to 15.
 // 255 sets it to previous level
 uint8_t clockDisplay::setBrightness(uint8_t level, bool setInitial)
 {
@@ -1152,60 +1150,35 @@ bool clockDisplay::loadNVMData(uint8_t *loadBuf)
 uint8_t clockDisplay::getLED7NumChar(uint8_t value)
 {
     if(value >= '0' && value <= '9') {
-        return numDigs[value - 48];
+        return numDigs[value - 32];
     } else if(value <= 9) {
-        return numDigs[value];
+        return numDigs[value + '0' - 32];
     }
     return 0;   // blank on invalid
 }
-
+  
 // Returns bit pattern for provided character for display on 7 segment display
 uint8_t clockDisplay::getLED7AlphaChar(uint8_t value)
 {
-    if(value >= '0' && value <= '9') {
-        // Use common "6" pattern to differ from "b" if desired
-        if(_corr6 && value == '6') return numDigs[6] | 0x01;
-        return numDigs[value - 48];
-    } else if(value >= 'A' && value <= 'Z') {
-        return numDigs[value - 'A' + 10];
-    } else if(value >= 'a' && value <= 'z') {
-        return numDigs[value - 'a' + 10];
-    }
-    switch(value) {
-    case '-':
-        return numDigs[36];
-    case '(':
-    case '[':
-        return numDigs[37];
-    case ')':
-    case ']':
-        return numDigs[38];
-    case '_':
-    case '.':
-        return numDigs[39];
-    case '~':   // used for "°"
-        return numDigs[40];
-    case '%':   // left part of double-digit "%"
-        return numDigs[41];
-    case '&':   // right part of double-digit "%"
-        return numDigs[42];
-    case '?':
-        return numDigs[43];
-    }
-
-    return 0;
+    if(value < 32 || value >= 127) 
+        return 0;
+    
+    if(_corr6 && value == '6') 
+        return numDigs[value - 32] | 0x01;
+    
+    return numDigs[value - 32];
 }
 
 // Returns bit pattern for provided character for display on alphanumeric 14 segment display
 #ifndef IS_ACAR_DISPLAY
 uint16_t clockDisplay::getLEDAlphaChar(uint8_t value)
 {
-    if(value < 32 || value > 127) return 0;
+    if(value < 32 || value >= 127) return 0;
 
     // For text, use common "6" pattern to conform with 7-seg-part
     if(_corr6 && value == '6') return alphaChars['6' - 32] | 0x0001;
 
-    return alphaChars[value-32];
+    return alphaChars[value - 32];
 }
 #endif
 

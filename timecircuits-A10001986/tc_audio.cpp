@@ -394,6 +394,7 @@ void play_keypad_sound(char key)
 void play_hour_sound(int hour)
 {
     char buf[16];
+    const char *hsnd = "/hour.mp3";
 
     if(!haveSD || mpActive) return;
     // Not even called in night mode
@@ -403,8 +404,12 @@ void play_hour_sound(int hour)
         play_file(buf, 1.0, false, false, true, false);
         return;
     }
-    
-    play_file("/hour.mp3", 1.0, false, false, true, false);
+
+    // Check for file so we do not interrupt anything
+    // if the file does not exist
+    if(SD.exists(hsnd)) {
+        play_file(hsnd, 1.0, false, false, true, false);
+    }
 }
 
 void play_beep()
@@ -550,6 +555,11 @@ void play_file(const char *audio_file, float volumeFactor, bool checkNightMode, 
         #endif
         
     }
+}
+
+bool check_file_SD(const char *audio_file)
+{
+    return (haveSD && SD.exists(audio_file));
 }
 
 // Returns value for volume based on the position of the pot
