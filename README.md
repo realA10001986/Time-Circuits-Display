@@ -789,7 +789,7 @@ In typical home setups with 24/7 WiFi, this option hardly matters. However, if y
 
 ##### &#9654; WiFi power save timer
 
-See [here](#wifi-power-saving-features). Note that a non-zero value here disables Home Assistant support.
+See [here](#wifi-power-saving-features)
 
 ##### &#9654; WiFi power save timer (AP-mode)
 
@@ -802,10 +802,6 @@ The time zone of the place where the device is operated. Has to be in POSIX form
 ##### &#9654; NTP Server
 
 Name of your preferred NTP (network time protocol) server for time synchronization. Leave this empty to disable NTP.
-
-##### &#9654; Use GPS as time source
-
-If a [GPS receiver](#gps-receiver) is connected, this selects whether GPS time is used for time synchronization.
 
 #### World Clock mode
 
@@ -853,13 +849,9 @@ If the light sensor reports a number of lux below or equal to this value, night-
 
 #### Temperature/humidity sensor settings
 
-##### &#9654; Use temperature sensor
-
-Select whether to use a temperature/humidity sensor. The sensor data is used for room condition mode, and the temperature is optionally displayed on a connected Speedo display. See [here](#room-condition-mode-temperaturehumidity-sensor)
-
 ##### &#9654; Display in °Celsius
 
-Selects between Fahrenheit and Celsius for temperature display.
+Selects between Fahrenheit and Celsius for temperature display. See [here](#room-condition-mode-temperaturehumidity-sensor)
 
 ##### &#9654; Temperature offset
 
@@ -914,6 +906,24 @@ This selects whether a GPIO pin is activated upon a time-travel in order to cont
 ##### &#9654; Play time travel sounds
 
 If other props are connected, they might bring their own time travel sound effects. In this case, you can uncheck this to disable the Time Circuit's own time travel sounds. Note that this only covers sounds played during time travel, not other sound effects.
+
+#### Home Assistant / MQTT settings
+
+##### Use Home Assistant (MQTT 3.1.1)
+
+If checked, the TCD will connect to the broker (if configured) and send and receive messages via MQTT.
+
+##### Broker IP[:port] or domain[:port]
+
+The broker server address. Can be a domain (eg. "myhome.me") or an IP address (eg "192.168.1.5"). The default port is 1883. If different port is to be used, it can be specified after the domain/IP and a colon ":", for example: "192.168.1.5:1884". 
+
+##### User[:Password]
+
+The username (and optionally the password) to be used when connecting to the broker. Can be left empty if the broker accepts anonymous logins.
+
+##### Topic to subscribe to
+
+A topic the TCD subscribes to in order to display messages on the *Destination Time" display.
 
 #### Music Player settings
 
