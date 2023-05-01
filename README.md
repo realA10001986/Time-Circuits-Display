@@ -659,6 +659,10 @@ Seven sensor types are supported: MCP9808 (i2c address 0x18), BMx280 (0x77), SI7
 
 *Note: You cannot connect the sensor chip directly to the TCD control board; most sensors need at least a power converter/level-shifter.* This is why I exclusively used Adafruit or Seeed breakouts ([MCP9808](https://www.adafruit.com/product/1782), [BME280](https://www.adafruit.com/product/2652), [SI7021](https://www.adafruit.com/product/3251), [SHT40](https://www.adafruit.com/product/4885), [TMP117](https://www.adafruit.com/product/4821), [AHT20](https://www.adafruit.com/product/4566), [HTU31D](https://www.adafruit.com/product/4832)), which all allow connecting named sensors to the 5V the TCD board operates on. For wiring information, see [here](#appendix-b-sensor-wiring).
 
+## Home Assistant / MQTT
+
+more to come shortly.
+
 ## WiFi power saving features
 
 The Config Portal offers two options for WiFi power saving, one for AP-mode (ie when the device acts as an access point), one for station mode (ie when the device is connected to a WiFi network). Both options do the same: They configure a timer after whose expiry WiFi is switched off; the device is no longer transmitting or receiving data over WiFi. 
