@@ -661,7 +661,48 @@ Seven sensor types are supported: MCP9808 (i2c address 0x18), BMx280 (0x77), SI7
 
 ## Home Assistant / MQTT
 
-more to come shortly.
+The TCD supports the MQTT protocol version 3.1.1 for the following features:
+
+### Display messages on TCD
+
+The TCD can subscribe to a user-configured topic and display messages received for this topic on the *Destination Time* display. This can be used to display the status of other HA/MQTT devices, for instance alarm systems. If the SD card contains a file names "ha-alert.mp3", this file will be played upon reception of a message.
+
+Only ASCII messages are supported, the maximum length is 255 characters.
+
+### Control the TCD via MQTT
+
+The TCD can - to a limited extent - be controlled through messages sent to topic bttf/tcd/cmd. Support commands are
+- TIMETRAVEL: Start a time travel
+- RETURN: Return from time travel
+- BEEP_ON: Enables the annoying beep(tm)
+- BEEP_OFF: Disables the annoying beep(tm)
+- BEEP_30, BEEP_60: Set the beep modes as described here
+- ALARM_ON: Enable the alarm
+- ALARM_OFF: Disable the alarm
+- NIGHTMODE_ON: Enable manual night mode
+- NIGHTMODE_OFF: Disable manual night mode
+- MP_PLAY: Starts the Music Player
+- MP_STOP: Stops the Music Player
+- MP_NEXT: Jump to next song
+- MP_PREV: Jump to previous song
+- MP_SHUFFLE_ON: Enables shuffle mode in Music Player
+- MP_SHUFFLE_OFF: Disables shuffle mode in Music Player
+
+### Trigger a time travel on other devices
+
+Upon a time travel, the TCD can send the message "TIMETRAVEL" to topic bttf/tcd/pub. This can be used to control other props wirelessly, such as Flux Capacitor, SID, etc. The timing is identical to the wired protocol, see here.
+
+### Setup
+
+In order to connect to a MQTT network, a "broker" must be present in your network, and its address needs to be configured in the Config Portal. The broker can be specified either by domain or IP (preferred, spares us a DNS call). The default port is 1883. If a different port is to be used, append a ":" followed by the port number to the domain/IP, such as "192.168.1.5:1884". 
+
+If your broker does not allow anonymous logins, a username and password can be specified.
+
+If you want your TCD to display messages as described above, you also need to specify the topic in the respective field.
+
+If you want your TCD to publish messages to bttf/tcd/pub, check the respective option.
+
+Limitations: Protocol 3.1.1, no encryption, maximum message length 255 characters.
 
 ## WiFi power saving features
 
