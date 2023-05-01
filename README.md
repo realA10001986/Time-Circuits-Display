@@ -913,19 +913,19 @@ If other props are connected, they might bring their own time travel sound effec
 
 #### Home Assistant / MQTT settings
 
-##### Use Home Assistant (MQTT 3.1.1)
+##### &#9654; Use Home Assistant (MQTT 3.1.1)
 
-If checked, the TCD will connect to the broker (if configured) and send and receive messages via MQTT.
+If checked, the TCD will connect to the broker (if configured) and send and receive messages via [MQTT](#home-assistant--mqtt)
 
-##### Broker IP[:port] or domain[:port]
+##### &#9654; Broker IP[:port] or domain[:port]
 
 The broker server address. Can be a domain (eg. "myhome.me") or an IP address (eg "192.168.1.5"). The default port is 1883. If different port is to be used, it can be specified after the domain/IP and a colon ":", for example: "192.168.1.5:1884". 
 
-##### User[:Password]
+##### &#9654; User[:Password]
 
 The username (and optionally the password) to be used when connecting to the broker. Can be left empty if the broker accepts anonymous logins.
 
-##### Topic to subscribe to
+##### &#9654; Topic to subscribe to
 
 A topic the TCD subscribes to in order to display messages on the *Destination Time" display.
 
