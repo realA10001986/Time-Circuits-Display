@@ -364,7 +364,7 @@ static void ettKeyHeld()
 }
 #endif
 
-static void recordKey(char key)
+void recordKey(char key)
 {
     dateBuffer[dateIndex++] = key;
     dateBuffer[dateIndex] = '\0';
@@ -570,7 +570,6 @@ void keypad_loop()
 
             uint16_t code = atoi(dateBuffer);
             char atxt[16];
-            bool bmchg = false;
             
             switch(code) {
             #ifdef TC_HAVETEMP
@@ -652,40 +651,10 @@ void keypad_loop()
                 }
                 break;
             case 000:
-                muteBeep = true;
-                beepMode = 0;
-                beepTimer = false;
-                bmchg = true;
-                break;
             case 001:
-                muteBeep = false;
-                beepMode = 1;
-                beepTimer = false;
-                bmchg = true;
-                break;
             case 002:
-                if(beepMode == 1) {
-                    beepTimerNow = millis();
-                    beepTimer = true;
-                }
-                beepMode = 2;
-                beepTimeout = BEEPM2_SECS*1000;
-                bmchg = true;
-                break;
             case 003:
-                if(beepMode == 1) {
-                    beepTimerNow = millis();
-                    beepTimer = true;
-                }
-                beepMode = 3;
-                beepTimeout = BEEPM3_SECS*1000;
-                bmchg = true;
-                break;
-            default:
-                invalidEntry = true;
-            }
-
-            if(bmchg) {
+                setBeepMode(code);
                 #ifdef IS_ACAR_DISPLAY
                 sprintf(atxt, "BEEP MODE  %1d", beepMode);
                 #else
@@ -694,6 +663,9 @@ void keypad_loop()
                 destinationTime.showTextDirect(atxt);
                 enterDelay = ENTER_DELAY;
                 specDisp = 10;
+                break;
+            default:
+                invalidEntry = true;
             }
 
         } else if(strLen == DATELEN_INT) {
@@ -1101,6 +1073,42 @@ static void mykpddelay(unsigned int mydel)
     }
 }
 
+/*
+ * Beep
+ */
+
+void setBeepMode(int mode)
+{
+    switch(mode) {
+    case 0:
+        muteBeep = true;
+        beepMode = 0;
+        beepTimer = false;
+        break;
+    case 1:
+        muteBeep = false;
+        beepMode = 1;
+        beepTimer = false;
+        break;
+    case 2:
+        if(beepMode == 1) {
+            beepTimerNow = millis();
+            beepTimer = true;
+        }
+        beepMode = 2;
+        beepTimeout = BEEPM2_SECS*1000;
+        break;
+    case 3:
+        if(beepMode == 1) {
+            beepTimerNow = millis();
+            beepTimer = true;
+        }
+        beepMode = 3;
+        beepTimeout = BEEPM3_SECS*1000;
+        break;
+    }
+}
+         
 /*
  * Un-mute beep and start beep timer
  */

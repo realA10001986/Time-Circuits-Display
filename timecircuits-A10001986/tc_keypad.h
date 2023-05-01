@@ -54,6 +54,7 @@ void cancelETTAnim();
 
 bool keypadIsIdle();
 
+void setBeepMode(int mode);
 void startBeepTimer();
 
 void nightModeOn();

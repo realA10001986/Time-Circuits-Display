@@ -346,9 +346,6 @@ static bool read_settings(File configFile)
             memset(settings.ntpServer, 0, sizeof(settings.ntpServer));
             strncpy(settings.ntpServer, json["ntpServer"], sizeof(settings.ntpServer) - 1);
         } else wd = true;
-        #ifdef TC_HAVEGPS
-        wd |= CopyCheckValidNumParm(json["useGPS"], settings.useGPS, sizeof(settings.useGPS), 0, 1, DEF_USE_GPS);
-        #endif
 
         if(json["timeZoneDest"]) {
             memset(settings.timeZoneDest, 0, sizeof(settings.timeZoneDest));
@@ -390,7 +387,6 @@ static bool read_settings(File configFile)
         #endif
 
         #ifdef TC_HAVETEMP
-        wd |= CopyCheckValidNumParm(json["useTemp"], settings.useTemp, sizeof(settings.useTemp), 0, 1, DEF_USE_TEMP);
         wd |= CopyCheckValidNumParm(json["tempUnit"], settings.tempUnit, sizeof(settings.tempUnit), 0, 1, DEF_TEMP_UNIT);
         wd |= CopyCheckValidNumParmF(json["tempOffs"], settings.tempOffs, sizeof(settings.tempOffs), -3.0, 3.0, DEF_TEMP_OFFS);
         #endif
@@ -493,9 +489,6 @@ void write_settings()
     
     json["timeZone"] = settings.timeZone;
     json["ntpServer"] = settings.ntpServer;
-    #ifdef TC_HAVEGPS
-    json["useGPS"] = settings.useGPS;
-    #endif
 
     json["timeZoneDest"] = settings.timeZoneDest;
     json["timeZoneDep"] = settings.timeZoneDep;
@@ -519,7 +512,6 @@ void write_settings()
     #endif
 
     #ifdef TC_HAVETEMP
-    json["useTemp"] = settings.useTemp;
     json["tempUnit"] = settings.tempUnit;
     json["tempOffs"] = settings.tempOffs;
     #endif

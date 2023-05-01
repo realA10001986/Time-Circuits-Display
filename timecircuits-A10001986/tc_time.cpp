@@ -247,7 +247,7 @@ bool timetravelPersistent = true;
 // Alarm/HourlySound based on RTC (or presentTime's display)
 static bool alarmRTC = true;
 
-bool useGPS      = false;
+bool useGPS      = true;
 bool useGPSSpeed = false;
 
 // TZ/DST status & data
@@ -733,7 +733,7 @@ void time_setup()
 
     // Set up GPS receiver
     #ifdef TC_HAVEGPS
-    useGPS = ((int)atoi(settings.useGPS) > 0);
+    useGPS = true;    // Use by default if detected
     
     #ifdef TC_HAVESPEEDO
     if(useSpeedo) {
@@ -1114,38 +1114,34 @@ void time_setup()
 
     // Set up temperature sensor
     #ifdef TC_HAVETEMP
-    useTemp = ((int)atoi(settings.useTemp) > 0);
+    useTemp = true;   // Used by default if detected
     #ifdef TC_HAVESPEEDO
     dispTemp = ((int)atoi(settings.dispTemp) > 0);
     #else
     dispTemp = false;
     #endif
-    if(useTemp) {
-        if(tempSens.begin(powerupMillis)) {
-            tempSens.setCustomDelayFunc(myCustomDelay);
-            tempUnit = ((int)atoi(settings.tempUnit) > 0);
-            tempSens.setOffset((float)atof(settings.tempOffs));
-            #ifdef TC_HAVESPEEDO
-            tempBrightness = (int)atoi(settings.tempBright);
-            tempOffNM = ((int)atoi(settings.tempOffNM) > 0);
-            if(!useSpeedo || useGPSSpeed) dispTemp = false;
-            if(dispTemp) {
-                #ifdef FAKE_POWER_ON
-                if(!waitForFakePowerButton) {
-                #endif
-                    updateTemperature(true);
-                    dispTemperature(true);
-                #ifdef FAKE_POWER_ON
-                }
-                #endif
+    if(tempSens.begin(powerupMillis)) {
+        tempSens.setCustomDelayFunc(myCustomDelay);
+        tempUnit = ((int)atoi(settings.tempUnit) > 0);
+        tempSens.setOffset((float)atof(settings.tempOffs));
+        #ifdef TC_HAVESPEEDO
+        tempBrightness = (int)atoi(settings.tempBright);
+        tempOffNM = ((int)atoi(settings.tempOffNM) > 0);
+        if(!useSpeedo || useGPSSpeed) dispTemp = false;
+        if(dispTemp) {
+            #ifdef FAKE_POWER_ON
+            if(!waitForFakePowerButton) {
+            #endif
+                updateTemperature(true);
+                dispTemperature(true);
+            #ifdef FAKE_POWER_ON
             }
             #endif
-            haveRcMode = true;
-        } else {
-            useTemp = dispTemp = false;
         }
+        #endif
+        haveRcMode = true;
     } else {
-        dispTemp = false;
+        useTemp = dispTemp = false;
     }
     #else
     useTemp = dispTemp = false;

@@ -48,7 +48,7 @@ extern uint8_t musFolderNum;
 #define DEF_ALARM_RTC       1     // 0-1;  Default: 1 = Alarm is RTC-based (otherwise 0 = presentTime-based)
 #define DEF_PLAY_INTRO      1     // 0-1;  Default: 1 = Play intro
 #define DEF_MODE24          0     // 0-1;  Default: 0 = 12-hour-mode
-#define DEF_BEEP            0     // 0-1:  Default: 0 = annoying beep(tm) off by default
+#define DEF_BEEP            0     // 0-1:  Default: 0 = annoying beep(tm) off
 #define DEF_AUTOROTTIMES    1     // 0-5;  Default: Auto-rotate every 5th minute
 #define DEF_HOSTNAME        "timecircuits"
 #define DEF_WIFI_RETRY      3     // 1-15; Default: 3 retries
@@ -73,9 +73,7 @@ extern uint8_t musFolderNum;
 #define DEF_SPEEDO_TYPE     99    // Default display type: None
 #define DEF_SPEEDO_FACT     2.0   // Speedo factor (1.0 actual DeLorean figures; >1.0 faster, <1.0 slower)
 #define DEF_BRIGHT_SPEEDO   15    // Default: Max. brightness for speed
-#define DEF_USE_GPS         0     // 0: No i2c GPS module
 #define DEF_USE_GPS_SPEED   0     // 0: Do not use GPS speed on speedo display
-#define DEF_USE_TEMP        0     // 0: No i2c temperature/humidity sensor
 #define DEF_DISP_TEMP       1     // 1: Display temperature (if available) on speedo
 #define DEF_TEMP_BRIGHT     3     // Default temperature brightness
 #define DEF_TEMP_OFF_NM     1     // Default: temperature off in night mode
@@ -83,8 +81,8 @@ extern uint8_t musFolderNum;
 #define DEF_TEMP_OFFS       0.0   // Default: temperature offset 0.0
 #define DEF_USE_LIGHT       0     // Default: No i2c light sensor
 #define DEF_LUX_LIMIT       3     // Default Lux for night mode
-#define DEF_USE_ETTO        0     // 0: No external props
-#define DEF_PLAY_TT_SND     1     // 1: Play time travel sounds (0: Do not; for use with external equipment)
+#define DEF_USE_ETTO        0     // Default: 0: No external props
+#define DEF_PLAY_TT_SND     1     // Default 1: Play time travel sounds (0: Do not; for use with external equipment)
 #define DEF_SHUFFLE         0     // Music Player: Do not shuffle by default
 #define DEF_CFG_ON_SD       0     // Default: Save alarm/volume settings in flash memory
 #define DEF_SD_FREQ         0     // SD/SPI frequency: Default 16MHz
@@ -124,11 +122,7 @@ struct Settings {
     char ettDelay[8]        = MS(DEF_ETT_DELAY);
     char ettLong[4]         = MS(DEF_ETT_LONG);
 #endif
-#ifdef TC_HAVEGPS
-    char useGPS[4]          = MS(DEF_USE_GPS);
-#endif
 #ifdef TC_HAVETEMP
-    char useTemp[4]         = MS(DEF_USE_TEMP);
     char tempUnit[4]        = MS(DEF_TEMP_UNIT);
     char tempOffs[6]        = MS(DEF_TEMP_OFFS);
 #endif

@@ -153,17 +153,9 @@ WiFiManagerParameter custom_wifiPRe("wifiPRet", "Periodic reconnection attempts 
 #endif // -------------------------------------------------
 WiFiManagerParameter custom_wifiOffDelay("wifioff", "<br>WiFi power save timer<br>(10-99[minutes];0=off)", settings.wifiOffDelay, 2, "type='number' min='0' max='99' title='If in station mode, WiFi will be shut down after chosen number of minutes after power-on. 0 means never.'");
 WiFiManagerParameter custom_wifiAPOffDelay("wifiAPoff", "WiFi power save timer (AP-mode)<br>(10-99[minutes];0=off)", settings.wifiAPOffDelay, 2, "type='number' min='0' max='99' title='If in AP mode, WiFi will be shut down after chosen number of minutes after power-on. 0 means never.'");
-WiFiManagerParameter custom_wifiHint("<div style='margin:0;padding:0'>Hold '7' to re-enable Wifi when in power save mode.</div>");
 
 WiFiManagerParameter custom_timeZone("time_zone", "Time zone (in <a href='https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv' target=_blank>Posix</a> format)", settings.timeZone, 63, "placeholder='Example: CST6CDT,M3.2.0,M11.1.0'");
 WiFiManagerParameter custom_ntpServer("ntp_server", "NTP Server (empty to disable NTP)", settings.ntpServer, 63, "pattern='[a-zA-Z0-9.-]+' placeholder='Example: pool.ntp.org'");
-#ifdef TC_HAVEGPS
-#ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
-WiFiManagerParameter custom_useGPS("uGPS", "Use GPS as time source (0=no, 1=yes)", settings.useGPS, 1, "autocomplete='off' title='Enable to use a GPS receiver as a time source'");
-#else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_useGPS("uGPS", "Use GPS as time source", settings.useGPS, 1, "autocomplete='off' title='Check to use a GPS receiver as a time source' type='checkbox' style='margin-top:12px'", WFM_LABEL_AFTER);
-#endif // -------------------------------------------------
-#endif
 
 WiFiManagerParameter custom_timeZone1("time_zone1", "Time zone for Destination Time display", settings.timeZoneDest, 63, "placeholder='Example: CST6CDT,M3.2.0,M11.1.0'");
 WiFiManagerParameter custom_timeZone2("time_zone2", "Time zone for Last Time Dep. display", settings.timeZoneDep, 63, "placeholder='Example: CST6CDT,M3.2.0,M11.1.0'");
@@ -193,11 +185,9 @@ WiFiManagerParameter custom_lxLim("lxLim", "<br>Lux threshold (0-50000)", settin
 
 #ifdef TC_HAVETEMP
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
-WiFiManagerParameter custom_useTemp("uTem", "Use temperature/humidity sensor (0=no, 1=yes)", settings.useTemp, 1, "autocomplete='off' title='Enable to use a temperature/humidity sensor for room condition mode and to display temperature on speedo display while idle.'");
-WiFiManagerParameter custom_tempUnit("uTem", "Temperture unit (0=°F, 1=°C)", settings.tempUnit, 1, "autocomplete='off' title='Select unit for temperature'");
+WiFiManagerParameter custom_tempUnit("uTem", "Temperature unit (0=°F, 1=°C)", settings.tempUnit, 1, "autocomplete='off' title='Select unit for temperature'");
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_useTemp("uTem", "Use temperature/humidity sensor", settings.useTemp, 1, "title='Check to use a temperature/humidity sensor for room condition mode and to display temperature on speedo display while idle.' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
-WiFiManagerParameter custom_tempUnit("temUnt", "Display in °Celsius", settings.tempUnit, 1, "title='If unchecked, temperature is displayed in Fahrenheit' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_tempUnit("temUnt", "Show temperature in °Celsius", settings.tempUnit, 1, "title='If unchecked, temperature is displayed in Fahrenheit' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 WiFiManagerParameter custom_tempOffs("tOffs", "<br>Temperature offset (-3.0-3.0)", settings.tempOffs, 4, "type='number' min='-3.0' max='3.0' step='0.1' title='Correction value to add to temperature' autocomplete='off'");
 #endif // TC_HAVETEMP
@@ -295,8 +285,12 @@ WiFiManagerParameter custom_sectstart_head("<div class='sects'>");
 WiFiManagerParameter custom_sectstart("</div><div class='sects'>");
 WiFiManagerParameter custom_sectend("</div>");
 
-WiFiManagerParameter custom_sectstart_nm("</div><div class='sects'><div class='headl'>Night mode</div>");
+WiFiManagerParameter custom_sectstart_wi("<div style='margin:0;padding:0'>Hold '7' to re-enable Wifi when in power save mode.</div></div><div class='sects'>");
 WiFiManagerParameter custom_sectstart_wc("</div><div class='sects'><div class='headl'>World Clock mode</div>");
+WiFiManagerParameter custom_sectstart_nm("</div><div class='sects'><div class='headl'>Night mode</div>");
+#ifdef TC_HAVETEMP
+WiFiManagerParameter custom_sectstart_te("</div><div class='sects'><div class='headl'>Temperature/humidity sensor</div>");
+#endif
 WiFiManagerParameter custom_sectstart_et("</div><div class='sects'><div class='headl'>External time travel button</div>");
 WiFiManagerParameter custom_sectstart_mp("</div><div class='sects'><div class='headl'>MusicPlayer</div>");
 
@@ -435,21 +429,17 @@ void wifi_setup()
     wm.addParameter(&custom_mode24);
     wm.addParameter(&custom_beep_aint);
     
-    wm.addParameter(&custom_sectstart);     // 8
+    wm.addParameter(&custom_sectstart);     // 7
     wm.addParameter(&custom_hostName);
     wm.addParameter(&custom_wifiConRetries);
     wm.addParameter(&custom_wifiConTimeout);
     wm.addParameter(&custom_wifiPRe);
     wm.addParameter(&custom_wifiOffDelay);
     wm.addParameter(&custom_wifiAPOffDelay);
-    wm.addParameter(&custom_wifiHint);
     
-    wm.addParameter(&custom_sectstart);     // 4
+    wm.addParameter(&custom_sectstart_wi);  // 3    (ss_wi contains wifiHint from section above)
     wm.addParameter(&custom_timeZone);
-    wm.addParameter(&custom_ntpServer);
-    #ifdef TC_HAVEGPS
-    wm.addParameter(&custom_useGPS);
-    #endif
+    wm.addParameter(&custom_ntpServer);   
 
     wm.addParameter(&custom_sectstart_wc);  // 5
     wm.addParameter(&custom_timeZone1);
@@ -470,8 +460,7 @@ void wifi_setup()
     #endif
 
     #ifdef TC_HAVETEMP
-    wm.addParameter(&custom_sectstart);     // 4
-    wm.addParameter(&custom_useTemp);
+    wm.addParameter(&custom_sectstart_te);  // 3
     wm.addParameter(&custom_tempUnit);
     wm.addParameter(&custom_tempOffs);
     #endif
@@ -578,18 +567,18 @@ void wifi_setup()
     pubMQTT = ((int)atoi(settings.pubMQTT) > 0);
     #endif
     
-    if(useMQTT) {
-        if((!settings.mqttServer[0]) || // No server -> no MQTT
-           (wifiInAPMode)            || // WiFi in AP mode -> no MQTT
-           (wifiAPOffDelay > 0) )       // WiFi Power save config'd -> no MQTT
-            useMQTT = false;  
-    }
+    if((!settings.mqttServer[0]) || // No server -> no MQTT
+       (wifiInAPMode))              // WiFi in AP mode -> no MQTT
+        useMQTT = false;  
     
     if(useMQTT) {
 
         bool mqttRes = false;
         char *t;
         int tt;
+
+        // No WiFi power save if we're using MQTT
+        origWiFiOffDelay = wifiOffDelay = 0;
 
         if((t = strchr(settings.mqttServer, ':'))) {
             strncpy(mqttServer, settings.mqttServer, t - settings.mqttServer);
@@ -636,7 +625,7 @@ void wifi_setup()
         #endif
 
         #ifdef TC_DBG
-        Serial.println("MQTT: Skipping init");
+        Serial.println("MQTT: Disabled");
         #endif
 
     }
@@ -774,10 +763,6 @@ void wifi_loop()
             mystrcpy(settings.mode24, &custom_mode24);
 
             mystrcpy(settings.wifiPRetry, &custom_wifiPRe);
-                       
-            #ifdef TC_HAVEGPS
-            mystrcpy(settings.useGPS, &custom_useGPS);
-            #endif
             
             mystrcpy(settings.dtNmOff, &custom_dtNmOff);
             mystrcpy(settings.ptNmOff, &custom_ptNmOff);
@@ -787,7 +772,6 @@ void wifi_loop()
             #endif
             
             #ifdef TC_HAVETEMP
-            mystrcpy(settings.useTemp, &custom_useTemp);
             mystrcpy(settings.tempUnit, &custom_tempUnit);
             #endif
             
@@ -835,10 +819,6 @@ void wifi_loop()
             strcpyCB(settings.mode24, &custom_mode24);
 
             strcpyCB(settings.wifiPRetry, &custom_wifiPRe);
-            
-            #ifdef TC_HAVEGPS
-            strcpyCB(settings.useGPS, &custom_useGPS);
-            #endif
 
             strcpyCB(settings.dtNmOff, &custom_dtNmOff);
             strcpyCB(settings.ptNmOff, &custom_ptNmOff);
@@ -848,7 +828,6 @@ void wifi_loop()
             #endif
             
             #ifdef TC_HAVETEMP
-            strcpyCB(settings.useTemp, &custom_useTemp);
             strcpyCB(settings.tempUnit, &custom_tempUnit);
             #endif
             
@@ -989,6 +968,10 @@ static void wifiConnect(bool deferConfigPortal)
         // delayed for as long as the DTIM period.
         // Since it is the default setting, so no need to call it here.
         //WiFi.setSleep(true);
+
+        // Disable modem sleep, don't want delays accessing the CP or
+        // with MQTT.
+        WiFi.setSleep(false);
 
         // Set transmit power to max; we might be connecting as STA after
         // a previous period in AP mode.
@@ -1497,9 +1480,6 @@ void updateConfigPortalValues()
     custom_playIntro.setValue(settings.playIntro, 1);
     custom_mode24.setValue(settings.mode24, 1);
     custom_wifiPRe.setValue(settings.wifiPRetry, 1);
-    #ifdef TC_HAVEGPS
-    custom_useGPS.setValue(settings.useGPS, 1);
-    #endif
     custom_dtNmOff.setValue(settings.dtNmOff, 1);
     custom_ptNmOff.setValue(settings.ptNmOff, 1);
     custom_ltNmOff.setValue(settings.ltNmOff, 1);
@@ -1507,7 +1487,6 @@ void updateConfigPortalValues()
     custom_uLS.setValue(settings.useLight, 1);
     #endif
     #ifdef TC_HAVETEMP
-    custom_useTemp.setValue(settings.useTemp, 1);
     custom_tempUnit.setValue(settings.tempUnit, 1);
     #endif
     #ifdef TC_HAVESPEEDO
@@ -1546,9 +1525,6 @@ void updateConfigPortalValues()
     setCBVal(&custom_playIntro, settings.playIntro);
     setCBVal(&custom_mode24, settings.mode24);
     setCBVal(&custom_wifiPRe, settings.wifiPRetry);
-    #ifdef TC_HAVEGPS
-    setCBVal(&custom_useGPS, settings.useGPS);
-    #endif
     setCBVal(&custom_dtNmOff, settings.dtNmOff);
     setCBVal(&custom_ptNmOff, settings.ptNmOff);
     setCBVal(&custom_ltNmOff, settings.ltNmOff);
@@ -1556,7 +1532,6 @@ void updateConfigPortalValues()
     setCBVal(&custom_uLS, settings.useLight);
     #endif
     #ifdef TC_HAVETEMP
-    setCBVal(&custom_useTemp, settings.useTemp);
     setCBVal(&custom_tempUnit, settings.tempUnit);
     #endif
     #ifdef TC_HAVESPEEDO
@@ -1824,6 +1799,10 @@ static void mqttCallback(char *topic, byte *payload, unsigned int length)
       "MP_STOP",          // 9
       "MP_NEXT",          // 10
       "MP_PREV",          // 11
+      "BEEP_OFF",         // 12
+      "BEEP_ON",          // 13
+      "BEEP_30",          // 14
+      "BEEP_60",          // 15
       NULL
     };
 
@@ -1892,6 +1871,12 @@ static void mqttCallback(char *topic, byte *payload, unsigned int length)
             break;
         case 11:
             if(haveMusic) mp_prev(mpActive);
+            break;
+        case 12:
+        case 13:
+        case 14:
+        case 15:
+            setBeepMode(i-12);
             break;
         }
             
