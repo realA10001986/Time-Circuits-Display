@@ -676,7 +676,7 @@ The TCD can - to a limited extent - be controlled through messages sent to topic
 - RETURN: Return from time travel
 - BEEP_ON: Enables the annoying beep(tm)
 - BEEP_OFF: Disables the annoying beep(tm)
-- BEEP_30, BEEP_60: Set the beep modes as described here
+- BEEP_30, BEEP_60: Set the beep modes as described [here](#beep-on-the-second)
 - ALARM_ON: Enable the alarm
 - ALARM_OFF: Disable the alarm
 - NIGHTMODE_ON: Enable manual night mode
