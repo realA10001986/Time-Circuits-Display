@@ -2123,7 +2123,9 @@ void time_loop()
             // Only do this on second 59, check if it's time to do so
             if((dt.second() == 59)                        &&
                (!autoPaused)                              &&
+               #ifdef TC_HAVETEMP
                (!isRcMode() || !tempSens.haveHum())       &&    // Skip in rcMode if temp&hum available
+               #endif
                (!isWcMode() || !WcHaveTZ1 || !WcHaveTZ2)  &&    // Skip in wcMode if both TZs available
                autoTimeIntervals[autoInterval]            &&
                (minNext % autoTimeIntervals[autoInterval] == 0)) {
