@@ -629,7 +629,7 @@ void wifi_setup()
         #endif
 
     }
-#endif    
+#endif
 }
 
 /*
@@ -751,8 +751,8 @@ void wifi_loop()
 
             #ifdef TC_HAVEMQTT
             strcpytrim(settings.mqttServer, custom_mqttServer.getValue());
-            strcpyutf8(settings.mqttUser, custom_mqttUser.getValue(), sizeof(settings.mqttUser)-1);
-            strcpyutf8(settings.mqttTopic, custom_mqttTopic.getValue(), sizeof(settings.mqttTopic)-1);
+            strcpyutf8(settings.mqttUser, custom_mqttUser.getValue(), sizeof(settings.mqttUser));
+            strcpyutf8(settings.mqttTopic, custom_mqttTopic.getValue(), sizeof(settings.mqttTopic));
             #endif
             
             #ifdef TC_NOCHECKBOXES // --------- Plain text boxes:
@@ -1738,7 +1738,8 @@ static void setCBVal(WiFiManagerParameter *el, char *sv)
 #ifdef TC_HAVEMQTT
 static void strcpyutf8(char *dst, const char *src, unsigned int len)
 {
-    strncpy(dst, src, len);
+    strncpy(dst, src, len - 1);
+    dst[len - 1] = 0;
 }
 
 static void filterOutUTF8(char *src, char *dst)
@@ -1880,7 +1881,7 @@ static void mqttCallback(char *topic, byte *payload, unsigned int length)
             break;
         }
             
-    } else if(strcmp(topic, "bttf/tcd/pub")) {
+    } else if(!strcmp(topic, settings.mqttTopic)) {
     
         for(i = 0; i < ml; i++) {
             tempBuf[i] = payload[i];
@@ -1923,19 +1924,18 @@ static bool mqttReconnect(bool force, bool connectLooper)
             }
             
             if(success) {
-                if(settings.mqttTopic[0]) {
-                    if(!mqttClient.subscribe(settings.mqttTopic)) {
+                if(!mqttClient.subscribe("bttf/tcd/cmd", settings.mqttTopic)) {
+                    if(!mqttClient.subscribe("bttf/tcd/cmd")) {
+                        mqttClient.disconnect();
+                        success = false;
+                        #ifdef TC_DBG
+                        Serial.println("MQTT: Failed to subscribe to all topics");
+                        #endif
+                    } else {
                         #ifdef TC_DBG
                         Serial.println("MQTT: Failed to subscribe to user topic");
                         #endif
                     }
-                }
-                if(!mqttClient.subscribe("bttf/tcd/cmd")) {
-                    mqttClient.disconnect();
-                    success = false;
-                    #ifdef TC_DBG
-                    Serial.println("MQTT: Failed to subscribe to command topic");
-                    #endif
                 }
             }
 

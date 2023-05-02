@@ -101,7 +101,7 @@
 
 #define CHECK_STRING_LENGTH(l,s) if(l+2+strnlen(s, this->bufferSize) > this->bufferSize) { _client->stop(); return false; }
 
-class PubSubClient : public Print {
+class PubSubClient {
 
     public:
         PubSubClient();
@@ -110,8 +110,8 @@ class PubSubClient : public Print {
         ~PubSubClient();
     
         void setServer(IPAddress ip, uint16_t port);
-        void setServer(const char * domain, uint16_t port);
-        void setCallback(void (*callback)(char*, uint8_t*, unsigned int));
+        void setServer(const char *domain, uint16_t port);
+        void setCallback(void (*callback)(char *, uint8_t *, unsigned int));
         void setLooper(void (*looper)());
         void setClient(Client& client);
         void setKeepAlive(uint16_t keepAlive);
@@ -120,35 +120,31 @@ class PubSubClient : public Print {
         bool setBufferSize(uint16_t size);
         uint16_t getBufferSize();
     
-        bool connect(const char* id);
-        bool connect(const char* id, const char* user, const char* pass);
+        bool connect(const char *id);
+        bool connect(const char *id, const char *user, const char *pass);
         bool connect(const char *id, const char *user, const char *pass, bool cleanSession);
        
         void disconnect();
 
-        bool publish(const char* topic, const uint8_t* payload, unsigned int plength, bool retained = false);
-       
-        // Write a single byte of payload (only to be used with beginPublish/endPublish)
-        virtual size_t write(uint8_t);
-        // Write size bytes from buffer into the payload (only to be used with beginPublish/endPublish)
-        // Returns the number of bytes written
-        virtual size_t write(const uint8_t *buffer, size_t size);
-        bool subscribe(const char* topic);
-        bool subscribe(const char* topic, uint8_t qos);
-        bool unsubscribe(const char* topic);
+        bool publish(const char *topic, const uint8_t *payload, unsigned int plength, bool retained = false);
+             
+        bool subscribe(const char *topic, const char *topic2 = NULL, uint8_t qos = 0);
+        bool unsubscribe(const char *topic);
+        
         bool loop();
+        
         bool connected();
-        int state();
+        int  state();
         void setConLooper(bool conLooper);
     
     private:
 
-        bool subscribe_int(bool unsubscribe, const char* topic, uint8_t qos);
-        uint32_t readPacket(uint8_t*);
-        bool readByte(uint8_t * result);
-        bool readByte(uint8_t * result, uint16_t * index);
-        bool write(uint8_t header, uint8_t* buf, uint16_t length);
-        uint16_t writeString(const char* string, uint8_t* buf, uint16_t pos);
+        bool subscribe_int(bool unsubscribe, const char *topic, const char *topic2L, uint8_t qos);
+        uint32_t readPacket(uint8_t *);
+        bool readByte(uint8_t *result);
+        bool readByte(uint8_t *result, uint16_t *index);
+        bool write(uint8_t header, uint8_t *buf, uint16_t length);
+        uint16_t writeString(const char *string, uint8_t *buf, uint16_t pos);
         // Build up the header ready to send
         // Returns the size of the header
         // Note: the header is built at the end of the first MQTT_MAX_HEADER_SIZE bytes, so will start
@@ -164,7 +160,7 @@ class PubSubClient : public Print {
         unsigned long lastOutActivity;
         unsigned long lastInActivity;
         bool pingOutstanding;
-        void (*callback)(char*, uint8_t*, unsigned int);
+        void (*callback)(char *, uint8_t *, unsigned int);
         void (*looper)();
         bool callLooperCon;
 

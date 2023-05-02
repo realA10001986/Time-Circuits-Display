@@ -1376,36 +1376,6 @@ void time_loop()
     }
     #endif
 
-    // Power management: CPU speed
-    // Can only reduce when GPS is not used and WiFi is off
-    if(!pwrLow && checkAudioDone() &&
-                  #ifdef TC_HAVEGPS
-                  !useGPS && !useGPSSpeed &&
-                  #endif
-                             (wifiIsOff || wifiAPIsOff) && (millisNow - pwrFullNow >= 5*60*1000)) {
-        setCpuFrequencyMhz(80);
-        pwrLow = true;
-
-        #ifdef TC_DBG
-        Serial.printf("Reduced CPU speed to %d\n", getCpuFrequencyMhz());
-        #endif
-    }
-
-    // End of OTPR for PCF2129
-    if(OTPRinProgress) {
-        if(millisNow - OTPRStarted > 100) {
-            rtc.OTPRefresh(false);
-            OTPRinProgress = false;
-            OTPRDoneNow = millisNow;
-        }
-    }
-
-    // Beep auto modes
-    if(beepTimer && (millisNow - beepTimerNow > beepTimeout)) {
-        muteBeep = true;
-        beepTimer = false;
-    }
-
     // Initiate startup delay, play startup sound
     if(startupSound) {
         startupNow = pauseNow = millis();
@@ -1442,12 +1412,12 @@ void time_loop()
     #ifdef EXTERNAL_TIMETRAVEL_OUT
     // Timer for start of ETTO signal/pulse
     if(triggerETTO && (millis() - triggerETTONow >= triggerETTOLeadTime)) {
+        ettoPulseStart();
         #ifdef TC_HAVEMQTT
         if(useMQTT && pubMQTT) {
             mqttPublish("bttf/tcd/pub", "TIMETRAVEL\0", 11);
         }
         #endif
-        ettoPulseStart();
         triggerETTO = false;
         ettoPulse = true;
         ettoPulseNow = millis();
@@ -1573,38 +1543,77 @@ void time_loop()
         timeTravelRE = false;
     }
 
-    // Read GPS, and display GPS speed or temperature
+    y = digitalRead(SECONDS_IN_PIN);
+    if(y == x) {
 
-    #ifdef TC_HAVEGPS
-    if(useGPS || useGPSSpeed) {
-        if(millis() - lastLoopGPS >= GPSupdateFreq) {
-            lastLoopGPS = millis();
-            myGPS.loop(true);
-            #ifdef TC_HAVESPEEDO
-            dispGPSSpeed(true);
-            #endif
+        // timing un-critical stuff goes here:
+
+        // Read GPS, and display GPS speed or temperature
+        #ifdef TC_HAVEGPS
+        if(useGPS || useGPSSpeed) {
+            if(millis() - lastLoopGPS >= GPSupdateFreq) {
+                lastLoopGPS = millis();
+                myGPS.loop(true);
+                #ifdef TC_HAVESPEEDO
+                dispGPSSpeed(true);
+                #endif
+            }
         }
-    }
-    #endif
+        #endif
 
-    #ifdef TC_HAVETEMP
-    updateTemperature();
-    #ifdef TC_HAVESPEEDO
-    dispTemperature();
-    #endif
-    #endif
+        // Power management: CPU speed
+        // Can only reduce when GPS is not used and WiFi is off
+        if(!pwrLow && checkAudioDone() &&
+                      #ifdef TC_HAVEGPS
+                      !useGPS && !useGPSSpeed &&
+                      #endif
+                                 (wifiIsOff || wifiAPIsOff) && (millisNow - pwrFullNow >= 5*60*1000)) {
+            setCpuFrequencyMhz(80);
+            pwrLow = true;
+
+            #ifdef TC_DBG
+            Serial.printf("Reduced CPU speed to %d\n", getCpuFrequencyMhz());
+            #endif
+        }   
+
+        // Beep auto modes
+        if(beepTimer && (millisNow - beepTimerNow > beepTimeout)) {
+            muteBeep = true;
+            beepTimer = false;
+        }
+
+        // Update sensors
+
+        #ifdef TC_HAVETEMP
+        updateTemperature();
+        #ifdef TC_HAVESPEEDO
+        dispTemperature();
+        #endif
+        #endif
+        
+        #ifdef TC_HAVELIGHT
+        if(useLight && (millis() - lastLoopLight >= 3000)) {
+            lastLoopLight = millis();
+            lightSens.loop();
+        }
+        #endif
+
+        // End of OTPR for PCF2129
+        if(OTPRinProgress) {
+            if(millisNow - OTPRStarted > 100) {
+                rtc.OTPRefresh(false);
+                OTPRinProgress = false;
+                OTPRDoneNow = millisNow;
+            }
+        }
+
+    } 
     
-    #ifdef TC_HAVELIGHT
-    if(useLight && (millis() - lastLoopLight >= 3000)) {
-        lastLoopLight = millis();
-        lightSens.loop();
-    }
-    #endif
-
-    // Actual clock stuff
-
     y = digitalRead(SECONDS_IN_PIN);
     if(y != x) {
+
+        // Actual clock stuff
+      
         if(y == 0) {
 
             // Set colon
@@ -2590,6 +2599,11 @@ void timeTravel(bool doComplete, bool withSpeedo)
     #ifdef EXTERNAL_TIMETRAVEL_OUT
     if(useETTO) {
         ettoPulseEnd();
+        #ifdef TC_HAVEMQTT
+        if(useMQTT && pubMQTT) {
+            mqttPublish("bttf/tcd/pub", "REENTRY\0", 8);
+        }
+        #endif
     }
     #endif
 }

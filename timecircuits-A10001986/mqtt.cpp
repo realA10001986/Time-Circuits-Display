@@ -409,18 +409,6 @@ bool PubSubClient::publish(const char* topic, const uint8_t* payload, unsigned i
     return false;
 }
 
-size_t PubSubClient::write(uint8_t data)
-{
-    lastOutActivity = millis();
-    return _client->write(data);
-}
-
-size_t PubSubClient::write(const uint8_t *buffer, size_t size)
-{
-    lastOutActivity = millis();
-    return _client->write(buffer,size);
-}
-
 size_t PubSubClient::buildHeader(uint8_t header, uint8_t *buf, uint16_t length)
 {
     uint8_t lenBuf[4];
@@ -479,34 +467,34 @@ bool PubSubClient::write(uint8_t header, uint8_t *buf, uint16_t length)
 #endif
 }
 
-bool PubSubClient::subscribe(const char* topic)
+bool PubSubClient::subscribe(const char *topic, const char *topic2, uint8_t qos)
 {
-    return subscribe(topic, 0);
-}
-
-bool PubSubClient::subscribe(const char* topic, uint8_t qos)
-{
-    return subscribe_int(false, topic, qos);
+    return subscribe_int(false, topic, topic2, qos);
 }
 
 bool PubSubClient::unsubscribe(const char* topic)
 {
-    return subscribe_int(true, topic, 0);
+    return subscribe_int(true, topic, NULL, 0);
 }
 
-bool PubSubClient::subscribe_int(bool unsubscribe, const char* topic, uint8_t qos)
+bool PubSubClient::subscribe_int(bool unsubscribe, const char *topic, const char *topic2, uint8_t qos)
 {
     size_t  topicLength = strnlen(topic, this->bufferSize);
+    size_t  topicLength2 = topic2 ? strnlen(topic2, this->bufferSize) : 0;
     uint8_t header = unsubscribe ? MQTTUNSUBSCRIBE : MQTTSUBSCRIBE;
     
-    if(!topic) 
+    if(!topic)
         return false;
     
-    if(!unsubscribe && qos > 1) 
-        return false;
-
-    if(this->bufferSize < 9 + topicLength) 
-        return false;
+    if(!unsubscribe) {
+        if(qos > 1)
+            return false;
+        if(this->bufferSize < MQTT_MAX_HEADER_SIZE+2 + 2+topicLength+1 + (topicLength2 ? 2+topicLength+1 : 0))
+            return false;
+    } else {
+        if(this->bufferSize < MQTT_MAX_HEADER_SIZE+2 + 2+topicLength)
+            return false;
+    }
     
     if(connected()) {
         // Leave room in the buffer for header and variable length field
@@ -517,8 +505,12 @@ bool PubSubClient::subscribe_int(bool unsubscribe, const char* topic, uint8_t qo
         this->buffer[length++] = (nextMsgId & 0xff);
         
         length = writeString((char*)topic, this->buffer, length);
-
         if(!unsubscribe) this->buffer[length++] = qos;
+
+        if(topic2 && topicLength2) {
+            length = writeString((char*)topic2, this->buffer, length);
+            this->buffer[length++] = qos;
+        }
 
         return write(header | MQTTQOS1, this->buffer, length - MQTT_MAX_HEADER_SIZE);
     }

@@ -364,7 +364,7 @@ static void ettKeyHeld()
 }
 #endif
 
-void recordKey(char key)
+static void recordKey(char key)
 {
     dateBuffer[dateIndex++] = key;
     dateBuffer[dateIndex] = '\0';
