@@ -690,7 +690,7 @@ The TCD can - to a limited extent - be controlled through messages sent to topic
 
 ### Trigger a time travel on other devices
 
-Upon a time travel, the TCD can send messages to topic bttf/tcd/pub. This can be used to control other props wirelessly, such as Flux Capacitor, SID, etc. The timing is identical to the wired protocol, see [here](#controlling-other-props). TIMETRAVEL is sent when IO14 goes high, ie with a lead time (ETTO LEAD) of 5 seconds. REENTRY is sent when the re-entry sequence starts (ie when IO14 goes low). Note that network traffic has some latency, so timing might night be as exact as a wired connection.
+Upon a time travel, the TCD can send messages to topic bttf/tcd/pub. This can be used to control other props wirelessly, such as Flux Capacitor, SID, etc. The timing is identical to the wired protocol, see [here](#controlling-other-props). TIMETRAVEL is sent when IO14 goes high, ie with a lead time (ETTO LEAD) of 5 seconds. REENTRY is sent when the re-entry sequence starts (ie when IO14 goes low). Note that network traffic has some latency, so timing might not be as exact as a wired connection.
 
 ### Setup
 
@@ -700,9 +700,9 @@ If your broker does not allow anonymous logins, a username and password can be s
 
 If you want your TCD to display messages as described above, you also need to specify the topic in the respective field.
 
-If you want your TCD to publish messages to bttf/tcd/pub, check the respective option.
+If you want your TCD to publish messages to bttf/tcd/pub (ie if you want to notify other devices about the timetravel), check the respective option.
 
-Limitations: Protocol 3.1.1, no encryption, maximum message length 255 characters.
+Limitations: MQTT Protocol version 3.1.1; no encryption; maximum message length 255 characters. Note that using HA/MQTT will disable WiFi power saving (as described below).
 
 ## WiFi power saving features
 
