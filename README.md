@@ -690,7 +690,7 @@ The TCD can - to a limited extent - be controlled through messages sent to topic
 
 ### Trigger a time travel on other devices
 
-Upon a time travel, the TCD can send the message "TIMETRAVEL" to topic bttf/tcd/pub. This can be used to control other props wirelessly, such as Flux Capacitor, SID, etc. The timing is identical to the wired protocol, see [here](#controlling-other-props). TIMETRAVEL is sent when IO14 goes high, ie with a lead time (ETTO LEAD) of 5 seconds.
+Upon a time travel, the TCD can send the message "TIMETRAVEL" to topic bttf/tcd/pub. This can be used to control other props wirelessly, such as Flux Capacitor, SID, etc. The timing is identical to the wired protocol, see [here](#controlling-other-props). TIMETRAVEL is sent when IO14 goes high, ie with a lead time (ETTO LEAD) of 5 seconds. REENTRY is sent when the re-entry sequence starts (ie when IO14 goes low).
 
 ### Setup
 
