@@ -102,7 +102,7 @@
  *  2023/05/02 (A10001986)
  *    - HA/MQTT: Publish "REENTRY" for external props; fix error in topic scanning;
  *      subscribe two topics at a time.
- *    - time_loop(): Move less timing critical stuff to when there is no non-half-
+ *    - time_loop(): Move less timing critical stuff to when there is no half-
  *      second switch.
  *  2023/05/01 (A10001986)
  *    - HA/MQTT changes: More commands supported; commands can be in lower case; 
