@@ -37,7 +37,7 @@ Features include
 - Support for triggering time travels on [other props](#controlling-other-props); TCD can act as master controller for SID, flux capacitor, etc.
 - Built-in installer for default audio files in addition to OTA firmware updates
 
-The code here is based on rudimentary code from/by CircuitSetup, who in the meantime decided to use this firmware, under the name "v2", as their official firmware. The difference between what you get here and CircuitSetup's releases is that the code here might be ahead in development (and uses some different sounds), and the pre-compiled binary has all the features enabled.
+The code here was formerly based on rudimentary code from/by CircuitSetup. Since Sep 2022, CircuitSetup are distributing this very firmware as their official one (starting with 2.0). The difference between what you get here and CircuitSetup's releases is that the code here might be ahead in development (and uses some different sounds), and the pre-compiled binary has all the features enabled.
 
 ## Installation
 
