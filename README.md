@@ -671,11 +671,11 @@ Only ASCII messages are supported, the maximum length is 255 characters.
 
 ### Control the TCD via MQTT
 
-The TCD can - to a limited extent - be controlled through messages sent to topic bttf/tcd/cmd. Support commands are
+The TCD can - to a limited extent - be controlled through messages sent to topic **bttf/tcd/cmd**. Support commands are
 - TIMETRAVEL: Start a time travel
 - RETURN: Return from time travel
-- BEEP_ON: Enables the annoying beep(tm)
-- BEEP_OFF: Disables the annoying beep(tm)
+- BEEP_ON: Enables the *annoying beep*(tm)
+- BEEP_OFF: Disables the *annoying beep*(tm)
 - BEEP_30, BEEP_60: Set the beep modes as described [here](#beep-on-the-second)
 - ALARM_ON: Enable the alarm
 - ALARM_OFF: Disable the alarm
@@ -690,7 +690,7 @@ The TCD can - to a limited extent - be controlled through messages sent to topic
 
 ### Trigger a time travel on other devices
 
-Upon a time travel, the TCD can send messages to topic bttf/tcd/pub. This can be used to control other props wirelessly, such as Flux Capacitor, SID, etc. The timing is identical to the wired protocol, see [here](#controlling-other-props). TIMETRAVEL is sent when IO14 goes high, ie with a lead time (ETTO LEAD) of 5 seconds. REENTRY is sent when the re-entry sequence starts (ie when IO14 goes low). Note that network traffic has some latency, so timing might not be as exact as a wired connection.
+Upon a time travel, the TCD can send messages to topic **bttf/tcd/pub**. This can be used to control other props wirelessly, such as Flux Capacitor, SID, etc. The timing is identical to the wired protocol, see [here](#controlling-other-props). TIMETRAVEL is sent when IO14 goes high, ie with a lead time (ETTO LEAD) of 5 seconds. REENTRY is sent when the re-entry sequence starts (ie when IO14 goes low). Note that network traffic has some latency, so timing might not be as exact as a wired connection.
 
 ### Setup
 
