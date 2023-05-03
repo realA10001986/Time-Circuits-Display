@@ -607,7 +607,7 @@ Luckily, there is a row of solder pads right next to the socket on the control b
 
 In order to trigger a time-travel sequence on the Time Circuits, "TT IN"/IO27 and GND must be shortened for at least 200ms and then opened; the time travel is triggered upon release of the button. If the button is pressed for 3000ms, a ["Return from Time Travel"](#time-travel) is triggered.
 
-The Config Portal allows configuring a delay and the type of sequence played, in order match the device to another prop.
+The Config Portal allows configuring a delay, in order match/synchronize the TCD to another prop. The delay, if any, starts running after the button is released. The time travel sequence starts after the delay has expired. If the button is pressed for 3 seconds or longer, a "return from time travel" is tiggered.
 
 ## Speedometer
 
@@ -621,13 +621,13 @@ What you need is a box, the LED segment displays and a HT16K33-based PCB that al
 
 The speedo display shown in this video is based on a fairly well-designed stand-alone replica I purchased on ebay. I removed the electronics inside and wired the LED segments to an Adafruit i2c backpack (from the Adafruit 878 product) and connected it to the TCD. Yes, it is really that simple. (The switch was made by me, see [here](https://github.com/realA10001986/Time-Circuits-Display/wiki/Time-Circuits-Switch), it uses the [Fake Power Switch](#fake-power-switch) feature of the TCD.)
 
-There are two special options in the Speedo Display Type drop-down in the Config Portal: *Ada 1911 (left tube)* and *Ada 878 (left tube)*. These two can be used if you connect only one 2-digit-tube to the respective Adafruit i2c backpack, as I did in case of my speedo replica as well as my [Wall Clock](#my-custom-made-time-circuits-wall-clock).
+In order to use the Speedometer display, select the correct display type in the Config Portal. There are two special options in the Speedo Display Type drop-down: *Ada 1911 (left tube)* and *Ada 878 (left tube)*. These two can be used if you connect only one 2-digit-tube to the respective Adafruit i2c backpack, as I did in case of my speedo replica as well as my [Wall Clock](#my-custom-made-time-circuits-wall-clock).
 
 Since the I2C bus is already quite long from the control board to the last display in the chain, I recommend soldering another JST XH 4pin plug onto the control board (there are two additional i2c break-outs available), and to connect the speedometer there.
 
 ## GPS receiver
 
-The firmware supports an MT(K)3333-based GPS receiver, connected through i2c (slave address 0x10). The CircuitSetup-designed speedo display will have such a chip built-in, but since this gadget is not yet available, in the meantime, you can use alternatives such as the Adafruit Mini GPS PA1010D (product id [4415](https://www.adafruit.com/product/4415)) or the Pimoroni P1010D GPS Breakout ([PIM525](https://shop.pimoroni.com/products/pa1010d-gps-breakout?variant=32257258881107)). The GPS receiver can be used as a source of authoritative time (like NTP), and/or speed of movement (to be displayed on a [speedo display](#speedometer)).
+The firmware supports an MT(K)3333-based GPS receiver, connected through i2c (slave address 0x10). The CircuitSetup-designed speedo display will have such a chip built-in, but since this gadget is not yet available, in the meantime, you can use alternatives such as the Adafruit Mini GPS PA1010D (product id [4415](https://www.adafruit.com/product/4415)) or the Pimoroni P1010D GPS Breakout ([PIM525](https://shop.pimoroni.com/products/pa1010d-gps-breakout?variant=32257258881107)). The GPS receiver can be used as a source of authoritative time (like NTP), and speed of movement (to be displayed on a [speedo display](#speedometer)).
 
 GPS receivers receive signals from satellites, but in order to do so, they need to be "tuned in" (aka get a "fix"). This "tuning" process can take a long time; after first power up, it can take 30 minutes or more for a receiver to be able to determine its position. In order to speed up this process, modern GPS receivers have special "assisting" features. One key element is knowledge of current time, as this helps identifying satellite signals quicker. So, in other words, initially, you need to tell the receiver, what it is supposed to tell you. However, as soon as the receiver has received satellite signals for 15-20 minutes, it saves the data it collected to its battery-backed memory and will find a fix within seconds after power-up in the future.
 
@@ -639,6 +639,8 @@ For using GPS effectively as a long-term source of accurate time, it is therefor
 
 If/as long as the GPS receiver has a fix and receives data from satellites, the dot in the present time's year field is lit.
 
+In order to use the GPS receiver as a source of time, no special configuration is required. If it is detected during boot, it will be used.
+
 #### GPS for speed
 
 One nice feature of GPS is that the receiver can deliver current speed of movement. If the Time Circuits are, for instance, mounted in a car or on a boat, and a [speedo display](#speedometer) is connected, this display will be just that: A real speedometer.
@@ -646,6 +648,8 @@ One nice feature of GPS is that the receiver can deliver current speed of moveme
 | [![Watch the video](https://img.youtube.com/vi/wbeXZJaDLa8/0.jpg)](https://youtu.be/wbeXZJaDLa8) |
 |:--:|
 | Click to watch the video |
+
+In order to use the GPS receiver for speed, check *Display GPS speed* in the Config Portal.
 
 ## Room Condition Mode, Temperature/humidity sensor
 
@@ -658,6 +662,8 @@ Furthermore, unless you do time travelling on a regular basis, the [speedo displ
 Seven sensor types are supported: MCP9808 (i2c address 0x18), BMx280 (0x77), SI7021 (0x40), SHT40 (0x44), TMP117 (0x49), AHT20/AM2315C (0x38), HTU31D (0x41). All of those are readily available on breakout boards from Adafruit or Seeed (Grove). The BMP280 (unlike BME280), MCP9808 and TMP117 work as pure temperature sensors, the others for temperature and humidity. 
 
 *Note: You cannot connect the sensor chip directly to the TCD control board; most sensors need at least a power converter/level-shifter.* This is why I exclusively used Adafruit or Seeed breakouts ([MCP9808](https://www.adafruit.com/product/1782), [BME280](https://www.adafruit.com/product/2652), [SI7021](https://www.adafruit.com/product/3251), [SHT40](https://www.adafruit.com/product/4885), [TMP117](https://www.adafruit.com/product/4821), [AHT20](https://www.adafruit.com/product/4566), [HTU31D](https://www.adafruit.com/product/4832)), which all allow connecting named sensors to the 5V the TCD board operates on. For wiring information, see [here](#appendix-b-sensor-wiring).
+
+In order to use a temperature/humidity sensor, no special configuration is required. If a sensor is detected during boot, it will be used.
 
 ## Home Assistant / MQTT
 
@@ -735,6 +741,8 @@ The device can tell other props about a time travel, and in essence act as a "ma
  ```
 
 "ETTO lead", ie the lead time between IO14 going high and the actual start of a time travel is defined as 5000ms (ETTO_LEAD_TIME). In this window of time, the prop can play its pre-time-travel (warm-up/acceleration/etc) sequence. The sequence inside the time "tunnel" follows after that lead time, and when IO14 goes LOW, the re-entry into the destination time takes place.
+
+If external gear is connected to IO14 and you want to use this control feature, check **Use compatible external props** in the Config Portal.
 
 ## Flash Wear
 
