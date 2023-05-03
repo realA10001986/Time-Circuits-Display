@@ -1741,7 +1741,7 @@ static void strcpyutf8(char *dst, const char *src, unsigned int len)
     dst[len - 1] = 0;
 }
 
-static void filterOutUTF8(char *src, char *dst)
+static int16_t filterOutUTF8(char *src, char *dst)
 {
     int i, j, slen = strlen(src);
     unsigned char c, d, e, f;
@@ -1771,6 +1771,8 @@ static void filterOutUTF8(char *src, char *dst)
         }
     }
     dst[j] = 0;
+
+    return j;
 }
 
 static void mqttLooper()
@@ -1887,7 +1889,7 @@ static void mqttCallback(char *topic, byte *payload, unsigned int length)
             tempBuf[i+1] = 0;
         }
 
-        filterOutUTF8(tempBuf, mqttMsg);
+        j = filterOutUTF8(tempBuf, mqttMsg);
         
         mqttIdx = 0;
         mqttMaxIdx = (j > DISP_LEN) ? j : -1;

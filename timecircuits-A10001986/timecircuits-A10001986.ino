@@ -102,6 +102,7 @@
  *  2023/05/03 (A10001986)
  *    - Add missing characters to 7-seg font
  *    - JS optimization for CP
+ *    - Fix MQTT message scrolling
  *  2023/05/02 (A10001986)
  *    - [Pre-compiled binary: Patch WiFiManager::HTTPSend (avoid duplication of String)]
  *    - HA/MQTT: Publish "REENTRY" for external props; fix error in topic scanning;
