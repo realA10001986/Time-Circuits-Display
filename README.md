@@ -532,7 +532,7 @@ Note that the Music Folder Number is saved in a config file on the SD card.
 - Hold ENTER to invoke main menu
 - Press ENTER repeatedly until "NET-WORK" is shown
 - Hold ENTER, the displays show the IP address
-- Repeatedly press ENTER to cycle between IP address, WiFi status and MAC address (in station mode)
+- Repeatedly press ENTER to cycle between IP address, WiFi status, MAC address (in station mode) and Home Assistant connection status.
 - Hold ENTER to leave the menu
 
 #### How to set the Real Time Clock (RTC):
@@ -540,7 +540,7 @@ Note that the Music Folder Number is saved in a config file on the SD card.
 Adjusting the RTC is useful if you can't use NTP for time keeping, and really helpful when using GPS. Always set your actual local present time here; if you want to display some other time, use the Time Travel function. Note: The time you entered will be overwritten if/when the device has access to authoritative time such as via NTP or GPS. For DST (daylight saving) and GPS, it is essential that you also set the correct time zone in the [Config Portal](#the-config-portal).
 
 - Hold ENTER to invoke main menu
-- Press ENTER repeatedly until "SET RTC" or "RTC" is displayed and the *Present Time* display shows a date and time 
+- Press ENTER repeatedly until "SET RTC" is displayed and the *Present Time* display shows a date and time 
 - Hold ENTER until the *Present Time* display goes off except for the first field to enter data into
 - The field to enter data into is shown (exclusively), pre-set with its current value
 - Data entry works as described [above](#the-keypad-menu); remember that months need to be entered numerically (01-12), and hours in 24-hour notation (0-23).
@@ -591,6 +591,8 @@ Here is a close-up of one of my boards; I have soldered some headers on the io p
 
 Note that the switch actually needs to be a switch with a maintained contact; the pins need to remain connected for as long as the device is fake-switched-on.
 
+In order to use the Fake Power Switch, check **Use fake power switch** in the Config Portal.
+
 ## External Time Travel Trigger
 
 As mentioned above, a time travel can be triggered by holding "0" on the keypad. Since this doesn't really allow for an authentic movie-like experience, the firmware also supports an external trigger, such as a button switch or even another prop to trigger a time travel. Note that, unlike the [Fake Power Switch](#fake-power-switch), this trigger must be a momentary toggle.
@@ -605,9 +607,9 @@ Luckily, there is a row of solder pads right next to the socket on the control b
 
 ![tcboard_io27](https://user-images.githubusercontent.com/76924199/194284336-2fe9fa9b-d5e5-49f5-b1cd-b0fd2abdff53.jpg)
 
-In order to trigger a time-travel sequence on the Time Circuits, "TT IN"/IO27 and GND must be shortened for at least 200ms and then opened; the time travel is triggered upon release of the button. If the button is pressed for 3000ms, a ["Return from Time Travel"](#time-travel) is triggered.
+In order to trigger a time-travel sequence on the Time Circuits, "TT IN"/IO27 and GND must be shortened for at least 200ms and then opened; the time travel is triggered upon release of the button. If the button is pressed for 3000ms (3 seconds), a ["Return from Time Travel"](#time-travel) is triggered.
 
-The Config Portal allows configuring a delay, in order match/synchronize the TCD to another prop. The delay, if any, starts running after the button is released. The time travel sequence starts after the delay has expired. If the button is pressed for 3 seconds or longer, a "return from time travel" is tiggered.
+The Config Portal allows configuring a delay for matching/synchronizing the TCD to another prop. The delay, if any, starts running after the button is released. The time travel sequence starts after the delay has expired.
 
 ## Speedometer
 
@@ -748,7 +750,7 @@ If external gear is connected to IO14 and you want to use this control feature, 
 
 Flash memory has a somewhat limited life-time. It can be written to only between 10.000 and 100.000 times before becoming unreliable. The firmware writes to the internal flash memory when saving settings and other data. Every time you change settings through the keypad menu or the Config Portal, data is written to flash memory. The same goes for changing alarm settings (including enabling/disabling the alarm), and time travelling if time travels are [persistent](#persistent--non-persistent-time-travels).
 
-In order to reduce the number of write operations and thereby prolonging the life of your clock, it is recommended
+In order to reduce the number of write operations and thereby prolong the life of your clock, it is recommended
 - to uncheck the option *[Make time travels persistent](#persistent--non-persistent-time-travels)* in the Config Portal,
 - to use a good-quality SD card and to check ["Save alarm/volume settings on SD"](#-save-alarmvolume-settings-on-sd) in the Config Portal; alarm and volume settings are then stored on the SD card (which also suffers from wear but is easy to replace). If you want to swap the SD card but preserve your alarm/volume settings, go to the Config Portal while the old SD card is still in place, uncheck the *Save alarm/volume settings on SD* option, click on Save and wait until the clock has rebooted. You can then power down the clock, swap the SD card and power-up again. Then go to the Config Portal, change the option back on and click on Save. Your settings are now on the new SD card.
 
