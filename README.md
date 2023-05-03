@@ -68,9 +68,9 @@ After installation, the SD card can be re-used for [other purposes](#sd-card).
 
 ## Short summary of first steps
 
-The first step is to establish access to the Config Portal in order to configure your clock. This involves connecting the clock to your WiFi network, if applicable and desired. 
+The first step is to establish access to the Config Portal in order to configure your clock.
 
-As long as the device is unconfigured, as is the case with a brand new clock, or later for some reason fails to connect to a configured WiFi network, it starts in "access point" mode, i.e. it creates a WiFi network of its own named "TCD-AP".
+As long as the device is unconfigured, as is the case with a brand new clock, or later if it for some reason fails to connect to a configured WiFi network, it starts in "access point" mode, i.e. it creates a WiFi network of its own named "TCD-AP".
 
 - Power up the clock and wait until it shows a time (which is probably wrong).
 - Connect your computer or handheld device to the WiFi network "TCD-AP".
