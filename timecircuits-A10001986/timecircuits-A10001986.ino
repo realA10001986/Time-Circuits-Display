@@ -99,7 +99,11 @@
 
 /*  Changelog
  *   
+ *  2023/05/03 (A10001986)
+ *    - Add missing characters to 7-seg font
+ *    - JS optimization for CP
  *  2023/05/02 (A10001986)
+ *    - [Pre-compiled binary: Patch WiFiManager::HTTPSend (avoid duplication of String)]
  *    - HA/MQTT: Publish "REENTRY" for external props; fix error in topic scanning;
  *      subscribe two topics at a time.
  *    - time_loop(): Move less timing critical stuff to when there is no half-

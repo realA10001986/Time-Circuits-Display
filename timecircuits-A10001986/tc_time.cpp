@@ -986,6 +986,13 @@ void time_setup()
         
         // Set ms between GPS polls
         // Need more updates if speed is to be displayed
+        // RMC is around 85 chars, so three fit in the 255 byte buffer. 
+        // With speed, the buffer fills in 3 seconds; without in 15 seconds;
+        // Then there is ZDA every 5 seconds; -> 2.4 / 12.5 seconds.
+        // The update freq of 250ms means the entire buffer is read 
+        // - once per second with speed,
+        // - every 2 seconds without speed. 
+        // Good enough.
         GPSupdateFreq    = useGPSSpeed ? 250 : 500;
         GPSupdateFreqMin = useGPSSpeed ? 500 : 500;
     }
@@ -1546,13 +1553,15 @@ void time_loop()
     y = digitalRead(SECONDS_IN_PIN);
     if(y == x) {
 
-        // timing un-critical stuff goes here:
+        // less timing critical stuff goes here:
 
         // Read GPS, and display GPS speed or temperature
         #ifdef TC_HAVEGPS
         if(useGPS || useGPSSpeed) {
             if(millis() - lastLoopGPS >= GPSupdateFreq) {
                 lastLoopGPS = millis();
+                // call loop with doDelay true; delay not needed but
+                // this causes a call of audio_loop() which is good
                 myGPS.loop(true);
                 #ifdef TC_HAVESPEEDO
                 dispGPSSpeed(true);

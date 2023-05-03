@@ -789,15 +789,15 @@ void clockDisplay::showHumDirect(int hum, bool animate)
 
     if(hum < 0) {
         #ifdef IS_ACAR_DISPLAY
-        sprintf(buf, "%s--%%&", thum);
+        sprintf(buf, "%s--\x7f\x80", thum);
         #else
-        sprintf(buf, "%s --%%&", thum);
+        sprintf(buf, "%s --\x7f\x80", thum);
         #endif
     } else {
         #ifdef IS_ACAR_DISPLAY
-        sprintf(buf, "%s%2d%%&", thum, hum);
+        sprintf(buf, "%s%2d\x7f\x80", thum, hum);
         #else
-        sprintf(buf, "%s %2d%%&", thum, hum);
+        sprintf(buf, "%s %2d\x7f\x80", thum, hum);
         #endif
     }
 
@@ -1160,23 +1160,25 @@ uint8_t clockDisplay::getLED7NumChar(uint8_t value)
 // Returns bit pattern for provided character for display on 7 segment display
 uint8_t clockDisplay::getLED7AlphaChar(uint8_t value)
 {
-    if(value < 32 || value >= 127) 
+    if(value < 32 || value >= 127 + 2)
         return 0;
     
-    if(_corr6 && value == '6') 
+    if(_corr6 && value == '6')
         return numDigs[value - 32] | 0x01;
     
     return numDigs[value - 32];
 }
 
-// Returns bit pattern for provided character for display on alphanumeric 14 segment display
+// Returns bit pattern for provided character for display on 14 segment display
 #ifndef IS_ACAR_DISPLAY
 uint16_t clockDisplay::getLEDAlphaChar(uint8_t value)
 {
-    if(value < 32 || value >= 127) return 0;
+    if(value < 32 || value >= 127)
+        return 0;
 
     // For text, use common "6" pattern to conform with 7-seg-part
-    if(_corr6 && value == '6') return alphaChars['6' - 32] | 0x0001;
+    if(_corr6 && value == '6')
+        return alphaChars['6' - 32] | 0x0001;
 
     return alphaChars[value - 32];
 }
