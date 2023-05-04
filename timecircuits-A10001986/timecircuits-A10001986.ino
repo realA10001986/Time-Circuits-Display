@@ -99,6 +99,8 @@
 
 /*  Changelog
  *   
+ *  2023/05/04 (A10001986)
+ *    - Ignore MQTT messages with a length of zero
  *  2023/05/03 (A10001986)
  *    - Add missing characters to 7-seg font
  *    - JS optimization for CP

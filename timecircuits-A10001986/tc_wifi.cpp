@@ -1808,6 +1808,8 @@ static void mqttCallback(char *topic, byte *payload, unsigned int length)
       NULL
     };
 
+    if(!length) return;
+
     if(!strcmp(topic, "bttf/tcd/cmd")) {
 
         // Not taking commands under these circumstances:
