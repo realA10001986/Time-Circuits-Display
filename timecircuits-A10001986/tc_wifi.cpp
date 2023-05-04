@@ -1817,15 +1817,16 @@ static void mqttCallback(char *topic, byte *payload, unsigned int length)
            timeTravelP0 || timeTravelP1 || timeTravelRE)
             return;
 
-        memcpy(tempBuf, (const char *)payload, length);
-        tempBuf[length] = 0;
-        for(j = 0; j < length; j++) {
+        memcpy(tempBuf, (const char *)payload, ml);
+        tempBuf[ml] = 0;
+
+        for(j = 0; j < ml; j++) {
             if(tempBuf[j] >= 'a' && tempBuf[j] <= 'z') tempBuf[j] &= ~0x20;
         }
 
         while(cmdList[i]) {
             j = strlen(cmdList[i]);
-            if((length >= j) && !strncmp((const char *)tempBuf, cmdList[i], j)) {
+            if((ml >= j) && !strncmp((const char *)tempBuf, cmdList[i], j)) {
                 break;
             }
             i++;          
@@ -1885,11 +1886,9 @@ static void mqttCallback(char *topic, byte *payload, unsigned int length)
         }
             
     } else if(!strcmp(topic, settings.mqttTopic)) {
-    
-        for(i = 0; i < ml; i++) {
-            tempBuf[i] = payload[i];
-            tempBuf[i+1] = 0;
-        }
+
+        memcpy(tempBuf, (const char *)payload, ml);
+        tempBuf[ml] = 0;
 
         j = filterOutUTF8(tempBuf, mqttMsg);
         

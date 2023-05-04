@@ -100,7 +100,7 @@
 /*  Changelog
  *   
  *  2023/05/04 (A10001986)
- *    - Ignore MQTT messages with a length of zero
+ *    - Ignore MQTT messages with a length of zero; fix long string handling
  *  2023/05/03 (A10001986)
  *    - Add missing characters to 7-seg font
  *    - JS optimization for CP

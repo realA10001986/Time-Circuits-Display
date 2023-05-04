@@ -2362,7 +2362,7 @@ void time_loop()
  *          ETTO: Pulse                  TT_P1_POINT88                   |
  *               or                    (ms from P1 start)                |
  *           LOW->HIGH                                            ETTO: HIGH->LOW
- *
+ *       [MQTT: "TIMETRAVEL']                                    [MQTT: "REENTRY']                          
  *
  *  As regards the mere "time" logic, a time travel means to
  *  -) copy present time into departed time (where it freezes)
