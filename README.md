@@ -408,8 +408,9 @@ The firmware supports some additional user-provided sound effects, which it will
 - "hour.mp3": Will be played every hour, on the hour. This feature is disabled in night mode.
 - "hour-xx.mp3", xx being 00 through 23: Sounds-on-the-hour for specific hours that will be played instead of "hour.mp3". If a sound for a specific hour is not present, "hour.mp3" will be played, if that one exists.
 - "key3.mp3" and/or "key6.mp3": Will be played if you hold the "3"/"6" key for 2 seconds.
+- "ha-alert.mp3" will be played when a [HA/MQTT](#home-assistant--mqtt) message is received.
 
-"hour.mp3"/"hour-xx.mp3", "key3.mp3" and "key6.mp3" are not provided here. You can use any mp3, with 128kpbs or less.
+"hour.mp3"/"hour-xx.mp3", "key3.mp3", "key6.mp3" and "ha-alert.mp3" are not provided here. You can use any mp3, with 128kpbs or less.
 
 ## The Music Player
 
