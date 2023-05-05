@@ -93,7 +93,7 @@ The Config Portal is accessible exclusively through WiFi. As outlined above, if 
 If the operating system on your handheld or computer supports Bonjour (or "mDNS"), you can connect to the Config Portal by directing your browser to http://timecircuits.local. (mDNS is supported on Windows 10 version TH2 (1511) [other sources say 1703] and later, Android 13 and later, MacOS, iOS)
 
 If that fails, the way to connect to the Config Portal depends on whether the clock is in access point mode or not. 
-- If it is in access point mode (and your handheld/computer is connected to the WiFi network "TCP-AP"), nagivate your browser to http://192.168.4.1 
+- If it is in access point mode (and your handheld/computer is connected to the WiFi network "TCP-AP"), navigate your browser to http://192.168.4.1 
 - If the device is connected to your WiFi network, you need to find out its IP address first: Hold ENTER on the keypad for 2 seconds, then repeatedly press ENTER until "NET-WORK" is shown, then hold ENTER for 2 seconds. The device will then show its current IP address. Then, on your handheld or computer, navigate to http://a.b.c.d (a.b.c.d being the IP address as shown on the display) in order to enter the Config Portal.
 
 In the main menu, click on "Setup" to configure your clock, first and foremost your time zone. If the time zone isn't set correctly, the clock might show a wrong time, and DST (daylight saving) will not be switched on/off correctly.
@@ -317,7 +317,7 @@ Persistent time travels, if done often, will cause [Flash Wear](#flash-wear).
 
 ## Beep on the second
 
-In the movies, the Time Circuits emit a "beep" sound every second, which is only really audible in the scene in which Doc examplains to Marty how the time machine works. The firmware supports that beep, too.
+In the movies, the Time Circuits emit a "beep" sound every second, which is only really audible in the scene in which Doc explains to Marty how the time machine works. The firmware supports that beep, too.
 
 The beep can be permanently disabled, permanently enabled, or enabled for 30 or 60 seconds
 - after a destination time is entered (and ENTER is pressed),
@@ -388,7 +388,7 @@ Your replacements need to be put in the root (top-most) directory of the SD card
 - "alarmoff.mp3". Played when disabling the alarm
 - "nmon.mp3". Played when manually enabling night mode
 - "nmoff.mp3". Played when manually disabling night mode
-- "timer.mp3". Playeed when the count-down timer expires.
+- "timer.mp3". Played when the count-down timer expires.
 
 The following sounds are time-sync'd to display action. If you decide to substitute these with your own, be prepared to lose synchronicity:
 - "enter.mp3". Played when a date was entered and ENTER was pressed
