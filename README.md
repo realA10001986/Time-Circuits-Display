@@ -1033,6 +1033,12 @@ On most sensor boards the pins are named as follows, and need to be connected to
 
 Do not connect anything to "3Vo".
 
+For longer cables, ie >50cm (>20in), I recommend using a twisted pair cable, and to connect it as follows to avoid cross-talk:
+
+![i2clongcable](https://user-images.githubusercontent.com/76924199/236399502-8c059fe4-2c1e-4aa4-9132-9ba40da34a91.png)
+
+I had a GPS receiver connected through such a cable and had no issues over a distance of 5m/16ft.
+
 #### i2c addresses
 
 Most sensors either only support one i2c address, or are recognized by the firmware (only) by their default address. For those, nothing must be done in order to use them with the Time Circuits Display.
