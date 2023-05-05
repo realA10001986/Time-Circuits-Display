@@ -1780,7 +1780,7 @@ static void mqttLooper()
     ntp_loop();
     audio_loop();
     #ifdef TC_HAVEGPS
-    gps_loop();   // calls other loops too
+    gps_loop();   // does not call any other loops
     #endif
 }
 

@@ -35,6 +35,10 @@
 #include "mqtt.h"
 #include "Arduino.h"
 
+static void defLooper()
+{
+}
+
 PubSubClient::PubSubClient()
 {
     this->_state = MQTT_DISCONNECTED;
@@ -44,6 +48,7 @@ PubSubClient::PubSubClient()
     setBufferSize(MQTT_MAX_PACKET_SIZE);
     setKeepAlive(MQTT_KEEPALIVE);
     setSocketTimeout(MQTT_SOCKET_TIMEOUT);
+    setLooper(defLooper);
 }
 
 PubSubClient::PubSubClient(Client& client)
@@ -54,6 +59,7 @@ PubSubClient::PubSubClient(Client& client)
     setBufferSize(MQTT_MAX_PACKET_SIZE);
     setKeepAlive(MQTT_KEEPALIVE);
     setSocketTimeout(MQTT_SOCKET_TIMEOUT);
+    setLooper(defLooper);
 }
 
 PubSubClient::~PubSubClient()

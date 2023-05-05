@@ -1420,14 +1420,14 @@ void time_loop()
     // Timer for start of ETTO signal/pulse
     if(triggerETTO && (millis() - triggerETTONow >= triggerETTOLeadTime)) {
         ettoPulseStart();
+        triggerETTO = false;
+        ettoPulse = true;
+        ettoPulseNow = millis();
         #ifdef TC_HAVEMQTT
         if(useMQTT && pubMQTT) {
             mqttPublish("bttf/tcd/pub", "TIMETRAVEL\0", 11);
         }
         #endif
-        triggerETTO = false;
-        ettoPulse = true;
-        ettoPulseNow = millis();
         #ifdef TC_DBG
         Serial.println(F("ETTO triggered"));
         #endif
@@ -2050,6 +2050,11 @@ void time_loop()
                         if(!alarmDone) {
                             play_file("/alarm.mp3", 1.0, false, true);
                             alarmDone = true;
+                            #ifdef TC_HAVEMQTT
+                            if(useMQTT && pubMQTT) {
+                                mqttPublish("bttf/tcd/pub", "ALARM\0", 6);
+                            }
+                            #endif
                         }
                     } else {
                         alarmDone = false;
