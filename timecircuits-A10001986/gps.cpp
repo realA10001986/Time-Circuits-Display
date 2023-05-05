@@ -95,7 +95,7 @@ bool tcGPS::begin(unsigned long powerupTime, bool quickUpdates)
         for(int i = 0; i < 8; i++) {
             testBuf = Wire.read();
             // Bail if illegal characters returned
-            if(testBuf != 0x0A && testBuf != 0x0D && (testBuf < ' ' || testBuf > 0x7e)) {
+            if(testBuf != 0x0a && testBuf != 0x0d && (testBuf < ' ' || testBuf > 0x7e)) {
                 return false;
             }
         }
@@ -338,7 +338,7 @@ bool tcGPS::readAndParse(bool doDelay)
         for(int i = 0; i < i2clen; i++) {
             curr_char = Wire.read();
             // Skip "empty data" (ie LF if not preceeded by CR)
-            if((curr_char != 0x0A) || (_last_char == 0x0D)) {
+            if((curr_char != 0x0a) || (_last_char == 0x0d)) {
                  _buffer[buff_max++] = curr_char;
             }
             _last_char = curr_char;
@@ -363,7 +363,7 @@ bool tcGPS::readAndParse(bool doDelay)
         }
 
         // Finish a line on LF
-        if(curr_char == 0x0A) {
+        if(curr_char == 0x0a) {
 
             // terminate current line
             _currentline[_lineidx] = 0;
@@ -509,9 +509,9 @@ uint8_t tcGPS::parseHex(char c)
     if(c < '0')   return 0;
     if(c <= '9')  return c - '0';
     if(c < 'A')   return 0;
-    if(c <= 'F')  return (c - 'A') + 10;
+    if(c <= 'F')  return c - 'A' + 10;
     if(c < 'a')   return 0;
-    if(c <= 'f')  return (c - 'a') + 10;
+    if(c <= 'f')  return c - 'a' + 10;
     return 0;
 }
 

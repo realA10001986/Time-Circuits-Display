@@ -76,8 +76,8 @@ extern bool readFileFromFS(const char *fn, uint8_t *buf, int len);
 extern bool writeFileToFS(const char *fn, uint8_t *buf, int len);
 
 static const char months[12][4] = {
-      "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
-      "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
+    "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+    "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
 };
 
 static const char *fnLastYear = "/tcdly";
@@ -198,7 +198,7 @@ uint8_t clockDisplay::setBrightnessDirect(uint8_t level)
     if(level > 15)
         level = 15;
 
-    directCmd(0xE0 | level);
+    directCmd(0xe0 | level);
 
     return level;
 }
@@ -351,7 +351,7 @@ void clockDisplay::showAnimate2()
     Wire.beginTransmission(_address);
     Wire.write(0x00);
     for(int i = 0; i < CD_BUF_SIZE; i++) {
-        Wire.write(_displayBuffer[i] & 0xFF);
+        Wire.write(_displayBuffer[i] & 0xff);
         Wire.write(_displayBuffer[i] >> 8);
     }
     Wire.endTransmission();
@@ -1207,7 +1207,7 @@ void clockDisplay::directCol(int col, int segments)
     }
     Wire.beginTransmission(_address);
     Wire.write(col * 2);
-    Wire.write(segments & 0xFF);
+    Wire.write(segments & 0xff);
     Wire.write(segments >> 8);
     Wire.endTransmission();
 }
@@ -1219,7 +1219,7 @@ void clockDisplay::clearDisplay()
     Wire.write(0x00);
 
     for(int i = 0; i < CD_BUF_SIZE*2; i++) {
-        Wire.write(0x0);
+        Wire.write(0x00);
     }
 
     Wire.endTransmission();
@@ -1279,7 +1279,7 @@ void clockDisplay::showInt(bool animate, bool Alt)
     }
 
     for(; i < CD_BUF_SIZE; i++) {
-        Wire.write(db[i] & 0xFF);
+        Wire.write(db[i] & 0xff);
         Wire.write(db[i] >> 8);
     }
 

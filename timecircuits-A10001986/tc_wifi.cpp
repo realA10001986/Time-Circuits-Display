@@ -202,11 +202,12 @@ WiFiManagerParameter custom_useGPSS("uGPSS", "Display GPS speed (0=no, 1=yes)", 
 #else // -------------------- Checkbox hack: --------------
 WiFiManagerParameter custom_useGPSS("uGPSS", "Display GPS speed", settings.useGPSSpeed, 1, "autocomplete='off' title='Check to use a GPS receiver to display actual speed on speedo display' type='checkbox' style='margin-top:12px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
+#endif // TC_HAVEGPS
 #ifdef TC_HAVETEMP
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
-WiFiManagerParameter custom_useDpTemp("dpTemp", "Display temperature (0=no, 1=yes)", settings.useGPSSpeed, 1, "autocomplete='off' title='Enable to display temperature on speedo display when idle (needs temperature sensor)'");
+WiFiManagerParameter custom_useDpTemp("dpTemp", "Display temperature (0=no, 1=yes)", settings.dispTemp, 1, "autocomplete='off' title='Enable to display temperature on speedo display when idle (needs temperature sensor)'");
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_useDpTemp("dpTemp", "Display temperature", settings.useGPSSpeed, 1, "autocomplete='off' title='Check to display temperature on speedo display when idle (needs temperature sensor)' type='checkbox' style='margin-top:12px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_useDpTemp("dpTemp", "Display temperature", settings.dispTemp, 1, "autocomplete='off' title='Check to display temperature on speedo display when idle (needs temperature sensor)' type='checkbox' style='margin-top:12px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 WiFiManagerParameter custom_tempBright("temBri", "<br>Temperature brightness (0-15)", settings.tempBright, 2, "type='number' min='0' max='15' autocomplete='off'");
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
@@ -215,7 +216,6 @@ WiFiManagerParameter custom_tempOffNM("toffNM", "Temperature in night mode (0=di
 WiFiManagerParameter custom_tempOffNM("toffNM", "Temperature off in night mode", settings.tempOffNM, 1, "autocomplete='off' title='If unchecked, the display will be dimmed' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 #endif
-#endif // TC_HAVEGPS
 #endif // TC_HAVESPEEDO
 
 #ifdef FAKE_POWER_ON

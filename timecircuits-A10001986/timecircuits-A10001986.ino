@@ -101,6 +101,7 @@
  *   
  *  2023/05/05 (A10001986)
  *    - Publish "ALARM" via MQTT
+ *    - Fix compilation if GPS is to be left out
  *  2023/05/04 (A10001986)
  *    - Ignore MQTT messages with a length of zero; fix long string handling
  *  2023/05/03 (A10001986)
