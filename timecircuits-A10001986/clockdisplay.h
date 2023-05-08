@@ -85,7 +85,7 @@ class clockDisplay {
 
         void setDateTime(DateTime dt);           // Set object date & time using a DateTime ignoring timeDiff
         void setDateTimeDiff(DateTime dt);       // Set object date & time using a DateTime plus/minus timeDiff
-        void setFromStruct(const dateStruct* s); // Set object date & time from struct; never use this with RTC
+        void setFromStruct(const dateStruct *s); // Set object date & time from struct; never use this with RTC
         void setFromParms(int year, int month, int day, int hour, int minute);
 
         void getToParms(int& year, int& yo, int& month, int& day, int& hour, int& minute);

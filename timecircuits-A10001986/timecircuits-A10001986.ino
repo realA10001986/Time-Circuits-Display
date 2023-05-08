@@ -99,6 +99,8 @@
 
 /*  Changelog
  *   
+ *  2023/05/08 (A10001986)
+ *    - Minor optimizations for TZ parsing and DST checks
  *  2023/05/05 (A10001986)
  *    - Publish "ALARM" via MQTT
  *    - Fix compilation if GPS is to be left out

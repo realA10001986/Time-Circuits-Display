@@ -486,7 +486,9 @@ void enter_menu()
 
                 rtc.adjust(0, minSet, hourSet, dayOfWeek(daySet, monthSet, yearSet), daySet, monthSet, newYear-2000U);
 
-                // User entered current local time; set DST flag to current DST status
+                // User entered current local time; set DST flag accordingly
+                // (This assumes user did not set time in the "loop-hour" when
+                // DST is ending, otherwise there's a 50% chance DST is wrong.)
                 if(couldDST[0]) {
                     int currTimeMins;
                     presentTime.setDST(timeIsDST(0, yearSet, monthSet, daySet, hourSet, minSet, currTimeMins));

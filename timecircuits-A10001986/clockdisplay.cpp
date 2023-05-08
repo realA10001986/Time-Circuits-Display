@@ -293,7 +293,7 @@ void clockDisplay::setDateTimeDiff(DateTime dt)
 
 // Set YEAR, MONTH, DAY, HOUR, MIN from structure
 // Never use for RTC!
-void clockDisplay::setFromStruct(const dateStruct* s)
+void clockDisplay::setFromStruct(const dateStruct *s)
 {
     #ifdef TC_DBG
     if(isRTC()) {

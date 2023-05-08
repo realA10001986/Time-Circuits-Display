@@ -251,10 +251,11 @@ bool useGPS      = true;
 bool useGPSSpeed = false;
 
 // TZ/DST status & data
-static bool useDST          = false; // Do use own DST management (and DST is defined in TZ)
+static bool useDST          = false;
 bool        couldDST[3]     = { false, false, false };   // Could use own DST management (and DST is defined in TZ)
 static int  tzForYear[3]    = { 0, 0, 0 };               // Parsing done for this very year
-static bool tzIsValid[3]    = { false, false, false };
+static int8_t tzIsValid[3]  = { -1, -1, -1 };
+static int8_t tzHasDST[3]   = { -1, -1, -1 };
 static char *tzDSTpart[3]   = { NULL, NULL, NULL };
 static int  tzDiffGMT[3]    = { 0, 0, 0 };               // Difference to UTC in nonDST time
 static int  tzDiffGMTDST[3] = { 0, 0, 0 };               // Difference to UTC in DST time
@@ -371,32 +372,7 @@ const dateStruct departedTimes[NUM_AUTOTIMES] = {
 
 #else //  --------------------------- TWPRIVATE
 
-const dateStruct destinationTimes[NUM_AUTOTIMES] = {
-    {1985,  7, 23, 20,  1},
-    {1985, 11, 23, 16, 24},
-    {1986,  5, 26, 14, 12},
-    {1986,  8, 23, 11,  0},
-    {1986, 12, 24, 21, 22},
-    {1987,  3, 20, 19, 31},
-    {1987,  5, 26,  0,  0},
-    {1988,  6,  3, 10, 44},
-    {1988, 12, 24, 22, 31},
-    {1993, 12,  5, 23, 49},
-    {1984,  9, 15, 17, 11}
-};
-const dateStruct departedTimes[NUM_AUTOTIMES] = {
-    {2017,  7, 11, 10, 11},
-    {1943,  3, 15,  7, 47},
-    {2016,  6, 22, 16, 11},
-    {1982,  5, 15,  9, 41},
-    {1943, 11, 25, 11, 11},
-    {1970,  5, 26,  8, 22},
-    {2021,  5,  5, 10,  9},
-    {2012,  8, 16, 19, 49},
-    {2004,  8, 30, 19, 39},
-    {2015, 12, 24, 19, 30},
-    {2014,  4, 12, 12,  0}
-};
+#include "z_twdates.h"
 
 #endif  // ------------------------------------
 
@@ -654,7 +630,7 @@ void time_setup()
 
         // Blink white LED forever
         pinMode(WHITE_LED_PIN, OUTPUT);
-        while (1) {
+        while(1) {
             digitalWrite(WHITE_LED_PIN, HIGH);
             delay(1000);
             digitalWrite(WHITE_LED_PIN, LOW);
@@ -1883,72 +1859,87 @@ void time_loop()
 
             // Check if we need to switch from/to DST
 
-            if(useDST && !DSTcheckDone && ((dt.minute() % dstChkInt) == 0)) {
+            // Check every dstChkInt-th minute
+            // (Do not use "useDST && min%x==0": useDST
+            // might switch, so the one-time-check isn't one)
+            if((dt.minute() % dstChkInt) == 0) {
 
-                int oldDST = presentTime.getDST();
-                int currTimeMins = 0;
-                int myDST = timeIsDST(0, dt.year() - presentTime.getYearOffset(), dt.month(), 
-                                            dt.day(), dt.hour(), dt.minute(), currTimeMins);
+                if(!DSTcheckDone) {
 
-                DSTcheckDone = true;
-                dstChkInt = 5;
+                    // Set to 5 (might be 1 from time_setup)
+                    // Save to set here, because useDST is only
+                    // FALSE if no DST is defined or we just
+                    // adjusted via NTP/GPS; in both cases the
+                    // purpose of setting it to 1 is served.
+                    dstChkInt = 5;
 
-                if( (myDST != oldDST) &&
-                    (!(blockDSTChange(currTimeMins))) ) {
-                  
-                    int nyear, nmonth, nday, nhour, nminute;
-                    int myDiff = tzDiff[0];
-                    uint64_t rtcTime;
-                    uint16_t rtcYear;
-                    int16_t  yOffs = 0;
+                    if(useDST) {
 
-                    #ifdef TC_DBG
-                    Serial.printf("time_loop: DST change detected: %d -> %d\n", presentTime.getDST(), myDST);
-                    #endif
+                        int oldDST = presentTime.getDST();
+                        int currTimeMins = 0;
+                        int myDST = timeIsDST(0, dt.year() - presentTime.getYearOffset(), dt.month(), 
+                                                    dt.day(), dt.hour(), dt.minute(), currTimeMins);
 
-                    presentTime.setDST(myDST);
+                        DSTcheckDone = true;
 
-                    // If DST status is -1 (unknown), do not adjust clock,
-                    // only save corrected flag
-                    if(oldDST >= 0) {
+                        if( (myDST != oldDST) &&
+                            (!(blockDSTChange(currTimeMins))) ) {
+                          
+                            int nyear, nmonth, nday, nhour, nminute;
+                            int myDiff = tzDiff[0];
+                            uint64_t rtcTime;
+                            uint16_t rtcYear;
+                            int16_t  yOffs = 0;
+        
+                            #ifdef TC_DBG
+                            Serial.printf("time_loop: DST change detected: %d -> %d\n", presentTime.getDST(), myDST);
+                            #endif
+        
+                            presentTime.setDST(myDST);
+        
+                            // If DST status is -1 (unknown), do not adjust clock,
+                            // only save corrected flag
+                            if(oldDST >= 0) {
+        
+                                if(myDST == 0) myDiff *= -1;
+        
+                                dt = myrtcnow();
+            
+                                rtcTime = dateToMins(dt.year() - presentTime.getYearOffset(),
+                                                   dt.month(), dt.day(), dt.hour(), dt.minute());
+            
+                                rtcTime += myDiff;
+            
+                                minsToDate(rtcTime, nyear, nmonth, nday, nhour, nminute);
+            
+                                // Get RTC-fit year & offs for our real year
+                                rtcYear = nyear;
+                                correctYr4RTC(rtcYear, yOffs);
+            
+                                rtc.adjust(dt.second(), 
+                                           nminute, 
+                                           nhour, 
+                                           dayOfWeek(nday, nmonth, nyear),
+                                           nday, 
+                                           nmonth, 
+                                           rtcYear-2000
+                                );
+            
+                                presentTime.setYearOffset(yOffs);
+        
+                            }
+        
+                            // Save yearOffset & isDTS to NVM
+                            if(timetravelPersistent) {
+                                presentTime.save();
+                            } else {
+                                presentTime.saveYOffs();
+                            }
+        
+                            dt = myrtcnow();
 
-                        if(myDST == 0) myDiff *= -1;
-
-                        dt = myrtcnow();
-    
-                        rtcTime = dateToMins(dt.year() - presentTime.getYearOffset(),
-                                           dt.month(), dt.day(), dt.hour(), dt.minute());
-    
-                        rtcTime += myDiff;
-    
-                        minsToDate(rtcTime, nyear, nmonth, nday, nhour, nminute);
-    
-                        // Get RTC-fit year & offs for our real year
-                        rtcYear = nyear;
-                        correctYr4RTC(rtcYear, yOffs);
-    
-                        rtc.adjust(dt.second(), 
-                                   nminute, 
-                                   nhour, 
-                                   dayOfWeek(nday, nmonth, nyear),
-                                   nday, 
-                                   nmonth, 
-                                   rtcYear-2000
-                        );
-    
-                        presentTime.setYearOffset(yOffs);
-
+                        }
                     }
-
-                    // Save yearOffset & isDTS to NVM
-                    if(timetravelPersistent) {
-                        presentTime.save();
-                    } else {
-                        presentTime.saveYOffs();
-                    }
-
-                    dt = myrtcnow();
-
                 }
                 
             } else {
@@ -3116,7 +3107,7 @@ static bool getNTPTime(bool weHaveAuthTime)
             presentTime.setYearOffset(newYOffs);
     
             // Parse TZ and set up DST data for now current year
-            if((!couldDST[0]) || (tzForYear[0] != nyear)) {
+            if(tzHasDST[0] && (tzForYear[0] != nyear)) {
                 if(!(parseTZ(0, nyear))) {
                     #ifdef TC_DBG
                     Serial.println(F("getNTPTime: Failed to parse TZ"));
@@ -3195,7 +3186,7 @@ static bool getGPStime()
     minsToDate(utcMins, nyear, nmonth, nday, nhour, nminute);
 
     // DST handling: Parse TZ and setup DST data for now current year
-    if(!couldDST[0] || tzForYear[0] != nyear) {
+    if(tzHasDST[0] && (tzForYear[0] != nyear)) {
         if(!(parseTZ(0, nyear))) {
             #ifdef TC_DBG
             Serial.println(F("getGPStime: Failed to parse TZ"));
@@ -3222,7 +3213,7 @@ static bool getGPStime()
     presentTime.setYearOffset(newYOffs);
 
     // Parse TZ and set up DST data for now current year
-    if((!couldDST[0]) || (tzForYear[0] != nyear)) {
+    if(tzHasDST[0] && (tzForYear[0] != nyear)) {
         if(!(parseTZ(0, nyear))) {
             #ifdef TC_DBG
             Serial.println(F("getGPStime: Failed to parse TZ"));
@@ -3645,20 +3636,18 @@ static int mins2Date(int year, int month, int day, int hour, int mins)
  */
 bool parseTZ(int index, int currYear, bool doparseDST)
 {
-    char *t, *u, *v;
+    char *tz, *t, *u, *v;
     int diffNorm = 0;
     int diffDST = 0;
     int it;
     int DSTonYear, DSTonMonth, DSTonDay, DSTonHour, DSTonMinute;
     int DSToffYear, DSToffMonth, DSToffDay, DSToffHour, DSToffMinute;
-    char *tz;
 
     switch(index) {
     case 0: tz = settings.timeZone;     break;
     case 1: tz = settings.timeZoneDest; break;
     case 2: tz = settings.timeZoneDep;  break;
     default:
-      Serial.printf("parseTZ: Bad index %d\n", index);
       return false;
     }
 
@@ -3670,15 +3659,24 @@ bool parseTZ(int index, int currYear, bool doparseDST)
 
     // 0) Basic validity check
 
-    if(*tz == 0) return true;                         // Empty string. OK, no DST.
+    if(*tz == 0) {                                    // Empty string. OK, don't use TZ. So be it.
+        tzHasDST[index] = 0;
+        return true;
+    }
 
-    if(!tzIsValid[index]) {
+    if(tzIsValid[index] < 1) {
+
+        // If previously determined to be invalid, bail.
+        if(!tzIsValid[index]) return false;
+
+        // Set TZ to "invalid" until verified
+        tzIsValid[index] = 0;
+
         t = tz;
         while((t = strchr(t, '>'))) { t++; diffNorm++; }
         t = tz;
         while((t = strchr(t, '<'))) { t++; diffDST++; }
-        if(diffNorm != diffDST) return false;         // Uneven < and >, string is bad. No DST.
-        tzIsValid[index] = true;
+        if(diffNorm != diffDST) return false;         // Uneven < and >, string is bad.
     }
 
     // 1) Find difference between nonDST and DST time
@@ -3686,12 +3684,12 @@ bool parseTZ(int index, int currYear, bool doparseDST)
     if(!tzDSTpart[index]) {
 
         diffNorm = diffDST = 0;
-    
+
         // a. Skip TZ name and parse GMT-diff
         t = tz;
         if(*t == '<') {
            t = strchr(t, '>');
-           if(!t) return false;                       // if <, but no >, string is bad. No DST.
+           if(!t) return false;                       // if <, but no >, string is bad. Bad TZ.
            t++;
         } else {
            while(*t && *t != '-' && (*t < '0' || *t > '9')) {
@@ -3702,7 +3700,7 @@ bool parseTZ(int index, int currYear, bool doparseDST)
         
         // t = start of diff to GMT
         if(*t != '-' && *t != '+' && (*t < '0' || *t > '9'))
-            return false;                             // No numerical difference after name -> bad string. No DST.
+            return false;                             // No numerical difference after name -> bad string. Bad TZ.
     
         t = parseInt(t, it);
         if(it >= -24 && it <= 24) diffNorm = it * 60;
@@ -3711,12 +3709,12 @@ bool parseTZ(int index, int currYear, bool doparseDST)
         if(*t == ':') {
             t++;
             u = parseInt(t, it);
-            if(!u) return false;                      // No number following ":". Bad string. No DST.
+            if(!u) return false;                      // No number following ":". Bad string. Bad TZ.
             t = u;
             if(it >= 0 && it <= 59) {
                 if(diffNorm < 0)  diffNorm -= it;
                 else              diffNorm += it;
-            } else return false;                      // Bad min difference. No DST.
+            } else return false;                      // Bad min difference. Bad TZ.
             if(*t == ':') {
                 t++;
                 u = parseInt(t, it);
@@ -3729,7 +3727,7 @@ bool parseTZ(int index, int currYear, bool doparseDST)
         
         if(*t == '<') {
            t = strchr(t, '>');
-           if(!t) return false;                       // if <, but no >, string is bad. No DST.
+           if(!t) return false;                       // if <, but no >, string is bad. Bad TZ.
            t++;
         } else {
            while(*t && *t != ',' && *t != '-' && (*t < '0' || *t > '9'))
@@ -3737,21 +3735,23 @@ bool parseTZ(int index, int currYear, bool doparseDST)
         }
         
         // t = assumed start of DST-diff to GMT
-        if(*t != '-' && *t != '+' && (*t < '0' || *t > '9')) {
+        if(*t == 0) {
+            tzDiff[index] = 0;
+        } else if(*t != '-' && *t != '+' && (*t < '0' || *t > '9')) {
             tzDiff[index] = 60;                       // No numerical difference after name -> Assume 1 hr
         } else {
             t = parseInt(t, it);
             if(it >= -24 && it <= 24) diffDST = it * 60;
-            else                      return false;   // Bad hr difference. No DST. Bad string.
+            else                      return false;   // Bad hr difference. Bad TZ.
             if(*t == ':') {
                 t++;
                 u = parseInt(t, it);
-                if(!u) return false;                  // No number following ":". Bad string. No DST.
+                if(!u) return false;                  // No number following ":". Bad TZ.
                 t = u;
                 if(it >= 0 && it <= 59) {
                     if(diffNorm < 0)  diffDST -= it;
                     else              diffDST += it;
-                } else return false;                  // Bad min difference. No DST. Bad string.
+                } else return false;                  // Bad min difference. Bad TZ.
                 if(*t == ':') {
                     t++;
                     u = parseInt(t, it);
@@ -3767,16 +3767,29 @@ bool parseTZ(int index, int currYear, bool doparseDST)
     
         tzDSTpart[index] = t;
 
+        tzIsValid[index] = 1;   // TZ is valid
+
     } else {
 
         t = tzDSTpart[index];
       
     }
 
-    if(*t == 0 || *t != ',' || !doparseDST) return true;    // No DST definition. No DST.
+    if(!tzHasDST[index] || !doparseDST) {
+        return true;
+    }
+    
+    if(*t == 0 || *t != ',') {                        // No DST definition. No DST.
+        tzHasDST[index] = 0;
+        return true;
+    }
+
     t++;
 
     tzForYear[index] = currYear;
+
+    // Set to "no DST" until verified valid
+    tzHasDST[index] = 0;
 
     // 2) parse DST start
 
@@ -3814,8 +3827,10 @@ bool parseTZ(int index, int currYear, bool doparseDST)
         u = parseDST(v, DSToffYear, DSToffMonth, DSToffDay, DSToffHour, DSToffMinute, currYear+1);
         if(!u) return false;
     }
-    
-    t = u;
+
+    // 4) Evaluate results
+
+    tzHasDST[index] = 1;  // TZ has valid DST definition
 
     if((DSToffMonth == DSTonMonth) && (DSToffDay == DSTonDay)) {
         couldDST[index] = false;
@@ -4018,7 +4033,7 @@ void setDatesTimesWC(DateTime dt)
         myTime1 = myTime - tzDiffGMT[1];
         minsToDate(myTime1, year, month, day, hour, minute);
 
-        if(!couldDST[1] || tzForYear[1] != year) {
+        if(tzHasDST[1] && tzForYear[1] != year) {
             parseTZ(1, year);
         }       
 
@@ -4031,7 +4046,7 @@ void setDatesTimesWC(DateTime dt)
         myTime2 = myTime - tzDiffGMT[2];
         minsToDate(myTime2, year, month, day, hour, minute);
 
-        if(!couldDST[2] || tzForYear[2] != year) {
+        if(tzHasDST[2] && tzForYear[2] != year) {
             parseTZ(2, year);
         }       
 
@@ -4261,7 +4276,7 @@ static bool NTPGetLocalTime(int& year, int& month, int& day, int& hour, int& min
     minute = total32 - (temp * 60);
 
     // DST handling: Parse TZ and setup DST data for now current year
-    if(!couldDST[0] || tzForYear[0] != year) {
+    if(tzHasDST[0] && tzForYear[0] != year) {
         if(!(parseTZ(0, year))) {
             #ifdef TC_DBG
             Serial.println(F("NTPGetLocalTime: Failed to parse TZ"));
