@@ -772,10 +772,9 @@ void time_setup()
         } while (!NTPHaveTime() && timeout);
     }
 
-    // Parse TZ and set TZ parameters
-    // Year does not matter at this point. We only parse 
-    // the actual time zone for the first calculations.
-    if(!(parseTZ(0, 2022, false))) {
+    // Parse TZ to check validity.
+    // (Year does not matter at this point)
+    if(!(parseTZ(0, 2022))) {
         tzbad = true;
         #ifdef TC_DBG
         Serial.println(F("time_setup: Failed to parse TZ"));
@@ -865,15 +864,12 @@ void time_setup()
         lastYear = presentTime.loadLastYear();
     }
 
-    // Parse (complete) TZ and set TZ/DST parameters
-    // (sets/clears couldDST)
+    // Parse TZ and set TZ/DST parameters for current year
     if(!(parseTZ(0, rtcYear))) {
         tzbad = true;
     }
 
     // Parse alternate time zones for WC
-    // Needed at this point for determining
-    // non-DST time difference
     if(settings.timeZoneDest[0] != 0) {
         if(parseTZ(1, rtcYear)) {
             WcHaveTZ1 = true;
@@ -1861,16 +1857,16 @@ void time_loop()
 
             // Check every dstChkInt-th minute
             // (Do not use "useDST && min%x==0": useDST
-            // might switch, so the one-time-check isn't one)
+            // might vary, so the one-time-check isn't one)
             if((dt.minute() % dstChkInt) == 0) {
 
                 if(!DSTcheckDone) {
 
                     // Set to 5 (might be 1 from time_setup)
-                    // Save to set here, because useDST is only
+                    // Safe to set here, because useDST is only
                     // FALSE if no DST is defined or we just
                     // adjusted via NTP/GPS; in both cases the
-                    // purpose of setting it to 1 is served.
+                    // purpose of setting it to 1 is moot.
                     dstChkInt = 5;
 
                     if(useDST) {
@@ -3633,6 +3629,10 @@ static int mins2Date(int year, int month, int day, int hour, int mins)
 
 /*
  * Parse TZ string and setup DST data
+ * 
+ * If TZ-part is bad, always returns FALSE
+ * If DST-part is bad, only returns FALSE once
+ * (DST-part ignored if bad in later calls)
  */
 bool parseTZ(int index, int currYear, bool doparseDST)
 {
@@ -3919,9 +3919,9 @@ static bool blockDSTChange(int currTimeMins)
 }
 
 /*
- * Determine DST from non-DST local time. This is used for NTP and GPS, 
- * where we get UTC time, and have converted it to local nonDST time.
- * There is no need for blocking as there is no ambiguity.
+ * Determine DST from non-DST local time. This is used with NTP, GPS and
+ * the WC times, where we get UTC time and have converted it to local
+ * nonDST time. There is no need for blocking as there is no ambiguity.
  */
 static void localToDST(int index, int& year, int& month, int& day, int& hour, int& minute, int& isDST)
 {
@@ -4012,7 +4012,7 @@ static void handleDSTFlag(struct tm *ti, int nisDST)
  */
 void setDatesTimesWC(DateTime dt)
 {
-    uint64_t myTime1, myTime2; 
+    uint64_t myTimeL; 
     int year = dt.year() - presentTime.getYearOffset();
     int month = dt.month();
     int day = dt.day();
@@ -4028,10 +4028,10 @@ void setDatesTimesWC(DateTime dt)
 
     myTime += tzDiffGMT[0];
 
-    // Convert to new TZ
+    // Convert UTC to new TZ
     if(WcHaveTZ1) {
-        myTime1 = myTime - tzDiffGMT[1];
-        minsToDate(myTime1, year, month, day, hour, minute);
+        myTimeL = myTime - tzDiffGMT[1];
+        minsToDate(myTimeL, year, month, day, hour, minute);
 
         if(tzHasDST[1] && tzForYear[1] != year) {
             parseTZ(1, year);
@@ -4043,8 +4043,8 @@ void setDatesTimesWC(DateTime dt)
     }
 
     if(WcHaveTZ2) {
-        myTime2 = myTime - tzDiffGMT[2];
-        minsToDate(myTime2, year, month, day, hour, minute);
+        myTimeL = myTime - tzDiffGMT[2];
+        minsToDate(myTimeL, year, month, day, hour, minute);
 
         if(tzHasDST[2] && tzForYear[2] != year) {
             parseTZ(2, year);
