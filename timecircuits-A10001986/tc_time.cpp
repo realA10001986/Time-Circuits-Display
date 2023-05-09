@@ -251,7 +251,7 @@ bool useGPS      = true;
 bool useGPSSpeed = false;
 
 // TZ/DST status & data
-static bool useDST          = false;
+static bool checkDST        = false;
 bool        couldDST[3]     = { false, false, false };   // Could use own DST management (and DST is defined in TZ)
 static int  tzForYear[3]    = { 0, 0, 0 };               // Parsing done for this very year
 static int8_t tzIsValid[3]  = { -1, -1, -1 };
@@ -545,7 +545,7 @@ static void ettoPulseEnd();
 static int  mins2Date(int year, int month, int day, int hour, int mins);
 static bool blockDSTChange(int currTimeMins);
 static void localToDST(int index, int& year, int& month, int& day, int& hour, int& minute, int& isDST);
-static void handleDSTFlag(struct tm *ti, int nisDST = -1);
+static void updateDSTFlag(int nisDST = -1);
 
 /// Native NTP
 static void ntp_setup();
@@ -1705,7 +1705,7 @@ void time_loop()
                         syncTrigger = false;
 
                         // We have current DST determination, skip it below
-                        useDST = false;
+                        checkDST = false;
 
                         if(couldDST[0]) allowedDiff = tzDiff[0] + 1;
 
@@ -1748,7 +1748,7 @@ void time_loop()
                     } else {
 
                         // No auth time at this point, do DST check below
-                        useDST = couldDST[0];
+                        checkDST = couldDST[0];
 
                         #ifdef TC_DBG
                         Serial.println(F("time_loop: RTC re-adjustment via NTP/GPS failed"));
@@ -1759,7 +1759,7 @@ void time_loop()
                 } else {
 
                     // We have current DST determination, skip it below
-                    useDST = false;
+                    checkDST = false;
 
                 }
 
@@ -1776,7 +1776,7 @@ void time_loop()
                 }
 
                 // No auth time at this point, do DST check below
-                useDST = couldDST[0];
+                checkDST = couldDST[0];
 
             }
 
@@ -1856,20 +1856,20 @@ void time_loop()
             // Check if we need to switch from/to DST
 
             // Check every dstChkInt-th minute
-            // (Do not use "useDST && min%x==0": useDST
+            // (Do not use "checkDST && min%x == 0": checkDST
             // might vary, so the one-time-check isn't one)
             if((dt.minute() % dstChkInt) == 0) {
 
                 if(!DSTcheckDone) {
 
                     // Set to 5 (might be 1 from time_setup)
-                    // Safe to set here, because useDST is only
+                    // Safe to set here, because checkDST is only
                     // FALSE if no DST is defined or we just
                     // adjusted via NTP/GPS; in both cases the
                     // purpose of setting it to 1 is moot.
                     dstChkInt = 5;
 
-                    if(useDST) {
+                    if(checkDST) {
 
                         int oldDST = presentTime.getDST();
                         int currTimeMins = 0;
@@ -3111,7 +3111,7 @@ static bool getNTPTime(bool weHaveAuthTime)
                 }
             }
 
-            handleDSTFlag(NULL, nisDST);
+            updateDSTFlag(nisDST);
     
             #ifdef TC_DBG
             Serial.printf("getNTPTime: New time %d-%02d-%02d %02d:%02d:%02d DST: %d\n", 
@@ -3217,8 +3217,8 @@ static bool getGPStime()
         }
     }
 
-    // Handle presentTime's DST flag
-    handleDSTFlag(NULL, isDST);
+    // Update presentTime's DST flag
+    updateDSTFlag(isDST);
 
     #ifdef TC_DBG
     Serial.printf("getGPStime: New time %d-%02d-%02d %02d:%02d:%02d DST: %d\n", 
@@ -3957,51 +3957,17 @@ static void localToDST(int index, int& year, int& month, int& day, int& hour, in
 }
 
 /*
- * Evaluate DST flag from authoritative time source
- * and update presentTime's isDST flag
+ * Update presentTime's isDST flag
  */
-static void handleDSTFlag(struct tm *ti, int nisDST)
+static void updateDSTFlag(int nisDST)
 {
-    int myisDST = nisDST;
-    
-    if(ti) myisDST = ti->tm_isdst;
-    
-    if(presentTime.getDST() != myisDST) {
-      
-        int myDST = -1, currTimeMins = 0;
-        #ifdef TC_DBG
-        bool isAuth = false;
-        #endif
-        
-        if(myisDST >= 0) {
-
-            // If authority has a clear answer, use it.
-            myDST = myisDST;
-            if(myDST > 1) myDST = 1;    // Who knows....
-            #ifdef TC_DBG
-            isAuth = true;
-            #endif
-            
-        } else if(couldDST[0] && ti) {
-
-            // If authority is unsure, try for ourselves
-            myDST = timeIsDST(0, ti->tm_year + 1900, ti->tm_mon + 1, ti->tm_mday, 
-                              ti->tm_hour, ti->tm_min, currTimeMins);
-                              
-            // If we are within block-period, set to current to prohibit a change
-            if(blockDSTChange(currTimeMins)) myDST = presentTime.getDST();
-             
-        }
-        
-        if(presentTime.getDST() != myDST) {
-            #ifdef TC_DBG
-            Serial.printf("handleDSTFlag: Updating isDST from %d to %s%d\n", 
-                  presentTime.getDST(), isAuth ? "[authoritative] " : "", myDST);
-            #endif
-            presentTime.setDST(myDST);
-        }
-        
+    #ifdef TC_DBG
+    if(presentTime.getDST() != nisDST) {
+        Serial.printf("updateDSTFlag: Updating isDST from %d to %d\n", 
+              presentTime.getDST(), nisDST);
     }
+    #endif
+    presentTime.setDST(nisDST);
 }
 
 /*
