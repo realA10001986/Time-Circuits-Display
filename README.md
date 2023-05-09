@@ -701,15 +701,17 @@ The TCD can - to a limited extent - be controlled through messages sent to topic
 
 Upon a time travel, the TCD can send messages to topic **bttf/tcd/pub**. This can be used to control other props wirelessly, such as Flux Capacitor, SID, etc. The timing is identical to the wired protocol, see [here](#controlling-other-props). TIMETRAVEL is sent when IO14 goes high, ie with a lead time (ETTO LEAD) of 5 seconds. REENTRY is sent when the re-entry sequence starts (ie when IO14 goes low). Note that network traffic has some latency, so timing might not be as exact as a wired connection.
 
+When the [alarm](#how-to-set-up-the-alarm) sounds, the TCD can also send "ALARM" to **bttf/tcd/pub**.
+
 ### Setup
 
-In order to connect to a MQTT network, a "broker" must be present in your network, and its address needs to be configured in the Config Portal. The broker can be specified either by domain or IP (preferred, spares us a DNS call). The default port is 1883. If a different port is to be used, append a ":" followed by the port number to the domain/IP, such as "192.168.1.5:1884". 
+In order to connect to a MQTT network, a "broker" (such as [mosquitto](https://mosquitto.org/), [EMQ X](https://www.emqx.io/), [Cassandana](https://github.com/mtsoleimani/cassandana), [RabbitMQ](https://www.rabbitmq.com/), [Ejjaberd](https://www.ejabberd.im/), [HiveMQ](https://www.hivemq.com/) to name a few) must be present in your network, and its address needs to be configured in the Config Portal. The broker can be specified either by domain or IP (preferred, spares us a DNS call). The default port is 1883. If a different port is to be used, append a ":" followed by the port number to the domain/IP, such as "192.168.1.5:1884". 
 
 If your broker does not allow anonymous logins, a username and password can be specified.
 
 If you want your TCD to display messages as described above, you also need to specify the topic in the respective field.
 
-If you want your TCD to publish messages to bttf/tcd/pub (ie if you want to notify other devices about the timetravel), check the respective option.
+If you want your TCD to publish messages to bttf/tcd/pub (ie if you want to notify other devices about the timetravel and/or the alarm), check the respective option.
 
 Limitations: MQTT Protocol version 3.1.1; no encryption; maximum message length 255 characters. Note that using HA/MQTT will disable WiFi power saving (as described below).
 
