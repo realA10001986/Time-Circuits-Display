@@ -46,6 +46,8 @@ extern char timeBuffer[];
 void keypad_setup();
 bool scanKeypad();
 
+void resetKeypadState();
+
 void keypad_loop();
 
 void resetTimebufIndices();

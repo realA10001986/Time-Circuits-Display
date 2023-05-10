@@ -1572,8 +1572,11 @@ int wifi_getStatus()
           return (int)WiFi.status();
       case WIFI_MODE_AP:
           return 0x10000;     // AP MODE
+      case WIFI_MODE_APSTA:
+          return 0x10003;     // AP/STA MIXED
       case WIFI_MODE_NULL:
           return 0x10001;     // OFF
+      
     }
 
     return 0x10002;           // UNKNOWN
@@ -1588,6 +1591,7 @@ bool wifi_getIP(uint8_t& a, uint8_t& b, uint8_t& c, uint8_t& d)
           myip = WiFi.localIP();
           break;
       case WIFI_MODE_AP:
+      case WIFI_MODE_APSTA:
           myip = WiFi.softAPIP();
           break;
       default:

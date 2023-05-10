@@ -56,6 +56,7 @@ class clockDisplay {
         void on();
         void onCond();
         void off();
+        void onBlink(uint8_t blink);
         void realLampTest();
         void lampTest(bool randomize = false);
 
@@ -115,7 +116,7 @@ class clockDisplay {
         void showMinuteDirect(int minuteNum);
         void showYearDirect(int yearNum);
 
-        void showSettingValDirect(const char* setting, int8_t val = -1, bool clear = false);
+        void showSettingValDirect(const char* setting, int8_t val = -1, bool clear = false, bool blink = false);
         void showTextDirect(const char *text, bool clear = true, bool corr6 = false);
         void showHalfIPDirect(int a, int b, bool clear = false);
 
@@ -167,6 +168,7 @@ class clockDisplay {
 
         uint8_t  _did = 0;
         uint8_t  _address = 0;
+        uint8_t  _blink = 0;
         uint16_t _displayBuffer[CD_BUF_SIZE];
         uint16_t _displayBufferAlt[CD_BUF_SIZE];
 

@@ -338,6 +338,11 @@ static void keypadEvent(char key, KeyState kstate)
     }
 }
 
+void resetKeypadState()
+{
+    doKey = false;
+}
+
 static void enterKeyPressed()
 {
     isEnterKeyPressed = true;

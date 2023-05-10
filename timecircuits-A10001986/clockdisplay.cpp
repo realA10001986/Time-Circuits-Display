@@ -123,6 +123,11 @@ void clockDisplay::off()
     directCmd(0x80);
 }
 
+void clockDisplay::onBlink(uint8_t blink)
+{
+    directCmd(0x80 | 1 | ((blink & 0x03) << 1)); 
+}
+
 // Turn on all LEDs
 // Not for use in normal operation
 // Red displays apparently draw more power
@@ -733,13 +738,13 @@ void clockDisplay::showHalfIPDirect(int a, int b, bool clear)
 }
 
 // Show a text part and a number
-void clockDisplay::showSettingValDirect(const char* setting, int8_t val, bool clear)
+void clockDisplay::showSettingValDirect(const char* setting, int8_t val, bool clear, bool blink)
 {
     showTextDirect(setting, clear);
 
     int field = (strlen(setting) <= CD_MONTH_DIGS) ? CD_DAY_POS : CD_MIN_POS;
 
-    if(val >= 0 && val < 100)
+    if(!blink && (val >= 0 && val < 100))
          directCol(field, makeNum(val));
     else
          directCol(field, 0x00);

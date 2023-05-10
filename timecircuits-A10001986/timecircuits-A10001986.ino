@@ -99,7 +99,9 @@
 
 /*  Changelog
  *   
- *  2023/05/08 (A10001986)
+ *  2023/05/10 (A10001986)
+ *    - Detect "APSTA" WiFi Mode correctly for Keypad Menu
+ *    - Optimize menu code; add "blinking" of editable data
  *    - Minor optimizations for TZ parsing and DST checks
  *  2023/05/05 (A10001986)
  *    - Publish "ALARM" via MQTT
