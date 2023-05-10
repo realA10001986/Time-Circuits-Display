@@ -1576,7 +1576,6 @@ int wifi_getStatus()
           return 0x10003;     // AP/STA MIXED
       case WIFI_MODE_NULL:
           return 0x10001;     // OFF
-      
     }
 
     return 0x10002;           // UNKNOWN

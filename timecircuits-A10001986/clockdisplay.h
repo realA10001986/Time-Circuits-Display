@@ -168,7 +168,6 @@ class clockDisplay {
 
         uint8_t  _did = 0;
         uint8_t  _address = 0;
-        uint8_t  _blink = 0;
         uint16_t _displayBuffer[CD_BUF_SIZE];
         uint16_t _displayBufferAlt[CD_BUF_SIZE];
 

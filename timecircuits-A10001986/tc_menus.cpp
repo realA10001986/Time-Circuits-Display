@@ -1042,21 +1042,24 @@ static bool setField(uint16_t& number, uint8_t field, int year, int month, bool 
  *  Volume #####################################################
  */
 
-static void showCurVolHWSW()
+static void showCurVolHWSW(bool blink)
 {
-    allOff();
-    if(curVolume == 255) {
-        destinationTime.showTextDirect("USE");
-        presentTime.showTextDirect("VOLUME");
-        departedTime.showTextDirect("KNOB");
-        departedTime.onBlink(2);
+    if(blink) {
+        allOff();
     } else {
-        destinationTime.showTextDirect("FIXED");
-        presentTime.showTextDirect("LEVEL");
-        departedTime.off();
+        if(curVolume == 255) {
+            destinationTime.showTextDirect("USE");
+            presentTime.showTextDirect("VOLUME");
+            departedTime.showTextDirect("KNOB");
+            departedTime.on();
+        } else {
+            destinationTime.showTextDirect("FIXED");
+            presentTime.showTextDirect("LEVEL");
+            departedTime.off();
+        }
+        destinationTime.on();
+        presentTime.on();
     }
-    destinationTime.onBlink(2);
-    presentTime.onBlink(2);
 }
 
 static void showCurVol(bool blink, bool doComment)
@@ -1082,9 +1085,9 @@ static void doSetVolume()
     unsigned long playNow;
     bool triggerPlay = false;
     bool blinkSwitch = false;
-    unsigned long blinkNow;
+    unsigned long blinkNow = millis();
 
-    showCurVolHWSW();
+    showCurVolHWSW(false);
 
     timeout = 0;  // reset timeout
 
@@ -1096,6 +1099,10 @@ static void doSetVolume()
 
             timeout = 0;  // button pressed, reset timeout
 
+            if(blinkSwitch) {
+                showCurVolHWSW(false);
+            }
+
             if(!(volDone = menuWaitForRelease())) {
 
                 if(curVolume <= 19)
@@ -1103,11 +1110,22 @@ static void doSetVolume()
                 else
                     curVolume = 0;
 
-                showCurVolHWSW();
+                showCurVolHWSW(false);
+
+                blinkNow = millis();
+                blinkSwitch = false;
 
             }
 
         } else {
+
+            unsigned long mm = millis();
+                
+            if(mm - blinkNow > 500) {
+                blinkSwitch = !blinkSwitch;
+                showCurVolHWSW(blinkSwitch);
+                blinkNow = mm;
+            }
 
             mydelay(50);
 
@@ -1122,6 +1140,8 @@ static void doSetVolume()
         showCurVol(false, true);
 
         timeout = 0;  // reset timeout
+
+        blinkSwitch = false;
         blinkNow = millis();
 
         volDone = false;
@@ -1376,13 +1396,13 @@ static void doSetAlarm()
 
             if(!(alarmDone = menuWaitForRelease())) {
 
-                blinkSwitch = false;
-                blinkNow = millis();
-
                 newAlarmOnOff = !newAlarmOnOff;
 
                 sprintf(almBuf, almFmt, newAlarmOnOff ? "ON " : "OFF", newAlarmHour, newAlarmMinute);
                 displaySet->showTextDirect(almBuf);
+
+                blinkSwitch = false;
+                blinkNow = millis();
 
             }
 
@@ -1557,14 +1577,15 @@ static void doSetAutoInterval()
 
             if(!(autoDone = menuWaitForRelease())) {
 
-                blinkSwitch = false;
-                blinkNow = millis();
-
                 newAutoInterval++;
                 if(newAutoInterval > 5)
                     newAutoInterval = 0;
 
                 displayAI(autoTimeIntervals[newAutoInterval], false, true);
+
+                blinkSwitch = false;
+                blinkNow = millis();
+
             }
 
         } else {
@@ -1644,15 +1665,15 @@ static bool doSetBrightness(clockDisplay* displaySet)
 
             if(!(briDone = menuWaitForRelease())) {
 
-                blinkSwitch = false;
-                blinkNow = millis();
-
                 number++;
                 if(number > 15) number = 0;
 
                 displaySet->setBrightness(number);
 
                 displayBri(displaySet, number, false);
+
+                blinkSwitch = false;
+                blinkNow = millis();
 
             }
 
