@@ -99,6 +99,13 @@
 
 /*  Changelog
  *   
+ *  2023/05/11 (A10001986)
+ *    - MQTT: Make (re)connection/subscription async on MQTT protocol level
+ *    - MQTT: Limit re-connection attempts. If there is a network problem
+ *      on TCP level, give up after 5 attempts to avoid "frozen displays"
+ *      and audio interruptions.
+ *      If the broker does not respond on MQTT protocol level, give up after 
+ *      120 attempts (ie approx 60 minutes).
  *  2023/05/10 (A10001986)
  *    - Detect "APSTA" WiFi Mode correctly for Keypad Menu
  *    - Optimize menu code; add "blinking" of editable data

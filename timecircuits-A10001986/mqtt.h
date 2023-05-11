@@ -32,8 +32,8 @@
 #define PubSubClient_h
 
 #include <Arduino.h>
-#include "IPAddress.h"
-#include "Client.h"
+#include <IPAddress.h>
+#include <WiFiClient.h>
 
 #define MQTT_VERSION_3_1      3
 #define MQTT_VERSION_3_1_1    4
@@ -65,6 +65,7 @@
 //#define MQTT_MAX_TRANSFER_SIZE 80
 
 // Possible values for client.state()
+#define MQTT_CONNECTING             -5
 #define MQTT_CONNECTION_TIMEOUT     -4
 #define MQTT_CONNECTION_LOST        -3
 #define MQTT_CONNECT_FAILED         -2
@@ -105,7 +106,7 @@ class PubSubClient {
 
     public:
         PubSubClient();
-        PubSubClient(Client& client);
+        PubSubClient(WiFiClient& client);
     
         ~PubSubClient();
     
@@ -113,7 +114,7 @@ class PubSubClient {
         void setServer(const char *domain, uint16_t port);
         void setCallback(void (*callback)(char *, uint8_t *, unsigned int));
         void setLooper(void (*looper)());
-        void setClient(Client& client);
+        void setClient(WiFiClient& client);
         void setKeepAlive(uint16_t keepAlive);
         void setSocketTimeout(uint16_t timeout);
     
@@ -135,7 +136,6 @@ class PubSubClient {
         
         bool connected();
         int  state();
-        void setConLooper(bool conLooper);
     
     private:
 
@@ -151,7 +151,7 @@ class PubSubClient {
         //       (MQTT_MAX_HEADER_SIZE - <returned size>) bytes into the buffer
         size_t buildHeader(uint8_t header, uint8_t* buf, uint16_t length);
        
-        Client* _client;
+        WiFiClient* _client;
         uint8_t* buffer;
         uint16_t bufferSize;
         uint16_t keepAlive;
@@ -162,7 +162,6 @@ class PubSubClient {
         bool pingOutstanding;
         void (*callback)(char *, uint8_t *, unsigned int);
         void (*looper)();
-        bool callLooperCon;
 
         IPAddress ip;
         const char* domain;

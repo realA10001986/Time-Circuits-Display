@@ -377,7 +377,6 @@ float tcRTC::getTemperature()
     switch(_rtcType) {
 
     case RTCT_DS3231:
-    default:
         read_bytes(DS3231_TEMP, buffer, 2);
         return (float)buffer[0] + (float)(buffer[1] >> 6) * 0.25f;
     }

@@ -33,7 +33,6 @@
 #ifdef TC_HAVEMQTT
 
 #include "mqtt.h"
-#include "Arduino.h"
 
 static void defLooper()
 {
@@ -51,7 +50,7 @@ PubSubClient::PubSubClient()
     setLooper(defLooper);
 }
 
-PubSubClient::PubSubClient(Client& client)
+PubSubClient::PubSubClient(WiFiClient& client)
 {
     this->_state = MQTT_DISCONNECTED;
     setClient(client);
@@ -87,9 +86,9 @@ bool PubSubClient::connect(const char *id, const char *user, const char *pass, b
             result = 1;
         } else {
             if(domain) {
-                result = _client->connect(this->domain, this->port);
+                result = _client->connect(this->domain, this->port, (int)5000);
             } else {
-                result = _client->connect(this->ip, this->port);
+                result = _client->connect(this->ip, this->port, (int)5000);
             }
         }
 
@@ -142,38 +141,15 @@ bool PubSubClient::connect(const char *id, const char *user, const char *pass, b
             write(MQTTCONNECT, this->buffer, length - MQTT_MAX_HEADER_SIZE);
 
             lastInActivity = lastOutActivity = millis();
-            unsigned long lastLooper = lastInActivity;
 
-            while(!_client->available()) {
-                if(millis() - lastInActivity >= this->socketTimeout) {
-                    _state = MQTT_CONNECTION_TIMEOUT;
-                    _client->stop();
-                    return false;
-                }
-                if(callLooperCon) {
-                    if(millis() - lastLooper > 20) {
-                        looper();
-                        lastLooper = millis();
-                    }
-                }
-            }
+            _state = MQTT_CONNECTING;
 
-            uint8_t llen;
-            uint32_t len = readPacket(&llen);
-
-            if(len == 4) {
-                if(buffer[3] == 0) {
-                    lastInActivity = millis();
-                    pingOutstanding = false;
-                    _state = MQTT_CONNECTED;
-                    return true;
-                } else {
-                    _state = buffer[3];
-                }
-            }
-            _client->stop();
+            return true;
+            
         } else {
+
             _state = MQTT_CONNECT_FAILED;
+
         }
         
         return false;
@@ -290,7 +266,51 @@ uint32_t PubSubClient::readPacket(uint8_t *lengthLength)
 
 bool PubSubClient::loop()
 {
-    if(connected()) {
+    if(_state == MQTT_CONNECTING) {
+
+        if(!_client->available()) {
+
+            if(millis() - lastInActivity >= this->socketTimeout) {
+                _state = MQTT_CONNECTION_TIMEOUT;
+                _client->stop();
+                #ifdef TC_DBG
+                Serial.println("MQTT: CONNACK timed-out");
+                #endif
+                return false;
+            }
+
+            return true;
+            
+        } else {
+
+            uint8_t llen;
+            uint32_t len = readPacket(&llen);
+
+            if(len == 4) {
+                if(buffer[3] == 0) {
+                    lastInActivity = millis();
+                    pingOutstanding = false;
+                    _state = MQTT_CONNECTED;
+                    #ifdef TC_DBG
+                    Serial.println("MQTT: CONNACK received");
+                    #endif
+                    return true;
+                } else {
+                    _state = buffer[3];
+                }
+            } else {
+                _state = MQTT_CONNECT_BAD_PROTOCOL;
+            }
+            _client->stop();
+
+            #ifdef TC_DBG
+            Serial.printf("MQTT: CONNACK failed, state %d\n", _state);
+            #endif
+
+            return false;
+        }
+      
+    } else if(connected()) {
         
         unsigned long t = millis();
         unsigned long ka = this->keepAlive * 1000UL;
@@ -599,7 +619,7 @@ void PubSubClient::setLooper(void (*looper)())
     this->looper = looper;
 }
 
-void PubSubClient::setClient(Client& client)
+void PubSubClient::setClient(WiFiClient& client)
 {
     this->_client = &client;
 }
@@ -611,7 +631,7 @@ int PubSubClient::state()
 
 bool PubSubClient::setBufferSize(uint16_t size)
 {
-    if(size == 0) 
+    if(size == 0)
         return false;
 
     if(this->bufferSize == 0) {
@@ -643,11 +663,6 @@ void PubSubClient::setKeepAlive(uint16_t keepAlive)
 void PubSubClient::setSocketTimeout(uint16_t timeout)
 {
     this->socketTimeout = timeout * 1000;
-}
-
-void PubSubClient::setConLooper(bool conLooper)
-{
-    this->callLooperCon = conLooper;
 }
 
 #endif  // TC_HAVEMQTT
