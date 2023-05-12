@@ -100,6 +100,7 @@
 /*  Changelog
  *   
  *  2023/05/12 (A10001986)
+ *    - Music Player: Fix going to song# when player is off
  *    - MQTT: Add async ping to server before trying to connect. This avoids
  *      "frozen" displays and audio interruptions. This requires that the server
  *      actually answers to ping (ICMP) requests. Connection-attempt-logic

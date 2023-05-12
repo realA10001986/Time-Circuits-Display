@@ -278,7 +278,7 @@ void mp_play(bool forcePlay)
     
     do {
         if(mp_play_int(forcePlay)) {
-            mpActive = true;
+            mpActive = forcePlay;
             break;
         }
         mpCurrIdx++;
