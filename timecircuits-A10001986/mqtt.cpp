@@ -34,6 +34,16 @@
 
 #include "mqtt.h"
 
+#include "lwip/inet_chksum.h"
+#include "lwip/ip.h"
+#include "lwip/ip4.h"
+#include "lwip/err.h"
+#include "lwip/icmp.h"
+#include "lwip/sockets.h"
+#include "lwip/sys.h"
+#include "lwip/netdb.h"
+#include "lwip/dns.h"
+
 static void defLooper()
 {
 }
@@ -663,6 +673,118 @@ void PubSubClient::setKeepAlive(uint16_t keepAlive)
 void PubSubClient::setSocketTimeout(uint16_t timeout)
 {
     this->socketTimeout = timeout * 1000;
+}
+
+#define PING_ID 0xAFAF
+
+bool PubSubClient::sendPing()
+{
+    struct sockaddr_in    address;
+    ip4_addr_t            ping_target;
+    struct icmp_echo_hdr *iecho;
+    struct sockaddr_in    to;
+    struct timeval        tout;
+    int    size       =   32;
+    size_t ping_size  =   sizeof(struct icmp_echo_hdr) + size;
+    size_t data_len   =   ping_size - sizeof(struct icmp_echo_hdr);
+    int    err;
+
+    #ifdef TC_DBG
+    Serial.printf("MQTT: Sending ping\n");
+    #endif
+
+    // We only PING if we have an IP address.
+    // No point in avoiding a blocking connect
+    // if a DNS call is required beforehand
+    if(this->domain)
+        return false;
+
+    if((_s = socket(AF_INET, SOCK_RAW, IP_PROTO_ICMP)) < 0)
+        return false;
+
+    address.sin_addr.s_addr = ip;
+    ping_target.addr        = ip;
+
+    tout.tv_sec  = 0;
+    tout.tv_usec = 2000;    // 2ms
+
+    if(setsockopt(_s, SOL_SOCKET, SO_RCVTIMEO, &tout, sizeof(tout)) < 0) {
+        closesocket(_s);
+        return false;
+    }
+
+    iecho = (struct icmp_echo_hdr *)mem_malloc((mem_size_t)ping_size);
+    if(!iecho) {
+        closesocket(_s);
+        return false;
+    }
+
+    ICMPH_TYPE_SET(iecho, ICMP_ECHO);
+    ICMPH_CODE_SET(iecho, 0);
+    iecho->chksum = 0;
+    iecho->id = PING_ID;
+    iecho->seqno = htons(++_pseq_num);
+
+    iecho->chksum = inet_chksum(iecho, (uint16_t)ping_size);
+
+    to.sin_len = sizeof(to);
+    to.sin_family = AF_INET;
+    inet_addr_from_ip4addr(&to.sin_addr, &ping_target);
+
+    err = sendto(_s, iecho, ping_size, 0, (struct sockaddr*)&to, sizeof(to));
+        
+    mem_free(iecho);
+
+    if(err) {
+        _pstate = PING_PINGING;
+    } else {
+        closesocket(_s);
+        _pstate = PING_IDLE;
+    }
+        
+    return (err ? true : false);
+}
+
+bool PubSubClient::pollPing()
+{
+    char buf[64];
+    int len, fromlen;
+    struct sockaddr_in    from;
+    struct ip_hdr        *iphdr;
+    struct icmp_echo_hdr *iecho = NULL;
+    bool success = false;
+
+    if(_pstate != PING_PINGING)
+        return false;
+
+    while((len = recvfrom(_s, buf, sizeof(buf), 0, (struct sockaddr*)&from, (socklen_t*)&fromlen)) > 0) {
+        if(len >= (int)(sizeof(struct ip_hdr) + sizeof(struct icmp_echo_hdr))) {
+            iphdr = (struct ip_hdr *)buf;
+            iecho = (struct icmp_echo_hdr *)(buf + (IPH_HL(iphdr) * 4));
+            success = ((iecho->id == PING_ID) && (iecho->seqno == htons(_pseq_num)));
+        }
+    }
+
+    if(success) {
+        closesocket(_s);
+        _pstate = PING_IDLE;
+    }
+
+    return success;
+}
+
+void PubSubClient::cancelPing()
+{
+    if(_pstate != PING_PINGING)
+        return;
+
+    closesocket(_s);
+    _pstate = PING_IDLE;   
+}
+
+int PubSubClient::pstate()
+{
+    return this->_pstate;
 }
 
 #endif  // TC_HAVEMQTT

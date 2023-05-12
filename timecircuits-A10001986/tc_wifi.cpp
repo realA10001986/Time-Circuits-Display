@@ -340,6 +340,11 @@ const char    *mqttAudioFile = "/ha-alert.mp3";
 bool          pubMQTT = false;
 static uint8_t mqttSoftErr = 0, mqttHardErr = 0;
 static bool   mqttSubAttempted = false;
+static bool   mqttOldState = true;
+static bool   mqttDoPing = true;
+static bool   mqttRestartPing = false;
+static bool   mqttPingDone = false;
+static unsigned long mqttPingNow = 0;
 #endif
 
 static void wifiOff(bool force);
@@ -367,6 +372,7 @@ static void setCBVal(WiFiManagerParameter *el, char *sv);
 
 #ifdef TC_HAVEMQTT
 static void strcpyutf8(char *dst, const char *src, unsigned int len);
+static void mqttPing();
 static bool mqttReconnect(bool force = false);
 static void mqttLooper();
 static void mqttCallback(char *topic, byte *payload, unsigned int length);
@@ -599,7 +605,12 @@ void wifi_setup()
         if(isIp(mqttServer)) {
             mqttClient.setServer(stringToIp(mqttServer), mqttPort);
         } else {
-            mqttClient.setServer(mqttServer, mqttPort);
+            IPAddress remote_addr;
+            if(WiFi.hostByName(mqttServer, remote_addr)) {
+                mqttClient.setServer(remote_addr, mqttPort);
+            } else {
+                mqttClient.setServer(mqttServer, mqttPort);
+            }
         }
         
         mqttClient.setCallback(mqttCallback);
@@ -648,12 +659,31 @@ void wifi_loop()
 
 #ifdef TC_HAVEMQTT
     if(useMQTT) {
+        unsigned long timeStart = millis();
         if(mqttClient.state() != MQTT_CONNECTING) {
             if(!mqttClient.connected()) {
-                mqttReconnect();
+                if(mqttOldState || mqttRestartPing) {
+                    // Disconnection first detected:
+                    mqttOldState = false;
+                    mqttPingDone = mqttDoPing ? false : true;
+                    mqttSubAttempted = false;
+                    mqttPingNow = mqttRestartPing ? millis() : 0;
+                    mqttRestartPing = false;
+                }
+                if(mqttDoPing && !mqttPingDone) {
+                    audio_loop();
+                    mqttPing();
+                    audio_loop();
+                }
+                if(mqttPingDone) {
+                    audio_loop();     // Call audio to avoid interruption
+                    mqttReconnect();
+                    audio_loop();
+                }
             } else {
                 // Only call Subscribe if connected
                 mqttSubscribe();
+                mqttOldState = true;
             }
         }
         mqttClient.loop();
@@ -1919,67 +1949,82 @@ static void mqttCallback(char *topic, byte *payload, unsigned int length)
     }
 }
 
+static void mqttPing()
+{
+    switch(mqttClient.pstate()) {
+    case PING_IDLE:
+        if(WiFi.status() == WL_CONNECTED) {
+            if(!mqttPingNow || (millis() - mqttPingNow > 30*1000)) {
+                mqttPingNow = millis();
+                if(!mqttClient.sendPing()) {
+                    // Mostly fails for internal reasons;
+                    // skip ping test in that case
+                    mqttDoPing = false;
+                    mqttPingDone = true;  // allow mqtt-connect attempt
+                }
+            }
+        }
+        break;
+    case PING_PINGING:
+        if(mqttClient.pollPing()) {
+            mqttDoPing = true;
+            mqttPingDone = true;          // allow mqtt-connect attempt
+            mqttPingNow = 0;
+            // Delay re-connection for 5 seconds after first ping echo
+            mqttReconnectNow = millis() - (mqttReconnectInt - 5000);
+        } else {
+            if(millis() - mqttPingNow > 5000) {
+                mqttClient.cancelPing();
+                mqttPingNow = millis();
+            }
+        }
+        break;
+    } 
+}
+
 static bool mqttReconnect(bool force)
 {
     bool success = false;
 
-    mqttSubAttempted = false;
+    if(useMQTT && (WiFi.status() == WL_CONNECTED)) {
+
+        if(!mqttClient.connected()) {
     
-    if(useMQTT && (WiFi.status() == WL_CONNECTED) && !mqttClient.connected()) {
-
-        if(force || (millis() - mqttReconnectNow > mqttReconnectInt)) {
-
-            // Five "hard errors" (ie network problem with long timeout)
-            // and we disable MQTT.
-            if(mqttHardErr > 5) {
-                useMQTT = false;
-                return false;
-            }
-            // 120 "soft errors" (connection refused, no blocking)
-            // and we disable MQTT.
-            if(mqttSoftErr > 120) {
-                useMQTT = false;
-                return false;
-            }
-
-            #ifdef TC_DBG
-            Serial.println("MQTT: Attempting to (re)connect");
-            #endif
-
-            mqttReconnectNow = millis();
-            if(strlen(mqttUser)) {
-                success = mqttClient.connect(settings.hostName, mqttUser, strlen(mqttPass) ? mqttPass : NULL);
-            } else {
-                success = mqttClient.connect(settings.hostName);
-            }
-            bool hardErr = (millis() - mqttReconnectNow > 3000);
-
-            mqttReconnectNow = millis();
-            
-            if(!success) {
-                if(hardErr) { 
-                    mqttHardErr++;
-                    mqttSoftErr = 0;
-                    mqttReconnectInt = (mqttHardErr > 3) ? MQTT_LONG_INT * 2 : MQTT_LONG_INT;
-                } else {
-                    mqttSoftErr++;
-                    mqttHardErr = 0;
-                    mqttReconnectInt = (mqttSoftErr > 20) ? MQTT_LONG_INT : MQTT_SHORT_INT;
+            if(force || !mqttReconnectNow || (millis() - mqttReconnectNow > mqttReconnectInt)) {
+    
+                // 120 "soft errors" (connection refused, no blocking)
+                // and we disable MQTT.
+                if(mqttSoftErr > 120) {
+                    useMQTT = false;
+                    return false;
                 }
+    
                 #ifdef TC_DBG
-                Serial.printf("MQTT: Failed to reconnect (%d/%d), retry in %d secs\n", mqttHardErr, mqttSoftErr, mqttReconnectInt/1000);
+                Serial.println("MQTT: Attempting to (re)connect");
                 #endif
-            } else {
-                #ifdef TC_DBG
-                Serial.println("MQTT: Connected to broker, waiting for CONNACK");
-                #endif
-                mqttSoftErr = mqttHardErr = 0;
-                mqttReconnectInt = MQTT_SHORT_INT;
-            }
-
-            return success;
-        } 
-        
+    
+                if(strlen(mqttUser)) {
+                    success = mqttClient.connect(settings.hostName, mqttUser, strlen(mqttPass) ? mqttPass : NULL);
+                } else {
+                    success = mqttClient.connect(settings.hostName);
+                }
+    
+                mqttReconnectNow = millis();
+                
+                if(!success) {
+                    mqttRestartPing = true;  // Force PING check before reconnection attempt
+                    #ifdef TC_DBG
+                    Serial.println("MQTT: Failed to reconnect");
+                    #endif
+                } else {
+                    #ifdef TC_DBG
+                    Serial.println("MQTT: Connected to broker, waiting for CONNACK");
+                    #endif
+                }
+    
+                return success;
+            } 
+        }
     }
       
     return true;

@@ -99,6 +99,11 @@
 
 /*  Changelog
  *   
+ *  2023/05/12 (A10001986)
+ *    - MQTT: Add async ping to server before trying to connect. This avoids
+ *      "frozen" displays and audio interruptions. This requires that the server
+ *      actually answers to ping (ICMP) requests. Connection-attempt-logic
+ *      mentioned below reduced to MQTT protocol errors.
  *  2023/05/11 (A10001986)
  *    - MQTT: Make (re)connection/subscription async on MQTT protocol level
  *    - MQTT: Limit re-connection attempts. If there is a network problem

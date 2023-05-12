@@ -100,6 +100,10 @@
 // Maximum size of fixed header and variable length size header
 #define MQTT_MAX_HEADER_SIZE 5
 
+#define PING_ERROR    -1
+#define PING_IDLE     0
+#define PING_PINGING  1
+
 #define CHECK_STRING_LENGTH(l,s) if(l+2+strnlen(s, this->bufferSize) > this->bufferSize) { _client->stop(); return false; }
 
 class PubSubClient {
@@ -136,6 +140,11 @@ class PubSubClient {
         
         bool connected();
         int  state();
+
+        bool sendPing();
+        bool pollPing();
+        void cancelPing();
+        int  pstate();
     
     private:
 
@@ -167,6 +176,10 @@ class PubSubClient {
         const char* domain;
         uint16_t port;
         int _state;
+
+        int _s;
+        int _pstate = PING_IDLE;
+        uint16_t _pseq_num = 34;
 };
 
 #endif
