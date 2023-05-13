@@ -1953,7 +1953,11 @@ static void mqttCallback(char *topic, byte *payload, unsigned int length)
     }
 }
 
+#ifdef TC_DBG
+#define MQTT_FAILCOUNT 6 //120
+#else
 #define MQTT_FAILCOUNT 120
+#endif
 
 static void mqttPing()
 {

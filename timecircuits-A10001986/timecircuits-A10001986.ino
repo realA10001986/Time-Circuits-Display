@@ -101,8 +101,6 @@
  *   
  *  2023/05/13 (A10001986)
  *    - MQTT: Increase reconnect-attempt-interval over time
- *    - Alarm: Add GPIO output in case of alarm (ALARM_PIN=GPIO4). Goes high
- *      for approx. 1 second (ALARM_DELAY) in case of alarm.
  *  2023/05/12 (A10001986)
  *    - Music Player: Fix going to song# when player is off
  *    - MQTT: Add async ping to server before trying to connect. This avoids

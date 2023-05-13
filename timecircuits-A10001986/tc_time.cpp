@@ -90,9 +90,6 @@
 #endif
 #define TIMETRAVEL_DELAY 1500
 
-// How long ALARM_PIN is high in case of alarm
-#define ALARM_DELAY   1000
-
 // Time between the phases of (long) time travel
 // Sum of all must be 8000
 #define TT_P1_DELAY_P1  1400                                                                    // Normal
@@ -141,9 +138,6 @@ static bool y = false;
 bool                 startup      = false;
 static bool          startupSound = false;
 static unsigned long startupNow   = 0;
-
-static bool          alarmPin = false;
-static unsigned long alarmNow = 0;
 
 // For beep-auto-modes
 uint8_t       beepMode = 0;
@@ -610,10 +604,6 @@ void time_setup()
 
     // Status LED
     pinMode(STATUS_LED_PIN, OUTPUT);
-
-    // Alarm pin
-    pinMode(ALARM_PIN, OUTPUT);
-    digitalWrite(ALARM_PIN, LOW);  
 
     // Init fake power switch
     #ifdef FAKE_POWER_ON
@@ -1390,12 +1380,6 @@ void time_loop()
         #endif
     }
 
-    // Set alarm pin to LOW again
-    if(alarmPin && (millis() - alarmNow >= ALARM_DELAY)) {
-        digitalWrite(ALARM_PIN, LOW);
-        alarmPin = false;
-    }
-
     #if defined(EXTERNAL_TIMETRAVEL_OUT) || defined(TC_HAVESPEEDO)
     // Timer for starting P1 if to be delayed
     if(triggerP1 && (millis() - triggerP1Now >= triggerP1LeadTime)) {
@@ -2053,9 +2037,6 @@ void time_loop()
                         if(!alarmDone) {
                             play_file("/alarm.mp3", 1.0, false, true);
                             alarmDone = true;
-                            digitalWrite(ALARM_PIN, HIGH);
-                            alarmPin = true;
-                            alarmNow = millis();
                             #ifdef TC_HAVEMQTT
                             if(useMQTT && pubMQTT) {
                                 mqttPublish("bttf/tcd/pub", "ALARM\0", 6);
