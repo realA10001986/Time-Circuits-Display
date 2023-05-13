@@ -99,19 +99,18 @@
 
 /*  Changelog
  *   
+ *  2023/05/13 (A10001986)
+ *    - MQTT: Increase reconnect-attempt-interval over time
+ *    - Alarm: Add GPIO output in case of alarm (ALARM_PIN=GPIO4). Goes high
+ *      for approx. 1 second (ALARM_DELAY) in case of alarm.
  *  2023/05/12 (A10001986)
  *    - Music Player: Fix going to song# when player is off
  *    - MQTT: Add async ping to server before trying to connect. This avoids
- *      "frozen" displays and audio interruptions. This requires that the server
- *      actually answers to ping (ICMP) requests. Connection-attempt-logic
- *      mentioned below reduced to MQTT protocol errors.
+ *      "frozen" displays and audio interruptions but requires that the server
+ *      actually answers to ping (ICMP) requests.
  *  2023/05/11 (A10001986)
  *    - MQTT: Make (re)connection/subscription async on MQTT protocol level
- *    - MQTT: Limit re-connection attempts. If there is a network problem
- *      on TCP level, give up after 5 attempts to avoid "frozen displays"
- *      and audio interruptions.
- *      If the broker does not respond on MQTT protocol level, give up after 
- *      120 attempts (ie approx 60 minutes).
+ *    - MQTT: Limit re-connection attempts.
  *  2023/05/10 (A10001986)
  *    - Detect "APSTA" WiFi Mode correctly for Keypad Menu
  *    - Optimize menu code; add "blinking" of editable data

@@ -78,7 +78,7 @@ PubSubClient::~PubSubClient()
 
 bool PubSubClient::connect(const char *id)
 {
-    return connect(id, NULL,NULL, true);
+    return connect(id, NULL, NULL, true);
 }
 
 bool PubSubClient::connect(const char *id, const char *user, const char *pass)

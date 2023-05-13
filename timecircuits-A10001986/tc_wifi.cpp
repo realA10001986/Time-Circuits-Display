@@ -254,7 +254,7 @@ WiFiManagerParameter custom_useMQTT("uMQTT", "Use Home Assistant (0=no, 1=yes)",
 #else // -------------------- Checkbox hack: --------------
 WiFiManagerParameter custom_useMQTT("uMQTT", "Use Home Assistant (MQTT 3.1.1)", settings.useMQTT, 1, "type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
-WiFiManagerParameter custom_mqttServer("ha_server", "<br>Broker IP[:port] or domain[:port]", settings.mqttServer, 63, "pattern='[a-zA-Z0-9.-:]+' placeholder='Example: 192.168.1.5'");
+WiFiManagerParameter custom_mqttServer("ha_server", "<br>Broker IP[:port] or domain[:port]", settings.mqttServer, 79, "pattern='[a-zA-Z0-9.-:]+' placeholder='Example: 192.168.1.5'");
 WiFiManagerParameter custom_mqttUser("ha_usr", "User[:Password]", settings.mqttUser, 63, "placeholder='Example: ronald:mySecret'");
 WiFiManagerParameter custom_mqttTopic("ha_topic", "Topic to subscribe to", settings.mqttTopic, 127, "placeholder='Example: home/outside/temperature'");
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
@@ -331,20 +331,22 @@ unsigned long origWiFiOffDelay = 0;
 bool          useMQTT = false;
 char          mqttUser[64] = { 0 };
 char          mqttPass[64] = { 0 };
-char          mqttServer[70] = { 0 };
+char          mqttServer[80] = { 0 };
 uint16_t      mqttPort = 1883;
-unsigned long mqttReconnectNow = 0;
-unsigned long mqttReconnectInt = MQTT_SHORT_INT;
 bool          haveMQTTaudio = false;
 const char    *mqttAudioFile = "/ha-alert.mp3";
 bool          pubMQTT = false;
-static uint8_t mqttSoftErr = 0, mqttHardErr = 0;
-static bool   mqttSubAttempted = false;
-static bool   mqttOldState = true;
-static bool   mqttDoPing = true;
-static bool   mqttRestartPing = false;
-static bool   mqttPingDone = false;
+static unsigned long mqttReconnectNow = 0;
+static unsigned long mqttReconnectInt = MQTT_SHORT_INT;
+static uint16_t      mqttReconnFails = 0;
+static bool          mqttSubAttempted = false;
+static bool          mqttOldState = true;
+static bool          mqttDoPing = true;
+static bool          mqttRestartPing = false;
+static bool          mqttPingDone = false;
 static unsigned long mqttPingNow = 0;
+static unsigned long mqttPingInt = MQTT_SHORT_INT;
+static uint16_t      mqttPingsExpired = 0;
 #endif
 
 static void wifiOff(bool force);
@@ -610,6 +612,9 @@ void wifi_setup()
                 mqttClient.setServer(remote_addr, mqttPort);
             } else {
                 mqttClient.setServer(mqttServer, mqttPort);
+                // Disable PING if we can't resolve domain
+                mqttDoPing = false;
+                Serial.printf("MQTT: Failed to resolve '%s'\n", mqttServer);
             }
         }
         
@@ -659,16 +664,15 @@ void wifi_loop()
 
 #ifdef TC_HAVEMQTT
     if(useMQTT) {
-        unsigned long timeStart = millis();
         if(mqttClient.state() != MQTT_CONNECTING) {
             if(!mqttClient.connected()) {
                 if(mqttOldState || mqttRestartPing) {
                     // Disconnection first detected:
-                    mqttOldState = false;
                     mqttPingDone = mqttDoPing ? false : true;
-                    mqttSubAttempted = false;
                     mqttPingNow = mqttRestartPing ? millis() : 0;
+                    mqttOldState = false;
                     mqttRestartPing = false;
+                    mqttSubAttempted = false;
                 }
                 if(mqttDoPing && !mqttPingDone) {
                     audio_loop();
@@ -676,12 +680,12 @@ void wifi_loop()
                     audio_loop();
                 }
                 if(mqttPingDone) {
-                    audio_loop();     // Call audio to avoid interruption
+                    audio_loop();
                     mqttReconnect();
                     audio_loop();
                 }
             } else {
-                // Only call Subscribe if connected
+                // Only call Subscribe() if connected
                 mqttSubscribe();
                 mqttOldState = true;
             }
@@ -1509,7 +1513,7 @@ void updateConfigPortalValues()
     #endif
 
     #ifdef TC_HAVEMQTT
-    custom_mqttServer.setValue(settings.mqttServer, 63);
+    custom_mqttServer.setValue(settings.mqttServer, 79);
     custom_mqttUser.setValue(settings.mqttUser, 63);
     custom_mqttTopic.setValue(settings.mqttTopic, 63);
     #endif
@@ -1949,12 +1953,14 @@ static void mqttCallback(char *topic, byte *payload, unsigned int length)
     }
 }
 
+#define MQTT_FAILCOUNT 6 //120
+
 static void mqttPing()
 {
     switch(mqttClient.pstate()) {
     case PING_IDLE:
         if(WiFi.status() == WL_CONNECTED) {
-            if(!mqttPingNow || (millis() - mqttPingNow > 30*1000)) {
+            if(!mqttPingNow || (millis() - mqttPingNow > mqttPingInt)) {
                 mqttPingNow = millis();
                 if(!mqttClient.sendPing()) {
                     // Mostly fails for internal reasons;
@@ -1967,16 +1973,18 @@ static void mqttPing()
         break;
     case PING_PINGING:
         if(mqttClient.pollPing()) {
-            mqttDoPing = true;
             mqttPingDone = true;          // allow mqtt-connect attempt
             mqttPingNow = 0;
+            mqttPingsExpired = 0;
+            mqttPingInt = MQTT_SHORT_INT; // Overwritten on fail in reconnect
             // Delay re-connection for 5 seconds after first ping echo
             mqttReconnectNow = millis() - (mqttReconnectInt - 5000);
-        } else {
-            if(millis() - mqttPingNow > 5000) {
-                mqttClient.cancelPing();
-                mqttPingNow = millis();
-            }
+        } else if(millis() - mqttPingNow > 5000) {
+            mqttClient.cancelPing();
+            mqttPingNow = millis();
+            mqttPingsExpired++;
+            mqttPingInt = MQTT_SHORT_INT * (1 << (mqttPingsExpired / MQTT_FAILCOUNT));
+            mqttReconnFails = 0;
         }
         break;
     } 
@@ -1991,14 +1999,7 @@ static bool mqttReconnect(bool force)
         if(!mqttClient.connected()) {
     
             if(force || !mqttReconnectNow || (millis() - mqttReconnectNow > mqttReconnectInt)) {
-    
-                // 120 "soft errors" (connection refused, no blocking)
-                // and we disable MQTT.
-                if(mqttSoftErr > 120) {
-                    useMQTT = false;
-                    return false;
-                }
-    
+
                 #ifdef TC_DBG
                 Serial.println("MQTT: Attempting to (re)connect");
                 #endif
@@ -2013,10 +2014,18 @@ static bool mqttReconnect(bool force)
                 
                 if(!success) {
                     mqttRestartPing = true;  // Force PING check before reconnection attempt
+                    mqttReconnFails++;
+                    if(mqttDoPing) {
+                        mqttPingInt = MQTT_SHORT_INT * (1 << (mqttReconnFails / MQTT_FAILCOUNT));
+                    } else {
+                        mqttReconnectInt = MQTT_SHORT_INT * (1 << (mqttReconnFails / MQTT_FAILCOUNT));
+                    }
                     #ifdef TC_DBG
-                    Serial.println("MQTT: Failed to reconnect");
+                    Serial.printf("MQTT: Failed to reconnect (%d)\n", mqttReconnFails);
                     #endif
                 } else {
+                    mqttReconnFails = 0;
+                    mqttReconnectInt = MQTT_SHORT_INT;
                     #ifdef TC_DBG
                     Serial.println("MQTT: Connected to broker, waiting for CONNACK");
                     #endif
@@ -2036,13 +2045,9 @@ static void mqttSubscribe()
     if(!mqttSubAttempted) {
         if(!mqttClient.subscribe("bttf/tcd/cmd", settings.mqttTopic)) {
             if(!mqttClient.subscribe("bttf/tcd/cmd")) {
-                #ifdef TC_DBG
                 Serial.println("MQTT: Failed to subscribe to all topics");
-                #endif
             } else {
-                #ifdef TC_DBG
                 Serial.println("MQTT: Failed to subscribe to user topic");
-                #endif
             }
         } else {
             #ifdef TC_DBG

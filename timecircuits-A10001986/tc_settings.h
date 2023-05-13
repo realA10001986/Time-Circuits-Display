@@ -152,7 +152,7 @@ struct Settings {
     char sdFreq[4]          = MS(DEF_SD_FREQ);
 #ifdef TC_HAVEMQTT  
     char useMQTT[4]         = "0";
-    char mqttServer[64]     = "";  // ip or domain [:port]  
+    char mqttServer[80]     = "";  // ip or domain [:port]  
     char mqttUser[128]      = "";  // user[:pass] (UTF8)
     char mqttTopic[512]     = "";  // topic (UTF8)
     char pubMQTT[4]         = "0"; // publish to broker (timetravel)

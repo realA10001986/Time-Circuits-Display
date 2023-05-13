@@ -127,6 +127,7 @@
  *************************************************************************/
 
 #define STATUS_LED_PIN     2      // Status LED (on ESP)
+#define ALARM_PIN          4      // Alarm
 #define SECONDS_IN_PIN    15      // SQW Monitor 1Hz from the DS3231
 #define ENTER_BUTTON_PIN  16      // enter key
 #define WHITE_LED_PIN     17      // white led
