@@ -675,6 +675,12 @@ void PubSubClient::setSocketTimeout(uint16_t timeout)
     this->socketTimeout = timeout * 1000;
 }
 
+/*
+ * Async PING
+ * We PING the broker before connecting in order
+ * to avoid a blocking connect().
+ */
+
 #define PING_ID 0xAFAF
 
 bool PubSubClient::sendPing()

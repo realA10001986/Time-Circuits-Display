@@ -91,8 +91,7 @@ bool isEnterKeyPressed = false;
 bool isEnterKeyHeld    = false;
 static bool enterWasPressed = false;
 
-static bool rcModeDepTime = false;
-static bool wcModeDepTime = false;
+static bool needDepTime = false;
 
 #ifdef EXTERNAL_TIMETRAVEL_IN
 bool                 isEttKeyPressed = false;
@@ -114,10 +113,11 @@ static unsigned long lastKeyPressed = 0;
 #define DATELEN_TIME   4   // HHMM          dt: hour, minute
 #define DATELEN_CODE   3   // xxx           special codes
 #define DATELEN_ALSH   2   // 11            show alarm time/wd
-#define DATELEN_CMIN   DATELEN_ALSH
-#define DATELEN_CMAX   DATELEN_QALM
+#define DATELEN_CMIN   DATELEN_ALSH     // min length of code entry
+#define DATELEN_CMAX   DATELEN_QALM     // max length of code entry
+#define DATELEN_MAX    DATELEN_ALL      // max length of possible entry
 
-static char dateBuffer[DATELEN_ALL + 2];
+static char dateBuffer[DATELEN_MAX + 2];
 char        timeBuffer[8];
 
 static int dateIndex = 0;
@@ -155,6 +155,7 @@ static void ettKeyPressed();
 static void ettKeyHeld();
 #endif
 
+static void setupWCMode();
 static void mykpddelay(unsigned int mydel);
 
 /*
@@ -374,7 +375,7 @@ static void recordKey(char key)
     dateBuffer[dateIndex++] = key;
     dateBuffer[dateIndex] = '\0';
     // Don't wrap around, overwrite end of date instead
-    if(dateIndex >= DATELEN_ALL) dateIndex = DATELEN_ALL - 1;  
+    if(dateIndex >= DATELEN_MAX) dateIndex = DATELEN_MAX - 1;  
     lastKeyPressed = millis();
 }
 
@@ -574,16 +575,21 @@ void keypad_loop()
         } else if(strLen == DATELEN_CODE) {
 
             uint16_t code = atoi(dateBuffer);
+            bool rcModeState;
             char atxt[16];
+            
+            if(code == 113 && (!haveRcMode || !haveWcMode)) {
+                code = haveRcMode ? 111 : 112;
+            }
             
             switch(code) {
             #ifdef TC_HAVETEMP
-            case 111:               // 111+ENTER: Toggle rc-mode (leaves wc mode untouched)
+            case 111:               // 111+ENTER: Toggle rc-mode
                 if(haveRcMode) {
                     toggleRcMode();
-                    if(tempSens.haveHum()) {
+                    if(tempSens.haveHum() || isWcMode()) {
                         departedTime.off();
-                        rcModeDepTime = true;
+                        needDepTime = true;
                     }
                     validEntry = true;
                 } else {
@@ -591,38 +597,30 @@ void keypad_loop()
                 }
                 break;
             #endif
-            case 112:               // 112+ENTER: Toggle wc-mode (disables rc mode)
+            case 112:               // 112+ENTER: Toggle wc-mode
                 if(haveWcMode) {
-                    bool depTimeOff = false;
                     toggleWcMode();
-                    #ifdef TC_HAVETEMP
-                    if(haveRcMode) {
-                        enableRcMode(false);
-                        if(tempSens.haveHum()) depTimeOff = true;
-                    }
-                    #endif
-                    if(WcHaveTZ2 || depTimeOff) {
+                    if(WcHaveTZ2 || isRcMode()) {
                         departedTime.off();
-                        wcModeDepTime = true;
+                        needDepTime = true;
                     }
-                    if(isWcMode()) {
-                        DateTime dt = myrtcnow();
-                        setDatesTimesWC(dt);
-                    } else if(autoTimeIntervals[autoInterval] == 0 || (timetravelPersistent && checkIfAutoPaused())) {
-                        // Restore NVM time if either time cycling is off, or
-                        // if paused; latter only if we have the last
-                        // time stored. Otherwise we have no previous time.
-                        if(WcHaveTZ1) destinationTime.load();
-                        if(WcHaveTZ2) departedTime.load();
-                    } else {
-                        if(WcHaveTZ1) destinationTime.setFromStruct(&destinationTimes[autoTime]);
-                        if(WcHaveTZ2) departedTime.setFromStruct(&departedTimes[autoTime]);
-                    }
+                    setupWCMode();
                     destShowAlt = depShowAlt = 0; // Reset TZ-Name-Animation
                     validEntry = true;
                 } else {
                     invalidEntry = true;
                 }
+                break;
+            case 113:               // 113+ENTER: Toggle rc+wc mode
+                // Dep Time display needed in any case:
+                // Either for TZ2 or TEMP
+                departedTime.off();
+                needDepTime = true;
+                rcModeState = toggleRcMode();
+                enableWcMode(rcModeState);
+                setupWCMode();
+                destShowAlt = depShowAlt = 0; // Reset TZ-Name-Animation
+                validEntry = true;
                 break;
             case 222:               // 222+ENTER: Turn shuffle off
             case 555:               // 555+ENTER: Turn shuffle on
@@ -780,9 +778,7 @@ void keypad_loop()
             #endif
 
             #ifdef TC_DBG
-            Serial.print(F("date entered: ["));
-            Serial.print(dateBuffer);
-            Serial.println(F("]"));
+            Serial.printf("Date entered: [%s]\n", dateBuffer);
             #endif
 
             for(int i = 0; i < strLen; i++) dateBuffer[i] -= '0';
@@ -880,6 +876,12 @@ void keypad_loop()
             }
 
             // Disable rc&wc modes
+            #ifdef TC_HAVETEMP
+            if(isRcMode() && (tempSens.haveHum() || isWcMode())) {
+                departedTime.off();
+                needDepTime = true;
+            }
+            #endif
             enableRcMode(false);
             if(isWcMode() && WcHaveTZ1) {
                 // If WC mode is enabled and we have a TZ for red display,
@@ -887,9 +889,9 @@ void keypad_loop()
                 // time on display. In that case, and if we have a TZ for the
                 // yellow display, we also restore the yellow time to either 
                 // the stored value or the current auto-int step, otherwise 
-                // the current yellow wc time would remain but become stale,
+                // the current yellow WC time would remain but become stale,
                 // which is confusing.
-                // If there is no TZ for red display, no need to disable wc
+                // If there is no TZ for red display, no need to disable WC
                 // mode at this time; let timetravel() take care of this.
                 if(WcHaveTZ2) {
                     // Restore NVM time if either time cycling is off, or
@@ -900,6 +902,8 @@ void keypad_loop()
                     } else {
                         departedTime.setFromStruct(&departedTimes[autoTime]);
                     }
+                    departedTime.off();
+                    needDepTime = true;
                 }
                 enableWcMode(false);
             }
@@ -967,7 +971,7 @@ void keypad_loop()
             #ifdef TC_HAVEMQTT
             // We overwrite dest time display here, so restart 
             // MQTT message afterwards.
-            if(mqttDisp) { 
+            if(mqttDisp) {
                 mqttOldDisp = mqttIdx = 0;
             }
             #endif
@@ -975,43 +979,61 @@ void keypad_loop()
             #ifdef TC_HAVETEMP
             if(isRcMode()) {
 
-                destinationTime.showTempDirect(tempSens.readLastTemp(), tempUnit, true);
-                if(rcModeDepTime) {
-                    departedTime.showHumDirect(tempSens.readHum(), true);
+                if(!isWcMode() || !WcHaveTZ1) {
+                    destinationTime.showTempDirect(tempSens.readLastTemp(), tempUnit, true);
+                } else {
+                    destinationTime.showAnimate1();
+                }
+                if(needDepTime) {
+                    if(isWcMode() && WcHaveTZ1) {
+                        departedTime.showTempDirect(tempSens.readLastTemp(), tempUnit, true);
+                    } else if(!isWcMode() && tempSens.haveHum()) {
+                        departedTime.showHumDirect(tempSens.readHum(), true);
+                    } else {
+                        departedTime.showAnimate1();
+                    }
                 }
                 mydelay(80);                      // Wait 80ms
-                destinationTime.showTempDirect(tempSens.readLastTemp(), tempUnit);
-                if(rcModeDepTime) {
-                    departedTime.showHumDirect(tempSens.readHum());
+
+                if(!isWcMode() || !WcHaveTZ1) {
+                    destinationTime.showTempDirect(tempSens.readLastTemp(), tempUnit);
+                } else {
+                    destinationTime.showAnimate2();
+                }
+                if(needDepTime) {
+                    if(isWcMode() && WcHaveTZ1) {
+                        departedTime.showTempDirect(tempSens.readLastTemp(), tempUnit);
+                    } else if(!isWcMode() && tempSens.haveHum()) {
+                        departedTime.showHumDirect(tempSens.readHum());
+                    } else {
+                        departedTime.showAnimate2();
+                    }
                 }
               
             } else {
             #endif
 
                 destinationTime.showAnimate1();   // Show all but month
-                if(rcModeDepTime || wcModeDepTime) {
+                if(needDepTime) {
                     departedTime.showAnimate1();
                 }
                 mydelay(80);                      // Wait 80ms
                 destinationTime.showAnimate2();   // turn on month
-                if(rcModeDepTime || wcModeDepTime) {
+                if(needDepTime) {
                     departedTime.showAnimate2();
                 }
-
-                destShowAlt = depShowAlt = 0; // Reset TZ-Name-Animation
 
             #ifdef TC_HAVETEMP
             }
             #endif
 
+            destShowAlt = depShowAlt = 0; // Reset TZ-Name-Animation
+
             digitalWrite(WHITE_LED_PIN, LOW); // turn off white LED
 
             enterWasPressed = false;          // reset flags
 
-            #ifdef TC_HAVETEMP
-            rcModeDepTime = false;
-            #endif
-            wcModeDepTime = false;
+            needDepTime = false;
 
         }
 
@@ -1027,16 +1049,22 @@ void cancelEnterAnim(bool reenableDT)
         
         if(reenableDT) {
             #ifdef TC_HAVETEMP
-            if(isRcMode()) {
+            if(isRcMode() && (!isWcMode() || !WcHaveTZ1)) {
                 destinationTime.showTempDirect(tempSens.readLastTemp(), tempUnit);
             } else
             #endif
                 destinationTime.show();
             destinationTime.onCond();
-            if(rcModeDepTime || wcModeDepTime) {
+            if(needDepTime) {
                 #ifdef TC_HAVETEMP
                 if(isRcMode()) {
-                    departedTime.showHumDirect(tempSens.readHum());
+                    if(isWcMode() && WcHaveTZ1) {
+                        departedTime.showTempDirect(tempSens.readLastTemp(), tempUnit);
+                    } else if(!isWcMode() && tempSens.haveHum()) {
+                        departedTime.showHumDirect(tempSens.readHum());
+                    } else {
+                        departedTime.show();
+                    }
                 } else
                 #endif
                     departedTime.show();
@@ -1044,10 +1072,7 @@ void cancelEnterAnim(bool reenableDT)
             }
         }
         
-        #ifdef TC_HAVETEMP
-        rcModeDepTime = false;
-        #endif
-        wcModeDepTime = false;
+        needDepTime = false;
         specDisp = 0;
     }
 }
@@ -1062,6 +1087,23 @@ void cancelETTAnim()
 bool keypadIsIdle()
 {
     return (!lastKeyPressed || (millis() - lastKeyPressed >= 2*60*1000));
+}
+
+static void setupWCMode()
+{
+    if(isWcMode()) {
+        DateTime dt = myrtcnow();
+        setDatesTimesWC(dt);
+    } else if(autoTimeIntervals[autoInterval] == 0 || (timetravelPersistent && checkIfAutoPaused())) {
+        // Restore NVM time if either time cycling is off, or
+        // if paused; latter only if we have the last
+        // time stored. Otherwise we have no previous time.
+        if(WcHaveTZ1) destinationTime.load();
+        if(WcHaveTZ2) departedTime.load();
+    } else {
+        if(WcHaveTZ1) destinationTime.setFromStruct(&destinationTimes[autoTime]);
+        if(WcHaveTZ2) departedTime.setFromStruct(&departedTimes[autoTime]);
+    }
 }
 
 /*

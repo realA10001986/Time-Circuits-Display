@@ -299,13 +299,7 @@ void clockDisplay::setDateTimeDiff(DateTime dt)
 // Set YEAR, MONTH, DAY, HOUR, MIN from structure
 // Never use for RTC!
 void clockDisplay::setFromStruct(const dateStruct *s)
-{
-    #ifdef TC_DBG
-    if(isRTC()) {
-        Serial.println(F("Clockdisplay: Internal error; setFromStruct() called for RTC"));
-    }
-    #endif
-    
+{    
     setYear(s->year);
     setMonth(s->month);
     setDay(s->day);
@@ -367,7 +361,7 @@ void clockDisplay::showAlt()
     showInt(false, true);
 }
 
-// Show the given text
+// Put the given text into _displayBufferAlt
 void clockDisplay::setAltText(const char *text)
 {
     int idx = 0, pos = CD_MONTH_POS;
@@ -410,9 +404,6 @@ void clockDisplay::setAltText(const char *text)
 void clockDisplay::setMonth(int monthNum)
 {
     if(monthNum < 1 || monthNum > 12) {
-        #ifdef TC_DBG
-        Serial.printf("Clockdisplay: setMonth: Bad month: %d\n", monthNum);
-        #endif
         monthNum = (monthNum > 12) ? 12 : 1;
     }
 
@@ -436,9 +427,6 @@ void clockDisplay::setDay(int dayNum)
     // and month have been set!
 
     if(dayNum < 1 || dayNum > maxDay) {
-        #ifdef TC_DBG
-        Serial.printf("Clockdisplay: setDay: Bad day: %d\n", dayNum);
-        #endif
         dayNum = (dayNum < 1) ? 1 : maxDay;
     }
 
@@ -464,7 +452,6 @@ void clockDisplay::setYear(uint16_t yearNum)
         #ifdef TC_DBG
         Serial.printf("Clockdisplay: setYear: Bad year: %d / yearOffset %d\n", yearNum, _yearoffset);
         #endif
-        
         yearNum = _yearoffset;                  // ny0: yo+1
     }
 
@@ -488,9 +475,6 @@ void clockDisplay::setYear(uint16_t yearNum)
 void clockDisplay::setHour(uint16_t hourNum)
 {
     if(hourNum > 23) {
-        #ifdef TC_DBG
-        Serial.printf("Clockdisplay: setHour: Bad hour: %d\n", hourNum);
-        #endif
         hourNum = 23;
     }
 
@@ -520,9 +504,6 @@ void clockDisplay::setHour(uint16_t hourNum)
 void clockDisplay::setMinute(int minNum)
 {
     if(minNum < 0 || minNum > 59) {
-        #ifdef TC_DBG
-        Serial.printf("Clockdisplay: setMinute: Bad Minute: %d\n", minNum);
-        #endif
         minNum = (minNum > 59) ? 59 : 0;
     }
 

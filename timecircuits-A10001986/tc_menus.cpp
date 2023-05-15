@@ -985,8 +985,9 @@ static bool setField(uint16_t& number, uint8_t field, int year, int month, bool 
     // Reset key state machine
     resetKeypadState();
 
-    while( !checkTimeOut() && !checkEnterPress() &&
-              ( (!someupddone && number == prevNum) || strlen(timeBuffer) < numChars) ) {
+    while( !checkTimeOut() && 
+           !checkEnterPress() &&
+           ( (!someupddone && number == prevNum) || strlen(timeBuffer) < numChars) ) {
 
         scanKeypad();      // We're outside our main loop, so poll here
 
@@ -1225,7 +1226,7 @@ static void doSetVolume()
 
 static void displayMSfx(int msfx, bool blink, bool doFolderChk)
 {
-    destinationTime.showSettingValDirect("NUMBER", msfx, true, blink);
+    destinationTime.showSettingValDirect("FOLDER", msfx, true, blink);
     destinationTime.on();
 
     if(doFolderChk) {

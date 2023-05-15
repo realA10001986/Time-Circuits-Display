@@ -1318,6 +1318,7 @@ void time_loop()
                     #endif
                     #endif
                     triggerWC = true;
+                    destShowAlt = depShowAlt = 0; // Reset TZ-Name-Animation
                 }
             } else {
                 if(FPBUnitIsOn) {
@@ -2122,14 +2123,14 @@ void time_loop()
             }
 
             // Only do this on second 59, check if it's time to do so
-            if((dt.second() == 59)                        &&
-               (!autoPaused)                              &&
-               #ifdef TC_HAVETEMP
-               (!isRcMode() || !tempSens.haveHum())       &&    // Skip in rcMode if temp&hum available
+            if((dt.second() == 59)                                      &&
+               (!autoPaused)                                            &&
+               autoTimeIntervals[autoInterval]                          &&
+               (minNext % autoTimeIntervals[autoInterval] == 0)         &&
+               #ifdef TC_HAVETEMP                             // Skip in rcMode if (temp&hum available || wcMode)
+               ( !(isRcMode() && (isWcMode() || tempSens.haveHum())) )  &&   
                #endif
-               (!isWcMode() || !WcHaveTZ1 || !WcHaveTZ2)  &&    // Skip in wcMode if both TZs available
-               autoTimeIntervals[autoInterval]            &&
-               (minNext % autoTimeIntervals[autoInterval] == 0)) {
+               (!isWcMode() || !WcHaveTZ1 || !WcHaveTZ2) ) {  // Skip in wcMode if both TZs available
 
                 if(!autoIntDone) {
 
@@ -2305,13 +2306,20 @@ void time_loop()
             if(isRcMode()) {
                 
                 if(!specDisp && !mqttDisp) {
-                    destinationTime.showTempDirect(tempSens.readLastTemp(), tempUnit);
+                    if(!isWcMode() || !WcHaveTZ1) {
+                        destinationTime.showTempDirect(tempSens.readLastTemp(), tempUnit);
+                    } else {
+                        destShowAlt ? destinationTime.showAlt() : destinationTime.show();
+                    }
                 }
-                if(tempSens.haveHum()) {
+                if(isWcMode() && WcHaveTZ1) {
+                    departedTime.showTempDirect(tempSens.readLastTemp(), tempUnit);
+                } else if(!isWcMode() && tempSens.haveHum()) {
                     departedTime.showHumDirect(tempSens.readHum());
                 } else {
-                    departedTime.show();
+                    depShowAlt ? departedTime.showAlt() : departedTime.show();
                 }
+
             } else {
             #endif
                 if(!specDisp && !mqttDisp) {
@@ -2958,8 +2966,8 @@ static void dispTemperature(bool force)
 void animate()
 {
     #ifdef TC_HAVETEMP
-    if(isRcMode()) {
-        destinationTime.showTempDirect(tempSens.readLastTemp(), tempUnit, true);
+    if(isRcMode() && (!isWcMode() || !WcHaveTZ1)) {
+            destinationTime.showTempDirect(tempSens.readLastTemp(), tempUnit, true);
     } else
     #endif
         destinationTime.showAnimate1();
@@ -2967,8 +2975,14 @@ void animate()
     presentTime.showAnimate1();
 
     #ifdef TC_HAVETEMP
-    if(isRcMode() && tempSens.haveHum()) {
-        departedTime.showHumDirect(tempSens.readHum(), true);
+    if(isRcMode()) {
+        if(isWcMode() && WcHaveTZ1) {
+            departedTime.showTempDirect(tempSens.readLastTemp(), tempUnit, true);
+        } else if(!isWcMode() && tempSens.haveHum()) {
+            departedTime.showHumDirect(tempSens.readHum(), true);
+        } else {
+            departedTime.showAnimate1();
+        }
     } else
     #endif
         departedTime.showAnimate1();
@@ -2976,17 +2990,23 @@ void animate()
     mydelay(80);
 
     #ifdef TC_HAVETEMP
-    if(isRcMode())
+    if(isRcMode() && (!isWcMode() || !WcHaveTZ1)) {
         destinationTime.showTempDirect(tempSens.readLastTemp(), tempUnit);
-    else
+    } else
     #endif
         destinationTime.showAnimate2();
         
     presentTime.showAnimate2();
 
     #ifdef TC_HAVETEMP
-    if(isRcMode() && tempSens.haveHum()) {
-        departedTime.showHumDirect(tempSens.readHum());
+    if(isRcMode()) {
+        if(isWcMode() && WcHaveTZ1) {
+            departedTime.showTempDirect(tempSens.readLastTemp(), tempUnit);
+        } else if(!isWcMode() && tempSens.haveHum()) {
+            departedTime.showHumDirect(tempSens.readHum());
+        } else {
+            departedTime.showAnimate2();
+        }
     } else
     #endif
         departedTime.showAnimate2();
