@@ -137,7 +137,11 @@ For logical reasons, WC mode will be automatically disabled in some situations:
 - Time travel. The time travel sequence runs like in non-WC mode: If a time travel is triggered while WC mode is enabled (and no new destination time was entered before), the currently shown *Destination Time* will be the travel target, and the *Last Time Departed* display will show your formerly current time. However: Both *Destination Time* as well as *Last Time Departed* become stale after the time travel as per the nature of the sequence.
 - After entering a destination time. WC mode is disabled at this point, because your new *Destination Time* would be overwritten otherwise.
 
-Note that [Room Condition mode](#room-condition-mode-temperaturehumidity-sensor) has priority over WC mode.
+#### WC/RC hybrid mode
+
+[Room Condition (RC) mode](#room-condition-mode-temperaturehumidity-sensor) can be enabled together with WC mode. In that case, only one timezone is used, and the other display shows the temperature. If there is a time zone configured for the red display, the temperature will be shown in the yellow display. If there no time zone for the red display, the temperature will be shown there, and the yellow display will show time for the time zone you set up for the yellow display.
+
+To toggle WC/RC hybrid mode, type "113" followed by ENTER. 
 
 ### Common usage scenarios
 
@@ -218,6 +222,10 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
     <tr>
      <td align="center">112&#9166;</td>
      <td align="center">Toggle <a href="#">World Clock mode</a></td>
+    </tr>
+    <tr>
+     <td align="center">113&#9166;</td>
+     <td align="center">Synchroniously toggle <a href="#">World Clock mode</a>and <a href="#room-condition-mode-temperaturehumidity-sensor">Room Condition mode</a></td>
     </tr>
     <tr>
      <td align="center">222&#9166;</td>
@@ -656,7 +664,7 @@ In order to use the GPS receiver for speed, check *Display GPS speed* in the Con
 
 ## Room Condition Mode, Temperature/humidity sensor
 
-The firmware supports connecting a temperature/humidity sensor for "room condition mode"; in this mode, *destination* and *last departed* times are replaced by temperature and humidity, respectively. To toggle between normal and room condition mode, enter "111" and press ENTER.
+The firmware supports connecting a temperature/humidity sensor for "room condition mode"; in this mode, *destination* and *last departed* times are replaced by temperature and humidity, respectively. To toggle between normal and room condition mode, enter "111" and press ENTER. If you want to enable room condition mode and World Clock mode synchroniously, enter 113 and press ENTER.
 
 ![rcmode](https://user-images.githubusercontent.com/76924199/208133653-f0fb0a38-51e4-4436-9506-d841ef1bfa6c.jpg)
 
