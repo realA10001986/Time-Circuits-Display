@@ -883,6 +883,10 @@ The time zone for the red display in [World Clock mode](#world-clock-mode). Defa
 
 The time zone for the yellow display in [World Clock mode](#world-clock-mode). Default: unset. Needs to be in [Posix](https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv) format.
 
+##### &#9654; City/location name
+
+For each World Clock time zones, a city or location name can be configured. For example "SYDNEY" or "LORD HOWE". This name will be shown every few seconds alternately with time.
+
 #### Night-mode
 
 ##### &#9654; Destination time off in night mode
