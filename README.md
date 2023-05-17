@@ -476,11 +476,11 @@ While the music player is playing music, most sound effects are disabled/muted, 
  
 The keypad menu is an additional way to configure your clock; it only involves the three displays and the keypad. It is controlled by "pressing" or "holding" the ENTER key on the keypad.
 
-*Note that while the clock is in the keypad menu, the alarm, count-down timer or sound-on-the-hour will not sound.*
-
 A "press" is shorter than 2 seconds, a "hold" is 2 seconds or longer.
 
 The menu is invoked by holding the ENTER button.
+
+*Note that while keypad menu is active, the alarm, the reminder, the count-down timer or sound-on-the-hour will not sound.*
 
 Data entry, such as for dates and times, is done through the keypad's number keys and works as follows: Whenever a data entry is requested, the field for that data is lit (while the rest of the display is dark) and a pre-set value is shown. If you want to keep that pre-set, press ENTER to proceed to next field. Otherwise press a digit on the keypad; the pre-set is then overwritten by the value entered. 2 digits can be entered (4 for years), upon which the new value is stored and the next field is activated. You can also enter less than 2 digits (4 for years) and press ENTER when done with the field. Note that a month needs to be entered numerically (1-12), and hours need to be entered in 24-hour notation (0-23), regardless of 12-hour or 24-hour mode as per the Config Portal setting.
 
