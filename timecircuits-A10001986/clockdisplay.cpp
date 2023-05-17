@@ -666,12 +666,13 @@ void clockDisplay::showMinuteDirect(int minuteNum)
 
 
 // Show the given text
-void clockDisplay::showTextDirect(const char *text, bool clear, bool corr6)
+void clockDisplay::showTextDirect(const char *text, bool clear, bool corr6, bool withColon)
 {
     int idx = 0, pos = CD_MONTH_POS;
     int temp = 0;
 
     _corr6 = corr6;
+    _withColon = withColon;
 
 #ifdef IS_ACAR_DISPLAY
     while(text[idx] && pos < (CD_MONTH_POS+CD_MONTH_SIZE)) {
@@ -706,7 +707,7 @@ void clockDisplay::showTextDirect(const char *text, bool clear, bool corr6)
         }
     }
     
-    _corr6 = false;
+    _corr6 = _withColon = false;
 }
 
 // Clear the display RAM and only show the provided 2 numbers (parts of IP)
@@ -1200,6 +1201,8 @@ void clockDisplay::directCol(int col, int segments)
 {
     if(_yearDot && (col == CD_YEAR_POS + 1)) {
         segments |= 0x8000;
+    } else if(_withColon && (col == CD_YEAR_POS)) {
+        segments |= 0x8080;
     }
     Wire.beginTransmission(_address);
     Wire.write(col * 2);

@@ -104,9 +104,12 @@
  *      will play a sound yearly on given date, or, if the month is 00,
  *      every month on given day. 77 displays current reminder, 770 deletes
  *      it, 777 displays the days/hours/mins until the next reminder.
- *      Required new sound-pack. Reminder always based on real local time.
+ *      Requires new sound-pack. Reminder always based on real local time.
  *    - Night mode no longer adheres to "Alarm base is real present time"
  *      setting. It is ALWAYS based on real present time now.
+ *    - Display colon in special displays where hours and minutes are used
+ *      as such.
+ *    - Fix ee1-regression
  *  2023/05/15 (A10001986)
  *    - Allow both world clock and room condition mode at the same time.
  *      If both on, only temp is shown, either in red display (if no

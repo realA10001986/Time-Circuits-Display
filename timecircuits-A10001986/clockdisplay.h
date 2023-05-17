@@ -119,7 +119,7 @@ class clockDisplay {
         void showYearDirect(int yearNum);
 
         void showSettingValDirect(const char* setting, int8_t val = -1, bool clear = false, bool blink = false);
-        void showTextDirect(const char *text, bool clear = true, bool corr6 = false);
+        void showTextDirect(const char *text, bool clear = true, bool corr6 = false, bool withColon = false);
         void showHalfIPDirect(int a, int b, bool clear = false);
 
         #ifdef TC_HAVETEMP
@@ -194,6 +194,7 @@ class clockDisplay {
         int _oldnm = -1;
         bool _corr6 = false;
         bool _yearDot = false;
+        bool _withColon = false;
 };
 
 #endif

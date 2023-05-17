@@ -538,7 +538,7 @@ void keypad_loop()
                     #else
                     sprintf(atxt, "%-8s %02d%02d", alwd, al >> 8, al & 0xff);
                     #endif
-                    destinationTime.showTextDirect(atxt);
+                    destinationTime.showTextDirect(atxt, true, false, true);
                     validEntry = true;
                 } else {
                     #ifdef IS_ACAR_DISPLAY
@@ -571,7 +571,7 @@ void keypad_loop()
                     #endif
                     validEntry = true;
                 }
-                destinationTime.showTextDirect(atxt);
+                destinationTime.showTextDirect(atxt, true, false, validEntry);
                 specDisp = 10;
 
             } else if(code == 77) {
@@ -588,7 +588,7 @@ void keypad_loop()
 
                 }
 
-                destinationTime.showTextDirect(atxt);
+                destinationTime.showTextDirect(atxt, true, false, validEntry);
                 specDisp = 10;
 
             } else 
@@ -728,17 +728,15 @@ void keypad_loop()
                     uint16_t hours = (tgtMins % (24*60)) / 60;
                     uint16_t minutes = tgtMins - (days*24*60) - (hours*60);
 
-                    Serial.printf("Reminder in %d days, %d hours, %d minutes\n", days, hours, minutes);
                     #ifdef IS_ACAR_DISPLAY
                     sprintf(atxt, "    %3dd%2d%02d", days, hours, minutes);
                     #else
                     sprintf(atxt, "     %3dd%2d%02d", days, hours, minutes);
                     #endif
-                    destinationTime.showTextDirect(atxt);
-                    specDisp = 10;
                     validEntry = true;
-                    
                 }
+                destinationTime.showTextDirect(atxt, true, false, validEntry);
+                specDisp = 10;
                 break;
             case 000:
             case 001:
@@ -846,7 +844,7 @@ void keypad_loop()
                 ctDownNow = millis();
             }
 
-            destinationTime.showTextDirect(atxt);
+            destinationTime.showTextDirect(atxt, true, false, (mins != 0));
             specDisp = 10;
             validEntry = true;
 
@@ -880,7 +878,7 @@ void keypad_loop()
 
                         buildRemString(atxt);
 
-                        destinationTime.showTextDirect(atxt);
+                        destinationTime.showTextDirect(atxt, true, false, true);
                         specDisp = 10;
 
                         validEntry = true;
@@ -951,7 +949,7 @@ void keypad_loop()
                         spTxt[i] = spTxtS1[i] ^ (i == 0 ? 0xff : spTxtS1[i-1]);
                     }
                 } else if((spTmp ^ getHrs1KYrs(8)) == 59572453)  {
-                    if(_setHour >= 9 && _setHour <= 11) {
+                    if(_setHour >= 9 && _setHour <= 12) {
                         special = 2;
                     }
                 } else if((spTmp ^ getHrs1KYrs(6)) == 97681642)  {
@@ -968,7 +966,7 @@ void keypad_loop()
 
             switch(special) {
             case 1:
-                destinationTime.showTextDirect(spTxt);
+                destinationTime.showTextDirect(spTxt, true, false, true);
                 specDisp = 1;
                 validEntry = true;
                 break;
@@ -1060,37 +1058,37 @@ void keypad_loop()
 
     if(enterWasPressed && (millis() - timeNow > enterDelay)) {
 
-        if(specDisp) {
-
-            switch(specDisp) {
-            case 2:
-            case 10:
-                specDisp++;
-                if(specDisp == 3) destinationTime.onCond();
-                else              { destinationTime.resetBrightness(); destinationTime.on(); }
-                digitalWrite(WHITE_LED_PIN, LOW);
-                timeNow = millis();
-                enterWasPressed = true;
-                enterDelay = (specDisp == 3) ? EE1_DELAY2 : ENTER_DELAY*5;
-                break;
-            case 3:
-                specDisp++;
-                spTxt[EE1_KL2] = '\0';
-                for(int i = EE1_KL2-1; i >= 0; i--) {
-                    spTxt[i] = spTxtS2[i] ^ (i == 0 ? 0xff : spTxtS2[i-1]);
-                }
-                destinationTime.showTextDirect(spTxt);
-                timeNow = millis();
-                enterWasPressed = true;
-                enterDelay = EE1_DELAY3;
-                play_file("/ee1.mp3", 1.0, true, true, false, false);
-                break;
-            case 4:
-            case 11:
-                specDisp = 0;
-                break;
+        switch(specDisp) {
+        case 0:
+            break;
+        case 2:
+        case 10:
+            specDisp++;
+            if(specDisp == 3) destinationTime.onCond();
+            else              { destinationTime.resetBrightness(); destinationTime.on(); }
+            digitalWrite(WHITE_LED_PIN, LOW);
+            timeNow = millis();
+            enterWasPressed = true;
+            enterDelay = (specDisp == 3) ? EE1_DELAY2 : ENTER_DELAY*5;
+            break;
+        case 3:
+            specDisp++;
+            spTxt[EE1_KL2] = '\0';
+            for(int i = EE1_KL2-1; i >= 0; i--) {
+                spTxt[i] = spTxtS2[i] ^ (i == 0 ? 0xff : spTxtS2[i-1]);
             }
-
+            destinationTime.showTextDirect(spTxt);
+            timeNow = millis();
+            enterWasPressed = true;
+            enterDelay = EE1_DELAY3;
+            play_file("/ee1.mp3", 1.0, true, true, false, false);
+            break;
+        case 4:
+        case 11:
+            specDisp = 0;
+            break;
+        default:
+            specDisp++;
         }
 
         if(!specDisp) {
@@ -1254,9 +1252,9 @@ static void buildRemString(char *buf)
 static void buildRemOffString(char *buf)
 {
     #ifdef IS_ACAR_DISPLAY
-    sprintf(buf, "REMINDER OFF");
+    strcpy(buf, "REMINDER OFF");
     #else
-    sprintf(buf, "REMINDER  OFF");
+    strcpy(buf, "REMINDER  OFF");
     #endif
 }
 
