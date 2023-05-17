@@ -427,6 +427,7 @@ Your replacements need to be put in the root (top-most) directory of the SD card
 - "alarmoff.mp3". Played when disabling the alarm
 - "nmon.mp3". Played when manually enabling night mode
 - "nmoff.mp3". Played when manually disabling night mode
+- "reminder.mp3". Played when the reminder is due.
 - "timer.mp3". Played when the count-down timer expires.
 
 The following sounds are time-sync'd to display action. If you decide to substitute these with your own, be prepared to lose synchronicity:
