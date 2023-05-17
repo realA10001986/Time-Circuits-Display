@@ -18,6 +18,7 @@ Features include
 - &#x1F195; [World Clock mode](#world-clock-mode): Show current time in different time zones in *destination time* and/or *last time departed* displays
 - [Alarm function](#how-to-set-up-the-alarm)
 - [Count-down timer](#count-down-timer)
+- &#x1F195; Yearly/monthly reminder
 - [Night mode](#night-mode) (displays off or dimmed; manual, scheduled or sensor-controlled)
 - [Music player](#the-music-player): Play mp3 files located on an SD card
 - &#x1F195; [Home Assistant](#home-assistant--mqtt) (MQTT 3.1.1) support
@@ -375,6 +376,20 @@ The firmware features a simple count-down timer. This timer can count down from 
 To set the timer to MM minutes, type 44MM and press ENTER. Note that for minutes, 2 digits must be entered. To cancel a running timer, enter 4400 and press ENTER.
 
 The check the remaining time, type 44 and press ENTER.
+
+## Yearly/monthly reminder
+
+The reminder is similar to the alarm, the difference being that the reminder is yearly or monthly, not daily. 
+
+To program a yearly reminder, enter 77mmddhhMM and press ENTER. For example: 7705150900 sets the reminder to May 15 9am. Now a reminder sound will play every year on May 15 at 9am.
+
+To program a monthly reminder, enter 7700ddhhMM and press ENTER. For example: 7700152300 sets the reminder to the 15th of each month, at 11pm.
+
+Note that, as usual, all fields consist of two digits, and hours are entered in 24-hour notation.
+
+Type 77 followed by ENTER to display the programmed reminder, 770 to delete it, and 777 to display the days/hours/minutes until the next reminder.
+
+The reminder only plays a sound file. The current sound-pack contains a default file; if your SD contains a file named "reminder.mp3", this will played instead of the default file.
 
 ## SD card
 
