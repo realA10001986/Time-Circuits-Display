@@ -451,6 +451,7 @@ static unsigned long lastAuthTime = 0;
 uint64_t    lastAuthTime64 = 0;
 static bool authTimeExpired = false;
 static bool alarmDone = false;
+static bool remDone = false;
 static bool hourlySoundDone = false;
 static bool autoNMDone = false;
 
@@ -542,7 +543,6 @@ static void ettoPulseEnd();
 #endif
 
 // Time calculations
-static int  mins2Date(int year, int month, int day, int hour, int mins);
 static bool blockDSTChange(int currTimeMins);
 static void localToDST(int index, int& year, int& month, int& day, int& hour, int& minute, int& isDST);
 static void updateDSTFlag(int nisDST = -1);
@@ -992,6 +992,9 @@ void time_setup()
     // Load alarm from alarmconfig file
     // Don't care if data invalid, alarm is off in that case
     loadAlarm();
+
+    // Load yearly/monthly reminder settings
+    loadReminder();
 
     // Auto-NightMode
     autoNightModeMode = (int)atoi(settings.autoNMPreset);
@@ -2030,6 +2033,24 @@ void time_loop()
                     }
                 }
 
+                // Handle reminder
+                if(remMonth > 0 || remDay > 0) {
+                      if( (!remMonth || remMonth == dt.month()) &&
+                          (remDay == dt.day())                  &&
+                          (remHour == dt.hour())                &&
+                          (remMin == dt.minute()) ) {
+                            if(!remDone) {
+                                if( (!(alarmOnOff && (alarmHour == compHour) && (alarmMinute == compMin))) ||
+                                    (alarmDone && checkAudioDone()) ) {
+                                        play_file("/reminder.mp3", 1.0, false, true, true, false);
+                                        remDone = true;
+                                }
+                            }
+                      } else {
+                          remDone = false;
+                      }
+                }
+
                 // Handle alarm
 
                 if(alarmOnOff) {
@@ -2130,7 +2151,7 @@ void time_loop()
                #ifdef TC_HAVETEMP                             // Skip in rcMode if (temp&hum available || wcMode)
                ( !(isRcMode() && (isWcMode() || tempSens.haveHum())) )  &&   
                #endif
-               (!isWcMode() || !WcHaveTZ1 || !WcHaveTZ2) ) {  // Skip in wcMode if both TZs available
+               (!isWcMode() || !WcHaveTZ1 || !WcHaveTZ2) ) {  // Skip in wcMode if both TZs configured
 
                 if(!autoIntDone) {
 
@@ -3642,7 +3663,7 @@ static char *parseDST(char *t, int& DSTyear, int& DSTmonth, int& DSTday, int& DS
 /*
  * Convert date into minutes since 1/1 00:00 of given year
  */
-static int mins2Date(int year, int month, int day, int hour, int mins)
+int mins2Date(int year, int month, int day, int hour, int mins)
 {
     return ((((mon_yday[isLeapYear(year) ? 1 : 0][month - 1] + (day - 1)) * 24) + hour) * 60) + mins;
 }
@@ -3895,6 +3916,12 @@ bool parseTZ(int index, int currYear, bool doparseDST)
     }
         
     return true;
+}
+
+int getTzDiff()
+{
+  if(couldDST[0]) return tzDiff[0];
+  return 0;
 }
 
 /*

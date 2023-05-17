@@ -255,6 +255,11 @@ uint8_t alarmHour = 255;
 uint8_t alarmMinute = 255;
 uint8_t alarmWeekday = 0;
 
+uint8_t remMonth = 0;
+uint8_t remDay = 0;
+uint8_t remHour = 0;
+uint8_t remMin = 0;
+
 static int menuItemNum;
 
 bool keypadInMenu = false;

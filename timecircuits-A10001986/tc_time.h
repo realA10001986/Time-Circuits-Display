@@ -172,7 +172,9 @@ bool gpsHaveFix();
 void gps_loop();
 #endif
 
+int   mins2Date(int year, int month, int day, int hour, int mins);
 bool  parseTZ(int index, int currYear, bool doparseDST = true);
+int   getTzDiff();
 int   timeIsDST(int index, int year, int month, int day, int hour, int mins, int& currTimeMins);
 
 void  setDatesTimesWC(DateTime dt);

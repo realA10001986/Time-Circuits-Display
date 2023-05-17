@@ -74,7 +74,7 @@ static bool configOnSD = false;
 /* Paranoia: No writes Flash-FS  */
 bool FlashROMode = false;
 
-#define NUM_AUDIOFILES 18
+#define NUM_AUDIOFILES 19
 #define SND_ENTER_IDX  8
 #ifndef TWSOUND
 #define SND_ENTER_LEN   13374
@@ -84,29 +84,31 @@ bool FlashROMode = false;
 #define SND_STARTUP_LEN 18419
 #endif
 static const char *audioFiles[NUM_AUDIOFILES] = {
-      "/alarm.mp3\0",
-      "/alarmoff.mp3\0",
-      "/alarmon.mp3\0",
-      "/baddate.mp3\0",
-      "/ee1.mp3\0",
-      "/ee2.mp3\0",
-      "/ee3.mp3\0",
-      "/ee4.mp3\0",
-      "/enter.mp3\0",
-      "/intro.mp3\0",
-      "/nmoff.mp3\0",
-      "/nmon.mp3\0",
-      "/ping.mp3\0",
+      "/alarm.mp3",
+      "/alarmoff.mp3",
+      "/alarmon.mp3",
+      "/baddate.mp3",
+      "/ee1.mp3",
+      "/ee2.mp3",
+      "/ee3.mp3",
+      "/ee4.mp3",
+      "/enter.mp3",
+      "/intro.mp3",
+      "/nmoff.mp3",
+      "/nmon.mp3",
+      "/ping.mp3",
+      "/reminder.mp3",
       "/shutdown.mp3",
-      "/startup.mp3\0",
-      "/timer.mp3\0",
-      "/timetravel.mp3\0",
-      "/travelstart.mp3\0"
+      "/startup.mp3",
+      "/timer.mp3",
+      "/timetravel.mp3",
+      "/travelstart.mp3"
 };
 static const char *IDFN = "/TCD_def_snd.txt";
 
 static const char *cfgName    = "/config.json";     // Main config (flash)
 static const char *almCfgName = "/tcdalmcfg.json";  // Alarm config (flash/SD)
+static const char *remCfgName = "/tcdremcfg.json";  // Reminder config (flash/SD)
 static const char *volCfgName = "/tcdvolcfg.json";  // Volume config (flash/SD)
 static const char *musCfgName = "/tcdmcfg.json";    // Music config (SD)
 static const char *ipCfgName  = "/ipconfig.json";   // IP config (flash)
@@ -116,6 +118,8 @@ static const char *badConfig = "Settings bad/missing/incomplete; writing new fil
 static const char *failFileWrite = "Failed to open file for writing";
 
 static bool read_settings(File configFile);
+
+static void deleteReminder();
 
 static bool CopyCheckValidNumParm(const char *json, char *text, uint8_t psize, int lowerLim, int upperLim, int setDefault);
 static bool CopyCheckValidNumParmF(const char *json, char *text, uint8_t psize, float lowerLim, float upperLim, float setDefault);
@@ -781,6 +785,126 @@ void saveAlarm()
 }
 
 /*
+ *  Load/save the Yearly/Monthly Reminder settings
+ */
+
+bool loadReminder()
+{
+    const char *funcName = "loadReminder";
+    bool writedefault = false;
+    bool haveConfigFile = false;
+    File configFile;
+
+    if(!haveFS && !configOnSD) {
+        Serial.printf("%s: %s\n", funcName, fsNoAvail);
+        return false;
+    }
+
+    #ifdef TC_DBG
+    Serial.printf("%s: Loading from %s\n", funcName, configOnSD ? "SD" : "flash FS");
+    #endif
+
+    if(configOnSD) {
+        if(SD.exists(remCfgName)) {
+            haveConfigFile = (configFile = SD.open(remCfgName, "r"));
+        }
+    } else {
+        if(SPIFFS.exists(remCfgName)) {
+            haveConfigFile = (configFile = SPIFFS.open(remCfgName, "r"));
+        }
+    }
+
+    if(haveConfigFile) {
+        StaticJsonDocument<512> json;
+        
+        if(!deserializeJson(json, configFile)) {
+            if(json["month"] && json["hour"] && json["min"]) {
+                remMonth  = atoi(json["month"]);
+                remDay  = atoi(json["day"]);
+                remHour  = atoi(json["hour"]);
+                remMin  = atoi(json["min"]);
+                if(remMonth > 12 ||               // month can be zero (=monthly reminder)
+                   remDay   > 31 || remDay < 1 ||
+                   remHour  > 23 || 
+                   remMin   > 59)
+                    writedefault = true;
+            }
+        } 
+        configFile.close();
+
+        if(writedefault) {
+            Serial.printf("%s: %s\n", funcName, badConfig);
+            remMonth = remDay = remHour = remMin = 0;
+            deleteReminder();
+        }
+        
+    }
+
+    return true;
+}
+
+void saveReminder()
+{
+    const char *funcName = "saveReminder";
+    char monBuf[8];
+    char dayBuf[8];
+    char hourBuf[8];
+    char minBuf[8];
+    bool haveConfigFile = false;
+    File configFile;
+    StaticJsonDocument<512> json;
+
+    if(!haveFS && !configOnSD) {
+        Serial.printf("%s: %s\n", funcName, fsNoAvail);
+        return;
+    }
+
+    if(!remMonth && !remDay) {
+        deleteReminder();
+        return;
+    }
+
+    #ifdef TC_DBG
+    Serial.printf("%s: Writing to %s\n", funcName, configOnSD ? "SD" : "flash FS");
+    #endif
+
+    sprintf(monBuf, "%d", remMonth);
+    sprintf(dayBuf, "%d", remDay);
+    sprintf(hourBuf, "%d", remHour);
+    sprintf(minBuf, "%d", remMin);
+    
+    json["month"] = (char *)monBuf;
+    json["day"] = (char *)dayBuf;
+    json["hour"] = (char *)hourBuf;
+    json["min"] = (char *)minBuf;
+
+    if(configOnSD) {
+        haveConfigFile = (configFile = SD.open(remCfgName, FILE_WRITE));
+    } else {
+        haveConfigFile = (configFile = SPIFFS.open(remCfgName, FILE_WRITE));
+    }
+
+    if(haveConfigFile) {
+        serializeJson(json, configFile);
+        configFile.close();
+    } else {
+        Serial.printf("%s: %s\n", funcName, failFileWrite);
+    }
+}
+
+static void deleteReminder()
+{
+    if(!haveFS && !configOnSD)
+        return;
+
+    if(configOnSD) {
+        SD.remove(remCfgName);
+    } else {
+        SPIFFS.remove(remCfgName);
+    }
+}
+
+/*
  *  Load/save the Volume
  */
 
@@ -891,6 +1015,7 @@ void copySettings()
         #endif
         saveCurVolume();
         saveAlarm();
+        saveReminder();
     }
 
     configOnSD = !configOnSD;
@@ -1108,8 +1233,8 @@ static bool check_if_default_audio_present()
       65230, 71500, 60633, 10478,           // alarm, alarmoff, alarmon, baddate
       15184, 22983, 33364, 51701,           // ee1, ee2, ee3, ee4
       SND_ENTER_LEN, 125804, 33853, 47228,  // enter, intro, nmoff, nmon
-      16747, 3790, SND_STARTUP_LEN, 84894,  // ping, shutdown, startup, timer
-      38899, 135447                         // timetravel, travelstart
+      16747, 151719, 3790, SND_STARTUP_LEN, // ping, reminder, shutdown, startup, 
+      84894, 38899, 135447                  // timer, timetravel, travelstart
     };
 
     if(!haveSD)

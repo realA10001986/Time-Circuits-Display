@@ -80,6 +80,8 @@ static const char months[12][4] = {
     "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
 };
 
+static const char *nullStr = "";
+
 static const char *fnLastYear = "/tcdly";
 static const char *fnEEPROM[3] = {
     "/tcddt", "/tcdpt", "/tcdlt"
@@ -576,6 +578,14 @@ uint8_t clockDisplay::getMinute()
 int8_t clockDisplay::getDST()
 {
     return _isDST;
+}
+
+const char * clockDisplay::getMonthString(uint8_t mon)
+{
+    if(mon >= 1 && mon <= 12)
+        return months[mon-1];
+    else
+        return nullStr;
 }
 
 // Put data directly on display (bypass buffer) --------------------------------

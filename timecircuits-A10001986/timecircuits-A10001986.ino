@@ -99,6 +99,18 @@
 
 /*  Changelog
  *   
+ *  2023/05/17 (A10001986)
+ *    - Add yearly/monthly reminder: Type 77MMddhhmm to set a timer that
+ *      will play a sound yearly on given date, or, if the month is 00,
+ *      every month on given day. 77 displays current reminder, 770 deletes
+ *      it, 777 displays the days/hours/mins until the next reminder.
+ *      Required new sound-pack.
+ *  2023/05/15 (A10001986)
+ *    - Allow both world clock and room condition mode at the same time.
+ *      If both on, only temp is shown, either in red display (if no
+ *      TZ for red display was configured) or in yellow display (regardless
+ *      of a TZ for that display).
+ *      113+ENTER toggles both RC/WC-mode (synchronously).
  *  2023/05/13 (A10001986)
  *    - MQTT: Increase reconnect-attempt-interval over time
  *  2023/05/12 (A10001986)

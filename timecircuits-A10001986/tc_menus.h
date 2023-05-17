@@ -46,6 +46,11 @@ extern uint8_t alarmHour;
 extern uint8_t alarmMinute;
 extern uint8_t alarmWeekday;
 
+extern uint8_t remMonth;
+extern uint8_t remDay;
+extern uint8_t remHour;
+extern uint8_t remMin;
+
 void enter_menu();
 
 void alarmOff();

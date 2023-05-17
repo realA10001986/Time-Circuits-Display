@@ -110,6 +110,8 @@ class clockDisplay {
         uint8_t  getMinute();
         int8_t   getDST();
 
+        const char* getMonthString(uint8_t month);
+
         void showMonthDirect(int monthNum);
         void showDayDirect(int dayNum);
         void showHourDirect(int hourNum, bool force24 = false);

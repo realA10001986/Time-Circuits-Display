@@ -179,6 +179,9 @@ bool checkConfigExists();
 bool loadAlarm();
 void saveAlarm();
 
+bool loadReminder();
+void saveReminder();
+
 bool loadCurVolume();
 void saveCurVolume();
 

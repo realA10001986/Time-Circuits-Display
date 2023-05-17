@@ -107,6 +107,7 @@ static unsigned long timeNow = 0;
 static unsigned long lastKeyPressed = 0;
 
 #define DATELEN_ALL   12   // mmddyyyyHHMM  dt: month, day, year, hour, min
+#define DATELEN_REM   10   // 77mmddHHMM    set reminder
 #define DATELEN_DATE   8   // mmddyyyy      dt: month, day, year
 #define DATELEN_QALM   6   // 11HHMM/888xxx 11, hour, min (alarm-set shortcut); 888xxx (mp)
 #define DATELEN_INT    5   // xxxxx         reset
@@ -156,6 +157,8 @@ static void ettKeyHeld();
 #endif
 
 static void setupWCMode();
+static void buildRemString(char *buf);
+static void buildRemOffString(char *buf);
 static void mykpddelay(unsigned int mydel);
 
 /*
@@ -513,6 +516,7 @@ void keypad_loop()
         timeNow = millis();
 
         if(strLen != DATELEN_ALL  &&
+           strLen != DATELEN_REM  &&
            strLen != DATELEN_DATE &&
            (strLen < DATELEN_CMIN ||
             strLen > DATELEN_CMAX) ) {
@@ -522,8 +526,9 @@ void keypad_loop()
         } else if(strLen == DATELEN_ALSH) {
 
             char atxt[16];
+            uint8_t code = atoi(dateBuffer);
             
-            if(dateBuffer[0] == '1' && dateBuffer[1] == '1') {
+            if(code == 11) {
 
                 int al = getAlarm();
                 if(al >= 0) {
@@ -545,7 +550,7 @@ void keypad_loop()
                 }
                 specDisp = 10;
 
-            } else if(dateBuffer[0] == '4' && dateBuffer[1] == '4') {
+            } else if(code == 44) {
 
                 if(!ctDown) {
                     #ifdef IS_ACAR_DISPLAY
@@ -566,6 +571,23 @@ void keypad_loop()
                     #endif
                     validEntry = true;
                 }
+                destinationTime.showTextDirect(atxt);
+                specDisp = 10;
+
+            } else if(code == 77) {
+
+                if(!remMonth && !remDay) {
+                  
+                    buildRemOffString(atxt);
+                    invalidEntry = true;
+
+                } else {
+
+                    buildRemString(atxt);
+                    validEntry = true;
+
+                }
+
                 destinationTime.showTextDirect(atxt);
                 specDisp = 10;
 
@@ -651,6 +673,71 @@ void keypad_loop()
                     validEntry = true;
                 } else {
                     invalidEntry = true;
+                }
+                break;
+            case 770:
+                remMonth = remDay = remHour = remMin = 0;
+                saveReminder();
+                buildRemOffString(atxt);
+                destinationTime.showTextDirect(atxt);
+                specDisp = 10;
+                validEntry = true;
+                break;
+            case 777:
+                if(!remMonth && !remDay) {
+                  
+                    buildRemOffString(atxt);
+                    invalidEntry = true;
+                    
+                } else {
+                  
+                    // This does not take DST into account if the next reminder
+                    // is due in the following year. Calculation is off by tzDiff
+                    // (one hour) if DST borders are crossed.
+                    DateTime dt = myrtcnow();
+                    int yr = dt.year() - presentTime.getYearOffset();
+                    bool sameYear = true;
+                    int locDST = 0;
+                    uint32_t locMins = mins2Date(yr, dt.month(), dt.day(), dt.hour(), dt.minute());
+                    uint32_t tgtMins = mins2Date(yr, remMonth ? remMonth : dt.month(), remDay, remHour, remMin);
+                    if(tgtMins < locMins) {
+                        if(remMonth) {
+                            tgtMins = mins2Date(yr + 1, remMonth, remDay, remHour, remMin);
+                            tgtMins += (365*24*60);
+                            if(isLeapYear(yr)) tgtMins += 24*60;
+                            sameYear = false;
+                        } else {
+                            if(dt.month() == 12) {
+                                tgtMins = mins2Date(yr + 1, 1, remDay, remHour, remMin);
+                                tgtMins += (365*24*60);
+                                if(isLeapYear(yr)) tgtMins += 24*60;
+                                sameYear = false;
+                            } else {
+                                tgtMins = mins2Date(yr, dt.month() + 1, remDay, remHour, remMin);
+                            }
+                        }
+                    }
+                    tgtMins -= locMins;
+                    if(sameYear && couldDST[0] && ((locDST = presentTime.getDST()) >= 0)) {
+                        int curMins;
+                        int tgtDST = timeIsDST(0, yr, remMonth ? remMonth : dt.month() + 1, remDay, remHour, remMin, curMins);
+                        if(!locDST && tgtDST)      tgtMins += getTzDiff();
+                        else if(locDST && !tgtDST) tgtMins -= getTzDiff();
+                    }
+                    uint16_t days = tgtMins / (24*60);
+                    uint16_t hours = (tgtMins % (24*60)) / 60;
+                    uint16_t minutes = tgtMins - (days*24*60) - (hours*60);
+
+                    Serial.printf("Reminder in %d days, %d hours, %d minutes\n", days, hours, minutes);
+                    #ifdef IS_ACAR_DISPLAY
+                    sprintf(atxt, "    %3dd%2d%02d", days, hours, minutes);
+                    #else
+                    sprintf(atxt, "     %3dd%2d%02d", days, hours, minutes);
+                    #endif
+                    destinationTime.showTextDirect(atxt);
+                    specDisp = 10;
+                    validEntry = true;
+                    
                 }
                 break;
             case 000:
@@ -762,6 +849,46 @@ void keypad_loop()
             destinationTime.showTextDirect(atxt);
             specDisp = 10;
             validEntry = true;
+
+        } else if(strLen == DATELEN_REM) {
+
+            if(dateBuffer[0] == '7' && dateBuffer[1] == '7') {
+
+                char atxt[16];
+
+                for(int i = 2; i < strLen; i++) dateBuffer[i] -= '0';
+
+                uint8_t sMon  = (dateBuffer[2] * 10) + dateBuffer[3];
+                uint8_t sDay  = (dateBuffer[4] * 10) + dateBuffer[5];
+                uint8_t sHour = (dateBuffer[6] * 10) + dateBuffer[7];
+                uint8_t sMin  = (dateBuffer[8] * 10) + dateBuffer[9];
+
+                if((sMon <= 12) && (sDay >= 1 && sDay <= 31) && (sHour <= 23) && (sMin <= 59)) {
+
+                    if(!sMon || sDay <= daysInMonth(sMon, 2000)) {
+
+                        if( (remMonth != sMon) || (remDay != sDay) || 
+                            (remHour != sHour) || (remMin != sMin) ) {
+                        
+                            remMonth = sMon;
+                            remDay = sDay;
+                            remHour = sHour;
+                            remMin = sMin;
+                        
+                            saveReminder();
+                        }
+
+                        buildRemString(atxt);
+
+                        destinationTime.showTextDirect(atxt);
+                        specDisp = 10;
+
+                        validEntry = true;
+                    }
+                } 
+            } 
+            
+            invalidEntry = !validEntry;
 
         } else {
 
@@ -1104,6 +1231,33 @@ static void setupWCMode()
         if(WcHaveTZ1) destinationTime.setFromStruct(&destinationTimes[autoTime]);
         if(WcHaveTZ2) departedTime.setFromStruct(&departedTimes[autoTime]);
     }
+}
+
+static void buildRemString(char *buf)
+{
+    if(remMonth) {
+        #ifdef IS_ACAR_DISPLAY
+        sprintf(buf, "%02d%02d    %02d%02d", remMonth, remDay, remHour, remMin);
+        #else
+        sprintf(buf, "%3s%02d    %02d%02d", destinationTime.getMonthString(remMonth), 
+                                         remDay, remHour, remMin);
+        #endif
+    } else {
+        #ifdef IS_ACAR_DISPLAY
+        sprintf(buf, "  %02d    %02d%02d", remDay, remHour, remMin);
+        #else
+        sprintf(buf, "   %02d    %02d%02d", remDay, remHour, remMin);
+        #endif
+    }
+}
+
+static void buildRemOffString(char *buf)
+{
+    #ifdef IS_ACAR_DISPLAY
+    sprintf(buf, "REMINDER OFF");
+    #else
+    sprintf(buf, "REMINDER  OFF");
+    #endif
 }
 
 /*
