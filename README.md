@@ -375,6 +375,8 @@ The presets are for (hopefully) typical home, office and shop setups, and they a
 
 The *daily* schedule works by entering start and end in the text fields below. The clock will go into night-mode at the defined start hour (xx:00), and return to normal operation at the end hour (yy:00). 
 
+Night mode schedules are always based on actual local present time.
+
 #### Sensor-controlled night-mode
 
 You can also connect a light sensor to the device. Four sensor types/models are supported: TSL2561, BH1750, VEML7700/VEML6030, LTR303/LTR329, connected through i2c with their respective default slave address. The VEML7700 can only be connected if no GPS receiver is connected at the same time; the VEML6030 needs its address to be set to  0x48 if a GPS receiver is present at the same time. All these sensor types are readily available on breakout boards from Adafruit or Seeed (Grove). Only one light sensor can be used at the same time. *Note: You cannot connect the sensor chip directly to the TCD control board; most sensors need at least a power converter/level-shifter.* This is why I exclusively used Adafruit or Seeed breakouts ([TSL2561](https://www.adafruit.com/product/439) or [here](https://www.seeedstudio.com/Grove-Digital-Light-Sensor-TSL2561.html), [BH1750](https://www.adafruit.com/product/4681), [VEML7700](https://www.adafruit.com/product/4162), [LTR303](https://www.adafruit.com/product/5610)), which all allow connecting named sensors to the 5V the TCD board operates on. For wiring information, see [here](#appendix-b-sensor-wiring).
@@ -851,7 +853,9 @@ See [here](#persistent--non-persistent-time-travels)
 
 ##### &#9654; Alarm base is real present time
 
-Selects whether the alarm, sound-on-the-hour and night-mode schedules are based on real, actual present time, or "present" time as displayed (eg after a time travel).
+Selects whether the alarm and sound-on-the-hour are based on real, actual present time, or "present" time as displayed (eg after a time travel).
+
+Note that the night mode schedules and the Reminder are always based on actual present time.
 
 ##### &#9654; Play intro
 
