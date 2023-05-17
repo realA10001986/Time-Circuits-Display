@@ -407,6 +407,8 @@ Type 77 followed by ENTER to display the programmed reminder, 770 to delete it, 
 
 The reminder only plays a sound file. The current sound-pack contains a default file; if your SD contains a file named "reminder.mp3", this will played instead of the default file.
 
+Note: While the alarm and the sound-on-the-hour adhere to the "Alarm base is real present time" setting in the config portal, the Reminder does not. It is always based on real local time.
+
 ## SD card
 
 Preface note on SD cards: For unknown reasons, some SD cards simply do not work with this device. For instance, I had no luck with a Sandisk Ultra 32GB card. If your SD card is not recognized, check if it is formatted in FAT32 format (not exFAT!). Also, the size must not exceed 32GB (as larger cards cannot be formatted with FAT32).
