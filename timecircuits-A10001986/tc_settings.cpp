@@ -1440,6 +1440,11 @@ void rewriteSecondarySettings()
     Serial.println("Re-writing alarm settings");
     #endif
     saveAlarm();
+
+    #ifdef TC_DBG
+    Serial.println("Re-writing reminder settings");
+    #endif
+    saveReminder();
     
     #ifdef TC_DBG
     Serial.println("Re-writing volume");
