@@ -18,7 +18,7 @@ Features include
 - &#x1F195; [World Clock mode](#world-clock-mode): Show current time in different time zones in *destination time* and/or *last time departed* displays
 - [Alarm function](#how-to-set-up-the-alarm)
 - [Count-down timer](#count-down-timer)
-- &#x1F195; Yearly/monthly reminder
+- &#x1F195; [Yearly/monthly reminder](#yearlymonthly-reminder)
 - [Night mode](#night-mode) (displays off or dimmed; manual, scheduled or sensor-controlled)
 - [Music player](#the-music-player): Play mp3 files located on an SD card
 - &#x1F195; [Home Assistant](#home-assistant--mqtt) (MQTT 3.1.1) support
@@ -215,6 +215,22 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
     <tr>
      <td align="center">44MM&#9166;</td>
      <td align="center"><a href="#count-down-timer">Timer</a>: Set timer to MM minutes</td>
+    </tr>
+    <tr>
+     <td align="center">77&#9166;</td>
+     <td align="center"><a href="#yearlymonthly-reminder">Reminder</a>: Display reminder</td>
+    </tr>
+    <tr>
+     <td align="center">777&#9166;</td>
+     <td align="center"><a href="#yearlymonthly-reminder">Reminder</a>: Display time until reminder</td>
+    </tr>
+    <tr>
+     <td align="center">770&#9166;</td>
+     <td align="center"><a href="#yearlymonthly-reminder">Reminder</a>: Delete reminder</td>
+    </tr>
+    <tr>
+     <td align="center">77mmddhhMM&#9166;</td>
+     <td align="center"><a href="#yearlymonthly-reminder">Reminder</a>: Program reminder</td>
     </tr>
     <tr>
      <td align="center">111&#9166;</td>
