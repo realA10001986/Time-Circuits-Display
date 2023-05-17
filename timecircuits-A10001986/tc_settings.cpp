@@ -1420,7 +1420,7 @@ void formatFlashFS()
     SPIFFS.format();
 }
 
-// Re-write IP/alarm/vol settings
+// Re-write IP/alarm/reminder/vol settings
 // Used during audio file installation when flash FS needs
 // to be re-formatted.
 void rewriteSecondarySettings()

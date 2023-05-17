@@ -2080,7 +2080,7 @@ void time_loop()
                 }
                 
                 if(autoNightMode && (manualNightMode < 0)) {
-                    if(compMin == 0 || forceReEvalANM) {
+                    if(dt.minute() == 0 || forceReEvalANM) {
                         if(!autoNMDone || forceReEvalANM) {
                             uint32_t myField;
                             if(autoNightModeMode == 0) {
@@ -2089,7 +2089,7 @@ void time_loop()
                                 const uint32_t *myFieldPtr = autoNMPresets[autoNightModeMode - 1];
                                 myField = myFieldPtr[weekDay];
                             }                       
-                            if(myField & (1 << (23 - compHour))) {
+                            if(myField & (1 << (23 - dt.hour()))) {
                                 nightModeOn();
                                 timedNightMode = 1;
                             } else {
