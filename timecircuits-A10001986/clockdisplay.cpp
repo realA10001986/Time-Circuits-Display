@@ -450,6 +450,13 @@ void clockDisplay::setYearOffset(int16_t yearOffs)
 
 void clockDisplay::setYear(uint16_t yearNum)
 {
+    uint16_t seg = 0;
+
+    #ifdef TC_HAVEGPS
+    if((_did == DISP_PRES) && gpsHaveFix()) 
+        seg = 0x8000;
+    #endif
+    
     if((int16_t)yearNum - _yearoffset < 0) {    // ny0: < 1
         #ifdef TC_DBG
         Serial.printf("Clockdisplay: setYear: Bad year: %d / yearOffset %d\n", yearNum, _yearoffset);
@@ -464,71 +471,51 @@ void clockDisplay::setYear(uint16_t yearNum)
         yearNum -= 10000;
 
     _displayBuffer[CD_YEAR_POS]     = makeNum(yearNum / 100);
-    _displayBuffer[CD_YEAR_POS + 1] = makeNum(yearNum % 100);
-
-    #ifdef TC_HAVEGPS
-    if(_did == DISP_PRES) {
-        if(gpsHaveFix())
-            _displayBuffer[CD_YEAR_POS + 1] |= 0x8000;
-    }
-    #endif
+    _displayBuffer[CD_YEAR_POS + 1] = makeNum(yearNum % 100) | seg;
 }
 
 void clockDisplay::setHour(uint16_t hourNum)
 {
-    if(hourNum > 23) {
+    uint16_t seg = 0;
+    
+    if(hourNum > 23) 
         hourNum = 23;
-    }
 
     _hour = hourNum;
 
     if(!_mode24) {
-
         if(hourNum == 0) {
-            _displayBuffer[CD_HOUR_POS] = makeNum(12);
+            hourNum = 12;
         } else if(hourNum > 12) {
-            // pm
-            _displayBuffer[CD_HOUR_POS] = makeNum(hourNum - 12);
-        } else if(hourNum <= 12) {
-            // am
-            _displayBuffer[CD_HOUR_POS] = makeNum(hourNum);
+            hourNum -= 12; 
         }
-
-    } else {
-
-        _displayBuffer[CD_HOUR_POS] = makeNum(hourNum);
-
     }
+
+    _displayBuffer[CD_HOUR_POS] = makeNum(hourNum);
 
     // AM/PM will be set on show() to avoid being overwritten
 }
 
 void clockDisplay::setMinute(int minNum)
 {
+    uint16_t seg = ((_did == DISP_PRES) && alarmOnOff) ? 0x8000 : 0;
+    
     if(minNum < 0 || minNum > 59) {
         minNum = (minNum > 59) ? 59 : 0;
     }
 
     _minute = minNum;
 
-    _displayBuffer[CD_MIN_POS] = makeNum(minNum);
-
-    if(_did == DISP_PRES) {
-        if(alarmOnOff)
-            _displayBuffer[CD_MIN_POS] |= 0x8000;
-    }
+    _displayBuffer[CD_MIN_POS] = makeNum(minNum) | seg;
 }
-
 
 void clockDisplay::setColon(bool col)
 {
     // set true to turn it on
     // colon is off in night mode
     
-    if(_nightmode) col = false;
-    _colon = col;
+    _colon = _nightmode ? false : col;
 }
-
 
 void clockDisplay::setDST(int8_t isDST)
 {
@@ -594,9 +581,8 @@ void clockDisplay::showMonthDirect(int monthNum, uint16_t dflags)
 {
     clearDisplay();
 
-    if(monthNum > 12) {
+    if(monthNum > 12)
         monthNum = 12;
-    }
 
 #ifdef IS_ACAR_DISPLAY
     directCol(CD_MONTH_POS, makeNum(monthNum, dflags));
@@ -650,23 +636,21 @@ void clockDisplay::showHourDirect(int hourNum, uint16_t dflags)
 
     if(!_mode24 && !(dflags & CDD_FORCE24)) {
 
-        if(hourNum == 0) {
-            directCol(CD_HOUR_POS, makeNum(12));
-        } else if(hourNum > 12) {
-            directCol(CD_HOUR_POS, makeNum(hourNum - 12, dflags));
-        } else {
-            directCol(CD_HOUR_POS, makeNum(hourNum, dflags));
-        }
-
         (hourNum > 11) ? directPM() : directAM();
 
-    }  else {
+        if(hourNum == 0) {
+            hourNum = 12;
+        } else if(hourNum > 12) {
+            hourNum -= 12;
+        }
 
-        directCol(CD_HOUR_POS, makeNum(hourNum, dflags));
+    } else {
 
         directAMPMoff();
 
     }
+
+    directCol(CD_HOUR_POS, makeNum(hourNum, dflags));
 }
 
 void clockDisplay::showMinuteDirect(int minuteNum, uint16_t dflags)
@@ -1202,11 +1186,12 @@ uint16_t clockDisplay::makeNum(uint8_t num, uint16_t dflags)
 {
     uint16_t segments = 0;
 
-    // Each position holds two digits, high byte is 1's, low byte is 10's
+    // Each position holds two digits
+    // MSB = 1s, LSB = 10s
 
-    segments = getLED7NumChar(num % 10) << 8;     // Place 1's in upper byte
+    segments = getLED7NumChar(num % 10) << 8;     
     if(!(dflags & CDD_NOLEAD0) || (num / 10)) {
-        segments |= getLED7NumChar(num / 10);     // 10's in lower byte
+        segments |= getLED7NumChar(num / 10);   
     }
 
     return segments;
