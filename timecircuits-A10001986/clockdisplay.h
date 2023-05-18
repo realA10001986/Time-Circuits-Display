@@ -47,6 +47,16 @@ struct dateStruct {
 
 #define CD_BUF_SIZE   8  // Buffer size in words (16bit)
 
+// Flags for textDirect() etc (flags)
+#define CDT_CLEAR 0x0001
+#define CDT_CORR6 0x0002
+#define CDT_COLON 0x0004
+#define CDT_BLINK 0x0008
+
+// Flags for xxxDirect (dflags)
+#define CDD_FORCE24 0x0001
+#define CDD_NOLEAD0 0x0002
+
 class clockDisplay {
 
     public:
@@ -112,15 +122,15 @@ class clockDisplay {
 
         const char* getMonthString(uint8_t month);
 
-        void showMonthDirect(int monthNum);
-        void showDayDirect(int dayNum);
-        void showHourDirect(int hourNum, bool force24 = false);
-        void showMinuteDirect(int minuteNum);
-        void showYearDirect(int yearNum);
+        void showMonthDirect(int monthNum, uint16_t dflags = 0);
+        void showDayDirect(int dayNum, uint16_t dflags = 0);
+        void showHourDirect(int hourNum, uint16_t dflags = 0);
+        void showMinuteDirect(int minuteNum, uint16_t dflags = 0);
+        void showYearDirect(int yearNum, uint16_t dflags = 0);
 
-        void showSettingValDirect(const char* setting, int8_t val = -1, bool clear = false, bool blink = false);
-        void showTextDirect(const char *text, bool clear = true, bool corr6 = false, bool withColon = false);
-        void showHalfIPDirect(int a, int b, bool clear = false);
+        void showTextDirect(const char *text, uint16_t flags = CDT_CLEAR);
+        void showHalfIPDirect(int a, int b, uint16_t flags = 0);
+        void showSettingValDirect(const char* setting, int8_t val = -1, uint16_t flags = 0);
 
         #ifdef TC_HAVETEMP
         void showTempDirect(float temp, bool tempUnit, bool animate = false);
@@ -147,7 +157,7 @@ class clockDisplay {
         uint16_t getLEDAlphaChar(uint8_t value);
         #endif
 
-        uint16_t makeNum(uint8_t num);
+        uint16_t makeNum(uint8_t num, bool nolead0 = false);
 
         void directCol(int col, int segments);  // directly writes column RAM
 

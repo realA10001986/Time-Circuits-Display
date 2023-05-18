@@ -291,8 +291,8 @@ static const char *alarmWD[10] = {
 
 static bool menuSelect(int& number, int mode_min);
 static void menuShow(int number);
-static void setUpdate(uint16_t number, int field, bool extra = false);
-static bool setField(uint16_t& number, uint8_t field, int year = 0, int month = 0, bool extra = false);
+static void setUpdate(uint16_t number, int field, uint16_t dflags = 0);
+static bool setField(uint16_t& number, uint8_t field, int year = 0, int month = 0, uint16_t dflags = 0);
 static void showCurVolHWSW();
 static void showCurVol();
 static void doSetVolume();
@@ -432,10 +432,10 @@ void enter_menu()
             goto quitMenu;
 
         // Get hour
-        setUpdate(hourSet, FIELD_HOUR);
+        setUpdate(hourSet, FIELD_HOUR, CDD_FORCE24);
         prepareInput(hourSet);
         waitForEnterRelease();
-        if(!setField(hourSet, FIELD_HOUR))
+        if(!setField(hourSet, FIELD_HOUR, 0, 0, CDD_FORCE24))
             goto quitMenu;
 
         // Get minute
@@ -901,23 +901,23 @@ static void menuShow(int number)
  * field = field to show it in
  *
  */
-static void setUpdate(uint16_t number, int field, bool extra)
+static void setUpdate(uint16_t number, int field, uint16_t dflags)
 {
     switch(field) {
     case FIELD_MONTH:
-        displaySet->showMonthDirect(number);
+        displaySet->showMonthDirect(number, dflags);
         break;
     case FIELD_DAY:
-        displaySet->showDayDirect(number);
+        displaySet->showDayDirect(number, dflags);
         break;
     case FIELD_YEAR:
-        displaySet->showYearDirect(number);
+        displaySet->showYearDirect(number, dflags);
         break;
     case FIELD_HOUR:
-        displaySet->showHourDirect(number, extra);
+        displaySet->showHourDirect(number, dflags);
         break;
     case FIELD_MINUTE:
-        displaySet->showMinuteDirect(number);
+        displaySet->showMinuteDirect(number, dflags);
         break;
     }
 }
@@ -941,23 +941,25 @@ static void prepareInput(uint16_t number)
  * year, month - check checking maximum day number
  *
  */
-static bool setField(uint16_t& number, uint8_t field, int year, int month, bool extra)
+static bool setField(uint16_t& number, uint8_t field, int year, int month, uint16_t dflags)
 {
     int upperLimit;
     int lowerLimit;
     int i;
     uint16_t setNum = 0, prevNum = number;
-    int16_t numVal = 0;
-
+    int16_t  numVal = 0;
     int numChars = 2;
-
     bool someupddone = false;
+    unsigned long blinkNow = 0;
+    bool blinkSwitch = true;
 
     timeout = 0;  // reset timeout
 
-    displaySet->onBlink(2);   // Start blinking
+    // Start blinking
+    displaySet->onBlink(2);
 
-    //timeBuffer[0] = '\0';   // No, timeBuffer is pre-set with previous value
+    // No, timeBuffer is pre-set with previous value
+    //timeBuffer[0] = '\0';   
 
     switch(field) {
     case FIELD_MONTH:
@@ -994,11 +996,9 @@ static bool setField(uint16_t& number, uint8_t field, int year, int month, bool 
            !checkEnterPress() &&
            ( (!someupddone && number == prevNum) || strlen(timeBuffer) < numChars) ) {
 
-        scanKeypad();      // We're outside our main loop, so poll here
+        // We're outside our main loop, so poll here
+        scanKeypad();
 
-        /* Using strlen here means that we always need to start a new number at timebuffer[0].
-         * This is therefore NOT a ringbuffer!
-         */
         setNum = 0;
         for(i = 0; i < strlen(timeBuffer); i++) {
             setNum *= 10;
@@ -1008,12 +1008,20 @@ static bool setField(uint16_t& number, uint8_t field, int year, int month, bool 
         // Show setNum in field
         if(prevNum != setNum) {
             someupddone = true;
-            setUpdate(setNum, field, extra);
+            setUpdate(setNum, field, dflags | CDD_NOLEAD0);
             prevNum = setNum;
             timeout = 0;  // key pressed, reset timeout
+            displaySet->on();
+            blinkNow = millis();
+            blinkSwitch = false;
         }
 
         mydelay(10);
+
+        if(!blinkSwitch && (millis() - blinkNow > 500)) {
+            displaySet->onBlink(2);
+            blinkSwitch = true;
+        }
 
     }
 
@@ -1022,7 +1030,8 @@ static bool setField(uint16_t& number, uint8_t field, int year, int month, bool 
     // Force keypad to send keys somewhere else but our buffer
     keypadInMenu = false;
 
-    displaySet->on();   // Stop blinking
+    // Stop blinking
+    displaySet->on();
 
     if(checkTimeOut())
         return false;
@@ -1035,9 +1044,9 @@ static bool setField(uint16_t& number, uint8_t field, int year, int month, bool 
     if(numVal < lowerLimit) numVal = lowerLimit;
     if(numVal > upperLimit) numVal = upperLimit;
     number = numVal;
-    setNum = numVal;
 
-    setUpdate(setNum, field, extra);
+    // Display (corrected) number for .5 seconds
+    setUpdate((uint16_t)numVal, field, dflags);
 
     mydelay(500);
 
@@ -1070,7 +1079,10 @@ static void showCurVolHWSW(bool blink)
 
 static void showCurVol(bool blink, bool doComment)
 {
-    destinationTime.showSettingValDirect("LEVEL", curVolume, true, blink);
+    uint16_t flags = CDT_CLEAR;
+    if(blink) flags |= CDT_BLINK;
+    
+    destinationTime.showSettingValDirect("LEVEL", curVolume, flags);
     destinationTime.on();
 
     if(doComment) {
@@ -1191,7 +1203,7 @@ static void doSetVolume()
                 }
 
                 if(triggerPlay && (mm - playNow >= 1*1000)) {
-                    play_file("/alarm.mp3", 1.0, false, true);
+                    play_file("/alarm.mp3", PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
                     triggerPlay = false;
                 }
 
@@ -1231,7 +1243,10 @@ static void doSetVolume()
 
 static void displayMSfx(int msfx, bool blink, bool doFolderChk)
 {
-    destinationTime.showSettingValDirect("FOLDER", msfx, true, blink);
+    uint16_t flags = CDT_CLEAR;
+    if(blink) flags |= CDT_BLINK;
+    
+    destinationTime.showSettingValDirect("FOLDER", msfx, flags);
     destinationTime.on();
 
     if(doFolderChk) {
@@ -1383,7 +1398,7 @@ static void doSetAlarm()
     // On/Off
     sprintf(almBuf2, almFmt, "   " , newAlarmHour, newAlarmMinute);
     sprintf(almBuf, almFmt, newAlarmOnOff ? "ON " : "OFF", newAlarmHour, newAlarmMinute);
-    displaySet->showTextDirect(almBuf);
+    displaySet->showTextDirect(almBuf, CDT_CLEAR|CDT_COLON);
     displaySet->on();
 
     timeout = 0;  // reset timeout
@@ -1397,7 +1412,7 @@ static void doSetAlarm()
             timeout = 0;  // button pressed, reset timeout
 
             if(blinkSwitch) {
-                displaySet->showTextDirect(almBuf);
+                displaySet->showTextDirect(almBuf, CDT_CLEAR|CDT_COLON);
             }
 
             if(!(alarmDone = menuWaitForRelease())) {
@@ -1405,7 +1420,7 @@ static void doSetAlarm()
                 newAlarmOnOff = !newAlarmOnOff;
 
                 sprintf(almBuf, almFmt, newAlarmOnOff ? "ON " : "OFF", newAlarmHour, newAlarmMinute);
-                displaySet->showTextDirect(almBuf);
+                displaySet->showTextDirect(almBuf, CDT_CLEAR|CDT_COLON);
 
                 blinkSwitch = false;
                 blinkNow = millis();
@@ -1418,7 +1433,7 @@ static void doSetAlarm()
             
             if(mm - blinkNow > 500) {
                 blinkSwitch = !blinkSwitch;
-                displaySet->showTextDirect(blinkSwitch ? almBuf2 : almBuf);
+                displaySet->showTextDirect(blinkSwitch ? almBuf2 : almBuf, CDT_CLEAR|CDT_COLON);
                 blinkNow = mm;
             }
 
@@ -1431,10 +1446,10 @@ static void doSetAlarm()
     if(!alarmDone) return;
 
     // Get hour
-    setUpdate(newAlarmHour, FIELD_HOUR, true);  // force24 here
+    setUpdate(newAlarmHour, FIELD_HOUR, CDD_FORCE24);
     prepareInput(newAlarmHour);
     waitForEnterRelease();
-    if(!setField(newAlarmHour, FIELD_HOUR, 0, 0, true)) {
+    if(!setField(newAlarmHour, FIELD_HOUR, 0, 0, CDD_FORCE24)) {
         waitAudioDone();    // (keypad; should not be necessary)
         return;
     }
@@ -1452,6 +1467,7 @@ static void doSetAlarm()
     waitForEnterRelease();
     displaySet->showTextDirect(getAlWD(newAlarmWeekday));
     displaySet->onBlink(2);
+    blinkSwitch = true;
 
     alarmDone = false;
     timeout = 0;
@@ -1463,6 +1479,8 @@ static void doSetAlarm()
         if(checkEnterPress()) {
 
             timeout = 0;  // button pressed, reset timeout
+            displaySet->on();
+            blinkSwitch = false;
 
             if(!(alarmDone = menuWaitForRelease())) {
 
@@ -1470,14 +1488,17 @@ static void doSetAlarm()
                 if(newAlarmWeekday > 9) newAlarmWeekday = 0;
 
                 displaySet->showTextDirect(getAlWD(newAlarmWeekday));
-                displaySet->off();
-                displaySet->onBlink(2);
 
             }
 
         } else {
 
             mydelay(50);
+
+            if(!blinkSwitch) {
+                displaySet->onBlink(2);
+                blinkSwitch = true;
+            }
 
         }
 
@@ -1541,7 +1562,10 @@ static void saveAutoInterval()
 
 static void displayAI(int interval, bool blink, bool doComment)
 { 
-    destinationTime.showSettingValDirect("INTERVAL", interval, true, blink);
+    uint16_t flags = CDT_CLEAR;
+    if(blink) flags |= CDT_BLINK;
+    
+    destinationTime.showSettingValDirect("INTERVAL", interval, flags);
 
     if(doComment) {
         if(interval == 0) {
@@ -1634,10 +1658,13 @@ static void doSetAutoInterval()
 
 static void displayBri(clockDisplay* displaySet, int8_t number, bool blink)
 {
+    uint16_t flags = 0;
+    if(blink) flags |= CDT_BLINK;
+    
     #ifdef IS_ACAR_DISPLAY
-    displaySet->showSettingValDirect("LV", number, false, blink);
+    displaySet->showSettingValDirect("LV", number, flags);
     #else
-    displaySet->showSettingValDirect("LVL", number, false, blink);
+    displaySet->showSettingValDirect("LVL", number, flags);
     #endif
 }
 
@@ -1835,8 +1862,8 @@ static void displayIP()
     wifi_getIP(a, b, c, d);
     
     destinationTime.showTextDirect("IP");
-    presentTime.showHalfIPDirect(a, b, true);
-    departedTime.showHalfIPDirect(c, d, true);
+    presentTime.showHalfIPDirect(a, b, CDT_CLEAR);
+    departedTime.showHalfIPDirect(c, d, CDT_CLEAR);
     
     destinationTime.on();
     presentTime.on();
@@ -1933,7 +1960,7 @@ static void doShowNetInfo()
                 case 2:
                     destinationTime.showTextDirect("MAC");
                     destinationTime.on();
-                    presentTime.showTextDirect(macBuf, true, true);
+                    presentTime.showTextDirect(macBuf, CDT_CLEAR|CDT_CORR6);
                     presentTime.on();
                     departedTime.off();
                     break;
@@ -1971,8 +1998,7 @@ void doCopyAudioFiles()
 {
     bool doCancDone = false;
     bool newCanc = false;
-    bool blinkSwitch = false;
-    unsigned long blinkNow = millis();
+    bool blinkSwitch;
     bool delIDfile = false;
 
     // Cancel/Copy
@@ -1980,6 +2006,7 @@ void doCopyAudioFiles()
     presentTime.on();
     departedTime.showTextDirect("CANCEL");
     departedTime.onBlink(2);
+    blinkSwitch = true;
 
     timeout = 0;  // reset timeout
 
@@ -1990,6 +2017,8 @@ void doCopyAudioFiles()
         if(checkEnterPress()) {
 
             timeout = 0;  // button pressed, reset timeout
+            departedTime.on();
+            blinkSwitch = false;
 
             if(!(doCancDone = menuWaitForRelease())) {
 
@@ -2002,6 +2031,11 @@ void doCopyAudioFiles()
         } else {
   
             mydelay(50);
+
+            if(!blinkSwitch) {
+                departedTime.onBlink(2);
+                blinkSwitch = true;
+            }
   
         }
 

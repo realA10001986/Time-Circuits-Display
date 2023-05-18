@@ -48,7 +48,7 @@ void play_keypad_sound(char key);
 void play_hour_sound(int hour);
 void play_beep();
 void audio_loop();
-void play_file(const char *audio_file, float volumeFactor = 1.0, bool checkNightMode = true, bool interruptMusic = false, bool allowSD = true, bool dynvolume = true);
+void play_file(const char *audio_file, uint16_t flags, float volumeFactor = 1.0);
 bool check_file_SD(const char *audio_file);
 bool checkAudioDone();
 bool checkMP3Done();
@@ -65,5 +65,10 @@ bool mp_checkForFolder(int num);
 
 // By default, use the volume knob
 #define DEFAULT_VOLUME 255
+
+#define PA_CHECKNM 0x0001
+#define PA_INTRMUS 0x0002
+#define PA_ALLOWSD 0x0004
+#define PA_DYNVOL  0x0008
 
 #endif

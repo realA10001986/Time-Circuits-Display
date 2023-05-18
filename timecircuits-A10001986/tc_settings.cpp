@@ -269,7 +269,7 @@ void settings_setup()
         write_settings();
     }
 
-    // Determine if alarm/volume settings are to be stored on SD
+    // Determine if alarm/reminder/volume settings are to be stored on SD
     configOnSD = (haveSD && ((settings.CfgOnSD[0] != '0') || FlashROMode));
 
     // Check if SD contains our default sound files
@@ -821,7 +821,7 @@ bool loadReminder()
             if(json["month"] && json["hour"] && json["min"]) {
                 remMonth  = atoi(json["month"]);
                 remDay  = atoi(json["day"]);
-                remHour  = atoi(json["hour"]);
+                remHour = atoi(json["hour"]);
                 remMin  = atoi(json["min"]);
                 if(remMonth > 12 ||               // month can be zero (=monthly reminder)
                    remDay   > 31 || remDay < 1 ||

@@ -1210,7 +1210,7 @@ void time_setup()
         const char *t2 = "TO";
         const char *t3 = "THE FUTURE";
         
-        play_file("/intro.mp3", 1.0, true, true);
+        play_file("/intro.mp3", PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
 
         myIntroDelay(1200);
         destinationTime.setBrightnessDirect(15);
@@ -1343,7 +1343,7 @@ void time_loop()
                     cancelEnterAnim(false);
                     cancelETTAnim();
                     mp_stop();
-                    play_file("/shutdown.mp3", 1.0, true, true, true, false);
+                    play_file("/shutdown.mp3", PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD);
                     mydelay(130);
                     allOff();
                     leds_off();
@@ -1362,7 +1362,7 @@ void time_loop()
     // Initiate startup delay, play startup sound
     if(startupSound) {
         startupNow = pauseNow = millis();
-        play_file("/startup.mp3", 1.0, true, true, true, false);
+        play_file("/startup.mp3", PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD);
         startupSound = false;
         // Don't let autoInt interrupt us
         autoPaused = true;
@@ -2027,7 +2027,7 @@ void time_loop()
                     if(millis() - ctDownNow > ctDown) {
                         if( (!(alarmOnOff && (alarmHour == compHour) && (alarmMinute == compMin))) ||
                             (alarmDone && checkAudioDone()) ) {
-                            play_file("/timer.mp3", 1.0, false, true, true, false);
+                            play_file("/timer.mp3", PA_INTRMUS|PA_ALLOWSD);
                             ctDown = 0;
                         }
                     }
@@ -2042,7 +2042,7 @@ void time_loop()
                             if(!remDone) {
                                 if( (!(alarmOnOff && (alarmHour == compHour) && (alarmMinute == compMin))) ||
                                     (alarmDone && checkAudioDone()) ) {
-                                        play_file("/reminder.mp3", 1.0, false, true, true, false);
+                                        play_file("/reminder.mp3", PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
                                         remDone = true;
                                 }
                             }
@@ -2057,7 +2057,7 @@ void time_loop()
                     if((alarmHour == compHour) && (alarmMinute == compMin) && 
                                   (alarmWDmasks[alarmWeekday] & (1 << weekDay))) {
                         if(!alarmDone) {
-                            play_file("/alarm.mp3", 1.0, false, true);
+                            play_file("/alarm.mp3", PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
                             alarmDone = true;
                             #ifdef TC_HAVEMQTT
                             if(useMQTT && pubMQTT) {
@@ -2296,7 +2296,7 @@ void time_loop()
                     destinationTime.showTextDirect(mqttMsg + mqttIdx);
                     if(mqttST) {
                         if(!presentTime.getNightMode()) {
-                            play_file(mqttAudioFile,  1.0, true, false, true, false);
+                            play_file(mqttAudioFile, PA_CHECKNM|PA_ALLOWSD);
                         }
                         mqttST = false;
                     }
@@ -2570,7 +2570,7 @@ void timeTravel(bool doComplete, bool withSpeedo)
     timetravelNow = ttUnivNow;
     timeTravelRE = true;
 
-    if(playTTsounds) play_file("/timetravel.mp3", 1.0, true, true);
+    if(playTTsounds) play_file("/timetravel.mp3", PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
 
     allOff();
 
@@ -2642,7 +2642,7 @@ void timeTravel(bool doComplete, bool withSpeedo)
 
 static void triggerLongTT()
 {
-    if(playTTsounds) play_file("/travelstart.mp3", 1.0, true, true);
+    if(playTTsounds) play_file("/travelstart.mp3", PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
     timetravelP1Now = millis();
     timetravelP1Delay = TT_P1_DELAY_P1;
     timeTravelP1 = 1;
@@ -2682,7 +2682,7 @@ void resetPresentTime()
     
     if(timeDifference && playTTsounds) {
         mp_stop();
-        play_file("/timetravel.mp3", 1.0, true, true);
+        play_file("/timetravel.mp3", PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
     }
 
     // Disable RC and WC modes

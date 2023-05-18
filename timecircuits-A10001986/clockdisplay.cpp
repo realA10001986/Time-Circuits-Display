@@ -590,75 +590,90 @@ const char * clockDisplay::getMonthString(uint8_t mon)
 
 // Put data directly on display (bypass buffer) --------------------------------
 
-void clockDisplay::showMonthDirect(int monthNum)
+void clockDisplay::showMonthDirect(int monthNum, uint16_t dflags)
 {
     clearDisplay();
 
-    if(monthNum < 1 || monthNum > 12) {
-        monthNum = (monthNum > 12) ? 12 : 1;
+    if(monthNum > 12) {
+        monthNum = 12;
     }
 
 #ifdef IS_ACAR_DISPLAY
-    directCol(CD_MONTH_POS, makeNum(monthNum));
+    directCol(CD_MONTH_POS, makeNum(monthNum, dflags));
 #else
-    monthNum--;
-    directCol(CD_MONTH_POS,     getLEDAlphaChar(months[monthNum][0]));
-    directCol(CD_MONTH_POS + 1, getLEDAlphaChar(months[monthNum][1]));
-    directCol(CD_MONTH_POS + 2, getLEDAlphaChar(months[monthNum][2]));
+    if(monthNum > 0) {
+        monthNum--;
+        directCol(CD_MONTH_POS,     getLEDAlphaChar(months[monthNum][0]));
+        directCol(CD_MONTH_POS + 1, getLEDAlphaChar(months[monthNum][1]));
+        directCol(CD_MONTH_POS + 2, getLEDAlphaChar(months[monthNum][2]));
+    } else {
+        directCol(CD_MONTH_POS,     0);
+        directCol(CD_MONTH_POS + 1, 0);
+        directCol(CD_MONTH_POS + 2, getLEDAlphaChar('_'));
+    }
 #endif
 }
 
-void clockDisplay::showDayDirect(int dayNum)
+void clockDisplay::showDayDirect(int dayNum, uint16_t dflags)
 {
     clearDisplay();
 
-    directCol(CD_DAY_POS, makeNum(dayNum));
+    directCol(CD_DAY_POS, makeNum(dayNum, dflags));
 }
 
-void clockDisplay::showYearDirect(int yearNum)
+void clockDisplay::showYearDirect(int yearNum, uint16_t dflags)
 {
+    uint16_t seg = 0;
+    int y100;
+
     clearDisplay();
 
     while(yearNum >= 10000) 
         yearNum -= 10000;
 
-    directCol(CD_YEAR_POS,     makeNum(yearNum / 100));
-    directCol(CD_YEAR_POS + 1, makeNum(yearNum % 100));
+    y100 = yearNum / 100;
+
+    if(!(dflags & CDD_NOLEAD0) || y100) {
+        seg = makeNum(y100, dflags);
+        if(y100) dflags &= ~CDD_NOLEAD0;
+    }
+    directCol(CD_YEAR_POS, seg);
+    directCol(CD_YEAR_POS + 1, makeNum(yearNum % 100, dflags));
 }
 
-void clockDisplay::showHourDirect(int hourNum, bool force24)
+void clockDisplay::showHourDirect(int hourNum, uint16_t dflags)
 {
     clearDisplay();
 
     // This assumes that CD_HOUR_POS is different to
     // CD_AMPM_POS
 
-    if(!_mode24 && !force24) {
+    if(!_mode24 && !(dflags & CDD_FORCE24)) {
 
         if(hourNum == 0) {
             directCol(CD_HOUR_POS, makeNum(12));
         } else if(hourNum > 12) {
-            directCol(CD_HOUR_POS, makeNum(hourNum - 12));
+            directCol(CD_HOUR_POS, makeNum(hourNum - 12, dflags));
         } else {
-            directCol(CD_HOUR_POS, makeNum(hourNum));
+            directCol(CD_HOUR_POS, makeNum(hourNum, dflags));
         }
 
         (hourNum > 11) ? directPM() : directAM();
 
     }  else {
 
-        directCol(CD_HOUR_POS, makeNum(hourNum));
+        directCol(CD_HOUR_POS, makeNum(hourNum, dflags));
 
         directAMPMoff();
 
     }
 }
 
-void clockDisplay::showMinuteDirect(int minuteNum)
+void clockDisplay::showMinuteDirect(int minuteNum, uint16_t dflags)
 {
     clearDisplay();
 
-    directCol(CD_MIN_POS, makeNum(minuteNum));
+    directCol(CD_MIN_POS, makeNum(minuteNum, dflags));
 }
 
 
@@ -666,13 +681,13 @@ void clockDisplay::showMinuteDirect(int minuteNum)
 
 
 // Show the given text
-void clockDisplay::showTextDirect(const char *text, bool clear, bool corr6, bool withColon)
+void clockDisplay::showTextDirect(const char *text, uint16_t flags)
 {
     int idx = 0, pos = CD_MONTH_POS;
     int temp = 0;
 
-    _corr6 = corr6;
-    _withColon = withColon;
+    _corr6 = (flags & CDT_CORR6) ? true : false;
+    _withColon = (flags & CDT_COLON) ? true : false;
 
 #ifdef IS_ACAR_DISPLAY
     while(text[idx] && pos < (CD_MONTH_POS+CD_MONTH_SIZE)) {
@@ -701,7 +716,7 @@ void clockDisplay::showTextDirect(const char *text, bool clear, bool corr6, bool
         directCol(pos++, temp);
     }
 
-    if(clear) {
+    if(flags & CDT_CLEAR) {
         while(pos <= CD_MIN_POS) {
             directCol(pos++, 0);
         }
@@ -711,7 +726,7 @@ void clockDisplay::showTextDirect(const char *text, bool clear, bool corr6, bool
 }
 
 // Clear the display RAM and only show the provided 2 numbers (parts of IP)
-void clockDisplay::showHalfIPDirect(int a, int b, bool clear)
+void clockDisplay::showHalfIPDirect(int a, int b, uint16_t flags)
 {
     char buf[16];
     #ifdef IS_ACAR_DISPLAY
@@ -726,17 +741,17 @@ void clockDisplay::showHalfIPDirect(int a, int b, bool clear)
     #else
     sprintf(buf, fmt, a, b);
     #endif
-    showTextDirect(buf, clear);
+    showTextDirect(buf, flags);
 }
 
 // Show a text part and a number
-void clockDisplay::showSettingValDirect(const char* setting, int8_t val, bool clear, bool blink)
+void clockDisplay::showSettingValDirect(const char* setting, int8_t val, uint16_t flags)
 {
-    showTextDirect(setting, clear);
+    showTextDirect(setting, flags);
 
     int field = (strlen(setting) <= CD_MONTH_DIGS) ? CD_DAY_POS : CD_MIN_POS;
 
-    if(!blink && (val >= 0 && val < 100))
+    if(!(flags & CDT_BLINK) && (val >= 0 && val < 100))
          directCol(field, makeNum(val));
     else
          directCol(field, 0x00);
@@ -1151,7 +1166,7 @@ uint8_t clockDisplay::getLED7NumChar(uint8_t value)
     } else if(value <= 9) {
         return numDigs[value + '0' - 32];
     }
-    return 0;   // blank on invalid
+    return 0;
 }
   
 // Returns bit pattern for provided character for display on 7 segment display
@@ -1183,14 +1198,16 @@ uint16_t clockDisplay::getLEDAlphaChar(uint8_t value)
 
 // Make a 2 digit number from the array and return the segment data
 // (makes leading 0s)
-uint16_t clockDisplay::makeNum(uint8_t num)
+uint16_t clockDisplay::makeNum(uint8_t num, bool nolead0)
 {
     uint16_t segments = 0;
 
     // Each position holds two digits, high byte is 1's, low byte is 10's
 
     segments = getLED7NumChar(num % 10) << 8;     // Place 1's in upper byte
-    segments |= getLED7NumChar(num / 10);         // 10's in lower byte
+    if(!nolead0 || (num / 10)) {
+        segments |= getLED7NumChar(num / 10);     // 10's in lower byte
+    }
 
     return segments;
 }

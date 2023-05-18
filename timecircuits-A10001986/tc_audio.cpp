@@ -357,7 +357,7 @@ static bool mp_play_int(bool force)
 
     mp_buildFileName(fnbuf, playList[mpCurrIdx]);
     if(SD.exists(fnbuf)) {
-        if(force) play_file(fnbuf, 1.0, true, true);
+        if(force) play_file(fnbuf, PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
         return true;
     }
     return false;
@@ -387,7 +387,7 @@ void play_keypad_sound(char key)
 
     if(key) {
         buf[6] = key;
-        play_file(buf, 0.6, true, false, false, false);
+        play_file(buf, PA_CHECKNM, 0.6);
     }
 }
 
@@ -401,14 +401,14 @@ void play_hour_sound(int hour)
     
     sprintf(buf, "/hour-%02d.mp3", hour);
     if(SD.exists(buf)) {
-        play_file(buf, 1.0, false, false, true, false);
+        play_file(buf, PA_ALLOWSD);
         return;
     }
 
     // Check for file so we do not interrupt anything
     // if the file does not exist
     if(SD.exists(hsnd)) {
-        play_file(hsnd, 1.0, false, false, true, false);
+        play_file(hsnd, PA_ALLOWSD);
     }
 }
 
@@ -485,16 +485,16 @@ static int skipID3(char *buf)
     return 0;
 }
 
-void play_file(const char *audio_file, float volumeFactor, bool checkNightMode, bool interruptMusic, bool allowSD, bool dynVolume)
+void play_file(const char *audio_file, uint16_t flags, float volumeFactor)
 {
     char buf[10];
     
     if(audioMute) return;
 
-    if(!interruptMusic) {
-        if(mpActive) return;
-    } else {
+    if(flags & PA_INTRMUS) {
         mpActive = false;
+    } else {
+        if(mpActive) return;
     }
 
     pwrNeedFullNow();
@@ -512,8 +512,8 @@ void play_file(const char *audio_file, float volumeFactor, bool checkNightMode, 
     }
 
     curVolFact = volumeFactor;
-    curChkNM   = checkNightMode;
-    dynVol     = dynVolume;
+    curChkNM   = (flags & PA_CHECKNM) ? true : false;
+    dynVol     = (flags & PA_DYNVOL) ? true : false;
 
     // Reset vol smoothing
     // (user might have turned the pot while no sound was played)
@@ -524,7 +524,7 @@ void play_file(const char *audio_file, float volumeFactor, bool checkNightMode, 
 
     buf[0] = 0;
 
-    if(haveSD && (allowSD || FlashROMode) && mySD0->open(audio_file)) {
+    if(haveSD && ((flags & PA_ALLOWSD) || FlashROMode) && mySD0->open(audio_file)) {
 
         mySD0->read((void *)buf, 10);
         mySD0->seek(skipID3(buf), SEEK_SET);

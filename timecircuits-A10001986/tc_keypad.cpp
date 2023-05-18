@@ -257,10 +257,10 @@ static void keypadEvent(char key, KeyState kstate)
                 playBad = true;
                 break;
             case 0:
-                play_file("/alarmoff.mp3", 1.0, true, false);
+                play_file("/alarmoff.mp3", PA_CHECKNM|PA_ALLOWSD|PA_DYNVOL);
                 break;
             case 1:
-                play_file("/alarmon.mp3", 1.0, true, false);
+                play_file("/alarmon.mp3", PA_CHECKNM|PA_ALLOWSD|PA_DYNVOL);
                 break;
             }
             break;
@@ -268,28 +268,28 @@ static void keypadEvent(char key, KeyState kstate)
             doKey = false;
             if(toggleNightMode()) {
                 manualNightMode = 1;
-                play_file("/nmon.mp3", 1.0, false, false);
+                play_file("/nmon.mp3", PA_ALLOWSD|PA_DYNVOL);
             } else {
                 manualNightMode = 0;
-                play_file("/nmoff.mp3", 1.0, false, false);
+                play_file("/nmoff.mp3", PA_ALLOWSD|PA_DYNVOL);
             }
             manualNMNow = millis();
             break;
         case '3':    // "3" held down -> play audio file "key3.mp3"
             doKey = false;
-            play_file("/key3.mp3", 1.0, true, true);
+            play_file("/key3.mp3", PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
             break;
         case '6':    // "6" held down -> play audio file "key6.mp3"
             doKey = false;
-            play_file("/key6.mp3", 1.0, true, true);
+            play_file("/key6.mp3", PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
             break;
         case '7':    // "7" held down -> re-enable/re-connect WiFi
             doKey = false;
             if(!wifiOnWillBlock()) {
-                play_file("/ping.mp3", 1.0, true, false, true, false);
+                play_file("/ping.mp3", PA_CHECKNM|PA_ALLOWSD);
             } else {
                 if(haveMusic) mpWasActive = mp_stop();
-                play_file("/ping.mp3", 1.0, true, true, true, false);
+                play_file("/ping.mp3", PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD);
                 waitAudioDone();
             }
             // Enable WiFi / even if in AP mode / with CP
@@ -322,7 +322,7 @@ static void keypadEvent(char key, KeyState kstate)
             break;
         }
         if(playBad) {
-            play_file("/baddate.mp3", 1.0, true, false, true, false);
+            play_file("/baddate.mp3", PA_CHECKNM|PA_ALLOWSD);
         }
         break;
         
@@ -500,7 +500,7 @@ void keypad_loop()
         int  strLen = strlen(dateBuffer);
         bool invalidEntry = false;
         bool validEntry = false;
-        bool enterInterruptsMusic = false;
+        uint16_t enterInterruptsMusic = 0;
 
         isEnterKeyPressed = false;
         enterWasPressed = true;
@@ -538,7 +538,7 @@ void keypad_loop()
                     #else
                     sprintf(atxt, "%-8s %02d%02d", alwd, al >> 8, al & 0xff);
                     #endif
-                    destinationTime.showTextDirect(atxt, true, false, true);
+                    destinationTime.showTextDirect(atxt, CDT_CLEAR|CDT_COLON);
                     validEntry = true;
                 } else {
                     #ifdef IS_ACAR_DISPLAY
@@ -551,6 +551,8 @@ void keypad_loop()
                 specDisp = 10;
 
             } else if(code == 44) {
+
+                uint16_t flags = 0;
 
                 if(!ctDown) {
                     #ifdef IS_ACAR_DISPLAY
@@ -570,11 +572,14 @@ void keypad_loop()
                     sprintf(atxt, "%s %02d%02d", tmr, mins, secs);
                     #endif
                     validEntry = true;
+                    flags = CDT_COLON;
                 }
-                destinationTime.showTextDirect(atxt, true, false, validEntry);
+                destinationTime.showTextDirect(atxt, CDT_CLEAR|flags);
                 specDisp = 10;
 
             } else if(code == 77) {
+
+                uint16_t flags = 0;
 
                 if(!remMonth && !remDay) {
                   
@@ -585,10 +590,11 @@ void keypad_loop()
 
                     buildRemString(atxt);
                     validEntry = true;
+                    flags = CDT_COLON;
 
                 }
 
-                destinationTime.showTextDirect(atxt, true, false, validEntry);
+                destinationTime.showTextDirect(atxt, CDT_CLEAR|flags);
                 specDisp = 10;
 
             } else 
@@ -599,6 +605,7 @@ void keypad_loop()
             uint16_t code = atoi(dateBuffer);
             bool rcModeState;
             char atxt[16];
+            uint16_t flags = 0;
             
             if(code == 113 && (!haveRcMode || !haveWcMode)) {
                 code = haveRcMode ? 111 : 112;
@@ -734,8 +741,9 @@ void keypad_loop()
                     sprintf(atxt, "     %3dd%2d%02d", days, hours, minutes);
                     #endif
                     validEntry = true;
+                    flags = CDT_COLON;
                 }
-                destinationTime.showTextDirect(atxt, true, false, validEntry);
+                destinationTime.showTextDirect(atxt, CDT_CLEAR|flags);
                 specDisp = 10;
                 break;
             case 000:
@@ -825,6 +833,7 @@ void keypad_loop()
 
             char atxt[16];
             uint8_t mins;
+            uint16_t flags = 0;
             
             mins = ((dateBuffer[2] - '0') * 10) + (dateBuffer[3] - '0');
             if(!mins) {
@@ -842,9 +851,10 @@ void keypad_loop()
                 #endif
                 ctDown = mins * 60 * 1000;
                 ctDownNow = millis();
+                flags = CDT_COLON;
             }
 
-            destinationTime.showTextDirect(atxt, true, false, (mins != 0));
+            destinationTime.showTextDirect(atxt, CDT_CLEAR|flags);
             specDisp = 10;
             validEntry = true;
 
@@ -878,7 +888,7 @@ void keypad_loop()
 
                         buildRemString(atxt);
 
-                        destinationTime.showTextDirect(atxt, true, false, true);
+                        destinationTime.showTextDirect(atxt, CDT_CLEAR|CDT_COLON);
                         specDisp = 10;
 
                         validEntry = true;
@@ -962,24 +972,24 @@ void keypad_loop()
             // hour and min are checked in clockdisplay
 
             // Normal date/time: ENTER-sound interrupts musicplayer
-            enterInterruptsMusic = true;
+            enterInterruptsMusic = PA_INTRMUS;
 
             switch(special) {
             case 1:
-                destinationTime.showTextDirect(spTxt, true, false, true);
+                destinationTime.showTextDirect(spTxt, CDT_CLEAR|CDT_COLON);
                 specDisp = 1;
                 validEntry = true;
                 break;
             case 2:
-                play_file("/ee2.mp3", 1.0, true, true, false, false);
+                play_file("/ee2.mp3", PA_CHECKNM|PA_INTRMUS);
                 enterDelay = EE2_DELAY;
                 break;
             case 3:
-                play_file("/ee3.mp3", 1.0, true, true, false, false);
+                play_file("/ee3.mp3", PA_CHECKNM|PA_INTRMUS);
                 enterDelay = EE3_DELAY;
                 break;
             case 4:
-                play_file("/ee4.mp3", 1.0, true, true, false, false);
+                play_file("/ee4.mp3", PA_CHECKNM|PA_INTRMUS);
                 enterDelay = EE4_DELAY;
                 break;
             default:
@@ -1041,10 +1051,10 @@ void keypad_loop()
         }
 
         if(validEntry) {
-            play_file("/enter.mp3", 1.0, true, enterInterruptsMusic, true, false);
+            play_file("/enter.mp3", PA_CHECKNM|enterInterruptsMusic|PA_ALLOWSD);
             enterDelay = ENTER_DELAY;
         } else if(invalidEntry) {
-            play_file("/baddate.mp3", 1.0, true, enterInterruptsMusic, true, false);
+            play_file("/baddate.mp3", PA_CHECKNM|enterInterruptsMusic|PA_ALLOWSD);
             enterDelay = BADDATE_DELAY;
         }
 
@@ -1081,7 +1091,7 @@ void keypad_loop()
             timeNow = millis();
             enterWasPressed = true;
             enterDelay = EE1_DELAY3;
-            play_file("/ee1.mp3", 1.0, true, true, false, false);
+            play_file("/ee1.mp3", PA_CHECKNM|PA_INTRMUS);
             break;
         case 4:
         case 11:

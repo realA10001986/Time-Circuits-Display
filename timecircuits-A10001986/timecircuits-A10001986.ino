@@ -99,6 +99,9 @@
 
 /*  Changelog
  *   
+ *  2023/05/18 (A10001986)
+ *    - Internal optimizations (data entry doesn't show leading 0; blink
+ *      logic; Audio, ClockDisplay: Get rid of bools, use flags; etc)
  *  2023/05/17 (A10001986)
  *    - Add yearly/monthly reminder: Type 77MMddhhmm to set a timer that
  *      will play a sound yearly on given date, or, if the month is 00,
@@ -224,7 +227,7 @@
  *    - Revisit WiFi reconnection logic: Support case where WiFi network was inaccessible
  *      during power-up. See comments tc_time.cpp for details.
  *    - Add keypad menu item "TIME SYNC", shows when last time sync (NTP/GPS) was done.
- *  2023/04/06 (A10001986) [CS 2.7 Release]
+ *  2023/04/06 (A10001986) [would have been CS 2.7 Release]
  *    - Audio: Re-do beep; remove all traces of (obsolete) MIXER; Short fx are now 
  *      played without re-scanning the analog input during play-back. Reason: Pot 
  *      tolerance led to audible "distortions" with very short sounds.
