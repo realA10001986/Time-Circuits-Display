@@ -21,7 +21,7 @@
 #define TC_VERSION_EXTRA "05182023"   // 12 chars max
 #endif
 
-#define TC_DBG              // debug output on Serial
+//#define TC_DBG              // debug output on Serial
 
 /*************************************************************************
  ***                     mDNS (Bonjour) support                        ***
@@ -111,7 +111,7 @@
 
 // Custom stuff -----
 #define TWSOUND         // Use A10001986's sound files
-#define TWPRIVATE     // A10001986's private customizations
+//#define TWPRIVATE     // A10001986's private customizations
 
 #ifdef TWPRIVATE
 #undef TC_VERSION
