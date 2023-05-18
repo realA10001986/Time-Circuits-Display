@@ -157,7 +157,7 @@ class clockDisplay {
         uint16_t getLEDAlphaChar(uint8_t value);
         #endif
 
-        uint16_t makeNum(uint8_t num, bool nolead0 = false);
+        uint16_t makeNum(uint8_t num, uint16_t dflags = 0);
 
         void directCol(int col, int segments);  // directly writes column RAM
 

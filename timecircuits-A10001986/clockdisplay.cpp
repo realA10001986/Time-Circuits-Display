@@ -1198,14 +1198,14 @@ uint16_t clockDisplay::getLEDAlphaChar(uint8_t value)
 
 // Make a 2 digit number from the array and return the segment data
 // (makes leading 0s)
-uint16_t clockDisplay::makeNum(uint8_t num, bool nolead0)
+uint16_t clockDisplay::makeNum(uint8_t num, uint16_t dflags)
 {
     uint16_t segments = 0;
 
     // Each position holds two digits, high byte is 1's, low byte is 10's
 
     segments = getLED7NumChar(num % 10) << 8;     // Place 1's in upper byte
-    if(!nolead0 || (num / 10)) {
+    if(!(dflags & CDD_NOLEAD0) || (num / 10)) {
         segments |= getLED7NumChar(num / 10);     // 10's in lower byte
     }
 
