@@ -99,6 +99,10 @@
 
 /*  Changelog
  *   
+ *  2023/05/19 (A10001986)
+ *    - More internal optimizations (reference DateTime instead of copying
+ *      it over function calls; don't read RTC too often, update dt instead,
+ *      etc)
  *  2023/05/18 (A10001986)
  *    - Internal optimizations (data entry doesn't show leading 0; blink
  *      logic; Audio, ClockDisplay: Get rid of bools, use flags; etc)

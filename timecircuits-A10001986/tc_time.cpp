@@ -263,7 +263,7 @@ static int  tzDiff[3]       = { 0, 0, 0 };               // difference between D
 static int  DSTonMins[3]    = { -1, -1, -1 };            // DST-on date/time in minutes since 1/1 00:00 (in non-DST time)
 static int  DSToffMins[3]   = { 600000, 600000, 600000}; // DST-off date/time in minutes since 1/1 00:00 (in DST time)
 
-/* WC stuff */
+// WC stuff
 bool        WcHaveTZ1  = false;
 bool        WcHaveTZ2  = false;
 bool        haveWcMode = false;
@@ -518,10 +518,10 @@ static void myCustomDelay(unsigned int mydel);
 static void myIntroDelay(unsigned int mydel, bool withGPS = true);
 static void waitAudioDoneIntro();
 
-static bool getNTPOrGPSTime(bool weHaveAuthTime);
-static bool getNTPTime(bool weHaveAuthTime);
+static bool getNTPOrGPSTime(bool weHaveAuthTime, DateTime &dt);
+static bool getNTPTime(bool weHaveAuthTime, DateTime &dt);
 #ifdef TC_HAVEGPS
-static bool getGPStime();
+static bool getGPStime(DateTime &dt);
 static bool setGPStime();
 bool        gpsHaveFix();
 static bool gpsHaveTime();
@@ -582,6 +582,7 @@ void time_boot()
  */
 void time_setup()
 {
+    DateTime dt;
     bool rtcbad = false;
     bool tzbad = false;
     bool haveGPS = false;
@@ -782,7 +783,7 @@ void time_setup()
     }
     
     // Set RTC with NTP time
-    if(getNTPTime(true)) {
+    if(getNTPTime(true, dt)) {
 
         // So we have authoritative time now
         haveAuthTime = true;
@@ -807,7 +808,7 @@ void time_setup()
                 #ifdef TC_DBG
                 if(i == 0) Serial.println(F("time_setup: First attempt to read time from GPS"));
                 #endif
-                if(getGPStime()) {
+                if(getGPStime(dt)) {
                     // So we have authoritative time now
                     haveAuthTime = true;
                     lastAuthTime = millis();
@@ -849,8 +850,7 @@ void time_setup()
     }
 
     // Load the time for initial display
-    
-    DateTime dt = myrtcnow();
+    myrtcnow(dt);
 
     // rtcYear: Current year as read from the RTC
     uint16_t rtcYear = dt.year() - presentTime.getYearOffset();
@@ -907,7 +907,7 @@ void time_setup()
         if((newYear != dt.year()) || (yOffs != presentTime.getYearOffset())) {
 
             // Update RTC
-            dt = myrtcnow();
+            myrtcnow(dt);
             rtc.adjust(dt.second(), 
                        dt.minute(), 
                        dt.hour(), 
@@ -918,6 +918,8 @@ void time_setup()
             );
 
             presentTime.setYearOffset(yOffs);
+
+            dt.setYear(newYear-2000);
 
             // Save YearOffs to NVM if change is detected
             if(presentTime.getYearOffset() != presentTime.loadYOffs()) {
@@ -932,8 +934,6 @@ void time_setup()
 
             lastYear = rtcYear;
 
-            // Re-read RTC
-            dt = myrtcnow();
         }
     }
 
@@ -1601,6 +1601,8 @@ void time_loop()
       
         if(y == 0) {
 
+            DateTime dt;
+
             // Set colon
             destinationTime.setColon(true);
             presentTime.setColon(true);
@@ -1623,7 +1625,8 @@ void time_loop()
             bool GPShasTime = false;
             #endif
 
-            DateTime dt = myrtcnow();
+            // Read RTC
+            myrtcnow(dt);
 
             // Re-adjust time periodically through NTP/GPS
             //
@@ -1699,7 +1702,7 @@ void time_loop()
                     // WiFi; no current NTP time stamp will be available. Repeated calls
                     // will eventually succeed.
 
-                    if(getNTPOrGPSTime(haveAuthTime)) {
+                    if(getNTPOrGPSTime(haveAuthTime, dt)) {
 
                         bool wasFakeRTC = false;
                         uint64_t allowedDiff = 61;
@@ -1717,8 +1720,6 @@ void time_loop()
                         lastAuthTime = millis();
                         lastAuthTime64 = lastAuthTime + millisEpoch;
                         authTimeExpired = false;
-
-                        dt = myrtcnow();
 
                         // We have just adjusted, don't do it again below
                         lastYear = dt.year() - presentTime.getYearOffset();
@@ -1829,7 +1830,6 @@ void time_loop()
                     if((rtcYear != dt.year()) || (yOffs != presentTime.getYearOffset())) {
     
                         // Update RTC
-                        dt = myrtcnow();
                         rtc.adjust(dt.second(), 
                                    dt.minute(), 
                                    dt.hour(), 
@@ -1840,6 +1840,8 @@ void time_loop()
                         );
     
                         presentTime.setYearOffset(yOffs);
+
+                        dt.setYear(rtcYear-2000);
     
                         // Save YearOffs to NVM if change is detected
                         if(yOffs != presentTime.loadYOffs()) {
@@ -1849,9 +1851,6 @@ void time_loop()
                                 presentTime.saveYOffs();
                             }
                         }
-
-                        // Re-read RTC
-                        dt = myrtcnow();
     
                     }
                 }
@@ -1902,8 +1901,6 @@ void time_loop()
                             if(oldDST >= 0) {
         
                                 if(myDST == 0) myDiff *= -1;
-        
-                                dt = myrtcnow();
             
                                 rtcTime = dateToMins(dt.year() - presentTime.getYearOffset(),
                                                    dt.month(), dt.day(), dt.hour(), dt.minute());
@@ -1926,6 +1923,9 @@ void time_loop()
                                 );
             
                                 presentTime.setYearOffset(yOffs);
+
+                                dt.set(rtcYear-2000, nmonth, nday, 
+                                       nhour, nminute, dt.second());
         
                             }
         
@@ -1935,8 +1935,6 @@ void time_loop()
                             } else {
                                 presentTime.saveYOffs();
                             }
-        
-                            dt = myrtcnow();
 
                         }
                     }
@@ -1982,7 +1980,7 @@ void time_loop()
             }
             #endif
 
-            // Alarm, count-down timer, Sound-on-the-Hour
+            // Alarm, count-down timer, Sound-on-the-Hour, Reminder
 
             {
                 #ifdef TC_HAVELIGHT
@@ -2591,7 +2589,8 @@ void timeTravel(bool doComplete, bool withSpeedo)
 
     // Calculate time difference between RTC and destination time
 
-    DateTime dt = myrtcnow();
+    DateTime dt;
+    myrtcnow(dt);
     uint64_t rtcTime = dateToMins(dt.year() - presentTime.getYearOffset(),
                                   dt.month(),
                                   dt.day(),
@@ -2749,6 +2748,11 @@ bool checkIfAutoPaused()
     return true;
 }
 
+void endPauseAuto(void)
+{
+    autoPaused = false;
+}
+
 /*
  * Callbacks for fake power switch
  */
@@ -2837,10 +2841,11 @@ void pwrNeedFullNow(bool force)
  * which is interpreted as 2165/165/165 etc
  * Check for this and retry in case.
  */
-DateTime myrtcnow()
+void myrtcnow(DateTime &dt)
 {
-    DateTime dt = rtc.now();
     int retries = 0;
+
+    rtc.now(dt);
 
     while ((dt.month() < 1 || dt.month() > 12 ||
             dt.day()   < 1 || dt.day()   > 31 ||
@@ -2849,15 +2854,13 @@ DateTime myrtcnow()
             retries < 30 ) {
 
             mydelay((retries < 5) ? 50 : 100);
-            dt = rtc.now();
+            rtc.now(dt);
             retries++;
     }
 
     if(retries > 0) {
         Serial.printf("myrtcnow: %d retries needed to read RTC. Check your i2c cabling.\n", retries);
     }
-
-    return dt;
 }
 
 /*
@@ -3069,24 +3072,25 @@ void allOff()
 
 /*
  * Get time from NTP or GPS
+ * and update given DateTime
  * 
  */
-static bool getNTPOrGPSTime(bool weHaveAuthTime)
+static bool getNTPOrGPSTime(bool weHaveAuthTime, DateTime &dt)
 {
     // If GPS has a time and WiFi is off, try GPS first.
     // This avoids a frozen display when WiFi reconnects.
     #ifdef TC_HAVEGPS
     if(gpsHaveTime() && wifiIsOff) {
-        if(getGPStime()) return true;
+        if(getGPStime(dt)) return true;
     }
     #endif
 
     // Now try NTP
-    if(getNTPTime(weHaveAuthTime)) return true;
+    if(getNTPTime(weHaveAuthTime, dt)) return true;
 
     // Again go for GPS, might have older timestamp
     #ifdef TC_HAVEGPS
-    return getGPStime();
+    return getGPStime(dt);
     #else
     return false;
     #endif
@@ -3101,7 +3105,7 @@ static bool getNTPOrGPSTime(bool weHaveAuthTime)
  * called repeatedly within a certain time window, so we can 
  * retry with a later call.
  */
-static bool getNTPTime(bool weHaveAuthTime)
+static bool getNTPTime(bool weHaveAuthTime, DateTime &dt)
 {
     uint16_t newYear;
     int16_t  newYOffs = 0;
@@ -3140,8 +3144,11 @@ static bool getNTPTime(bool weHaveAuthTime)
                        nday,
                        nmonth,
                        newYear - 2000);
-    
+
             presentTime.setYearOffset(newYOffs);
+
+            dt.set(newYear - 2000, nmonth, nday, 
+                   nhour,          nmin,   nsecond);
     
             // Parse TZ and set up DST data for now current year
             if(tzHasDST[0] && (tzForYear[0] != nyear)) {
@@ -3188,7 +3195,7 @@ static bool getNTPTime(bool weHaveAuthTime)
  * 
  */
 #ifdef TC_HAVEGPS
-static bool getGPStime()
+static bool getGPStime(DateTime &dt)
 {
     struct tm timeinfo;
     uint64_t utcMins;
@@ -3249,6 +3256,9 @@ static bool getGPStime()
 
     presentTime.setYearOffset(newYOffs);
 
+    dt.set(newYear - 2000, nmonth,  nday, 
+           nhour,          nminute, nsecond);
+
     // Parse TZ and set up DST data for now current year
     if(tzHasDST[0] && (tzForYear[0] != nyear)) {
         if(!(parseTZ(0, nyear))) {
@@ -3279,6 +3289,7 @@ static bool setGPStime()
     struct tm timeinfo;
     int nyear, nmonth, nday, nhour, nminute;
     uint64_t utcMins;
+    DateTime dt;
 
     if(!useGPS && !useGPSSpeed)
         return false;
@@ -3287,7 +3298,7 @@ static bool setGPStime()
     Serial.println(F("setGPStime() called"));
     #endif
 
-    DateTime dt = myrtcnow();
+    myrtcnow(dt);
 
     // Convert local time to UTC
     utcMins = dateToMins(dt.year() - presentTime.getYearOffset(), dt.month(), dt.day(), 
@@ -4023,7 +4034,7 @@ static void updateDSTFlag(int nisDST)
  * them to display. If a TW for a display is not
  * configured, it does not touch that display.
  */
-void setDatesTimesWC(DateTime dt)
+void setDatesTimesWC(DateTime &dt)
 {
     uint64_t myTimeL; 
     int year = dt.year() - presentTime.getYearOffset();

@@ -24,10 +24,10 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
- * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
@@ -61,36 +61,6 @@
  * 
  * Supports dates in the range from 1 Jan 2000 to 31 Dec 2099.
  ****************************************************************/
-
-/*
- * Constructor for empty DateTime object (1-Jan-2000 00:00)
- */
-DateTime::DateTime()
-{
-    yOff = 0;
-    m = 1;
-    d = 1;
-    hh = 0;
-    mm = 0;
-    ss = 0;
-}
-
-/*
- * Constructor from (year, month, day, hour, minute, second) 
- */
-DateTime::DateTime(uint16_t year, uint8_t month, uint8_t day,
-                   uint8_t  hour, uint8_t min,   uint8_t sec)
-{
-    if(year >= 2000U)
-        year -= 2000U;
-        
-    yOff = year;
-    m = month;
-    d = day;
-    hh = hour;
-    mm = min;
-    ss = sec;
-}
 
 /*
  *  Copy constructor
@@ -241,7 +211,7 @@ void tcRTC::adjust(byte second, byte minute, byte hour, byte dayOfWeek, byte day
 /*
  * Get current date/time
  */
-DateTime tcRTC::now() 
+void tcRTC::now(DateTime &dt) 
 {
     uint8_t buffer[7];
 
@@ -249,22 +219,22 @@ DateTime tcRTC::now()
 
     case RTCT_PCF2129:
         read_bytes(PCF2129_TIME, buffer, 7);
-        return DateTime(bcd2bin(buffer[6]) + 2000U,
-                        bcd2bin(buffer[5] & 0x7F),
-                        bcd2bin(buffer[3]),
-                        bcd2bin(buffer[2]),
-                        bcd2bin(buffer[1]),
-                        bcd2bin(buffer[0] & 0x7F));
+        dt.set(bcd2bin(buffer[6]) + 2000U,
+               bcd2bin(buffer[5] & 0x7F),
+               bcd2bin(buffer[3]),
+               bcd2bin(buffer[2]),
+               bcd2bin(buffer[1]),
+               bcd2bin(buffer[0] & 0x7F));
 
     case RTCT_DS3231:
     default:
         read_bytes(DS3231_TIME, buffer, 7);
-        return DateTime(bcd2bin(buffer[6]) + 2000U,
-                        bcd2bin(buffer[5] & 0x7F),
-                        bcd2bin(buffer[4]),
-                        bcd2bin(buffer[2]),
-                        bcd2bin(buffer[1]),
-                        bcd2bin(buffer[0] & 0x7F));
+        dt.set(bcd2bin(buffer[6]) + 2000U,
+               bcd2bin(buffer[5] & 0x7F),
+               bcd2bin(buffer[4]),
+               bcd2bin(buffer[2]),
+               bcd2bin(buffer[1]),
+               bcd2bin(buffer[0] & 0x7F));
     }
 }
 

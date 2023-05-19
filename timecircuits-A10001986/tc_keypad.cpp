@@ -701,10 +701,11 @@ void keypad_loop()
                     // This does not take DST into account if the next reminder
                     // is due in the following year. Calculation is off by tzDiff
                     // (one hour) if DST borders are crossed.
-                    DateTime dt = myrtcnow();
-                    int yr = dt.year() - presentTime.getYearOffset();
+                    DateTime dt;
+                    myrtcnow(dt);
+                    int  yr = dt.year() - presentTime.getYearOffset();
                     bool sameYear = true;
-                    int locDST = 0;
+                    int  locDST = 0;
                     uint32_t locMins = mins2Date(yr, dt.month(), dt.day(), dt.hour(), dt.minute());
                     uint32_t tgtMins = mins2Date(yr, remMonth ? remMonth : dt.month(), remDay, remHour, remMin);
                     if(tgtMins < locMins) {
@@ -1227,7 +1228,8 @@ bool keypadIsIdle()
 static void setupWCMode()
 {
     if(isWcMode()) {
-        DateTime dt = myrtcnow();
+        DateTime dt;
+        myrtcnow(dt);
         setDatesTimesWC(dt);
     } else if(autoTimeIntervals[autoInterval] == 0 || (timetravelPersistent && checkIfAutoPaused())) {
         // Restore NVM time if either time cycling is off, or

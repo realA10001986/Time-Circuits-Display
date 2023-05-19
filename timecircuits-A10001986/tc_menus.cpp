@@ -331,6 +331,7 @@ void enter_menu()
     int mode_min;
     int y1, yo1, m1, d1, h1, mi1;
     int y2, yo2, m2, d2, h2, mi2;
+    DateTime dt;
 
     pwrNeedFullNow();
 
@@ -360,7 +361,8 @@ void enter_menu()
     departedTime.load();
 
     // Load the RTC time into present time
-    presentTime.setDateTime(myrtcnow());
+    myrtcnow(dt);
+    presentTime.setDateTime(dt);
 
     // Show first menu item
     menuShow(menuItemNum);
@@ -389,12 +391,12 @@ void enter_menu()
         if(displaySet->isRTC()) {
 
             // This is the RTC, get the current date/time
-            DateTime currentTime = myrtcnow();
-            yearSet = currentTime.year() - displaySet->getYearOffset();
-            monthSet = currentTime.month();
-            daySet = currentTime.day();
-            minSet = currentTime.minute();
-            hourSet = currentTime.hour();
+            myrtcnow(dt);
+            yearSet = dt.year() - displaySet->getYearOffset();
+            monthSet = dt.month();
+            daySet = dt.day();
+            minSet = dt.minute();
+            hourSet = dt.hour();
 
         } else {
 
@@ -638,10 +640,6 @@ quitMenu:
     waitForEnterRelease();
 
     // Return dest/dept displays to where they should be
-    if(isWcMode()) {
-        DateTime dt = myrtcnow();
-        setDatesTimesWC(dt);
-    }
     if((autoTimeIntervals[autoInterval] == 0) || checkIfAutoPaused()) {
         if(nonRTCdisplayChanged) {
             if(!isWcMode() || !WcHaveTZ1) destinationTime.load();
@@ -672,18 +670,22 @@ quitMenu:
     resetKeypadState();
 
     // Restore present time
-    presentTime.setDateTimeDiff(myrtcnow());
+    myrtcnow(dt);
+    presentTime.setDateTimeDiff(dt);
+    if(isWcMode()) {
+        setDatesTimesWC(dt);
+    }
 
     // all displays on and show
 
     animate();
 
-    myloop();
-
     // Restore night mode
     destinationTime.setNightMode(desNM);
     presentTime.setNightMode(preNM);
     departedTime.setNightMode(depNM);
+
+    myloop();
 
     // make time_loop immediately re-eval auto-nm
     // unless manual-override
@@ -1646,6 +1648,10 @@ static void doSetAutoInterval()
             saveAutoInterval();
             updateConfigPortalValues();
         }
+
+        // End pause if current setting != off
+        if(autoTimeIntervals[autoInterval]) 
+            endPauseAuto();
 
         mydelay(1000);
 

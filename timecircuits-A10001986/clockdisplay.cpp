@@ -135,6 +135,7 @@ void clockDisplay::onBlink(uint8_t blink)
 // Red displays apparently draw more power
 // and might remain dark after repeatedly
 // calling this.
+#if 0
 void clockDisplay::realLampTest()
 {
     Wire.beginTransmission(_address);
@@ -145,6 +146,7 @@ void clockDisplay::realLampTest()
     }
     Wire.endTransmission();
 }
+#endif
 
 // Turn on some LEDs
 // Used for effects and brightness keypad menu
@@ -246,7 +248,6 @@ void clockDisplay::setRTC(bool rtc)
     _rtc = rtc;
 }
 
-// is this an real time display?
 bool clockDisplay::isRTC()
 {
     return _rtc;
@@ -256,7 +257,7 @@ bool clockDisplay::isRTC()
 
 
 // Set the displayed time with supplied DateTime object, ignores timeDifference
-void clockDisplay::setDateTime(DateTime dt)
+void clockDisplay::setDateTime(DateTime &dt)
 {
     // ATTN: DateTime does not work for years < 2000, > 2099!
 
@@ -268,7 +269,7 @@ void clockDisplay::setDateTime(DateTime dt)
 }
 
 // Set the displayed time with supplied DateTime object with timeDifference
-void clockDisplay::setDateTimeDiff(DateTime dt)
+void clockDisplay::setDateTimeDiff(DateTime &dt)
 {
     uint64_t rtcTime;
     int year, month, day, hour, minute;

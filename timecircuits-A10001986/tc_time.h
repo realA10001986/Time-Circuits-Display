@@ -138,6 +138,7 @@ void timeTravel(bool doComplete, bool withSpeedo = false);
 void resetPresentTime();
 void pauseAuto();
 bool checkIfAutoPaused();
+void endPauseAuto(void);
 
 void enableWcMode(bool onOff);
 bool toggleWcMode();
@@ -153,7 +154,7 @@ void allOff();
 
 bool      isLeapYear(int year);
 int       daysInMonth(int month, int year);
-DateTime  myrtcnow();
+void      myrtcnow(DateTime &dt);
 uint64_t  dateToMins(int year, int month, int day, int hour, int minute);
 void      minsToDate(uint64_t total, int& year, int& month, int& day, int& hour, int& minute);
 uint32_t  getHrs1KYrs(int index);
@@ -177,7 +178,7 @@ bool  parseTZ(int index, int currYear, bool doparseDST = true);
 int   getTzDiff();
 int   timeIsDST(int index, int year, int month, int day, int hour, int mins, int& currTimeMins);
 
-void  setDatesTimesWC(DateTime dt);
+void  setDatesTimesWC(DateTime &dt);
 
 void  ntp_loop();
 void  ntp_short_loop();
