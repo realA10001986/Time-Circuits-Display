@@ -99,6 +99,8 @@
 
 /*  Changelog
  *   
+ *  2023/05/20 (A10001986)
+ *    - Fix beep modes 2 and 3 with time travel
  *  2023/05/19 (A10001986)
  *    - More internal optimizations (reference DateTime instead of copying
  *      it over function calls; don't read RTC too often, update dt instead,

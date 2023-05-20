@@ -57,7 +57,7 @@ class DateTime {
                     hh   = hour; mm = min;   ss = sec;
                 }
                  
-        DateTime(const DateTime &copy);
+        DateTime(const DateTime& copy);
 
         uint16_t year()   const { return 2000U + yOff; }
         uint8_t  month()  const { return m; }
@@ -109,10 +109,10 @@ class tcRTC
 
         bool begin(unsigned long powerupTime);
 
-        void adjust(const DateTime &dt);
+        void adjust(const DateTime& dt);
         void adjust(byte second, byte minute, byte hour, byte dayOfWeek, byte dayOfMonth, byte month, byte year);
 
-        void now(DateTime &dt);
+        void now(DateTime& dt);
 
         void clockOutEnable();
 

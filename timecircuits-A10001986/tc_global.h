@@ -16,9 +16,9 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION "V2.8.0"           // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "MAY192023"  // 13 chars max
+#define TC_VERSION_EXTRA "MAY202023"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "05192023"   // 12 chars max
+#define TC_VERSION_EXTRA "05202023"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -50,6 +50,9 @@
 #define TC_HAVESPEEDO
 #define SP_NUM_TYPES    12  // Number of speedo display types supported
 #define SP_MIN_TYPE     0
+// Uncomment to keep speedo showing "00" when neither temp nor GPS speed 
+// are to be displayed instead of switching it off.
+//#define SP_ALWAYS_ON      
 
 // Uncomment for support of a temperature/humidity sensor (MCP9808, BMx280, 
 // SI7021, SHT40, TMP117, AHT20, HTU31D) connected via i2c. Will be used for 

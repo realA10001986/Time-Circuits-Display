@@ -419,8 +419,9 @@ void play_beep()
        muteBeep         || 
        mpActive         || 
        audioMute        || 
-       presentTime.getNightMode())
+       presentTime.getNightMode()) {
         return;
+    }
 
     pwrNeedFullNow();
 

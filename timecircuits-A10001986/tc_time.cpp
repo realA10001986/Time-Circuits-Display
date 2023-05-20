@@ -173,6 +173,9 @@ static float         ttP0TimeFactor = 1.0;
 #ifdef TC_HAVEGPS
 static unsigned long dispGPSnow = 0;
 #endif
+#ifdef SP_ALWAYS_ON
+static unsigned long dispIdlenow = 0;
+#endif
 #ifdef TC_HAVETEMP
 static int           tempBrightness = DEF_TEMP_BRIGHT;
 #endif
@@ -518,10 +521,10 @@ static void myCustomDelay(unsigned int mydel);
 static void myIntroDelay(unsigned int mydel, bool withGPS = true);
 static void waitAudioDoneIntro();
 
-static bool getNTPOrGPSTime(bool weHaveAuthTime, DateTime &dt);
-static bool getNTPTime(bool weHaveAuthTime, DateTime &dt);
+static bool getNTPOrGPSTime(bool weHaveAuthTime, DateTime& dt);
+static bool getNTPTime(bool weHaveAuthTime, DateTime& dt);
 #ifdef TC_HAVEGPS
-static bool getGPStime(DateTime &dt);
+static bool getGPStime(DateTime& dt);
 static bool setGPStime();
 bool        gpsHaveFix();
 static bool gpsHaveTime();
@@ -531,7 +534,12 @@ static void dispGPSSpeed(bool force = false);
 #ifdef TC_HAVETEMP
 static void updateTemperature(bool force = false);
 #ifdef TC_HAVESPEEDO
-static void dispTemperature(bool force = false);
+static bool dispTemperature(bool force = false);
+#endif
+#endif
+#ifdef TC_HAVESPEEDO
+#ifdef SP_ALWAYS_ON
+static void dispIdleZero(bool force = false);
 #endif
 #endif
 
@@ -856,7 +864,8 @@ void time_setup()
     uint16_t rtcYear = dt.year() - presentTime.getYearOffset();
 
     // lastYear: The year when the RTC was adjusted for the last time.
-    // If the RTC was just updated, everything is in place.
+    // If the RTC was just updated, everything is in place, lastYear
+    // will be saved in the time_loop if changed.
     // Otherwise load from NVM, and make required re-calculations.
     if(haveAuthTime) {
         lastYear = rtcYear;
@@ -929,12 +938,11 @@ void time_setup()
                     presentTime.saveYOffs();
                 }
             }
-            
-            presentTime.saveLastYear(rtcYear);
-
-            lastYear = rtcYear;
 
         }
+
+        presentTime.saveLastYear(rtcYear);
+        lastYear = rtcYear;
     }
 
     // Load to display
@@ -1074,6 +1082,7 @@ void time_setup()
 
         speedo.off();
 
+        #ifdef SP_ALWAYS_ON
         #ifdef FAKE_POWER_ON
         if(!waitForFakePowerButton) {
         #endif
@@ -1082,6 +1091,7 @@ void time_setup()
             speedo.show();
         #ifdef FAKE_POWER_ON
         }
+        #endif
         #endif
 
         #ifdef TC_HAVEGPS
@@ -1314,6 +1324,12 @@ void time_loop()
                     destinationTime.setBrightness(255); // restore brightnesses
                     presentTime.setBrightness(255);     // in case we got switched
                     departedTime.setBrightness(255);    // off during time travel
+                    #ifdef SP_ALWAYS_ON
+                    if(useSpeedo && !useGPSSpeed) {
+                        speedo.setSpeed(0);
+                        speedo.show();
+                    }
+                    #endif
                     #ifdef TC_HAVETEMP
                     updateTemperature(true);
                     #ifdef TC_HAVESPEEDO
@@ -1375,11 +1391,18 @@ void time_loop()
         startup = false;
         #ifdef TC_HAVESPEEDO
         if(useSpeedo && !useGPSSpeed) {
-            speedo.off(); // Yes, off.
             #ifdef TC_HAVETEMP
             updateTemperature(true);
-            dispTemperature(true);
+            if(!dispTemperature(true)) {
             #endif
+                #ifndef SP_ALWAYS_ON
+                speedo.off(); // Yes, off.
+                #else
+                dispIdleZero();
+                #endif
+            #ifdef TC_HAVETEMP
+            }
+            #endif  
         }
         #endif
     }
@@ -1461,7 +1484,13 @@ void time_loop()
         #endif
         if((timeTravelP0Speed <= targetSpeed) || (targetSpeed >= 88)) {
             timeTravelP2 = 0;
-            if(!useGPSSpeed) speedo.off();
+            if(!useGPSSpeed) {
+                #ifndef SP_ALWAYS_ON
+                speedo.off();
+                #else
+                dispIdleZero();
+                #endif
+            }
             #ifdef TC_HAVEGPS
             dispGPSSpeed(true);
             #endif
@@ -1529,7 +1558,13 @@ void time_loop()
     y = digitalRead(SECONDS_IN_PIN);
     if(y == x) {
 
+        #ifdef TC_HAVESPEEDO
+        bool didUpdSpeedo = false;
+        #endif
+
         // less timing critical stuff goes here:
+        // (Will be skipped in current iteration if
+        // seconds change is detected)
 
         // Read GPS, and display GPS speed or temperature
         #ifdef TC_HAVEGPS
@@ -1562,7 +1597,7 @@ void time_loop()
         }   
 
         // Beep auto modes
-        if(beepTimer && (millisNow - beepTimerNow > beepTimeout)) {
+        if(beepTimer && (millis() - beepTimerNow > beepTimeout)) {
             muteBeep = true;
             beepTimer = false;
         }
@@ -1572,7 +1607,15 @@ void time_loop()
         #ifdef TC_HAVETEMP
         updateTemperature();
         #ifdef TC_HAVESPEEDO
-        dispTemperature();
+        didUpdSpeedo = dispTemperature();
+        #endif
+        #endif
+
+        #ifdef TC_HAVESPEEDO
+        #ifdef SP_ALWAYS_ON
+        if(!didUpdSpeedo && !useGPSSpeed) {
+            dispIdleZero();
+        }
         #endif
         #endif
         
@@ -2020,7 +2063,6 @@ void time_loop()
                 }
 
                 // Handle count-down timer
-
                 if(ctDown) {
                     if(millis() - ctDownNow > ctDown) {
                         if( (!(alarmOnOff && (alarmHour == compHour) && (alarmMinute == compMin))) ||
@@ -2050,7 +2092,6 @@ void time_loop()
                 }
 
                 // Handle alarm
-
                 if(alarmOnOff) {
                     if((alarmHour == compHour) && (alarmMinute == compMin) && 
                                   (alarmWDmasks[alarmWeekday] & (1 << weekDay))) {
@@ -2230,7 +2271,7 @@ void time_loop()
                     #else
                     #define JAN011885 "JAN0118851200"
                     #endif
-                    ((rand() % 10) < 4) ? destinationTime.showTextDirect(JAN011885) : destinationTime.show();
+                    ((rand() % 10) < 4) ? destinationTime.showTextDirect(JAN011885, CDT_COLON) : destinationTime.show();
                     if(!(ii % 2)) destinationTime.setBrightnessDirect((1+(rand() % 10)) & 0x0a);
                     if(ii % 2) presentTime.setBrightnessDirect((1+(rand() % 10)) & 0x0b);
                     ((rand() % 10) < 3) ? departedTime.showTextDirect(">ACS2011GIDUW") : departedTime.show();
@@ -2841,7 +2882,7 @@ void pwrNeedFullNow(bool force)
  * which is interpreted as 2165/165/165 etc
  * Check for this and retry in case.
  */
-void myrtcnow(DateTime &dt)
+void myrtcnow(DateTime& dt)
 {
     int retries = 0;
 
@@ -2955,16 +2996,16 @@ static void dispGPSSpeed(bool force)
 }
 #endif
 #ifdef TC_HAVETEMP
-static void dispTemperature(bool force)
+static bool dispTemperature(bool force)
 {
     bool tempNM = speedo.getNightMode();
     bool tempChgNM = false;
 
     if(!dispTemp)
-        return;
+        return false;
 
     if(!FPBUnitIsOn || startup || timeTravelP0 || timeTravelP1 || timeTravelRE || timeTravelP2)
-        return;
+        return false;
 
     tempChgNM = (tempNM != tempOldNM);
     tempOldNM = tempNM;
@@ -2981,6 +3022,24 @@ static void dispTemperature(bool force)
             speedo.on();
         }
         tempDispNow = millis();
+    }
+
+    return true;
+}
+#endif
+#ifdef SP_ALWAYS_ON
+static void dispIdleZero(bool force)
+{
+    if(!FPBUnitIsOn || startup || timeTravelP0 || timeTravelP1 || timeTravelRE || timeTravelP2)
+        return;
+
+    if(force || (millis() - dispIdlenow >= 500)) {
+
+        speedo.setSpeed(0);
+        speedo.show();
+        speedo.on();
+        dispIdlenow = millis();
+
     }
 }
 #endif
@@ -3075,7 +3134,7 @@ void allOff()
  * and update given DateTime
  * 
  */
-static bool getNTPOrGPSTime(bool weHaveAuthTime, DateTime &dt)
+static bool getNTPOrGPSTime(bool weHaveAuthTime, DateTime& dt)
 {
     // If GPS has a time and WiFi is off, try GPS first.
     // This avoids a frozen display when WiFi reconnects.
@@ -3105,15 +3164,12 @@ static bool getNTPOrGPSTime(bool weHaveAuthTime, DateTime &dt)
  * called repeatedly within a certain time window, so we can 
  * retry with a later call.
  */
-static bool getNTPTime(bool weHaveAuthTime, DateTime &dt)
+static bool getNTPTime(bool weHaveAuthTime, DateTime& dt)
 {
     uint16_t newYear;
     int16_t  newYOffs = 0;
 
     if(settings.ntpServer[0] == 0) {
-        #ifdef TC_DBG
-        Serial.println(F("getNTPTime: NTP skipped, no server configured"));
-        #endif
         return false;
     }
 
@@ -3195,7 +3251,7 @@ static bool getNTPTime(bool weHaveAuthTime, DateTime &dt)
  * 
  */
 #ifdef TC_HAVEGPS
-static bool getGPStime(DateTime &dt)
+static bool getGPStime(DateTime& dt)
 {
     struct tm timeinfo;
     uint64_t utcMins;
@@ -4034,7 +4090,7 @@ static void updateDSTFlag(int nisDST)
  * them to display. If a TW for a display is not
  * configured, it does not touch that display.
  */
-void setDatesTimesWC(DateTime &dt)
+void setDatesTimesWC(DateTime& dt)
 {
     uint64_t myTimeL; 
     int year = dt.year() - presentTime.getYearOffset();

@@ -65,7 +65,7 @@
 /*
  *  Copy constructor
  */
-DateTime::DateTime(const DateTime &copy)
+DateTime::DateTime(const DateTime& copy)
     : yOff(copy.yOff), 
       m(copy.m), 
       d(copy.d), 
@@ -143,7 +143,7 @@ bool tcRTC::begin(unsigned long powerupTime)
  *
  * (year: 2000-2099; dayOfWeek: 0=Sun..6=Sat)
  */
-void tcRTC::adjust(const DateTime &dt)
+void tcRTC::adjust(const DateTime& dt)
 {
     adjust(dt.second(),
            dt.minute(),
@@ -211,7 +211,7 @@ void tcRTC::adjust(byte second, byte minute, byte hour, byte dayOfWeek, byte day
 /*
  * Get current date/time
  */
-void tcRTC::now(DateTime &dt) 
+void tcRTC::now(DateTime& dt) 
 {
     uint8_t buffer[7];
 
