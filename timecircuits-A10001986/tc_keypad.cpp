@@ -64,6 +64,8 @@
 #define ENTER_DELAY   600
 #endif
 
+#define SPEC_DELAY   3000
+
 #define EE1_DELAY2   3000
 #define EE1_DELAY3   2000
 #define EE2_DELAY     600
@@ -409,6 +411,11 @@ void enterkeyScan()
 #ifdef EXTERNAL_TIMETRAVEL_IN
     ettKey.scan();    // scan the ext. time travel button
 #endif
+}
+
+static uint8_t read2digs(uint8_t idx)
+{
+   return ((dateBuffer[idx] - '0') * 10) + (dateBuffer[idx+1] - '0');
 }
 
 /*
@@ -790,9 +797,9 @@ void keypad_loop()
             uint8_t aHour, aMin;
             uint16_t num = 0;
 
-            if(dateBuffer[0] == '1' && dateBuffer[1] == '1') {
-                aHour = ((dateBuffer[2] - '0') * 10) + (dateBuffer[3] - '0');
-                aMin  = ((dateBuffer[4] - '0') * 10) + (dateBuffer[5] - '0');
+            if(read2digs(0) == 11) {
+                aHour = read2digs(2);
+                aMin  = read2digs(4);
                 if(aHour <= 23 && aMin <= 59) {
                     const char *alwd = getAlWD(alarmWeekday);
                     if( (alarmHour != aHour)  ||
@@ -808,14 +815,14 @@ void keypad_loop()
                     #else
                     sprintf(atxt, "%-8s %02d%02d", alwd, alarmHour, alarmMinute);
                     #endif
-                    destinationTime.showTextDirect(atxt);
+                    destinationTime.showTextDirect(atxt, CDT_COLON);
                     specDisp = 10;
                     validEntry = true;
                 } else {
                     invalidEntry = true;
                 }
-            } else if(haveMusic && dateBuffer[0] == '8' && dateBuffer[1] == '8' && dateBuffer[2] == '8') {
-                num = ((dateBuffer[3] - '0') * 100) + ((dateBuffer[4] - '0') * 10) + (dateBuffer[5] - '0');
+            } else if(haveMusic && !strncmp(dateBuffer, "888", 3)) {
+                num = ((dateBuffer[3] - '0') * 100) + read2digs(4);
                 num = mp_gotonum(num, mpActive);
                 #ifdef IS_ACAR_DISPLAY
                 sprintf(atxt, "NEXT     %03d", num);
@@ -829,14 +836,13 @@ void keypad_loop()
                 invalidEntry = true;
             }
 
-        } else if(strLen == DATELEN_TIME && 
-                  dateBuffer[0] == '4' && dateBuffer[1] == '4') {
+        } else if(strLen == DATELEN_TIME && read2digs(0) == 44) {
 
             char atxt[16];
             uint8_t mins;
             uint16_t flags = 0;
             
-            mins = ((dateBuffer[2] - '0') * 10) + (dateBuffer[3] - '0');
+            mins = read2digs(2);
             if(!mins) {
                 #ifdef IS_ACAR_DISPLAY
                 sprintf(atxt, "%s OFF", tmr);
@@ -861,16 +867,14 @@ void keypad_loop()
 
         } else if(strLen == DATELEN_REM) {
 
-            if(dateBuffer[0] == '7' && dateBuffer[1] == '7') {
+            if(read2digs(0) == 77) {
 
                 char atxt[16];
 
-                for(int i = 2; i < strLen; i++) dateBuffer[i] -= '0';
-
-                uint8_t sMon  = (dateBuffer[2] * 10) + dateBuffer[3];
-                uint8_t sDay  = (dateBuffer[4] * 10) + dateBuffer[5];
-                uint8_t sHour = (dateBuffer[6] * 10) + dateBuffer[7];
-                uint8_t sMin  = (dateBuffer[8] * 10) + dateBuffer[9];
+                uint8_t sMon  = read2digs(2);
+                uint8_t sDay  = read2digs(4);
+                uint8_t sHour = read2digs(6);
+                uint8_t sMin  = read2digs(8);
 
                 if((sMon <= 12) && (sDay >= 1 && sDay <= 31) && (sHour <= 23) && (sMin <= 59)) {
 
@@ -917,10 +921,8 @@ void keypad_loop()
             Serial.printf("Date entered: [%s]\n", dateBuffer);
             #endif
 
-            for(int i = 0; i < strLen; i++) dateBuffer[i] -= '0';
-
-            temp1 = (dateBuffer[0] * 10) + dateBuffer[1];
-            temp2 = (dateBuffer[2] * 10) + dateBuffer[3];
+            temp1 = read2digs(0);
+            temp2 = read2digs(2);
             
             // Convert dateBuffer to date
             if(strLen == DATELEN_TIME) {
@@ -929,11 +931,10 @@ void keypad_loop()
             } else {
                 _setMonth = temp1;
                 _setDay   = temp2;
-                _setYear  = (dateBuffer[4] * 1000) + (dateBuffer[5] * 100) + 
-                            (dateBuffer[6] *   10) +  dateBuffer[7];
+                _setYear  = ((int)read2digs(4) * 100) + read2digs(6);
                 if(strLen == DATELEN_ALL) {
-                    _setHour = (dateBuffer[8]  * 10) + dateBuffer[9];
-                    _setMin  = (dateBuffer[10] * 10) + dateBuffer[11];
+                    _setHour = read2digs(8);
+                    _setMin  = read2digs(10);
                 }
 
                 // Fix month
@@ -943,11 +944,11 @@ void keypad_loop()
                 // Check if day makes sense for the month entered
                 if(_setDay < 1)     _setDay = 1;
                 if(_setDay > daysInMonth(_setMonth, _setYear)) {
-                    //set to max day in that month
+                    // set to max day in that month
                     _setDay = daysInMonth(_setMonth, _setYear); 
                 }
 
-                // year: 1-9999 allowed. There is no year "0", for crying out loud.
+                // year: There is no year "0", for crying out loud.
                 // Having said that, we allow it anyway, let the people have
                 // the full movie experience.
                 //if(_setYear < 1) _setYear = 1;
@@ -1080,7 +1081,7 @@ void keypad_loop()
             digitalWrite(WHITE_LED_PIN, LOW);
             timeNow = millis();
             enterWasPressed = true;
-            enterDelay = (specDisp == 3) ? EE1_DELAY2 : ENTER_DELAY*5;
+            enterDelay = (specDisp == 3) ? EE1_DELAY2 : SPEC_DELAY;
             break;
         case 3:
             specDisp++;
@@ -1112,6 +1113,8 @@ void keypad_loop()
             }
             #endif
 
+            // Animate display
+
             #ifdef TC_HAVETEMP
             if(isRcMode()) {
 
@@ -1129,7 +1132,8 @@ void keypad_loop()
                         departedTime.showAnimate1();
                     }
                 }
-                mydelay(80);                      // Wait 80ms
+
+                mydelay(80);
 
                 if(!isWcMode() || !WcHaveTZ1) {
                     destinationTime.showTempDirect(tempSens.readLastTemp(), tempUnit);
@@ -1149,12 +1153,12 @@ void keypad_loop()
             } else {
             #endif
 
-                destinationTime.showAnimate1();   // Show all but month
+                destinationTime.showAnimate1();
                 if(needDepTime) {
                     departedTime.showAnimate1();
                 }
-                mydelay(80);                      // Wait 80ms
-                destinationTime.showAnimate2();   // turn on month
+                mydelay(80);
+                destinationTime.showAnimate2();
                 if(needDepTime) {
                     departedTime.showAnimate2();
                 }
@@ -1163,7 +1167,7 @@ void keypad_loop()
             }
             #endif
 
-            destShowAlt = depShowAlt = 0; // Reset TZ-Name-Animation
+            destShowAlt = depShowAlt = 0;     // Reset TZ-Name-Animation
 
             digitalWrite(WHITE_LED_PIN, LOW); // turn off white LED
 
@@ -1368,6 +1372,10 @@ bool toggleNightMode()
     return true;
 }
 
+/*
+ * LEDs (TCD control board 1.3)
+ */
+ 
 void leds_on()
 {
     if(FPBUnitIsOn && !destinationTime.getNightMode()) {

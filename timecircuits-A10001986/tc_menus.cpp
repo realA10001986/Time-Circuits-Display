@@ -144,7 +144,7 @@
  *     - Press ENTER until "BRIGHTNESS" is shown
  *     - Hold ENTER, the displays show all elements, the top-most display 
  *       says "LVL"
- *     - Press ENTER to cycle through the possible levels (1-5)
+ *     - Press ENTER to cycle through the possible levels (1-15)
  *     - Hold ENTER to use current value and proceed to next display
  *     - After the third display, "SAVING" is displayed briefly and the menu 
  *       is left automatically.
@@ -154,7 +154,8 @@
  *     - Hold ENTER to invoke main menu
  *     - Press ENTER until "NET-WORK" is shown
  *     - Hold ENTER, the displays shows the IP address
- *     - Press ENTER to toggle between WiFi status, MAC address and IP address
+ *     - Press ENTER to toggle between WiFi status, MAC address, IP address
+ *       and HomeAssistant/MQTT connection status
  *     - Hold ENTER to leave the menu
  *
  * How to enter dates/times for the three displays / set the RTC:
@@ -173,9 +174,10 @@
  *
  *     By entering a date/time into the present time display, the RTC (real 
  *     time clock) of the device is adjusted, which is useful if you can't 
- *     use NTP for time keeping. The time you entered will be overwritten 
- *     if/when the device has access to network time via NTP, or time from 
- *     GPS. Don't forget to configure your time zone in the Config Portal.
+ *     use NTP or GPS for time synchronization. The time you entered will be
+ *     overwritten if/when the device has access to network time via NTP, or 
+ *     time from GPS. Don't forget to configure your time zone in the Config 
+ *     Portal.
  *     
  *     Note that when entering dates/times into the destination time or last 
  *     time departed displays, the Time-rotation Interval is automatically 
@@ -183,7 +185,7 @@
  *     overwritten by time travels (see above, section How to select the 
  *     Time-rotation Interval").
  *     
- * How to view light/temperature sensor data:
+ * How to view light/temperature/humidity sensor data:
  *
  *     - Hold ENTER to invoke main menu
  *     - Press ENTER until "SENSORS" is shown. If this menu does not appear,
@@ -318,7 +320,7 @@ static void myssdelay(unsigned long mydel);
 static void myloop();
 
 /*
- * enter_menu() - the real thing
+ * enter_menu()
  *
  */
 void enter_menu()
@@ -2055,7 +2057,7 @@ void doCopyAudioFiles()
         // If copy fails, re-format flash FS
         departedTime.showTextDirect("FORMATTING");
         formatFlashFS();            // Format
-        rewriteSecondarySettings(); // Re-write alarm/ip/vol settings
+        rewriteSecondarySettings(); // Re-write alarm/reminder/ip/vol settings
         #ifdef TC_DBG 
         Serial.println("Re-writing general settings");
         #endif

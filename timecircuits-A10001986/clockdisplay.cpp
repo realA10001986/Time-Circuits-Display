@@ -454,7 +454,7 @@ void clockDisplay::setYear(uint16_t yearNum)
     uint16_t seg = 0;
 
     #ifdef TC_HAVEGPS
-    if((_did == DISP_PRES) && gpsHaveFix()) 
+    if((_did == DISP_PRES) && gpsHaveFix())
         seg = 0x8000;
     #endif
     

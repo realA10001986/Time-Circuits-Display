@@ -1297,7 +1297,7 @@ void time_setup()
  */
 void time_loop()
 {
-    unsigned long millisNow = millis();    
+    unsigned long millisNow = millis();
     #ifdef TC_DBG
     int dbgLastMin;
     #endif
@@ -1562,6 +1562,8 @@ void time_loop()
         bool didUpdSpeedo = false;
         #endif
 
+        millisNow = millis();
+
         // less timing critical stuff goes here:
         // (Will be skipped in current iteration if
         // seconds change is detected)
@@ -1569,8 +1571,8 @@ void time_loop()
         // Read GPS, and display GPS speed or temperature
         #ifdef TC_HAVEGPS
         if(useGPS || useGPSSpeed) {
-            if(millis() - lastLoopGPS >= GPSupdateFreq) {
-                lastLoopGPS = millis();
+            if(millisNow - lastLoopGPS >= GPSupdateFreq) {
+                lastLoopGPS = millisNow;
                 // call loop with doDelay true; delay not needed but
                 // this causes a call of audio_loop() which is good
                 myGPS.loop(true);
@@ -1597,7 +1599,7 @@ void time_loop()
         }   
 
         // Beep auto modes
-        if(beepTimer && (millis() - beepTimerNow > beepTimeout)) {
+        if(beepTimer && (millisNow - beepTimerNow > beepTimeout)) {
             muteBeep = true;
             beepTimer = false;
         }
@@ -1620,8 +1622,8 @@ void time_loop()
         #endif
         
         #ifdef TC_HAVELIGHT
-        if(useLight && (millis() - lastLoopLight >= 3000)) {
-            lastLoopLight = millis();
+        if(useLight && (millisNow - lastLoopLight >= 3000)) {
+            lastLoopLight = millisNow;
             lightSens.loop();
         }
         #endif
@@ -2225,7 +2227,7 @@ void time_loop()
 
         } else {
 
-            unsigned long millisNow = millis();
+            millisNow = millis();
 
             destinationTime.setColon(false);
             presentTime.setColon(false);

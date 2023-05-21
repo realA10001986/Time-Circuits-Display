@@ -8,7 +8,7 @@
  * Settings & file handling
  * 
  * Main and IP settings are stored on flash FS only
- * Alarm and volume either on SD or on flash FS
+ * Alarm, Reminder and volume either on SD or on flash FS
  * Music Folder number always on SD
  *
  * -------------------------------------------------------------------

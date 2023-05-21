@@ -37,6 +37,8 @@
  * - This firmware requires the "ESP32-Arduino" framework. To install this framework, 
  *   in the Arduino IDE, go to "File" > "Preferences" and add the URL   
  *   https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+ *   - or (if the URL above does not work) -
+ *   https://espressif.github.io/arduino-esp32/package_esp32_index.json
  *   to "Additional Boards Manager URLs". The list is comma-separated.
  *   
  * - Go to "Tools" > "Board" > "Boards Manager", then search for "esp32", and install 
@@ -70,7 +72,8 @@
  * - Install required libraries. In the Arduino IDE, go to "Tools" -> "Manage Libraries" 
  *   and install the following libraries:
  *   - ESP8266Audio: https://github.com/earlephilhower/ESP8266Audio
- *     (1.9.7 and later for esp32-arduino 2.x.x; 1.9.5 for 1.0.6 and below)
+ *     (1.9.7 and later for esp32-arduino 2.x.x; 
+ *      1.9.5 for esp32-arduino 1.0.6 and below)
  *   - WifiManager (tablatronix, tzapu) https://github.com/tzapu/WiFiManager
  *     (Tested with 2.0.13beta and 2.0.15-rc1)
  *   - ArduinoJSON >= 6.19: https://arduinojson.org/v6/doc/installation/
@@ -91,14 +94,12 @@
  *     "CANCEL" and "PROCEED". Choose "PROCEED" and hold ENTER for 2 seconds.
  *   - The audio files will now be installed. When finished, the clock will reboot.
  *   - After reboot, power-down the clock and remove the SD card.
- *
- * Detailed installation and compilation instructions, while a bit outdated in 
- * library requirements, are also here and additionally cover PlatformIO:
- * https://github.com/CircuitSetup/Time-Circuits-Display/wiki/9.-Programming-&-Upgrading-the-Firmware-(ESP32)
  */
 
 /*  Changelog
  *   
+ *  2023/05/21 (A10001986)
+ *    - Minor optimizations
  *  2023/05/20 (A10001986)
  *    - Fix beep modes 2 and 3 with time travel
  *  2023/05/19 (A10001986)
@@ -131,7 +132,7 @@
  *    - Music Player: Fix going to song# when player is off
  *    - MQTT: Add async ping to server before trying to connect. This avoids
  *      "frozen" displays and audio interruptions but requires that the server
- *      actually answers to ping (ICMP) requests.
+ *      properly answers to ping (ICMP) requests.
  *  2023/05/11 (A10001986)
  *    - MQTT: Make (re)connection/subscription async on MQTT protocol level
  *    - MQTT: Limit re-connection attempts.
