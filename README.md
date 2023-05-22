@@ -258,7 +258,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
     </tr>
     <tr>
      <td align="center">88&#9166;</td>
-     <td align="center"><a href="#the-music-player">Music Player</a>: Show currently played</td>
+     <td align="center"><a href="#the-music-player">Music Player</a>: Show currently played song number</td>
     </tr>
     <tr>
      <td align="center">888&#9166;</td>
@@ -410,6 +410,8 @@ The reminder is similar to the alarm, the difference being that the reminder is 
 To program a yearly reminder, enter 77mmddhhMM and press ENTER. For example: 7705150900 sets the reminder to May 15 9am. Now a reminder sound will play every year on May 15 at 9am.
 
 To program a monthly reminder, enter 7700ddhhMM and press ENTER. For example: 7700152300 sets the reminder to the 15th of each month, at 11pm.
+
+You can also leave out the hhMM part; in that case the time remains unchanged from a previous setting, unless both hour and minute were 0 (zero), in which case the reminder time is set to 9am.
 
 Note that, as usual, all fields consist of two digits, and hours are entered in 24-hour notation.
 
