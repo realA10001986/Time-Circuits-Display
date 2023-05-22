@@ -533,6 +533,7 @@ void keypad_loop()
         } else if(strLen == DATELEN_ALSH) {
 
             char atxt[16];
+            uint16_t flags = 0;
             uint8_t code = atoi(dateBuffer);
             
             if(code == 11) {
@@ -545,21 +546,20 @@ void keypad_loop()
                     #else
                     sprintf(atxt, "%-8s %02d%02d", alwd, al >> 8, al & 0xff);
                     #endif
-                    destinationTime.showTextDirect(atxt, CDT_CLEAR|CDT_COLON);
-                    validEntry = true;
+                    flags = CDT_COLON;
                 } else {
                     #ifdef IS_ACAR_DISPLAY
-                    destinationTime.showTextDirect("ALARM  UNSET");
+                    strcpy(atxt, "ALARM  UNSET");
                     #else
-                    destinationTime.showTextDirect("ALARM   UNSET");
+                    strcpy(atxt, "ALARM   UNSET");
                     #endif
-                    invalidEntry = true;
                 }
+
+                destinationTime.showTextDirect(atxt, CDT_CLEAR|flags);
                 specDisp = 10;
+                validEntry = true;
 
             } else if(code == 44) {
-
-                uint16_t flags = 0;
 
                 if(!ctDown) {
                     #ifdef IS_ACAR_DISPLAY
@@ -567,7 +567,6 @@ void keypad_loop()
                     #else
                     sprintf(atxt, "%s  OFF", tmr);
                     #endif
-                    invalidEntry = true;
                 } else {
                     unsigned long el = ctDown - (millis()-ctDownNow);
                     uint8_t mins = el/(1000*60);
@@ -578,33 +577,45 @@ void keypad_loop()
                     #else
                     sprintf(atxt, "%s %02d%02d", tmr, mins, secs);
                     #endif
-                    validEntry = true;
                     flags = CDT_COLON;
                 }
+
                 destinationTime.showTextDirect(atxt, CDT_CLEAR|flags);
                 specDisp = 10;
+                validEntry = true;
 
             } else if(code == 77) {
 
                 uint16_t flags = 0;
 
                 if(!remMonth && !remDay) {
-                  
                     buildRemOffString(atxt);
-                    invalidEntry = true;
-
                 } else {
-
                     buildRemString(atxt);
-                    validEntry = true;
                     flags = CDT_COLON;
-
                 }
 
                 destinationTime.showTextDirect(atxt, CDT_CLEAR|flags);
                 specDisp = 10;
+                validEntry = true;
 
-            } else 
+            } else if(code == 88 && haveMusic) {
+
+                if(mpActive) {
+                    #ifdef IS_ACAR_DISPLAY
+                    sprintf(atxt, "PLAYING  %03d", mp_get_currently_playing());
+                    #else
+                    sprintf(atxt, "PLAYING   %03d", mp_get_currently_playing());
+                    #endif
+                } else {
+                    strcpy(atxt, "STOPPED");
+                }
+
+                destinationTime.showTextDirect(atxt, CDT_CLEAR);
+                specDisp = 10;
+                validEntry = true;
+              
+            } else
                 invalidEntry = true;
 
         } else if(strLen == DATELEN_CODE) {
@@ -701,13 +712,13 @@ void keypad_loop()
                 if(!remMonth && !remDay) {
                   
                     buildRemOffString(atxt);
-                    invalidEntry = true;
                     
                 } else {
                   
                     // This does not take DST into account if the next reminder
                     // is due in the following year. Calculation is off by tzDiff
-                    // (one hour) if DST borders are crossed.
+                    // (one hour) if DST borders are crossed for an odd number of
+                    // times.
                     DateTime dt;
                     myrtcnow(dt);
                     int  yr = dt.year() - presentTime.getYearOffset();
@@ -748,11 +759,11 @@ void keypad_loop()
                     #else
                     sprintf(atxt, "     %3dd%2d%02d", days, hours, minutes);
                     #endif
-                    validEntry = true;
                     flags = CDT_COLON;
                 }
                 destinationTime.showTextDirect(atxt, CDT_CLEAR|flags);
                 specDisp = 10;
+                validEntry = true;
                 break;
             case 000:
             case 001:
@@ -767,6 +778,7 @@ void keypad_loop()
                 destinationTime.showTextDirect(atxt);
                 enterDelay = ENTER_DELAY;
                 specDisp = 10;
+                // Play no sound, ie no xxvalidEntry
                 break;
             default:
                 invalidEntry = true;
@@ -794,10 +806,12 @@ void keypad_loop()
         } else if(strLen == DATELEN_QALM) {
 
             char atxt[16];
-            uint8_t aHour, aMin;
-            uint16_t num = 0;
+            uint8_t code = read2digs(0);
 
-            if(read2digs(0) == 11) {
+            if(code == 11) {
+
+                uint8_t aHour, aMin;
+
                 aHour = read2digs(2);
                 aMin  = read2digs(4);
                 if(aHour <= 23 && aMin <= 59) {
@@ -821,8 +835,44 @@ void keypad_loop()
                 } else {
                     invalidEntry = true;
                 }
+
+            } else if(code == 77) {
+
+                uint8_t sMon  = read2digs(2);
+                uint8_t sDay  = read2digs(4);
+
+                if((sMon <= 12) && (sDay >= 1 && sDay <= 31)) {
+
+                    if(!sMon || sDay <= daysInMonth(sMon, 2000)) {
+
+                        if( (remMonth != sMon) || (remDay != sDay) ) {
+                        
+                            remMonth = sMon;
+                            remDay = sDay;
+
+                            // If current hr and min are zero
+                            // assume unset, set default 9am.
+                            if(!remHour && !remMin) {
+                                remHour = 9;
+                            }
+                            
+                            saveReminder();
+                        }
+
+                        buildRemString(atxt);
+
+                        destinationTime.showTextDirect(atxt, CDT_CLEAR|CDT_COLON);
+                        specDisp = 10;
+
+                        validEntry = true;
+                    }
+                } 
+
+                invalidEntry = !validEntry; 
+            
             } else if(haveMusic && !strncmp(dateBuffer, "888", 3)) {
-                num = ((dateBuffer[3] - '0') * 100) + read2digs(4);
+
+                uint16_t num = ((dateBuffer[3] - '0') * 100) + read2digs(4);
                 num = mp_gotonum(num, mpActive);
                 #ifdef IS_ACAR_DISPLAY
                 sprintf(atxt, "NEXT     %03d", num);
@@ -832,8 +882,11 @@ void keypad_loop()
                 destinationTime.showTextDirect(atxt);
                 specDisp = 10;
                 validEntry = true;
+
             } else {
+
                 invalidEntry = true;
+
             }
 
         } else if(strLen == DATELEN_TIME && read2digs(0) == 44) {
@@ -937,18 +990,18 @@ void keypad_loop()
                     _setMin  = read2digs(10);
                 }
 
-                // Fix month
+                // Check month
                 if (_setMonth < 1)  _setMonth = 1;
                 if (_setMonth > 12) _setMonth = 12;
 
-                // Check if day makes sense for the month entered
+                // Check day
                 if(_setDay < 1)     _setDay = 1;
                 if(_setDay > daysInMonth(_setMonth, _setYear)) {
                     // set to max day in that month
                     _setDay = daysInMonth(_setMonth, _setYear); 
                 }
 
-                // year: There is no year "0", for crying out loud.
+                // Year: There is no year "0", for crying out loud.
                 // Having said that, we allow it anyway, let the people have
                 // the full movie experience.
                 //if(_setYear < 1) _setYear = 1;
@@ -971,7 +1024,7 @@ void keypad_loop()
                 }
             }
 
-            // hour and min are checked in clockdisplay
+            // Hour and min are checked in clockdisplay
 
             // Normal date/time: ENTER-sound interrupts musicplayer
             enterInterruptsMusic = PA_INTRMUS;
@@ -1058,6 +1111,10 @@ void keypad_loop()
         } else if(invalidEntry) {
             play_file("/baddate.mp3", PA_CHECKNM|enterInterruptsMusic|PA_ALLOWSD);
             enterDelay = BADDATE_DELAY;
+            if(!enterInterruptsMusic && mpActive) {
+                destinationTime.showTextDirect("ERROR", CDT_CLEAR);
+                specDisp = 10;
+            }
         }
 
         // Prepare for next input

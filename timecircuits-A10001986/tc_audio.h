@@ -62,6 +62,7 @@ void mp_prev(bool forcePlay = false);
 int  mp_gotonum(int num, bool force = false);
 void mp_makeShuffle(bool enable);
 bool mp_checkForFolder(int num);
+int  mp_get_currently_playing();
 
 // By default, use the volume knob
 #define DEFAULT_VOLUME 255

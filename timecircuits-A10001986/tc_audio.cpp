@@ -81,6 +81,7 @@ static uint16_t maxMusic = 0;
 static uint16_t *playList = NULL;
 static int  mpCurrIdx = 0;
 static bool mpShuffle = false;
+static uint16_t currPlaying = 0;
 
 static const float volTable[20] = {
     0.00, 0.02, 0.04, 0.06,
@@ -358,9 +359,18 @@ static bool mp_play_int(bool force)
     mp_buildFileName(fnbuf, playList[mpCurrIdx]);
     if(SD.exists(fnbuf)) {
         if(force) play_file(fnbuf, PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
+        currPlaying = playList[mpCurrIdx];
         return true;
     }
     return false;
+}
+
+int mp_get_currently_playing()
+{
+    if(!haveMusic || !mpActive)
+        return -1;
+
+    return currPlaying;
 }
 
 static void mp_buildFileName(char *fnbuf, int num)

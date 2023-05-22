@@ -98,41 +98,46 @@
 
 /*  Changelog
  *   
+ *  2023/05/22 (A10001986)
+ *    - 77mmdd sets reminder to month/day, leaving time unchanged (unless hr and min are 
+ *      zero, in which case it sets the reminder to 9am)  
+ *    - MusicPlayer: 88 shows currently played song
+ *    - 11, 44, 77: If alarm/timer/reminder is unset/off, play regular enter sound, not
+ *      the "error" one
+ *    - If Music Player is active, show "ERROR" for bad/invalid input (since the player
+ *      should not be interrupted) (Exception: Programming a Destination Time)
  *  2023/05/21 (A10001986)
  *    - Minor optimizations
  *  2023/05/20 (A10001986)
  *    - Fix beep modes 2 and 3 with time travel
  *  2023/05/19 (A10001986)
- *    - More internal optimizations (reference DateTime instead of copying
- *      it over function calls; don't read RTC too often, update dt instead,
- *      etc)
+ *    - More internal optimizations (reference DateTime instead of copying it over 
+ *      function calls; don't read RTC too often, update dt instead, etc)
  *  2023/05/18 (A10001986)
- *    - Internal optimizations (data entry doesn't show leading 0; blink
- *      logic; Audio, ClockDisplay: Get rid of bools, use flags; etc)
+ *    - Internal optimizations (data entry doesn't show leading 0; blink logic; Audio, 
+ *      ClockDisplay: Get rid of bools, use flags; etc)
  *  2023/05/17 (A10001986)
- *    - Add yearly/monthly reminder: Type 77MMddhhmm to set a timer that
- *      will play a sound yearly on given date, or, if the month is 00,
- *      every month on given day. 77 displays current reminder, 770 deletes
- *      it, 777 displays the days/hours/mins until the next reminder.
+ *    - Add yearly/monthly reminder: Type 77mmddhhMM to set a timer that will play a 
+ *      sound yearly on given date, or, if the month is 00, every month on given day. 
+ *      77 displays current reminder, 770 deletes it, 777 displays the days/hours/mins 
+ *      until the next reminder.
  *      Requires new sound-pack. Reminder always based on real local time.
- *    - Night mode no longer adheres to "Alarm base is real present time"
- *      setting. It is ALWAYS based on real present time now.
- *    - Display colon in special displays where hours and minutes are used
- *      as such.
+ *    - Night mode no longer adheres to "Alarm base is real present time" setting. It 
+ *      is ALWAYS based on real present time now.
+ *    - Display colon in special displays where hours and minutes are used as such.
  *    - Fix ee1-regression
  *  2023/05/15 (A10001986)
  *    - Allow both world clock and room condition mode at the same time.
- *      If both on, only temp is shown, either in red display (if no
- *      TZ for red display was configured) or in yellow display (regardless
- *      of a TZ for that display).
+ *      If both on, only temp is shown, either in red display (if no TZ for red display 
+ *      was configured) or in yellow display (regardless of a TZ for that display).
  *      113+ENTER toggles both RC/WC-mode (synchronously).
  *  2023/05/13 (A10001986)
  *    - MQTT: Increase reconnect-attempt-interval over time
  *  2023/05/12 (A10001986)
  *    - Music Player: Fix going to song# when player is off
- *    - MQTT: Add async ping to server before trying to connect. This avoids
- *      "frozen" displays and audio interruptions but requires that the server
- *      properly answers to ping (ICMP) requests.
+ *    - MQTT: Add async ping to server before trying to connect. This avoids "frozen" 
+ *      displays and audio interruptions but requires that the server properly answers 
+ *      to ping (ICMP) requests.
  *  2023/05/11 (A10001986)
  *    - MQTT: Make (re)connection/subscription async on MQTT protocol level
  *    - MQTT: Limit re-connection attempts.
