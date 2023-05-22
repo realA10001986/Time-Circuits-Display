@@ -229,6 +229,10 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="center"><a href="#yearlymonthly-reminder">Reminder</a>: Delete reminder</td>
     </tr>
     <tr>
+     <td align="center">77mmdd&#9166;</td>
+     <td align="center"><a href="#yearlymonthly-reminder">Reminder</a>: Program reminder</td>
+    </tr>
+    <tr>
      <td align="center">77mmddhhMM&#9166;</td>
      <td align="center"><a href="#yearlymonthly-reminder">Reminder</a>: Program reminder</td>
     </tr>
@@ -251,6 +255,10 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
     <tr>
      <td align="center">555&#9166;</td>
      <td align="center"><a href="#the-music-player">Music Player</a>: Shuffle on</td>
+    </tr>
+    <tr>
+     <td align="center">88&#9166;</td>
+     <td align="center"><a href="#the-music-player">Music Player</a>: Show currently played</td>
     </tr>
     <tr>
      <td align="center">888&#9166;</td>
