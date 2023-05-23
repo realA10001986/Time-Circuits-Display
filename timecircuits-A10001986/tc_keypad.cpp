@@ -700,6 +700,17 @@ void keypad_loop()
                     invalidEntry = true;
                 }
                 break;
+            case 440:
+                #ifdef IS_ACAR_DISPLAY
+                sprintf(atxt, "%s OFF", tmr);
+                #else
+                sprintf(atxt, "%s  OFF", tmr);
+                #endif
+                destinationTime.showTextDirect(atxt);
+                ctDown = 0;
+                specDisp = 10;
+                validEntry = true;
+                break;
             case 770:
                 remMonth = remDay = remHour = remMin = 0;
                 saveReminder();

@@ -98,12 +98,14 @@
 
 /*  Changelog
  *   
- *  2023/05/22 (A10001986)
- *    - 77mmdd sets reminder to month/day, leaving time unchanged (unless hr and min are 
- *      zero, in which case it sets the reminder to 9am)  
- *    - MusicPlayer: 88 shows currently played song
- *    - 11, 44, 77: If alarm/timer/reminder is unset/off, play regular enter sound, not
- *      the "error" one
+ *  2023/05/23 
+ *    - Keypad: 440ENTER deletes timer
+ *  2023/05/22 (A10001986) [released by CS as 2.8]
+ *    - 77mmddENTER sets reminder to month/day, leaving time unchanged (unless hr and 
+ *      min are zero, in which case it sets the reminder to 9am)  
+ *    - MusicPlayer: 88ENTER shows currently played song
+ *    - Keypad: 11, 44, 77: If alarm/timer/reminder is unset/off, play regular enter
+ *      sound, not the "error" one
  *    - If Music Player is active, show "ERROR" for bad/invalid input (since the player
  *      should not be interrupted) (Exception: Programming a Destination Time)
  *  2023/05/21 (A10001986)
