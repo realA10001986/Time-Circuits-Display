@@ -15,13 +15,13 @@ Features include
 - Movie-accurate [time travel](#time-travel) function with *Present time* always running as a clock (as opposed to being stale)
 - ["Return from Time Travel"](#time-travel): Return to real present time easily
 - ["Decorative mode"](#time-cycling): Movie-accurate time travel times displayed in *destination time* and *last time departed* displays, and cycled in configurable interval
-- &#x1F195; [World Clock mode](#world-clock-mode): Show current time in different time zones in *destination time* and/or *last time departed* displays
+- [World Clock mode](#world-clock-mode): Show current time in different time zones in *destination time* and/or *last time departed* displays
 - [Alarm function](#how-to-set-up-the-alarm): Daily alarms, with weekday selection
 - [Count-down timer](#count-down-timer): Count down from up to 99 minutes
-- &#x1F195; [Yearly/monthly reminder](#yearlymonthly-reminder): Get a yearly or monthly acoustic reminder
+- [Yearly/monthly reminder](#yearlymonthly-reminder): Get a yearly or monthly acoustic reminder
 - [Night mode](#night-mode): Dim or switch off displays on schedule, manually or sensor-controlled.
 - [Music player](#the-music-player): Play mp3 files located on an SD card
-- &#x1F195; [Home Assistant](#home-assistant--mqtt) (MQTT 3.1.1) support
+- [Home Assistant](#home-assistant--mqtt) (MQTT 3.1.1) support
 - [SD card](#sd-card) support for custom audio files for effects, and music for the Music Player
 - Advanced network-accessible [Config Portal](#the-config-portal) for setup with mDNS support for easy access (http://timecircuits.local, hostname configurable)
 - [Keypad-controlled menu](#the-keypad-menu) for adjusting various settings and viewing network status via the three displays
@@ -29,7 +29,7 @@ Features include
 - [Room condition mode](#room-condition-mode-temperaturehumidity-sensor): Display temperature and humidity instead of destination/departed time (requires suitable sensor)
 - Optional power-up intro
 - Optional [sound on the hour](#additional-custom-sounds)
-- Optional [beep](#beep-on-the-second) every second (&#x1F195; 4 modes)
+- Optional [beep](#beep-on-the-second) every second (4 modes)
 - Support for external [fake "power switch"](#fake-power-switch)
 - Support for external display acting as [Speedometer](#speedometer)
 - Support for external [GPS receiver](#gps-receiver), used as time source, and for [speed](#gps-for-speed) to be displayed on speedo display
