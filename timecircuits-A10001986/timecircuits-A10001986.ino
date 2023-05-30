@@ -91,6 +91,8 @@
 /*  Changelog
  *   
  *  2023/05/30 (A10001986)
+ *    - MusicPlayer: 55ENTER shows currently played song (changed this from 88 to avoid
+ *      going to song 0 by accident)
  *    - MusicPlayer: Add "auto-renamer". User can now put his mp3-files with original
  *      names (eg "Dire Straits - Money For Nothing.mp3") in the musicX folders on the 
  *      SD and they will be automatically renamed to "000.mp3" and so on. File names are 
@@ -419,7 +421,7 @@
  *    - Changed read logic for Si7021 and SHT4x; fix typo in TMP117 code path
  *    - Run MCP9808 in higher resolution mode, scrap sensor shut-down
  *    - Restrict allowed chars in NTP server and hostname fields in Config Portal
- *    - Updated WiFiManager to 2.0.15-rc1 in pre-compiled binary
+ *    * Updated WiFiManager to 2.0.15-rc1 in pre-compiled binary
  *  2022/12/18 (A10001986)
  *    - Audio files installer in keypad menu: If copy fails, re-format flash FS,
  *      re-write settings, and retry copy. (Same can be done by writing "FORMAT"

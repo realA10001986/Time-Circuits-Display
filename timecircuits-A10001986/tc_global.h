@@ -109,7 +109,7 @@
 //#define GTE_KEYPAD 
 
 // Use SPIFFS (if defined) or LittleFS (if undefined; esp32-arduino >= 2.x)
-// I stick to SPIFFS for now.
+// I stick with SPIFFS for now.
 #define USE_SPIFFS
 
 // Custom stuff -----

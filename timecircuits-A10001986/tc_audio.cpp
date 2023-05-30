@@ -142,7 +142,7 @@ void audio_setup()
     analogReadResolution(POT_RESOLUTION);
     analogSetWidth(POT_RESOLUTION);
 
-    out = new AudioOutputI2S(0, 0, 32, 0);
+    out = new AudioOutputI2S(0, AudioOutputI2S::EXTERNAL_I2S, 32, AudioOutputI2S::APLL_DISABLE);
     out->SetOutputModeMono(true);
     out->SetPinout(I2S_BCLK_PIN, I2S_LRCLK_PIN, I2S_DIN_PIN);
 
@@ -456,22 +456,22 @@ int mp_checkForFolder(int num)
 // - not a hidden/exAtt file,
 // - filename not already "/musicX/ddd.mp3"
 static bool mpren_checkFN(const char *buf)
-{   
+{      
     // Hidden or macOS exAttr file, ignore
-    if(buf[8+0] == '.') return true;
+    if(buf[0] == '.') return true;
     
-    if(strlen(buf) != 8+7) return false;
+    if(strlen(buf) != 7) return false;
 
-    if(buf[8+3+0] != '.' || buf[8+3+3] != '3')
+    if(buf[3+0] != '.' || buf[3+3] != '3')
         return false;
-    if(buf[8+3+1] != 'm' && buf[8+3+1] != 'M')
+    if(buf[3+1] != 'm' && buf[3+1] != 'M')
         return false;
-    if(buf[8+3+2] != 'p' && buf[8+3+2] != 'P')
+    if(buf[3+2] != 'p' && buf[3+2] != 'P')
         return false;
 
-    if(buf[8+0] < '0' || buf[8+0] > '9' ||
-       buf[8+1] < '0' || buf[8+1] > '9' ||
-       buf[8+2] < '0' || buf[8+2] > '9')
+    if(buf[0] < '0' || buf[0] > '9' ||
+       buf[1] < '0' || buf[1] > '9' ||
+       buf[2] < '0' || buf[2] > '9')
         return false;
 
     return true;
@@ -521,14 +521,20 @@ static bool mp_renameFilesInDir(bool isSetup)
     char fnbuf[20];
     char fnbuf3[32];
     char fnbuf2[256];
+    char **a, **d;
     char *c;
-    char **d;
     int num = musFolderNum;
     int count = 0;
     int fileNum = 0;
     int strLength;
     int nameOffs = 8;
-    unsigned long sz, bufSize = 1000 * 64;
+    int allocBufs = 1;
+    int allocBufIdx = 0;
+    const unsigned long bufSizes[8] = {
+        16384, 16384, 8192, 8192, 8192, 8192, 8192, 4096 
+    };
+    char *bufs[8] = { NULL };
+    unsigned long sz, bufSize;
     bool stopLoop = false;
     bool hls = false;
 #ifdef HAVE_GETNEXTFILENAME
@@ -574,33 +580,29 @@ static bool mp_renameFilesInDir(bool isSetup)
     }
         
     // Allocate pointer array
-    char **a = (char **)malloc(1000*sizeof(char *));
-    if(!a) {
+    if(!(a = (char **)malloc(1000*sizeof(char *)))) {
         Serial.printf("%sFailed to allocate pointer array\n", funcName);
         origin.close();
         return false;
     }
 
-    // Allocate buffer for file names
-    char *b = (char *)malloc(bufSize);
-    if(!b) {
-        Serial.printf("%sFailed to allocate large sort buffer\n", funcName);
-        bufSize /= 2;
-        if(!(b = (char *)malloc(bufSize))) {
-            Serial.printf("%sFailed to allocate short sort buffer\n", funcName);
-            origin.close();
-            free(a);
-            return false;
-        }
+    // Allocate (first) buffer for file names
+    if(!(bufs[0] = (char *)malloc(bufSizes[0]))) {
+        Serial.printf("%sFailed to allocate first sort buffer\n", funcName);
+        origin.close();
+        free(a);
+        return false;
     }
 
-    c = b;
+    c = bufs[0];
+    bufSize = bufSizes[0];
     d = a;
 
     // Loop through all files in folder
 
 #ifdef HAVE_GETNEXTFILENAME
     String fileName = origin.getNextFileName(&isDir);
+    // Check if File::name() returns FQN or plain name
     if(fileName.length() > 0) nameOffs = (fileName.charAt(0) == '/') ? 8 : 0;
     while(!stopLoop && fileName.length() > 0)
 #else
@@ -619,8 +621,20 @@ static bool mp_renameFilesInDir(bool isSetup)
             const char *fn = fileName.c_str();
             strLength = strlen(fn);
             sz = strLength - nameOffs + 1;
+            if((sz > bufSize) && (allocBufIdx < 7)) {
+                allocBufIdx++;
+                if(!(bufs[allocBufIdx] = (char *)malloc(bufSizes[allocBufIdx]))) {
+                    Serial.printf("%sFailed to allocate additional sort buffer\n", funcName);
+                } else {
+                    #ifdef TC_DBG
+                    Serial.printf("%sAllocated additional sort buffer\n", funcName);
+                    #endif
+                    c = bufs[allocBufIdx];
+                    bufSize = bufSizes[allocBufIdx];
+                }
+            }
             if((strLength < 256) && (sz <= bufSize)) {
-                if(!mpren_checkFN(fn)) {
+                if(!mpren_checkFN(fn + nameOffs)) {
                     *d++ = c;
                     strcpy(c, fn + nameOffs);
                     #ifdef TC_DBG
@@ -632,6 +646,7 @@ static bool mp_renameFilesInDir(bool isSetup)
                 }
             } else if(sz > bufSize) {
                 stopLoop = true;
+                Serial.printf("%sSort buffer(s) exhausted, remaining files ignored\n", funcName);
             }
         }
         
@@ -640,8 +655,20 @@ static bool mp_renameFilesInDir(bool isSetup)
         if(!file.isDirectory()) {
             strLength = strlen(file.name());
             sz = strLength - nameOffs + 1;
+            if((sz > bufSize) && (allocBufIdx < 7)) {
+                allocBufIdx++;
+                if(!(bufs[allocBufIdx] = (char *)malloc(bufSizes[allocBufIdx]))) {
+                    Serial.printf("%sFailed to allocate additional sort buffer\n", funcName);
+                } else {
+                    #ifdef TC_DBG
+                    Serial.printf("%sAllocated additional sort buffer\n", funcName);
+                    #endif
+                    c = bufs[allocBufIdx];
+                    bufSize = bufSizes[allocBufIdx];
+                }
+            }
             if((strLength < 256) && (sz <= bufSize)) {
-                if(!mpren_checkFN(file.name())) {
+                if(!mpren_checkFN(file.name() + nameOffs)) {
                     *d++ = c;
                     strcpy(c, file.name() + nameOffs);
                     #ifdef TC_DBG
@@ -653,13 +680,14 @@ static bool mp_renameFilesInDir(bool isSetup)
                 }
             } else if(sz > bufSize) {
                 stopLoop = true;
+                Serial.printf("%sSort buffer(s) exhausted, remaining files ignored\n", funcName);
             }
         }
         file.close();
         
 #endif
         
-        if(fileNum > 999) stopLoop = true;
+        if(fileNum >= 1000) stopLoop = true;
 
         if(!stopLoop) {
             #ifdef HAVE_GETNEXTFILENAME
@@ -725,7 +753,9 @@ static bool mp_renameFilesInDir(bool isSetup)
         }
     }
 
-    free(b);
+    for(int i = 0; i <= allocBufIdx; i++) {
+        if(bufs[i]) free(bufs[i]);
+    }
     free(a);
 
     // Write "DONE" file
@@ -750,6 +780,14 @@ static bool mp_renameFilesInDir(bool isSetup)
  * QuickSort for file names
  */
 
+static unsigned char mpren_toUpper(char a)
+{
+    if(a >= 'a' && a <= 'z')
+        a &= ~0x20;
+
+    return (unsigned char)a;
+}
+
 static bool mpren_strLT(const char *a, const char *b)
 {
     int aa = strlen(a);
@@ -757,15 +795,17 @@ static bool mpren_strLT(const char *a, const char *b)
     int cc = aa < bb ? aa : bb;
 
     for(int i = 0; i < cc; i++) {
-        if((unsigned char)*a < (unsigned char)*b) return true;
-        if((unsigned char)*a > (unsigned char)*b) return false;
+        unsigned char aaa = mpren_toUpper(*a);
+        unsigned char bbb = mpren_toUpper(*b);
+        if(aaa < bbb) return true;
+        if(aaa > bbb) return false;
         *a++; *b++;
     }
 
     return false;
 }
 
-static int mpren_partition(char **a, int s, int e) 
+static int mpren_partition(char **a, int s, int e)
 {
     char *t;
     char *p = a[e];
@@ -780,11 +820,13 @@ static int mpren_partition(char **a, int s, int e)
         }
     }
 
-    t = a[i+1];
-    a[i+1] = a[e];
+    i++;
+
+    t = a[i];
+    a[i] = a[e];
     a[e] = t;
     
-    return i + 1;
+    return i;
 }
 
 static void mpren_quickSort(char **a, int s, int e)
