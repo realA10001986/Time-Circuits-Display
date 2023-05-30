@@ -1254,11 +1254,33 @@ static void displayMSfx(int msfx, bool blink, bool doFolderChk)
     destinationTime.on();
 
     if(doFolderChk) {
-        if(mp_checkForFolder(msfx)) {
+        int folderState = mp_checkForFolder(msfx);
+        switch(folderState) {
+        case 1:
             presentTime.off();
-        } else {
+            departedTime.off();
+            break;
+        case 0:
             presentTime.showTextDirect("NOT FOUND");
             presentTime.on();
+            departedTime.off();
+            break;
+        case -1:
+            presentTime.showTextDirect("PROCESSING");
+            departedTime.showTextDirect("REQUIRED");
+            break;
+        case -2:
+            presentTime.showTextDirect("NO AUDIO");
+            departedTime.showTextDirect("FILES");
+            break;
+        case -3:
+            presentTime.showTextDirect("NOT A");
+            departedTime.showTextDirect("FOLDER");
+            break;
+        }
+        if(folderState < 0) {
+            presentTime.on();
+            departedTime.on();
         }
     }
 }
@@ -1271,7 +1293,6 @@ static void doSetMSfx()
     unsigned long blinkNow = millis();
 
     displayMSfx(musFolderNum, false, true);
-    departedTime.off();
 
     timeout = 0;  // reset timeout
 

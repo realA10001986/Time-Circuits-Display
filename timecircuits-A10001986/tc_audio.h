@@ -54,14 +54,14 @@ bool checkAudioDone();
 bool checkMP3Done();
 void stopAudio();
 
-void mp_init();
+void mp_init(bool isSetup = false);
 void mp_play(bool forcePlay = true);
 bool mp_stop();
 void mp_next(bool forcePlay = false);
 void mp_prev(bool forcePlay = false);
 int  mp_gotonum(int num, bool force = false);
 void mp_makeShuffle(bool enable);
-bool mp_checkForFolder(int num);
+int  mp_checkForFolder(int num);
 int  mp_get_currently_playing();
 
 // By default, use the volume knob

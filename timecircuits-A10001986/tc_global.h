@@ -14,11 +14,11 @@
 // Version strings.
 // These must not contain any characters other than
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
-#define TC_VERSION "V2.8.0"           // 13 chars max
+#define TC_VERSION "V2.8.99"          // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "MAY232023"  // 13 chars max
+#define TC_VERSION_EXTRA "MAY302023"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "05232023"   // 12 chars max
+#define TC_VERSION_EXTRA "05302023"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -109,7 +109,7 @@
 //#define GTE_KEYPAD 
 
 // Use SPIFFS (if defined) or LittleFS (if undefined; esp32-arduino >= 2.x)
-// Since I am on esp32-arduino 1.x, I use SPIFFS.
+// I stick to SPIFFS for now.
 #define USE_SPIFFS
 
 // Custom stuff -----
@@ -124,6 +124,18 @@
 #define TC_VERSION "A10001986"
 #endif
 
+/*************************************************************************
+ ***                  esp32-arduino version detection                  ***
+ *************************************************************************/
+
+#if defined __has_include && __has_include(<esp_arduino_version.h>)
+#include <esp_arduino_version.h>
+#ifdef ESP_ARDUINO_VERSION_MAJOR
+    #if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(2,0,8)
+    #define HAVE_GETNEXTFILENAME
+    #endif
+#endif
+#endif
 
 /*************************************************************************
  ***                             GPIO pins                             ***

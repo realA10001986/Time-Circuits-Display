@@ -32,28 +32,30 @@
 
 #include "tc_global.h"
 
+//#define TC_DBG_AUDIO      // debug audio library
 
 #include <Arduino.h>
 #include <SD.h>
 #include <FS.h>
 #ifdef USE_SPIFFS
 #include <SPIFFS.h>
-#include <AudioFileSourceSPIFFS.h>
+#include "src/ESP8266Audio/AudioFileSourceSPIFFS.h"
 #else
 #include <LittleFS.h>
-#include <AudioFileSourceLittleFS.h>
+#include "src/ESP8266Audio/AudioFileSourceLittleFS.h"
 #endif
-#include <AudioFileSourceSD.h>
-#include <AudioFileSourcePROGMEM.h>
+#include "src/ESP8266Audio/AudioFileSourceSD.h"
+#include "src/ESP8266Audio/AudioFileSourcePROGMEM.h"
 
-#include <AudioGeneratorMP3.h>
-#include <AudioGeneratorWAV.h>
+#include "src/ESP8266Audio/AudioGeneratorMP3.h"
+#include "src/ESP8266Audio/AudioGeneratorWAV.h"
 
-#include <AudioOutputI2S.h>
+#include "src/ESP8266Audio/AudioOutputI2S.h"
 
 #include "tc_settings.h"
 #include "tc_keypad.h"
 #include "tc_time.h"
+#include "tc_wifi.h"
 
 #include "tc_audio.h"
 
@@ -108,10 +110,17 @@ static long prev_avg, prev_raw, prev_raw2;
 // Resolution for pot, 9-12 allowed
 #define POT_RESOLUTION 9
 
-static bool mp_checkForFile(int num);
+bool headLineShown = false;
+bool blinker = true;
+unsigned long renNow1, renNow2;
+const char *tcdrdone = "/TCD_DONE.TXT";
+
+static int  mp_findMaxNum();
 static void mp_nextprev(bool forcePlay, bool next);
 static bool mp_play_int(bool force);
 static void mp_buildFileName(char *fnbuf, int num);
+static bool mp_renameFilesInDir(bool isSetup);
+static void mpren_quickSort(char **a, int s, int e);
 
 static int skipID3(char *buf);
 
@@ -125,7 +134,7 @@ static float getVolume();
  */
 void audio_setup()
 {
-    #ifdef TC_DBG
+    #ifdef TC_DBG_AUDIO
     audioLogger = &Serial;
     #endif
 
@@ -158,12 +167,16 @@ void audio_setup()
     mpShuffle = (settings.shuffle[0] != '0');
 
     // MusicPlayer init
-    mp_init();
+    mp_init(true);
 
     audioInitDone = true;
 }
 
-void mp_init() 
+/*
+ * Music Player
+ */
+ 
+void mp_init(bool isSetup) 
 {
     char fnbuf[20];
     
@@ -183,25 +196,13 @@ void mp_init()
         Serial.println("MusicPlayer: Checking for music files");
         #endif
 
+        mp_renameFilesInDir(isSetup);
+
         mp_buildFileName(fnbuf, 0);
         if(SD.exists(fnbuf)) {
             haveMusic = true;
-
-            for(j = 256, i = 512; j >= 2; j >>= 1) {
-                if(mp_checkForFile(i)) {
-                    i += j;    
-                } else {
-                    i -= j;
-                }
-            }
-            if(mp_checkForFile(i)) {
-                if(mp_checkForFile(i+1)) i++;
-            } else {
-                i--;
-                if(!mp_checkForFile(i)) i--;
-            }
             
-            maxMusic = i;
+            maxMusic = mp_findMaxNum();
             #ifdef TC_DBG
             Serial.printf("MusicPlayer: last file num %d\n", maxMusic);
             #endif
@@ -241,6 +242,27 @@ static bool mp_checkForFile(int num)
         return true;
     }
     return false;
+}
+
+static int mp_findMaxNum()
+{
+    int i, j;
+
+    for(j = 256, i = 512; j >= 2; j >>= 1) {
+        if(mp_checkForFile(i)) {
+            i += j;    
+        } else {
+            i -= j;
+        }
+    }
+    if(mp_checkForFile(i)) {
+        if(mp_checkForFile(i+1)) i++;
+    } else {
+        i--;
+        if(!mp_checkForFile(i)) i--;
+    }
+
+    return i;
 }
 
 void mp_makeShuffle(bool enable)
@@ -378,19 +400,407 @@ static void mp_buildFileName(char *fnbuf, int num)
     sprintf(fnbuf, "/music%1d/%03d.mp3", musFolderNum, num);
 }
 
-bool mp_checkForFolder(int num)
+// For keypad menu only
+int mp_checkForFolder(int num)
+{
+    char fnbuf[32];
+    int ret;
+
+    // returns 
+    // 1 if folder is ready (contains 000.mp3 and DONE)
+    // 0 if folder does not exist
+    // -1 if folder exists but needs processing
+    // -2 if musicX contains no audio files
+    // -3 if musicX is not a folder
+
+    if(num < 0 || num > 9)
+        return 0;
+
+    // If folder does not exist, return 0
+    sprintf(fnbuf, "/music%1d", num);
+    if(!SD.exists(fnbuf))
+        return 0;
+
+    // Check if DONE exists
+    sprintf(fnbuf, "/music%1d%s", num, tcdrdone);
+    if(SD.exists(fnbuf)) {
+        sprintf(fnbuf, "/music%1d/000.mp3", num);
+        if(SD.exists(fnbuf)) {
+            // If 000.mp3 and DONE exists, return 1
+            return 1;
+        }
+        // If DONE, but no 000.mp3, assume no audio files
+        return -2;
+    }
+      
+    // Check if folder is folder
+    sprintf(fnbuf, "/music%1d", num);
+    File origin = SD.open(fnbuf);
+    if(!origin) return 0;
+    if(!origin.isDirectory()) {
+        // If musicX is not a folder, return -3
+        ret = -3;
+    } else {
+        // If it is a folder, it needs processing
+        ret = -1;
+    }
+    origin.close();
+    return ret;
+}
+
+/*
+ * Auto-renamer
+ */
+
+// Check file is eligable for renaming:
+// - not a hidden/exAtt file,
+// - filename not already "/musicX/ddd.mp3"
+static bool mpren_checkFN(const char *buf)
+{   
+    // Hidden or macOS exAttr file, ignore
+    if(buf[8+0] == '.') return true;
+    
+    if(strlen(buf) != 8+7) return false;
+
+    if(buf[8+3+0] != '.' || buf[8+3+3] != '3')
+        return false;
+    if(buf[8+3+1] != 'm' && buf[8+3+1] != 'M')
+        return false;
+    if(buf[8+3+2] != 'p' && buf[8+3+2] != 'P')
+        return false;
+
+    if(buf[8+0] < '0' || buf[8+0] > '9' ||
+       buf[8+1] < '0' || buf[8+1] > '9' ||
+       buf[8+2] < '0' || buf[8+2] > '9')
+        return false;
+
+    return true;
+}
+
+static void mpren_showHeadLine(bool checking)
+{
+    destinationTime.showTextDirect(checking ? "CHECKING" : "RENAMING");
+    presentTime.showTextDirect("MUSIC FILES");
+}
+
+static void mpren_showBlinker(bool blinker)
+{
+    departedTime.showTextDirect(blinker ? "PLEASE" : "WAIT");
+}
+
+static void mpren_looper(bool isSetup, bool checking)
+{       
+    if(millis() - renNow1 > 250) {
+        wifi_loop();
+        if(!isSetup) {
+            ntp_loop();
+            #ifdef TC_HAVEGPS
+            gps_loop();
+            #endif
+            // audio_loop not required, never
+            // called when audio is active
+        }
+        renNow1 = millis();
+    }
+    if(millis() - renNow2 > 2000) {
+        mpren_showBlinker(blinker);
+        if(!headLineShown) {
+            mpren_showHeadLine(checking);
+            destinationTime.on();
+            presentTime.on();
+            departedTime.on();
+            headLineShown = true;
+        }
+        blinker = !blinker;
+        renNow2 = millis();
+    }
+}
+
+static bool mp_renameFilesInDir(bool isSetup)
 {
     char fnbuf[20];
+    char fnbuf3[32];
+    char fnbuf2[256];
+    char *c;
+    char **d;
+    int num = musFolderNum;
+    int count = 0;
+    int fileNum = 0;
+    int strLength;
+    int nameOffs = 8;
+    unsigned long sz, bufSize = 1000 * 64;
+    bool stopLoop = false;
+    bool hls = false;
+#ifdef HAVE_GETNEXTFILENAME
+    bool isDir;
+#endif
+    const char *funcName = "MusicPlayer/Renamer: ";
 
-    if(num < 0 || num > 9) return false;
+    headLineShown = false;
+    blinker = true;
+    renNow1 = renNow2 = millis();
 
-    sprintf(fnbuf, "/music%1d/000.mp3", num);
-    if(SD.exists(fnbuf)) {
+    // Build "DONE"-file name
+    sprintf(fnbuf, "/music%1d", num);
+    strcpy(fnbuf3, fnbuf);
+    strcat(fnbuf3, tcdrdone);
+
+    // Check for DONE file
+    if(SD.exists(fnbuf3)) {
+        #ifdef TC_DBG
+        Serial.printf("%s%s exists\n", funcName, fnbuf3);
+        #endif
         return true;
     }
+
+    // Check if folder exists
+    if(!SD.exists(fnbuf)) {
+        #ifdef TC_DBG
+        Serial.printf("%s'%s' does not exist\n", funcName, fnbuf);
+        #endif
+        return false;
+    }
+
+    // Open folder and check if it is actually a folder
+    File origin = SD.open(fnbuf);
+    if(!origin) {
+        Serial.printf("%s'%s' failed to open\n", funcName, fnbuf);
+        return false;
+    }
+    if(!origin.isDirectory()) {
+        origin.close();
+        Serial.printf("%s'%s' is not a directory\n", funcName, fnbuf);
+        return false;
+    }
+        
+    // Allocate pointer array
+    char **a = (char **)malloc(1000*sizeof(char *));
+    if(!a) {
+        Serial.printf("%sFailed to allocate pointer array\n", funcName);
+        origin.close();
+        return false;
+    }
+
+    // Allocate buffer for file names
+    char *b = (char *)malloc(bufSize);
+    if(!b) {
+        Serial.printf("%sFailed to allocate large sort buffer\n", funcName);
+        bufSize /= 2;
+        if(!(b = (char *)malloc(bufSize))) {
+            Serial.printf("%sFailed to allocate short sort buffer\n", funcName);
+            origin.close();
+            free(a);
+            return false;
+        }
+    }
+
+    c = b;
+    d = a;
+
+    // Loop through all files in folder
+
+#ifdef HAVE_GETNEXTFILENAME
+    String fileName = origin.getNextFileName(&isDir);
+    if(fileName.length() > 0) nameOffs = (fileName.charAt(0) == '/') ? 8 : 0;
+    while(!stopLoop && fileName.length() > 0)
+#else
+    File file = origin.openNextFile();
+    // Check if File::name() returns FQN or plain name
+    if(file) nameOffs = (file.name()[0] == '/') ? 8 : 0;
+    while(!stopLoop && file)
+#endif
+    {
+
+        mpren_looper(isSetup, true);
+
+#ifdef HAVE_GETNEXTFILENAME
+
+        if(!isDir) {
+            const char *fn = fileName.c_str();
+            strLength = strlen(fn);
+            sz = strLength - nameOffs + 1;
+            if((strLength < 256) && (sz <= bufSize)) {
+                if(!mpren_checkFN(fn)) {
+                    *d++ = c;
+                    strcpy(c, fn + nameOffs);
+                    #ifdef TC_DBG
+                    Serial.printf("%sAdding '%s'\n", funcName, c);
+                    #endif
+                    c += sz;
+                    bufSize -= sz;
+                    fileNum++;
+                }
+            } else if(sz > bufSize) {
+                stopLoop = true;
+            }
+        }
+        
+#else // --------------
+
+        if(!file.isDirectory()) {
+            strLength = strlen(file.name());
+            sz = strLength - nameOffs + 1;
+            if((strLength < 256) && (sz <= bufSize)) {
+                if(!mpren_checkFN(file.name())) {
+                    *d++ = c;
+                    strcpy(c, file.name() + nameOffs);
+                    #ifdef TC_DBG
+                    Serial.printf("%sAdding '%s'\n", funcName, c);
+                    #endif
+                    c += sz;
+                    bufSize -= sz;
+                    fileNum++;
+                }
+            } else if(sz > bufSize) {
+                stopLoop = true;
+            }
+        }
+        file.close();
+        
+#endif
+        
+        if(fileNum > 999) stopLoop = true;
+
+        if(!stopLoop) {
+            #ifdef HAVE_GETNEXTFILENAME
+            fileName = origin.getNextFileName(&isDir);
+            #else
+            file = origin.openNextFile();
+            #endif
+        }
+    }
+
+    origin.close();
+
+    #ifdef TC_DBG
+    Serial.printf("%s%d files to process\n", funcName, fileNum);
+    #endif
+
+    // Sort file names, and rename
+
+    if(fileNum) {
+        
+        // Sort file names
+        mpren_quickSort(a, 0, fileNum - 1);
+    
+        sprintf(fnbuf2, "/music%1d/", num);
+        strcpy(fnbuf, fnbuf2);
+
+        // If 000.mp3 exists, find current count
+        // the usual way. Otherwise start at 000.
+        strcpy(fnbuf + 8, "000.mp3");
+        if(SD.exists(fnbuf)) {
+            count = mp_findMaxNum() + 1;
+        }
+
+        // Trigger head line change
+        if((hls = headLineShown)) {
+            renNow2 = 0;
+            headLineShown = false;
+        }
+
+        for(int i = 0; i < fileNum && count <= 999; i++) {
+            
+            mpren_looper(isSetup, false);
+
+            sprintf(fnbuf + 8, "%03d.mp3", count);
+            strcpy(fnbuf2 + 8, a[i]);
+            if(!SD.rename(fnbuf2, fnbuf)) {
+                bool done = false;
+                while(!done) {
+                    count++;
+                    if(count <= 999) {
+                        sprintf(fnbuf + 8, "%03d.mp3", count);
+                        done = SD.rename(fnbuf2, fnbuf);
+                    } else {
+                        done = true;
+                    }
+                }
+            }
+            #ifdef TC_DBG
+            Serial.printf("%sRenamed '%s' to '%s'\n", funcName, fnbuf2, fnbuf);
+            #endif
+            
+            count++;
+        }
+    }
+
+    free(b);
+    free(a);
+
+    // Write "DONE" file
+    if((origin = SD.open(fnbuf3, FILE_WRITE))) {
+        origin.close();
+        #ifdef TC_DBG
+        Serial.printf("%sWrote %s\n", funcName, fnbuf3);
+        #endif
+    }
+
+    // Clear displays
+    if(hls || headLineShown) {
+        destinationTime.showTextDirect("");
+        presentTime.showTextDirect("");
+        departedTime.showTextDirect("");
+    }
+
+    return true;
+}
+
+/*
+ * QuickSort for file names
+ */
+
+static bool mpren_strLT(const char *a, const char *b)
+{
+    int aa = strlen(a);
+    int bb = strlen(b);
+    int cc = aa < bb ? aa : bb;
+
+    for(int i = 0; i < cc; i++) {
+        if((unsigned char)*a < (unsigned char)*b) return true;
+        if((unsigned char)*a > (unsigned char)*b) return false;
+        *a++; *b++;
+    }
+
     return false;
 }
 
+static int mpren_partition(char **a, int s, int e) 
+{
+    char *t;
+    char *p = a[e];
+    int   i = s - 1;
+ 
+    for(int j = s; j <= e - 1; j++) {
+        if(mpren_strLT(a[j], p)) {
+            i++;
+            t = a[i];
+            a[i] = a[j];
+            a[j] = t;
+        }
+    }
+
+    t = a[i+1];
+    a[i+1] = a[e];
+    a[e] = t;
+    
+    return i + 1;
+}
+
+static void mpren_quickSort(char **a, int s, int e)
+{
+    if(s < e) {
+        int p = mpren_partition(a, s, e);
+        mpren_quickSort(a, s, p - 1);
+        mpren_quickSort(a, p + 1, e);
+    }
+}
+
+/*
+ * Play specific sounds
+ * 
+ */
+ 
 void play_keypad_sound(char key)
 {
     char buf[16] = "/Dtmf-0.mp3\0";

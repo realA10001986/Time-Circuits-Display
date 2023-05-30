@@ -599,7 +599,7 @@ void keypad_loop()
                 specDisp = 10;
                 validEntry = true;
 
-            } else if(code == 88 && haveMusic) {
+            } else if((code == 88 || code == 55) && haveMusic) {
 
                 if(mpActive) {
                     #ifdef IS_ACAR_DISPLAY

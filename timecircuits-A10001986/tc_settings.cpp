@@ -175,6 +175,8 @@ void settings_setup()
         SPIFFS.format();
         if(SPIFFS.begin()) haveFS = true;
 
+        destinationTime.showTextDirect("");
+
     }
 
     if(haveFS) {

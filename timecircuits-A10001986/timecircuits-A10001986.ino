@@ -45,11 +45,6 @@
  *   the latest version by Espressif Systems.
  *   Detailed instructions for this step:
  *   https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html
- *   (Personal note: I am still running on 1.0.6 and the pre-compiled binaries
- *   on my github do as well; from what I read, the 2.x.x branch has a lot of
- *   issues even as of 2.0.5; I honestly can't say whether or not any of those
- *   issues have an influence on the stability of this firmware.
- *   CircuitSetup.us and their pre-compiled binaries, however, use 2.0.x.)
  *   
  * - Go to "Tools" > "Board: ..." -> "ESP32 Arduino" and select your board model (the
  *   CircuitSetup original boards are "NodeMCU-32S")
@@ -71,11 +66,8 @@
  *
  * - Install required libraries. In the Arduino IDE, go to "Tools" -> "Manage Libraries" 
  *   and install the following libraries:
- *   - ESP8266Audio: https://github.com/earlephilhower/ESP8266Audio
- *     (1.9.7 and later for esp32-arduino 2.x.x; 
- *      1.9.5 for esp32-arduino 1.0.6 and below)
  *   - WifiManager (tablatronix, tzapu) https://github.com/tzapu/WiFiManager
- *     (Tested with 2.0.13beta and 2.0.15-rc1)
+ *     (Tested with 2.0.13beta, 2.0.15-rc1, 2.0.16rc2)
  *   - ArduinoJSON >= 6.19: https://arduinojson.org/v6/doc/installation/
  *
  * - Download the complete firmware source code:
@@ -98,8 +90,31 @@
 
 /*  Changelog
  *   
- *  2023/05/23 
- *    - Keypad: 440ENTER deletes timer
+ *  2023/05/30 (A10001986)
+ *    - MusicPlayer: Add "auto-renamer". User can now put his mp3-files with original
+ *      names (eg "Dire Straits - Money For Nothing.mp3") in the musicX folders on the 
+ *      SD and they will be automatically renamed to "000.mp3" and so on. File names are 
+ *      sorted alphabetically before renaming (in order to keep some kind of order; 
+ *      without sorting, the order would be more or less random).
+ *      This also works if files are added to a music folder that already contains some
+ *      files with numerical file names.
+ *      The process can take up to 10 minutes for 1000 files, perhaps even longer. Mac
+ *      users are advised to delete the "._"-files before putting the SD back into the
+ *      TCD, as removing these files speeds up the process.
+ *      Remember: 128kbps maximum bit rate. Recoding from higher bit rates is still up
+ *      to the user. Tools to do this batch-wise are plenty, for Mac MediaHuman Audio
+ *      Converter, for example.
+ *    * Switched to esp32-arduino 2.0.9 for pre-compiled binary. If you compile and upload 
+ *      using the IDE, settings will be lost and audio files will have to be re-installed.
+ *      If upgrading via the Config Portal's "Update" feature, everything stays. 
+ *    * Updated WiFiManager to 2.0.16rc2 for pre-compiled binary.
+ *    * The source code now includes a subset of the ESP8266Audio library version 1.9.5
+ *      with some patches. The reason for this is that ESP8266Audio 1.9.7 is somehow 
+ *      broken (delays playback for some reason, spits out i2s errors) and I don't know 
+ *      what the future holds for this library. I need a stable basis with predictable 
+ *      behavior.
+ *  2023/05/23 (A10001986)
+ *    - Keypad: 440ENTER deletes timer (4400 still does, too; added for uniformity)
  *  2023/05/22 (A10001986) [released by CS as 2.8]
  *    - 77mmddENTER sets reminder to month/day, leaving time unchanged (unless hr and 
  *      min are zero, in which case it sets the reminder to 9am)  
