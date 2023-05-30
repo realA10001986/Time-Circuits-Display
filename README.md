@@ -249,17 +249,17 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="center">Synchronously toggle <a href="#">World Clock mode</a> and <a href="#room-condition-mode-temperaturehumidity-sensor">Room Condition mode</a></td>
     </tr>
     <tr>
+     <td align="center">55&#9166;</td>
+     <td align="center"><a href="#the-music-player">Music Player</a>: Show currently played song number</td>
+    </tr>
+    <tr>
      <td align="center">222&#9166;</td>
      <td align="center"><a href="#the-music-player">Music Player</a>: Shuffle off</td>
     </tr>
     <tr>
      <td align="center">555&#9166;</td>
      <td align="center"><a href="#the-music-player">Music Player</a>: Shuffle on</td>
-    </tr>
-    <tr>
-     <td align="center">88&#9166;</td>
-     <td align="center"><a href="#the-music-player">Music Player</a>: Show currently played song number</td>
-    </tr>
+    </tr> 
     <tr>
      <td align="center">888&#9166;</td>
      <td align="center"><a href="#the-music-player">Music Player</a>: Go to song 0</td>
