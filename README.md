@@ -200,6 +200,35 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
     <tr>
      <td align="center" colspan="2">Keypad reference: Special key sequences<br>(&#9166; = ENTER key)</td>
     </tr>
+   <tr>
+     <td align="center">000&#9166;</td>
+     <td align="center">Disable <a href="#beep-on-the-second">beep</a> sound</td>
+    </tr>
+    <tr>
+     <td align="center">001&#9166;</td>
+     <td align="center">Enable <a href="#beep-on-the-second">beep</a> sound</td>
+    </tr>
+   <tr>
+     <td align="center">002&#9166;</td>
+     <td align="center">Enable <a href="#beep-on-the-second">beep</a> sound (30 seconds)</td>
+    </tr>
+   <tr>
+     <td align="center">003&#9166;</td>
+     <td align="center">Enable <a href="#beep-on-the-second">beep</a> sound (60 seconds)</td>
+    </tr>
+   <tr>
+     <td align="center">111&#9166;</td>
+     <td align="center">Toggle <a href="#room-condition-mode-temperaturehumidity-sensor">Room Condition mode</a></td>
+    </tr>
+    <tr>
+     <td align="center">112&#9166;</td>
+     <td align="center">Toggle <a href="#">World Clock mode</a></td>
+    </tr>
+    <tr>
+     <td align="center">113&#9166;</td>
+     <td align="center">Synchronously toggle <a href="#">World Clock mode</a> and <a href="#room-condition-mode-temperaturehumidity-sensor">Room Condition mode</a></td>
+    </tr>
+ 
     <tr>
      <td align="center">11&#9166;</td>
      <td align="center">Show current <a href="#how-to-set-up-the-alarm">alarm</a> time/weekday</td>
@@ -216,6 +245,10 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="center">44MM&#9166;</td>
      <td align="center"><a href="#count-down-timer">Timer</a>: Set timer to MM minutes</td>
     </tr>
+   <tr>
+     <td align="center">440</td>
+     <td align="center"><a href="#count-down-timer">Timer</a>: Delete timer</td>
+    </tr>
     <tr>
      <td align="center">77&#9166;</td>
      <td align="center"><a href="#yearlymonthly-reminder">Reminder</a>: Display reminder</td>
@@ -223,10 +256,6 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
     <tr>
      <td align="center">777&#9166;</td>
      <td align="center"><a href="#yearlymonthly-reminder">Reminder</a>: Display time until reminder</td>
-    </tr>
-    <tr>
-     <td align="center">770&#9166;</td>
-     <td align="center"><a href="#yearlymonthly-reminder">Reminder</a>: Delete reminder</td>
     </tr>
     <tr>
      <td align="center">77mmdd&#9166;</td>
@@ -237,16 +266,8 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="center"><a href="#yearlymonthly-reminder">Reminder</a>: Program reminder</td>
     </tr>
     <tr>
-     <td align="center">111&#9166;</td>
-     <td align="center">Toggle <a href="#room-condition-mode-temperaturehumidity-sensor">Room Condition mode</a></td>
-    </tr>
-    <tr>
-     <td align="center">112&#9166;</td>
-     <td align="center">Toggle <a href="#">World Clock mode</a></td>
-    </tr>
-    <tr>
-     <td align="center">113&#9166;</td>
-     <td align="center">Synchronously toggle <a href="#">World Clock mode</a> and <a href="#room-condition-mode-temperaturehumidity-sensor">Room Condition mode</a></td>
+     <td align="center">770&#9166;</td>
+     <td align="center"><a href="#yearlymonthly-reminder">Reminder</a>: Delete reminder</td>
     </tr>
     <tr>
      <td align="center">55&#9166;</td>
@@ -267,22 +288,6 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
     <tr>
      <td align="center">888xxx&#9166;</td>
      <td align="center"><a href="#the-music-player">Music Player</a>: Go to song xxx</td>
-    </tr>
-    <tr>
-     <td align="center">000&#9166;</td>
-     <td align="center">Disable <a href="#beep-on-the-second">beep</a> sound</td>
-    </tr>
-    <tr>
-     <td align="center">001&#9166;</td>
-     <td align="center">Enable <a href="#beep-on-the-second">beep</a> sound</td>
-    </tr>
-   <tr>
-     <td align="center">002&#9166;</td>
-     <td align="center">Enable <a href="#beep-on-the-second">beep</a> sound (30 seconds)</td>
-    </tr>
-   <tr>
-     <td align="center">003&#9166;</td>
-     <td align="center">Enable <a href="#beep-on-the-second">beep</a> sound (60 seconds)</td>
     </tr>
     <tr>
      <td align="center">64738&#9166;</td>
