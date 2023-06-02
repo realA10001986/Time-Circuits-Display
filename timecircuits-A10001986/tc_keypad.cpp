@@ -133,6 +133,9 @@ static bool doKey = false;
 
 static unsigned long enterDelay = 0;
 
+static char btxt[32];
+static char ctxt[32];
+
 static TCButton enterKey = TCButton(ENTER_BUTTON_PIN,
     false,    // Button is active HIGH
     false     // Disable internal pull-up resistor
@@ -601,18 +604,25 @@ void keypad_loop()
 
             } else if((code == 88 || code == 55) && haveMusic) {
 
+                specDisp = 10;
                 if(mpActive) {
                     #ifdef IS_ACAR_DISPLAY
                     sprintf(atxt, "PLAYING  %03d", mp_get_currently_playing());
                     #else
                     sprintf(atxt, "PLAYING   %03d", mp_get_currently_playing());
                     #endif
+                    if(haveId3) {
+                        decodeID3(ctxt, btxt);
+                        if(*ctxt || *btxt) {
+                            if(!*ctxt) strcpy(ctxt, "UNKNOWN");
+                            if(!*btxt) strcpy(btxt, "UNKNOWN");
+                            specDisp = 20;
+                        }
+                    }
                 } else {
                     strcpy(atxt, "STOPPED");
                 }
-
                 destinationTime.showTextDirect(atxt, CDT_CLEAR);
-                specDisp = 10;
                 validEntry = true;
               
             } else
@@ -1143,6 +1153,7 @@ void keypad_loop()
             break;
         case 2:
         case 10:
+        case 20:
             specDisp++;
             if(specDisp == 3) destinationTime.onCond();
             else              { destinationTime.resetBrightness(); destinationTime.on(); }
@@ -1163,8 +1174,17 @@ void keypad_loop()
             enterDelay = EE1_DELAY3;
             play_file("/ee1.mp3", PA_CHECKNM|PA_INTRMUS);
             break;
+        case 21:
+        case 22:
+            destinationTime.showTextDirect(specDisp == 21 ? btxt : ctxt);
+            specDisp++;
+            timeNow = millis();
+            enterWasPressed = true;
+            enterDelay = SPEC_DELAY;
+            break;
         case 4:
         case 11:
+        case 23:
             specDisp = 0;
             break;
         default:

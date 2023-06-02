@@ -42,6 +42,8 @@ extern uint8_t curVolume;
 
 extern bool haveMusic;
 extern bool mpActive;
+extern bool haveId3;
+extern char id3[];
 
 void audio_setup();
 void play_keypad_sound(char key);
@@ -53,6 +55,7 @@ bool check_file_SD(const char *audio_file);
 bool checkAudioDone();
 bool checkMP3Done();
 void stopAudio();
+void decodeID3(char *artist, char *track);
 
 void mp_init(bool isSetup = false);
 void mp_play(bool forcePlay = true);
@@ -71,5 +74,6 @@ int  mp_get_currently_playing();
 #define PA_INTRMUS 0x0002
 #define PA_ALLOWSD 0x0004
 #define PA_DYNVOL  0x0008
+#define PA_NOID3TS 0x0010
 
 #endif

@@ -2332,7 +2332,7 @@ void time_loop()
         } else if(!startup && !timeTravelRE && FPBUnitIsOn) {
 
             #ifdef TC_HAVEMQTT
-            if(mqttDisp) { 
+            if(mqttDisp) {
                 if(!specDisp) {
                     destinationTime.showTextDirect(mqttMsg + mqttIdx);
                     if(mqttST) {

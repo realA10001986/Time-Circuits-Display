@@ -81,9 +81,13 @@ bool haveMusic = false;
 bool mpActive = false;
 static uint16_t maxMusic = 0;
 static uint16_t *playList = NULL;
-static int  mpCurrIdx = 0;
-static bool mpShuffle = false;
+static int      mpCurrIdx = 0;
+static bool     mpShuffle = false;
 static uint16_t currPlaying = 0;
+#define         MAXID3LEN 2048
+bool            haveId3 = false;
+int             Id3Size;
+char            id3[MAXID3LEN];
 
 static const float volTable[20] = {
     0.00, 0.02, 0.04, 0.06,
@@ -849,7 +853,7 @@ void play_keypad_sound(char key)
 
     if(key) {
         buf[6] = key;
-        play_file(buf, PA_CHECKNM, 0.6);
+        play_file(buf, PA_CHECKNM|PA_NOID3TS, 0.6);
     }
 }
 
@@ -935,7 +939,8 @@ static int skipID3(char *buf)
 {
     if(buf[0] == 'I' && buf[1] == 'D' && buf[2] == '3' && 
        (buf[3] == 0x04 || buf[3] == 0x03 || buf[3] == 0x02) && 
-       buf[4] == 0) {
+       buf[4] == 0 &&
+       (!(buf[5] & 0x80))) {
         int32_t pos = ((buf[6] << (24-3)) |
                        (buf[7] << (16-2)) |
                        (buf[8] << (8-1))  |
@@ -951,6 +956,7 @@ static int skipID3(char *buf)
 void play_file(const char *audio_file, uint16_t flags, float volumeFactor)
 {
     char buf[10];
+    int pos;
     
     if(audioMute) return;
 
@@ -985,12 +991,20 @@ void play_file(const char *audio_file, uint16_t flags, float volumeFactor)
 
     out->SetGain(getVolume());
 
-    buf[0] = 0;
-
     if(haveSD && ((flags & PA_ALLOWSD) || FlashROMode) && mySD0->open(audio_file)) {
 
-        mySD0->read((void *)buf, 10);
-        mySD0->seek(skipID3(buf), SEEK_SET);
+        if(!(flags & PA_NOID3TS)) {
+            id3[0] = 0;
+            mySD0->read((void *)id3, 10);
+            if((pos = skipID3(id3))) {
+                Id3Size = pos <= MAXID3LEN ? pos : MAXID3LEN;
+                mySD0->read((void *)((char *)id3 + 10), Id3Size - 10);
+                haveId3 = true;
+            } else {
+                haveId3 = false;
+            }
+            mySD0->seek(pos, SEEK_SET);
+        }
         mp3->begin(mySD0, out);   
                  
         #ifdef TC_DBG
@@ -1003,8 +1017,11 @@ void play_file(const char *audio_file, uint16_t flags, float volumeFactor)
       else if(myFS0->open(audio_file))
     #endif
     {
-        myFS0->read((void *)buf, 10);
-        myFS0->seek(skipID3(buf), SEEK_SET);
+        if(!(flags & PA_NOID3TS)) {
+            buf[0] = 0;
+            myFS0->read((void *)buf, 10);
+            myFS0->seek(skipID3(buf), SEEK_SET);
+        }
         mp3->begin(myFS0, out);
                   
         #ifdef TC_DBG
@@ -1137,5 +1154,163 @@ void stopAudio()
         mp3->stop();
     } else if(beep->isRunning()) {
         beep->stop();
+    }
+}
+
+/*
+ * ID3 handling
+ */
+
+static void copyId3String(char *src, char *dst, int tagSz, int maxChrs)
+{
+   uint16_t chr;
+   char c;
+   char *send = src + tagSz;
+   char *tend = dst + maxChrs;
+   char enc = *src++;
+
+   dst[0] = 0;
+
+   if(enc == 1) {
+      uint16_t be = *src++ << 8;
+      be |= *src++;
+      if(be == 0xfeff) enc = 2;
+      else if(be != 0xfffe) src -= 2;
+   }
+
+   switch(enc) {
+   case 0:        // ISO-8859-1
+      while(dst < tend && src < send) {
+          if(!*src) return;
+          c = *src++;
+          if(c >= ' ' && c <= 126)  {
+              if(c >= 'a' && c <= 'z') c &= ~0x20;
+              *dst++ = c;
+              *dst = 0;
+          }
+      }
+      break;
+   case 1:        // UTF-16LE
+   case 2:        // UTF-16BE
+      while(dst < tend && src < send) {
+          if(enc == 1) { chr = *src++; chr |= (*src++ << 8); }
+          else         { chr = *src++ << 8; chr |= *src++;   }
+          if(!chr) return;
+          if(chr >= 0xd800 && chr <= 0xdbff) {
+              src += 2;
+          } else if(chr >= ' ' && chr <= 126) {
+              if(chr >= 'a' && chr <= 'z') chr &= ~0x20;
+              *dst++ = chr & 0xff;
+              *dst = 0;
+          }
+      }
+      break;
+   case 3:        // UTF-8
+      filterOutUTF8(src, dst, tagSz, maxChrs);
+      break;
+   }
+}
+
+void decodeID3(char *artist, char *track)
+{
+    uint8_t rev = id3[3];
+    char *ptr  = id3 + 10;
+    char *eptr = id3 + Id3Size;
+    int  stopLoop = 0;
+    uint8_t tag0, tag1, tag2, tag3;
+    uint8_t badFlags = 0;
+    unsigned long tagSz, offSet;
+    char tFlags[2] = { 0, 0 };
+
+    *artist = *track = 0;
+    
+    if(!haveId3) return;
+
+    // Unsynchronizing not supported
+    if(id3[5] & 0x80) return;
+    
+    // Skip extended header
+    if(rev >= 3 && id3[5] & 0x40) {
+        if(Id3Size < 16) return;
+        if(rev == 3) {
+            ptr += 4;
+            ptr += ((id3[10] << 24) |
+                    (id3[11] << 16) |
+                    (id3[12] <<  8) |
+                    (id3[13]));
+        } else {
+            ptr += ((id3[10] << (24-3)) |
+                    (id3[11] << (16-2)) |
+                    (id3[12] << (8-1))  |
+                    (id3[13]));
+        }
+        if(ptr >= eptr) return;
+    }
+
+    while((stopLoop != 3) && ptr < (eptr - 4)) {
+        tag0 = *ptr++;
+        tag1 = *ptr++;
+        tag2 = *ptr++;
+        tag3 = (rev == 2) ? 0 : *ptr++;
+    
+        // Quit when we are in padding
+        if(!(tag0 | tag1 | tag2 | tag3)) return;
+        
+        if(rev == 2) {
+
+            if(ptr > eptr - 3) return;
+
+            tagSz = ((ptr[0] << 16) |
+                     (ptr[1] <<  8) |
+                     (ptr[2]));
+
+            ptr += 3;
+          
+        } else {
+            
+            if(ptr > eptr - 6) return;
+
+            if(rev == 3) {
+                tagSz = ((ptr[0] << 24) |
+                         (ptr[1] << 16) |
+                         (ptr[2] <<  8) |
+                         (ptr[3]));
+                badFlags = 0x80 + 0x40;         // Compression/Encryption
+            } else {
+                tagSz = ((ptr[0] << (24-3)) |
+                         (ptr[1] << (16-2)) |
+                         (ptr[2] << (8-1))  |
+                         (ptr[3]));
+                badFlags = 0x08 + 0x04 + 0x02;  // Compression/Encryption/Unsync
+            }
+            
+            tFlags[0] = ptr[4];
+            tFlags[1] = ptr[5];
+
+            ptr += 6;
+
+        }
+
+        if(ptr + tagSz > eptr) return;
+
+        // Compression & unsynchronization not supported
+        if(!(tFlags[1] & badFlags) && (tag0 == 'T')) {
+            // Check for data length indicator despite no other flags
+            // Should not happen; we ignore it if it is there
+            offSet =  (rev == 4 && tFlags[1] & 0x01) ? 4 : 0;
+            if((rev == 2 && tag1 == 'T' && tag2 == '2') ||
+               (rev != 2 && tag1 == 'I' && tag2 == 'T' && tag3 == '2')) {
+                // Copy song title
+                copyId3String(ptr+offSet, track, tagSz-offSet, 15);
+                stopLoop |= 1;
+            } else if((rev == 2 && tag1 == 'P' && tag2 == '1') ||
+                      (rev != 2 && tag1 == 'P' && tag2 == 'E' && tag3 == '1')) {
+                // Copy artist
+                copyId3String(ptr+offSet, artist, tagSz-offSet, 15);
+                stopLoop |= 2;
+            }
+        }
+
+        ptr += tagSz;
     }
 }

@@ -90,6 +90,9 @@
 
 /*  Changelog
  *   
+ *  2023/06/02 (A10001986)
+ *    - Display Title & Artist from ID3 tags when typing 55ENTER to display the 
+ *      currently played song. (ID3v2 only)
  *  2023/05/30 (A10001986)
  *    - MusicPlayer: 55ENTER shows currently played song (changed this from 88 to avoid
  *      going to song 0 by accident)
@@ -104,8 +107,8 @@
  *      users are advised to delete the "._"-files before putting the SD back into the
  *      TCD, as removing these files speeds up the process.
  *      Remember: 128kbps maximum bit rate. Recoding from higher bit rates is still up
- *      to the user. Tools to do this batch-wise are plenty, for Mac MediaHuman Audio
- *      Converter, for example.
+ *      to the user. Tools to do this batch-wise are plenty, for Mac and Windows MediaHuman 
+ *      Audio Converter (https://www.mediahuman.com/download3.html), for example.
  *    * Switched to esp32-arduino 2.0.9 for pre-compiled binary. If you compile and upload 
  *      using the IDE, settings will be lost and audio files will have to be re-installed.
  *      If upgrading via the Config Portal's "Update" feature, everything stays. 

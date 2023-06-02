@@ -1783,19 +1783,12 @@ static void setCBVal(WiFiManagerParameter *el, char *sv)
 }
 #endif
 
-#ifdef TC_HAVEMQTT
-static void strcpyutf8(char *dst, const char *src, unsigned int len)
+int16_t filterOutUTF8(char *src, char *dst, int srcLen = 0, int maxChars = 99999)
 {
-    strncpy(dst, src, len - 1);
-    dst[len - 1] = 0;
-}
-
-static int16_t filterOutUTF8(char *src, char *dst)
-{
-    int i, j, slen = strlen(src);
+    int i, j, slen = srcLen ? srcLen : strlen(src);
     unsigned char c, d, e, f;
 
-    for(i = 0, j = 0; i < slen; i++) {
+    for(i = 0, j = 0; i < slen && j <= maxChars; i++) {
         c = (unsigned char)src[i];
         if(c >= 32 && c < 127 - 1) {    // 127 = °, non-std, skip
             if(c >= 'a' && c <= 'z') c &= ~0x20;
@@ -1822,6 +1815,13 @@ static int16_t filterOutUTF8(char *src, char *dst)
     dst[j] = 0;
 
     return j;
+}
+
+#ifdef TC_HAVEMQTT
+static void strcpyutf8(char *dst, const char *src, unsigned int len)
+{
+    strncpy(dst, src, len - 1);
+    dst[len - 1] = 0;
 }
 
 static void mqttLooper()
