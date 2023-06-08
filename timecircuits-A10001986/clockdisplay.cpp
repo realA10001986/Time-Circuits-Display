@@ -876,7 +876,7 @@ bool clockDisplay::saveYOffs()
     // RTC: Save yearoffs; zero timeDifference
 
     #ifdef TC_DBG
-    Serial.println(F("Clockdisplay: Saving RTC/YOffs setting"));
+    Serial.println(F("Clockdisplay: Saving RTC YOffs/DST setting"));
     #endif
 
     memset(savBuf, 0, 10);
@@ -909,7 +909,7 @@ bool clockDisplay::saveLastYear(uint16_t theYear)
         return true;
 
     #ifdef TC_DBG
-    Serial.printf("Clockdisplay: Saving RTC/LastYear to %s\n", FlashROMode ? "SD" : "Flash");
+    Serial.printf("Clockdisplay: Saving RTC LastYear to %s\n", FlashROMode ? "SD" : "Flash");
     #endif
     
     savBuf[0] = theYear & 0xff;
@@ -1101,45 +1101,72 @@ bool clockDisplay::saveNVMData(uint8_t *savBuf, bool noReadChk)
         }
     }
 
-    if(!skipSave) {
-        #ifdef TC_DBG
-        Serial.printf("saveNVMData to %s\n", FlashROMode ? "SD" : "Flash");
-        #endif
-        for(uint8_t i = 0; i < 9; i++) {
-            sum += (savBuf[i] ^ 0x55);
-        }
-        savBuf[9] = sum & 0xff;
-        if(FlashROMode) {
-            return writeFileToSD(fnEEPROM[_did], savBuf, 10);
-        } else {
-            return writeFileToFS(fnEEPROM[_did], savBuf, 10);
-        }
+    if(skipSave)
+        return true;
+        
+    #ifdef TC_DBG
+    Serial.printf("saveNVMData to %s\n", FlashROMode ? "SD" : "Flash");
+    #endif
+
+    for(uint8_t i = 0; i < 9; i++) {
+        sum += (savBuf[i] ^ 0x55);
     }
-    return true;
+    savBuf[9] = sum & 0xff;
+
+    if(FlashROMode) {
+        skipSave = writeFileToSD(fnEEPROM[_did], savBuf, 10);
+    } else {
+        skipSave = writeFileToFS(fnEEPROM[_did], savBuf, 10);
+    }
+
+    // Copy to cache regardless of result of write; otherwise
+    // the load function would read corrupt data instead of
+    // using the ok data in the cache.
+    memcpy(_CacheData, savBuf, 10);
+    _Cache = 2;
+
+    return skipSave;
 }
 
 bool clockDisplay::loadNVMData(uint8_t *loadBuf)
 {
     uint16_t sum = 0;
-    uint8_t  mxor = 0x55;
+    bool dataOk = false;
 
     memset(loadBuf, 0, 10);
 
-    #ifdef TC_DBG
-    Serial.printf("loadNVMData from %s\n", FlashROMode ? "SD" : "Flash");
-    #endif
-        
-    if(FlashROMode) {
-        readFileFromSD(fnEEPROM[_did], loadBuf, 10);
-    } else {
-        readFileFromFS(fnEEPROM[_did], loadBuf, 10);
+    if(_Cache == 2) {
+        memcpy(loadBuf, _CacheData, 10);
+        for(uint8_t i = 0; i < 9; i++) {
+           sum += (loadBuf[i] ^ 0x55);
+        }
+        dataOk = ((sum & 0xff) == loadBuf[9]);
     }
 
-    for(uint8_t i = 0; i < 9; i++) {
-        sum += (loadBuf[i] ^ mxor);
+    if(!dataOk) {
+        #ifdef TC_DBG
+        Serial.printf("loadNVMData from %s\n", FlashROMode ? "SD" : "Flash");
+        #endif
+
+        _Cache = -1;  // Invalidate; either empty or corrupt
+            
+        if(FlashROMode) {
+            readFileFromSD(fnEEPROM[_did], loadBuf, 10);
+        } else {
+            readFileFromFS(fnEEPROM[_did], loadBuf, 10);
+        }
+
+        for(uint8_t i = 0; i < 9; i++) {
+           sum += (loadBuf[i] ^ 0x55);
+        }
+        dataOk = ((sum & 0xff) == loadBuf[9]);
+        if(dataOk) {
+            memcpy(_CacheData, loadBuf, 10);
+            _Cache = 2;
+        }
     }
 
-    return ((sum & 0xff) == loadBuf[9]);
+    return dataOk;
 }
 
 // Returns bit pattern for provided value 0-9 or number provided as a char '0'-'9'

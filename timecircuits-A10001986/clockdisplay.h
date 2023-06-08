@@ -161,9 +161,9 @@ class clockDisplay {
 
         uint16_t makeNum(uint8_t num, uint16_t dflags = 0);
 
-        void directCol(int col, int segments);  // directly writes column RAM
+        void directCol(int col, int segments);
 
-        void clearDisplay();                    // clears display RAM
+        void clearDisplay();
         bool handleNM();
         void showInt(bool animate = false, bool Alt = false);
 
@@ -207,6 +207,9 @@ class clockDisplay {
         bool _corr6 = false;
         bool _yearDot = false;
         bool _withColon = false;
+
+        int8_t _Cache = -1;
+        char   _CacheData[10];
 };
 
 #endif

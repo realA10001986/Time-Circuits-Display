@@ -941,9 +941,11 @@ void time_setup()
 
         }
 
-        presentTime.saveLastYear(rtcYear);
         lastYear = rtcYear;
     }
+
+    // Write lastYear to NVM
+    presentTime.saveLastYear(lastYear);
 
     // Load to display
     presentTime.setDateTimeDiff(dt);
@@ -1596,7 +1598,7 @@ void time_loop()
             #ifdef TC_DBG
             Serial.printf("Reduced CPU speed to %d\n", getCpuFrequencyMhz());
             #endif
-        }   
+        }
 
         // Beep auto modes
         if(beepTimer && (millisNow - beepTimerNow > beepTimeout)) {
@@ -1732,7 +1734,7 @@ void time_loop()
             if( couldHaveAuthTime       &&
                 itsTime                 &&
                 (GPShasTime || doWiFi)  &&
-                !timeTravelP0 && !timeTravelP1 && !timeTravelRE && !timeTravelP2 ) {
+                !startup && !timeTravelP0 && !timeTravelP1 && !timeTravelRE && !timeTravelP2 ) {
 
                 if(!autoReadjust) {
 
@@ -2011,7 +2013,7 @@ void time_loop()
 
             // Update "lastYear" and save to NVM
             lastYear = dt.year() - presentTime.getYearOffset();
-            presentTime.saveLastYear(lastYear);
+            presentTime.saveLastYear(lastYear);            
 
             // Debug log beacon
             #ifdef TC_DBG
@@ -4214,10 +4216,10 @@ static void NTPSendPacket()
     
     memset(NTPUDPBuf, 0, NTP_PACKET_SIZE);
 
-    NTPUDPBuf[0] = B11100011; // LI, Version, Mode
-    NTPUDPBuf[1] = 0;         // Stratum
-    NTPUDPBuf[2] = 6;         // Polling Interval
-    NTPUDPBuf[3] = 0xEC;      // Peer Clock Precision
+    NTPUDPBuf[0] = 0b11100011; // LI, Version, Mode
+    NTPUDPBuf[1] = 0;          // Stratum
+    NTPUDPBuf[2] = 6;          // Polling Interval
+    NTPUDPBuf[3] = 0xEC;       // Peer Clock Precision
 
     NTPUDPBuf[12] = 'T';      // Ref ID, anything
     NTPUDPBuf[13] = 'C';

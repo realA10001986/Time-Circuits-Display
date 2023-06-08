@@ -90,6 +90,11 @@
 
 /*  Changelog
  *   
+ *  2023/06/06 (A10001986)
+ *    - Avoid sound distortion on newly initialized clocks by saving lastYear in setup(),
+ *      and skip NTP/GPS update during startup sequence. (Writing to flash is slow enough
+ *      to cause sound disturbances)
+ *    - Reduce read access to NVM by caching
  *  2023/06/02 (A10001986)
  *    - Display Title & Artist from ID3 tags when typing 55ENTER to display the 
  *      currently played song. (ID3v2 only)
@@ -177,7 +182,7 @@
  *    - JS optimization for CP
  *    - Fix MQTT message scrolling
  *  2023/05/02 (A10001986)
- *    - [Pre-compiled binary: Patch WiFiManager::HTTPSend (avoid duplication of String)]
+ *    * [Pre-compiled binary: Patch WiFiManager::HTTPSend (avoid duplication of String)]
  *    - HA/MQTT: Publish "REENTRY" for external props; fix error in topic scanning;
  *      subscribe two topics at a time.
  *    - time_loop(): Move less timing critical stuff to when there is no half-
