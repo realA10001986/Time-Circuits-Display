@@ -863,7 +863,7 @@ Clicking this (and saying "yes" in the confirmation dialog) erases the WiFi conf
 
 ---
 
-### Setup
+### Setup page
 
 #### Basic settings
 
