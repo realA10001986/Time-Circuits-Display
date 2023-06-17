@@ -847,7 +847,7 @@ Clicking this leads to the WiFi configuration page. On that page, you can connec
 
 ##### &#9654; Setup
 
-This leads to the [Setup page](#setup).
+This leads to the [Setup page](#setup-page).
 
 ##### &#9654; Restart
 
