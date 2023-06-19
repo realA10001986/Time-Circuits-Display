@@ -1057,6 +1057,10 @@ The username (and optionally the password) to be used when connecting to the bro
 
 A topic the TCD subscribes to in order to display messages on the *Destination Time" display.
 
+##### &#9654; Send commands for external props
+
+Check this if you want the TCD to send commands via [MQTT](#home-assistant--mqtt) to other props, such as Flux Capacitor or SID.
+
 #### Music Player settings
 
 ##### &#9654; Shuffle at startup
