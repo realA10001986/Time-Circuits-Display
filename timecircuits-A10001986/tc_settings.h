@@ -84,7 +84,7 @@ extern uint8_t musFolderNum;
 #define DEF_USE_ETTO        0     // Default: 0: No external props
 #define DEF_PLAY_TT_SND     1     // Default 1: Play time travel sounds (0: Do not; for use with external equipment)
 #define DEF_SHUFFLE         0     // Music Player: Do not shuffle by default
-#define DEF_CFG_ON_SD       0     // Default: Save alarm/volume settings in flash memory
+#define DEF_CFG_ON_SD       1     // Default: Save alarm/volume settings on SD
 #define DEF_SD_FREQ         0     // SD/SPI frequency: Default 16MHz
 
 struct Settings {

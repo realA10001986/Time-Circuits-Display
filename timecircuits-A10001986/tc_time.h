@@ -148,7 +148,7 @@ void enableRcMode(bool onOff);
 bool toggleRcMode();
 bool isRcMode();
 
-void animate();
+void animate(bool withLEDs = false);
 void allLampTest();
 void allOff();
 

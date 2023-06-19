@@ -1306,11 +1306,21 @@ static void saveParamsCallback()
 }
 
 // This is called before a firmware updated is initiated.
-// Disable WiFi-off-timers.
+// Disable WiFi-off-timers and audio.
 static void preUpdateCallback()
 {
     wifiAPOffDelay = 0;
     origWiFiOffDelay = 0;
+
+    stopAudio();
+
+    allOff();
+    #ifdef TC_HAVESPEEDO
+    if(useSpeedo) speedo.off();
+    #endif
+    destinationTime.resetBrightness();
+    destinationTime.showTextDirect("UPDATING");
+    destinationTime.on();
 }
 
 // Grab static IP parameters from WiFiManager's server.

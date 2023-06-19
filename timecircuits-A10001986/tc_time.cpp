@@ -145,6 +145,8 @@ bool          beepTimer = false;
 unsigned long beepTimeout = 30;
 unsigned long beepTimerNow = 0;
 
+static unsigned long secStartMillis = 0;
+
 // Pause auto-time-cycling if user played with time travel
 static bool          autoPaused = false;
 static unsigned long pauseNow = 0;
@@ -1320,7 +1322,6 @@ void time_loop()
                     startup = true;
                     startupSound = true;
                     FPBUnitIsOn = true;
-                    leds_on();
                     if(beepMode >= 2)      startBeepTimer();
                     else if(beepMode == 1) muteBeep = false;
                     destinationTime.setBrightness(255); // restore brightnesses
@@ -1389,7 +1390,7 @@ void time_loop()
 
     // Turn display on after startup delay
     if(startup && (millis() - startupNow >= STARTUP_DELAY)) {
-        animate();
+        animate(true);
         startup = false;
         #ifdef TC_HAVESPEEDO
         if(useSpeedo && !useGPSSpeed) {
@@ -1639,7 +1640,13 @@ void time_loop()
             }
         }
 
-    } 
+    }
+
+    if(secStartMillis && millis() - secStartMillis > 980) {
+        // Play "annoying beep"(tm)
+        //play_beep();
+        secStartMillis = 0;
+    }
     
     y = digitalRead(SECONDS_IN_PIN);
     if(y != x) {
@@ -1657,6 +1664,7 @@ void time_loop()
 
             // Play "annoying beep"(tm)
             play_beep();
+            //secStartMillis = millis();
 
             // Prepare for time re-adjustment through NTP/GPS
 
@@ -3050,7 +3058,7 @@ static void dispIdleZero(bool force)
 #endif
 
 // Show all, month after a short delay
-void animate()
+void animate(bool withLEDs)
 {
     #ifdef TC_HAVETEMP
     if(isRcMode() && (!isWcMode() || !WcHaveTZ1)) {
@@ -3073,6 +3081,10 @@ void animate()
     } else
     #endif
         departedTime.showAnimate1();
+
+    if(withLEDs) {
+        leds_on();
+    }
         
     mydelay(80);
 

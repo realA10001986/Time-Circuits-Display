@@ -90,6 +90,12 @@
 
 /*  Changelog
  *   
+ *  2023/06/19 (A10001986)
+ *    - Fake power: Turn on LEDs in sync with displays
+ *    - Re-do beep sound (better sync'd under ESP32-Arduino 2.0.9)
+ *    - Display "updating" and stop audio upon OTA fw update
+ *  2023/06/12 (A10001986)
+ *    - Don't show audio installer if in FlashROMode
  *  2023/06/06 (A10001986)
  *    - Avoid sound distortion on newly initialized clocks by saving lastYear in setup(),
  *      and skip NTP/GPS update during startup sequence. (Writing to flash is slow enough

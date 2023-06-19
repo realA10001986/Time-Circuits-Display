@@ -275,7 +275,8 @@ void settings_setup()
     configOnSD = (haveSD && ((settings.CfgOnSD[0] != '0') || FlashROMode));
 
     // Check if SD contains our default sound files
-    if(haveFS && haveSD) {
+    // We don't do that if in FlashROMode mode, of course
+    if(haveFS && haveSD && !FlashROMode) {
         allowCPA = check_if_default_audio_present();
     }
 

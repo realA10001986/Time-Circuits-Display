@@ -897,6 +897,10 @@ void play_beep()
 
     curVolFact = 0.3;
     curChkNM   = true;
+    // Reset vol smoothing
+    // (user might have turned the pot while no sound was played)
+    rawVolIdx = 0;
+    anaReadCount = 0;
     out->SetGain(getVolume());
 
     myPM->open(data_beep_wav, data_beep_wav_len);
