@@ -4443,12 +4443,12 @@ void bttfn_loop()
     if(BTTFUDPBuf[4] > BTTFN_VERSION)
         return;
 
-    byte cmd = BTTFUDPBuf[5];
-    memset(NTPUDPBuf + 5, 0, NTP_PACKET_SIZE - 5);
+    BTTFUDPBuf[4] = BTTFN_VERSION;
+
+    memset(NTPUDPBuf + 6, 0, NTP_PACKET_SIZE - 6);
 
     // Eval query and build reply into BTTFUDPBuf
-    switch(cmd) {
-    case 1:   // time
+    if(BTTFUDPBuf[5] & 0x01) {    // time
         myrtcnow(dt);
         temp = dt.year() - presentTime.getYearOffset();
         BTTFUDPBuf[6]  = (uint16_t)temp & 0xff;
@@ -4459,18 +4459,18 @@ void bttfn_loop()
         BTTFUDPBuf[11] = (uint8_t)dt.minute();
         BTTFUDPBuf[12] = (uint8_t)dt.second();
         BTTFUDPBuf[13] = (uint8_t)dt.dayOfTheWeek();
-        break;
-    case 2:   // speed  (-1 if unavailable)
+    }
+    if(BTTFUDPBuf[5] & 0x02) {   // speed  (-1 if unavailable)
         temp = -1;
         #ifdef TC_HAVEGPS
         if(useGPSSpeed) {
             temp = myGPS.getSpeed();
         }
         #endif
-        BTTFUDPBuf[6] = (uint16_t)temp & 0xff;
-        BTTFUDPBuf[7] = (uint16_t)temp >> 8;
-        break;
-    case 3:   // temperature (-32768 if unavailable)
+        BTTFUDPBuf[14] = (uint16_t)temp & 0xff;
+        BTTFUDPBuf[15] = (uint16_t)temp >> 8;
+    }
+    if(BTTFUDPBuf[5] & 0x04) {   // temperature (-32768 if unavailable)
         temp = -32768;
         #ifdef TC_HAVETEMP
         if(useTemp) {
@@ -4480,14 +4480,9 @@ void bttfn_loop()
             }
         }
         #endif
-        BTTFUDPBuf[6] = (uint16_t)temp & 0xff;
-        BTTFUDPBuf[7] = (uint16_t)temp >> 8;
-        break;
-    default:
-        return;
+        BTTFUDPBuf[16] = (uint16_t)temp & 0xff;
+        BTTFUDPBuf[17] = (uint16_t)temp >> 8;
     }
-
-    BTTFUDPBuf[4] = BTTFN_VERSION;
 
     a = 0;
     for(int i = 4; i < BTTF_PACKET_SIZE - 1; i++) {
