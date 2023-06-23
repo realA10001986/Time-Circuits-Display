@@ -183,4 +183,8 @@ void  setDatesTimesWC(DateTime& dt);
 void  ntp_loop();
 void  ntp_short_loop();
 
+#ifdef TC_HAVEBTTFN
+void bttfn_loop();
+#endif
+
 #endif

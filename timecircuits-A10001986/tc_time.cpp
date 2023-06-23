@@ -517,6 +517,16 @@ static const int16_t tt_p0_delays[88] =
 static long tt_p0_totDelays[88];
 #endif
 
+// BTTF UDP
+#ifdef TC_HAVEBTTFN
+#define BTTFN_VERSION              1
+#define BTTF_PACKET_SIZE          48
+#define BTTF_DEFAULT_LOCAL_PORT 1338
+static WiFiUDP       bttfUDP;
+static UDP*          tcdUDP;
+static byte          BTTFUDPBuf[BTTF_PACKET_SIZE];
+#endif
+
 static void myCustomDelay(unsigned int mydel);
 static void myIntroDelay(unsigned int mydel, bool withGPS = true);
 static void waitAudioDoneIntro();
@@ -565,6 +575,10 @@ static uint32_t NTPGetSecsSinceTCepoch();
 static bool NTPGetLocalTime(int& year, int& month, int& day, int& hour, int& minute, int& second, int& isDST);
 static bool NTPHaveLocalTime();
 
+// BTTF network stuff
+#ifdef TC_HAVEBTTFN
+static void bttfn_setup();
+#endif
 
 /*
  * time_boot()
@@ -1163,6 +1177,11 @@ void time_setup()
     #endif
     #endif
 
+    // Start bttf network stuff
+    #ifdef TC_HAVEBTTFN
+    bttfn_setup();
+    #endif
+    
     // Show "REPLACE BATTERY" message if RTC battery is low or depleted
     // Note: This also shows up the first time you power-up the clock
     // AFTER a battery change.
@@ -4385,3 +4404,99 @@ static bool NTPHaveLocalTime()
 
     return true;
 }
+
+/**************************************************************
+ ***                                                        ***
+ ***                 BTTF-network polling                   ***
+ ***                                                        ***
+ **************************************************************/
+
+#ifdef TC_HAVEBTTFN
+static void bttfn_setup()
+{
+    tcdUDP = &bttfUDP;
+    tcdUDP->begin(BTTF_DEFAULT_LOCAL_PORT);
+}
+
+void bttfn_loop()
+{
+    uint8_t a = 0;
+    int16_t temp = 0;
+    float tempf;
+    DateTime dt;
+    int psize = tcdUDP->parsePacket();
+    if(!psize) 
+        return;
+    
+    tcdUDP->read(BTTFUDPBuf, BTTF_PACKET_SIZE);
+
+    // Check
+    if(strncmp((char *)BTTFUDPBuf, "BTTF", 4))
+        return;
+
+    for(int i = 4; i < BTTF_PACKET_SIZE - 1; i++) {
+        a += BTTFUDPBuf[i] ^ 0x55;
+    }
+    if(BTTFUDPBuf[BTTF_PACKET_SIZE - 1] != a)
+        return;
+
+    if(BTTFUDPBuf[4] > BTTFN_VERSION)
+        return;
+
+    byte cmd = BTTFUDPBuf[5];
+    memset(NTPUDPBuf + 5, 0, NTP_PACKET_SIZE - 5);
+
+    // Eval query and build reply into BTTFUDPBuf
+    switch(cmd) {
+    case 1:   // time
+        myrtcnow(dt);
+        temp = dt.year() - presentTime.getYearOffset();
+        BTTFUDPBuf[6]  = (uint16_t)temp & 0xff;
+        BTTFUDPBuf[7]  = (uint16_t)temp >> 8;
+        BTTFUDPBuf[8]  = (uint8_t)dt.month();
+        BTTFUDPBuf[9]  = (uint8_t)dt.day();
+        BTTFUDPBuf[10] = (uint8_t)dt.hour();
+        BTTFUDPBuf[11] = (uint8_t)dt.minute();
+        BTTFUDPBuf[12] = (uint8_t)dt.second();
+        BTTFUDPBuf[13] = (uint8_t)dt.dayOfTheWeek();
+        break;
+    case 2:   // speed  (-1 if unavailable)
+        temp = -1;
+        #ifdef TC_HAVEGPS
+        if(useGPSSpeed) {
+            temp = myGPS.getSpeed();
+        }
+        #endif
+        BTTFUDPBuf[6] = (uint16_t)temp & 0xff;
+        BTTFUDPBuf[7] = (uint16_t)temp >> 8;
+        break;
+    case 3:   // temperature (-32768 if unavailable)
+        temp = -32768;
+        #ifdef TC_HAVETEMP
+        if(useTemp) {
+            tempf = tempSens.readLastTemp();
+            if(!isnan(tempf)) {
+                temp = (int16_t)(tempf * 100.0);
+            }
+        }
+        #endif
+        BTTFUDPBuf[6] = (uint16_t)temp & 0xff;
+        BTTFUDPBuf[7] = (uint16_t)temp >> 8;
+        break;
+    default:
+        return;
+    }
+
+    BTTFUDPBuf[4] = BTTFN_VERSION;
+
+    a = 0;
+    for(int i = 4; i < BTTF_PACKET_SIZE - 1; i++) {
+        a += BTTFUDPBuf[i] ^ 0x55;
+    }
+    BTTFUDPBuf[BTTF_PACKET_SIZE - 1] = a;
+
+    tcdUDP->beginPacket(tcdUDP->remoteIP(), tcdUDP->remotePort());
+    tcdUDP->write(BTTFUDPBuf, BTTF_PACKET_SIZE);
+    tcdUDP->endPacket();
+}
+#endif

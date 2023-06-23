@@ -2272,4 +2272,7 @@ static void myloop()
     #ifdef TC_HAVEGPS
     gps_loop();       // >= 12ms
     #endif
+    #ifdef TC_HAVEBTTFN
+    bttfn_loop();
+    #endif
 }

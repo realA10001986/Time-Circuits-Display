@@ -16,9 +16,9 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION "V2.8.99"          // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "JUN192023"  // 13 chars max
+#define TC_VERSION_EXTRA "JUN232023"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "06192023"   // 12 chars max
+#define TC_VERSION_EXTRA "06232023"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -95,6 +95,9 @@
 
 // Uncomment for HomeAssistant MQTT protocol support
 #define TC_HAVEMQTT
+
+// Uncomment for bttf network poll support
+#define TC_HAVEBTTFN
 
 // --- end of config options
 
