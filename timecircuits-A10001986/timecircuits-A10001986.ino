@@ -90,6 +90,8 @@
 
 /*  Changelog
  *   
+ *  2023/06/26 (A10001986)
+ *    - Network polling: Add response marker
  *  2023/06/23 (A10001986)
  *    - Add network data polling facility (time, speed, temperature), in preparation for
  *      other bttf props

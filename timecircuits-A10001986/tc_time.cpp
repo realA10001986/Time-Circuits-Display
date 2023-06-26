@@ -4422,8 +4422,10 @@ void bttfn_loop()
 {
     uint8_t a = 0;
     int16_t temp = 0;
+    int32_t temp32 = 0;
     float tempf;
     DateTime dt;
+    //uint8_t reqVersion;
     int psize = tcdUDP->parsePacket();
     if(!psize) 
         return;
@@ -4440,25 +4442,33 @@ void bttfn_loop()
     if(BTTFUDPBuf[BTTF_PACKET_SIZE - 1] != a)
         return;
 
+    if(BTTFUDPBuf[4] & 0x80)
+        return;
+        
     if(BTTFUDPBuf[4] > BTTFN_VERSION)
         return;
 
-    BTTFUDPBuf[4] = BTTFN_VERSION;
+    // For future use
+    //reqVersion = BTTFUDPBuf[4];
+    
+    // Add response marker to version byte
+    BTTFUDPBuf[4] |= 0x80;
 
-    memset(NTPUDPBuf + 6, 0, NTP_PACKET_SIZE - 6);
+    // Leave serial# (BTTFUDPBuf + 6-9) untouched
+    memset(BTTFUDPBuf + 10, 0, BTTF_PACKET_SIZE - 10);
 
     // Eval query and build reply into BTTFUDPBuf
     if(BTTFUDPBuf[5] & 0x01) {    // time
         myrtcnow(dt);
         temp = dt.year() - presentTime.getYearOffset();
-        BTTFUDPBuf[6]  = (uint16_t)temp & 0xff;
-        BTTFUDPBuf[7]  = (uint16_t)temp >> 8;
-        BTTFUDPBuf[8]  = (uint8_t)dt.month();
-        BTTFUDPBuf[9]  = (uint8_t)dt.day();
-        BTTFUDPBuf[10] = (uint8_t)dt.hour();
-        BTTFUDPBuf[11] = (uint8_t)dt.minute();
-        BTTFUDPBuf[12] = (uint8_t)dt.second();
-        BTTFUDPBuf[13] = (uint8_t)dt.dayOfTheWeek();
+        BTTFUDPBuf[10] = (uint16_t)temp & 0xff;
+        BTTFUDPBuf[11] = (uint16_t)temp >> 8;
+        BTTFUDPBuf[12] = (uint8_t)dt.month();
+        BTTFUDPBuf[13] = (uint8_t)dt.day();
+        BTTFUDPBuf[14] = (uint8_t)dt.hour();
+        BTTFUDPBuf[15] = (uint8_t)dt.minute();
+        BTTFUDPBuf[16] = (uint8_t)dt.second();
+        BTTFUDPBuf[17] = (uint8_t)dt.dayOfTheWeek();
     }
     if(BTTFUDPBuf[5] & 0x02) {   // speed  (-1 if unavailable)
         temp = -1;
@@ -4467,8 +4477,8 @@ void bttfn_loop()
             temp = myGPS.getSpeed();
         }
         #endif
-        BTTFUDPBuf[14] = (uint16_t)temp & 0xff;
-        BTTFUDPBuf[15] = (uint16_t)temp >> 8;
+        BTTFUDPBuf[18] = (uint16_t)temp & 0xff;
+        BTTFUDPBuf[19] = (uint16_t)temp >> 8;
     }
     if(BTTFUDPBuf[5] & 0x04) {   // temperature (-32768 if unavailable)
         temp = -32768;
@@ -4480,8 +4490,20 @@ void bttfn_loop()
             }
         }
         #endif
-        BTTFUDPBuf[16] = (uint16_t)temp & 0xff;
-        BTTFUDPBuf[17] = (uint16_t)temp >> 8;
+        BTTFUDPBuf[20] = (uint16_t)temp & 0xff;
+        BTTFUDPBuf[21] = (uint16_t)temp >> 8;
+    }
+    if(BTTFUDPBuf[5] & 0x08) {   // lux (-1 if unavailable)
+        temp32 = -1;
+        #ifdef TC_HAVELIGHT
+        if(useLight) {
+            temp32 = lightSens.readLux();
+        }
+        #endif
+        BTTFUDPBuf[22] =  (uint32_t)temp32        & 0xff;
+        BTTFUDPBuf[23] = ((uint32_t)temp32 >>  8) & 0xff;
+        BTTFUDPBuf[24] = ((uint32_t)temp32 >> 16) & 0xff;
+        BTTFUDPBuf[25] = ((uint32_t)temp32 >> 24) & 0xff;
     }
 
     a = 0;
