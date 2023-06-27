@@ -1701,7 +1701,10 @@ static bool isIp(char *str)
         str++;
     }
 
-    return true;
+    if(segs == 3)
+        return true;
+
+    return false;
 }
 
 // IPAddress to string
