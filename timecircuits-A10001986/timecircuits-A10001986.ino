@@ -3,7 +3,7 @@
  * CircuitSetup.us Time Circuits Display
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
  * (C) 2022-2023 Thomas Winischhofer (A10001986)
- * https://github.com/realA10001986/Time-Circuits-Display-A10001986
+ * https://github.com/realA10001986/Time-Circuits-Display
  *
  * -------------------------------------------------------------------
  * License: MIT
@@ -630,7 +630,7 @@
  *  2022/10/05 (A10001986)
  *    - Important: The external time travel trigger button is now no longer
  *      on IO14, but IO27. This will require some soldering on existing TC
- *      boards, see https://github.com/realA10001986/Time-Circuits-Display-A10001986
+ *      boards, see https://github.com/realA10001986/Time-Circuits-Display
  *      Also, externally triggered time travels will now include the speedo
  *      sequence as part of the time travel sequence, if a speedo is
  *      connected and activated in the Config Portal. If, in the Config Portal,
