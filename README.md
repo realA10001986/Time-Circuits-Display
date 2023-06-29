@@ -201,96 +201,96 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="center" colspan="2">Keypad reference: Special key sequences<br>(&#9166; = ENTER key)</td>
     </tr>
    <tr>
-     <td align="center">000&#9166;</td>
-     <td align="center">Disable <a href="#beep-on-the-second">beep</a> sound</td>
+     <td align="left">000&#9166;</td>
+     <td align="left">Disable <a href="#beep-on-the-second">beep</a> sound</td>
     </tr>
     <tr>
-     <td align="center">001&#9166;</td>
-     <td align="center">Enable <a href="#beep-on-the-second">beep</a> sound</td>
+     <td align="left">001&#9166;</td>
+     <td align="left">Enable <a href="#beep-on-the-second">beep</a> sound</td>
     </tr>
    <tr>
-     <td align="center">002&#9166;</td>
-     <td align="center">Enable <a href="#beep-on-the-second">beep</a> sound (30 seconds)</td>
+     <td align="left">002&#9166;</td>
+     <td align="left">Enable <a href="#beep-on-the-second">beep</a> sound (30 seconds)</td>
     </tr>
    <tr>
-     <td align="center">003&#9166;</td>
-     <td align="center">Enable <a href="#beep-on-the-second">beep</a> sound (60 seconds)</td>
+     <td align="left">003&#9166;</td>
+     <td align="left">Enable <a href="#beep-on-the-second">beep</a> sound (60 seconds)</td>
     </tr>
    <tr>
-     <td align="center">111&#9166;</td>
-     <td align="center">Toggle <a href="#room-condition-mode-temperaturehumidity-sensor">Room Condition mode</a></td>
+     <td align="left">111&#9166;</td>
+     <td align="left">Toggle <a href="#room-condition-mode-temperaturehumidity-sensor">Room Condition mode</a></td>
     </tr>
     <tr>
-     <td align="center">112&#9166;</td>
-     <td align="center">Toggle <a href="#">World Clock mode</a></td>
+     <td align="left">112&#9166;</td>
+     <td align="left">Toggle <a href="#">World Clock mode</a></td>
     </tr>
     <tr>
-     <td align="center">113&#9166;</td>
-     <td align="center">Synchronously toggle <a href="#">World Clock mode</a> and <a href="#room-condition-mode-temperaturehumidity-sensor">Room Condition mode</a></td>
+     <td align="left">113&#9166;</td>
+     <td align="left">Synchronously toggle <a href="#">World Clock mode</a> and <a href="#room-condition-mode-temperaturehumidity-sensor">Room Condition mode</a></td>
     </tr>
     <tr>
-     <td align="center">11&#9166;</td>
-     <td align="center">Show current <a href="#how-to-set-up-the-alarm">alarm</a> time/weekday</td>
+     <td align="left">11&#9166;</td>
+     <td align="left">Show current <a href="#how-to-set-up-the-alarm">alarm</a> time/weekday</td>
     </tr>
     <tr>
-     <td align="center">11hhMM&#9166;</td>
-     <td align="center">Set <a href="#how-to-set-up-the-alarm">alarm</a> to hh:MM</td>
+     <td align="left">11hhMM&#9166;</td>
+     <td align="left">Set <a href="#how-to-set-up-the-alarm">alarm</a> to hh:MM</td>
     </tr>
     <tr>
-     <td align="center">44&#9166;</td>
-     <td align="center"><a href="#count-down-timer">Timer</a>: Show remaining time</td>
+     <td align="left">44&#9166;</td>
+     <td align="left"><a href="#count-down-timer">Timer</a>: Show remaining time</td>
     </tr>
     <tr>
-     <td align="center">44MM&#9166;</td>
-     <td align="center"><a href="#count-down-timer">Timer</a>: Set timer to MM minutes</td>
+     <td align="left">44MM&#9166;</td>
+     <td align="left"><a href="#count-down-timer">Timer</a>: Set timer to MM minutes</td>
     </tr>
    <tr>
-     <td align="center">440</td>
-     <td align="center"><a href="#count-down-timer">Timer</a>: Delete timer</td>
+     <td align="left">440</td>
+     <td align="left"><a href="#count-down-timer">Timer</a>: Delete timer</td>
     </tr>
     <tr>
-     <td align="center">77&#9166;</td>
-     <td align="center"><a href="#yearlymonthly-reminder">Reminder</a>: Display reminder</td>
+     <td align="left">77&#9166;</td>
+     <td align="left"><a href="#yearlymonthly-reminder">Reminder</a>: Display reminder</td>
     </tr>
     <tr>
-     <td align="center">777&#9166;</td>
-     <td align="center"><a href="#yearlymonthly-reminder">Reminder</a>: Display time until reminder</td>
+     <td align="left">777&#9166;</td>
+     <td align="left"><a href="#yearlymonthly-reminder">Reminder</a>: Display time until reminder</td>
     </tr>
     <tr>
-     <td align="center">77mmdd&#9166;</td>
-     <td align="center"><a href="#yearlymonthly-reminder">Reminder</a>: Program reminder</td>
+     <td align="left">77mmdd&#9166;</td>
+     <td align="left"><a href="#yearlymonthly-reminder">Reminder</a>: Program reminder</td>
     </tr>
     <tr>
-     <td align="center">77mmddhhMM&#9166;</td>
-     <td align="center"><a href="#yearlymonthly-reminder">Reminder</a>: Program reminder</td>
+     <td align="left">77mmddhhMM&#9166;</td>
+     <td align="left"><a href="#yearlymonthly-reminder">Reminder</a>: Program reminder</td>
     </tr>
     <tr>
-     <td align="center">770&#9166;</td>
-     <td align="center"><a href="#yearlymonthly-reminder">Reminder</a>: Delete reminder</td>
+     <td align="left">770&#9166;</td>
+     <td align="left"><a href="#yearlymonthly-reminder">Reminder</a>: Delete reminder</td>
     </tr>
     <tr>
-     <td align="center">55&#9166;</td>
-     <td align="center"><a href="#the-music-player">Music Player</a>: Show currently played song number</td>
+     <td align="left">55&#9166;</td>
+     <td align="left"><a href="#the-music-player">Music Player</a>: Show currently played song number</td>
     </tr>
     <tr>
-     <td align="center">222&#9166;</td>
-     <td align="center"><a href="#the-music-player">Music Player</a>: Shuffle off</td>
+     <td align="left">222&#9166;</td>
+     <td align="left"><a href="#the-music-player">Music Player</a>: Shuffle off</td>
     </tr>
     <tr>
-     <td align="center">555&#9166;</td>
-     <td align="center"><a href="#the-music-player">Music Player</a>: Shuffle on</td>
+     <td align="left">555&#9166;</td>
+     <td align="left"><a href="#the-music-player">Music Player</a>: Shuffle on</td>
     </tr> 
     <tr>
-     <td align="center">888&#9166;</td>
-     <td align="center"><a href="#the-music-player">Music Player</a>: Go to song 0</td>
+     <td align="left">888&#9166;</td>
+     <td align="left"><a href="#the-music-player">Music Player</a>: Go to song 0</td>
     </tr>
     <tr>
-     <td align="center">888xxx&#9166;</td>
-     <td align="center"><a href="#the-music-player">Music Player</a>: Go to song xxx</td>
+     <td align="left">888xxx&#9166;</td>
+     <td align="left"><a href="#the-music-player">Music Player</a>: Go to song xxx</td>
     </tr>
     <tr>
-     <td align="center">64738&#9166;</td>
-     <td align="center">Reboot the device</td>
+     <td align="left">64738&#9166;</td>
+     <td align="left">Reboot the device</td>
     </tr>
 </table>
 
