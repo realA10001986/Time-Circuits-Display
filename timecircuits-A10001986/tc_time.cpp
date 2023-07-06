@@ -290,7 +290,8 @@ static uint32_t      NTPmsSinceSecond = 0;
 static bool          NTPPacketDue = false;
 static bool          NTPWiFiUp = false;
 static uint8_t       NTPfailCount = 0;
-static uint8_t       NTPUDPID[4] = { 0, 0, 0, 0};
+static uint8_t       NTPUDPHD[4] = { 'T', 'C', 'D', '1' };
+static uint32_t      NTPUDPID    = 0;
  
 // The RTC object
 tcRTC rtc(2, (uint8_t[2*2]){ PCF2129_ADDR, RTCT_PCF2129, 
@@ -525,6 +526,10 @@ static long tt_p0_totDelays[88];
 static WiFiUDP       bttfUDP;
 static UDP*          tcdUDP;
 static byte          BTTFUDPBuf[BTTF_PACKET_SIZE];
+static uint8_t       BTTFUDPHD[4] = { 'B', 'T', 'T', 'F'};
+#define BTTFN_MAX_CLIENTS 5
+static uint8_t bttfnClientIP[BTTFN_MAX_CLIENTS][4]  = { { 0 } };
+static char    bttfnClientID[BTTFN_MAX_CLIENTS][13] = { { 0 } };
 #endif
 
 static void myCustomDelay(unsigned int mydel);
@@ -4233,9 +4238,7 @@ static bool NTPTriggerUpdate()
 }
 
 static void NTPSendPacket()
-{
-    unsigned long mymillis = millis();
-    
+{   
     memset(NTPUDPBuf, 0, NTP_PACKET_SIZE);
 
     NTPUDPBuf[0] = 0b11100011; // LI, Version, Mode
@@ -4243,16 +4246,10 @@ static void NTPSendPacket()
     NTPUDPBuf[2] = 6;          // Polling Interval
     NTPUDPBuf[3] = 0xEC;       // Peer Clock Precision
 
-    NTPUDPBuf[12] = 'T';      // Ref ID, anything
-    NTPUDPBuf[13] = 'C';
-    NTPUDPBuf[14] = 'D';
-    NTPUDPBuf[15] = '1';
+    memcpy(NTPUDPBuf + 12, NTPUDPHD, 4);  // Ref ID, anything
 
     // Transmit, use as id
-    NTPUDPBuf[40] = NTPUDPID[0] = ((mymillis >> 24) & 0xff);      
-    NTPUDPBuf[41] = NTPUDPID[1] = ((mymillis >> 16) & 0xff);
-    NTPUDPBuf[42] = NTPUDPID[2] = ((mymillis >>  8) & 0xff);
-    NTPUDPBuf[43] = NTPUDPID[3] = (mymillis         & 0xff);
+    *((uint32_t *)(NTPUDPBuf + 40)) = NTPUDPID = (uint32_t)millis();
 
     myUDP->beginPacket(settings.ntpServer, 123);
     myUDP->write(NTPUDPBuf, NTP_PACKET_SIZE);
@@ -4287,10 +4284,8 @@ static void NTPCheckPacket()
 
     // Basic validity check
     if((NTPUDPBuf[0] & 0x3f) != 0x24) return;
-    if(NTPUDPBuf[24] != NTPUDPID[0] || 
-       NTPUDPBuf[25] != NTPUDPID[1] || 
-       NTPUDPBuf[26] != NTPUDPID[2] || 
-       NTPUDPBuf[27] != NTPUDPID[3]) {
+
+    if(*((uint32_t *)(NTPUDPBuf + 24)) != NTPUDPID) {
         #ifdef TC_DBG
         Serial.println("NTPCheckPacket: Bad packet ID (outdated packet?)");
         #endif
@@ -4412,6 +4407,96 @@ static bool NTPHaveLocalTime()
  **************************************************************/
 
 #ifdef TC_HAVEBTTFN
+int bttfnNumClients()
+{
+    int i;
+    
+    for(i = 0; i < BTTFN_MAX_CLIENTS; i++) {
+      if(!bttfnClientIP[i][0])
+          break;
+    }
+    return i;
+}
+
+bool bttfnGetClientInfo(int c, char **id, uint8_t **ip)
+{
+    if(c > BTTFN_MAX_CLIENTS - 1)
+        return false;
+        
+    if(!bttfnClientIP[c][0])
+        return false;
+        
+    *id = bttfnClientID[c];
+    *ip = bttfnClientIP[c];
+    return true;
+}
+
+static bool bttfnValChar(char *s, int i)
+{
+    char a = s[i];
+
+    if(a == '-') return true;
+    if(a < '0') return false;
+    if(a > '9' && a < 'A') return false;
+    if(a < 'Z') return true;
+    if(a > 'a' && a < 'z') {
+        s[i] &= ~0x20;
+        return true;
+    }
+    return false; 
+}
+
+static bool bttfnipcmp(uint8_t *ip1, uint8_t *ip2)
+{
+    for(int i = 0; i < 4; i++) {
+        if(*ip1++ != *ip2++) return true;
+    }
+    return false;
+}
+
+static void storeBTTFNClient(uint8_t *ip, char *id)
+{
+    int     i;
+    uint8_t *pip;
+    bool    badName = false;
+    
+    for(i = 0; i < BTTFN_MAX_CLIENTS; i++) {
+        pip = bttfnClientIP[i];
+        if(!*pip)
+            break;
+        else if(!bttfnipcmp(pip, ip))
+            break;
+    }
+
+    // Check if free slot available
+    if(i == BTTFN_MAX_CLIENTS)
+        return;
+
+    *pip++ = *ip++;
+    *pip++ = *ip++;
+    *pip++ = *ip++;
+    *pip = *ip;
+    
+    if(!*id) {
+        badName = true;
+    } else {
+        for(int j = 0; j < 12; j++) {
+            if(!id[j]) break;
+            if(!bttfnValChar(id, j)) {
+                badName = true;
+                break;
+            }
+        }
+    }
+    
+    if(badName) {
+        strcpy(bttfnClientID[i], "UNKNOWN");
+    } else {
+        strncpy(bttfnClientID[i], id, 12);
+        bttfnClientID[i][12] = 0;
+    }
+}
+
 static void bttfn_setup()
 {
     tcdUDP = &bttfUDP;
@@ -4420,20 +4505,20 @@ static void bttfn_setup()
 
 void bttfn_loop()
 {
+    uint8_t tip[4] = { 0 };
     uint8_t a = 0;
     int16_t temp = 0;
-    int32_t temp32 = 0;
-    float tempf;
-    DateTime dt;
+    
     //uint8_t reqVersion;
     int psize = tcdUDP->parsePacket();
+
     if(!psize) 
         return;
     
     tcdUDP->read(BTTFUDPBuf, BTTF_PACKET_SIZE);
 
     // Check
-    if(strncmp((char *)BTTFUDPBuf, "BTTF", 4))
+    if(memcmp(BTTFUDPBuf, BTTFUDPHD, 4))
         return;
 
     for(int i = 4; i < BTTF_PACKET_SIZE - 1; i++) {
@@ -4442,6 +4527,7 @@ void bttfn_loop()
     if(BTTFUDPBuf[BTTF_PACKET_SIZE - 1] != a)
         return;
 
+    // If response marker set, bail
     if(BTTFUDPBuf[4] & 0x80)
         return;
         
@@ -4454,11 +4540,17 @@ void bttfn_loop()
     // Add response marker to version byte
     BTTFUDPBuf[4] |= 0x80;
 
+    // Store client ip/id for keypad menu
+    IPAddress t = tcdUDP->remoteIP();
+    for(int i = 0; i < 4; i++) tip[i] = t[i];
+    storeBTTFNClient(tip, (char *)BTTFUDPBuf + 10);
+
     // Leave serial# (BTTFUDPBuf + 6-9) untouched
     memset(BTTFUDPBuf + 10, 0, BTTF_PACKET_SIZE - 10);
 
     // Eval query and build reply into BTTFUDPBuf
     if(BTTFUDPBuf[5] & 0x01) {    // time
+        DateTime dt;
         myrtcnow(dt);
         temp = dt.year() - presentTime.getYearOffset();
         BTTFUDPBuf[10] = (uint16_t)temp & 0xff;
@@ -4484,7 +4576,7 @@ void bttfn_loop()
         temp = -32768;
         #ifdef TC_HAVETEMP
         if(useTemp) {
-            tempf = tempSens.readLastTemp();
+            float tempf = tempSens.readLastTemp();
             if(!isnan(tempf)) {
                 temp = (int16_t)(tempf * 100.0);
             }
@@ -4494,7 +4586,7 @@ void bttfn_loop()
         BTTFUDPBuf[21] = (uint16_t)temp >> 8;
     }
     if(BTTFUDPBuf[5] & 0x08) {   // lux (-1 if unavailable)
-        temp32 = -1;
+        int32_t temp32 = -1;
         #ifdef TC_HAVELIGHT
         if(useLight) {
             temp32 = lightSens.readLux();
@@ -4506,6 +4598,7 @@ void bttfn_loop()
         BTTFUDPBuf[25] = ((uint32_t)temp32 >> 24) & 0xff;
     }
 
+    // Calc checksum
     a = 0;
     for(int i = 4; i < BTTF_PACKET_SIZE - 1; i++) {
         a += BTTFUDPBuf[i] ^ 0x55;

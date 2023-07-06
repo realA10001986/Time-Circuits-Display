@@ -721,6 +721,9 @@ void clockDisplay::showHalfIPDirect(int a, int b, uint16_t flags)
     const char *fmt = "%3d   %3d";
     #endif
 
+    if(a > 255) a = 255;    // Avoid buf overflow if numbers too high
+    if(b > 255) b = 255;
+
     #ifdef IS_ACAR_DISPLAY
     sprintf(buf, (a >= 100) ? fmt1 : fmt2, a, b);
     #else

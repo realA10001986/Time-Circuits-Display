@@ -90,6 +90,10 @@
 
 /*  Changelog
  *   
+ *  2023/07/05 (A10001986)
+ *    - Network polling: Show connected polling clients in keypad menu (hostname, IP).
+ *      This helps finding out the IP address of other props when they are connected
+ *      to the TCD's AP.
  *  2023/06/27 (A10001986)
  *    - Fix isIp()
  *  2023/06/26 (A10001986)

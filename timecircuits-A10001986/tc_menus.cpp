@@ -239,8 +239,9 @@
 #define MODE_DEPT 9
 #define MODE_SENS 10
 #define MODE_LTS  11
-#define MODE_VER  12
-#define MODE_END  13
+#define MODE_CLI  12
+#define MODE_VER  13
+#define MODE_END  14
 #define MODE_MAX  MODE_END
 
 #define FIELD_MONTH   0
@@ -310,6 +311,9 @@ static void doShowSensors();
 #endif
 static void displayIP();
 static void doShowNetInfo();
+#ifdef TC_HAVEBTTFN
+static void doShowBTTFNInfo();
+#endif
 static bool menuWaitForRelease();
 static bool checkEnterPress();
 static void prepareInput(uint16_t number);
@@ -617,6 +621,16 @@ void enter_menu()
         // Show net info
         doShowNetInfo();
 
+    #ifdef TC_HAVEBTTFN
+    } else if(menuItemNum == MODE_CLI) {   // Show bttfn clients
+
+        allOff();
+        waitForEnterRelease();
+
+        // Show client info
+        doShowBTTFNInfo();
+
+    #endif  
     #if defined(TC_HAVELIGHT) || defined(TC_HAVETEMP)
     } else if(menuItemNum == MODE_SENS) {   // Show light sensor info
 
@@ -725,6 +739,9 @@ static bool menuSelect(int& number, int mode_min)
             if(number == MODE_SENS && !useLight && !useTemp) number++;
             #else
             if(number == MODE_SENS) number++;
+            #endif
+            #ifndef TC_HAVEBTTFN
+            if(number == MODE_CLI) number++;
             #endif
             if(number > MODE_MAX) number = mode_min;
 
@@ -844,18 +861,6 @@ static void menuShow(int number)
         departedTime.off();
         break;
     #endif
-    case MODE_VER:  // Version info
-        destinationTime.showTextDirect("VERSION");
-        destinationTime.on();
-        presentTime.showTextDirect(TC_VERSION);
-        presentTime.on();
-        #ifdef TC_VERSION_EXTRA
-        departedTime.showTextDirect(TC_VERSION_EXTRA);
-        departedTime.on();
-        #else
-        departedTime.off();
-        #endif
-        break;
     case MODE_LTS:  // last time sync info
         destinationTime.showTextDirect("TIME SYNC");
         destinationTime.on();
@@ -879,6 +884,26 @@ static void menuShow(int number)
             departedTime.showTextDirect("AGO");
             departedTime.on();
         }
+        break;
+    #ifdef TC_HAVEBTTFN
+    case MODE_CLI:
+        destinationTime.showTextDirect("CLIENTS");
+        destinationTime.on();
+        presentTime.off();
+        departedTime.off();
+        break;
+    #endif
+    case MODE_VER:  // Version info
+        destinationTime.showTextDirect("VERSION");
+        destinationTime.on();
+        presentTime.showTextDirect(TC_VERSION);
+        presentTime.on();
+        #ifdef TC_VERSION_EXTRA
+        departedTime.showTextDirect(TC_VERSION_EXTRA);
+        departedTime.on();
+        #else
+        departedTime.off();
+        #endif
         break;
     case MODE_CPA:  // Install audio files
         destinationTime.showTextDirect("INSTALL");
@@ -2018,6 +2043,91 @@ static void doShowNetInfo()
 
     }
 }
+
+/*
+ * Show BTTFN network clients ##################################
+ */
+#ifdef TC_HAVEBTTFN
+static void displayClient(int numCli, int number)
+{
+    uint8_t *ip;
+    char *id;
+
+    destinationTime.on();
+    
+    if(!numCli) {
+        destinationTime.showTextDirect("NO CLIENTS");
+        presentTime.off();
+        departedTime.off();
+        return;
+    }
+
+    if(number >= numCli) number = numCli - 1;
+
+    if(bttfnGetClientInfo(number, &id, &ip)) {
+        destinationTime.showTextDirect(id);
+        presentTime.showHalfIPDirect(ip[0], ip[1], CDT_CLEAR);
+        departedTime.showHalfIPDirect(ip[2], ip[3], CDT_CLEAR);
+        presentTime.on();
+        departedTime.on();
+    } else {
+        destinationTime.showTextDirect("NO CLIENT");
+        presentTime.off();
+        departedTime.off();
+    }
+}
+
+void doShowBTTFNInfo()
+{
+    int number = 0;
+    bool netDone = false;
+    int numCli = bttfnNumClients();
+    int oldNumCli;
+
+    oldNumCli = numCli;
+
+    displayClient(numCli, number);
+
+    isEnterKeyHeld = false;
+
+    timeout = 0;  // reset timeout
+
+    // Wait for enter
+    while(!checkTimeOut() && !netDone) {
+
+        if(!oldNumCli && oldNumCli != numCli) {
+            number = 0;
+            displayClient(numCli, number);
+            oldNumCli = numCli;
+        }
+
+        // If pressed
+        if(checkEnterPress()) {
+
+            timeout = 0;  // button pressed, reset timeout
+
+            if(!(netDone = menuWaitForRelease())) {
+
+                if(numCli > 1) {
+                    number++;
+                    if(number >= numCli) number = 0;                    
+                } else
+                    number = 0;
+
+                displayClient(numCli, number);
+
+            }
+
+        } else {
+
+            mydelay(50);
+            numCli = bttfnNumClients();
+
+        }
+
+    }
+}
+#endif
 
 /*
  * Install default audio files from SD to flash FS #############

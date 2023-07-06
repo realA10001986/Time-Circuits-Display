@@ -359,7 +359,6 @@ static void waitConnectCallback();
 
 static void setupStaticIP();
 static bool isIp(char *str);
-static void ipToString(char *str, IPAddress ip);
 static IPAddress stringToIp(char *str);
 
 static void getParam(String name, char *destBuf, size_t length);
@@ -1708,7 +1707,7 @@ static bool isIp(char *str)
 }
 
 // IPAddress to string
-static void ipToString(char *str, IPAddress ip)
+void ipToString(char *str, IPAddress ip)
 {
     sprintf(str, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
 }
