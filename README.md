@@ -817,17 +817,23 @@ The device can tell other props about a time travel, and in essence act as a "ma
 
 "ETTO lead", ie the lead time between IO14 going high and the actual start of a time travel is defined as 5000ms (ETTO_LEAD_TIME). In this window of time, the prop can play its pre-time-travel (warm-up/acceleration/etc) sequence. The sequence inside the time "tunnel" follows after that lead time, and when IO14 goes LOW, the re-entry into the destination time takes place.
 
-If external gear is connected to IO14 and you want to use this control feature, check **Talk to props connected by wire** in the Config Portal.
+If external gear is connected to IO14 and you want to use this control feature, check **Control props connected by wire** in the Config Portal.
 
 ### Connecting props wirelessly
 
-#### BTTF-Network
+#### BTTF-Network (BTTFN)
 
-Documentation coming soon
+The TCD can communicate with other compatible props wirelessly, via WiFi. It can send out information about a time travel and an alarm, and other props can query the TCD for time, speed and some other data. Unlike with MQTT, no broker or other third party software is needed.
+
+On the TCD, no special configuration is required. However, if the TCD is supposed to send out notifications about time travel and alarm to connected clients, usage of MQTT must be disabled or the **Send commands for other props** option in the MQTT section of the Config Portal must be unchecked. The TCD only sends out such notifications either via MQTT or BTTFN, never both.
+
+On the other prop, such as CircuitSetup's upcoming Flux Capacitor or SID, the TCD's IP address must be entered into the **IP address of TCD** field on the respective Setup page in their Config Portal - that's it.
+
+The fact that the devices communicate directly with each other makes BTTFN the ideal solution for car setups: The TCD acts as access point for Flux Capacitor and SID, and both those props talk to the TCD wirelessly. More information on this is in the documentation of the respective prop.
 
 #### HomeAssitant/MQTT
 
-Documentation coming soon
+The other way of wireless communication is, of course, [Home Assistant/MQTT](#home-assistant--mqtt). If both the TCD and the other props are connected to the same broker, and the option **Send commands for other props** is checked on the TCD's side, other compatible props will receive information on time travel and alarm and play their sequences in sync with the TCD.
 
 ## Flash Wear
 
@@ -1043,9 +1049,9 @@ Selects a delay (in milliseconds) from when pressing the external time travel bu
 
 #### Settings for other peripherals
 
-##### &#9654; Talk to props connected by wire
+##### &#9654; Control props connected by wire
 
-This selects whether a GPIO pin is activated upon a time-travel in order to control external props. See [here](#controlling-other-props)
+This selects whether a GPIO pin is activated upon a time-travel in order to control other props. See [here](#controlling-other-props)
 
 ##### &#9654; Quick GPS updates for other props
 
