@@ -2146,17 +2146,7 @@ void time_loop()
                         if(!alarmDone) {
                             play_file("/alarm.mp3", PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
                             alarmDone = true;
-                            #ifdef TC_HAVEMQTT
-                            if(useMQTT && pubMQTT) {
-                                mqttPublish("bttf/tcd/pub", "ALARM\0", 6);
-                            }
-                            #endif
-                            #ifdef TC_HAVEBTTFN
-                            #ifdef TC_HAVEMQTT
-                            if(!useMQTT || !pubMQTT)
-                            #endif
-                                bttfn_notify(BTTFN_NOT_ALARM);
-                            #endif
+                            sendNetWorkMsg("ALARM\0", 6, BTTFN_NOT_ALARM);
                         }
                     } else {
                         alarmDone = false;
