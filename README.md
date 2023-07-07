@@ -797,6 +797,8 @@ Note that if your configured WiFi network was not available when the clock was t
 
 ## Controlling other props
 
+### Connecting props by wire
+
 The device can tell other props about a time travel, and in essence act as a "master controller" for several props. It does so via IO14 (labeled "TT OUT" on Control Boards 1.3 and later), see diagram below.
 
 ```
@@ -815,7 +817,17 @@ The device can tell other props about a time travel, and in essence act as a "ma
 
 "ETTO lead", ie the lead time between IO14 going high and the actual start of a time travel is defined as 5000ms (ETTO_LEAD_TIME). In this window of time, the prop can play its pre-time-travel (warm-up/acceleration/etc) sequence. The sequence inside the time "tunnel" follows after that lead time, and when IO14 goes LOW, the re-entry into the destination time takes place.
 
-If external gear is connected to IO14 and you want to use this control feature, check **Use compatible external props** in the Config Portal.
+If external gear is connected to IO14 and you want to use this control feature, check **Talk to props connected by wire** in the Config Portal.
+
+### Connecting props wirelessly
+
+#### BTTF-Network
+
+Documentation coming soon
+
+#### HomeAssitant/MQTT
+
+Documentation coming soon
 
 ## Flash Wear
 
@@ -1031,9 +1043,13 @@ Selects a delay (in milliseconds) from when pressing the external time travel bu
 
 #### Settings for other peripherals
 
-##### &#9654; Use compatible external props
+##### &#9654; Talk to props connected by wire
 
 This selects whether a GPIO pin is activated upon a time-travel in order to control external props. See [here](#controlling-other-props)
+
+##### &#9654; Quick GPS updates for other props
+
+Some BTTF-Network clients query the TCD for GPS speed, such as CircuitSetup's upcoming SID. Check this option if such clients are connected, so that they get a GPS speed updated in a higher rate (twice per second vs once every 5 seconds).
 
 ##### &#9654; Play time travel sounds
 
