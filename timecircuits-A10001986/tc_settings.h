@@ -82,6 +82,7 @@ extern uint8_t musFolderNum;
 #define DEF_USE_LIGHT       0     // Default: No i2c light sensor
 #define DEF_LUX_LIMIT       3     // Default Lux for night mode
 #define DEF_USE_ETTO        0     // Default: 0: No external props
+#define DEF_QUICK_GPS       0     // Default: Slow GPS updates
 #define DEF_PLAY_TT_SND     1     // Default 1: Play time travel sounds (0: Do not; for use with external equipment)
 #define DEF_SHUFFLE         0     // Music Player: Do not shuffle by default
 #define DEF_CFG_ON_SD       1     // Default: Save alarm/volume settings on SD
@@ -145,6 +146,9 @@ struct Settings {
 #endif // HAVESPEEDO
 #ifdef EXTERNAL_TIMETRAVEL_OUT
     char useETTO[4]         = MS(DEF_USE_ETTO);
+#endif
+#ifdef TC_HAVEGPS
+    char quickGPS[4]        = MS(DEF_QUICK_GPS);
 #endif
     char playTTsnds[4]      = MS(DEF_PLAY_TT_SND);
     char shuffle[4]         = MS(DEF_SHUFFLE);

@@ -887,9 +887,15 @@ static void menuShow(int number)
         break;
     #ifdef TC_HAVEBTTFN
     case MODE_CLI:
-        destinationTime.showTextDirect("CLIENTS");
-        destinationTime.on();
+        #ifdef IS_ACAR_DISPLAY
+        destinationTime.showTextDirect("BTTFN");
+        presentTime.showTextDirect("CLIENTS");
+        presentTime.on();
+        #else
+        destinationTime.showTextDirect("BTTFN CLIENTS");
         presentTime.off();
+        #endif
+        destinationTime.on();
         departedTime.off();
         break;
     #endif
@@ -2052,8 +2058,6 @@ static void displayClient(int numCli, int number)
 {
     uint8_t *ip;
     char *id;
-
-    destinationTime.on();
     
     if(!numCli) {
         destinationTime.showTextDirect("NO CLIENTS");
@@ -2071,7 +2075,7 @@ static void displayClient(int numCli, int number)
         presentTime.on();
         departedTime.on();
     } else {
-        destinationTime.showTextDirect("NO CLIENT");
+        destinationTime.showTextDirect("EXPIRED");
         presentTime.off();
         departedTime.off();
     }
@@ -2086,6 +2090,8 @@ void doShowBTTFNInfo()
 
     oldNumCli = numCli;
 
+    destinationTime.on();
+
     displayClient(numCli, number);
 
     isEnterKeyHeld = false;
@@ -2095,7 +2101,7 @@ void doShowBTTFNInfo()
     // Wait for enter
     while(!checkTimeOut() && !netDone) {
 
-        if(!oldNumCli && oldNumCli != numCli) {
+        if(oldNumCli != numCli) {
             number = 0;
             displayClient(numCli, number);
             oldNumCli = numCli;
@@ -2383,6 +2389,9 @@ static void myloop()
     gps_loop();       // >= 12ms
     #endif
     #ifdef TC_HAVEBTTFN
+    #ifdef TC_HAVEGPS
+    audio_loop();
+    #endif
     bttfn_loop();
     #endif
 }

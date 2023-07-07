@@ -16,9 +16,9 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION "V2.8.99"          // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "JUL052023"  // 13 chars max
+#define TC_VERSION_EXTRA "JUL072023"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "07052023"   // 12 chars max
+#define TC_VERSION_EXTRA "07072023"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -114,6 +114,9 @@
 // Use SPIFFS (if defined) or LittleFS (if undefined; esp32-arduino >= 2.x)
 // I stick with SPIFFS for now.
 #define USE_SPIFFS
+
+// 2Hz GPS updates for GPS speed (undefined: 1Hz)
+#define TC_GPSSPEED500
 
 // Custom stuff -----
 #define TWSOUND         // Use A10001986's sound files

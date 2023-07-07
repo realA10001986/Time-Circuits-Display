@@ -106,13 +106,21 @@ bool tcGPS::begin(unsigned long powerupTime, bool quickUpdates)
     // If we use GPS for speed, we need more frequent updates.
     // The value in PKT 314 is a multiplier for the value of PKT 220.
     // For speed we want updates every second for the RMC sentence,
-    // so we set the fix update to 1000ms, and the multiplier to 1.
+    // so we set the fix update to 500/1000ms, and the multiplier to 1.
     // For mere time, we set the fix update to 5000, and the
     // multiplier to 1 as well, so we get it every 5th second.
     if(quickUpdates) {
-        sendCommand("$PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0*30");
+        #ifndef TC_GPSSPEED500
         // Set update rate to 1000ms
+        // RMC 1x per sec, ZDA every 5th second
+        sendCommand("$PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0*30");
         sendCommand("$PMTK220,1000*1F");
+        #else
+        // Set update rate to 500ms
+        // RMC 2x per sec, ZDA every 10th second
+        sendCommand("$PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,0*07");
+        sendCommand("$PMTK220,500*2B");
+        #endif
     } else {
         sendCommand("$PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0*34");
         // Set update rate to 5000ms
@@ -344,7 +352,7 @@ bool tcGPS::readAndParse(bool doDelay)
             _last_char = curr_char;
         }
 
-        if(doDelay) (*_customDelayFunc)(5);
+        if(doDelay) (*_customDelayFunc)(1);
 
     }  
 

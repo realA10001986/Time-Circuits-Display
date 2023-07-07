@@ -237,15 +237,22 @@ WiFiManagerParameter custom_ettDelay("ettDe", "Delay (ms)", settings.ettDelay, 5
 
 #ifdef EXTERNAL_TIMETRAVEL_OUT
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
-WiFiManagerParameter custom_useETTO("uEtto", "Use compatible external props (0=no, 1=yes)", settings.useETTO, 1, "autocomplete='off' title='Enable to use compatible wired external props to be part of the time travel sequence, eg. FluxCapacitor, SID, etc.'");
+WiFiManagerParameter custom_useETTO("uEtto", "Talk to props connected by wire (0=no, 1=yes)", settings.useETTO, 1, "autocomplete='off' title='If enabled, the TCD will include compatible props, eg. Flux Capacitor or SID, into the time travel sequence'");
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_useETTO("uEtto", "Use compatible external props", settings.useETTO, 1, "autocomplete='off' title='Check to use compatible wired external props to be part of the time travel sequence, eg. Flux Capacitor, SID, etc.' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_useETTO("uEtto", "Talk to props connected by wire", settings.useETTO, 1, "autocomplete='off' title='If checked, the TCD will include compatible props, eg. Flux Capacitor or SID, into the time travel sequence' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 #endif // EXTERNAL_TIMETRAVEL_OUT
+#ifdef TC_HAVEGPS
+#ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
+WiFiManagerParameter custom_qGPS("qGPS", "Quick GPS updates for other props (0=no, 1=yes)", settings.quickGPS, 1, "autocomplete='off' title='If enabled, the TCD will provide high-frequency GPS updates for other props, eg. SID'");
+#else // -------------------- Checkbox hack: --------------
+WiFiManagerParameter custom_qGPS("qGPS", "Quick GPS updates for other props", settings.quickGPS, 1, "autocomplete='off' title='If checked, the TCD will provide high-frequency GPS updates for other props, eg. SID' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+#endif // -------------------------------------------------
+#endif // TC_HAVEGPS
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
 WiFiManagerParameter custom_playTTSnd("plyTTS", "Play time travel sounds (0=no, 1=yes)", settings.playTTsnds, 1, "autocomplete='off' title='Disable if other props provide time travel sound.'");
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_playTTSnd("plyTTS", "Play time travel sounds", settings.playTTsnds, 1, "autocomplete='off' title='Uncheck if other props provide time travel sound.' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_playTTSnd("plyTTS", "Play time travel sounds", settings.playTTsnds, 1, "autocomplete='off' title='Uncheck if other props provide time travel sound.' type='checkbox'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 
 #ifdef TC_HAVEMQTT
@@ -258,9 +265,9 @@ WiFiManagerParameter custom_mqttServer("ha_server", "<br>Broker IP[:port] or dom
 WiFiManagerParameter custom_mqttUser("ha_usr", "User[:Password]", settings.mqttUser, 63, "placeholder='Example: ronald:mySecret'");
 WiFiManagerParameter custom_mqttTopic("ha_topic", "Topic to subscribe to", settings.mqttTopic, 127, "placeholder='Example: home/outside/temperature'");
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
-WiFiManagerParameter custom_pubMQTT("pMQTT", "Send commands for external props", settings.pubMQTT, 1, "autocomplete='off'");
+WiFiManagerParameter custom_pubMQTT("pMQTT", "Send commands for other props", settings.pubMQTT, 1, "autocomplete='off'");
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_pubMQTT("pMQTT", "Send commands for external props", settings.pubMQTT, 1, "type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_pubMQTT("pMQTT", "Send commands for other props", settings.pubMQTT, 1, "type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 #endif // HAVEMQTT
 
@@ -506,6 +513,9 @@ void wifi_setup()
     wm.addParameter(&custom_sectstart);     // 3
     #ifdef EXTERNAL_TIMETRAVEL_OUT
     wm.addParameter(&custom_useETTO);
+    #endif
+    #ifdef TC_HAVEGPS
+    wm.addParameter(&custom_qGPS);
     #endif
     wm.addParameter(&custom_playTTSnd);
 
@@ -840,6 +850,9 @@ void wifi_loop()
             #ifdef EXTERNAL_TIMETRAVEL_OUT
             mystrcpy(settings.useETTO, &custom_useETTO);
             #endif
+            #ifdef TC_HAVEGPS
+            mystrcpy(settings.quickGPS, &custom_qGPS);
+            #endif
             mystrcpy(settings.playTTsnds, &custom_playTTSnd);
 
             #ifdef TC_HAVEMQTT
@@ -895,6 +908,9 @@ void wifi_loop()
             
             #ifdef EXTERNAL_TIMETRAVEL_OUT
             strcpyCB(settings.useETTO, &custom_useETTO);
+            #endif
+            #ifdef TC_HAVEGPS
+            strcpyCB(settings.quickGPS, &custom_qGPS);
             #endif
             strcpyCB(settings.playTTsnds, &custom_playTTSnd);
 
@@ -961,7 +977,7 @@ void wifi_loop()
     
     if(wifiInAPMode) {
         // Disable WiFi in AP mode after a configurable delay (if > 0)
-        if(wifiAPOffDelay > 0) {
+        if(wifiAPOffDelay > 0 && !bttfnHaveClients) {
             if(!wifiAPIsOff && (millis() - wifiAPModeNow >= wifiAPOffDelay)) {
                 wifiOff(false);
                 wifiAPIsOff = true;
@@ -974,7 +990,7 @@ void wifi_loop()
         }
     } else {
         // Disable WiFi in STA mode after a configurable delay (if > 0)
-        if(origWiFiOffDelay > 0) {
+        if(origWiFiOffDelay > 0 && !bttfnHaveClients) {
             if(!wifiIsOff && (millis() - wifiOnNow >= wifiOffDelay)) {
                 wifiOff(false);
                 wifiIsOff = true;
@@ -1561,6 +1577,9 @@ void updateConfigPortalValues()
     #ifdef EXTERNAL_TIMETRAVEL_OUT
     custom_useETTO.setValue(settings.useETTO, 1);
     #endif
+    #ifdef TC_HAVEGPS
+    custom_qGPS.setValue(settings.quickGPS, 1);
+    #endif
     custom_playTTSnd.setValue(settings.playTTsnds, 1);
     #ifdef TC_HAVEMQTT
     custom_useMQTT.setValue(settings.useMQTT, 1);
@@ -1605,6 +1624,9 @@ void updateConfigPortalValues()
     //#endif
     #ifdef EXTERNAL_TIMETRAVEL_OUT
     setCBVal(&custom_useETTO, settings.useETTO);
+    #endif
+    #ifdef TC_HAVEGPS
+    setCBVal(&custom_qGPS, settings.quickGPS);
     #endif
     setCBVal(&custom_playTTSnd, settings.playTTsnds);
     #ifdef TC_HAVEMQTT

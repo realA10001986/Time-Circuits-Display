@@ -116,6 +116,8 @@ extern int16_t  mqttMaxIdx;
 extern bool     mqttST;
 #endif
 
+extern bool bttfnHaveClients;
+
 // Time Travel difference to RTC
 extern uint64_t timeDifference;
 extern bool     timeDiffUp;

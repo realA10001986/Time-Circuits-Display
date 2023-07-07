@@ -252,6 +252,7 @@ static bool alarmRTC = true;
 
 bool useGPS      = true;
 bool useGPSSpeed = false;
+bool quickGPSupdates = false;
 
 // TZ/DST status & data
 static bool checkDST        = false;
@@ -519,17 +520,25 @@ static long tt_p0_totDelays[88];
 #endif
 
 // BTTF UDP
+bool bttfnHaveClients = false;
+#define BTTFN_NOT_PREPARE  1
+#define BTTFN_NOT_TT       2
+#define BTTFN_NOT_REENTRY  3
+#define BTTFN_NOT_ABORT_TT 4
+#define BTTFN_NOT_ALARM    5
 #ifdef TC_HAVEBTTFN
 #define BTTFN_VERSION              1
 #define BTTF_PACKET_SIZE          48
 #define BTTF_DEFAULT_LOCAL_PORT 1338
+#define BTTFN_MAX_CLIENTS          5
 static WiFiUDP       bttfUDP;
 static UDP*          tcdUDP;
 static byte          BTTFUDPBuf[BTTF_PACKET_SIZE];
 static uint8_t       BTTFUDPHD[4] = { 'B', 'T', 'T', 'F'};
-#define BTTFN_MAX_CLIENTS 5
-static uint8_t bttfnClientIP[BTTFN_MAX_CLIENTS][4]  = { { 0 } };
-static char    bttfnClientID[BTTFN_MAX_CLIENTS][13] = { { 0 } };
+static uint8_t       bttfnClientIP[BTTFN_MAX_CLIENTS][4]  = { { 0 } };
+static char          bttfnClientID[BTTFN_MAX_CLIENTS][13] = { { 0 } };
+static unsigned long bttfnClientALIVE[BTTFN_MAX_CLIENTS] = { 0 };
+static unsigned long bttfnlastExpire = 0;
 #endif
 
 static void myCustomDelay(unsigned int mydel);
@@ -563,6 +572,7 @@ static void triggerLongTT();
 #ifdef EXTERNAL_TIMETRAVEL_OUT
 static void ettoPulseStart();
 static void ettoPulseEnd();
+static void sendNetWorkMsg(const char *pl, unsigned int len, uint8_t bttfnMsg);
 #endif
 
 // Time calculations
@@ -583,6 +593,8 @@ static bool NTPHaveLocalTime();
 // BTTF network stuff
 #ifdef TC_HAVEBTTFN
 static void bttfn_setup();
+static void bttfn_notify(uint8_t event);
+static void bttfn_expire_clients();
 #endif
 
 /*
@@ -745,10 +757,12 @@ void time_setup()
     }
     #endif
 
+    quickGPSupdates = (useGPSSpeed || ((int)atoi(settings.quickGPS) > 0));
+
     // Check for GPS receiver
     // Do so regardless of usage in order to eliminate
     // VEML7700 light sensor with identical i2c address
-    if(myGPS.begin(powerupMillis, useGPSSpeed)) {
+    if(myGPS.begin(powerupMillis, quickGPSupdates)) {
 
         myGPS.setCustomDelayFunc(myCustomDelay);
         haveGPS = true;
@@ -987,15 +1001,21 @@ void time_setup()
         
         // Set ms between GPS polls
         // Need more updates if speed is to be displayed
-        // RMC is around 85 chars, so three fit in the 255 byte buffer. 
-        // With speed, the buffer fills in 3 seconds; without in 15 seconds;
-        // Then there is ZDA every 5 seconds; -> 2.4 / 12.5 seconds.
+        // RMC is 72-85 chars, so three fit in the 255 byte buffer.
+        #ifndef TC_GPSSPEED500 
+        // At 1000ms, the buffer fills in 3 seconds.
+        // Then there is ZDA every 5 seconds -> 2.4 / 12.5 seconds.
         // The update freq of 250ms means the entire buffer is read 
         // - once per second with speed,
-        // - every 2 seconds without speed. 
-        // Good enough.
-        GPSupdateFreq    = useGPSSpeed ? 250 : 500;
-        GPSupdateFreqMin = useGPSSpeed ? 500 : 500;
+        // - every 2 seconds without speed.
+        GPSupdateFreq    = quickGPSupdates ? 250 : 500;
+        GPSupdateFreqMin = quickGPSupdates ? 250 : 500;
+        #else
+        // At 500ms, the buffer fills in 1.5 seconds + ZDA
+        // At 200ms, the entire buffer is read in 0.75 secs
+        GPSupdateFreq    = quickGPSupdates ? 200 : 500;
+        GPSupdateFreqMin = quickGPSupdates ? 200 : 500;
+        #endif
     }
     #endif
 
@@ -1368,10 +1388,6 @@ void time_loop()
                 if(FPBUnitIsOn) {
                     startup = false;
                     startupSound = false;
-                    timeTravelP0 = 0;
-                    timeTravelP1 = 0;
-                    timeTravelRE = false;
-                    timeTravelP2 = 0;
                     triggerP1 = 0;
                     #ifdef EXTERNAL_TIMETRAVEL_OUT
                     triggerETTO = false;
@@ -1379,7 +1395,16 @@ void time_loop()
                         ettoPulseEnd();
                         ettoPulse = false;
                     }
+                    if(useETTO || bttfnHaveClients) {
+                        if(timeTravelP0 || timeTravelP1 || timeTravelRE || timeTravelP2) {
+                            sendNetWorkMsg("ABORT_TT\0", 9, BTTFN_NOT_ABORT_TT);
+                        }
+                    }
                     #endif
+                    timeTravelP0 = 0;
+                    timeTravelP1 = 0;
+                    timeTravelRE = false;
+                    timeTravelP2 = 0;
                     FPBUnitIsOn = false;
                     cancelEnterAnim(false);
                     cancelETTAnim();
@@ -1447,11 +1472,7 @@ void time_loop()
         triggerETTO = false;
         ettoPulse = true;
         ettoPulseNow = millis();
-        #ifdef TC_HAVEMQTT
-        if(useMQTT && pubMQTT) {
-            mqttPublish("bttf/tcd/pub", "TIMETRAVEL\0", 11);
-        }
-        #endif
+        sendNetWorkMsg("TIMETRAVEL\0", 11, BTTFN_NOT_TT);
         #ifdef TC_DBG
         Serial.println(F("ETTO triggered"));
         #endif
@@ -2130,6 +2151,12 @@ void time_loop()
                                 mqttPublish("bttf/tcd/pub", "ALARM\0", 6);
                             }
                             #endif
+                            #ifdef TC_HAVEBTTFN
+                            #ifdef TC_HAVEMQTT
+                            if(!useMQTT || !pubMQTT)
+                            #endif
+                                bttfn_notify(BTTFN_NOT_ALARM);
+                            #endif
                         }
                     } else {
                         alarmDone = false;
@@ -2523,12 +2550,11 @@ void timeTravel(bool doComplete, bool withSpeedo)
             // This add'l delay is put into timetravelP0Delay.
 
             #ifdef EXTERNAL_TIMETRAVEL_OUT
-            if(useETTO) {
+            if(useETTO || bttfnHaveClients) {
 
                 triggerETTO = true;
                 triggerP1 = true;
-                triggerETTONow = triggerP1Now = ttUnivNow;
-
+                
                 if(currTotDur >= ettoLeadPoint || currTotDur >= pointOfP1) {
 
                     if(currTotDur >= ettoLeadPoint && currTotDur >= pointOfP1) {
@@ -2572,6 +2598,15 @@ void timeTravel(bool doComplete, bool withSpeedo)
 
                 }
 
+                // If there is time between NOW and ETTO_LEAD start, send
+                // PREPARE message to networked clients.
+                if(triggerETTOLeadTime > 500) {
+                    sendNetWorkMsg("PREPARE\0", 8, BTTFN_NOT_PREPARE);
+                }
+                
+                ttUnivNow = millis();
+                triggerETTONow = triggerP1Now = ttUnivNow;
+
             } else
             #endif
             if(currTotDur >= pointOfP1) {
@@ -2606,10 +2641,10 @@ void timeTravel(bool doComplete, bool withSpeedo)
     if(doComplete) {
 
         #ifdef EXTERNAL_TIMETRAVEL_OUT
-        if(useETTO) {
+        if(useETTO || bttfnHaveClients) {
+
             triggerP1 = true;
             triggerETTO = true;
-            triggerETTONow = triggerP1Now = ttUnivNow;
 
             if(ettoLeadTime >= (TT_P1_POINT88 + TT_SNDLAT)) {
                 triggerETTOLeadTime = 0;
@@ -2617,7 +2652,14 @@ void timeTravel(bool doComplete, bool withSpeedo)
             } else {
                 triggerP1LeadTime = 0;
                 triggerETTOLeadTime = (TT_P1_POINT88 + TT_SNDLAT) - ettoLeadTime;
+
+                if(triggerETTOLeadTime > 500) {
+                    sendNetWorkMsg("PREPARE\0", 8, BTTFN_NOT_PREPARE);
+                }
             }
+
+            ttUnivNow = millis();
+            triggerETTONow = triggerP1Now = ttUnivNow;
 
             return;
         }
@@ -2680,6 +2722,14 @@ void timeTravel(bool doComplete, bool withSpeedo)
         timeDiffUp = false;
     }
 
+    // For external props: Signal Re-Entry
+    #ifdef EXTERNAL_TIMETRAVEL_OUT
+    if(useETTO || bttfnHaveClients) {
+        ettoPulseEnd();
+        sendNetWorkMsg("REENTRY\0", 8, BTTFN_NOT_REENTRY);
+    }
+    #endif
+
     // Save presentTime settings (timeDifference) if to be persistent
     if(timetravelPersistent) {
         presentTime.save();
@@ -2691,18 +2741,6 @@ void timeTravel(bool doComplete, bool withSpeedo)
         timeTravelP2 = 1;
         timetravelP0Now = ttUnivNow;
         timetravelP0Delay = 2000;
-    }
-    #endif
-
-    // For external props: Signal Re-Entry by ending tigger signal
-    #ifdef EXTERNAL_TIMETRAVEL_OUT
-    if(useETTO) {
-        ettoPulseEnd();
-        #ifdef TC_HAVEMQTT
-        if(useMQTT && pubMQTT) {
-            mqttPublish("bttf/tcd/pub", "REENTRY\0", 8);
-        }
-        #endif
     }
     #endif
 }
@@ -2725,6 +2763,7 @@ static void ettoPulseStart()
     digitalWrite(WHITE_LED_PIN, HIGH);
     #endif
 }
+
 static void ettoPulseEnd()
 {
     if(useETTOWired) {
@@ -2734,7 +2773,29 @@ static void ettoPulseEnd()
     digitalWrite(WHITE_LED_PIN, LOW);
     #endif
 }
-#endif
+
+// Send notification message via MQTT -or- BTTFN.
+// If MQTT is enabled in settings, and "Send commands for external props"
+// is checked, send via MQTT (regardless of connection status). 
+// Otherwise, send via BTTFN.
+// Props can rely on getting only ONE notification message if they listen
+// to both MQTT and BTTFN.
+static void sendNetWorkMsg(const char *pl, unsigned int len, uint8_t bttfnMsg)
+{
+    #ifdef TC_HAVEMQTT
+    if(useMQTT && pubMQTT) {
+        mqttPublish("bttf/tcd/pub", pl, len);
+        return;
+    }
+    #endif
+    #ifdef TC_HAVEBTTFN
+    #ifdef TC_HAVEMQTT
+    if(!useMQTT || !pubMQTT)
+    #endif
+        bttfn_notify(bttfnMsg);
+    #endif
+}
+#endif  // EXTERNAL_TIMETRAVEL_OUT
 
 /*
  * Reset present time to actual present time
@@ -4402,7 +4463,7 @@ static bool NTPHaveLocalTime()
 
 /**************************************************************
  ***                                                        ***
- ***                 BTTF-network polling                   ***
+ ***               BTTF-network communication               ***
  ***                                                        ***
  **************************************************************/
 
@@ -4459,7 +4520,7 @@ static void storeBTTFNClient(uint8_t *ip, char *id)
     int     i;
     uint8_t *pip;
     bool    badName = false;
-    
+
     for(i = 0; i < BTTFN_MAX_CLIENTS; i++) {
         pip = bttfnClientIP[i];
         if(!*pip)
@@ -4471,6 +4532,8 @@ static void storeBTTFNClient(uint8_t *ip, char *id)
     // Check if free slot available
     if(i == BTTFN_MAX_CLIENTS)
         return;
+
+    bttfnHaveClients = true;
 
     *pip++ = *ip++;
     *pip++ = *ip++;
@@ -4495,6 +4558,52 @@ static void storeBTTFNClient(uint8_t *ip, char *id)
         strncpy(bttfnClientID[i], id, 12);
         bttfnClientID[i][12] = 0;
     }
+
+    bttfnClientALIVE[i] = millis();
+}
+
+static void bttfn_expire_clients()
+{
+    bool didST = false;
+    int k, numClients = 0;
+    unsigned long now = millis();
+
+    if(now - bttfnlastExpire < 57*1000)
+        return;
+        
+    bttfnlastExpire = now;
+    
+    for(int i = 0; i < BTTFN_MAX_CLIENTS; i++) {
+        uint8_t *pip = bttfnClientIP[i];
+        if(*pip) {
+            numClients++;
+            if(millis() - bttfnClientALIVE[i] > 5*60*1000) {
+                *pip = 0;
+                numClients--;
+                didST = true;
+            }
+        }
+    }
+
+    bttfnHaveClients = (numClients > 0);
+
+    if(!didST)
+        return;
+
+    for(int j = 0; j < BTTFN_MAX_CLIENTS - 1; j++) {
+        if(!bttfnClientIP[j][0]) {
+            for(k = j + 1; k < BTTFN_MAX_CLIENTS; k++) {
+                if(bttfnClientIP[k][0]) {
+                    memcpy(bttfnClientIP[j], bttfnClientIP[k], 4);
+                    memcpy(bttfnClientID[j], bttfnClientID[k], 13);
+                    bttfnClientALIVE[j] = bttfnClientALIVE[k];
+                    bttfnClientIP[k][0] = 0;
+                    break;
+                }
+            }
+            if(k == BTTFN_MAX_CLIENTS) break;
+        } 
+    }
 }
 
 static void bttfn_setup()
@@ -4512,8 +4621,10 @@ void bttfn_loop()
     //uint8_t reqVersion;
     int psize = tcdUDP->parsePacket();
 
-    if(!psize) 
+    if(!psize) {
+        bttfn_expire_clients();
         return;
+    }
     
     tcdUDP->read(BTTFUDPBuf, BTTF_PACKET_SIZE);
 
@@ -4527,7 +4638,7 @@ void bttfn_loop()
     if(BTTFUDPBuf[BTTF_PACKET_SIZE - 1] != a)
         return;
 
-    // If response marker set, bail
+    // If response marker set, bail - is illegal
     if(BTTFUDPBuf[4] & 0x80)
         return;
         
@@ -4608,5 +4719,43 @@ void bttfn_loop()
     tcdUDP->beginPacket(tcdUDP->remoteIP(), tcdUDP->remotePort());
     tcdUDP->write(BTTFUDPBuf, BTTF_PACKET_SIZE);
     tcdUDP->endPacket();
+}
+
+// Send event notification to known clients
+static void bttfn_notify(uint8_t event)
+{
+    IPAddress ip;
+
+    // No clients?
+    if(!bttfnClientIP[0][0])
+        return;
+    
+    memset(BTTFUDPBuf, 0, BTTF_PACKET_SIZE);
+
+    // ID
+    memcpy(BTTFUDPBuf, BTTFUDPHD, 4);
+
+    BTTFUDPBuf[4] = BTTFN_VERSION + 0x40; // Version + notify marker
+    BTTFUDPBuf[5] = event;                // Store event id
+
+    // Checksum
+    uint8_t a = 0;
+    for(int i = 4; i < BTTF_PACKET_SIZE - 1; i++) {
+        a += BTTFUDPBuf[i] ^ 0x55;
+    }
+    BTTFUDPBuf[BTTF_PACKET_SIZE - 1] = a;
+
+    // Send out to all known clients
+    for(int i = 0; i < BTTFN_MAX_CLIENTS; i++) {
+        if(!bttfnClientIP[i][0])
+            break;
+        ip[0] = bttfnClientIP[i][0];
+        ip[1] = bttfnClientIP[i][1];
+        ip[2] = bttfnClientIP[i][2];
+        ip[3] = bttfnClientIP[i][3];
+        tcdUDP->beginPacket(ip, BTTF_DEFAULT_LOCAL_PORT);
+        tcdUDP->write(BTTFUDPBuf, BTTF_PACKET_SIZE);
+        tcdUDP->endPacket();
+    }
 }
 #endif

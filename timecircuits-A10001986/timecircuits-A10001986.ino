@@ -90,10 +90,17 @@
 
 /*  Changelog
  *   
- *  2023/07/05 (A10001986)
- *    - Network polling: Show connected polling clients in keypad menu (hostname, IP).
- *      This helps finding out the IP address of other props when they are connected
- *      to the TCD's AP.
+ *  2023/07/07 (A10001986)
+ *    - GPS speed: Increase update rate to twice per second for smoother speedo display.
+ *      Also, add CP option "Quick GPS updates" for peripherals that poll the TCD for 
+ *      speed (such as SID). If neither this nor the option "Display GPS speed" is set, 
+ *      GPS rate is every 5 seconds; if either is set, twice per second.
+ *    - Extend mere "network polling" into "BTTF network" ("BTTFN"): TCD now not only 
+ *      answers to polling requests (time, temp, lux, speed), but also sends notifications
+ *      to known clients about time timetravel and alarm. Those notifications are only
+ *      sent, if MQTT is disabled or "send commands for other props" is unchecked.
+ *    - BTTFN: Show connected clients in keypad menu (hostname, IP). This helps finding 
+ *      out the IP address of other props when they are connected to the TCD's AP.
  *  2023/06/27 (A10001986)
  *    - Fix isIp()
  *  2023/06/26 (A10001986)
