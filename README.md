@@ -35,7 +35,8 @@ Features include
 - Support for external [GPS receiver](#gps-receiver), used as time source, and for [speed](#gps-for-speed) to be displayed on speedo display
 - Support for external [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for "room condition mode" and to display temperature on speedo display while idle
 - Support for time travel [triggered by external source](#external-time-travel-trigger), with selectable delay
-- Support for triggering time travels on [other props](#controlling-other-props); TCD can act as master controller for SID, flux capacitor, etc.
+- Support for triggering time travels on [other props](#controlling-other-props) connected by wire; TCD can act as master controller for SID, flux capacitor, etc.
+- Support for wireless communication with compatible other props ("[BTTF-Network](#bttf-network-bttfn)")
 - Built-in installer for default audio files in addition to OTA firmware updates
 
 The code here was formerly based on rudimentary code from/by CircuitSetup. Since Sep 2022, CircuitSetup are distributing this very firmware as their official one (starting with 2.0). The difference between what you get here and CircuitSetup's releases is that the code here might be ahead in development (and uses some different sounds), and the pre-compiled binary has all the features enabled.
@@ -516,6 +517,7 @@ After invoking the keypad menu, the first step is to choose a menu item. The ava
 - enter dates/times for the *Destination* and *Last Time Departed* displays,
 - show light/temperature/humidity sensor info (if such a sensor is connected) ("SENSORS"),
 - show when time was last sync'd with NTP or GPS ("TIME SYNC"),
+- see which [BTTFN-Clients](#bttf-network-bttfn) currently are connected ("BTTFN CLIENTS"),
 - quit the menu ("END").
  
 Pressing ENTER cycles through the list, holding ENTER selects an item.
@@ -632,6 +634,15 @@ Note that when entering dates/times into the *destination time* or *last time de
 - Hold ENTER to exit the menu
 
 Note: Sometimes, light sensors report a lux value of -1. This is mostly due to the fact that all the supported sensors are adjusted for indoor usage and might overload in broad daylight. Also, some sensors might have issues with halogen lamps (reportedly TSL2561), and most sensors also "overload" if too much IR light is directed at them, for instance from surveillance cameras.
+
+#### How to see other BTTF-Network clients
+
+- Hold ENTER to invoke main menu
+- Press ENTER repeatedly until "BTTFN CLIENTS" is shown.
+- Hold ENTER
+- Now one of the connected clients is displayed, or "NO CLIENTS" if currently no clients are connected.
+- Press ENTER to scroll through the list of connected clients.
+- Hold ENTER to exit the menu
 
 #### How to leave the menu:
  
@@ -1055,11 +1066,11 @@ Selects a delay (in milliseconds) from when pressing the external time travel bu
 
 ##### &#9654; Control props connected by wire
 
-This selects whether a GPIO pin is activated upon a time-travel in order to control other props. See [here](#controlling-other-props)
+This selects whether a GPIO pin is activated upon a time-travel in order to play synchronized time travel sequences on other props. See [here](#controlling-other-props)
 
 ##### &#9654; Increased GPS update rate
 
-Some BTTF-Network clients query the TCD for GPS speed, such as CircuitSetup's upcoming SID. Check this option if such clients are connected, so that they get more frequent GPS speed updates (twice per second vs once every 5 seconds).
+Some [BTTF-Network](#bttf-network-bttfn) clients query the TCD for GPS speed, such as CircuitSetup's upcoming SID. Check this option if such clients are connected, so that they get more frequent GPS speed updates (twice per second vs once every 5 seconds).
 
 ##### &#9654; Play time travel sounds
 
