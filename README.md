@@ -846,7 +846,7 @@ The fact that the devices communicate directly with each other makes BTTFN the i
 
 To see which BTTFN devices are currently known to the TCD, enter the keypad menu and select "BTTFN CIENTS".
 
-#### HomeAssitant/MQTT
+#### HomeAssistant/MQTT
 
 The other way of wireless communication is, of course, [Home Assistant/MQTT](#home-assistant--mqtt). If both the TCD and the other props are connected to the same broker, and the option **Send commands for other props** is checked on the TCD's side, other compatible props will receive information on time travel and alarm and play their sequences in sync with the TCD.
 
