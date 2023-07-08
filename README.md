@@ -21,22 +21,22 @@ Features include
 - [Yearly/monthly reminder](#yearlymonthly-reminder): Get a yearly or monthly acoustic reminder
 - [Night mode](#night-mode): Dim or switch off displays on schedule, manually or sensor-controlled.
 - [Music player](#the-music-player): Play mp3 files located on an SD card
-- [Home Assistant](#home-assistant--mqtt) (MQTT 3.1.1) support
 - [SD card](#sd-card) support for custom audio files for effects, and music for the Music Player
 - Advanced network-accessible [Config Portal](#the-config-portal) for setup with mDNS support for easy access (http://timecircuits.local, hostname configurable)
 - [Keypad-controlled menu](#the-keypad-menu) for adjusting various settings and viewing network status via the three displays
 - 24-hour clock mode
 - [Room condition mode](#room-condition-mode-temperaturehumidity-sensor): Display temperature and humidity instead of destination/departed time (requires suitable sensor)
-- Optional power-up intro
-- Optional [sound on the hour](#additional-custom-sounds)
-- Optional [beep](#beep-on-the-second) every second (4 modes)
+- Power-up intro
+- [Sound on the hour](#additional-custom-sounds)
+- [Beep](#beep-on-the-second) every second (4 modes)
 - Support for external [fake "power switch"](#fake-power-switch)
-- Support for external display acting as [Speedometer](#speedometer)
-- Support for external [GPS receiver](#gps-receiver), used as time source, and for [speed](#gps-for-speed) to be displayed on speedo display
-- Support for external [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for "room condition mode" and to display temperature on speedo display while idle
 - Support for time travel [triggered by external source](#external-time-travel-trigger), with selectable delay
-- Support for triggering time travels on [other props](#controlling-other-props) connected by wire; TCD can act as master controller for SID, flux capacitor, etc.
+- Support for external display acting as [Speedometer](#speedometer)
+- Support for [GPS receiver](#gps-receiver), used as time source, and for [speed](#gps-for-speed) to be displayed on speedo display
+- Support for [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for "room condition mode" and to display temperature on speedo display while idle
 - Support for wireless communication with compatible other props ("[BTTF-Network](#bttf-network-bttfn)")
+- [Home Assistant](#home-assistant--mqtt) (MQTT 3.1.1) support
+- Support for triggering time travels on [other props](#controlling-other-props) connected by wire; TCD can act as master controller for SID, flux capacitor, etc.
 - Built-in installer for default audio files in addition to OTA firmware updates
 
 The code here was formerly based on rudimentary code from/by CircuitSetup. Since Sep 2022, CircuitSetup are distributing this very firmware as their official one (starting with 2.0). The difference between what you get here and CircuitSetup's releases is that the code here might be ahead in development (and uses some different sounds), and the pre-compiled binary has all the features enabled.
