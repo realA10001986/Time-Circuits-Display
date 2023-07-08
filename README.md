@@ -718,6 +718,8 @@ One nice feature of GPS is that the receiver can deliver current speed of moveme
 
 In order to use the GPS receiver for speed, check *Display GPS speed* in the Config Portal.
 
+If other props using GPS speed are connected via BTTFN, check the option *Increased GPS update rate* in the Config Portal.
+
 ## Room Condition Mode, Temperature/humidity sensor
 
 The firmware supports connecting a temperature/humidity sensor for "room condition mode"; in this mode, *destination* and *last departed* times are replaced by temperature and humidity (if applicable), respectively. To toggle between normal and room condition mode, enter "111" and press ENTER. 
@@ -827,9 +829,11 @@ The TCD can communicate with other compatible props wirelessly, via WiFi. It can
 
 On the TCD, no special configuration is required. However, if the TCD is supposed to send out notifications about time travel and alarm to connected clients, usage of MQTT must be disabled or the **Send commands for other props** option in the MQTT section of the Config Portal must be unchecked. The TCD only sends out such notifications either via MQTT or BTTFN, never both.
 
-On the other prop, such as CircuitSetup's upcoming Flux Capacitor or SID, the TCD's IP address must be entered into the **IP address of TCD** field on the respective Setup page in their Config Portal - that's it.
+On the other prop, such as CircuitSetup's upcoming Flux Capacitor or SID, the TCD's IP address (not hostname!) must be entered into the **IP address of TCD** field on the respective Setup page in their Config Portal - that's all.
 
-The fact that the devices communicate directly with each other makes BTTFN the ideal solution for car setups: The TCD acts as access point for Flux Capacitor and SID, and both those props talk to the TCD wirelessly. More information on this is in the documentation of the respective prop.
+The fact that the devices communicate directly with each other makes BTTFN the ideal solution for car setups: While at home, the devices might be connected to an existing WiFi network, in a car, the TCD can act as access point for Flux Capacitor and SID (ie they are connecting to the *TCD-AP* WiFi network), and those then can talk the TCD wirelessly. More information on this is in the documentation of the respective prop.
+
+To see which BTTFN devices are currently known to the TCD, enter the keypad menu and select "BTTFN CIENTS".
 
 #### HomeAssitant/MQTT
 
@@ -1053,9 +1057,9 @@ Selects a delay (in milliseconds) from when pressing the external time travel bu
 
 This selects whether a GPIO pin is activated upon a time-travel in order to control other props. See [here](#controlling-other-props)
 
-##### &#9654; Quick GPS updates for other props
+##### &#9654; Increased GPS update rate
 
-Some BTTF-Network clients query the TCD for GPS speed, such as CircuitSetup's upcoming SID. Check this option if such clients are connected, so that they get a GPS speed updated in a higher rate (twice per second vs once every 5 seconds).
+Some BTTF-Network clients query the TCD for GPS speed, such as CircuitSetup's upcoming SID. Check this option if such clients are connected, so that they get more frequent GPS speed updates (twice per second vs once every 5 seconds).
 
 ##### &#9654; Play time travel sounds
 
