@@ -755,7 +755,7 @@ The TCD supports the MQTT protocol version 3.1.1 for the following features:
 
 ### Display messages on TCD
 
-The TCD can subscribe to a user-configured topic and display messages received for this topic on the *Destination Time* display. This can be used to display the status of other HA/MQTT devices, for instance alarm systems. If the SD card contains a file names "ha-alert.mp3", this file will be played upon reception of a message.
+The TCD can subscribe to a user-configured topic and display messages received for this topic on the *Destination Time* display. This can be used to display the status of other HA/MQTT devices, for instance alarm systems. If the SD card contains a file named "ha-alert.mp3", this file will be played upon reception of a message (there is no default sound).
 
 Only ASCII messages are supported, the maximum length is 255 characters.
 
@@ -778,11 +778,11 @@ The TCD can - to a limited extent - be controlled through messages sent to topic
 - MP_SHUFFLE_ON: Enables shuffle mode in Music Player
 - MP_SHUFFLE_OFF: Disables shuffle mode in Music Player
 
-### Trigger a time travel on other devices
+### Notify other devices of a time travel or alarm
 
 Upon a time travel, the TCD can send messages to topic **bttf/tcd/pub**. This can be used to control other props wirelessly, such as Flux Capacitor, SID, etc. The timing is identical to the wired protocol, see [here](#controlling-other-props). TIMETRAVEL is sent when IO14 goes high, ie with a lead time (ETTO LEAD) of 5 seconds. REENTRY is sent when the re-entry sequence starts (ie when IO14 goes low). Note that network traffic has some latency, so timing might not be as exact as a wired connection.
 
-When the [alarm](#how-to-set-up-the-alarm) sounds, the TCD can also send "ALARM" to **bttf/tcd/pub**.
+When the [alarm](#how-to-set-up-the-alarm) sounds, the TCD can send "ALARM" to **bttf/tcd/pub**.
 
 ### Setup
 
@@ -792,21 +792,9 @@ If your broker does not allow anonymous logins, a username and password can be s
 
 If you want your TCD to display messages as described above, you also need to specify the topic in the respective field.
 
-If you want your TCD to publish messages to bttf/tcd/pub (ie if you want to notify other devices about the timetravel and/or the alarm), check the respective option.
+If you want your TCD to publish messages to bttf/tcd/pub (ie if you want to notify other devices about a timetravel and/or alarm), check the **Send event notifications** option.
 
 Limitations: MQTT Protocol version 3.1.1; TLS/SSL not supported; ".local" domains (MDNS) not supported; maximum message length 255 characters; server/broker must respond to PING (ICMP) echo requests. For proper operation with low latency, it is recommended that the broker is on your local network. Note that using HA/MQTT will disable WiFi power saving (as described below).
-
-## WiFi power saving features
-
-The Config Portal offers two options for WiFi power saving, one for AP-mode (ie when the device acts as an access point), one for station mode (ie when the device is connected to a WiFi network). Both options do the same: They configure a timer after whose expiry WiFi is switched off; the device is no longer transmitting or receiving data over WiFi. 
-
-The timers can be set to 0 (which disables them; WiFi is never switched off; this is the default), or 10-99 minutes. 
-
-The reason for having two different timers for AP-mode and for station mode is that if the device is used in a car, it might act as an access point, while at home it is most probably connected to a WiFi network as a client. Since in a car, WiFi will most likely not be used on a regular basis, the timer for AP mode can be short (eg 10 minutes), while the timer for station mode can be disabled.
-
-After WiFi has been switched off due to timer expiry, it can be re-enabled by holding "7" on the keypad for approx. 2 seconds, in which case the timers are restarted (ie WiFi is again switched off after timer expiry).
-
-Note that if your configured WiFi network was not available when the clock was trying to connect, it will end up in AP-mode. Holding "7" in that case will trigger another attempt to connect to your WiFi network.
 
 ## Controlling other props
 
@@ -844,13 +832,27 @@ On the TCD, no special configuration is required. However, if the TCD is suppose
 
 On the other prop, such as CircuitSetup's upcoming Flux Capacitor or SID, the TCD's IP address (not hostname!) must be entered into the **IP address of TCD** field on the Setup page in their Config Portal - that's all.
 
-The fact that the devices communicate directly with each other makes BTTFN also the ideal solution for car setups. Also, while at home, the devices might be connected to an existing WiFi network, in a car, the TCD can act as access point for Flux Capacitor and SID (ie they are connecting to the *TCD-AP* WiFi network), and those then can talk the TCD wirelessly. More information on this is in the documentation of the respective prop.
+The fact that the devices communicate directly with each other makes BTTFN the ideal solution for car setups. Also, while at home, the devices might be connected to an existing WiFi network, in a car, the TCD can act as access point for Flux Capacitor and SID (ie they are connecting to the *TCD-AP* WiFi network), and those then can talk the TCD wirelessly. More information on this is in the documentation of the respective prop.
 
 To see which BTTFN devices are currently known to the TCD, enter the keypad menu and select "BTTFN CIENTS".
 
-#### HomeAssistant/MQTT
+#### Home Assistant/MQTT
 
 The other way of wireless communication is, of course, [Home Assistant/MQTT](#home-assistant--mqtt). If both the TCD and the other props are connected to the same broker, and the option **Send event notifications** is checked on the TCD's side, other compatible props will receive information on time travel and alarm and play their sequences in sync with the TCD.
+
+MQTT and BTTFN can co-exist. However, as mentioned, the TCD only sends out time travel and alarm notifications through either MQTT or BTTFN, never both. If you have other MQTT-aware devices listening to the TCD's public topic (bttf/tcd/pub) in order to react to time travel or alarm messages, use MQTT (ie check **Send event notifications**). If only BTTFN-aware devices are to be used, uncheck this option to use BTTFN as it has less latency.
+
+## WiFi power saving features
+
+The Config Portal offers two options for WiFi power saving, one for AP-mode (ie when the device acts as an access point), one for station mode (ie when the device is connected to a WiFi network). Both options do the same: They configure a timer after whose expiry WiFi is switched off; the device is no longer transmitting or receiving data over WiFi. 
+
+The timers can be set to 0 (which disables them; WiFi is never switched off; this is the default), or 10-99 minutes. 
+
+The reason for having two different timers for AP-mode and for station mode is that if the device is used in a car, it might act as an access point, while at home it is most probably connected to a WiFi network as a client. Since in a car, WiFi will most likely not be used on a regular basis, the timer for AP mode can be short (eg 10 minutes), while the timer for station mode can be disabled.
+
+After WiFi has been switched off due to timer expiry, it can be re-enabled by holding "7" on the keypad for approx. 2 seconds, in which case the timers are restarted (ie WiFi is again switched off after timer expiry).
+
+Note that if your configured WiFi network was not available when the clock was trying to connect, it will end up in AP-mode. Holding "7" in that case will trigger another attempt to connect to your WiFi network.
 
 ## Flash Wear
 
