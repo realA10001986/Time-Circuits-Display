@@ -106,12 +106,6 @@
 // The external prop has ETTO_LEAD_TIME ms to play its pre-tt sequence. After
 // ETTO_LEAD_TIME ms, 88mph is reached, and the actual tt takes place.
 #define ETTO_LEAD_TIME      5000
-// Trigger mode:
-// true:  Pulse for ETTO_PULSE_DURATION ms on tt start minus leadTime
-// false: LOW->HIGH on tt start minus leadTime, HIGH->LOW on start of reentry
-#define ETTO_USE_PULSE      false
-// If ETTO_USE_PULSE is true, pulse for approx. ETTO_PULSE_DURATION ms
-#define ETTO_PULSE_DURATION 1000
 // End of ETTO config
 
 // Native NTP
@@ -198,13 +192,10 @@ static long          triggerP1LeadTime = 0;
 #ifdef EXTERNAL_TIMETRAVEL_OUT
 static bool          useETTO = DEF_USE_ETTO;
 static bool          useETTOWired = DEF_USE_ETTO;
-static bool          ettoUsePulse = ETTO_USE_PULSE;
 static long          ettoLeadTime = ETTO_LEAD_TIME;
 static bool          triggerETTO = false;
 static long          triggerETTOLeadTime = 0;
 static unsigned long triggerETTONow = 0;
-static bool          ettoPulse = false;
-static unsigned long ettoPulseNow = 0;
 static long          ettoLeadPoint = 0;
 #endif
 
@@ -660,7 +651,7 @@ void time_setup()
     // Init external time travel output ("etto")
     #ifdef EXTERNAL_TIMETRAVEL_OUT
     pinMode(EXTERNAL_TIMETRAVEL_OUT_PIN, OUTPUT);
-    ettoPulseEnd();
+    digitalWrite(EXTERNAL_TIMETRAVEL_OUT_PIN, LOW);
     #endif
 
     // RTC setup
@@ -753,6 +744,7 @@ void time_setup()
     
     #ifdef TC_HAVESPEEDO
     if(useSpeedo) {
+        // 'useGPSSpeed' strictly means "display GPS speed on speedo"
         useGPSSpeed = ((int)atoi(settings.useGPSSpeed) > 0);
     }
     #endif
@@ -766,24 +758,20 @@ void time_setup()
 
         myGPS.setCustomDelayFunc(myCustomDelay);
         haveGPS = true;
-        
-        if(useGPS || useGPSSpeed) {
           
-            // Clear so we don't add to stampAge unnecessarily in
-            // boot strap
-            GPSupdateFreq = GPSupdateFreqMin = 0;
-            
-            // We know now we have a possible source for auth time
-            couldHaveAuthTime = true;
-            
-            // Fetch data already in Receiver's buffer [120ms]
-            for(int i = 0; i < 10; i++) myGPS.loop(true);
-            
-            #ifdef TC_DBG
-            Serial.println(F("time_setup: GPS Receiver found and initialized"));
-            #endif
-
-        } 
+        // Clear so we don't add to stampAge unnecessarily in
+        // boot strap
+        GPSupdateFreq = GPSupdateFreqMin = 0;
+        
+        // We know now we have a possible source for auth time
+        couldHaveAuthTime = true;
+        
+        // Fetch data already in Receiver's buffer [120ms]
+        for(int i = 0; i < 10; i++) myGPS.loop(true);
+        
+        #ifdef TC_DBG
+        Serial.println(F("time_setup: GPS Receiver found and initialized"));
+        #endif
 
     } else {
       
@@ -994,7 +982,7 @@ void time_setup()
     // as long as time matches DST flag setting (which it does even
     // if we have no authTime).
     #ifdef TC_HAVEGPS
-    if(useGPS || useGPSSpeed) {
+    if(useGPS) {
         if(!haveAuthTimeGPS && (haveAuthTime || !rtcbad)) {
             setGPStime();
         }
@@ -1391,10 +1379,7 @@ void time_loop()
                     triggerP1 = 0;
                     #ifdef EXTERNAL_TIMETRAVEL_OUT
                     triggerETTO = false;
-                    if(useETTO && !ettoUsePulse) {
-                        ettoPulseEnd();
-                        ettoPulse = false;
-                    }
+                    ettoPulseEnd();
                     if(useETTO || bttfnHaveClients) {
                         if(timeTravelP0 || timeTravelP1 || timeTravelRE || timeTravelP2) {
                             sendNetWorkMsg("ABORT_TT\0", 9, BTTFN_NOT_ABORT_TT);
@@ -1466,21 +1451,14 @@ void time_loop()
     #endif
 
     #ifdef EXTERNAL_TIMETRAVEL_OUT
-    // Timer for start of ETTO signal/pulse
+    // Timer for start of ETTO signal
     if(triggerETTO && (millis() - triggerETTONow >= triggerETTOLeadTime)) {
         ettoPulseStart();
-        triggerETTO = false;
-        ettoPulse = true;
-        ettoPulseNow = millis();
         sendNetWorkMsg("TIMETRAVEL\0", 11, BTTFN_NOT_TT);
+        triggerETTO = false;
         #ifdef TC_DBG
         Serial.println(F("ETTO triggered"));
         #endif
-    }
-    // Timer to end ETTO pulse
-    if(ettoUsePulse && ettoPulse && (millis() - ettoPulseNow >= ETTO_PULSE_DURATION)) {
-        ettoPulseEnd();
-        ettoPulse = false;
     }
     #endif
 
@@ -1616,7 +1594,7 @@ void time_loop()
 
         // Read GPS, and display GPS speed or temperature
         #ifdef TC_HAVEGPS
-        if(useGPS || useGPSSpeed) {
+        if(useGPS) {
             if(millisNow - lastLoopGPS >= GPSupdateFreq) {
                 lastLoopGPS = millisNow;
                 // call loop with doDelay true; delay not needed but
@@ -1633,7 +1611,7 @@ void time_loop()
         // Can only reduce when GPS is not used and WiFi is off
         if(!pwrLow && checkAudioDone() &&
                       #ifdef TC_HAVEGPS
-                      !useGPS && !useGPSSpeed &&
+                      !useGPS &&
                       #endif
                                  (wifiIsOff || wifiAPIsOff) && (millisNow - pwrFullNow >= 5*60*1000)) {
             setCpuFrequencyMhz(80);
@@ -2516,8 +2494,8 @@ void timeTravel(bool doComplete, bool withSpeedo)
         timetravelP0Delay = 2000;
         triggerP1 = false;
         #ifdef EXTERNAL_TIMETRAVEL_OUT
-        triggerETTO = ettoPulse = false;
-        if(useETTO) ettoPulseEnd();
+        triggerETTO = false;
+        ettoPulseEnd();
         #endif
 
         #ifdef TC_HAVEGPS
@@ -2714,8 +2692,8 @@ void timeTravel(bool doComplete, bool withSpeedo)
 
     // For external props: Signal Re-Entry
     #ifdef EXTERNAL_TIMETRAVEL_OUT
+    ettoPulseEnd();
     if(useETTO || bttfnHaveClients) {
-        ettoPulseEnd();
         sendNetWorkMsg("REENTRY\0", 8, BTTFN_NOT_REENTRY);
     }
     #endif
@@ -3429,7 +3407,7 @@ static bool setGPStime()
     uint64_t utcMins;
     DateTime dt;
 
-    if(!useGPS && !useGPSSpeed)
+    if(!useGPS)
         return false;
 
     #ifdef TC_DBG
@@ -3461,7 +3439,7 @@ static bool setGPStime()
 
 bool gpsHaveFix()
 {
-    if(!useGPS && !useGPSSpeed)
+    if(!useGPS)
         return false;
         
     return myGPS.fix;
@@ -3469,7 +3447,7 @@ bool gpsHaveFix()
 
 static bool gpsHaveTime()
 {
-    if(!useGPS && !useGPSSpeed)
+    if(!useGPS)
         return false;
         
     return myGPS.haveTime();
@@ -3481,7 +3459,7 @@ static bool gpsHaveTime()
  */
 void gps_loop()
 {
-    if(!useGPS && !useGPSSpeed)
+    if(!useGPS)
         return;
 
     if(millis() - lastLoopGPS > GPSupdateFreqMin) {
@@ -4666,7 +4644,7 @@ void bttfn_loop()
     if(BTTFUDPBuf[5] & 0x02) {    // speed  (-1 if unavailable)
         temp = -1;
         #ifdef TC_HAVEGPS
-        if(useGPSSpeed) {
+        if(useGPS) {
             temp = myGPS.getSpeed();
         }
         #endif
@@ -4698,9 +4676,12 @@ void bttfn_loop()
         BTTFUDPBuf[24] = ((uint32_t)temp32 >> 16) & 0xff;
         BTTFUDPBuf[25] = ((uint32_t)temp32 >> 24) & 0xff;
     }
-    if(BTTFUDPBuf[5] & 0x10) {    // Status
-        BTTFUDPBuf[26] = presentTime.getNightMode() ? 1 : 0;  // bit 0: Night mode
-        // bits 7-1 for future use
+    if(BTTFUDPBuf[5] & 0x10) {    // Status flags
+        a = 0;
+        if(presentTime.getNightMode()) a |= 0x01; // bit 0: Night mode (0: off, 1: on)
+        if(!FPBUnitIsOn)               a |= 0x02; // bit 1: Fake power (0: on,  1: off)
+        // bits 7-2 for future use
+        BTTFUDPBuf[26] = a;
     }
 
     // Calc checksum
