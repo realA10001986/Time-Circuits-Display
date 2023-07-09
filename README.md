@@ -812,7 +812,7 @@ Note that if your configured WiFi network was not available when the clock was t
 
 ### Connecting props by wire
 
-The device can tell other props about a time travel, and in essence act as a "master controller" for several props. It does so via IO14 (labeled "TT OUT" on Control Boards 1.3 and later), see diagram below.
+The device can tell other props about a time travel, and in essence act as a "master controller" in a setup of several props. It does so via IO14 (labeled "TT OUT" on Control Boards 1.3 and later), see diagram below.
 
 ```
 |<---------- speedo acceleration --------->|                         |<-speedo de-acceleration->|
@@ -832,23 +832,25 @@ The device can tell other props about a time travel, and in essence act as a "ma
 
 If external gear is connected to IO14 and you want to use this control feature, check **Control props connected by wire** in the Config Portal.
 
+Note that a wired connection only allows for synchronized time travel sequences, no other communication takes place.
+
 ### Connecting props wirelessly
 
 #### BTTF-Network (BTTFN)
 
 The TCD can communicate with other compatible props wirelessly, via WiFi. It can send out information about a time travel and an alarm, and other props can query the TCD for time, speed and some other data. Unlike with MQTT, no broker or other third party software is needed.
 
-On the TCD, no special configuration is required. However, if the TCD is supposed to send out notifications about time travel and alarm to connected clients, usage of MQTT must be disabled or the **Send commands for other props** option in the MQTT section of the Config Portal must be unchecked. The TCD only sends out such notifications either via MQTT or BTTFN, never both.
+On the TCD, no special configuration is required. However, if the TCD is supposed to send out notifications about time travel and alarm to connected clients, usage of MQTT must be disabled or the **Send event notifications** option in the MQTT section of the Config Portal must be unchecked. The TCD only sends out such notifications either via MQTT or BTTFN, never both.
 
-On the other prop, such as CircuitSetup's upcoming Flux Capacitor or SID, the TCD's IP address (not hostname!) must be entered into the **IP address of TCD** field on the respective Setup page in their Config Portal - that's all.
+On the other prop, such as CircuitSetup's upcoming Flux Capacitor or SID, the TCD's IP address (not hostname!) must be entered into the **IP address of TCD** field on the Setup page in their Config Portal - that's all.
 
-The fact that the devices communicate directly with each other makes BTTFN the ideal solution for car setups: While at home, the devices might be connected to an existing WiFi network, in a car, the TCD can act as access point for Flux Capacitor and SID (ie they are connecting to the *TCD-AP* WiFi network), and those then can talk the TCD wirelessly. More information on this is in the documentation of the respective prop.
+The fact that the devices communicate directly with each other makes BTTFN also the ideal solution for car setups. Also, while at home, the devices might be connected to an existing WiFi network, in a car, the TCD can act as access point for Flux Capacitor and SID (ie they are connecting to the *TCD-AP* WiFi network), and those then can talk the TCD wirelessly. More information on this is in the documentation of the respective prop.
 
 To see which BTTFN devices are currently known to the TCD, enter the keypad menu and select "BTTFN CIENTS".
 
 #### HomeAssistant/MQTT
 
-The other way of wireless communication is, of course, [Home Assistant/MQTT](#home-assistant--mqtt). If both the TCD and the other props are connected to the same broker, and the option **Send commands for other props** is checked on the TCD's side, other compatible props will receive information on time travel and alarm and play their sequences in sync with the TCD.
+The other way of wireless communication is, of course, [Home Assistant/MQTT](#home-assistant--mqtt). If both the TCD and the other props are connected to the same broker, and the option **Send event notifications** is checked on the TCD's side, other compatible props will receive information on time travel and alarm and play their sequences in sync with the TCD.
 
 ## Flash Wear
 
@@ -1068,9 +1070,9 @@ Selects a delay (in milliseconds) from when pressing the external time travel bu
 
 This selects whether a GPIO pin is activated upon a time-travel in order to play synchronized time travel sequences on other props. See [here](#controlling-other-props)
 
-##### &#9654; Increased GPS update rate
+##### &#9654; Provide GPS speed for wireless props
 
-Some [BTTF-Network](#bttf-network-bttfn) clients query the TCD for GPS speed, such as CircuitSetup's upcoming SID. Check this option if such clients are connected, so that they get more frequent GPS speed updates (twice per second vs once every 5 seconds).
+Some [BTTF-Network](#bttf-network-bttfn) clients query the TCD for GPS speed, such as CircuitSetup's upcoming FC and SID. Check this option if such clients are connected, so that they get frequent GPS speed updates.
 
 ##### &#9654; Play time travel sounds
 
@@ -1090,13 +1092,15 @@ The broker server address. Can be a domain (eg. "myhome.me") or an IP address (e
 
 The username (and optionally the password) to be used when connecting to the broker. Can be left empty if the broker accepts anonymous logins.
 
-##### &#9654; Topic to subscribe to
+##### &#9654; Topic to display
 
-A topic the TCD subscribes to in order to display messages on the *Destination Time" display.
+An optional topic the TCD subscribes to in order to display messages on the *Destination Time" display.
 
-##### &#9654; Send commands for external props
+##### &#9654; Send event notifications
 
-Check this if you want the TCD to send commands via [MQTT](#home-assistant--mqtt) to other props, such as Flux Capacitor or SID.
+Check this if you want the TCD to send notifications on time travel and alarm via [MQTT](#home-assistant--mqtt).
+
+Note that if this option is checked, the TCD will not send out such notifications via [BTTF-Network](#bttf-network-bttfn).
 
 #### Music Player settings
 
