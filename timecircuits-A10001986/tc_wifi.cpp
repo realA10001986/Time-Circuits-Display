@@ -220,9 +220,9 @@ WiFiManagerParameter custom_tempOffNM("toffNM", "Temperature off in night mode",
 
 #ifdef FAKE_POWER_ON
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
-WiFiManagerParameter custom_fakePwrOn("fpo", "Use fake power switch (0=no, 1=yes)", settings.fakePwrOn, 1, "autocomplete='off' title='Enable to use a switch to fake-power-up and fake-power-down the device'");
+WiFiManagerParameter custom_fakePwrOn("fpo", "Use fake power switch (0=no, 1=yes)", settings.fakePwrOn, 1, "autocomplete='off' title='Enable to use a switch to fake-power-up/-down the device'");
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_fakePwrOn("fpo", "Use fake power switch", settings.fakePwrOn, 1, "title='Check to use a switch to fake-power-up and fake-power-down the device' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_fakePwrOn("fpo", "Use fake power switch", settings.fakePwrOn, 1, "title='Check to use a switch to fake-power-up/-down the device' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 #endif
 
@@ -237,37 +237,37 @@ WiFiManagerParameter custom_ettDelay("ettDe", "Delay (ms)", settings.ettDelay, 5
 
 #ifdef EXTERNAL_TIMETRAVEL_OUT
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
-WiFiManagerParameter custom_useETTO("uEtto", "Talk to props connected by wire (0=no, 1=yes)", settings.useETTO, 1, "autocomplete='off' title='If enabled, the TCD will include compatible props, eg. Flux Capacitor or SID, into the time travel sequence'");
+WiFiManagerParameter custom_useETTO("uEtto", "Control props connected by wire (0=no, 1=yes)", settings.useETTO, 1, "autocomplete='off' title='Enable to notify props of a time travel'");
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_useETTO("uEtto", "Talk to props connected by wire", settings.useETTO, 1, "autocomplete='off' title='If checked, the TCD will include compatible props, eg. Flux Capacitor or SID, into the time travel sequence' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_useETTO("uEtto", "Control props connected by wire", settings.useETTO, 1, "autocomplete='off' title='Check to notify props of a time travel' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 #endif // EXTERNAL_TIMETRAVEL_OUT
 #ifdef TC_HAVEGPS
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
-WiFiManagerParameter custom_qGPS("qGPS", "Quick GPS updates for other props (0=no, 1=yes)", settings.quickGPS, 1, "autocomplete='off' title='If enabled, the TCD will provide high-frequency GPS updates for other props, eg. SID'");
+WiFiManagerParameter custom_qGPS("qGPS", "Provide GPS speed for wireless props (0=no, 1=yes)", settings.quickGPS, 1, "autocomplete='off' title='Enable for frequently updated GPS speed for wireless props'");
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_qGPS("qGPS", "Quick GPS updates for other props", settings.quickGPS, 1, "autocomplete='off' title='If checked, the TCD will provide high-frequency GPS updates for other props, eg. SID' type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_qGPS("qGPS", "Provide GPS speed for wireless props", settings.quickGPS, 1, "autocomplete='off' title='Check for frequently updated GPS speed for wireless props' type='checkbox'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 #endif // TC_HAVEGPS
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
-WiFiManagerParameter custom_playTTSnd("plyTTS", "Play time travel sounds (0=no, 1=yes)", settings.playTTsnds, 1, "autocomplete='off' title='Disable if other props provide time travel sound.'");
+WiFiManagerParameter custom_playTTSnd("plyTTS", "Play time travel sounds (0=no, 1=yes)", settings.playTTsnds, 1, "autocomplete='off' title='Disable if other props provide time travel sound'");
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_playTTSnd("plyTTS", "Play time travel sounds", settings.playTTsnds, 1, "autocomplete='off' title='Uncheck if other props provide time travel sound.' type='checkbox'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_playTTSnd("plyTTS", "Play time travel sounds", settings.playTTsnds, 1, "autocomplete='off' title='Uncheck if other props provide time travel sound' type='checkbox'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 
 #ifdef TC_HAVEMQTT
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
-WiFiManagerParameter custom_useMQTT("uMQTT", "Use Home Assistant (0=no, 1=yes)", settings.useMQTT, 1, "autocomplete='off'");
+WiFiManagerParameter custom_useMQTT("uMQTT", "Use HA/MQTT 3.1.1 (0=no, 1=yes)", settings.useMQTT, 1, "autocomplete='off'");
 #else // -------------------- Checkbox hack: --------------
 WiFiManagerParameter custom_useMQTT("uMQTT", "Use Home Assistant (MQTT 3.1.1)", settings.useMQTT, 1, "type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 WiFiManagerParameter custom_mqttServer("ha_server", "<br>Broker IP[:port] or domain[:port]", settings.mqttServer, 79, "pattern='[a-zA-Z0-9.-:]+' placeholder='Example: 192.168.1.5'");
 WiFiManagerParameter custom_mqttUser("ha_usr", "User[:Password]", settings.mqttUser, 63, "placeholder='Example: ronald:mySecret'");
-WiFiManagerParameter custom_mqttTopic("ha_topic", "Topic to subscribe to", settings.mqttTopic, 127, "placeholder='Example: home/outside/temperature'");
+WiFiManagerParameter custom_mqttTopic("ha_topic", "Topic to display", settings.mqttTopic, 127, "placeholder='Optional. Example: home/alarm/status'");
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
-WiFiManagerParameter custom_pubMQTT("pMQTT", "Send commands for other props", settings.pubMQTT, 1, "autocomplete='off'");
+WiFiManagerParameter custom_pubMQTT("pMQTT", "Send event notifications (0=no, 1=yes)", settings.pubMQTT, 1, "autocomplete='off' title='Enable to send out time travel/alarm notifications'");
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_pubMQTT("pMQTT", "Send commands for other props", settings.pubMQTT, 1, "type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_pubMQTT("pMQTT", "Send event notifications", settings.pubMQTT, 1, "type='checkbox' style='margin-top:5px' title='Check to send out time travel/alarm notifications'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 #endif // HAVEMQTT
 

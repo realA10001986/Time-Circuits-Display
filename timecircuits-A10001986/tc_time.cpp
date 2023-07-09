@@ -4663,7 +4663,7 @@ void bttfn_loop()
         BTTFUDPBuf[16] = (uint8_t)dt.second();
         BTTFUDPBuf[17] = (uint8_t)dt.dayOfTheWeek();
     }
-    if(BTTFUDPBuf[5] & 0x02) {   // speed  (-1 if unavailable)
+    if(BTTFUDPBuf[5] & 0x02) {    // speed  (-1 if unavailable)
         temp = -1;
         #ifdef TC_HAVEGPS
         if(useGPSSpeed) {
@@ -4673,7 +4673,7 @@ void bttfn_loop()
         BTTFUDPBuf[18] = (uint16_t)temp & 0xff;
         BTTFUDPBuf[19] = (uint16_t)temp >> 8;
     }
-    if(BTTFUDPBuf[5] & 0x04) {   // temperature (-32768 if unavailable)
+    if(BTTFUDPBuf[5] & 0x04) {    // temperature (-32768 if unavailable)
         temp = -32768;
         #ifdef TC_HAVETEMP
         if(useTemp) {
@@ -4686,7 +4686,7 @@ void bttfn_loop()
         BTTFUDPBuf[20] = (uint16_t)temp & 0xff;
         BTTFUDPBuf[21] = (uint16_t)temp >> 8;
     }
-    if(BTTFUDPBuf[5] & 0x08) {   // lux (-1 if unavailable)
+    if(BTTFUDPBuf[5] & 0x08) {    // lux (-1 if unavailable)
         int32_t temp32 = -1;
         #ifdef TC_HAVELIGHT
         if(useLight) {
@@ -4697,6 +4697,10 @@ void bttfn_loop()
         BTTFUDPBuf[23] = ((uint32_t)temp32 >>  8) & 0xff;
         BTTFUDPBuf[24] = ((uint32_t)temp32 >> 16) & 0xff;
         BTTFUDPBuf[25] = ((uint32_t)temp32 >> 24) & 0xff;
+    }
+    if(BTTFUDPBuf[5] & 0x10) {    // Status
+        BTTFUDPBuf[26] = presentTime.getNightMode() ? 1 : 0;  // bit 0: Night mode
+        // bits 7-1 for future use
     }
 
     // Calc checksum

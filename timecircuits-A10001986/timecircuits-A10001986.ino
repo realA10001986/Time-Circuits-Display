@@ -90,7 +90,11 @@
 
 /*  Changelog
  *   
+ *  2023/07/09 (A10001986)
+ *    - BTTFN: Provide night mode status to BTTFN clients
+ *    - Config Portal: Rename some options for simplification/briefness
  *  2023/07/07 (A10001986)
+ *    - Block WiFi power-saving as long as BTTFN clients are present
  *    - GPS speed: Increase update rate to twice per second for smoother speedo display.
  *      Also, add CP option "Quick GPS updates" for peripherals that poll the TCD for 
  *      speed (such as SID). If neither this nor the option "Display GPS speed" is set, 
