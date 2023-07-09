@@ -517,7 +517,7 @@ After invoking the keypad menu, the first step is to choose a menu item. The ava
 - enter dates/times for the *Destination* and *Last Time Departed* displays,
 - show light/temperature/humidity sensor info (if such a sensor is connected) ("SENSORS"),
 - show when time was last sync'd with NTP or GPS ("TIME SYNC"),
-- see which [BTTFN-Clients](#bttf-network-bttfn) currently are connected ("BTTFN CLIENTS"),
+- see a list of [BTTFN-Clients](#bttf-network-bttfn) currently connected ("BTTFN CLIENTS"),
 - quit the menu ("END").
  
 Pressing ENTER cycles through the list, holding ENTER selects an item.
@@ -635,7 +635,7 @@ Note that when entering dates/times into the *destination time* or *last time de
 
 Note: Sometimes, light sensors report a lux value of -1. This is mostly due to the fact that all the supported sensors are adjusted for indoor usage and might overload in broad daylight. Also, some sensors might have issues with halogen lamps (reportedly TSL2561), and most sensors also "overload" if too much IR light is directed at them, for instance from surveillance cameras.
 
-#### How to see other BTTF-Network clients
+#### How to see a list of BTTF-Network clients
 
 - Hold ENTER to invoke main menu
 - Press ENTER repeatedly until "BTTFN CLIENTS" is shown.
