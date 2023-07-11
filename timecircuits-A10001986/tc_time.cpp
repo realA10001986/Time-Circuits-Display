@@ -1453,8 +1453,8 @@ void time_loop()
     #ifdef EXTERNAL_TIMETRAVEL_OUT
     // Timer for start of ETTO signal
     if(triggerETTO && (millis() - triggerETTONow >= triggerETTOLeadTime)) {
-        ettoPulseStart();
         sendNetWorkMsg("TIMETRAVEL\0", 11, BTTFN_NOT_TT);
+        ettoPulseStart();
         triggerETTO = false;
         #ifdef TC_DBG
         Serial.println(F("ETTO triggered"));
@@ -2692,10 +2692,10 @@ void timeTravel(bool doComplete, bool withSpeedo)
 
     // For external props: Signal Re-Entry
     #ifdef EXTERNAL_TIMETRAVEL_OUT
-    ettoPulseEnd();
     if(useETTO || bttfnHaveClients) {
         sendNetWorkMsg("REENTRY\0", 8, BTTFN_NOT_REENTRY);
     }
+    ettoPulseEnd();
     #endif
 
     // Save presentTime settings (timeDifference) if to be persistent
@@ -2743,7 +2743,7 @@ static void ettoPulseEnd()
 }
 
 // Send notification message via MQTT -or- BTTFN.
-// If MQTT is enabled in settings, and "Send commands for external props"
+// If MQTT is enabled in settings, and "Send event notifications"
 // is checked, send via MQTT (regardless of connection status). 
 // Otherwise, send via BTTFN.
 // Props can rely on getting only ONE notification message if they listen
@@ -2757,10 +2757,7 @@ static void sendNetWorkMsg(const char *pl, unsigned int len, uint8_t bttfnMsg)
     }
     #endif
     #ifdef TC_HAVEBTTFN
-    #ifdef TC_HAVEMQTT
-    if(!useMQTT || !pubMQTT)
-    #endif
-        bttfn_notify(bttfnMsg);
+    bttfn_notify(bttfnMsg);
     #endif
 }
 #endif  // EXTERNAL_TIMETRAVEL_OUT
@@ -4489,6 +4486,7 @@ static void storeBTTFNClient(uint8_t *ip, char *id)
     uint8_t *pip;
     bool    badName = false;
 
+    // Check if already in list, search for free slot
     for(i = 0; i < BTTFN_MAX_CLIENTS; i++) {
         pip = bttfnClientIP[i];
         if(!*pip)
@@ -4497,7 +4495,7 @@ static void storeBTTFNClient(uint8_t *ip, char *id)
             break;
     }
 
-    // Check if free slot available
+    // Bail if no slot available
     if(i == BTTFN_MAX_CLIENTS)
         return;
 
@@ -4585,8 +4583,8 @@ void bttfn_loop()
     uint8_t tip[4] = { 0 };
     uint8_t a = 0;
     int16_t temp = 0;
-    
     //uint8_t reqVersion;
+
     int psize = tcdUDP->parsePacket();
 
     if(!psize) {
@@ -4596,10 +4594,11 @@ void bttfn_loop()
     
     tcdUDP->read(BTTFUDPBuf, BTTF_PACKET_SIZE);
 
-    // Check
+    // Check header
     if(memcmp(BTTFUDPBuf, BTTFUDPHD, 4))
         return;
 
+    // Check checksum
     for(int i = 4; i < BTTF_PACKET_SIZE - 1; i++) {
         a += BTTFUDPBuf[i] ^ 0x55;
     }
@@ -4619,7 +4618,7 @@ void bttfn_loop()
     // Add response marker to version byte
     BTTFUDPBuf[4] |= 0x80;
 
-    // Store client ip/id for keypad menu
+    // Store client ip/id for notifications and keypad menu
     IPAddress t = tcdUDP->remoteIP();
     for(int i = 0; i < 4; i++) tip[i] = t[i];
     storeBTTFNClient(tip, (char *)BTTFUDPBuf + 10);
@@ -4679,7 +4678,9 @@ void bttfn_loop()
     if(BTTFUDPBuf[5] & 0x10) {    // Status flags
         a = 0;
         if(presentTime.getNightMode()) a |= 0x01; // bit 0: Night mode (0: off, 1: on)
+        #ifdef FAKE_POWER_ON
         if(!FPBUnitIsOn)               a |= 0x02; // bit 1: Fake power (0: on,  1: off)
+        #endif
         // bits 7-2 for future use
         BTTFUDPBuf[26] = a;
     }

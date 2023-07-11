@@ -90,6 +90,8 @@
 
 /*  Changelog
  *   
+ *  2023/07/11 (A10001986)
+ *    - Clean up
  *  2023/07/09 (A10001986)
  *    - BTTFN: Provide some status info to BTTFN clients
  *    - Config Portal: Rename some options for simplification/briefness
