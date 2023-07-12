@@ -325,9 +325,9 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
 
 ## Time travel
 
-To travel through time, hold "0" for 2 seconds. The *destination time*, as shown in the red display, will be your new *present time*, the old *present time* will be the *last time departed*. The new *present time* will continue to run like a normal clock.
+To travel through time, hold "0" for 2 seconds (or use an [external trigger](#external-time-travel-trigger)). The *destination time*, as shown in the red display, will be your new *present time*, the old *present time* will be the *last time departed*. The new *present time* will continue to run like a normal clock.
 
-Before holding "0", you can also first quickly set a new destination time by entering a date on the keypad: mmddyyyy, mmddyyyyhhMM or hhMM, then press ENTER. While typing, there is no visual feedback, but the date is then shown on the *destination time* display after pressing ENTER.
+Before triggering the time travel, you can also first quickly set a new destination time by entering a date on the keypad: mmddyyyy, mmddyyyyhhMM or hhMM, then press ENTER. While typing, there is no visual feedback, but the date is then shown on the *destination time* display after pressing ENTER.
 
 To travel back to actual present time, hold "9" for 2 seconds.
 
