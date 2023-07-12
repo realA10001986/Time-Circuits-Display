@@ -335,7 +335,7 @@ Beware that the alarm function, by default, is based on the real actual present 
 
 ### Persistent / Non-persistent time travels
 
-On the Config Portal's "Setup" page, there is an option item named "Make time travels persistent". The default is off.
+On the Config Portal's "Setup" page, there is an option item named *Make time travels persistent*. The default is off.
 
 If time travels are persistent
 - a user-programmed *destination time* is always stored in flash memory, and retrieved from there after a reboot. It can be programmed through the keypad menu, or ahead of a time travel by typing mmddyyyyhhMM/mmddyyyy/hhMM plus ENTER. In both cases, the time is stored in flash memory and retrieved upon power-up/reboot.
@@ -729,7 +729,7 @@ One nice feature of GPS is that the receiver can deliver current speed of moveme
 
 In order to use the GPS receiver for speed, check *Display GPS speed* in the Config Portal.
 
-If other props using GPS speed are connected via BTTFN, check the option *Increased GPS update rate* in the Config Portal.
+If other props using GPS speed are connected via [BTTF-Network](#bttf-network-bttfn), check the option *Provide GPS speed for wireless props* in the Config Portal.
 
 ## Room Condition Mode, Temperature/humidity sensor
 
@@ -741,7 +741,7 @@ Room condition mode can be used together with [World Clock mode](#world-clock-mo
 
 Temperature on speedometer display: Unless you do time travelling on a regular basis, the [speedo display](#speedometer) is idle most of the time in a typical home setup. To give it more of a purpose, the firmware can display ambient temperature on the speedo while idle.
 
-#### Hardware
+#### Sensor hardware
 
 In order to use a temperature/humidity sensor, no special configuration is required. If a sensor is detected by the firmware during boot, it will be used.
 
