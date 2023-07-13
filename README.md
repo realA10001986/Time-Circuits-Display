@@ -658,7 +658,7 @@ Note: Sometimes, light sensors report a lux value of -1. This is mostly due to t
 - [GPS-Receiver](#gps-receiver)
 - [Temperature Sensor](#room-condition-mode-temperaturehumidity-sensor)
 - [Light Sensor](#night-mode)
-- [Other Props (Flux Capacitor, SID, ...)
+- [Other Props](#controlling-other-props) (Flux Capacitor, SID, ...)
 
 ## Fake power Switch 
 
@@ -791,6 +791,8 @@ Note that a wired connection only allows for synchronized time travel sequences,
 #### BTTF-Network (BTTFN)
 
 The TCD can communicate with other compatible props wirelessly, via WiFi. It can send out information about a time travel and an alarm, and other props can query the TCD for time, speed and some other data. Unlike with MQTT, no broker or other third party software is needed.
+
+![family1000-wifi-bttfn](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/4c831d02-e6c9-4e80-9e05-37e782c68c79)
 
 On the TCD, no special configuration is required. However, if the TCD is supposed to send out notifications about time travel and alarm to connected BTTFN clients, usage of MQTT must be disabled or the *Send event notifications* option in the MQTT section of the Config Portal must be unchecked. The TCD only sends out such notifications either via MQTT or BTTFN, never both.
 
