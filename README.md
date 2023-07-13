@@ -649,6 +649,11 @@ Note: Sometimes, light sensors report a lux value of -1. This is mostly due to t
  - While the menu is active, press ENTER repeatedly until "END" is displayed.
  - Hold ENTER to leave the menu
 
+## Peripherals and connection
+
+![family1000](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/f45abbd3-3524-4b04-90b4-33c0a22b288a)
+
+
 ## Fake power Switch 
 
 You probably noticed that the device takes longer to boot than would be required to re-create the movie experience where Doc turns the knob and the Time Circuits immediately turn on. As a remedy, the firmware supports a fake "power switch": 
