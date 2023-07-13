@@ -688,11 +688,15 @@ As mentioned above, a time travel can be triggered by holding "0" on the keypad.
 
 On Control Boards V1.3 and later, there is a dedicated header for the button labeled "Time Travel". The button needs to shorten pins "TT IN" and "GND".
 
-![ttin](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/8ec8d88a-f2df-484c-b9b9-1d389dc6d480)
+| ![ttin](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/8ec8d88a-f2df-484c-b9b9-1d389dc6d480) |
+|:--:|
+| TT_IN on TCB 1.3 |
 
 Unfortunately, there is no header and no break out for IO27 on TC control boards V1.2 and below. Some soldering is required. The button needs to be connected to the two marked pins in the image below:
 
-![nodemcuio27](https://user-images.githubusercontent.com/76924199/194284838-635419f9-5eb7-4480-8693-2bf7cfc7c744.jpg)
+| ![nodemcuio27](https://user-images.githubusercontent.com/76924199/194284838-635419f9-5eb7-4480-8693-2bf7cfc7c744.jpg) |
+|:--:|
+| IO27 on TCB 1.2 |
 
 Luckily, there is a row of solder pads right next to the socket on the control board, where a pin header or cable can easily be soldered on:
 
@@ -774,7 +778,13 @@ The device can tell other props about a time travel, and in essence act as a "ma
 
 You need two wires for connecting the TCD to the other prop: IO14 (TT_OUT) and GND, which need to be connected to the respective pins of the prop.
 
-![ttout](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/b1330e4d-12ba-48ef-a454-3d6167fb2a5d)
+| ![ttout](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/112c0240-6a3b-44c3-a15d-5af7477a8791) |
+|:--:|
+| IO14 on TCB 1.2 |
+
+| ![ttout](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/b1330e4d-12ba-48ef-a454-3d6167fb2a5d) |
+|:--:|
+| IO14 on TCB 1.3 |
 
 In case you want to design your own props, here's the timing diagram:
 
