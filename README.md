@@ -651,8 +651,14 @@ Note: Sometimes, light sensors report a lux value of -1. This is mostly due to t
 
 ## Peripherals and connection
 
-![family1000](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/f45abbd3-3524-4b04-90b4-33c0a22b288a)
+![family1000-wired](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/16f1b2bb-2093-4a6b-a58c-cc5d9b9efd21)
 
+- [Fake Power Switch](#fake-power-switch)
+- [Speedometer](#speedometer)
+- [GPS-Receiver](#gps-receiver)
+- [Temperature Sensor](#room-condition-mode-temperaturehumidity-sensor)
+- [Light Sensor](#night-mode)
+- [Other Props (Flux Capacitor, SID, ...)
 
 ## Fake power Switch 
 
@@ -754,53 +760,6 @@ Seven sensor types are supported: MCP9808 (i2c address 0x18), BMx280 (0x77), SI7
 
 *Note: You cannot connect the sensor chip directly to the TCD control board; most sensors need at least a power converter/level-shifter.* This is why I exclusively used Adafruit or Seeed breakouts ([MCP9808](https://www.adafruit.com/product/1782), [BME280](https://www.adafruit.com/product/2652), [SI7021](https://www.adafruit.com/product/3251), [SHT40](https://www.adafruit.com/product/4885), [TMP117](https://www.adafruit.com/product/4821), [AHT20](https://www.adafruit.com/product/4566), [HTU31D](https://www.adafruit.com/product/4832)), which all allow connecting named sensors to the 5V the TCD board operates on.
 
-## Home Assistant / MQTT
-
-The TCD supports the MQTT protocol version 3.1.1 for the following features:
-
-### Display messages on TCD
-
-The TCD can subscribe to a user-configured topic and display messages received for this topic on the *Destination Time* display. This can be used to display the status of other HA/MQTT devices, for instance alarm systems. If the SD card contains a file named "ha-alert.mp3", this file will be played upon reception of a message (there is no default sound).
-
-Only ASCII messages are supported, the maximum length is 255 characters.
-
-### Control the TCD via MQTT
-
-The TCD can - to a limited extent - be controlled through messages sent to topic **bttf/tcd/cmd**. Support commands are
-- TIMETRAVEL: Start a time travel
-- RETURN: Return from time travel
-- BEEP_ON: Enables the *annoying beep*(tm)
-- BEEP_OFF: Disables the *annoying beep*(tm)
-- BEEP_30, BEEP_60: Set the beep modes as described [here](#beep-on-the-second)
-- ALARM_ON: Enable the alarm
-- ALARM_OFF: Disable the alarm
-- NIGHTMODE_ON: Enable manual night mode
-- NIGHTMODE_OFF: Disable manual night mode
-- MP_PLAY: Starts the Music Player
-- MP_STOP: Stops the Music Player
-- MP_NEXT: Jump to next song
-- MP_PREV: Jump to previous song
-- MP_SHUFFLE_ON: Enables shuffle mode in Music Player
-- MP_SHUFFLE_OFF: Disables shuffle mode in Music Player
-
-### Notify other devices of a time travel or alarm
-
-Upon a time travel, the TCD can send messages to topic **bttf/tcd/pub**. This can be used to control other props wirelessly, such as Flux Capacitor, SID, etc. The timing is identical to the wired protocol, see [here](#controlling-other-props). TIMETRAVEL is sent when IO14 goes high, ie with a lead time (ETTO LEAD) of 5 seconds. REENTRY is sent when the re-entry sequence starts (ie when IO14 goes low). Note that network traffic has some latency, so timing might not be as exact as a wired connection.
-
-When the [alarm](#how-to-set-up-the-alarm) sounds, the TCD can send "ALARM" to **bttf/tcd/pub**.
-
-### Setup
-
-In order to connect to a MQTT network, a "broker" (such as [mosquitto](https://mosquitto.org/), [EMQ X](https://www.emqx.io/), [Cassandana](https://github.com/mtsoleimani/cassandana), [RabbitMQ](https://www.rabbitmq.com/), [Ejjaberd](https://www.ejabberd.im/), [HiveMQ](https://www.hivemq.com/) to name a few) must be present in your network, and its address needs to be configured in the Config Portal. The broker can be specified either by domain or IP (IP preferred, spares us a DNS call). The default port is 1883. If a different port is to be used, append a ":" followed by the port number to the domain/IP, such as "192.168.1.5:1884". 
-
-If your broker does not allow anonymous logins, a username and password can be specified.
-
-If you want your TCD to display messages as described above, you also need to specify the topic in the respective field.
-
-If you want your TCD to publish messages to bttf/tcd/pub (ie if you want to notify other devices about a timetravel and/or alarm), check the *Send event notifications* option.
-
-Limitations: MQTT Protocol version 3.1.1; TLS/SSL not supported; ".local" domains (MDNS) not supported; maximum message length 255 characters; server/broker must respond to PING (ICMP) echo requests. For proper operation with low latency, it is recommended that the broker is on your local network. Note that using HA/MQTT will disable WiFi power saving (as described below).
-
 ## Controlling other props
 
 ### Connecting props by wire
@@ -850,6 +809,53 @@ MQTT and BTTFN can co-exist:
 BTTFN must be configured on the prop - regardless of MQTT usage - if that prop is to receive data from the TCD (like, for instance, GPS speed). 
 
 However, as mentioned, the TCD only sends out time travel and alarm notifications through either MQTT or BTTFN, never both. If you have other MQTT-aware devices listening to the TCD's public topic (bttf/tcd/pub) in order to react to time travel or alarm messages, use MQTT (ie check *Send event notifications*). If only BTTFN-aware devices are to be used, uncheck this option to use BTTFN as it has less latency.
+
+## Home Assistant / MQTT
+
+The TCD supports the MQTT protocol version 3.1.1 for the following features:
+
+### Display messages on TCD
+
+The TCD can subscribe to a user-configured topic and display messages received for this topic on the *Destination Time* display. This can be used to display the status of other HA/MQTT devices, for instance alarm systems. If the SD card contains a file named "ha-alert.mp3", this file will be played upon reception of a message (there is no default sound).
+
+Only ASCII messages are supported, the maximum length is 255 characters.
+
+### Control the TCD via MQTT
+
+The TCD can - to a limited extent - be controlled through messages sent to topic **bttf/tcd/cmd**. Support commands are
+- TIMETRAVEL: Start a time travel
+- RETURN: Return from time travel
+- BEEP_ON: Enables the *annoying beep*(tm)
+- BEEP_OFF: Disables the *annoying beep*(tm)
+- BEEP_30, BEEP_60: Set the beep modes as described [here](#beep-on-the-second)
+- ALARM_ON: Enable the alarm
+- ALARM_OFF: Disable the alarm
+- NIGHTMODE_ON: Enable manual night mode
+- NIGHTMODE_OFF: Disable manual night mode
+- MP_PLAY: Starts the Music Player
+- MP_STOP: Stops the Music Player
+- MP_NEXT: Jump to next song
+- MP_PREV: Jump to previous song
+- MP_SHUFFLE_ON: Enables shuffle mode in Music Player
+- MP_SHUFFLE_OFF: Disables shuffle mode in Music Player
+
+### Notify other devices of a time travel or alarm
+
+Upon a time travel, the TCD can send messages to topic **bttf/tcd/pub**. This can be used to control other props wirelessly, such as Flux Capacitor, SID, etc. The timing is identical to the wired protocol, see [here](#controlling-other-props). TIMETRAVEL is sent when IO14 goes high, ie with a lead time (ETTO LEAD) of 5 seconds. REENTRY is sent when the re-entry sequence starts (ie when IO14 goes low). Note that network traffic has some latency, so timing might not be as exact as a wired connection.
+
+When the [alarm](#how-to-set-up-the-alarm) sounds, the TCD can send "ALARM" to **bttf/tcd/pub**.
+
+### Setup
+
+In order to connect to a MQTT network, a "broker" (such as [mosquitto](https://mosquitto.org/), [EMQ X](https://www.emqx.io/), [Cassandana](https://github.com/mtsoleimani/cassandana), [RabbitMQ](https://www.rabbitmq.com/), [Ejjaberd](https://www.ejabberd.im/), [HiveMQ](https://www.hivemq.com/) to name a few) must be present in your network, and its address needs to be configured in the Config Portal. The broker can be specified either by domain or IP (IP preferred, spares us a DNS call). The default port is 1883. If a different port is to be used, append a ":" followed by the port number to the domain/IP, such as "192.168.1.5:1884". 
+
+If your broker does not allow anonymous logins, a username and password can be specified.
+
+If you want your TCD to display messages as described above, you also need to specify the topic in the respective field.
+
+If you want your TCD to publish messages to bttf/tcd/pub (ie if you want to notify other devices about a timetravel and/or alarm), check the *Send event notifications* option.
+
+Limitations: MQTT Protocol version 3.1.1; TLS/SSL not supported; ".local" domains (MDNS) not supported; maximum message length 255 characters; server/broker must respond to PING (ICMP) echo requests. For proper operation with low latency, it is recommended that the broker is on your local network. Note that using HA/MQTT will disable WiFi power saving (as described below).
 
 ## WiFi power saving features
 
