@@ -768,7 +768,7 @@ The device can tell other props about a time travel, and in essence act as a "ma
 
 ![Wired connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/2e9be0a2-2180-417a-9d04-6f36f7cd1697)
 
-You need two wires for connecting the TCD to the other prop: IO14 (TT_OUT) and GND, which need to be connected to TT_IN and GND of the prop.
+You need two wires for connecting the TCD to the other prop: IO14 (TT_OUT) and GND, which need to be connected to the respective pins of the prop.
 
 In case you want to design your own props, here's the timing diagram:
 
