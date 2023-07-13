@@ -678,7 +678,7 @@ Here is a close-up of one of my boards; I have soldered some headers on the io p
 
 Note that the switch actually needs to be a switch with a maintained contact; the pins need to remain connected for as long as the device is fake-switched-on.
 
-In order to use the Fake Power Switch, check **Use fake power switch** in the Config Portal.
+In order to use the Fake Power Switch, check *Use fake power switch* in the Config Portal.
 
 ## External Time Travel Trigger
 
