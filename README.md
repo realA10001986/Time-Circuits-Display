@@ -688,7 +688,7 @@ As mentioned above, a time travel can be triggered by holding "0" on the keypad.
 
 On Control Boards V1.3 and later, there is a dedicated header for the button labeled "Time Travel". The button needs to shorten pins "TT IN" and "GND".
 
-
+![ttin](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/8ec8d88a-f2df-484c-b9b9-1d389dc6d480)
 
 Unfortunately, there is no header and no break out for IO27 on TC control boards V1.2 and below. Some soldering is required. The button needs to be connected to the two marked pins in the image below:
 
