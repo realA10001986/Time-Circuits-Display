@@ -809,6 +809,8 @@ To see which BTTFN devices are currently known to the TCD, enter the keypad menu
 
 The other way of wireless communication is, of course, [Home Assistant/MQTT](#home-assistant--mqtt). If both the TCD and the other props are connected to the same broker, and the option *Send event notifications* is checked on the TCD's side, other compatible props will receive information on time travel and alarm and play their sequences in sync with the TCD.
 
+![MQTT connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/fdfcaabf-96e9-45b1-a626-ded91f37d128)
+
 MQTT and BTTFN can co-exist: 
 
 BTTFN must be configured on the prop - regardless of MQTT usage - if that prop is to receive data from the TCD (like, for instance, GPS speed). 
