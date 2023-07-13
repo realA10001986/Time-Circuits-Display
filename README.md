@@ -768,6 +768,9 @@ The device can tell other props about a time travel, and in essence act as a "ma
 
 ![Wired connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/2e9be0a2-2180-417a-9d04-6f36f7cd1697)
 
+You need two wires for connecting the TCD to the other prop: IO14 (TT_OUT) and GND, which need to be connected to TT_IN and GND of the prop.
+
+In case you want to design your own props, here's the timing diagram:
 
 ```
 |<---------- speedo acceleration --------->|                         |<-speedo de-acceleration->|
@@ -785,7 +788,7 @@ The device can tell other props about a time travel, and in essence act as a "ma
 
 "ETTO lead", ie the lead time between IO14 going high and the actual start of a time travel is defined as 5000ms (ETTO_LEAD_TIME). In this window of time, the prop can play its pre-time-travel (warm-up/acceleration/etc) sequence. The sequence inside the time "tunnel" follows after that lead time, and when IO14 goes LOW, the re-entry into the destination time takes place.
 
-If external gear is connected to IO14 and you want to use this control feature, check *Control props connected by wire* in the Config Portal.
+If external gear is connected to IO14/TT_OUT and you want to use this control feature, check *Control props connected by wire* in the Config Portal.
 
 Note that a wired connection only allows for synchronized time travel sequences, no other communication takes place.
 
