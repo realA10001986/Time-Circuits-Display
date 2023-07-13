@@ -764,7 +764,10 @@ Seven sensor types are supported: MCP9808 (i2c address 0x18), BMx280 (0x77), SI7
 
 ### Connecting props by wire
 
-The device can tell other props about a time travel, and in essence act as a "master controller" in a setup of several props. It does so via IO14 (labeled "TT OUT" on Control Boards 1.3 and later), see diagram below.
+The device can tell other props about a time travel, and in essence act as a "master controller" in a setup of several props. It does so via IO14 (labeled "TT OUT" on Control Boards 1.3 and later).
+
+![Wired connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/2e9be0a2-2180-417a-9d04-6f36f7cd1697)
+
 
 ```
 |<---------- speedo acceleration --------->|                         |<-speedo de-acceleration->|
@@ -792,7 +795,7 @@ Note that a wired connection only allows for synchronized time travel sequences,
 
 The TCD can communicate with other compatible props wirelessly, via WiFi. It can send out information about a time travel and an alarm, and other props can query the TCD for time, speed and some other data. Unlike with MQTT, no broker or other third party software is needed.
 
-![family1000-wifi-bttfn](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/4c831d02-e6c9-4e80-9e05-37e782c68c79)
+![bttfn connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/4c831d02-e6c9-4e80-9e05-37e782c68c79)
 
 On the TCD, no special configuration is required. However, if the TCD is supposed to send out notifications about time travel and alarm to connected BTTFN clients, usage of MQTT must be disabled or the *Send event notifications* option in the MQTT section of the Config Portal must be unchecked. The TCD only sends out such notifications either via MQTT or BTTFN, never both.
 
