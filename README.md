@@ -694,13 +694,13 @@ On Control Boards V1.3 and later, there is a dedicated header for the button lab
 
 Unfortunately, there is no header and no break out for IO27 on TC control boards V1.2 and below. Some soldering is required. The button needs to be connected to the two marked pins in the image below:
 
-| ![nodemcuio27](https://user-images.githubusercontent.com/76924199/194284838-635419f9-5eb7-4480-8693-2bf7cfc7c744.jpg) |
-|:--:|
-| IO27 on TCB 1.2 |
+![nodemcuio27](https://user-images.githubusercontent.com/76924199/194284838-635419f9-5eb7-4480-8693-2bf7cfc7c744.jpg)
 
 Luckily, there is a row of solder pads right next to the socket on the control board, where a pin header or cable can easily be soldered on:
 
-![tcboard_io27](https://user-images.githubusercontent.com/76924199/194284336-2fe9fa9b-d5e5-49f5-b1cd-b0fd2abdff53.jpg)
+| ![tcboard_io27](https://user-images.githubusercontent.com/76924199/194284336-2fe9fa9b-d5e5-49f5-b1cd-b0fd2abdff53.jpg) |
+|:--:|
+| IO27 (TT_IN) on TCB 1.2 |
 
 In order to trigger a time-travel sequence on the Time Circuits, "TT IN"/IO27 and GND must be shortened for at least 200ms and then opened; the time travel is triggered upon release of the button. If the button is pressed for 3000ms (3 seconds), a ["Return from Time Travel"](#time-travel) is triggered.
 
@@ -776,15 +776,15 @@ The device can tell other props about a time travel, and in essence act as a "ma
 
 ![Wired connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/2e9be0a2-2180-417a-9d04-6f36f7cd1697)
 
-You need two wires for connecting the TCD to the other prop: IO14 (TT_OUT) and GND, which need to be connected to the respective pins of the prop.
-
-| ![ttout](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/112c0240-6a3b-44c3-a15d-5af7477a8791) |
-|:--:|
-| IO14 on TCB 1.2 |
+You need two wires for connecting the TCD to the other prop: TT_OUT (IO14) and GND, which need to be connected to the respective pins of the prop.
 
 | ![ttout](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/b1330e4d-12ba-48ef-a454-3d6167fb2a5d) |
 |:--:|
 | IO14 on TCB 1.3 |
+
+| ![ttout](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/112c0240-6a3b-44c3-a15d-5af7477a8791) |
+|:--:|
+| IO14 on TCB 1.2 |
 
 In case you want to design your own props, here's the timing diagram:
 
