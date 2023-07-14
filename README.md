@@ -694,9 +694,10 @@ On Control Boards V1.3 and later, there is a dedicated header for the button lab
 |:--:|
 | TT_IN on TCB 1.3 |
 
-Unfortunately, there is no header and no break out for IO27 on TC control boards V1.2 and below. Some soldering is required. The button needs to be connected to the two marked pins in the image below:
+Unfortunately, there is no header and no break out for IO27 on TC control boards V1.2 and below. Some soldering is required. The button needs to be 
+connected to the two marked pins in the image below:
 
-![nodemcuio27](https://user-images.githubusercontent.com/76924199/194284838-635419f9-5eb7-4480-8693-2bf7cfc7c744.jpg)
+![nodemcuio272](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/9ace6814-87d6-48db-babe-39d44c03eaed)
 
 Luckily, there is a row of solder pads right next to the socket on the control board, where a pin header or cable can easily be soldered on:
 
