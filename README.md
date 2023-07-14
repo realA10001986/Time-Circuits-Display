@@ -100,7 +100,7 @@ If that fails, the way to connect to the Config Portal depends on whether the cl
 
 In the main menu, click on "Setup" to configure your clock, first and foremost your time zone. If the time zone isn't set correctly, the clock might show a wrong time, and DST (daylight saving) will not be switched on/off correctly.
 
-| ![The_Config_Portal](https://user-images.githubusercontent.com/76924199/235524035-afa58901-8115-42d6-a896-f65d4a7a56c2.png) |
+| ![The_Config_Portal](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/95888ad5-5e3e-4f62-8a6c-e945de1bd281) |
 |:--:| 
 | *The Config Portal's Setup page* |
 
