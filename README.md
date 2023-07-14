@@ -682,6 +682,8 @@ Note that the switch actually needs to be a switch with a maintained contact; th
 
 In order to use the Fake Power Switch, check *Use fake power switch* in the Config Portal.
 
+[Here](https://github.com/realA10001986/Time-Circuits-Display/wiki/Time-Circuits-Switch) are some hints for building a TFC Switch.
+
 ## External Time Travel Trigger
 
 As mentioned above, a time travel can be triggered by holding "0" on the keypad. Since this doesn't really allow for an authentic movie-like experience, the firmware also supports an external trigger, such as a button switch or even another prop to trigger a time travel. Note that, unlike the [Fake Power Switch](#fake-power-switch), this trigger must be a momentary toggle.
