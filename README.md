@@ -651,7 +651,7 @@ Note: Sometimes, light sensors report a lux value of -1. This is mostly due to t
 
 ## Peripherals and connection
 
-![family1000-wired](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/16f1b2bb-2093-4a6b-a58c-cc5d9b9efd21)
+![The BTTF Prop Family](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/fd0de57c-00a2-4f28-ac35-db2b7a2c0e60) |
 
 - [Fake Power Switch](#fake-power-switch)
 - [Speedometer](#speedometer)
