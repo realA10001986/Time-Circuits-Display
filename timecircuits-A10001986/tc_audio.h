@@ -75,5 +75,6 @@ int  mp_get_currently_playing();
 #define PA_ALLOWSD 0x0004
 #define PA_DYNVOL  0x0008
 #define PA_NOID3TS 0x0010
+#define PA_LOOPNOW 0x0020
 
 #endif

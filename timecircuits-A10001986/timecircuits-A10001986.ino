@@ -90,6 +90,8 @@
 
 /*  Changelog
  *   
+ *  2023/07/17 (A10001986)
+ *    - Try to make keypad sounds more immediate
  *  2023/07/11 (A10001986)
  *    - Clean up
  *  2023/07/09 (A10001986)
@@ -99,13 +101,13 @@
  *  2023/07/07 (A10001986)
  *    - Block WiFi power-saving as long as BTTFN clients are present
  *    - GPS speed: Increase update rate to twice per second for smoother speedo display.
- *      Also, add CP option "Quick GPS updates" for peripherals that poll the TCD for 
+ *      Also, add CP option "Provide GPS speed" for peripherals that poll the TCD for 
  *      speed (such as SID). If neither this nor the option "Display GPS speed" is set, 
  *      GPS rate is every 5 seconds; if either is set, twice per second.
  *    - Extend mere "network polling" into "BTTF network" ("BTTFN"): TCD now not only 
  *      answers to polling requests (time, temp, lux, speed), but also sends notifications
  *      to known clients about time timetravel and alarm. Those notifications are only
- *      sent, if MQTT is disabled or "send commands for other props" is unchecked.
+ *      sent, if MQTT is disabled or "send event notifications" is unchecked.
  *    - BTTFN: Show connected clients in keypad menu (hostname, IP). This helps finding 
  *      out the IP address of other props when they are connected to the TCD's AP.
  *  2023/06/27 (A10001986)
@@ -922,8 +924,10 @@ void setup()
 void loop()
 {
     keypad_loop();
+    audio_loop();
     scanKeypad();
     ntp_loop();
+    audio_loop();
     time_loop();
     audio_loop();
     wifi_loop();

@@ -853,7 +853,7 @@ void play_keypad_sound(char key)
 
     if(key) {
         buf[6] = key;
-        play_file(buf, PA_CHECKNM|PA_NOID3TS, 0.6);
+        play_file(buf, PA_CHECKNM|PA_NOID3TS|PA_LOOPNOW, 0.6);
     }
 }
 
@@ -1037,6 +1037,10 @@ void play_file(const char *audio_file, uint16_t flags, float volumeFactor)
         Serial.println(F("Audio file not found"));
         #endif
         
+    }
+
+    if(flags & PA_LOOPNOW) {
+        audio_loop();
     }
 }
 
