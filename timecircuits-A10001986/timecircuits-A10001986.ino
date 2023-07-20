@@ -92,6 +92,7 @@
  *   
  *  2023/07/20 (A10001986)
  *    - Make "beep" ever so slightly shorter
+ *    - Hack to display "0" on CircuitSetup's speedo's fake third digit
  *  2023/07/17 (A10001986)
  *    - Try to make keypad sounds more immediate
  *  2023/07/11 (A10001986)
