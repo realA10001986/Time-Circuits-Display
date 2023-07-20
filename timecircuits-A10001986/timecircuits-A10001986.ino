@@ -931,7 +931,7 @@ void loop()
     ntp_loop();
     audio_loop();
     time_loop();
-    //audio_loop();
+    audio_loop();
     wifi_loop();
     audio_loop();
     #ifdef TC_HAVEBTTFN
