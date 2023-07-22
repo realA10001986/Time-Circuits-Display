@@ -323,6 +323,24 @@ static bool checkTimeOut();
 static void myssdelay(unsigned long mydel);
 static void myloop();
 
+static void dt_showTextDirect(const char *text, uint16_t flags = CDT_CLEAR)
+{
+    destinationTime.showTextDirect(text, flags);
+}
+static void pt_showTextDirect(const char *text, uint16_t flags = CDT_CLEAR)
+{
+    presentTime.showTextDirect(text, flags);
+}
+static void lt_showTextDirect(const char *text, uint16_t flags = CDT_CLEAR)
+{
+    departedTime.showTextDirect(text, flags);
+}
+static void dt_off() { destinationTime.off(); }
+static void pt_off() { presentTime.off();     }
+static void lt_off() { departedTime.off();    }
+static void dt_on() {  destinationTime.on(); }
+static void pt_on() {  presentTime.on();     }
+static void lt_on() {  departedTime.on();    }
 /*
  * enter_menu()
  *
@@ -586,9 +604,9 @@ void enter_menu()
             goto quitMenu;
 
         // Now save
-        destinationTime.showTextDirect(StrSaving);
-        presentTime.off();
-        departedTime.off();
+        dt_showTextDirect(StrSaving);
+        pt_off();
+        lt_off();
 
         uint8_t dtbri2 = destinationTime.getBrightness();
         uint8_t ptbri2 = presentTime.getBrightness();
@@ -770,104 +788,104 @@ static void menuShow(int number)
     
     switch (number) {
     case MODE_DEST:  // Destination Time
-        destinationTime.on();
+        dt_on();
         destinationTime.setColon(false);
         destinationTime.show();
-        presentTime.off();
-        departedTime.off();
+        pt_off();
+        lt_off();
         displaySet = &destinationTime;
         break;
     case MODE_PRES:  // Present Time (RTC)
-        destinationTime.showTextDirect("SET RTC");
-        destinationTime.on();
-        presentTime.on();
+        dt_showTextDirect("SET RTC");
+        dt_on();
+        pt_on();
         presentTime.setColon(false);
         presentTime.show();
-        departedTime.off();
+        lt_off();
         displaySet = &presentTime;
         break;
     case MODE_DEPT:  // Last Time Departed
-        destinationTime.off();
-        presentTime.off();
-        departedTime.on();
+        dt_off();
+        pt_off();
+        lt_on();
         departedTime.setColon(false);
         departedTime.show();
         displaySet = &departedTime;
         break;
     case MODE_VOL:   // Software volume
         #ifdef IS_ACAR_DISPLAY
-        destinationTime.showTextDirect("VOLUME");
-        presentTime.off();
+        dt_showTextDirect("VOLUME");
+        pt_off();
         #else
-        destinationTime.showTextDirect("VOL");    // "M" on 7seg no good, 2 lines
-        presentTime.showTextDirect("UME");
-        presentTime.on();
+        dt_showTextDirect("VOL");    // "M" on 7seg no good, 2 lines
+        pt_showTextDirect("UME");
+        pt_on();
         #endif
-        destinationTime.on();
-        departedTime.off();
+        dt_on();
+        lt_off();
         break;
     case MODE_MSFX:   // Music Folder Number
-        destinationTime.showTextDirect("MUSIC");
-        presentTime.showTextDirect("FOLDER");
-        departedTime.showTextDirect("NUMBER");
-        presentTime.on();
-        destinationTime.on();
-        departedTime.on();
+        dt_showTextDirect("MUSIC");
+        pt_showTextDirect("FOLDER");
+        lt_showTextDirect("NUMBER");
+        pt_on();
+        dt_on();
+        lt_on();
         break;
     case MODE_ALRM:   // Alarm
         #ifdef IS_ACAR_DISPLAY
-        destinationTime.showTextDirect("ALARM");
-        presentTime.off();
+        dt_showTextDirect("ALARM");
+        pt_off();
         #else
-        destinationTime.showTextDirect("ALA");    // "M" on 7seg no good, 2 lines
-        presentTime.showTextDirect("RM");
-        presentTime.on();
+        dt_showTextDirect("ALA");    // "M" on 7seg no good, 2 lines
+        pt_showTextDirect("RM");
+        pt_on();
         #endif
-        destinationTime.on();
-        departedTime.off();
+        dt_on();
+        lt_off();
         displaySet = &destinationTime;
         break;
     case MODE_AINT:  // Time Cycling inverval
-        destinationTime.showTextDirect("TIME");
-        presentTime.showTextDirect("CYCLING");
-        destinationTime.on();
-        presentTime.on();
-        departedTime.off();
+        dt_showTextDirect("TIME");
+        pt_showTextDirect("CYCLING");
+        dt_on();
+        pt_on();
+        lt_off();
         break;
     case MODE_BRI:  // Brightness
-        destinationTime.showTextDirect("BRIGHTNESS");
-        presentTime.off();
-        departedTime.off();
-        destinationTime.on();
+        dt_showTextDirect("BRIGHTNESS");
+        pt_off();
+        lt_off();
+        dt_on();
         break;
     case MODE_NET:  // Network info
         #ifdef IS_ACAR_DISPLAY
-        destinationTime.showTextDirect("NETWORK");
-        destinationTime.on();
-        presentTime.off();
+        dt_showTextDirect("NETWORK");
+        dt_on();
+        pt_off();
         #else
-        destinationTime.showTextDirect("NET");  // "W" on 7seg no good, 2 lines
-        presentTime.showTextDirect("WORK");
-        destinationTime.on();
-        presentTime.on();
+        dt_showTextDirect("NET");  // "W" on 7seg no good, 2 lines
+        pt_showTextDirect("WORK");
+        dt_on();
+        pt_on();
         #endif
-        departedTime.off();
+        lt_off();
         break;
     #if defined(TC_HAVELIGHT) || defined(TC_HAVETEMP)
     case MODE_SENS:
-        destinationTime.showTextDirect("SENSORS");
-        destinationTime.on();
-        presentTime.off();
-        departedTime.off();
+        dt_showTextDirect("SENSORS");
+        dt_on();
+        pt_off();
+        lt_off();
         break;
     #endif
     case MODE_LTS:  // last time sync info
-        destinationTime.showTextDirect("TIME SYNC");
-        destinationTime.on();
+        dt_showTextDirect("TIME SYNC");
+        dt_on();
         if(!lastAuthTime64) {
-            presentTime.showTextDirect("NEVER");
-            presentTime.on();
-            departedTime.off();
+            pt_showTextDirect("NEVER");
+            pt_on();
+            lt_off();
         } else {
             uint64_t ago = (((uint64_t)millis() + millisEpoch) - lastAuthTime64) / 1000;
             if(ago > 24*60*60) {
@@ -879,51 +897,51 @@ static void menuShow(int number)
             } else {
                 sprintf(buf, "%d SECS", ago);
             }
-            presentTime.showTextDirect(buf);
-            presentTime.on();
-            departedTime.showTextDirect("AGO");
-            departedTime.on();
+            pt_showTextDirect(buf);
+            pt_on();
+            lt_showTextDirect("AGO");
+            lt_on();
         }
         break;
     #ifdef TC_HAVEBTTFN
     case MODE_CLI:
         #ifdef IS_ACAR_DISPLAY
-        destinationTime.showTextDirect("BTTFN");
-        presentTime.showTextDirect("CLIENTS");
-        presentTime.on();
+        dt_showTextDirect("BTTFN");
+        pt_showTextDirect("CLIENTS");
+        pt_on();
         #else
-        destinationTime.showTextDirect("BTTFN CLIENTS");
-        presentTime.off();
+        dt_showTextDirect("BTTFN CLIENTS");
+        pt_off();
         #endif
-        destinationTime.on();
-        departedTime.off();
+        dt_on();
+        lt_off();
         break;
     #endif
     case MODE_VER:  // Version info
-        destinationTime.showTextDirect("VERSION");
-        destinationTime.on();
-        presentTime.showTextDirect(TC_VERSION);
-        presentTime.on();
+        dt_showTextDirect("VERSION");
+        dt_on();
+        pt_showTextDirect(TC_VERSION);
+        pt_on();
         #ifdef TC_VERSION_EXTRA
-        departedTime.showTextDirect(TC_VERSION_EXTRA);
-        departedTime.on();
+        lt_showTextDirect(TC_VERSION_EXTRA);
+        lt_on();
         #else
-        departedTime.off();
+        lt_off();
         #endif
         break;
     case MODE_CPA:  // Install audio files
-        destinationTime.showTextDirect("INSTALL");
-        destinationTime.on();
-        presentTime.showTextDirect("AUDIO FILES");
-        presentTime.on();
-        departedTime.off();
+        dt_showTextDirect("INSTALL");
+        dt_on();
+        pt_showTextDirect("AUDIO FILES");
+        pt_on();
+        lt_off();
         break;
     case MODE_END:  // end
-        destinationTime.showTextDirect("END");
-        destinationTime.on();
+        dt_showTextDirect("END");
+        dt_on();
         destinationTime.setColon(false);
-        presentTime.off();
-        departedTime.off();
+        pt_off();
+        lt_off();
         break;
     }
 }
@@ -1098,17 +1116,17 @@ static void showCurVolHWSW(bool blink)
         allOff();
     } else {
         if(curVolume == 255) {
-            destinationTime.showTextDirect("USE");
-            presentTime.showTextDirect("VOLUME");
-            departedTime.showTextDirect("KNOB");
-            departedTime.on();
+            dt_showTextDirect("USE");
+            pt_showTextDirect("VOLUME");
+            lt_showTextDirect("KNOB");
+            lt_on();
         } else {
-            destinationTime.showTextDirect("FIXED");
-            presentTime.showTextDirect("LEVEL");
-            departedTime.off();
+            dt_showTextDirect("FIXED");
+            pt_showTextDirect("LEVEL");
+            lt_off();
         }
-        destinationTime.on();
-        presentTime.on();
+        dt_on();
+        pt_on();
     }
 }
 
@@ -1118,16 +1136,16 @@ static void showCurVol(bool blink, bool doComment)
     if(blink) flags |= CDT_BLINK;
     
     destinationTime.showSettingValDirect("LEVEL", curVolume, flags);
-    destinationTime.on();
+    dt_on();
 
     if(doComment) {
         if(curVolume == 0) {
-            presentTime.showTextDirect("MUTE");
-            presentTime.on();
+            pt_showTextDirect("MUTE");
+            pt_on();
         } else {
-            presentTime.off();
+            pt_off();
         }
-        departedTime.off();
+        lt_off();
     }
 }
 
@@ -1254,10 +1272,10 @@ static void doSetVolume()
 
     if(volDone) {
 
-        destinationTime.showTextDirect(StrSaving);
-        destinationTime.on();
-        presentTime.off();
-        departedTime.off();
+        dt_showTextDirect(StrSaving);
+        dt_on();
+        pt_off();
+        lt_off();
 
         // Save it (if changed)
         if(oldVol != curVolume) {
@@ -1282,36 +1300,36 @@ static void displayMSfx(int msfx, bool blink, bool doFolderChk)
     if(blink) flags |= CDT_BLINK;
     
     destinationTime.showSettingValDirect("FOLDER", msfx, flags);
-    destinationTime.on();
+    dt_on();
 
     if(doFolderChk) {
         int folderState = mp_checkForFolder(msfx);
         switch(folderState) {
         case 1:
-            presentTime.off();
-            departedTime.off();
+            pt_off();
+            lt_off();
             break;
         case 0:
-            presentTime.showTextDirect("NOT FOUND");
-            presentTime.on();
-            departedTime.off();
+            pt_showTextDirect("NOT FOUND");
+            pt_on();
+            lt_off();
             break;
         case -1:
-            presentTime.showTextDirect("PROCESSING");
-            departedTime.showTextDirect("REQUIRED");
+            pt_showTextDirect("PROCESSING");
+            lt_showTextDirect("REQUIRED");
             break;
         case -2:
-            presentTime.showTextDirect("NO AUDIO");
-            departedTime.showTextDirect("FILES");
+            pt_showTextDirect("NO AUDIO");
+            lt_showTextDirect("FILES");
             break;
         case -3:
-            presentTime.showTextDirect("NOT A");
-            departedTime.showTextDirect("FOLDER");
+            pt_showTextDirect("NOT A");
+            lt_showTextDirect("FOLDER");
             break;
         }
         if(folderState < 0) {
-            presentTime.on();
-            departedTime.on();
+            pt_on();
+            lt_on();
         }
     }
 }
@@ -1370,9 +1388,9 @@ static void doSetMSfx()
 
     if(msfxDone) {
 
-        destinationTime.showTextDirect(StrSaving);
-        presentTime.off();
-        departedTime.off();
+        dt_showTextDirect(StrSaving);
+        pt_off();
+        lt_off();
 
         // Save it (if changed)
         if(oldmsfx != musFolderNum) {
@@ -1625,9 +1643,9 @@ static void displayAI(int interval, bool blink, bool doComment)
 
     if(doComment) {
         if(interval == 0) {
-            presentTime.showTextDirect("OFF");
+            pt_showTextDirect("OFF");
         } else {
-            presentTime.showTextDirect("MINUTES");
+            pt_showTextDirect("MINUTES");
         }
     }
 }
@@ -1643,9 +1661,9 @@ static void doSetAutoInterval()
     unsigned long blinkNow = millis();
 
     displayAI(autoTimeIntervals[newAutoInterval], false, true);
-    destinationTime.on();
-    presentTime.on();
-    departedTime.off();
+    dt_on();
+    pt_on();
+    lt_off();
 
     timeout = 0;  // reset timeout
 
@@ -1692,9 +1710,9 @@ static void doSetAutoInterval()
 
     if(autoDone) {
 
-        destinationTime.showTextDirect(StrSaving);
-        presentTime.off();
-        departedTime.off();
+        dt_showTextDirect(StrSaving);
+        pt_off();
+        lt_off();
 
         // Save it (if changed)
         if(autoInterval != newAutoInterval) {
@@ -1818,11 +1836,11 @@ static void doShowSensors()
     maxIdx = numIdx - 1;
     numIdx = 0;
 
-    destinationTime.showTextDirect("WAIT");
-    destinationTime.on();
-    presentTime.showTextDirect("");
-    presentTime.on();
-    departedTime.off();
+    dt_showTextDirect("WAIT");
+    dt_on();
+    pt_showTextDirect("");
+    pt_on();
+    lt_off();
 
     isEnterKeyHeld = false;
 
@@ -1841,8 +1859,8 @@ static void doShowSensors()
                 if(maxIdx > 0) {
                     numIdx++;
                     if(numIdx > maxIdx) numIdx = 0;
-                    destinationTime.showTextDirect("WAIT");
-                    presentTime.showTextDirect("");
+                    dt_showTextDirect("WAIT");
+                    pt_showTextDirect("");
                 }
             }
             
@@ -1855,7 +1873,7 @@ static void doShowSensors()
                 case 0:
                     #ifdef TC_HAVELIGHT
                     lightSens.loop();
-                    destinationTime.showTextDirect("LIGHT");
+                    dt_showTextDirect("LIGHT");
                     //#ifdef TC_DBG
                     //sprintf(buf, "%08x", lightSens.readDebug());
                     //#else
@@ -1867,7 +1885,7 @@ static void doShowSensors()
                     break;
                 case 1:
                     #ifdef TC_HAVETEMP
-                    destinationTime.showTextDirect("TEMPERATURE");
+                    dt_showTextDirect("TEMPERATURE");
                     temp = tempSens.readTemp(tempUnit);
                     if(isnan(temp)) {
                         sprintf(buf, "--.--~%c", tempUnit ? 'C' : 'F');
@@ -1881,7 +1899,7 @@ static void doShowSensors()
                 case 2:
                     #ifdef TC_HAVETEMP
                     tempSens.readTemp(tempUnit);
-                    destinationTime.showTextDirect("HUMIDITY");
+                    dt_showTextDirect("HUMIDITY");
                     hum = tempSens.readHum();
                     if(hum < 0) {
                         #ifdef IS_ACAR_DISPLAY
@@ -1901,7 +1919,7 @@ static void doShowSensors()
                     #endif
                     break;
                 }
-                presentTime.showTextDirect(buf);
+                pt_showTextDirect(buf);
                 sensNow = millis();
             }
 
@@ -1921,13 +1939,13 @@ static void displayIP()
 
     wifi_getIP(a, b, c, d);
     
-    destinationTime.showTextDirect("IP");
+    dt_showTextDirect("IP");
     presentTime.showHalfIPDirect(a, b, CDT_CLEAR);
     departedTime.showHalfIPDirect(c, d, CDT_CLEAR);
     
-    destinationTime.on();
-    presentTime.on();
-    departedTime.on();
+    dt_on();
+    pt_on();
+    lt_on();
 }
 
 static void doShowNetInfo()
@@ -1966,75 +1984,75 @@ static void doShowNetInfo()
                     displayIP();
                     break;
                 case 1:
-                    destinationTime.showTextDirect("WIFI");
-                    destinationTime.on();
+                    dt_showTextDirect("WIFI");
+                    dt_on();
                     switch(wifi_getStatus()) {
                     case WL_IDLE_STATUS:
-                        presentTime.showTextDirect("IDLE");
-                        departedTime.off();
+                        pt_showTextDirect("IDLE");
+                        lt_off();
                         break;
                     case WL_SCAN_COMPLETED:
-                        presentTime.showTextDirect("SCAN");
-                        departedTime.showTextDirect("COMPLETE");
-                        departedTime.on();
+                        pt_showTextDirect("SCAN");
+                        lt_showTextDirect("COMPLETE");
+                        lt_on();
                         break;
                     case WL_NO_SSID_AVAIL:
-                        presentTime.showTextDirect("SSID NOT");
-                        departedTime.showTextDirect("AVAILABLE");
-                        departedTime.on();
+                        pt_showTextDirect("SSID NOT");
+                        lt_showTextDirect("AVAILABLE");
+                        lt_on();
                         break;
                     case WL_CONNECTED:
-                        presentTime.showTextDirect("CONNECTED");
-                        departedTime.off();
+                        pt_showTextDirect("CONNECTED");
+                        lt_off();
                         break;
                     case WL_CONNECT_FAILED:
-                        presentTime.showTextDirect("CONNECT");
-                        departedTime.showTextDirect("FAILED");
-                        departedTime.on();
+                        pt_showTextDirect("CONNECT");
+                        lt_showTextDirect("FAILED");
+                        lt_on();
                         break;
                     case WL_CONNECTION_LOST:
-                        presentTime.showTextDirect("CONNECTION");
-                        departedTime.showTextDirect("LOST");
-                        departedTime.on();
+                        pt_showTextDirect("CONNECTION");
+                        lt_showTextDirect("LOST");
+                        lt_on();
                         break;
                     case WL_DISCONNECTED:
-                        presentTime.showTextDirect("DISCONNECTED");
-                        departedTime.off();
+                        pt_showTextDirect("DISCONNECTED");
+                        lt_off();
                         break;
                     case 0x10000:
                     case 0x10003:   // AP-STA, treat as AP (=AP with conn.config'd but not connected)
-                        presentTime.showTextDirect("AP MODE");
-                        departedTime.off();
+                        pt_showTextDirect("AP MODE");
+                        lt_off();
                         break;
                     case 0x10001:
-                        presentTime.showTextDirect("OFF");
-                        departedTime.off();
+                        pt_showTextDirect("OFF");
+                        lt_off();
                         break;
                     //case 0x10002:     // UNKNOWN
                     default:
-                        presentTime.showTextDirect("UNKNOWN");
-                        departedTime.off();
+                        pt_showTextDirect("UNKNOWN");
+                        lt_off();
                     }
-                    presentTime.on();
+                    pt_on();
                     break;
                 case 2:
-                    destinationTime.showTextDirect("MAC");
-                    destinationTime.on();
-                    presentTime.showTextDirect(macBuf, CDT_CLEAR|CDT_CORR6);
-                    presentTime.on();
-                    departedTime.off();
+                    dt_showTextDirect("MAC");
+                    dt_on();
+                    pt_showTextDirect(macBuf, CDT_CLEAR|CDT_CORR6);
+                    pt_on();
+                    lt_off();
                     break;
                 #ifdef TC_HAVEMQTT
                 case 3:
-                    destinationTime.showTextDirect("HOMEASSISTANT");
-                    destinationTime.on();
+                    dt_showTextDirect("HOMEASSISTANT");
+                    dt_on();
                     if(useMQTT) {
-                        presentTime.showTextDirect(mqttState() ? "CONNECTED" : "DISCONNECTED");
+                        pt_showTextDirect(mqttState() ? "CONNECTED" : "DISCONNECTED");
                     } else {
-                        presentTime.showTextDirect("OFF");
+                        pt_showTextDirect("OFF");
                     }
-                    presentTime.on();
-                    departedTime.off();
+                    pt_on();
+                    lt_off();
                     break;
                 #endif
                 }
@@ -2058,26 +2076,30 @@ static void displayClient(int numCli, int number)
 {
     uint8_t *ip;
     char *id;
+    uint8_t type;
     
     if(!numCli) {
-        destinationTime.showTextDirect("NO CLIENTS");
-        presentTime.off();
-        departedTime.off();
+        dt_showTextDirect("NO CLIENTS");
+        pt_off();
+        lt_off();
         return;
     }
 
     if(number >= numCli) number = numCli - 1;
 
-    if(bttfnGetClientInfo(number, &id, &ip)) {
-        destinationTime.showTextDirect(id);
+    if(bttfnGetClientInfo(number, &id, &ip, &type)) {
+        dt_showTextDirect(id);
         presentTime.showHalfIPDirect(ip[0], ip[1], CDT_CLEAR);
         departedTime.showHalfIPDirect(ip[2], ip[3], CDT_CLEAR);
-        presentTime.on();
-        departedTime.on();
+        pt_on();
+        lt_on();
+        #ifdef TC_DBG
+        Serial.printf("BTTFN client type %d\n", type);
+        #endif
     } else {
-        destinationTime.showTextDirect("EXPIRED");
-        presentTime.off();
-        departedTime.off();
+        dt_showTextDirect("EXPIRED");
+        pt_off();
+        lt_off();
     }
 }
 
@@ -2090,7 +2112,7 @@ void doShowBTTFNInfo()
 
     oldNumCli = numCli;
 
-    destinationTime.on();
+    dt_on();
 
     displayClient(numCli, number);
 
@@ -2147,9 +2169,9 @@ void doCopyAudioFiles()
     bool delIDfile = false;
 
     // Cancel/Copy
-    destinationTime.on();
-    presentTime.on();
-    departedTime.showTextDirect("CANCEL");
+    dt_on();
+    pt_on();
+    lt_showTextDirect("CANCEL");
     departedTime.onBlink(2);
     blinkSwitch = true;
 
@@ -2162,14 +2184,14 @@ void doCopyAudioFiles()
         if(checkEnterPress()) {
 
             timeout = 0;  // button pressed, reset timeout
-            departedTime.on();
+            lt_on();
             blinkSwitch = false;
 
             if(!(doCancDone = menuWaitForRelease())) {
 
                 newCanc = !newCanc;
   
-                departedTime.showTextDirect(newCanc ? "PROCEED" : "CANCEL");
+                lt_showTextDirect(newCanc ? "PROCEED" : "CANCEL");
   
             }
   
@@ -2186,13 +2208,13 @@ void doCopyAudioFiles()
 
     }
 
-    departedTime.on();
+    lt_on();
 
     if(!doCancDone || !newCanc) return;
 
     if(!copy_audio_files()) {
         // If copy fails, re-format flash FS
-        departedTime.showTextDirect("FORMATTING");
+        lt_showTextDirect("FORMATTING");
         formatFlashFS();            // Format
         rewriteSecondarySettings(); // Re-write alarm/reminder/ip/vol settings
         #ifdef TC_DBG 
@@ -2214,8 +2236,8 @@ void doCopyAudioFiles()
     mydelay(2000);
 
     allOff();
-    destinationTime.showTextDirect("REBOOTING");
-    destinationTime.on();
+    dt_showTextDirect("REBOOTING");
+    dt_on();
 
     esp_restart();
 }
@@ -2227,12 +2249,12 @@ void start_file_copy()
     mp_stop();
     stopAudio();
   
-    destinationTime.showTextDirect("COPYING");
-    presentTime.showTextDirect("FILES");
-    departedTime.showTextDirect("PLEASE");
-    destinationTime.on();
-    presentTime.on();
-    departedTime.on();
+    dt_showTextDirect("COPYING");
+    pt_showTextDirect("FILES");
+    lt_showTextDirect("PLEASE");
+    dt_on();
+    pt_on();
+    lt_on();
     destinationTime.resetBrightness();
     presentTime.resetBrightness();
     departedTime.resetBrightness();
@@ -2244,7 +2266,7 @@ void start_file_copy()
 void file_copy_progress()
 {
     if(millis() - fcstart >= 1000) {
-        departedTime.showTextDirect(fcprog ? "PLEASE" : "WAIT");
+        lt_showTextDirect(fcprog ? "PLEASE" : "WAIT");
         fcprog = !fcprog;
         fcstart = millis();
     }
@@ -2252,12 +2274,12 @@ void file_copy_progress()
 
 void file_copy_done()
 {
-    departedTime.showTextDirect("DONE");
+    lt_showTextDirect("DONE");
 }
 
 void file_copy_error()
 {
-    departedTime.showTextDirect("ERROR");
+    lt_showTextDirect("ERROR");
 }
 
 /*

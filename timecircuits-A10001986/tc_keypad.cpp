@@ -991,10 +991,6 @@ void keypad_loop()
             char spTxtS1[EE1_KL1] = { 181, 244, 186, 138, 187, 138, 179, 138, 179, 131, 179, 139, 179 };
             #endif
 
-            #ifdef TC_DBG
-            Serial.printf("Date entered: [%s]\n", dateBuffer);
-            #endif
-
             temp1 = read2digs(0);
             temp2 = read2digs(2);
             

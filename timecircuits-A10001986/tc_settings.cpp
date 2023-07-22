@@ -202,8 +202,8 @@ void settings_setup()
     } else {
 
         Serial.println(F("failed.\nThis is very likely a hardware problem."));
-        Serial.println(F("*** Since the internal storage is unavailable, all settings/states will be stored on"));
-        Serial.println(F("*** the SD card (if available)")); 
+        Serial.println(F("*** All settings/states will be stored on the SD card (if available)"));
+
     }
     
     // Set up SD card
@@ -314,7 +314,7 @@ static bool read_settings(File configFile)
 
     jsonSize = json.memoryUsage();
     if(jsonSize > JSON_SIZE) {
-        Serial.printf("%s: ERROR: Config file too large (%d vs %d), memory corrupted, awaiting doom.\n", funcName, jsonSize, JSON_SIZE);
+        Serial.printf("%s: ERROR: Config too large (%d vs %d), memory corrupted.\n", funcName, jsonSize, JSON_SIZE);
     }
     
     #ifdef TC_DBG
@@ -1296,13 +1296,6 @@ static bool check_if_default_audio_present()
         #endif
     }
 
-    #ifdef TC_DBG
-    for(i = 0; i < (10+NUM_AUDIOFILES); i++) {
-        Serial.printf("%d, ", sizes[i]);
-    }
-    Serial.println("");
-    #endif
-
     return true;
 }
 
@@ -1437,27 +1430,19 @@ void rewriteSecondarySettings()
     bool oldconfigOnSD = configOnSD;
     
     #ifdef TC_DBG
-    Serial.println("Re-writing IP settings");
+    Serial.println("Re-writing seconday settings");
     #endif
+    
     writeIpSettings();
 
     // Create current alarm/volume settings on flash FS
     // regardless of SD-option
     configOnSD = false;
     
-    #ifdef TC_DBG
-    Serial.println("Re-writing alarm settings");
-    #endif
     saveAlarm();
 
-    #ifdef TC_DBG
-    Serial.println("Re-writing reminder settings");
-    #endif
     saveReminder();
     
-    #ifdef TC_DBG
-    Serial.println("Re-writing volume");
-    #endif
     saveCurVolume();
     
     configOnSD = oldconfigOnSD;

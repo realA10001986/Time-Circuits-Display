@@ -561,10 +561,12 @@ void speedDisplay::setSpeed(int8_t speedNum)
     } else {
         _displayBuffer[_speed_pos10] |= (*(_fontXSeg + (speedNum / 10)) << _dig10_shift);
         _displayBuffer[_speed_pos01] |= (*(_fontXSeg + (speedNum % 10)) << _dig01_shift);
+        #ifdef SP_CS_0ON
         if(_dispType == SP_CIRCSETUP) {
             // Hack to display "0" after dot
-            _displayBuffer[2] = 0b00111111;   // FIXME: Really [2]? Perhaps << 8?
+            _displayBuffer[2] = 0b00111111;
         }
+        #endif
     }
     
     if(_dot01) _displayBuffer[_dot_pos01] |= (*(_fontXSeg + 36) << _dot01_shift);

@@ -517,17 +517,22 @@ bool bttfnHaveClients = false;
 #define BTTFN_NOT_REENTRY  3
 #define BTTFN_NOT_ABORT_TT 4
 #define BTTFN_NOT_ALARM    5
+#define BTTFN_TYPE_ANY     0    // Any, unknown or no device
+#define BTTFN_TYPE_FLUX    1    // Flux Capacitor
+#define BTTFN_TYPE_SID     2    // SID
+#define BTTFN_TYPE_PCG     3    // Plutonium chamber gauge panel
 #ifdef TC_HAVEBTTFN
 #define BTTFN_VERSION              1
 #define BTTF_PACKET_SIZE          48
 #define BTTF_DEFAULT_LOCAL_PORT 1338
 #define BTTFN_MAX_CLIENTS          5
+static const uint8_t BTTFUDPHD[4] = { 'B', 'T', 'T', 'F'};
 static WiFiUDP       bttfUDP;
 static UDP*          tcdUDP;
 static byte          BTTFUDPBuf[BTTF_PACKET_SIZE];
-static uint8_t       BTTFUDPHD[4] = { 'B', 'T', 'T', 'F'};
 static uint8_t       bttfnClientIP[BTTFN_MAX_CLIENTS][4]  = { { 0 } };
 static char          bttfnClientID[BTTFN_MAX_CLIENTS][13] = { { 0 } };
+static uint8_t       bttfnClientType[BTTFN_MAX_CLIENTS] = { 0 };
 static unsigned long bttfnClientALIVE[BTTFN_MAX_CLIENTS] = { 0 };
 static unsigned long bttfnlastExpire = 0;
 #endif
@@ -624,10 +629,6 @@ void time_setup()
 
     // Power management: Set CPU speed
     // to maximum and start timer
-    #ifdef TC_DBG
-    Serial.print("Initial CPU speed is ");
-    Serial.println(getCpuFrequencyMhz(), DEC);
-    #endif
     pwrNeedFullNow(true);
 
     // Pin for monitoring seconds from RTC
@@ -920,9 +921,6 @@ void time_setup()
             haveTZName2 = true;
         }
     }
-    #ifdef TC_DBG
-    Serial.printf("time_setup: haveWcMode %d\n", haveWcMode);
-    #endif
  
     // If we are switched on after a year switch, re-do
     // RTC year-translation.
@@ -1218,9 +1216,6 @@ void time_setup()
 
     // Invoke audio file installer if SD content qualifies
     if(check_allow_CPA()) {
-        #ifdef TC_DBG
-        Serial.println(F("time_setup: calling doCopyAudioFiles()"));
-        #endif
         destinationTime.showTextDirect("INSTALL");
         presentTime.showTextDirect("AUDIO FILES?");
         destinationTime.on();
@@ -4444,7 +4439,7 @@ int bttfnNumClients()
     return i;
 }
 
-bool bttfnGetClientInfo(int c, char **id, uint8_t **ip)
+bool bttfnGetClientInfo(int c, char **id, uint8_t **ip, uint8_t *type)
 {
     if(c > BTTFN_MAX_CLIENTS - 1)
         return false;
@@ -4454,6 +4449,9 @@ bool bttfnGetClientInfo(int c, char **id, uint8_t **ip)
         
     *id = bttfnClientID[c];
     *ip = bttfnClientIP[c];
+
+    *type = bttfnClientType[c];
+
     return true;
 }
 
@@ -4480,7 +4478,7 @@ static bool bttfnipcmp(uint8_t *ip1, uint8_t *ip2)
     return false;
 }
 
-static void storeBTTFNClient(uint8_t *ip, char *id)
+static void storeBTTFNClient(uint8_t *ip, char *id, uint8_t type)
 {
     int     i;
     uint8_t *pip;
@@ -4525,6 +4523,8 @@ static void storeBTTFNClient(uint8_t *ip, char *id)
         bttfnClientID[i][12] = 0;
     }
 
+    bttfnClientType[i] = type;
+
     bttfnClientALIVE[i] = millis();
 }
 
@@ -4562,13 +4562,15 @@ static void bttfn_expire_clients()
                 if(bttfnClientIP[k][0]) {
                     memcpy(bttfnClientIP[j], bttfnClientIP[k], 4);
                     memcpy(bttfnClientID[j], bttfnClientID[k], 13);
+                    bttfnClientType[j] = bttfnClientType[k];
                     bttfnClientALIVE[j] = bttfnClientALIVE[k];
                     bttfnClientIP[k][0] = 0;
+                    bttfnClientType[k] = 0;
                     break;
                 }
             }
             if(k == BTTFN_MAX_CLIENTS) break;
-        } 
+        }
     }
 }
 
@@ -4581,7 +4583,7 @@ static void bttfn_setup()
 void bttfn_loop()
 {
     uint8_t tip[4] = { 0 };
-    uint8_t a = 0;
+    uint8_t a = 0, parm = 0;
     int16_t temp = 0;
     //uint8_t reqVersion;
 
@@ -4614,16 +4616,19 @@ void bttfn_loop()
 
     // For future use
     //reqVersion = BTTFUDPBuf[4];
-    
+
     // Add response marker to version byte
     BTTFUDPBuf[4] |= 0x80;
 
     // Store client ip/id for notifications and keypad menu
     IPAddress t = tcdUDP->remoteIP();
     for(int i = 0; i < 4; i++) tip[i] = t[i];
-    storeBTTFNClient(tip, (char *)BTTFUDPBuf + 10);
+    storeBTTFNClient(tip, (char *)BTTFUDPBuf + 10, (uint8_t)BTTFUDPBuf[10+13]);
 
-    // Leave serial# (BTTFUDPBuf + 6-9) untouched
+    // Retrieve (optional) request parameter
+    parm = BTTFUDPBuf[24];
+    
+    // Clear, but leave serial# (BTTFUDPBuf + 6-9) untouched
     memset(BTTFUDPBuf + 10, 0, BTTF_PACKET_SIZE - 10);
 
     // Eval query and build reply into BTTFUDPBuf
@@ -4683,6 +4688,18 @@ void bttfn_loop()
         #endif
         // bits 7-2 for future use
         BTTFUDPBuf[26] = a;
+    }
+    if(BTTFUDPBuf[5] & 0x20) {    // Request IP of given device type
+        if(parm) {
+            for(int i = 0; i < BTTFN_MAX_CLIENTS; i++) {
+                if(parm == bttfnClientType[i]) {
+                    for(int j = 0; j < 4; j++) {
+                        BTTFUDPBuf[27+j] = bttfnClientIP[i][j];
+                    }
+                    break;
+                }
+            }
+        }
     }
 
     // Calc checksum

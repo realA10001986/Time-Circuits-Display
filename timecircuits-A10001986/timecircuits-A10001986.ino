@@ -90,9 +90,13 @@
 
 /*  Changelog
  *   
+ *  2023/07/22 (A10001986)
+ *    - BTTFN: Add client device type; let others query IP of given type
+ *    - Do some minor binary size crunching
  *  2023/07/20 (A10001986)
  *    - Make "beep" ever so slightly shorter
  *    - Hack to display "0" on CircuitSetup's speedo's fake third digit
+ *      (Enabled by compile-time-option, see tc_global.h)
  *  2023/07/17 (A10001986)
  *    - Try to make keypad sounds more immediate
  *  2023/07/11 (A10001986)
