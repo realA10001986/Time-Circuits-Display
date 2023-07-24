@@ -459,9 +459,6 @@ void clockDisplay::setYear(uint16_t yearNum)
     #endif
     
     if((int16_t)yearNum - _yearoffset < 0) {    // ny0: < 1
-        #ifdef TC_DBG
-        Serial.printf("Clockdisplay: setYear: Bad year: %d / yearOffset %d\n", yearNum, _yearoffset);
-        #endif
         yearNum = _yearoffset;                  // ny0: yo+1
     }
 
@@ -825,10 +822,6 @@ bool clockDisplay::save()
 
         // Non-RTC: Save time
 
-        #ifdef TC_DBG
-        Serial.println(F("Clockdisplay: Saving non-RTC settings"));
-        #endif
-
         savBuf[0] = _year & 0xff;
         savBuf[1] = (_year >> 8) & 0xff;
         savBuf[2] = _yearoffset & 0xff;
@@ -842,10 +835,6 @@ bool clockDisplay::save()
     } else {
 
         // RTC: Save IsDST, yearoffs, timeDiff
-        
-        #ifdef TC_DBG
-        Serial.println(F("Clockdisplay: Saving RTC settings"));
-        #endif
 
         savBuf[0] = _isDST + 1;
         
@@ -878,10 +867,6 @@ bool clockDisplay::saveYOffs()
 
     // RTC: Save yearoffs; zero timeDifference
 
-    #ifdef TC_DBG
-    Serial.println(F("Clockdisplay: Saving RTC YOffs/DST setting"));
-    #endif
-
     memset(savBuf, 0, 10);
     
     savBuf[0] = _isDST + 1;
@@ -910,10 +895,6 @@ bool clockDisplay::saveLastYear(uint16_t theYear)
     _lastWrittenLY = loadLastYear();
     if(_lastWrittenLY == theYear)
         return true;
-
-    #ifdef TC_DBG
-    Serial.printf("Clockdisplay: Saving RTC LastYear to %s\n", FlashROMode ? "SD" : "Flash");
-    #endif
     
     savBuf[0] = theYear & 0xff;
     savBuf[1] = (theYear >> 8) & 0xff;    
@@ -950,10 +931,6 @@ bool clockDisplay::load(int initialBrightness)
 
         if(loadNVMData(loadBuf)) {
 
-            #ifdef TC_DBG
-            Serial.println(F("Clockdisplay: Loaded non-RTC settings"));
-            #endif
-
             setYearOffset((loadBuf[3] << 8) | loadBuf[2]);
             setYear((loadBuf[1] << 8) | loadBuf[0]);
             setMonth(loadBuf[4]);
@@ -986,10 +963,6 @@ bool clockDisplay::load(int initialBrightness)
 
               timeDiffUp = loadBuf[8] ? true : false;
 
-              #ifdef TC_DBG
-              Serial.println(F("Clockdisplay: Loaded RTC settings"));
-              #endif
-
         } else {
 
               _isDST = -1;
@@ -998,10 +971,6 @@ bool clockDisplay::load(int initialBrightness)
 
               timeDifference = 0;
 
-              #ifdef TC_DBG
-              Serial.println(F("Clockdisplay: Invalid RTC data"));
-              #endif
-
         }
 
         // Reinstate _brightness to keep old behavior
@@ -1009,10 +978,6 @@ bool clockDisplay::load(int initialBrightness)
 
         return true;
     }
-
-    #ifdef TC_DBG
-    Serial.println(F("Clockdisplay: Invalid Non-RTC data"));
-    #endif
 
     // Do NOT clear NVM if data is invalid.
     // All 0s are as bad, wait for NVM to be
@@ -1106,10 +1071,6 @@ bool clockDisplay::saveNVMData(uint8_t *savBuf, bool noReadChk)
 
     if(skipSave)
         return true;
-        
-    #ifdef TC_DBG
-    Serial.printf("saveNVMData to %s\n", FlashROMode ? "SD" : "Flash");
-    #endif
 
     for(uint8_t i = 0; i < 9; i++) {
         sum += (savBuf[i] ^ 0x55);
@@ -1147,9 +1108,6 @@ bool clockDisplay::loadNVMData(uint8_t *loadBuf)
     }
 
     if(!dataOk) {
-        #ifdef TC_DBG
-        Serial.printf("loadNVMData from %s\n", FlashROMode ? "SD" : "Flash");
-        #endif
 
         _Cache = -1;  // Invalidate; either empty or corrupt
             

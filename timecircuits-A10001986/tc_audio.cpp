@@ -196,7 +196,7 @@ void mp_init(bool isSetup)
     if(haveSD) {
         int i, j;
 
-        #ifdef TC_DBG
+        #ifdef TC_DBG_MP
         Serial.println("MusicPlayer: Checking for music files");
         #endif
 
@@ -207,7 +207,7 @@ void mp_init(bool isSetup)
             haveMusic = true;
             
             maxMusic = mp_findMaxNum();
-            #ifdef TC_DBG
+            #ifdef TC_DBG_MP
             Serial.printf("MusicPlayer: last file num %d\n", maxMusic);
             #endif
 
@@ -216,7 +216,7 @@ void mp_init(bool isSetup)
             if(!playList) {
 
                 haveMusic = false;
-                #ifdef TC_DBG
+                #ifdef TC_DBG_MP
                 Serial.println("MusicPlayer: Failed to allocate PlayList");
                 #endif
 
@@ -228,7 +228,7 @@ void mp_init(bool isSetup)
             }
 
         } else {
-            #ifdef TC_DBG
+            #ifdef TC_DBG_MP
             Serial.printf("MusicPlayer: Failed to open %s\n", fnbuf);
             #endif
         }
@@ -288,7 +288,7 @@ void mp_makeShuffle(bool enable)
             playList[ti] = playList[i];
             playList[i] = t;
         }
-        #ifdef TC_DBG
+        #ifdef TC_DBG_MP
         for(int i = 0; i <= maxMusic; i++) {
             Serial.printf("%d ", playList[i]);
             if((i+1) % 16 == 0 || i == maxMusic) Serial.printf("\n");
@@ -557,7 +557,7 @@ static bool mp_renameFilesInDir(bool isSetup)
 
     // Check for DONE file
     if(SD.exists(fnbuf3)) {
-        #ifdef TC_DBG
+        #ifdef TC_DBG_MP
         Serial.printf("%s%s exists\n", funcName, fnbuf3);
         #endif
         return true;
@@ -565,34 +565,27 @@ static bool mp_renameFilesInDir(bool isSetup)
 
     // Check if folder exists
     if(!SD.exists(fnbuf)) {
-        #ifdef TC_DBG
-        Serial.printf("%s'%s' does not exist\n", funcName, fnbuf);
-        #endif
         return false;
     }
 
     // Open folder and check if it is actually a folder
     File origin = SD.open(fnbuf);
     if(!origin) {
-        Serial.printf("%s'%s' failed to open\n", funcName, fnbuf);
         return false;
     }
     if(!origin.isDirectory()) {
         origin.close();
-        Serial.printf("%s'%s' is not a directory\n", funcName, fnbuf);
         return false;
     }
         
     // Allocate pointer array
     if(!(a = (char **)malloc(1000*sizeof(char *)))) {
-        Serial.printf("%sFailed to allocate pointer array\n", funcName);
         origin.close();
         return false;
     }
 
     // Allocate (first) buffer for file names
     if(!(bufs[0] = (char *)malloc(bufSizes[0]))) {
-        Serial.printf("%sFailed to allocate first sort buffer\n", funcName);
         origin.close();
         free(a);
         return false;
@@ -628,9 +621,11 @@ static bool mp_renameFilesInDir(bool isSetup)
             if((sz > bufSize) && (allocBufIdx < 7)) {
                 allocBufIdx++;
                 if(!(bufs[allocBufIdx] = (char *)malloc(bufSizes[allocBufIdx]))) {
+                    #ifdef TC_DBG_MP
                     Serial.printf("%sFailed to allocate additional sort buffer\n", funcName);
+                    #endif
                 } else {
-                    #ifdef TC_DBG
+                    #ifdef TC_DBG_MP
                     Serial.printf("%sAllocated additional sort buffer\n", funcName);
                     #endif
                     c = bufs[allocBufIdx];
@@ -641,7 +636,7 @@ static bool mp_renameFilesInDir(bool isSetup)
                 if(!mpren_checkFN(fn + nameOffs)) {
                     *d++ = c;
                     strcpy(c, fn + nameOffs);
-                    #ifdef TC_DBG
+                    #ifdef TC_DBG_MP
                     Serial.printf("%sAdding '%s'\n", funcName, c);
                     #endif
                     c += sz;
@@ -650,7 +645,9 @@ static bool mp_renameFilesInDir(bool isSetup)
                 }
             } else if(sz > bufSize) {
                 stopLoop = true;
+                #ifdef TC_DBG_MP
                 Serial.printf("%sSort buffer(s) exhausted, remaining files ignored\n", funcName);
+                #endif
             }
         }
         
@@ -662,9 +659,11 @@ static bool mp_renameFilesInDir(bool isSetup)
             if((sz > bufSize) && (allocBufIdx < 7)) {
                 allocBufIdx++;
                 if(!(bufs[allocBufIdx] = (char *)malloc(bufSizes[allocBufIdx]))) {
+                    #ifdef TC_DBG_MP
                     Serial.printf("%sFailed to allocate additional sort buffer\n", funcName);
+                    #endif
                 } else {
-                    #ifdef TC_DBG
+                    #ifdef TC_DBG_MP
                     Serial.printf("%sAllocated additional sort buffer\n", funcName);
                     #endif
                     c = bufs[allocBufIdx];
@@ -675,7 +674,7 @@ static bool mp_renameFilesInDir(bool isSetup)
                 if(!mpren_checkFN(file.name() + nameOffs)) {
                     *d++ = c;
                     strcpy(c, file.name() + nameOffs);
-                    #ifdef TC_DBG
+                    #ifdef TC_DBG_MP
                     Serial.printf("%sAdding '%s'\n", funcName, c);
                     #endif
                     c += sz;
@@ -684,7 +683,9 @@ static bool mp_renameFilesInDir(bool isSetup)
                 }
             } else if(sz > bufSize) {
                 stopLoop = true;
+                #ifdef TC_DBG_MP
                 Serial.printf("%sSort buffer(s) exhausted, remaining files ignored\n", funcName);
+                #endif
             }
         }
         file.close();
@@ -704,7 +705,7 @@ static bool mp_renameFilesInDir(bool isSetup)
 
     origin.close();
 
-    #ifdef TC_DBG
+    #ifdef TC_DBG_MP
     Serial.printf("%s%d files to process\n", funcName, fileNum);
     #endif
 
@@ -765,7 +766,7 @@ static bool mp_renameFilesInDir(bool isSetup)
     // Write "DONE" file
     if((origin = SD.open(fnbuf3, FILE_WRITE))) {
         origin.close();
-        #ifdef TC_DBG
+        #ifdef TC_DBG_MP
         Serial.printf("%sWrote %s\n", funcName, fnbuf3);
         #endif
     }

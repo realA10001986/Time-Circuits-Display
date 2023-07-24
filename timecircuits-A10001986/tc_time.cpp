@@ -257,6 +257,9 @@ static int  tzDiffGMTDST[3] = { 0, 0, 0 };               // Difference to UTC in
 static int  tzDiff[3]       = { 0, 0, 0 };               // difference between DST and non-DST in minutes
 static int  DSTonMins[3]    = { -1, -1, -1 };            // DST-on date/time in minutes since 1/1 00:00 (in non-DST time)
 static int  DSToffMins[3]   = { 600000, 600000, 600000}; // DST-off date/time in minutes since 1/1 00:00 (in DST time)
+#ifdef TC_DBG
+static const char *badTZ = "Failed to parse TZ\n";
+#endif
 
 // WC stuff
 bool        WcHaveTZ1  = false;
@@ -282,7 +285,7 @@ static uint32_t      NTPmsSinceSecond = 0;
 static bool          NTPPacketDue = false;
 static bool          NTPWiFiUp = false;
 static uint8_t       NTPfailCount = 0;
-static uint8_t       NTPUDPHD[4] = { 'T', 'C', 'D', '1' };
+static const uint8_t NTPUDPHD[4] = { 'T', 'C', 'D', '1' };
 static uint32_t      NTPUDPID    = 0;
  
 // The RTC object
@@ -624,6 +627,7 @@ void time_setup()
     #ifdef TC_HAVEGPS
     bool haveAuthTimeGPS = false;
     #endif
+    const char *funcName = "time_setup: ";
 
     Serial.println(F("Time Circuits Display version " TC_VERSION " " TC_VERSION_EXTRA));
 
@@ -658,7 +662,7 @@ void time_setup()
     // RTC setup
     if(!rtc.begin(powerupMillis)) {
 
-        Serial.println(F("time_setup: Couldn't find RTC. Panic!"));
+        Serial.printf("%sRTC not found\n", funcName);
 
         // Blink white LED forever
         pinMode(WHITE_LED_PIN, OUTPUT);
@@ -679,7 +683,7 @@ void time_setup()
         rtc.adjust(0, 0, 0, dayOfWeek(1, 1, 2023), 1, 1, 23);
        
         #ifdef TC_DBG
-        Serial.println(F("time_setup: RTC lost power, setting default time."));
+        Serial.printf("%sRTC lost power, setting default time\n", funcName);
         #endif
 
         rtcbad = true;
@@ -771,7 +775,7 @@ void time_setup()
         for(int i = 0; i < 10; i++) myGPS.loop(true);
         
         #ifdef TC_DBG
-        Serial.println(F("time_setup: GPS Receiver found and initialized"));
+        Serial.printf("%sGPS Receiver found\n", funcName);
         #endif
 
     } else {
@@ -779,7 +783,7 @@ void time_setup()
         useGPS = useGPSSpeed = false;
         
         #ifdef TC_DBG
-        Serial.println(F("time_setup: GPS Receiver not found"));
+        Serial.printf("%sGPS Receiver not found\n", funcName);
         #endif
         
     }
@@ -808,7 +812,7 @@ void time_setup()
     if(!(parseTZ(0, 2022))) {
         tzbad = true;
         #ifdef TC_DBG
-        Serial.println(F("time_setup: Failed to parse TZ"));
+        Serial.printf("%s%s", funcName, badTZ);
         #endif
     }
     
@@ -821,7 +825,7 @@ void time_setup()
         lastAuthTime64 = lastAuthTime;
         
         #ifdef TC_DBG
-        Serial.println(F("time_setup: RTC set through NTP"));        
+        Serial.printf("%sRTC set through NTP\n", funcName);        
         #endif
         
     } else {
@@ -836,7 +840,7 @@ void time_setup()
             for(int i = 0; i < 10; i++) {
                 for(int j = 0; j < 4; j++) myGPS.loop(true);
                 #ifdef TC_DBG
-                if(i == 0) Serial.println(F("time_setup: First attempt to read time from GPS"));
+                if(i == 0) Serial.printf("%sFirst attempt to read time from GPS\n", funcName);
                 #endif
                 if(getGPStime(dt)) {
                     // So we have authoritative time now
@@ -845,7 +849,7 @@ void time_setup()
                     lastAuthTime64 = lastAuthTime;
                     haveAuthTimeGPS = true;
                     #ifdef TC_DBG
-                    Serial.println(F("time_setup: RTC set through GPS"));
+                    Serial.printf("%sRTC set through GPS\n", funcName);
                     #endif
                     break;
                 }
@@ -1300,7 +1304,7 @@ void time_setup()
         leds_off();
 
         #ifdef TC_DBG
-        Serial.println(F("time_setup: waiting for fake power on"));
+        Serial.printf("%swaiting for fake power on\n", funcName);
         #endif
 
     } else {
@@ -1329,6 +1333,7 @@ void time_loop()
     unsigned long millisNow = millis();
     #ifdef TC_DBG
     int dbgLastMin;
+    const char *funcName = "time_loop: ";
     #endif
 
     // millisEpoch counter
@@ -1744,7 +1749,7 @@ void time_loop()
 
             #ifdef TC_DBG
             if(dt.second() == 35) {
-                Serial.printf("time_loop: %d %d %d %d %d\n", couldHaveAuthTime, itsTime, doWiFi, haveAuthTime, syncTrigger);
+                Serial.printf("%s%d %d %d %d %d\n", funcName, couldHaveAuthTime, itsTime, doWiFi, haveAuthTime, syncTrigger);
             }
             #endif
             
@@ -1789,7 +1794,7 @@ void time_loop()
                         lastYear = dt.year() - presentTime.getYearOffset();
 
                         #ifdef TC_DBG
-                        Serial.println(F("time_loop: RTC re-adjusted using NTP or GPS"));
+                        Serial.printf("%sRTC re-adjusted using NTP or GPS\n", funcName);
                         #endif
 
                         if(timeDifference) {
@@ -1820,7 +1825,7 @@ void time_loop()
                         checkDST = couldDST[0];
 
                         #ifdef TC_DBG
-                        Serial.println(F("time_loop: RTC re-adjustment via NTP/GPS failed"));
+                        Serial.printf("%sRTC re-adjustment via NTP/GPS failed\n", funcName);
                         #endif
 
                     }
@@ -1861,7 +1866,7 @@ void time_loop()
     
                     if(thisYear > 9999) {
                         #ifdef TC_DBG
-                        Serial.println(F("time_loop: Rollover 9999->1 detected"));
+                        Serial.printf("%sRollover 9999->1 detected\n", funcName);
                         #endif
 
                         // We do not roll over to year "0".
@@ -1882,7 +1887,7 @@ void time_loop()
                     // Parse TZ and set up DST data for now current year
                     if(!(parseTZ(0, thisYear))) {
                         #ifdef TC_DBG
-                        Serial.println(F("time_loop: [year change] Failed to parse TZ"));
+                        Serial.printf("%s[year change] %s", funcName, badTZ);
                         #endif
                     }
     
@@ -1955,7 +1960,7 @@ void time_loop()
                             int16_t  yOffs = 0;
         
                             #ifdef TC_DBG
-                            Serial.printf("time_loop: DST change detected: %d -> %d\n", presentTime.getDST(), myDST);
+                            Serial.printf("%sDST change detected: %d -> %d\n", funcName, presentTime.getDST(), myDST);
                             #endif
         
                             presentTime.setDST(myDST);
@@ -2948,7 +2953,7 @@ void myrtcnow(DateTime& dt)
     }
 
     if(retries > 0) {
-        Serial.printf("myrtcnow: %d retries needed to read RTC. Check your i2c cabling.\n", retries);
+        Serial.printf("%d retries reading RTC. Check your i2c cabling.\n", retries);
     }
 }
 
@@ -3262,7 +3267,7 @@ static bool getNTPTime(bool weHaveAuthTime, DateTime& dt)
             if(tzHasDST[0] && (tzForYear[0] != nyear)) {
                 if(!(parseTZ(0, nyear))) {
                     #ifdef TC_DBG
-                    Serial.println(F("getNTPTime: Failed to parse TZ"));
+                    Serial.printf("getNTPTime: %s", badTZ);
                     #endif
                 }
             }
@@ -3341,7 +3346,7 @@ static bool getGPStime(DateTime& dt)
     if(tzHasDST[0] && (tzForYear[0] != nyear)) {
         if(!(parseTZ(0, nyear))) {
             #ifdef TC_DBG
-            Serial.println(F("getGPStime: Failed to parse TZ"));
+            Serial.printf("getGPStime: %s", badTZ);
             #endif
         }
     }
@@ -3371,7 +3376,7 @@ static bool getGPStime(DateTime& dt)
     if(tzHasDST[0] && (tzForYear[0] != nyear)) {
         if(!(parseTZ(0, nyear))) {
             #ifdef TC_DBG
-            Serial.println(F("getGPStime: Failed to parse TZ"));
+            Serial.printf("getGPStime: %s", badTZ);
             #endif
         }
     }
@@ -4401,7 +4406,7 @@ static bool NTPGetLocalTime(int& year, int& month, int& day, int& hour, int& min
     if(tzHasDST[0] && tzForYear[0] != year) {
         if(!(parseTZ(0, year))) {
             #ifdef TC_DBG
-            Serial.println(F("NTPGetLocalTime: Failed to parse TZ"));
+            Serial.printf("NTPGetLocalTime: %s", badTZ);
             #endif
         }
     }

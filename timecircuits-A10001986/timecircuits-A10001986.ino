@@ -90,6 +90,9 @@
 
 /*  Changelog
  *   
+ *  2023/07/24 (A10001986)
+ *    - Truncate beep sound data (for bin size)
+ *    - Reduce/shrink debug output (for bin size)
  *  2023/07/22 (A10001986)
  *    - BTTFN: Add client device type; let others query IP of given type
  *    - Do some minor binary size crunching
