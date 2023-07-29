@@ -115,7 +115,7 @@ static unsigned long lastKeyPressed = 0;
 #define DATELEN_INT    5   // xxxxx         reset
 #define DATELEN_TIME   4   // HHMM          dt: hour, minute
 #define DATELEN_CODE   3   // xxx           special codes
-#define DATELEN_ALSH   2   // 11            show alarm time/wd
+#define DATELEN_ALSH   2   // 11            show alarm time/wd, etc.
 #define DATELEN_CMIN   DATELEN_ALSH     // min length of code entry
 #define DATELEN_CMAX   DATELEN_QALM     // max length of code entry
 #define DATELEN_MAX    DATELEN_ALL      // max length of possible entry

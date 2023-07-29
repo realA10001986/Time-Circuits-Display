@@ -395,6 +395,102 @@ static void mqttSubscribe();
 void wifi_setup()
 {
     int temp;
+    
+    WiFiManagerParameter *parmArray[] = {
+      
+      &custom_sectstart_head, 
+      &custom_ttrp, 
+      &custom_alarmRTC, 
+      &custom_playIntro, 
+      &custom_mode24, 
+      &custom_beep_aint,
+
+      &custom_sectstart, 
+      &custom_hostName, 
+      &custom_wifiConRetries, 
+      &custom_wifiConTimeout, 
+      &custom_wifiPRe,
+      &custom_wifiOffDelay, 
+      &custom_wifiAPOffDelay,
+
+      &custom_sectstart_wi,   // (ss_wi contains wifiHint from section above)
+      &custom_timeZone, 
+      &custom_ntpServer,   
+      &custom_sectstart_wc, 
+      &custom_timeZone1, &custom_timeZoneN1,
+      &custom_timeZone2, &custom_timeZoneN2,
+    
+      &custom_sectstart_nm, 
+      &custom_dtNmOff, &custom_ptNmOff, &custom_ltNmOff,
+      &custom_autoNMTimes, 
+      &custom_autoNMOn, &custom_autoNMOff,
+    #ifdef TC_HAVELIGHT
+      &custom_uLS, &custom_lxLim,
+    #endif
+
+    #ifdef TC_HAVETEMP
+      &custom_sectstart_te, 
+      &custom_tempUnit, 
+      &custom_tempOffs,
+    #endif
+
+    #ifdef TC_HAVESPEEDO
+      &custom_sectstart, 
+      &custom_speedoType, 
+      &custom_speedoBright, 
+      &custom_speedoFact,
+    #ifdef TC_HAVEGPS
+      &custom_useGPSS,
+    #endif
+    #ifdef TC_HAVETEMP
+      &custom_useDpTemp, 
+      &custom_tempBright, 
+      &custom_tempOffNM,
+    #endif
+    #endif
+
+    #ifdef FAKE_POWER_ON
+      &custom_sectstart, 
+      &custom_fakePwrOn,
+    #endif
+    
+    #ifdef EXTERNAL_TIMETRAVEL_IN
+      &custom_sectstart_et, 
+      &custom_ettDelay,  
+      //&custom_ettLong,
+    #endif
+    
+      &custom_sectstart,
+    #ifdef EXTERNAL_TIMETRAVEL_OUT
+      &custom_useETTO,
+    #endif
+    #ifdef TC_HAVEGPS
+      &custom_qGPS,
+    #endif
+      &custom_playTTSnd,
+
+    #ifdef TC_HAVEMQTT
+      &custom_sectstart, 
+      &custom_useMQTT, 
+      &custom_mqttServer, 
+      &custom_mqttUser, 
+      &custom_mqttTopic,
+    #ifdef EXTERNAL_TIMETRAVEL_OUT
+      &custom_pubMQTT,
+    #endif
+    #endif
+    
+      &custom_sectstart_mp, 
+      &custom_shuffle,
+
+      &custom_sectstart, 
+      &custom_CfgOnSD, 
+      //&custom_sdFrq, 
+      &custom_sectend_foot,
+      
+      NULL
+    };
+      
 
     // Explicitly set mode, esp allegedly defaults to STA_AP
     WiFi.mode(WIFI_MODE_STA);
@@ -440,103 +536,12 @@ void wifi_setup()
     //wm.setRemoveDuplicateAPs(false);
 
     wm.setMenu(wifiMenu, TC_MENUSIZE);
-    
-    wm.addParameter(&custom_sectstart_head);// 6
-    wm.addParameter(&custom_ttrp);
-    wm.addParameter(&custom_alarmRTC);
-    wm.addParameter(&custom_playIntro);
-    wm.addParameter(&custom_mode24);
-    wm.addParameter(&custom_beep_aint);
-    
-    wm.addParameter(&custom_sectstart);     // 7
-    wm.addParameter(&custom_hostName);
-    wm.addParameter(&custom_wifiConRetries);
-    wm.addParameter(&custom_wifiConTimeout);
-    wm.addParameter(&custom_wifiPRe);
-    wm.addParameter(&custom_wifiOffDelay);
-    wm.addParameter(&custom_wifiAPOffDelay);
-    
-    wm.addParameter(&custom_sectstart_wi);  // 3    (ss_wi contains wifiHint from section above)
-    wm.addParameter(&custom_timeZone);
-    wm.addParameter(&custom_ntpServer);   
 
-    wm.addParameter(&custom_sectstart_wc);  // 5
-    wm.addParameter(&custom_timeZone1);
-    wm.addParameter(&custom_timeZoneN1);
-    wm.addParameter(&custom_timeZone2);
-    wm.addParameter(&custom_timeZoneN2);
-    
-    wm.addParameter(&custom_sectstart_nm);  // 9
-    wm.addParameter(&custom_dtNmOff);
-    wm.addParameter(&custom_ptNmOff);
-    wm.addParameter(&custom_ltNmOff);
-    wm.addParameter(&custom_autoNMTimes);
-    wm.addParameter(&custom_autoNMOn);
-    wm.addParameter(&custom_autoNMOff);
-    #ifdef TC_HAVELIGHT
-    wm.addParameter(&custom_uLS);
-    wm.addParameter(&custom_lxLim);
-    #endif
-
-    #ifdef TC_HAVETEMP
-    wm.addParameter(&custom_sectstart_te);  // 3
-    wm.addParameter(&custom_tempUnit);
-    wm.addParameter(&custom_tempOffs);
-    #endif
-
-    #ifdef TC_HAVESPEEDO
-    wm.addParameter(&custom_sectstart);     // 8
-    wm.addParameter(&custom_speedoType);
-    wm.addParameter(&custom_speedoBright);
-    wm.addParameter(&custom_speedoFact);
-    #ifdef TC_HAVEGPS
-    wm.addParameter(&custom_useGPSS);
-    #endif
-    #ifdef TC_HAVETEMP
-    wm.addParameter(&custom_useDpTemp);
-    wm.addParameter(&custom_tempBright);
-    wm.addParameter(&custom_tempOffNM);
-    #endif
-    #endif
-
-    #ifdef FAKE_POWER_ON
-    wm.addParameter(&custom_sectstart);     // 2
-    wm.addParameter(&custom_fakePwrOn);
-    #endif
-    
-    #ifdef EXTERNAL_TIMETRAVEL_IN
-    wm.addParameter(&custom_sectstart_et);  // 2
-    wm.addParameter(&custom_ettDelay);
-    //wm.addParameter(&custom_ettLong);
-    #endif
-    
-    wm.addParameter(&custom_sectstart);     // 3
-    #ifdef EXTERNAL_TIMETRAVEL_OUT
-    wm.addParameter(&custom_useETTO);
-    #endif
-    #ifdef TC_HAVEGPS
-    wm.addParameter(&custom_qGPS);
-    #endif
-    wm.addParameter(&custom_playTTSnd);
-
-    #ifdef TC_HAVEMQTT
-    wm.addParameter(&custom_sectstart);     // 6
-    wm.addParameter(&custom_useMQTT);
-    wm.addParameter(&custom_mqttServer);
-    wm.addParameter(&custom_mqttUser);
-    wm.addParameter(&custom_mqttTopic);
-    #ifdef EXTERNAL_TIMETRAVEL_OUT
-    wm.addParameter(&custom_pubMQTT);
-    #endif
-    #endif
-    
-    wm.addParameter(&custom_sectstart_mp);  // 2
-    wm.addParameter(&custom_shuffle);
-
-    wm.addParameter(&custom_sectstart);     // 3
-    wm.addParameter(&custom_CfgOnSD);
-    //wm.addParameter(&custom_sdFrq);
-    wm.addParameter(&custom_sectend_foot);
+    temp = 0;
+    while(parmArray[temp]) {
+        wm.addParameter(parmArray[temp]);
+        temp++;
+    }
 
     updateConfigPortalValues();
 
@@ -1988,7 +1993,7 @@ static void mqttCallback(char *topic, byte *payload, unsigned int length)
 }
 
 #ifdef TC_DBG
-#define MQTT_FAILCOUNT 6 //120
+#define MQTT_FAILCOUNT 6
 #else
 #define MQTT_FAILCOUNT 120
 #endif
@@ -2083,9 +2088,13 @@ static void mqttSubscribe()
     if(!mqttSubAttempted) {
         if(!mqttClient.subscribe("bttf/tcd/cmd", settings.mqttTopic)) {
             if(!mqttClient.subscribe("bttf/tcd/cmd")) {
+                #ifdef TC_DBG
                 Serial.println("MQTT: Failed to subscribe to all topics");
+                #endif
             } else {
+                #ifdef TC_DBG
                 Serial.println("MQTT: Failed to subscribe to user topic");
+                #endif
             }
         } else {
             #ifdef TC_DBG

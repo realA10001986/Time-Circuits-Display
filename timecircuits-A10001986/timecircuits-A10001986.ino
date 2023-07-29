@@ -90,6 +90,8 @@
 
 /*  Changelog
  *   
+ *  2023/07/25 (A10001986)
+ *    - Loop for adding WiFi parameters
  *  2023/07/24 (A10001986)
  *    - Truncate beep sound data (for bin size)
  *    - Reduce/shrink debug output (for bin size)
