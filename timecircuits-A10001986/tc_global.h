@@ -16,9 +16,9 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION "V2.8.99"          // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "JUL252023"  // 13 chars max
+#define TC_VERSION_EXTRA "JUL312023"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "07252023"   // 12 chars max
+#define TC_VERSION_EXTRA "07312023"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -93,13 +93,13 @@
 // The defined pin is set HIGH on a time travel, and LOW upon re-entry from 
 // a time travel. See tc_time.c for a timing diagram.
 // Uncomment to include support for etto, see below for pin number
-// This is also needed if MQTT is used to trigger external props
+// This is also needed if MQTT or NTTFN is used to trigger external props
 #define EXTERNAL_TIMETRAVEL_OUT
 
 // Uncomment for HomeAssistant MQTT protocol support
 #define TC_HAVEMQTT
 
-// Uncomment for bttf network poll support
+// Uncomment for bttf network support
 #define TC_HAVEBTTFN
 
 // --- end of config options

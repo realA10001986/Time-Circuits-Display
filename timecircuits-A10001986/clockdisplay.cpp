@@ -806,6 +806,7 @@ void clockDisplay::showHumDirect(int hum, bool animate)
 }
 #endif
 
+
 // Save & load data ------------------------------------------------------------
 
 
@@ -916,16 +917,9 @@ bool clockDisplay::saveLastYear(uint16_t theYear)
  * Load data from NVM storage
  *
  */
-bool clockDisplay::load(int initialBrightness)
+bool clockDisplay::load()
 {
     uint8_t loadBuf[10];
-
-    if(initialBrightness >= 0) {
-        if(initialBrightness > 15)
-            initialBrightness = 15;
-
-        _origBrightness = initialBrightness;
-    }
 
     if(!isRTC()) {
 
@@ -937,9 +931,6 @@ bool clockDisplay::load(int initialBrightness)
             setDay(loadBuf[5]);
             setHour(loadBuf[6]);
             setMinute(loadBuf[7]);
-
-            // Set initial _brightness
-            setBrightness(_origBrightness);
 
             return true;
 
@@ -972,9 +963,6 @@ bool clockDisplay::load(int initialBrightness)
               timeDifference = 0;
 
         }
-
-        // Reinstate _brightness to keep old behavior
-        setBrightness(_origBrightness);
 
         return true;
     }

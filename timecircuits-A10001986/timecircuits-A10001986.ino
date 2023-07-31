@@ -90,6 +90,9 @@
 
 /*  Changelog
  *   
+ *  2023/07/31 (A10001986)
+ *    - Don't show "REPLACE BATT" on uninitialized clocks
+ *    - Remove old unneeded stuff
  *  2023/07/25 (A10001986)
  *    - Loop for adding WiFi parameters
  *  2023/07/24 (A10001986)

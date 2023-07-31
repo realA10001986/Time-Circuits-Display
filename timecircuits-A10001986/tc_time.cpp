@@ -624,6 +624,7 @@ void time_setup()
     bool rtcbad = false;
     bool tzbad = false;
     bool haveGPS = false;
+    bool isVirgin = false;
     #ifdef TC_HAVEGPS
     bool haveAuthTimeGPS = false;
     #endif
@@ -662,15 +663,17 @@ void time_setup()
     // RTC setup
     if(!rtc.begin(powerupMillis)) {
 
-        Serial.printf("%sRTC not found\n", funcName);
+        const char *rtcNotFound = "RTC NOT FOUND";
+        uint8_t r = HIGH;
+        
+        destinationTime.showTextDirect(rtcNotFound);
+        Serial.printf("%s%s\n", funcName, rtcNotFound);
 
         // Blink white LED forever
-        pinMode(WHITE_LED_PIN, OUTPUT);
         while(1) {
-            digitalWrite(WHITE_LED_PIN, HIGH);
+            digitalWrite(WHITE_LED_PIN, r);
             delay(1000);
-            digitalWrite(WHITE_LED_PIN, LOW);
-            delay(1000);
+            r ^= HIGH;
         }
     }
 
@@ -722,8 +725,11 @@ void time_setup()
     // Determine if user wanted Time Travels to be persistent
     timetravelPersistent = ((int)atoi(settings.timesPers) > 0);
 
+    // Set initial brightness for present time displqy
+    presentTime.setBrightness((int)atoi(settings.presTimeBright), true);
+    
     // Load present time settings (yearOffs, timeDifference, isDST)
-    presentTime.load((int)atoi(settings.presTimeBright));
+    presentTime.load();
 
     if(!timetravelPersistent) {
         timeDifference = 0;
@@ -1009,23 +1015,26 @@ void time_setup()
     }
     #endif
 
+    // Set initial brightness for dest & last time dep displays
+    destinationTime.setBrightness((int)atoi(settings.destTimeBright), true);
+    departedTime.setBrightness((int)atoi(settings.lastTimeBright), true);
+
     // Load destination time (and set to default if invalid)
-    if(!destinationTime.load((int)atoi(settings.destTimeBright))) {
+    if(!destinationTime.load()) {
         destinationTime.setYearOffset(0);
         destinationTime.setFromStruct(&destinationTimes[0]);
-        destinationTime.setBrightness((int)atoi(settings.destTimeBright));
         destinationTime.save();
+        isVirgin = true;
     }
 
     // Load departed time (and set to default if invalid)
-    if(!departedTime.load((int)atoi(settings.lastTimeBright))) {
+    if(!departedTime.load()) {
         departedTime.setYearOffset(0);
         departedTime.setFromStruct(&departedTimes[0]);
-        departedTime.setBrightness((int)atoi(settings.lastTimeBright));
         departedTime.save();
     }
 
-    // Load autoInterval ("time cycling interval") from settings
+    // Load (copy) autoInterval ("time cycling interval") from settings
     loadAutoInterval();
 
     // Load alarm from alarmconfig file
@@ -1192,7 +1201,7 @@ void time_setup()
     #endif
     #endif
 
-    // Start bttf network stuff
+    // Start bttf network
     #ifdef TC_HAVEBTTFN
     bttfn_setup();
     #endif
@@ -1200,7 +1209,7 @@ void time_setup()
     // Show "REPLACE BATTERY" message if RTC battery is low or depleted
     // Note: This also shows up the first time you power-up the clock
     // AFTER a battery change.
-    if(rtcbad || rtc.battLow()) {
+    if((rtcbad && !isVirgin) || rtc.battLow()) {
         destinationTime.showTextDirect("REPLACE");
         presentTime.showTextDirect("BATTERY");
         destinationTime.on();

@@ -141,7 +141,7 @@ class clockDisplay {
 
         bool    save();
         bool    saveYOffs();
-        bool    load(int initialBrightness = -1);
+        bool    load();
         int16_t loadYOffs();
         int8_t  loadDST();
 
