@@ -1237,6 +1237,15 @@ void keypad_loop()
             } else {
             #endif
 
+                #ifdef BTTF3_MODE
+                for(int i = 0; i < 12; i++) {
+                    destinationTime.showAnimate3(i);
+                    if(needDepTime) {
+                        departedTime.showAnimate3(i);
+                    }
+                    mydelay(5);
+                }
+                #else
                 destinationTime.showAnimate1();
                 if(needDepTime) {
                     departedTime.showAnimate1();
@@ -1246,6 +1255,7 @@ void keypad_loop()
                 if(needDepTime) {
                     departedTime.showAnimate2();
                 }
+                #endif
 
             #ifdef TC_HAVETEMP
             }

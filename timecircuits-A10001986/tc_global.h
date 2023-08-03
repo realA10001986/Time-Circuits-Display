@@ -11,14 +11,24 @@
 #ifndef _TC_GLOBAL_H
 #define _TC_GLOBAL_H
 
-// Version strings.
+/*************************************************************************
+ ***                           Miscellaneous                           ***
+ *************************************************************************/
+
+// Uncomment if month is 2 digits (7-seg), as in the original A-Car display.
+//#define IS_ACAR_DISPLAY
+
+/*************************************************************************
+ ***                          Version Strings                          ***
+ *************************************************************************/
+
 // These must not contain any characters other than
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION "V2.8.99"          // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "JUL312023"  // 13 chars max
+#define TC_VERSION_EXTRA "AUG032023"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "07312023"   // 12 chars max
+#define TC_VERSION_EXTRA "08032023"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -93,7 +103,7 @@
 // The defined pin is set HIGH on a time travel, and LOW upon re-entry from 
 // a time travel. See tc_time.c for a timing diagram.
 // Uncomment to include support for etto, see below for pin number
-// This is also needed if MQTT or NTTFN is used to trigger external props
+// This is also needed if MQTT or BTTFN is used to trigger external props
 #define EXTERNAL_TIMETRAVEL_OUT
 
 // Uncomment for HomeAssistant MQTT protocol support
@@ -108,17 +118,22 @@
  ***                           Miscellaneous                           ***
  *************************************************************************/
 
-// Uncomment if month is 2 digits (7-seg), as in the original A-Car display.
-//#define IS_ACAR_DISPLAY
-
 // Uncomment if using real GTE/TRW keypad control board
 //#define GTE_KEYPAD 
+
+// Uncomment for alternate "animation" when entering a destination time
+// (Does not affect other situations where animation is shown, like time
+// cycling, or when RC mode is active)
+//#define BTTF3_MODE
+
+// Uncomment if AM and PM should be reversed (like in BTTF2/3-version of TCD)
+//#define REV_AMPM
 
 // Use SPIFFS (if defined) or LittleFS (if undefined; esp32-arduino >= 2.x)
 // I stick with SPIFFS for now.
 #define USE_SPIFFS
 
-// 2Hz GPS updates for GPS speed (undefined: 1Hz)
+// Uncomment for 2Hz GPS updates for GPS speed (undefined: 1Hz)
 #define TC_GPSSPEED500
 
 // Custom stuff -----

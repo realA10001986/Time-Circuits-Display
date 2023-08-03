@@ -80,6 +80,18 @@ static const char months[12][4] = {
     "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
 };
 
+#ifdef BTTF3_MODE
+static const uint8_t idxtbl[] = {
+        0, 
+        CD_DAY_POS, CD_DAY_POS, 
+        CD_YEAR_POS, CD_YEAR_POS, 
+        CD_YEAR_POS + 1, CD_YEAR_POS + 1, 
+        CD_HOUR_POS, 
+        CD_HOUR_POS, CD_HOUR_POS, 
+        CD_MIN_POS, CD_MIN_POS
+};
+#endif
+
 static const char *nullStr = "";
 
 static const char *fnLastYear = "/tcdly";
@@ -345,19 +357,65 @@ void clockDisplay::showAnimate1()
 }
 
 // Show month, assumes showAnimate1() was called before
-void clockDisplay::showAnimate2()
+void clockDisplay::showAnimate2(int until)
 {
     if(_nightmode && _NmOff)
         return;
 
     Wire.beginTransmission(_address);
     Wire.write(0x00);
-    for(int i = 0; i < CD_BUF_SIZE; i++) {
+    for(int i = 0; i < until; i++) {
         Wire.write(_displayBuffer[i] & 0xff);
         Wire.write(_displayBuffer[i] >> 8);
     }
+    for(int i = until; i < CD_BUF_SIZE; i++) {
+        Wire.write(0x00);
+        Wire.write(0x00);
+    }
     Wire.endTransmission();
 }
+
+#ifdef BTTF3_MODE
+void clockDisplay::showAnimate3(int mystep)
+{    
+    
+    uint16_t buf;
+    uint16_t *bu;
+    
+    if(!mystep) {
+        if(!handleNM())
+            return;
+        off();
+        AMPMoff();
+        colonOff();
+        showAnimate2(CD_DAY_POS);
+        on();
+        if(_NmOff) _oldnm = 0;
+    }
+    
+    uint8_t lim = idxtbl[mystep] + 1;
+    
+    switch(mystep) {
+    case 1:
+    case 3:
+    case 5:
+    case 8:
+    case 10:
+        bu = &_displayBuffer[idxtbl[mystep]];
+        buf = *bu;
+        *bu &= 0xff;
+        showAnimate2(lim);
+        *bu = buf;
+        break;
+    case 7:
+        if(!_mode24) {
+            (_hour < 12) ? AM() : PM();
+        }
+    default:
+        showAnimate2(lim);
+    }
+}
+#endif
 
 void clockDisplay::showAlt()
 {
@@ -1249,11 +1307,10 @@ void clockDisplay::showInt(bool animate, bool Alt)
     Wire.write(0x00);
 
     if(animate) {
-        for(i = 0; i < CD_MONTH_SIZE; i++) {
+        for(i = 0; i < CD_DAY_POS; i++) {
             Wire.write(0x00);  // blank month
             Wire.write(0x00);
         }
-        i = CD_DAY_POS;
     }
 
     for(; i < CD_BUF_SIZE; i++) {
@@ -1280,14 +1337,24 @@ void clockDisplay::colonOff()
 
 void clockDisplay::AM()
 {
+#ifndef REV_AMPM
     _displayBuffer[CD_AMPM_POS] |= 0x0080;
     _displayBuffer[CD_AMPM_POS] &= 0x7FFF;
+#else
+    _displayBuffer[CD_AMPM_POS] |= 0x8000;
+    _displayBuffer[CD_AMPM_POS] &= 0xFF7F;
+#endif
 }
 
 void clockDisplay::PM()
 {
+#ifndef REV_AMPM  
     _displayBuffer[CD_AMPM_POS] |= 0x8000;
     _displayBuffer[CD_AMPM_POS] &= 0xFF7F;
+#else
+    _displayBuffer[CD_AMPM_POS] |= 0x0080;
+    _displayBuffer[CD_AMPM_POS] &= 0x7FFF;
+#endif    
 }
 
 void clockDisplay::AMPMoff()
@@ -1306,12 +1373,20 @@ void clockDisplay::directAMPM(int val1, int val2)
 
 void clockDisplay::directAM()
 {
+#ifndef REV_AMPM  
     directAMPM(0x80, 0x00);
+#else
+    directAMPM(0x00, 0x80);
+#endif    
 }
 
 void clockDisplay::directPM()
 {
+#ifndef REV_AMPM  
     directAMPM(0x00, 0x80);
+#else
+    directAMPM(0x80, 0x00);
+#endif
 }
 
 void clockDisplay::directAMPMoff()
