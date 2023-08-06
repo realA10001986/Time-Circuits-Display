@@ -80,7 +80,7 @@ static const char months[12][4] = {
     "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
 };
 
-#ifdef BTTF3_MODE
+#ifdef BTTF3_ANIM
 static const uint8_t idxtbl[] = {
         0, 
         CD_DAY_POS, CD_DAY_POS, 
@@ -357,6 +357,23 @@ void clockDisplay::showAnimate1()
 }
 
 // Show month, assumes showAnimate1() was called before
+#ifndef BTTF3_ANIM
+void clockDisplay::showAnimate2()
+{
+    if(_nightmode && _NmOff)
+        return;
+
+    Wire.beginTransmission(_address);
+    Wire.write(0x00);
+    for(int i = 0; i < CD_BUF_SIZE; i++) {
+        Wire.write(_displayBuffer[i] & 0xff);
+        Wire.write(_displayBuffer[i] >> 8);
+    }
+    Wire.endTransmission();
+}
+
+#else
+
 void clockDisplay::showAnimate2(int until)
 {
     if(_nightmode && _NmOff)
@@ -375,10 +392,8 @@ void clockDisplay::showAnimate2(int until)
     Wire.endTransmission();
 }
 
-#ifdef BTTF3_MODE
 void clockDisplay::showAnimate3(int mystep)
-{    
-    
+{
     uint16_t buf;
     uint16_t *bu;
     
@@ -415,7 +430,7 @@ void clockDisplay::showAnimate3(int mystep)
         showAnimate2(lim);
     }
 }
-#endif
+#endif // BTTF3_ANIM
 
 void clockDisplay::showAlt()
 {

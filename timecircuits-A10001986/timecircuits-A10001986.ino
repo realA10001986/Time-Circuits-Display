@@ -90,12 +90,14 @@
 
 /*  Changelog
  *   
+ *  2023/08/04 (A10001986)
+ *    - Minor cleanup
  *  2023/08/03 (A10001986)
  *    - Fix "animation" and version string on A-Car displays
  *    - Add compile time options (tc_global.h) for
  *      - showing BTTF3-like animation when entering a dest time
  *        (and only then; also not when RC mode is active)
- *      - reversing AM and PM, like in some BTTF2/3 scenes
+ *      - reversing AM and PM, like seen in some BTTF2/3 scenes
  *  2023/07/31 (A10001986)
  *    - Don't show "REPLACE BATT" on uninitialized clocks
  *    - Remove old unneeded stuff

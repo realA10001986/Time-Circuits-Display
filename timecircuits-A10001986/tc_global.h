@@ -26,9 +26,9 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION "V2.8.99"          // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "AUG032023"  // 13 chars max
+#define TC_VERSION_EXTRA "AUG042023"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "08032023"   // 12 chars max
+#define TC_VERSION_EXTRA "08042023"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -124,7 +124,7 @@
 // Uncomment for alternate "animation" when entering a destination time
 // (Does not affect other situations where animation is shown, like time
 // cycling, or when RC mode is active)
-//#define BTTF3_MODE
+//#define BTTF3_ANIM
 
 // Uncomment if AM and PM should be reversed (like in BTTF2/3-version of TCD)
 //#define REV_AMPM
@@ -207,8 +207,6 @@
  ***                         TimeCircuits Epoch                        ***
  *************************************************************************/
 
-#define SECS1900_1970 2208988800ULL
-
 #define SECS1970_2022 1640995200ULL
 #define SECS1970_2023 1672531200ULL
 #define SECS1970_2024 1704067200ULL
@@ -226,7 +224,7 @@
 #define SECS1970_2036 2082758400ULL
 
 // NTP baseline data: Prolong life time of NTP
-// Set this to current year. Stop and leave at 2036.
+// Set this to current year. Stop at 2036.
 #define TCEPOCH       2023
 // Set to SECS1970_xxxx, xxxx being current year. Stop at 2036.
 #define TCEPOCH_SECS  SECS1970_2023

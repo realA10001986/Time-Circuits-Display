@@ -91,9 +91,11 @@ class clockDisplay {
 
         void show();
         void showAnimate1();
+        #ifdef BTTF3_ANIM
         void showAnimate2(int until = CD_BUF_SIZE);
-        #ifdef BTTF3_MODE
         void showAnimate3(int mystep);
+        #else
+        void showAnimate2();
         #endif
 
         void showAlt();

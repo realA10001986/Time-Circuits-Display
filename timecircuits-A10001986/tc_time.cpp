@@ -112,6 +112,8 @@
 #define NTP_PACKET_SIZE 48
 #define NTP_DEFAULT_LOCAL_PORT 1337
 
+#define SECS1900_1970 2208988800ULL
+
 unsigned long        powerupMillis = 0;
 static unsigned long lastMillis = 0;
 uint64_t             millisEpoch = 0;
@@ -2133,7 +2135,9 @@ void time_loop()
                         if(!alarmDone) {
                             play_file("/alarm.mp3", PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
                             alarmDone = true;
+                            #ifdef EXTERNAL_TIMETRAVEL_OUT
                             sendNetWorkMsg("ALARM\0", 6, BTTFN_NOT_ALARM);
+                            #endif
                         }
                     } else {
                         alarmDone = false;

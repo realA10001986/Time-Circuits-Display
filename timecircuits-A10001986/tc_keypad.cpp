@@ -1237,7 +1237,7 @@ void keypad_loop()
             } else {
             #endif
 
-                #ifdef BTTF3_MODE
+                #ifdef BTTF3_ANIM
                 for(int i = 0; i < 12; i++) {
                     destinationTime.showAnimate3(i);
                     if(needDepTime) {
