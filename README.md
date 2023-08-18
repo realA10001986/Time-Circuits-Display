@@ -150,7 +150,7 @@ To toggle WC/RC hybrid mode, type "113" followed by ENTER.
 ####  &#9654; I want my clock to work like in the movie
 
 In this case, head to the Config Portal and
-- set the *<ins>Time Cycling Interval</ins>* to OFF
+- set the *<samp>Time Cycling Interval</samp>* to OFF
 - check or uncheck *Make time travels persistent* depending on whether you care about keeping your times across reboots
 
 Note that *actual* time travel is not supported.
