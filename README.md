@@ -406,7 +406,7 @@ Switching on/off night-mode manually deactivates any schedule and the light sens
 
 The firmware features a simple count-down timer. This timer can count down from max 99 minutes and plays a sound when expired.
 
-To set the timer to MM minutes, type 44MM and press ENTER. Note that for minutes, 2 digits must be entered. To cancel a running timer, enter 4400 and press ENTER.
+To set the timer to MM minutes, type 44MM and press ENTER. Note that for minutes, 2 digits must be entered. To cancel a running timer, enter 440 and press ENTER.
 
 The check the remaining time, type 44 and press ENTER.
 
