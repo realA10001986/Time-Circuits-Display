@@ -1623,10 +1623,10 @@ void time_loop()
                         if(FPBUnitIsOn && !presentTime.getNightMode() &&
                            !startup && !timeTravelP0 && !timeTravelP1 && !timeTravelRE && !timeTravelP2) {
                             timeTravel(true, false);
+                            GPSabove88 = true;
                         }
-                        GPSabove88 = true;
                     }
-                } else if(myGPS.getSpeed() < 30) {
+                } else if(myGPS.getSpeed() < 10) {
                     GPSabove88 = false;
                 }
                 #endif

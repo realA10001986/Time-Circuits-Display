@@ -161,7 +161,7 @@ void tcGPS::loop(bool doDelay)
     // Speed "simulator" for debugging
     #ifdef GPS_SPEED_SIMU
     speed = (79 + (rand() % 10));
-    if(speed == 79) speed = 48;
+    if(speed <= 80) speed -= (79-8);
     _haveSpeed = true;        
     _curspdTS = myNow;
     #endif
