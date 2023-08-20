@@ -711,7 +711,7 @@ The Config Portal allows configuring a delay for matching/synchronizing the TCD 
 
 ## Speedometer
 
-The firmware supports a speedometer display connected via i2c (slave address 0x70) as part of the time travel sequence. Unfortunately, CircuitSetup's upcoming Speedo display is yet in the design stage, so you are on your own to build one for the time being.
+The firmware supports a speedometer display connected via i2c (slave address 0x70) as part of the time travel sequence. As CircuitSetup's upcoming Speedo display is not available yet, you are on your own to build one for the time being.
 
 What you need is a box, the LED segment displays and a HT16K33-based PCB that allows accessing the LED displays via i2c. There are various readily available LED segment displays with suitable i2c break-outs from Adafruit and Seeed (Grove) that can be used as a basis. Adafruit [878](https://www.adafruit.com/product/878), [1270](https://www.adafruit.com/product/1270) and [1911](https://www.adafruit.com/product/1911), as well as Grove 0.54" 14-segment [2-digit](https://www.seeedstudio.com/Grove-0-54-Red-Dual-Alphanumeric-Display-p-4031.html) or [4-digit](https://www.seeedstudio.com/Grove-0-54-Red-Quad-Alphanumeric-Display-p-4032.html) alphanumeric displays are supported. (The product numbers vary with color, the numbers here are the red ones.)
 
