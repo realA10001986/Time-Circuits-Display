@@ -34,9 +34,9 @@ Features include
 - Support for external display acting as [Speedometer](#speedometer)
 - Support for [GPS receiver](#gps-receiver), used as time source, and for [speed](#gps-for-speed) to be displayed on speedo display
 - Support for [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for "room condition mode" and to display temperature on speedo display while idle
-- Support for wireless communication with compatible other props ("[BTTF-Network](#bttf-network-bttfn)")
+- Support for wireless communication ("[BTTF-Network](#bttf-network-bttfn)") with compatible other props such as CircuitSetup's [SID](https://github.com/realA10001986/SID) and [Flux Capacitor](https://github.com/realA10001986/Flux-Capacitor) 
 - [Home Assistant](#home-assistant--mqtt) (MQTT 3.1.1) support
-- Support for triggering time travels on [other props](#controlling-other-props) connected by wire; TCD can act as master controller for SID, flux capacitor, etc.
+- Support for triggering time travels on [other props](#controlling-other-props) connected by wire; TCD can act as master controller for [SID](https://github.com/realA10001986/SID), [Flux Capacitor](https://github.com/realA10001986/Flux-Capacitor), etc.
 - Built-in installer for default audio files in addition to OTA firmware updates
 
 The code here was formerly based on rudimentary code from/by CircuitSetup. Since Sep 2022, CircuitSetup are distributing this very firmware as their official one (starting with 2.0). The difference between what you get here and CircuitSetup's releases is that the code here might be ahead in development (and uses some different sounds), and the pre-compiled binary has all the features enabled.
@@ -821,7 +821,7 @@ The TCD can communicate with other compatible props wirelessly, via WiFi. It can
 
 On the TCD, no special configuration is required. However, if the TCD is supposed to send out notifications about time travel and alarm to connected BTTFN clients, usage of MQTT must be disabled or the *Send event notifications* option in the MQTT section of the Config Portal must be unchecked. The TCD only sends out such notifications either via MQTT or BTTFN, never both.
 
-On the other prop, such as CircuitSetup's upcoming Flux Capacitor or SID, the TCD's IP address (not hostname!) must be entered into the *IP address of TCD* field on the Setup page in their Config Portal - that's all.
+On the other prop, such as CircuitSetup's upcoming [Flux Capacitor](https://github.com/realA10001986/Flux-Capacitor) or [SID](https://github.com/realA10001986/SID), the TCD's IP address (not hostname!) must be entered into the *IP address of TCD* field on the Setup page in their Config Portal - that's all.
 
 The fact that the devices communicate directly with each other makes BTTFN the ideal solution for car setups. Also, while at home, the devices might be connected to an existing WiFi network, in a car, the TCD can act as access point for Flux Capacitor and SID (ie they are connecting to the *TCD-AP* WiFi network), and those then can talk the TCD wirelessly. More information on this is in the documentation of the respective prop.
 
