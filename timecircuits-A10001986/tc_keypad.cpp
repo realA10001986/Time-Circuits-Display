@@ -98,6 +98,7 @@ static bool needDepTime = false;
 #ifdef EXTERNAL_TIMETRAVEL_IN
 bool                 isEttKeyPressed = false;
 bool                 isEttKeyHeld = false;
+bool                 isEttKeyImmediate = false;
 static unsigned long ettNow = 0;
 static bool          ettDelayed = false;
 static unsigned long ettDelay = 0; // ms
@@ -165,6 +166,7 @@ static void setupWCMode();
 static void buildRemString(char *buf);
 static void buildRemOffString(char *buf);
 static void mykpddelay(unsigned int mydel);
+static void prepareReboot();
 
 /*
  * keypad_setup()
@@ -368,6 +370,7 @@ static void enterKeyHeld()
 static void ettKeyPressed()
 {
     isEttKeyPressed = true;
+    // Do not touch isEttKeyImmediate here
     pwrNeedFullNow();
 }
 
@@ -445,7 +448,7 @@ void keypad_loop()
         isEnterKeyHeld = false;
         isEnterKeyPressed = false;
         #ifdef EXTERNAL_TIMETRAVEL_IN
-        isEttKeyPressed = false;
+        isEttKeyPressed = isEttKeyImmediate = false;
         isEttKeyHeld = false;
         #endif
 
@@ -456,9 +459,9 @@ void keypad_loop()
 #ifdef EXTERNAL_TIMETRAVEL_IN
     if(isEttKeyHeld) {
         resetPresentTime();
-        isEttKeyPressed = isEttKeyHeld = false;
+        isEttKeyPressed = isEttKeyHeld = isEttKeyImmediate = false;
     } else if(isEttKeyPressed) {
-        if(!ettDelay) {
+        if(!ettDelay || isEttKeyImmediate) {
             timeTravel(ettLong, true);
             ettDelayed = false;
         } else {
@@ -466,7 +469,7 @@ void keypad_loop()
             ettDelayed = true;
             startBeepTimer();
         }
-        isEttKeyPressed = isEttKeyHeld = false;
+        isEttKeyPressed = isEttKeyHeld = isEttKeyImmediate = false;
     }
     if(ettDelayed) {
         if(millis() - ettNow >= ettDelay) {
@@ -497,7 +500,7 @@ void keypad_loop()
         #ifdef EXTERNAL_TIMETRAVEL_IN
         // No external tt while in menu mode,
         // so reset flag upon menu exit
-        isEttKeyPressed = isEttKeyHeld = false;
+        isEttKeyPressed = isEttKeyHeld = isEttKeyImmediate = false;
         #endif
 
         menuActive = false;
@@ -801,6 +804,18 @@ void keypad_loop()
                 specDisp = 10;
                 // Play no sound, ie no xxvalidEntry
                 break;
+            case 990:
+            case 991:
+                rcModeState = carMode;
+                carMode = (code == 991);
+                if(rcModeState != carMode) {
+                    saveCarMode();
+                    prepareReboot();
+                    delay(1000);
+                    esp_restart();
+                }
+                validEntry = true;
+                break;
             default:
                 invalidEntry = true;
             }
@@ -808,17 +823,7 @@ void keypad_loop()
         } else if(strLen == DATELEN_INT) {
 
             if(!(strncmp(dateBuffer, "64738", 5))) {
-                mp_stop();
-                stopAudio();
-                allOff();
-                #ifdef TC_HAVESPEEDO
-                if(useSpeedo) speedo.off();
-                #endif
-                destinationTime.resetBrightness();
-                destinationTime.showTextDirect("REBOOTING");
-                destinationTime.on();
-                delay(ENTER_DELAY);
-                digitalWrite(WHITE_LED_PIN, LOW);
+                prepareReboot();
                 esp_restart();
             }
 
@@ -1277,8 +1282,8 @@ void keypad_loop()
 void cancelEnterAnim(bool reenableDT)
 {
     if(enterWasPressed) {
+      
         enterWasPressed = false;
-        
         digitalWrite(WHITE_LED_PIN, LOW);
         
         if(reenableDT) {
@@ -1305,7 +1310,8 @@ void cancelEnterAnim(bool reenableDT)
                 departedTime.onCond();
             }
         }
-        
+
+        destShowAlt = depShowAlt = 0;     // Reset TZ-Name-Animation
         needDepTime = false;
         specDisp = 0;
     }
@@ -1366,6 +1372,21 @@ static void buildRemOffString(char *buf)
     #else
     strcpy(buf, "REMINDER  OFF");
     #endif
+}
+
+static void prepareReboot()
+{
+    mp_stop();
+    stopAudio();
+    allOff();
+    #ifdef TC_HAVESPEEDO
+    if(useSpeedo) speedo.off();
+    #endif
+    destinationTime.resetBrightness();
+    destinationTime.showTextDirect("REBOOTING");
+    destinationTime.on();
+    delay(ENTER_DELAY);
+    digitalWrite(WHITE_LED_PIN, LOW);
 }
 
 /*

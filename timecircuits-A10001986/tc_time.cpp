@@ -607,6 +607,12 @@ static void bttfn_expire_clients();
  */
 void time_boot()
 {
+    // Reset TT-out as early as possible
+    #ifdef EXTERNAL_TIMETRAVEL_OUT
+    pinMode(EXTERNAL_TIMETRAVEL_OUT_PIN, OUTPUT);
+    digitalWrite(EXTERNAL_TIMETRAVEL_OUT_PIN, LOW);
+    #endif
+    
     // Start the displays early to clear them
     presentTime.begin();
     destinationTime.begin();
@@ -1206,6 +1212,13 @@ void time_setup()
     #endif
     #endif
 
+    // Preset this for BTTFN status requests during boot
+    #ifdef FAKE_POWER_ON
+    if(waitForFakePowerButton) {
+        FPBUnitIsOn = false;
+    }
+    #endif
+
     // Start bttf network
     #ifdef TC_HAVEBTTFN
     bttfn_setup();
@@ -1246,7 +1259,7 @@ void time_setup()
         isEnterKeyHeld = false;
         isEnterKeyPressed = false;
         #ifdef EXTERNAL_TIMETRAVEL_IN
-        isEttKeyPressed = false;
+        isEttKeyPressed = isEttKeyImmediate = false;
         isEttKeyHeld = false;
         #endif
     }
@@ -2902,9 +2915,12 @@ static void myIntroDelay(unsigned int mydel, bool withGPS)
 {
     unsigned long startNow = millis();
     while(millis() - startNow < mydel) {
-        delay(5);
+        delay((mydel > 100) ? 10 : 5);    // delay(5) does not allow for UDP traffic
         audio_loop();
         ntp_short_loop();
+        #ifdef TC_HAVEBTTFN
+        bttfn_loop();
+        #endif
         #ifdef TC_HAVEGPS
         if(withGPS) gps_loop();
         #endif
@@ -2919,6 +2935,9 @@ static void waitAudioDoneIntro()
     while(!checkAudioDone() && timeout--) {
         audio_loop();
         ntp_short_loop();
+        #ifdef TC_HAVEBTTFN
+        bttfn_loop();
+        #endif
         #ifdef TC_HAVEGPS
         gps_loop();
         #endif

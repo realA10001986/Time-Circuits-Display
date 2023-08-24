@@ -51,6 +51,7 @@
 #include "tc_menus.h"
 #include "tc_audio.h"
 #include "tc_time.h"
+#include "tc_wifi.h"
 
 // Size of main config JSON
 // Needs to be adapted when config grows
@@ -112,6 +113,7 @@ static const char *remCfgName = "/tcdremcfg.json";  // Reminder config (flash/SD
 static const char *volCfgName = "/tcdvolcfg.json";  // Volume config (flash/SD)
 static const char *musCfgName = "/tcdmcfg.json";    // Music config (SD)
 static const char *ipCfgName  = "/ipconfig.json";   // IP config (flash)
+static const char *cmCfgName = "/cmconfig.json";    // Carmode (flash/SD)
 
 static const char *fsNoAvail = "File System not available";
 static const char *badConfig = "Settings bad/missing/incomplete; writing new file";
@@ -120,6 +122,8 @@ static const char *failFileWrite = "Failed to open file for writing";
 static bool read_settings(File configFile);
 
 static void deleteReminder();
+
+static void loadCarMode();
 
 static bool CopyCheckValidNumParm(const char *json, char *text, uint8_t psize, int lowerLim, int upperLim, int setDefault);
 static bool CopyCheckValidNumParmF(const char *json, char *text, uint8_t psize, float lowerLim, float upperLim, float setDefault);
@@ -279,6 +283,9 @@ void settings_setup()
     if(haveFS && haveSD && !FlashROMode) {
         allowCPA = check_if_default_audio_present();
     }
+
+    // Load carMode setting
+    loadCarMode();
 
     // Allow user to delete static IP data by holding ENTER
     // while booting
@@ -686,6 +693,36 @@ static bool checkValidNumParmF(char *text, float lowerLim, float upperLim, float
     return false;
 }
 
+static bool openCfgFileRead(const char *fn, File& f)
+{
+    bool haveConfigFile;
+    
+    if(configOnSD) {
+        if(SD.exists(fn)) {
+            haveConfigFile = (f = SD.open(fn, "r"));
+        }
+    } else {
+        if(SPIFFS.exists(fn)) {
+            haveConfigFile = (f = SPIFFS.open(fn, "r"));
+        }
+    }
+
+    return haveConfigFile;
+}
+
+static bool openCfgFileWrite(const char *fn, File& f)
+{
+    bool haveConfigFile;
+    
+    if(configOnSD) {
+        haveConfigFile = (f = SD.open(fn, FILE_WRITE));
+    } else {
+        haveConfigFile = (f = SPIFFS.open(fn, FILE_WRITE));
+    }
+
+    return haveConfigFile;
+}
+
 /*
  *  Load/save the Alarm settings
  */
@@ -757,7 +794,6 @@ void saveAlarm()
     char aooBuf[8];
     char hourBuf[8];
     char minBuf[8];
-    bool haveConfigFile = false;
     File configFile;
     StaticJsonDocument<512> json;
 
@@ -779,13 +815,7 @@ void saveAlarm()
     json["alarmhour"] = (char *)hourBuf;
     json["alarmmin"] = (char *)minBuf;
 
-    if(configOnSD) {
-        haveConfigFile = (configFile = SD.open(almCfgName, FILE_WRITE));
-    } else {
-        haveConfigFile = (configFile = SPIFFS.open(almCfgName, FILE_WRITE));
-    }
-
-    if(haveConfigFile) {
+    if(openCfgFileWrite(almCfgName, configFile)) {
         serializeJson(json, configFile);
         configFile.close();
     } else {
@@ -801,7 +831,6 @@ bool loadReminder()
 {
     const char *funcName = "loadReminder";
     bool writedefault = false;
-    bool haveConfigFile = false;
     File configFile;
 
     if(!haveFS && !configOnSD) {
@@ -813,17 +842,8 @@ bool loadReminder()
     Serial.printf("%s: Loading from %s\n", funcName, configOnSD ? "SD" : "flash FS");
     #endif
 
-    if(configOnSD) {
-        if(SD.exists(remCfgName)) {
-            haveConfigFile = (configFile = SD.open(remCfgName, "r"));
-        }
-    } else {
-        if(SPIFFS.exists(remCfgName)) {
-            haveConfigFile = (configFile = SPIFFS.open(remCfgName, "r"));
-        }
-    }
+    if(openCfgFileRead(remCfgName, configFile)) {
 
-    if(haveConfigFile) {
         StaticJsonDocument<512> json;
         
         if(!deserializeJson(json, configFile)) {
@@ -859,7 +879,6 @@ void saveReminder()
     char dayBuf[8];
     char hourBuf[8];
     char minBuf[8];
-    bool haveConfigFile = false;
     File configFile;
     StaticJsonDocument<512> json;
 
@@ -887,13 +906,7 @@ void saveReminder()
     json["hour"] = (char *)hourBuf;
     json["min"] = (char *)minBuf;
 
-    if(configOnSD) {
-        haveConfigFile = (configFile = SD.open(remCfgName, FILE_WRITE));
-    } else {
-        haveConfigFile = (configFile = SPIFFS.open(remCfgName, FILE_WRITE));
-    }
-
-    if(haveConfigFile) {
+    if(openCfgFileWrite(remCfgName, configFile)) {
         serializeJson(json, configFile);
         configFile.close();
     } else {
@@ -910,6 +923,49 @@ static void deleteReminder()
         SD.remove(remCfgName);
     } else {
         SPIFFS.remove(remCfgName);
+    }
+}
+
+/*
+ *  Load/save carMode
+ */
+
+static void loadCarMode()
+{
+    bool haveConfigFile = false;
+    File configFile;
+
+    if(!haveFS && !configOnSD)
+        return;
+
+    if(openCfgFileRead(cmCfgName, configFile)) {
+        StaticJsonDocument<512> json;
+        
+        if(!deserializeJson(json, configFile)) {
+            if(json["CarMode"]) {
+                carMode = (atoi(json["CarMode"]) > 0);
+            }
+        } 
+        configFile.close();
+    }
+}
+
+void saveCarMode()
+{
+    char buf[2];
+    File configFile;
+    StaticJsonDocument<512> json;
+
+    if(!haveFS && !configOnSD)
+        return;
+
+    buf[0] = carMode ? '1' : '0';
+    buf[1] = 0;
+    json["CarMode"] = (char *)buf;
+
+    if(openCfgFileWrite(cmCfgName, configFile)) {
+        serializeJson(json, configFile);
+        configFile.close();
     }
 }
 
@@ -936,17 +992,7 @@ bool loadCurVolume()
     Serial.printf("%s: Loading from %s\n", funcName, configOnSD ? "SD" : "flash FS");
     #endif
 
-    if(configOnSD) {
-        if(SD.exists(volCfgName)) {
-            haveConfigFile = (configFile = SD.open(volCfgName, "r"));
-        }
-    } else {
-        if(SPIFFS.exists(volCfgName)) {
-            haveConfigFile = (configFile = SPIFFS.open(volCfgName, "r"));
-        }
-    }
-
-    if(haveConfigFile) {
+    if(openCfgFileRead(volCfgName, configFile)) {
         StaticJsonDocument<512> json;
         if(!deserializeJson(json, configFile)) {
             if(!CopyCheckValidNumParm(json["volume"], temp, sizeof(temp), 0, 255, 255)) {
@@ -972,7 +1018,6 @@ void saveCurVolume()
 {
     const char *funcName = "saveCurVolume";
     char buf[6];
-    bool haveConfigFile = false;
     File configFile;
     StaticJsonDocument<512> json;
 
@@ -988,18 +1033,7 @@ void saveCurVolume()
     sprintf(buf, "%d", curVolume);
     json["volume"] = (char *)buf;
 
-    if(configOnSD) {
-        haveConfigFile = (configFile = SD.open(volCfgName, FILE_WRITE));
-    } else {
-        haveConfigFile = (configFile = SPIFFS.open(volCfgName, FILE_WRITE));
-    }
-
-    #ifdef TC_DBG
-    serializeJson(json, Serial);
-    Serial.println(F(" "));
-    #endif
-
-    if(haveConfigFile) {
+    if(openCfgFileWrite(volCfgName, configFile)) {
         serializeJson(json, configFile);
         configFile.close();
     } else {
@@ -1020,11 +1054,12 @@ void copySettings()
 
     if(configOnSD || !FlashROMode) {
         #ifdef TC_DBG
-        Serial.println(F("copySettings: Copying alarm/vol settings to other medium"));
+        Serial.println(F("copySettings: Copying alarm/vol/etc settings to other medium"));
         #endif
         saveCurVolume();
         saveAlarm();
         saveReminder();
+        saveCarMode();
     }
 
     configOnSD = !configOnSD;
@@ -1352,7 +1387,7 @@ static void open_and_copy(const char *fn, int& haveErr)
         }
         sFile.close();
     } else {
-        Serial.printf("%s: Error opening source file: %s\n", funcName, fn);
+        Serial.printf("%s: %s not found\n", funcName, fn);
         haveErr++;
     }
 }
@@ -1364,7 +1399,7 @@ static bool filecopy(File source, File dest)
 
     while((bytesr = source.read(buffer, 1024))) {
         if((bytesw = dest.write(buffer, bytesr)) != bytesr) {
-            Serial.println(F("filecopy: Error writing data"));
+            Serial.println(F("filecopy: Write error"));
             return false;
         }
         file_copy_progress();
@@ -1442,6 +1477,8 @@ void rewriteSecondarySettings()
     saveAlarm();
 
     saveReminder();
+
+    saveCarMode();
     
     saveCurVolume();
     

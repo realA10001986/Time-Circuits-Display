@@ -90,6 +90,15 @@
 
 /*  Changelog
  *   
+ *  2023/08/24 (A10001986)
+ *    - Add "car mode": Reboots (and stays) in AP-mode. This speeds up boot in a car
+ *      without deleting the WiFi configuration; car mode is enabled by typing 991ENTER,
+ *      and disabled with 990ENTER. Car mode needs to be enabled if the TCD is acting
+ *      as AP for FC/SID and all props are powered up simultaneously.
+ *    - Fix fake-power-up for peripherals during boot
+ *  2023/08/20 (A10001986)
+ *    - MQTT-induced TT is now always immediate, does not honor the delay configured
+ *      for the external time travel button
  *  2023/08/19 (A10001986)
  *    - Minor debug code change (no binary change)
  *  2023/08/14 (A10001986)

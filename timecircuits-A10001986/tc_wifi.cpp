@@ -144,7 +144,7 @@ WiFiManagerParameter custom_beep_aint(beepaintCustHTML);  // beep + aint
 #define HNTEXT "Hostname<br><span style='font-size:80%'>(Valid characters: a-z/0-9/-)</span>"
 #endif
 WiFiManagerParameter custom_hostName("hostname", HNTEXT, settings.hostName, 31, "pattern='[A-Za-z0-9-]+' placeholder='Example: timecircuits'");
-WiFiManagerParameter custom_wifiConRetries("wifiret", "WiFi connection attempts (1-15)", settings.wifiConRetries, 2, "type='number' min='1' max='15' autocomplete='off'", WFM_LABEL_BEFORE);
+WiFiManagerParameter custom_wifiConRetries("wifiret", "WiFi connection attempts (1-10)", settings.wifiConRetries, 2, "type='number' min='1' max='10' autocomplete='off'", WFM_LABEL_BEFORE);
 WiFiManagerParameter custom_wifiConTimeout("wificon", "WiFi connection timeout (7-25[seconds])", settings.wifiConTimeout, 2, "type='number' min='7' max='25'");
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
 WiFiManagerParameter custom_wifiPRe("wifiPRet", "Periodic reconnection attempts (0=no, 1=yes)", settings.wifiPRetry, 1, "autocomplete='off' title='Enable to periodically retry WiFi connection after failure'");
@@ -316,6 +316,8 @@ static bool shouldDeleteIPConfig = false;
 
 // Did user configure a WiFi network to connect to?
 bool wifiHaveSTAConf = false;
+
+bool carMode = false;
 
 static unsigned long lastConnect = 0;
 static unsigned long consecutiveAPmodeFB = 0;
@@ -529,7 +531,7 @@ void wifi_setup()
 
     temp = atoi(settings.wifiConRetries);
     if(temp < 1) temp = 1;
-    if(temp > 15) temp = 15;
+    if(temp > 10) temp = 10;
     wm.setConnectRetries(temp);
 
     wm.setCleanConnect(true);
@@ -562,6 +564,13 @@ void wifi_setup()
     if(wifiAPOffDelay > 0 && wifiAPOffDelay < 10) wifiAPOffDelay = 10;
     wifiAPOffDelay *= (60 * 1000);
 
+    // Disable WiFI PS in AP mode for car mode?
+    // No, user might have only TCD, no FC or SID
+    // Power saving makes sense then.
+    //if(carMode) {
+    //    wifiAPOffDelay = 0;
+    //}
+
     // Read setting for "periodic retries"
     // This determines if, after a fall-back to AP mode,
     // the device should periodically retry to connect
@@ -575,7 +584,7 @@ void wifi_setup()
            
     // Find out if we have a configured WiFi network to connect to,
     // or if we are condemned to AP mode for good
-    {
+    if(!carMode) {
         wifi_config_t conf;
         esp_wifi_get_config(WIFI_IF_STA, &conf);
         wifiHaveSTAConf = (conf.sta.ssid[0] != 0);
@@ -1012,9 +1021,16 @@ void wifi_loop()
 
 static void wifiConnect(bool deferConfigPortal)
 {     
+    bool doOnlyAP = false;
+    
+    if(carMode) {
+        wm.startConfigPortal("TCD-AP");
+        doOnlyAP = true;
+    }
+    
     // Automatically connect using saved credentials if they exist
     // If connection fails it starts an access point with the specified name
-    if(wm.autoConnect("TCD-AP")) {
+    if(!doOnlyAP && wm.autoConnect("TCD-AP")) {
         #ifdef TC_DBG
         Serial.println(F("WiFi connected"));
         #endif
@@ -1056,6 +1072,7 @@ static void wifiConnect(bool deferConfigPortal)
         consecutiveAPmodeFB = 0;  // Reset counter of consecutive AP-mode fall-backs
 
     } else {
+
         #ifdef TC_DBG
         Serial.println(F("Config portal running in AP-mode"));
         #endif
@@ -1925,7 +1942,7 @@ static void mqttCallback(char *topic, byte *payload, unsigned int length)
         switch(i) {
         case 0:
             #ifdef EXTERNAL_TIMETRAVEL_IN
-            isEttKeyPressed = true;
+            isEttKeyPressed = isEttKeyImmediate = true;
             #endif
             break;
         case 1:

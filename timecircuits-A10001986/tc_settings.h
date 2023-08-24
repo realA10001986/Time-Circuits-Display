@@ -186,6 +186,8 @@ void saveAlarm();
 bool loadReminder();
 void saveReminder();
 
+void saveCarMode();
+
 bool loadCurVolume();
 void saveCurVolume();
 

@@ -38,6 +38,7 @@ extern bool isEnterKeyHeld;
 #ifdef EXTERNAL_TIMETRAVEL_IN
 extern bool isEttKeyPressed;
 extern bool isEttKeyHeld;
+extern bool isEttKeyImmediate;
 #endif
 extern bool menuActive;
 

@@ -39,6 +39,8 @@ extern bool wifiInAPMode;
 
 extern bool wifiHaveSTAConf;
 
+extern bool carMode;
+
 #ifdef TC_HAVEMQTT
 extern bool useMQTT;
 extern const char *mqttAudioFile;
