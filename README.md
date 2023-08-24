@@ -143,7 +143,22 @@ For logical reasons, WC mode will be automatically disabled in some situations:
 
 [Room Condition (RC) mode](#room-condition-mode-temperaturehumidity-sensor) can be enabled together with WC mode. In that case, only one timezone is used, and the other display shows the temperature. If there is a time zone configured for the red display, the temperature will be shown in the yellow display. If there no time zone for the red display, the temperature will be shown there, and the yellow display will show time for the time zone you set up for the yellow display.
 
-To toggle WC/RC hybrid mode, type "113" followed by ENTER. 
+To toggle WC/RC hybrid mode, type "113" followed by ENTER.
+
+### Car Mode
+
+If the TCD, perhaps along with other props such as Flux Capacitor or SID, is mounted in a car, there are a few things to be considered:
+
+- There is probably no point in attempting to connect a WiFi network.
+- If the TCD acts as WiFi access point for Flux Capacitor and/or SID, it should boot quickly so that the other props can connect to it as soon as possible.
+
+This is what *car mode* is for: If enabled, the TCD will always boot in AP mode, regardless of a configured WiFi network. This speeds up booting.
+
+To enable *car mode*, type 991 followed by ENTER. The TCD will reboot in AP mode.
+
+To disable *car mode*, type 990 followed by ENTER. The TCD will reboot and attempt to connect to a previously configured WiFi network.
+
+*Car mode* is persistent, ie it remains active until disabled.
 
 ### Common usage scenarios
 
