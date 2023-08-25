@@ -158,7 +158,7 @@ To enable *car mode*, type 991 followed by ENTER. The TCD will reboot in AP mode
 
 To disable *car mode*, type 990 followed by ENTER. The TCD will reboot and attempt to connect to a previously configured WiFi network.
 
-*Car mode* is persistent, ie it remains active until disabled.
+*Car mode* is persistent, ie it remains active (even accross reboots and power-downs) until disabled.
 
 ### Common usage scenarios
 
