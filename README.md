@@ -78,7 +78,11 @@ As long as the device is unconfigured, as is the case with a brand new clock, or
 - Connect your computer or handheld device to the WiFi network "TCD-AP".
 - Navigate your browser to http://timecircuits.local or http://192.168.4.1 to enter the Config Portal.
  
-If you want your clock to connect to your WiFi network, click on "Configure WiFi". The bare minimum is to select an SSID (WiFi network name) and a WiFi password. Note that the device requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). (If the device is inaccessible as a result of wrong static IPs, hold ENTER when powering it up until the white LED lits; static IP data will be deleted and the device will return to DHCP.) After saving the WiFi network settings, the device reboots and tries to connect to your configured WiFi network. If that fails, it will again start in access point mode. (If you have your TCD mounted in a car, also see [here](#car-mode))
+If you want your clock to connect to your WiFi network, click on "Configure WiFi". The bare minimum is to select an SSID (WiFi network name) and a WiFi password. 
+
+Note that the device requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). If the device is inaccessible as a result of incorrect static IPs, hold ENTER when powering it up until the white LED lits; static IP data will be deleted and the device will return to DHCP. 
+
+After saving the WiFi network settings, the device reboots and tries to connect to your configured WiFi network. If that fails, it will again start in access point mode. 
 
 The next step is to set the clock's ... clock (and time zone).
 
@@ -303,6 +307,10 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
     <tr>
      <td align="left">888xxx&#9166;</td>
      <td align="left"><a href="#the-music-player">Music Player</a>: Go to song xxx</td>
+    </tr>
+   <tr>
+     <td align="left">990&#9166; / 990&#9166;</td>
+     <td align="left">Disable / enable <a href="#car-mode">*car mode*</a></td>
     </tr>
     <tr>
      <td align="left">64738&#9166;</td>
@@ -838,7 +846,7 @@ On the TCD, no special configuration is required. However, if the TCD is suppose
 
 On the other prop, such as CircuitSetup's upcoming [Flux Capacitor](https://github.com/realA10001986/Flux-Capacitor) or [SID](https://github.com/realA10001986/SID), the TCD's IP address (not hostname!) must be entered into the *IP address of TCD* field on the Setup page in their Config Portal - that's all.
 
-The fact that the devices communicate directly with each other makes BTTFN the ideal solution for car setups. Also, while at home, the devices might be connected to an existing WiFi network, in a car, the TCD can act as access point for Flux Capacitor and SID (ie they are connecting to the *TCD-AP* WiFi network), and those then can talk the TCD wirelessly. More information on this is in the documentation of the respective prop.
+The fact that the devices communicate directly with each other makes BTTFN the ideal solution for car setups. Also, while at home, the devices might be connected to an existing WiFi network, in a car, the TCD can act as access point for Flux Capacitor and SID (ie they are connecting to the *TCD-AP* WiFi network), and those then can talk the TCD wirelessly. The TCD has *car mode* for doing exactly this, see [here](#car-mode) and the documentation of the respective prop. 
 
 To see which BTTFN devices are currently known to the TCD, enter the keypad menu and select "BTTFN CIENTS".
 
