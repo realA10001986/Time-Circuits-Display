@@ -293,7 +293,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left"><a href="#the-music-player">Music Player</a>: Go to song xxx</td>
     </tr>
    <tr>
-     <td align="left">990&#9166; / 990&#9166;</td>
+     <td align="left">990&#9166; / 991&#9166;</td>
      <td align="left">Disable / enable <a href="#car-mode"><i>car mode</i></a></td>
     </tr>
     <tr>
