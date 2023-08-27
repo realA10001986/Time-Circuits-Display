@@ -82,13 +82,12 @@ If you want your clock to connect to your WiFi network, click on "Configure WiFi
 
 Note that the device requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). If the device is inaccessible as a result of incorrect static IPs, hold ENTER when powering it up until the white LED lits; static IP data will be deleted and the device will return to DHCP. 
 
-After saving the WiFi network settings, the device reboots and tries to connect to your configured WiFi network. If that fails, it will again start in access point mode. 
+After saving the WiFi network settings, the device reboots and tries to connect to your configured WiFi network. If that fails, it will again start in access point mode.
 
-The next step is to set the clock's ... clock (and time zone).
+The next step is to set the clock's time zone and actual time.
 
-If your clock is connected to a WiFi network with internet access, it will receive time information through NTP (network time protocol). If the clock shows a wrong time initially, don't worry: This is due to a wrong time zone.
-
-If the internet is inaccessible, please set your local time through the [keypad menu](#how-to-set-the-real-time-clock-rtc). 
+- If your clock is connected to a WiFi network with internet access, it will receive time information through NTP (network time protocol). If the clock shows a wrong time initially, don't worry: This is due to a wrong time zone.
+- If the internet is inaccessible (such as is the case if the TCD is in access point mode), please set your local time through the [keypad menu](#how-to-set-the-real-time-clock-rtc) after setting up the time zone.
 
 In both cases it is, again, important to set the clock's time zone. This is done in the Config Portal, so read on.
 
@@ -148,21 +147,6 @@ For logical reasons, WC mode will be automatically disabled in some situations:
 [Room Condition (RC) mode](#room-condition-mode-temperaturehumidity-sensor) can be enabled together with WC mode. In that case, only one timezone is used, and the other display shows the temperature. If there is a time zone configured for the red display, the temperature will be shown in the yellow display. If there no time zone for the red display, the temperature will be shown there, and the yellow display will show time for the time zone you set up for the yellow display.
 
 To toggle WC/RC hybrid mode, type "113" followed by ENTER.
-
-### Car Mode
-
-If the TCD, perhaps along with other props such as Flux Capacitor or SID, is mounted in a car, there are a few things to be considered:
-
-- There is probably no point in attempting to connect a WiFi network.
-- If the TCD acts as WiFi access point for Flux Capacitor and/or SID, it should boot quickly so that the other props can connect to it as soon as possible.
-
-This is what *car mode* is for: If enabled, the TCD will always boot in AP mode, regardless of a configured WiFi network. This speeds up booting.
-
-To enable *car mode*, type 991 followed by ENTER. The TCD will reboot in AP mode.
-
-To disable *car mode*, type 990 followed by ENTER. The TCD will reboot and attempt to connect to a previously configured WiFi network.
-
-*Car mode* is persistent, i.e. it remains active (even accross reboots and power-downs) until disabled.
 
 ### Common usage scenarios
 
@@ -627,7 +611,7 @@ Note that the Music Folder Number is saved in a config file on the SD card.
 
 #### How to set the Real Time Clock (RTC):
 
-Adjusting the RTC is useful if you can't use NTP for time keeping, and really helpful when using GPS. Always set your actual local present time here; if you want to display some other time, use the Time Travel function. Note: The time you entered will be overwritten if/when the device has access to authoritative time such as via NTP or GPS. For DST (daylight saving) and GPS, it is essential that you also set the correct time zone in the [Config Portal](#the-config-portal).
+Adjusting the RTC is useful if you can't use NTP for time keeping, and really helpful when using GPS. Always set your actual local present time here; if you want to display some other time, use the Time Travel function. Note: The time you entered will be overwritten if/when the device has access to authoritative time such as via NTP or GPS. For DST (daylight saving) and GPS, it is essential that you first set the correct time zone in the [Config Portal](#the-config-portal).
 
 - Hold ENTER to invoke main menu
 - Press ENTER repeatedly until "SET RTC" is displayed and the *Present Time* display shows a date and time 
@@ -793,6 +777,23 @@ In order to use a temperature/humidity sensor, no special configuration is requi
 Seven sensor types are supported: MCP9808 (i2c address 0x18), BMx280 (0x77), SI7021 (0x40), SHT40 (0x44), TMP117 (0x49), AHT20/AM2315C (0x38), HTU31D (0x41). All of those are readily available on breakout boards from Adafruit or Seeed (Grove). The BMP280 (unlike BME280), MCP9808 and TMP117 work as pure temperature sensors, the others for temperature and humidity. For wiring information, see [here](#appendix-b-sensor-wiring).
 
 *Note: You cannot connect the sensor chip directly to the TCD control board; most sensors need at least a power converter/level-shifter.* This is why I exclusively used Adafruit or Seeed breakouts ([MCP9808](https://www.adafruit.com/product/1782), [BME280](https://www.adafruit.com/product/2652), [SI7021](https://www.adafruit.com/product/3251), [SHT40](https://www.adafruit.com/product/4885), [TMP117](https://www.adafruit.com/product/4821), [AHT20](https://www.adafruit.com/product/4566), [HTU31D](https://www.adafruit.com/product/4832)), which all allow connecting named sensors to the 5V the TCD board operates on.
+
+## Car Mode
+
+If the TCD, perhaps along with other props such as Flux Capacitor or SID, is mounted in a car, there are a few things to be considered:
+
+- There is no point in attempting to connect a WiFi network.
+- If the TCD acts as WiFi access point for Flux Capacitor and/or SID, it should boot quickly so that the other props can connect to it as soon as possible.
+
+This is what *car mode* is for: If enabled, the TCD will always boot in AP mode, regardless of a configured WiFi network. This speeds up booting.
+
+To enable *car mode*, type 991 followed by ENTER. The TCD will reboot in AP mode.
+
+To disable *car mode*, type 990 followed by ENTER. The TCD will reboot and attempt to connect to a previously configured WiFi network.
+
+*Car mode* is persistent, i.e. it remains active (even accross reboots and power-downs) until disabled.
+
+Note that the TCD has no internet access while in car mode; this means that it cannot update its clock automatically. If the time runs off over time, you need to re-adjust it using the keypad menu.
 
 ## Controlling other props
 
