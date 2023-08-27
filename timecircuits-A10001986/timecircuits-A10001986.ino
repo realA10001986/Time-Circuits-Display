@@ -91,11 +91,13 @@
 /*  Changelog
  *   
  *  2023/08/27 (A10001986)
- *    - Add "AP name appendix" setting; allows to run multiple TCDs in AP mode in
- *      close range. 7 characters, 0-9/a-z/A-Z/- only.
+ *    - Add "AP name appendix" setting; allows unique AP names when running multiple 
+ *      TCDs in AP mode in close range. 7 characters, 0-9/a-z/A-Z/- only, will be 
+ *      added to "TCD-AP".
  *    - Add AP password: Allows to configure a WPA2 password for the TCD's AP mode
  *      (empty or 8 characters, 0-9/a-z/A-Z/- only)
  *    - Increase JSON max size for main settings
+ *    - Some text changes in Config Portal
  *    - Fix string copy function for 0-length-strings
  *    - Fix HTML pattern attributes for text fields
  *  2023/08/25 (A10001986)
