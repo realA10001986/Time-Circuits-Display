@@ -1006,6 +1006,14 @@ The device's hostname in the WiFi network. Defaults to 'timecircuits'. This also
 
 If you have more than one clock in your local network, please give them unique hostnames.
 
+##### &#9654; AP Mode: Network name appendix
+
+By default, if the TCD creates a WiFi network of its own ("AP-mode"), this network is named "TCD-AP". In case you have multiple TCDs in your vicinity, you can have a string appended to create a unique network name. If you, for instance, enter "-ABC" here, the WiFi network name will be "TCD-AP-ABC". Characters A-Z, a-z, 0-9 and - are allowed.
+
+##### &#9654; AP Mode: WiFi password
+
+By default, and if this field is empty, the TCD's own WiFi network ("AP-mode") will not be password protected. If you want to protect your TCD access point, enter your password here. It needs to be 8 characters in length and only characters A-Z, a-z, 0-9 and - are allowed.
+
 ##### &#9654; WiFi connection attempts
 
 Number of times the firmware tries to reconnect to a WiFi network, before falling back to AP-mode. See [here](#short-summary-of-first-steps)
