@@ -51,7 +51,7 @@ extern uint8_t musFolderNum;
 #define DEF_BEEP            0     // 0-1:  Default: 0 = annoying beep(tm) off
 #define DEF_AUTOROTTIMES    1     // 0-5;  Default: Auto-rotate every 5th minute
 #define DEF_HOSTNAME        "timecircuits"
-#define DEF_WIFI_RETRY      3     // 1-15; Default: 3 retries
+#define DEF_WIFI_RETRY      3     // 1-10; Default: 3 retries
 #define DEF_WIFI_TIMEOUT    7     // 7-25; Default: 7 seconds
 #define DEF_WIFI_OFFDELAY   0     // 0/10-99; Default 0 = Never power down WiFi in STA-mode
 #define DEF_WIFI_APOFFDELAY 0     // 0/10-99; Default 0 = Never power down WiFi in AP-mode
@@ -96,6 +96,8 @@ struct Settings {
     char beep[4]            = MS(DEF_BEEP);
     char autoRotateTimes[4] = MS(DEF_AUTOROTTIMES);   
     char hostName[32]       = DEF_HOSTNAME;
+    char systemID[8]        = "";
+    char appw[10]           = "";
     char wifiConRetries[4]  = MS(DEF_WIFI_RETRY);
     char wifiConTimeout[4]  = MS(DEF_WIFI_TIMEOUT);
     char wifiOffDelay[4]    = MS(DEF_WIFI_OFFDELAY);

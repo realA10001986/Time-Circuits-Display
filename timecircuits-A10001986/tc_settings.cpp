@@ -55,7 +55,7 @@
 
 // Size of main config JSON
 // Needs to be adapted when config grows
-#define JSON_SIZE 2048
+#define JSON_SIZE 2500
 
 /* If SPIFFS/LittleFS is mounted */
 static bool haveFS = false;
@@ -346,7 +346,18 @@ static bool read_settings(File configFile)
             memset(settings.hostName, 0, sizeof(settings.hostName));
             strncpy(settings.hostName, json["hostName"], sizeof(settings.hostName) - 1);
         } else wd = true;
-        wd |= CopyCheckValidNumParm(json["wifiConRetries"], settings.wifiConRetries, sizeof(settings.wifiConRetries), 1, 15, DEF_WIFI_RETRY);
+
+        if(json["systemID"]) {
+            memset(settings.systemID, 0, sizeof(settings.systemID));
+            strncpy(settings.systemID, json["systemID"], sizeof(settings.systemID) - 1);
+        } else wd = true;
+
+        if(json["appw"]) {
+            memset(settings.appw, 0, sizeof(settings.appw));
+            strncpy(settings.appw, json["appw"], sizeof(settings.appw) - 1);
+        } else wd = true;
+        
+        wd |= CopyCheckValidNumParm(json["wifiConRetries"], settings.wifiConRetries, sizeof(settings.wifiConRetries), 1, 10, DEF_WIFI_RETRY);
         wd |= CopyCheckValidNumParm(json["wifiConTimeout"], settings.wifiConTimeout, sizeof(settings.wifiConTimeout), 7, 25, DEF_WIFI_TIMEOUT);
         wd |= CopyCheckValidNumParm(json["wifiOffDelay"], settings.wifiOffDelay, sizeof(settings.wifiOffDelay), 0, 99, DEF_WIFI_OFFDELAY);
         wd |= CopyCheckValidNumParm(json["wifiAPOffDelay"], settings.wifiAPOffDelay, sizeof(settings.wifiAPOffDelay), 0, 99, DEF_WIFI_APOFFDELAY);
@@ -498,6 +509,8 @@ void write_settings()
     json["autoRotateTimes"] = settings.autoRotateTimes;
 
     json["hostName"] = settings.hostName;
+    json["systemID"] = settings.systemID;
+    json["appw"] = settings.appw;
     json["wifiConRetries"] = settings.wifiConRetries;
     json["wifiConTimeout"] = settings.wifiConTimeout;
     json["wifiOffDelay"] = settings.wifiOffDelay;

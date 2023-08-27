@@ -143,7 +143,9 @@ WiFiManagerParameter custom_beep_aint(beepaintCustHTML);  // beep + aint
 #else
 #define HNTEXT "Hostname<br><span style='font-size:80%'>(Valid characters: a-z/0-9/-)</span>"
 #endif
-WiFiManagerParameter custom_hostName("hostname", HNTEXT, settings.hostName, 31, "pattern='[A-Za-z0-9-]+' placeholder='Example: timecircuits'");
+WiFiManagerParameter custom_hostName("hostname", HNTEXT, settings.hostName, 31, "pattern='[A-Za-z0-9\\-]+' placeholder='Example: timecircuits'");
+WiFiManagerParameter custom_sysID("sysID", "AP Mode: Network name appendix<br><span style='font-size:80%'>Will be appended to \"TCD-AP\". Can be empty unless there are multiple TCDs in vicinity. [a-z/0-9/-]</span>", settings.systemID, 7, "pattern='[A-Za-z0-9\\-]+'");
+WiFiManagerParameter custom_appw("appw", "AP Mode: WiFi password<br><span style='font-size:80%'>Password to connect to TCD-AP. Empty or 8 characters [a-z/0-9/-]</span>", settings.appw, 8, "minlength='8' pattern='[A-Za-z0-9\\-]+'");
 WiFiManagerParameter custom_wifiConRetries("wifiret", "WiFi connection attempts (1-10)", settings.wifiConRetries, 2, "type='number' min='1' max='10' autocomplete='off'", WFM_LABEL_BEFORE);
 WiFiManagerParameter custom_wifiConTimeout("wificon", "WiFi connection timeout (7-25[seconds])", settings.wifiConTimeout, 2, "type='number' min='7' max='25'");
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
@@ -155,12 +157,12 @@ WiFiManagerParameter custom_wifiOffDelay("wifioff", "<br>WiFi power save timer<b
 WiFiManagerParameter custom_wifiAPOffDelay("wifiAPoff", "WiFi power save timer (AP-mode)<br>(10-99[minutes];0=off)", settings.wifiAPOffDelay, 2, "type='number' min='0' max='99' title='If in AP mode, WiFi will be shut down after chosen number of minutes after power-on. 0 means never.'");
 
 WiFiManagerParameter custom_timeZone("time_zone", "Time zone (in <a href='https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv' target=_blank>Posix</a> format)", settings.timeZone, 63, "placeholder='Example: CST6CDT,M3.2.0,M11.1.0'");
-WiFiManagerParameter custom_ntpServer("ntp_server", "NTP Server (empty to disable NTP)", settings.ntpServer, 63, "pattern='[a-zA-Z0-9.-]+' placeholder='Example: pool.ntp.org'");
+WiFiManagerParameter custom_ntpServer("ntp_server", "NTP Server (empty to disable NTP)", settings.ntpServer, 63, "pattern='[a-zA-Z0-9\\.\\-]+' placeholder='Example: pool.ntp.org'");
 
 WiFiManagerParameter custom_timeZone1("time_zone1", "Time zone for Destination Time display", settings.timeZoneDest, 63, "placeholder='Example: CST6CDT,M3.2.0,M11.1.0'");
 WiFiManagerParameter custom_timeZone2("time_zone2", "Time zone for Last Time Dep. display", settings.timeZoneDep, 63, "placeholder='Example: CST6CDT,M3.2.0,M11.1.0'");
-WiFiManagerParameter custom_timeZoneN1("time_zonen1", tznp1, settings.timeZoneNDest, DISP_LEN, "pattern='[a-zA-Z0-9- ]+' placeholder='Optional. Example: CHICAGO' style='margin-bottom:15px'");
-WiFiManagerParameter custom_timeZoneN2("time_zonen2", tznp1, settings.timeZoneNDep, DISP_LEN, "pattern='[a-zA-Z0-9- ]+' placeholder='Optional. Example: CHICAGO'");
+WiFiManagerParameter custom_timeZoneN1("time_zonen1", tznp1, settings.timeZoneNDest, DISP_LEN, "pattern='[a-zA-Z0-9 \\-]+' placeholder='Optional. Example: CHICAGO' style='margin-bottom:15px'");
+WiFiManagerParameter custom_timeZoneN2("time_zonen2", tznp1, settings.timeZoneNDep, DISP_LEN, "pattern='[a-zA-Z0-9 \\-]+' placeholder='Optional. Example: CHICAGO'");
 
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
 WiFiManagerParameter custom_dtNmOff("dTnMOff", "Destination time (0=dimmed, 1=off)", settings.dtNmOff, 1, aco);
@@ -261,7 +263,7 @@ WiFiManagerParameter custom_useMQTT("uMQTT", "Use HA/MQTT 3.1.1 (0=no, 1=yes)", 
 #else // -------------------- Checkbox hack: --------------
 WiFiManagerParameter custom_useMQTT("uMQTT", "Use Home Assistant (MQTT 3.1.1)", settings.useMQTT, 1, "type='checkbox' style='margin-top:5px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
-WiFiManagerParameter custom_mqttServer("ha_server", "<br>Broker IP[:port] or domain[:port]", settings.mqttServer, 79, "pattern='[a-zA-Z0-9.-:]+' placeholder='Example: 192.168.1.5'");
+WiFiManagerParameter custom_mqttServer("ha_server", "<br>Broker IP[:port] or domain[:port]", settings.mqttServer, 79, "pattern='[a-zA-Z0-9\\.:\\-]+' placeholder='Example: 192.168.1.5'");
 WiFiManagerParameter custom_mqttUser("ha_usr", "User[:Password]", settings.mqttUser, 63, "placeholder='Example: ronald:mySecret'");
 WiFiManagerParameter custom_mqttTopic("ha_topic", "Topic to display", settings.mqttTopic, 127, "placeholder='Optional. Example: home/alarm/status'");
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
@@ -408,7 +410,9 @@ void wifi_setup()
       &custom_beep_aint,
 
       &custom_sectstart, 
-      &custom_hostName, 
+      &custom_hostName,
+      &custom_sysID,
+      &custom_appw,
       &custom_wifiConRetries, 
       &custom_wifiConTimeout, 
       &custom_wifiPRe,
@@ -752,6 +756,8 @@ void wifi_loop()
         // Only read parms if the user actually clicked SAVE on the params page
         if(shouldSaveConfig > 1) {
 
+            int temp;
+
             getParam("beepmode", settings.beep, 1);
             if(strlen(settings.beep) == 0) {
                 sprintf(settings.beep, "%d", DEF_BEEP);
@@ -766,6 +772,13 @@ void wifi_loop()
             } else {
                 char *s = settings.hostName;
                 for ( ; *s; ++s) *s = tolower(*s);
+            }
+            strcpytrim(settings.systemID, custom_sysID.getValue(), true);
+            strcpytrim(settings.appw, custom_appw.getValue(), true);
+            if((temp = strlen(settings.appw)) > 0) {
+                if(temp < 8) {
+                    settings.appw[0] = 0;
+                }
             }
             mystrcpy(settings.wifiConRetries, &custom_wifiConRetries);
             mystrcpy(settings.wifiConTimeout, &custom_wifiConTimeout);
@@ -1022,15 +1035,22 @@ void wifi_loop()
 static void wifiConnect(bool deferConfigPortal)
 {     
     bool doOnlyAP = false;
+    const char *apName = "TCD-AP";
+    char realAPName[16];
+
+    strcpy(realAPName, apName);
+    if(settings.systemID[0]) {
+        strcat(realAPName, settings.systemID);
+    }
     
     if(carMode) {
-        wm.startConfigPortal("TCD-AP");
+        wm.startConfigPortal(realAPName, settings.appw);
         doOnlyAP = true;
     }
     
     // Automatically connect using saved credentials if they exist
     // If connection fails it starts an access point with the specified name
-    if(!doOnlyAP && wm.autoConnect("TCD-AP")) {
+    if(!doOnlyAP && wm.autoConnect(realAPName, settings.appw)) {
         #ifdef TC_DBG
         Serial.println(F("WiFi connected"));
         #endif
@@ -1491,6 +1511,8 @@ void updateConfigPortalValues()
     strcat(beepaintCustHTML, aintCustHTML8);
 
     custom_hostName.setValue(settings.hostName, 31);
+    custom_sysID.setValue(settings.systemID, 7);
+    custom_appw.setValue(settings.appw, 8);
     custom_wifiConTimeout.setValue(settings.wifiConTimeout, 2);
     custom_wifiConRetries.setValue(settings.wifiConRetries, 2);
     custom_wifiOffDelay.setValue(settings.wifiOffDelay, 2);
@@ -1796,10 +1818,10 @@ static char* strcpytrim(char* destination, const char* source, bool doFilter)
 {
     char *ret = destination;
     
-    do {
+    while(*source) {
         if(!myisspace(*source) && (!doFilter || myisgoodchar(*source))) *destination++ = *source;
         source++;
-    } while(*source);
+    }
     
     *destination = 0;
     
@@ -1810,10 +1832,10 @@ static char* strcpyfilter(char *destination, const char *source)
 {
     char *ret = destination;
     
-    do {
+    while(*source) {
         if(myisgoodchar(*source) || myisgoodchar2(*source)) *destination++ = *source;
         source++;
-    } while(*source);
+    }
     
     *destination = 0;
     

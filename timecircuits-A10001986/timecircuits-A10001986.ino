@@ -90,6 +90,16 @@
 
 /*  Changelog
  *   
+ *  2023/08/27 (A10001986)
+ *    - Add "AP name appendix" setting; allows to run multiple TCDs in AP mode in
+ *      close range. 7 characters, 0-9/a-z/A-Z/- only.
+ *    - Add AP password: Allows to configure a WPA2 password for the TCD's AP mode
+ *      (empty or 8 characters, 0-9/a-z/A-Z/- only)
+ *    - Increase JSON max size for main settings
+ *    - Fix string copy function for 0-length-strings
+ *    - Fix HTML pattern attributes for text fields
+ *  2023/08/25 (A10001986)
+ *    - Restrict WiFi conn retrys to 10 (like WiFiManager)
  *  2023/08/24 (A10001986)
  *    - Add "car mode": Reboots (and stays) in AP-mode. This speeds up boot in a car
  *      without deleting the WiFi configuration; car mode is enabled by typing 991ENTER,
