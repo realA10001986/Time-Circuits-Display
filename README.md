@@ -793,7 +793,7 @@ To disable *car mode*, type 990 followed by ENTER. The TCD will reboot and attem
 
 *Car mode* is persistent, i.e. it remains active (even accross reboots and power-downs) until disabled.
 
-Note that the TCD has no internet access while in car mode; this means that it cannot update its clock automatically. If the time runs off over time, you need to re-adjust it using the keypad menu.
+Note that the TCD has no internet access while in car mode; this means that it cannot update its clock automatically. If the time runs off over time, you need to re-adjust it using the [keypad menu](#how-to-set-the-real-time-clock-rtc).
 
 ## Controlling other props
 
