@@ -301,9 +301,12 @@ void settings_setup()
 
         unsigned long mnow = millis();
 
-        Serial.printf("%s: Deleting ip config\n", funcName);
+        Serial.printf("%s: Deleting ip config; temporarily clearing AP mode WiFi password\n", funcName);
 
         deleteIpSettings();
+
+        // Set AP mode password to empty (not written, only until reboot!)
+        settings.appw[0] = 0;
 
         // Pre-maturely use white led (initialized again in keypad_setup())
         pinMode(WHITE_LED_PIN, OUTPUT);

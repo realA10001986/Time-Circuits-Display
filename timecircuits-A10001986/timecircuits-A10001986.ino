@@ -92,6 +92,8 @@
  *   
  *  2023/08/28 (A10001986)
  *    - Config Portal: Clicking on header logo jumps to main menu page
+ *    - Holding ENTER during boot not only deletes static IP config (as before), but
+ *       also temporarily clears AP mode WiFi password (until reboot).
  *  2023/08/27 (A10001986)
  *    - Add "AP name appendix" setting; allows unique AP names when running multiple 
  *      TCDs in AP mode in close range. 7 characters, 0-9/a-z/A-Z/- only, will be 
