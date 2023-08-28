@@ -116,8 +116,10 @@ static const char *ipCfgName  = "/ipconfig.json";   // IP config (flash)
 static const char *cmCfgName = "/cmconfig.json";    // Carmode (flash/SD)
 
 static const char *fsNoAvail = "File System not available";
-static const char *badConfig = "Settings bad/missing/incomplete; writing new file";
 static const char *failFileWrite = "Failed to open file for writing";
+#ifdef TC_DBG
+static const char *badConfig = "Settings bad/missing/incomplete; writing new file";
+#endif
 
 static bool read_settings(File configFile);
 
@@ -262,7 +264,9 @@ void settings_setup()
                 writedefault2 = true;
             }
             if(writedefault2) {
+                #ifdef TC_DBG
                 Serial.printf("%s: %s\n", funcName, badConfig);
+                #endif
                 write_settings();
             }
         }
@@ -271,7 +275,9 @@ void settings_setup()
     // Now write new config to flash FS if old one somehow bad
     // Only write this file if FlashROMode is off
     if(haveFS && writedefault && !FlashROMode) {
+        #ifdef TC_DBG
         Serial.printf("%s: %s\n", funcName, badConfig);
+        #endif
         write_settings();
     }
 
@@ -791,7 +797,9 @@ bool loadAlarm()
     }
 
     if(writedefault) {
+        #ifdef TC_DBG
         Serial.printf("%s: %s\n", funcName, badConfig);
+        #endif
         alarmHour = alarmMinute = 255;
         alarmOnOff = false;
         alarmWeekday = 0;
@@ -875,7 +883,9 @@ bool loadReminder()
         configFile.close();
 
         if(writedefault) {
+            #ifdef TC_DBG
             Serial.printf("%s: %s\n", funcName, badConfig);
+            #endif
             remMonth = remDay = remHour = remMin = 0;
             deleteReminder();
         }
@@ -1020,7 +1030,9 @@ bool loadCurVolume()
     }
 
     if(writedefault) {
+        #ifdef TC_DBG
         Serial.printf("%s: %s\n", funcName, badConfig);
+        #endif
         saveCurVolume();
     }
 
@@ -1188,8 +1200,10 @@ bool loadIpSettings()
 
         // config file is invalid - delete it
 
+        #ifdef TC_DBG
         Serial.println(F("loadIpSettings: IP settings invalid; deleting file"));
-
+        #endif
+        
         deleteIpSettings();
 
         memset(ipsettings.ip, 0, sizeof(ipsettings.ip));
