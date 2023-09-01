@@ -596,6 +596,10 @@ void wifi_setup()
         Serial.printf("WiFi network configured: %s (%s)\n", wifiHaveSTAConf ? "YES" : "NO", 
                     wifiHaveSTAConf ? (const char *)conf.sta.ssid : "n/a");
         #endif
+        // No point in retry when we have no WiFi config'd
+        if(!wifiHaveSTAConf) {
+            wm.setConnectRetries(1);
+        }
     }
 
     // Connect, but defer starting the CP

@@ -90,6 +90,8 @@
 
 /*  Changelog
  *   
+ *  2023/08/31 (A10001986)
+ *    - WiFi connect retry: When no network config'd, set retry to 1
  *  2023/08/28 (A10001986)
  *    - Config Portal: Clicking on header logo jumps to main menu page
  *    - Holding ENTER during boot not only deletes static IP config (as before), but
