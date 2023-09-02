@@ -90,6 +90,12 @@
 
 /*  Changelog
  *   
+ *  2023/09/02 (A10001986)
+ *    - Make lead time for time travel variable for BTTFN clients. This is especially
+ *      important for when GPS is in action. Triggering a TT at high speeds (> 80mph)
+ *      was delayed due to the fixed 5000ms ETTO_LEAD. It still is for wired clients
+ *      and MQTT, but if only BTTFN is active (ie no wired clients, MQTT off or not
+ *      publishing events), the delay is now reduced dynamically.
  *  2023/08/31 (A10001986)
  *    - WiFi connect retry: When no network config'd, set retry to 1
  *  2023/08/28 (A10001986)
