@@ -456,6 +456,7 @@ static bool read_settings(File configFile)
         
         #ifdef EXTERNAL_TIMETRAVEL_OUT
         wd |= CopyCheckValidNumParm(json["useETTO"], settings.useETTO, sizeof(settings.useETTO), 0, 1, DEF_USE_ETTO);
+        wd |= CopyCheckValidNumParm(json["noETTOLead"], settings.noETTOLead, sizeof(settings.noETTOLead), 0, 1, DEF_NO_ETTO_LEAD);
         #endif
         #ifdef TC_HAVEGPS
         wd |= CopyCheckValidNumParm(json["quickGPS"], settings.quickGPS, sizeof(settings.quickGPS), 0, 1, DEF_QUICK_GPS);
@@ -580,6 +581,7 @@ void write_settings()
 
     #ifdef EXTERNAL_TIMETRAVEL_OUT
     json["useETTO"] = settings.useETTO;
+    json["noETTOLead"] = settings.noETTOLead;
     #endif
     #ifdef TC_HAVEGPS
     json["quickGPS"] = settings.quickGPS;

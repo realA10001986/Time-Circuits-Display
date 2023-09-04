@@ -26,12 +26,12 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION "V2.8.99"          // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "SEP022023"  // 13 chars max
+#define TC_VERSION_EXTRA "SEP042023"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "09022023"   // 12 chars max
+#define TC_VERSION_EXTRA "09042023"   // 12 chars max
 #endif
 
-//#define TC_DBG              // debug output on Serial
+#define TC_DBG              // debug output on Serial
 
 /*************************************************************************
  ***                     mDNS (Bonjour) support                        ***
@@ -138,7 +138,7 @@
 
 // Custom stuff -----
 #define TWSOUND         // Use A10001986's sound files
-//#define TWPRIVATE     // A10001986's private customizations
+#define TWPRIVATE     // A10001986's private customizations
 
 #ifdef TWPRIVATE
 #undef TC_VERSION

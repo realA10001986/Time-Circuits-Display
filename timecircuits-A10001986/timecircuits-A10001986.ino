@@ -90,6 +90,13 @@
 
 /*  Changelog
  *   
+ *  2023/09/04 (A10001986)
+ *    - Add option to signal time travel on TT_OUT/IO13 without 5 seconds lead. This
+ *      is for signalling a time travel to third party props. For CircuitSetup
+ *      original props (if they are connected by wire) this option must NOT be set.
+ *      Time travels are still approx 1.4 seconds delayed (time between button press
+ *      or TT_IN going active and actual time travel start) because the TCD's time
+ *      travel sound starts before the time travel starts.
  *  2023/09/02 (A10001986)
  *    - Make lead time for time travel variable for BTTFN clients. This is especially
  *      important for when GPS is in action. Triggering a TT at high speeds (> 80mph)

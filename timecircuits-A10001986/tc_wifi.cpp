@@ -126,12 +126,12 @@ static const char *aco = "autocomplete='off'";
 static const char *tznp1 = "City/location name [a-z/0-9/-/ ]";
 
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
-WiFiManagerParameter custom_ttrp("ttrp", "Make time travels persistent (0=no, 1=yes)", settings.timesPers, 1, "autocomplete='off' title='If disabled, the displays are reset after reboot'");
+WiFiManagerParameter custom_ttrp("ttrp", "Make time travels persistent (0=no, 1=yes)", settings.timesPers, 1, "autocomplete='off'");
 WiFiManagerParameter custom_alarmRTC("artc", "Alarm base is RTC (1) or displayed \"present\" time (0)", settings.alarmRTC, 1, aco);
 WiFiManagerParameter custom_playIntro("plIn", "Play intro (0=off, 1=on)", settings.playIntro, 1, aco);
 WiFiManagerParameter custom_mode24("md24", "24-hour clock mode: (0=12hr, 1=24hr)", settings.mode24, 1, aco);
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_ttrp("ttrp", "Make time travels persistent", settings.timesPers, 1, "title='If unchecked, the displays are reset after reboot' type='checkbox' style='margin-top:3px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_ttrp("ttrp", "Make time travels persistent", settings.timesPers, 1, "type='checkbox' style='margin-top:3px'", WFM_LABEL_AFTER);
 WiFiManagerParameter custom_alarmRTC("artc", "Alarm base is real present time", settings.alarmRTC, 1, "title='If unchecked, the alarm base is the displayed \"present\" time' type='checkbox'", WFM_LABEL_AFTER);
 WiFiManagerParameter custom_playIntro("plIn", "Play intro", settings.playIntro, 1, "type='checkbox'", WFM_LABEL_AFTER);
 WiFiManagerParameter custom_mode24("md24", "24-hour clock mode", settings.mode24, 1, "type='checkbox'", WFM_LABEL_AFTER);
@@ -149,9 +149,9 @@ WiFiManagerParameter custom_appw("appw", "AP Mode: WiFi password<br><span style=
 WiFiManagerParameter custom_wifiConRetries("wifiret", "WiFi connection attempts (1-10)", settings.wifiConRetries, 2, "type='number' min='1' max='10' autocomplete='off'", WFM_LABEL_BEFORE);
 WiFiManagerParameter custom_wifiConTimeout("wificon", "WiFi connection timeout (7-25[seconds])", settings.wifiConTimeout, 2, "type='number' min='7' max='25'");
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
-WiFiManagerParameter custom_wifiPRe("wifiPRet", "Periodic reconnection attempts (0=no, 1=yes)", settings.wifiPRetry, 1, "autocomplete='off' title='Enable to periodically retry WiFi connection after failure'");
+WiFiManagerParameter custom_wifiPRe("wifiPRet", "Periodic reconnection attempts (0=no, 1=yes)", settings.wifiPRetry, 1, "autocomplete='off'");
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_wifiPRe("wifiPRet", "Periodic reconnection attempts ", settings.wifiPRetry, 1, "autocomplete='off' title='Check to periodically retry WiFi connection after failure' type='checkbox' style='margin:5px 0 10px 0'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_wifiPRe("wifiPRet", "Periodic reconnection attempts ", settings.wifiPRetry, 1, "autocomplete='off' type='checkbox' style='margin:5px 0 10px 0'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 WiFiManagerParameter custom_wifiOffDelay("wifioff", "<br>WiFi power save timer<br>(10-99[minutes];0=off)", settings.wifiOffDelay, 2, "type='number' min='0' max='99' title='WiFi will be shut down after chosen number of minutes after power-on. 0 means never.'");
 WiFiManagerParameter custom_wifiAPOffDelay("wifiAPoff", "WiFi power save timer for AP-mode<br>(10-99[minutes];0=off)", settings.wifiAPOffDelay, 2, "type='number' min='0' max='99' title='WiFi-AP will be shut down after chosen number of minutes after power-on. 0 means never.'");
@@ -169,13 +169,13 @@ WiFiManagerParameter custom_dtNmOff("dTnMOff", "Destination time (0=dimmed, 1=of
 WiFiManagerParameter custom_ptNmOff("pTnMOff", "Present time (0=dimmed, 1=off)", settings.ptNmOff, 1, aco);
 WiFiManagerParameter custom_ltNmOff("lTnMOff", "Last time dep. (0=dimmed, 1=off)", settings.ltNmOff, 1, aco);
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_dtNmOff("dTnMOff", "Destination time off", settings.dtNmOff, 1, "title='If unchecked, display will be dimmed' type='checkbox' class='mt5'", WFM_LABEL_AFTER);
-WiFiManagerParameter custom_ptNmOff("pTnMOff", "Present time off", settings.ptNmOff, 1, "title='If unchecked, display will be dimmed' type='checkbox' class='mt5'", WFM_LABEL_AFTER);
-WiFiManagerParameter custom_ltNmOff("lTnMOff", "Last time dep. off", settings.ltNmOff, 1, "title='If unchecked, display will be dimmed' type='checkbox' class='mt5'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_dtNmOff("dTnMOff", "Destination time off", settings.dtNmOff, 1, "title='Dimmed if unchecked' type='checkbox' class='mt5'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_ptNmOff("pTnMOff", "Present time off", settings.ptNmOff, 1, "title='Dimmed if unchecked' type='checkbox' class='mt5'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_ltNmOff("lTnMOff", "Last time dep. off", settings.ltNmOff, 1, "title='Dimmed if unchecked' type='checkbox' class='mt5'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 WiFiManagerParameter custom_autoNMTimes(anmCustHTML);
-WiFiManagerParameter custom_autoNMOn("anmon", "Daily night-mode start hour (0-23)", settings.autoNMOn, 2, "type='number' min='0' max='23' title='Enter hour to switch on night-mode'");
-WiFiManagerParameter custom_autoNMOff("anmoff", "Daily night-mode end hour (0-23)", settings.autoNMOff, 2, "type='number' min='0' max='23' autocomplete='off' title='Enter hour to switch off night-mode'");
+WiFiManagerParameter custom_autoNMOn("anmon", "Daily night-mode start hour (0-23)", settings.autoNMOn, 2, "type='number' min='0' max='23' title='Hour to switch on night-mode'");
+WiFiManagerParameter custom_autoNMOff("anmoff", "Daily night-mode end hour (0-23)", settings.autoNMOff, 2, "type='number' min='0' max='23' autocomplete='off' title='Hour to switch off night-mode'");
 #ifdef TC_HAVELIGHT
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
 WiFiManagerParameter custom_uLS("uLS", "Use light sensor (0=no, 1=yes)", settings.useLight, 1,  "title='If enabled, TCD will be put in night-mode if lux level is below or equal threshold.' autocomplete='off'");
@@ -189,7 +189,7 @@ WiFiManagerParameter custom_lxLim("lxLim", "<br>Lux threshold (0-50000)", settin
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
 WiFiManagerParameter custom_tempUnit("uTem", "Temperature unit (0=°F, 1=°C)", settings.tempUnit, 1, "autocomplete='off' title='Select unit for temperature'");
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_tempUnit("temUnt", "Show temperature in °Celsius", settings.tempUnit, 1, "title='If unchecked, unit is Fahrenheit' type='checkbox' class='mt5'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_tempUnit("temUnt", "Show temperature in °Celsius", settings.tempUnit, 1, "title='Fahrenheit if unchecked' type='checkbox' class='mt5'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 WiFiManagerParameter custom_tempOffs("tOffs", "<br>Temperature offset (-3.0-3.0)", settings.tempOffs, 4, "type='number' min='-3.0' max='3.0' step='0.1' title='Correction value to add to temperature' autocomplete='off'");
 #endif // TC_HAVETEMP
@@ -215,16 +215,16 @@ WiFiManagerParameter custom_tempBright("temBri", "<br>Temperature brightness (0-
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
 WiFiManagerParameter custom_tempOffNM("toffNM", "Temperature in night mode (0=dimmed, 1=off)", settings.tempOffNM, 1, "autocomplete='off'");
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_tempOffNM("toffNM", "Temperature off in night mode", settings.tempOffNM, 1, "autocomplete='off' title='If unchecked, display will be dimmed' type='checkbox' class='mt5'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_tempOffNM("toffNM", "Temperature off in night mode", settings.tempOffNM, 1, "autocomplete='off' title='Dimmed if unchecked' type='checkbox' class='mt5'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 #endif
 #endif // TC_HAVESPEEDO
 
 #ifdef FAKE_POWER_ON
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
-WiFiManagerParameter custom_fakePwrOn("fpo", "Use fake power switch (0=no, 1=yes)", settings.fakePwrOn, 1, "autocomplete='off' title='Enable to use a switch to fake-power-up/-down the TCD'");
+WiFiManagerParameter custom_fakePwrOn("fpo", "Use fake power switch (0=no, 1=yes)", settings.fakePwrOn, 1, "autocomplete='off'");
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_fakePwrOn("fpo", "Use fake power switch", settings.fakePwrOn, 1, "title='Check to use a switch to fake-power-up/-down the TCD' type='checkbox' class='mt5'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_fakePwrOn("fpo", "Use fake power switch", settings.fakePwrOn, 1, "type='checkbox' class='mt5'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 #endif
 
@@ -243,18 +243,23 @@ WiFiManagerParameter custom_useETTO("uEtto", "Control props connected by wire (0
 #else // -------------------- Checkbox hack: --------------
 WiFiManagerParameter custom_useETTO("uEtto", "Control props connected by wire", settings.useETTO, 1, "autocomplete='off' title='Check to notify props of a time travel' type='checkbox' class='mt5'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
+#ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
+WiFiManagerParameter custom_noETTOL("uEtNL", "Signal Time Travel without 5s lead (0=no, 1=yes)", settings.noETTOLead, 1, "autocomplete='off'");
+#else // -------------------- Checkbox hack: --------------
+WiFiManagerParameter custom_noETTOL("uEtNL", "Signal Time Travel without 5s lead", settings.noETTOLead, 1, "autocomplete='off' type='checkbox' class='mt5' style='margin-left:20px'", WFM_LABEL_AFTER);
+#endif // -------------------------------------------------
 #endif // EXTERNAL_TIMETRAVEL_OUT
 #ifdef TC_HAVEGPS
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
-WiFiManagerParameter custom_qGPS("qGPS", "Provide GPS speed for wireless props (0=no, 1=yes)", settings.quickGPS, 1, "autocomplete='off' title='Enable for frequently updated GPS speed for wireless props'");
+WiFiManagerParameter custom_qGPS("qGPS", "Provide GPS speed for wireless props (0=no, 1=yes)", settings.quickGPS, 1, "autocomplete='off'");
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_qGPS("qGPS", "Provide GPS speed for wireless props", settings.quickGPS, 1, "autocomplete='off' title='Check for frequently updated GPS speed for wireless props' type='checkbox'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_qGPS("qGPS", "Provide GPS speed for wireless props", settings.quickGPS, 1, "autocomplete='off' type='checkbox'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 #endif // TC_HAVEGPS
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
-WiFiManagerParameter custom_playTTSnd("plyTTS", "Play time travel sounds (0=no, 1=yes)", settings.playTTsnds, 1, "autocomplete='off' title='Disable if other props provide time travel sound'");
+WiFiManagerParameter custom_playTTSnd("plyTTS", "Play time travel sounds (0=no, 1=yes)", settings.playTTsnds, 1, "autocomplete='off'");
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_playTTSnd("plyTTS", "Play time travel sounds", settings.playTTsnds, 1, "autocomplete='off' title='Uncheck if other props provide time travel sound' type='checkbox'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_playTTSnd("plyTTS", "Play time travel sounds", settings.playTTsnds, 1, "autocomplete='off' type='checkbox'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 
 #ifdef TC_HAVEMQTT
@@ -280,9 +285,9 @@ WiFiManagerParameter custom_shuffle("musShu", "Shuffle at startup", settings.shu
 #endif // -------------------------------------------------
 
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
-WiFiManagerParameter custom_CfgOnSD("CfgOnSD", "Save alarm/volume on SD (0=no, 1=yes)<br><span style='font-size:80%'>Enable this if you often change alarm or volume settings to avoid flash wear</span>", settings.CfgOnSD, 1, "autocomplete='off'");
+WiFiManagerParameter custom_CfgOnSD("CfgOnSD", "Save alarm/volume on SD (0=no, 1=yes)<br><span style='font-size:80%'>Enable this to avoid flash wear</span>", settings.CfgOnSD, 1, "autocomplete='off'");
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_CfgOnSD("CfgOnSD", "Save alarm/volume settings on SD<br><span style='font-size:80%'>Check this if you often change alarm or volume settings to avoid flash wear</span>", settings.CfgOnSD, 1, "autocomplete='off' type='checkbox' class='mt5'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_CfgOnSD("CfgOnSD", "Save alarm/volume settings on SD<br><span style='font-size:80%'>Check this to avoid flash wear</span>", settings.CfgOnSD, 1, "autocomplete='off' type='checkbox' class='mt5'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
 //WiFiManagerParameter custom_sdFrq("sdFrq", "SD clock speed (0=16Mhz, 1=4Mhz)<br><span style='font-size:80%'>Slower access might help in case of problems with SD cards</span>", settings.sdFreq, 1, "autocomplete='off'");
@@ -469,6 +474,7 @@ void wifi_setup()
       &custom_sectstart,
     #ifdef EXTERNAL_TIMETRAVEL_OUT
       &custom_useETTO,
+      &custom_noETTOL,
     #endif
     #ifdef TC_HAVEGPS
       &custom_qGPS,
@@ -880,6 +886,7 @@ void wifi_loop()
             
             #ifdef EXTERNAL_TIMETRAVEL_OUT
             mystrcpy(settings.useETTO, &custom_useETTO);
+            mystrcpy(settings.noETTOLead, &custom_noETTOL);
             #endif
             #ifdef TC_HAVEGPS
             mystrcpy(settings.quickGPS, &custom_qGPS);
@@ -939,6 +946,7 @@ void wifi_loop()
             
             #ifdef EXTERNAL_TIMETRAVEL_OUT
             strcpyCB(settings.useETTO, &custom_useETTO);
+            strcpyCB(settings.noETTOLead, &custom_noETTOL);
             #endif
             #ifdef TC_HAVEGPS
             strcpyCB(settings.quickGPS, &custom_qGPS);
@@ -1624,6 +1632,7 @@ void updateConfigPortalValues()
     //#endif
     #ifdef EXTERNAL_TIMETRAVEL_OUT
     custom_useETTO.setValue(settings.useETTO, 1);
+    custom_noETTOL.setValue(settings.noETTOLead, 1);
     #endif
     #ifdef TC_HAVEGPS
     custom_qGPS.setValue(settings.quickGPS, 1);
@@ -1672,6 +1681,7 @@ void updateConfigPortalValues()
     //#endif
     #ifdef EXTERNAL_TIMETRAVEL_OUT
     setCBVal(&custom_useETTO, settings.useETTO);
+    setCBVal(&custom_noETTOL, settings.noETTOLead);
     #endif
     #ifdef TC_HAVEGPS
     setCBVal(&custom_qGPS, settings.quickGPS);

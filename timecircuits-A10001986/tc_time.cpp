@@ -106,6 +106,7 @@
 // The external prop has ETTO_LEAD_TIME ms to play its pre-tt sequence. After
 // ETTO_LEAD_TIME ms, 88mph is reached, and the actual tt takes place.
 #define ETTO_LEAD_TIME      5000
+#define ETTO_LAT              50  // DO NOT CHANGE
 // End of ETTO config
 
 // Native NTP
@@ -197,7 +198,8 @@ static long          triggerP1LeadTime = 0;
 #ifdef EXTERNAL_TIMETRAVEL_OUT
 static bool          useETTO = DEF_USE_ETTO;
 static bool          useETTOWired = DEF_USE_ETTO;
-static long          ettoLeadTime = ETTO_LEAD_TIME;
+static bool          useETTOWiredNoLead = false;
+static long          ettoLeadTime = ETTO_LEAD_TIME - ETTO_LAT;
 static bool          triggerETTO = false;
 static long          triggerETTOLeadTime = 0;
 static unsigned long triggerETTONow = 0;
@@ -578,6 +580,7 @@ static void triggerLongTT();
 
 #ifdef EXTERNAL_TIMETRAVEL_OUT
 static void ettoPulseStart();
+static void ettoPulseStartNoLead();
 static void ettoPulseEnd();
 static void sendNetWorkMsg(const char *pl, unsigned int len, uint8_t bttfnMsg, uint16_t bttfnPayload = 0);
 #endif
@@ -1212,6 +1215,12 @@ void time_setup()
     // useETTO means either wired or MQTT (with pub); not BTTFN.
     #ifdef EXTERNAL_TIMETRAVEL_OUT
     useETTO = useETTOWired = (atoi(settings.useETTO) > 0);
+    if(useETTOWired) {
+        useETTOWiredNoLead = (atoi(settings.noETTOLead) > 0);
+        if(useETTOWiredNoLead) {
+            useETTO = useETTOWired = false;
+        }
+    }
     #ifdef TC_HAVEMQTT
     if(useMQTT && pubMQTT) useETTO = true;
     #endif
@@ -1584,6 +1593,10 @@ void time_loop()
         timetravelP1Now = millis();
         switch(timeTravelP1) {
         case 2:
+            #ifdef TC_DBG
+            Serial.printf("TT initiated %d\n", millis());
+            #endif
+            ettoPulseStartNoLead();
             allOff();
             timetravelP1Delay = TT_P1_DELAY_P2;
             break;
@@ -2530,6 +2543,8 @@ void timeTravel(bool doComplete, bool withSpeedo)
     // Pause autoInterval-cycling so user can play undisturbed
     pauseAuto();
 
+    ttUnivNow = millis();
+
     /*
      * Complete sequence with speedo: Initiate P0 (speed count-up)
      *
@@ -2567,6 +2582,9 @@ void timeTravel(bool doComplete, bool withSpeedo)
                                 } else {
                                     ettoLeadPoint = currTotDur;
                                     bttfnTTLeadTime = ettoBase - currTotDur;
+                                }
+                                if(bttfnTTLeadTime > ETTO_LAT) {
+                                    bttfnTTLeadTime -= ETTO_LAT;
                                 }
                             }
                         }
@@ -2801,20 +2819,32 @@ static void ettoPulseStart()
 {
     if(useETTOWired) {
         digitalWrite(EXTERNAL_TIMETRAVEL_OUT_PIN, HIGH);
+        #ifdef TC_DBG
+        digitalWrite(WHITE_LED_PIN, HIGH);
+        Serial.printf("ETTO Start %d\n", millis());
+        #endif
     }
-    #ifdef TC_DBG
-    digitalWrite(WHITE_LED_PIN, HIGH);
+}
+
+static void ettoPulseStartNoLead()
+{
+    if(useETTOWiredNoLead) {
+        digitalWrite(EXTERNAL_TIMETRAVEL_OUT_PIN, HIGH);
+        #ifdef TC_DBG
+        digitalWrite(WHITE_LED_PIN, HIGH);
+        Serial.printf("ETTO Start (no lead) %d\n", millis());
     #endif
+    }
 }
 
 static void ettoPulseEnd()
 {
-    if(useETTOWired) {
+    if(useETTOWired || useETTOWiredNoLead) {
         digitalWrite(EXTERNAL_TIMETRAVEL_OUT_PIN, LOW);
+        #ifdef TC_DBG
+        digitalWrite(WHITE_LED_PIN, LOW);
+        #endif
     }
-    #ifdef TC_DBG
-    digitalWrite(WHITE_LED_PIN, LOW);
-    #endif
 }
 
 // Send notification message via MQTT -or- BTTFN.
