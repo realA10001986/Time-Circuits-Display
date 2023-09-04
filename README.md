@@ -815,6 +815,8 @@ You need two wires for connecting the TCD to the other prop: TT_OUT (IO14) and G
 
 In case you want to design your own props, here's the timing diagram:
 
+1) Option *Signal Time Travel without 5s lead* unchecked
+
 ```
 |<---------- speedo acceleration --------->|                         |<-speedo de-acceleration->|
 0....10....20....................xx....87..88------------------------88...87....................0
@@ -829,9 +831,27 @@ In case you want to design your own props, here's the timing diagram:
      IO14: LOW->HIGH                                           IO14: HIGH->LOW
  ```
 
-"ETTO lead", ie the lead time between IO14 going high and the actual start of a time travel is defined as 5000ms (ETTO_LEAD_TIME). In this window of time, the prop can play its pre-time-travel (warm-up/acceleration/etc) sequence. The sequence inside the time "tunnel" follows after that lead time, and when IO14 goes LOW, the re-entry into the destination time takes place.
+"ETTO lead", ie the lead time between TT_OUT/IO14 going high and the actual start of a time travel is defined as 5000ms (ETTO_LEAD_TIME). In this window of time, the prop can play its pre-time-travel (warm-up/acceleration/etc) sequence. The sequence inside the time "tunnel" follows after that lead time, and when IO14 goes LOW, the re-entry into the destination time takes place.
 
-If external gear is connected to IO14/TT_OUT and you want to use this control feature, check *Control props connected by wire* in the Config Portal.
+2) Option *Signal Time Travel without 5s lead* checked
+
+```
+|<---------- speedo acceleration --------->|                         |<-speedo de-acceleration->|
+0....10....20....................xx....87..88------------------------88...87....................0
+                                           |<--Actual Time Travel -->|
+                                           |  (Display disruption)   |
+                                      TT starts                      Reentry phase
+                                           |                         |
+                                           |                         |
+                                           |                         |
+                                           |                         |
+                                           |                         |
+                                    IO14: LOW->HIGH           IO14: HIGH->LOW
+ ```
+
+If external gear is connected to TT_OUT/IO14 and you want to use this control feature, check *Control props connected by wire* in the Config Portal.
+
+For CircuitSetup original props connected by wire, the option *Signal Time Travel without 5s lead* must not be set. If those props are connected wirelessly, this option has no effect.
 
 Note that a wired connection only allows for synchronized time travel sequences, no other communication takes place.
 
@@ -1140,17 +1160,23 @@ Selects whether the temperature display is dimmed or switched of in night mode.
 
 ##### &#9654; Use fake power switch
 
-Check this if you want to use a fake power switch. See [here](#fake-power-switch)
+Check this if you want to use a fake power switch. See [here](#fake-power-switch).
 
 ##### &#9654; External time travel button: Delay
 
-Selects a delay (in milliseconds) from when pressing the external time travel button until the time travel sequence starts. See [here](#external-time-travel-trigger)
+Selects a delay (in milliseconds) from when pressing the external time travel button until the time travel sequence starts. See [here](#external-time-travel-trigger).
 
 #### Settings for other peripherals
 
 ##### &#9654; Control props connected by wire
 
-This selects whether a GPIO pin is activated upon a time-travel in order to play synchronized time travel sequences on other props. See [here](#controlling-other-props)
+This selects whether the TT_OUT/IO14 pin is activated upon a time-travel in order to play synchronized time travel sequences on other props, if those props are connected by wire. See [here](#controlling-other-props).
+
+##### &#9654; Signal Time Travel without 5s lead
+
+If this option is unchecked (which is the default), a time travel is signalled for wired props with a 5 second lead, to give the prop time to play an acceleraton sequence. If this option is checked, TT_OUT/IO14 is activated when the time travel actually starts. 
+
+For CircuitSetup original props, if they are connected by wire, this option must not be set. For wirelessly connected props this option has no effect. Also see [here](#controlling-other-props).
 
 ##### &#9654; Provide GPS speed for wireless props
 
@@ -1164,7 +1190,7 @@ If other props are connected, they might bring their own time travel sound effec
 
 ##### &#9654; Use Home Assistant (MQTT 3.1.1)
 
-If checked, the TCD will connect to the broker (if configured) and send and receive messages via [MQTT](#home-assistant--mqtt)
+If checked, the TCD will connect to the broker (if configured) and send and receive messages via [MQTT](#home-assistant--mqtt).
 
 ##### &#9654; Broker IP[:port] or domain[:port]
 
