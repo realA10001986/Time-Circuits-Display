@@ -4,6 +4,7 @@
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
  * (C) 2022-2023 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display
+ * http://tcd.winischhofer.net
  *
  * -------------------------------------------------------------------
  * License: MIT
@@ -90,6 +91,13 @@
 
 /*  Changelog
  *   
+ *  2023/09/07 (A10001986)
+ *    - Add custom "stale present time" mode:
+ *      ) 99mmddyyyyhhMM sets a stale present time
+ *      ) 999 returns to normal operation.
+ *      [feature disabled in precompiled binary]
+ *  2023/09/06 (A10001986)
+ *    - Change link in CP
  *  2023/09/04 (A10001986)
  *    - Add option to signal time travel on TT_OUT/IO13 without 5 seconds lead. This
  *      is for signalling a time travel to third party props. For CircuitSetup

@@ -4,6 +4,7 @@
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
  * (C) 2022-2023 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display
+ * http://tcd.winischhofer.net
  *
  * Keypad handling
  *
@@ -109,6 +110,7 @@ static unsigned long timeNow = 0;
 
 static unsigned long lastKeyPressed = 0;
 
+#define DATELEN_STPR  14   // 99mmddyyyyHHMM  spt: month, day, year, hour, min
 #define DATELEN_ALL   12   // mmddyyyyHHMM  dt: month, day, year, hour, min
 #define DATELEN_REM   10   // 77mmddHHMM    set reminder
 #define DATELEN_DATE   8   // mmddyyyy      dt: month, day, year
@@ -119,7 +121,11 @@ static unsigned long lastKeyPressed = 0;
 #define DATELEN_ALSH   2   // 11            show alarm time/wd, etc.
 #define DATELEN_CMIN   DATELEN_ALSH     // min length of code entry
 #define DATELEN_CMAX   DATELEN_QALM     // max length of code entry
+#ifdef HAVE_STALE_PRESENT
+#define DATELEN_MAX    DATELEN_STPR
+#else
 #define DATELEN_MAX    DATELEN_ALL      // max length of possible entry
+#endif
 
 static char dateBuffer[DATELEN_MAX + 2];
 char        timeBuffer[8];
@@ -531,6 +537,9 @@ void keypad_loop()
         if(strLen != DATELEN_ALL  &&
            strLen != DATELEN_REM  &&
            strLen != DATELEN_DATE &&
+           #ifdef HAVE_STALE_PRESENT
+           strLen != DATELEN_STPR &&
+           #endif
            (strLen < DATELEN_CMIN ||
             strLen > DATELEN_CMAX) ) {
 
@@ -816,6 +825,12 @@ void keypad_loop()
                 }
                 validEntry = true;
                 break;
+            #ifdef HAVE_STALE_PRESENT
+            case 999:
+                stalePresent = false;
+                validEntry = true;
+                break;
+            #endif
             default:
                 invalidEntry = true;
             }
@@ -982,6 +997,42 @@ void keypad_loop()
             
             invalidEntry = !validEntry;
 
+        #ifdef HAVE_STALE_PRESENT
+        } else if(strLen == DATELEN_STPR) {
+
+            if(read2digs(0) == 99) {
+                int temp1 = read2digs(2);
+                int temp2 = read2digs(4);
+
+                stalePresentTime[0].year = ((int)read2digs(6) * 100) + read2digs(8);
+
+                if(temp1 < 1)  temp1 = 1;
+                if(temp1 > 12) temp1 = 12;
+                if(temp2 < 1)  temp2 = 1;
+                int temp3 = daysInMonth(temp1, stalePresentTime[0].year);
+                if(temp2 > temp3) temp2 = temp3;
+                stalePresentTime[0].month = temp1;
+                stalePresentTime[0].day = temp2;
+                
+                temp1 = read2digs(10);
+                if(temp1 < 0) temp1 = 0;
+                if(temp1 > 23) temp1 = 23;
+                stalePresentTime[0].hour = temp1;
+                
+                temp1  = read2digs(12);
+                if(temp1 < 0) temp1 = 0;
+                if(temp1 > 59) temp1 = 59;
+                stalePresentTime[0].minute = temp1;
+
+                memcpy((void *)&stalePresentTime[1], (void *)&stalePresentTime[0], sizeof(dateStruct));
+
+                stalePresent = true;
+                validEntry = true;
+            } else {
+                invalidEntry = true;
+            }
+            
+        #endif  
         } else {
 
             int _setMonth = -1, _setDay = -1, _setYear = -1;

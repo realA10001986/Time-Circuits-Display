@@ -4,6 +4,7 @@
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
  * (C) 2022-2023 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display
+ * http://tcd.winischhofer.net
  *
  * Time and Main Controller
  *
@@ -350,6 +351,14 @@ lightSensor lightSens(5,
 static int8_t minNext  = 0;
 int8_t        autoTime = 0;  // Selects date/time from array below
 
+#ifdef HAVE_STALE_PRESENT
+bool          stalePresent = false;
+dateStruct stalePresentTime[2] = {
+    {1985, 10, 26,  1, 22},         // original for backup
+    {1985, 10, 26,  1, 22}          // changed during use
+};
+#endif
+
 #ifndef TWPRIVATE //  ----------------- OFFICIAL
 
 const dateStruct destinationTimes[NUM_AUTOTIMES] = {
@@ -577,6 +586,7 @@ static void dispIdleZero(bool force = false);
 #endif
 
 static void triggerLongTT();
+static void copyPresentToDeparted(bool isReturn);
 
 #ifdef EXTERNAL_TIMETRAVEL_OUT
 static void ettoPulseStart();
@@ -994,7 +1004,13 @@ void time_setup()
     presentTime.saveLastYear(lastYear);
 
     // Load to display
-    presentTime.setDateTimeDiff(dt);
+    #ifdef HAVE_STALE_PRESENT
+    memcpy((void *)&stalePresentTime[1], (void *)&stalePresentTime[0], sizeof(dateStruct));
+    if(stalePresent)
+        presentTime.setFromStruct(&stalePresentTime[1]);
+    else
+    #endif
+        presentTime.setDateTimeDiff(dt);
 
     // If we don't have authTime, DST status (time & flag) might be 
     // wrong at this point if we're switched on after a long time. 
@@ -2074,7 +2090,12 @@ void time_loop()
             }
 
             // Write time to presentTime display
-            presentTime.setDateTimeDiff(dt);
+            #ifdef HAVE_STALE_PRESENT
+            if(stalePresent)
+                presentTime.setFromStruct(&stalePresentTime[1]);
+            else
+            #endif
+                presentTime.setDateTimeDiff(dt);
 
             // Handle WC mode (load dates/times for dest/dep display)
             // (Restoring not needed, done elsewhere)
@@ -2743,12 +2764,7 @@ void timeTravel(bool doComplete, bool withSpeedo)
     allOff();
 
     // Copy present time to last time departed
-    departedTime.setYear(presentTime.getDisplayYear());
-    departedTime.setMonth(presentTime.getMonth());
-    departedTime.setDay(presentTime.getDay());
-    departedTime.setHour(presentTime.getHour());
-    departedTime.setMinute(presentTime.getMinute());
-    departedTime.setYearOffset(0);
+    copyPresentToDeparted(false);
 
     // We only save the new time to NVM if user wants persistence.
     // Might not be preferred; first, this messes with the user's custom
@@ -2898,12 +2914,7 @@ void resetPresentTime()
     allOff();
 
     // Copy "present" time to last time departed
-    departedTime.setYear(presentTime.getDisplayYear());
-    departedTime.setMonth(presentTime.getMonth());
-    departedTime.setDay(presentTime.getDay());
-    departedTime.setHour(presentTime.getHour());
-    departedTime.setMinute(presentTime.getMinute());
-    departedTime.setYearOffset(0);
+    copyPresentToDeparted(true);
 
     // We only save the new time if user wants persistence.
     // Might not be preferred; first, this messes with the user's 
@@ -2922,6 +2933,29 @@ void resetPresentTime()
 
     // Beep auto mode: Restart timer
     startBeepTimer();
+}
+
+static void copyPresentToDeparted(bool isReturn)
+{
+    #ifdef HAVE_STALE_PRESENT
+    departedTime.setYear(stalePresent ? stalePresentTime[1].year : presentTime.getDisplayYear());
+    departedTime.setMonth(stalePresent ? stalePresentTime[1].month : presentTime.getMonth());
+    departedTime.setDay(stalePresent ? stalePresentTime[1].day : presentTime.getDay());
+    departedTime.setHour(stalePresent ? stalePresentTime[1].hour : presentTime.getHour());
+    departedTime.setMinute(stalePresent ? stalePresentTime[1].minute : presentTime.getMinute());
+    stalePresentTime[1].year = isReturn ? stalePresentTime[0].year : destinationTime.getYear();
+    stalePresentTime[1].month = isReturn ? stalePresentTime[0].month : destinationTime.getMonth();
+    stalePresentTime[1].day = isReturn ? stalePresentTime[0].day : destinationTime.getDay();
+    stalePresentTime[1].hour = isReturn ? stalePresentTime[0].hour : destinationTime.getHour();
+    stalePresentTime[1].minute = isReturn ? stalePresentTime[0].minute : destinationTime.getMinute();
+    #else
+    departedTime.setYear(presentTime.getDisplayYear());
+    departedTime.setMonth(presentTime.getMonth());
+    departedTime.setDay(presentTime.getDay());
+    departedTime.setHour(presentTime.getHour());
+    departedTime.setMinute(presentTime.getMinute());
+    #endif
+    departedTime.setYearOffset(0);
 }
 
 // Pause autoInverval-updating for 30 minutes
