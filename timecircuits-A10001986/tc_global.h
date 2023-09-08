@@ -116,7 +116,7 @@
 // Uncomment to include stale present time mode
 // 99mmddyyyyhhMM sets (and enables) a stale present time; 
 // 999 toggles between stale time and normal operation
-#define HAVE_STALE_PRESENT
+//#define HAVE_STALE_PRESENT
 
 // --- end of config options
 
