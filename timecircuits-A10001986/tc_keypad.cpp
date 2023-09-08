@@ -827,7 +827,7 @@ void keypad_loop()
                 break;
             #ifdef HAVE_STALE_PRESENT
             case 999:
-                stalePresent = false;
+                stalePresent = !stalePresent;
                 validEntry = true;
                 break;
             #endif

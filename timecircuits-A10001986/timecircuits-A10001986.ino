@@ -91,10 +91,10 @@
 
 /*  Changelog
  *   
- *  2023/09/07 (A10001986)
+ *  2023/09/08 (A10001986)
  *    - Add custom "stale present time" mode:
  *      ) 99mmddyyyyhhMM sets a stale present time
- *      ) 999 returns to normal operation.
+ *      ) 999 toggles between stale time and normal operation.
  *      [feature disabled in precompiled binary]
  *  2023/09/06 (A10001986)
  *    - Change link in CP
