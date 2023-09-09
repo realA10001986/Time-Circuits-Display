@@ -728,13 +728,15 @@ static bool checkValidNumParmF(char *text, float lowerLim, float upperLim, float
 
 static bool openCfgFileRead(const char *fn, File& f)
 {
-    bool haveConfigFile;
+    bool haveConfigFile = false;
     
     if(configOnSD) {
         if(SD.exists(fn)) {
             haveConfigFile = (f = SD.open(fn, "r"));
         }
-    } else {
+    }
+
+    if(!haveConfigFile) {
         if(SPIFFS.exists(fn)) {
             haveConfigFile = (f = SPIFFS.open(fn, "r"));
         }

@@ -93,6 +93,7 @@
  *   
  *  2023/09/09 (A10001986)
  *    - If SD mount fails at 16Mhz, retry at 25Mhz
+ *    - If specific config file not found on SD, read from FlashFS
  *  2023/09/08 (A10001986)
  *    - Add custom "stale present time" mode:
  *      ) 99mmddyyyyhhMM sets a stale present time
