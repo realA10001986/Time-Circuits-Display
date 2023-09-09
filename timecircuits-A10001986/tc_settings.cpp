@@ -158,6 +158,7 @@ void settings_setup()
 {
     const char *funcName = "settings_setup";
     bool writedefault = false;
+    bool SDres = false;
 
     // Pre-maturely use ENTER button (initialized again in keypad_setup())
     pinMode(ENTER_BUTTON_PIN, INPUT_PULLUP);
@@ -227,24 +228,31 @@ void settings_setup()
     Serial.printf("%s: Mounting SD... ", funcName);
     #endif
 
-    if(!SD.begin(SD_CS_PIN, SPI, sdfreq)) {
+    if(!(SDres = SD.begin(SD_CS_PIN, SPI, sdfreq))) {
+        #ifdef TCD_DBG
+        Serial.printf("Retrying at 25Mhz... ");
+        #endif
+        SDres = SD.begin(SD_CS_PIN, SPI, 25000000);
+    }
 
-        Serial.println(F("no SD card found"));
+    if(SDres) {
 
-    } else {
-
-        #ifdef TC_DBG
+        #ifdef TCD_DBG
         Serial.println(F("ok"));
         #endif
 
         uint8_t cardType = SD.cardType();
        
-        #ifdef TC_DBG
+        #ifdef TCD_DBG
         const char *sdTypes[5] = { "No card", "MMC", "SD", "SDHC", "unknown (SD not usable)" };
         Serial.printf("SD card type: %s\n", sdTypes[cardType > 4 ? 4 : cardType]);
         #endif
 
         haveSD = ((cardType != CARD_NONE) && (cardType != CARD_UNKNOWN));
+
+    } else {
+
+        Serial.println(F("no SD card found"));
 
     }
 
