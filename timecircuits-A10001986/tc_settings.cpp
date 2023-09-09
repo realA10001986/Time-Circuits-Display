@@ -237,13 +237,13 @@ void settings_setup()
 
     if(SDres) {
 
-        #ifdef TCD_DBG
+        #ifdef TC_DBG
         Serial.println(F("ok"));
         #endif
 
         uint8_t cardType = SD.cardType();
        
-        #ifdef TCD_DBG
+        #ifdef TC_DBG
         const char *sdTypes[5] = { "No card", "MMC", "SD", "SDHC", "unknown (SD not usable)" };
         Serial.printf("SD card type: %s\n", sdTypes[cardType > 4 ? 4 : cardType]);
         #endif
