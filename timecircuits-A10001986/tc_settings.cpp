@@ -229,7 +229,7 @@ void settings_setup()
     #endif
 
     if(!(SDres = SD.begin(SD_CS_PIN, SPI, sdfreq))) {
-        #ifdef TCD_DBG
+        #ifdef TC_DBG
         Serial.printf("Retrying at 25Mhz... ");
         #endif
         SDres = SD.begin(SD_CS_PIN, SPI, 25000000);
