@@ -91,6 +91,9 @@
 
 /*  Changelog
  *   
+ *  2023/09/10 (A10001986)
+ *    - If specific config file not found on SD, read from FlashFS - but only
+ *      if it is mounted.
  *  2023/09/09 (A10001986)
  *    - If SD mount fails at 16Mhz, retry at 25Mhz
  *    - If specific config file not found on SD, read from FlashFS

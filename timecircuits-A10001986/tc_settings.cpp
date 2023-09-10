@@ -290,7 +290,7 @@ void settings_setup()
         write_settings();
     }
 
-    // Determine if alarm/reminder/volume settings are to be stored on SD
+    // Determine if alarm/reminder/volume/carmode settings are to be stored on SD
     configOnSD = (haveSD && ((settings.CfgOnSD[0] != '0') || FlashROMode));
 
     // Check if SD contains our default sound files
@@ -736,7 +736,7 @@ static bool openCfgFileRead(const char *fn, File& f)
         }
     }
 
-    if(!haveConfigFile) {
+    if(!haveConfigFile && haveFS) {
         if(SPIFFS.exists(fn)) {
             haveConfigFile = (f = SPIFFS.open(fn, "r"));
         }
