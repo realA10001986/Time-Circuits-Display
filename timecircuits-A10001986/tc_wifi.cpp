@@ -157,7 +157,7 @@ WiFiManagerParameter custom_wifiPRe("wifiPRet", "Periodic reconnection attempts 
 WiFiManagerParameter custom_wifiOffDelay("wifioff", "<br>WiFi power save timer<br>(10-99[minutes];0=off)", settings.wifiOffDelay, 2, "type='number' min='0' max='99' title='WiFi will be shut down after chosen number of minutes after power-on. 0 means never.'");
 WiFiManagerParameter custom_wifiAPOffDelay("wifiAPoff", "WiFi power save timer for AP-mode<br>(10-99[minutes];0=off)", settings.wifiAPOffDelay, 2, "type='number' min='0' max='99' title='WiFi-AP will be shut down after chosen number of minutes after power-on. 0 means never.'");
 
-WiFiManagerParameter custom_timeZone("time_zone", "Time zone (in <a href='https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv' target=_blank>Posix</a> format)", settings.timeZone, 63, "placeholder='Example: CST6CDT,M3.2.0,M11.1.0'");
+WiFiManagerParameter custom_timeZone("time_zone", "Time zone (in <a href='https://tz.backtothefutu.re' target=_blank>Posix</a> format)", settings.timeZone, 63, "placeholder='Example: CST6CDT,M3.2.0,M11.1.0'");
 WiFiManagerParameter custom_ntpServer("ntp_server", "NTP server", settings.ntpServer, 63, "pattern='[a-zA-Z0-9\\.\\-]+' placeholder='Example: pool.ntp.org'");
 
 WiFiManagerParameter custom_timeZone1("time_zone1", "Time zone for Destination Time display", settings.timeZoneDest, 63, "placeholder='Example: CST6CDT,M3.2.0,M11.1.0'");
