@@ -342,7 +342,7 @@ Beware that the alarm function, by default, is based on the real actual present 
 
 ### Persistent / Non-persistent time travels
 
-On the Config Portal's "Setup" page, there is an option item named *Make time travels persistent*. The default is off.
+On the Config Portal's "Setup" page, there is an option item named **_Make time travels persistent_**. The default is off.
 
 If time travels are persistent
 - a user-programmed *destination time* is always stored in flash memory, and retrieved from there after a reboot. It can be programmed through the keypad menu, or ahead of a time travel by typing mmddyyyyhhMM/mmddyyyy/hhMM plus ENTER. In both cases, the time is stored in flash memory and retrieved upon power-up/reboot.
@@ -671,7 +671,7 @@ Note: Sometimes, light sensors report a lux value of -1. This is mostly due to t
 
 You probably noticed that the device takes longer to boot than would be required to re-create the movie experience where Doc turns the knob and the Time Circuits immediately turn on. As a remedy, the firmware supports a fake "power switch": 
 
-If corresponding option is enabled in the Config Portal (*Use fake power switch*), the device will power-up, initialize everything, but stay quiet and dark. Only when the fake "power switch" is activated, the device will visually "power up". Likewise, you can also fake "power off" the device using this switch. Fake "off" disables the displays, all audio (except the alarm) and the keypad. Just like in the movie.
+If corresponding option is enabled in the Config Portal (**_Use fake power switch_**), the device will power-up, initialize everything, but stay quiet and dark. Only when the fake "power switch" is activated, the device will visually "power up". Likewise, you can also fake "power off" the device using this switch. Fake "off" disables the displays, all audio (except the alarm) and the keypad. Just like in the movie.
 
 On Control Boards V1.3 and later, there is a dedicated header labeled "Fake PWR" to connect the switch to. The pins to be shortened by the switch are labeled "GND" and "PWR Trigger":
 
@@ -851,7 +851,7 @@ In case you want to design your own props, here's the timing diagram:
 
 If external gear is connected to TT_OUT/IO14 and you want to use this control feature, check **_Control props connected by wire_** in the Config Portal.
 
-For CircuitSetup original props connected by wire, the option *Signal Time Travel without 5s lead* must not be set. If those props are connected wirelessly, this option has no effect.
+For CircuitSetup original props connected by wire, the option **_Signal Time Travel without 5s lead_** must not be set. If those props are connected wirelessly, this option has no effect.
 
 Note that a wired connection only allows for synchronized time travel sequences, no other communication takes place.
 
