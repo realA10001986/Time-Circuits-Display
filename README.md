@@ -154,7 +154,7 @@ To toggle WC/RC hybrid mode, type "113" followed by ENTER.
 
 In this case, head to the Config Portal and
 - set the *Time Cycling Interval* to OFF
-- check or uncheck *Make time travels persistent* depending on whether you care about keeping your times across reboots
+- check or uncheck *_Make time travels persistent_* depending on whether you care about keeping your times across reboots
 
 Note that *actual* time travel is not supported.
 
