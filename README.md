@@ -153,24 +153,24 @@ To toggle WC/RC hybrid mode, type "113" followed by ENTER.
 ####  &#9654; I want my clock to work like in the movie
 
 In this case, head to the Config Portal and
-- set the *Time Cycling Interval* to OFF
-- check or uncheck *_Make time travels persistent_* depending on whether you care about keeping your times across reboots
+- set the **_Time Cycling Interval_** to OFF
+- check or uncheck **_Make time travels persistent_** depending on whether you care about keeping your times across reboots
 
 Note that *actual* time travel is not supported.
 
 #### 	&#9654; I want my clock to show/cycle movie times
 
 In this case, head to the Config Portal and
-- set the *Time Cycling Interval* to the desired interval
-- uncheck *Make time travels persistent*
+- set the **_Time Cycling Interval_** to the desired interval
+- uncheck **_Make time travels persistent_**
 
 Time-travelling will interrupt the cycling of movie times for 30 minutes.
 
 #### 	&#9654; I want my clock to always show my favorite *Destination* and *last time departed* times
 
 In this case, head to the Config Portal and
-- set the *Time Cycling Interval* to OFF
-- uncheck *Make time travels persistent*
+- set the **_Time Cycling Interval_** to OFF
+- uncheck **_Make time travels persistent**_
 
 Then enter the [keypad menu](#how-to-enter-datestimes-for-the-destination-and-last-time-departed-displays) and set your favorite *Destination* and *Last time departed* times.
 
@@ -687,7 +687,7 @@ Here is a close-up of one of my boards; I have soldered some headers on the io p
 
 Note that the switch actually needs to be a switch with a maintained contact; the pins need to remain connected for as long as the device is fake-switched-on.
 
-In order to use the Fake Power Switch, check *Use fake power switch* in the Config Portal.
+In order to use the Fake Power Switch, check **_Use fake power switch_** in the Config Portal.
 
 [Here](https://github.com/realA10001986/Time-Circuits-Display/wiki/Time-Circuits-Switch) are some hints for building a TFC Switch.
 
@@ -756,9 +756,9 @@ One nice feature of GPS is that the receiver can deliver current speed of moveme
 |:--:|
 | Click to watch the video |
 
-In order to use the GPS receiver for speed, check *Display GPS speed* in the Config Portal.
+In order to use the GPS receiver for speed, check **_Display GPS speed_** in the Config Portal.
 
-If other props using GPS speed are connected via [BTTF-Network](#bttf-network-bttfn), check the option *Provide GPS speed for wireless props* in the Config Portal.
+If other props using GPS speed are connected via [BTTF-Network](#bttf-network-bttfn), check the option **_Provide GPS speed for wireless props_** in the Config Portal.
 
 ## Room Condition Mode, Temperature/humidity sensor
 
@@ -815,7 +815,7 @@ You need two wires for connecting the TCD to the other prop: TT_OUT (IO14) and G
 
 In case you want to design your own props, here's the timing diagram:
 
-1) Option *Signal Time Travel without 5s lead* unchecked
+1) Option **_Signal Time Travel without 5s lead_** unchecked
 
 ```
 |<---------- speedo acceleration --------->|                         |<-speedo de-acceleration->|
@@ -833,7 +833,7 @@ In case you want to design your own props, here's the timing diagram:
 
 "ETTO lead", ie the lead time between TT_OUT/IO14 going high and the actual start of a time travel is defined as 5000ms (ETTO_LEAD_TIME). In this window of time, the prop can play its pre-time-travel (warm-up/acceleration/etc) sequence. The sequence inside the time "tunnel" follows after that lead time, and when IO14 goes LOW, the re-entry into the destination time takes place.
 
-2) Option *Signal Time Travel without 5s lead* checked
+2) Option **_Signal Time Travel without 5s lead_** checked
 
 ```
 |<---------- speedo acceleration --------->|                         |<-speedo de-acceleration->|
@@ -849,7 +849,7 @@ In case you want to design your own props, here's the timing diagram:
                                     IO14: LOW->HIGH           IO14: HIGH->LOW
  ```
 
-If external gear is connected to TT_OUT/IO14 and you want to use this control feature, check *Control props connected by wire* in the Config Portal.
+If external gear is connected to TT_OUT/IO14 and you want to use this control feature, check **_Control props connected by wire_** in the Config Portal.
 
 For CircuitSetup original props connected by wire, the option *Signal Time Travel without 5s lead* must not be set. If those props are connected wirelessly, this option has no effect.
 
@@ -863,7 +863,7 @@ The TCD can communicate with other compatible props wirelessly, via WiFi. It can
 
 ![bttfn connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/4c831d02-e6c9-4e80-9e05-37e782c68c79)
 
-On the TCD, no special configuration is required. However, if the TCD is supposed to send out notifications about time travel and alarm to connected BTTFN clients, usage of MQTT must be disabled or the *Send event notifications* option in the MQTT section of the Config Portal must be unchecked. The TCD only sends out such notifications either via MQTT or BTTFN, never both.
+On the TCD, no special configuration is required. However, if the TCD is supposed to send out notifications about time travel and alarm to connected BTTFN clients, usage of MQTT must be disabled or the **_Send event notifications_** option in the MQTT section of the Config Portal must be unchecked. The TCD only sends out such notifications either via MQTT or BTTFN, never both.
 
 On the other prop, such as CircuitSetup's upcoming [Flux Capacitor](https://github.com/realA10001986/Flux-Capacitor) or [SID](https://github.com/realA10001986/SID), the TCD's IP address (not hostname!) must be entered into the *IP address of TCD* field on the Setup page in their Config Portal - that's all.
 
@@ -873,7 +873,7 @@ To see which BTTFN devices are currently known to the TCD, enter the keypad menu
 
 #### Home Assistant/MQTT
 
-The other way of wireless communication is, of course, [Home Assistant/MQTT](#home-assistant--mqtt). If both the TCD and the other props are connected to the same broker, and the option *Send event notifications* is checked on the TCD's side, other compatible props will receive information on time travel and alarm and play their sequences in sync with the TCD.
+The other way of wireless communication is, of course, [Home Assistant/MQTT](#home-assistant--mqtt). If both the TCD and the other props are connected to the same broker, and the option **_Send event notifications_** is checked on the TCD's side, other compatible props will receive information on time travel and alarm and play their sequences in sync with the TCD.
 
 ![MQTT connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/fdfcaabf-96e9-45b1-a626-ded91f37d128)
 
@@ -881,7 +881,7 @@ MQTT and BTTFN can co-exist:
 
 BTTFN must be configured on the prop - regardless of MQTT usage - if that prop is to receive data from the TCD (like, for instance, GPS speed). 
 
-However, as mentioned, the TCD only sends out time travel and alarm notifications through either MQTT or BTTFN, never both. If you have other MQTT-aware devices listening to the TCD's public topic (bttf/tcd/pub) in order to react to time travel or alarm messages, use MQTT (ie check *Send event notifications*). If only BTTFN-aware devices are to be used, uncheck this option to use BTTFN as it has less latency.
+However, as mentioned, the TCD only sends out time travel and alarm notifications through either MQTT or BTTFN, never both. If you have other MQTT-aware devices listening to the TCD's public topic (bttf/tcd/pub) in order to react to time travel or alarm messages, use MQTT (ie check **_Send event notifications_**). If only BTTFN-aware devices are to be used, uncheck this option to use BTTFN as it has less latency.
 
 ## Home Assistant / MQTT
 
@@ -926,7 +926,7 @@ If your broker does not allow anonymous logins, a username and password can be s
 
 If you want your TCD to display messages as described above, you also need to specify the topic in the respective field.
 
-If you want your TCD to publish messages to bttf/tcd/pub (ie if you want to notify other devices about a timetravel and/or alarm), check the *Send event notifications* option.
+If you want your TCD to publish messages to bttf/tcd/pub (ie if you want to notify other devices about a timetravel and/or alarm), check the **_Send event notifications_** option.
 
 Limitations: MQTT Protocol version 3.1.1; TLS/SSL not supported; ".local" domains (MDNS) not supported; maximum message length 255 characters; server/broker must respond to PING (ICMP) echo requests. For proper operation with low latency, it is recommended that the broker is on your local network. Note that using HA/MQTT will disable WiFi power saving (as described below).
 
@@ -947,8 +947,8 @@ Note that if your configured WiFi network was not available when the clock was t
 Flash memory has a somewhat limited life-time. It can be written to only between 10.000 and 100.000 times before becoming unreliable. The firmware writes to the internal flash memory when saving settings and other data. Every time you change settings through the keypad menu or the Config Portal, data is written to flash memory. The same goes for changing alarm settings (including enabling/disabling the alarm), and time travelling if time travels are [persistent](#persistent--non-persistent-time-travels).
 
 In order to reduce the number of write operations and thereby prolong the life of your clock, it is recommended
-- to uncheck the option *[Make time travels persistent](#persistent--non-persistent-time-travels)* in the Config Portal,
-- to use a good-quality SD card and to check *[Save alarm/volume settings on SD](#-save-alarmvolume-settings-on-sd)* in the Config Portal; alarm and volume settings are then stored on the SD card (which also suffers from wear but is easy to replace). If you want to swap the SD card but preserve your alarm/volume settings, go to the Config Portal while the old SD card is still in place, uncheck the *Save alarm/volume settings on SD* option, click on Save and wait until the clock has rebooted. You can then power down the clock, swap the SD card and power-up again. Then go to the Config Portal, change the option back on and click on Save. Your settings are now on the new SD card.
+- to uncheck the option **_[Make time travels persistent](#persistent--non-persistent-time-travels)_** in the Config Portal,
+- to use a good-quality SD card and to check **_[Save alarm/volume settings on SD](#-save-alarmvolume-settings-on-sd)_** in the Config Portal; alarm and volume settings are then stored on the SD card (which also suffers from wear but is easy to replace). If you want to swap the SD card but preserve your alarm/volume settings, go to the Config Portal while the old SD card is still in place, uncheck the **_Save alarm/volume settings on SD_** option, click on Save and wait until the clock has rebooted. You can then power down the clock, swap the SD card and power-up again. Then go to the Config Portal, change the option back on and click on Save. Your settings are now on the new SD card.
 
 ## My custom-made Time Circuits Wall Clock
 
