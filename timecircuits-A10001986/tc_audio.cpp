@@ -1017,7 +1017,7 @@ void play_file(const char *audio_file, uint16_t flags, float volumeFactor)
         #endif
     }
     #ifdef USE_SPIFFS
-      else if(SPIFFS.exists(audio_file) && myFS0->open(audio_file))
+      else if(haveFS && SPIFFS.exists(audio_file) && myFS0->open(audio_file))
     #else    
       else if(myFS0->open(audio_file))
     #endif

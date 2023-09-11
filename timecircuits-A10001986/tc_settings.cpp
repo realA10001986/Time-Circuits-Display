@@ -59,7 +59,7 @@
 #define JSON_SIZE 2500
 
 /* If SPIFFS/LittleFS is mounted */
-static bool haveFS = false;
+bool haveFS = false;
 
 /* If a SD card is found */
 bool haveSD = false;
@@ -114,7 +114,7 @@ static const char *remCfgName = "/tcdremcfg.json";  // Reminder config (flash/SD
 static const char *volCfgName = "/tcdvolcfg.json";  // Volume config (flash/SD)
 static const char *musCfgName = "/tcdmcfg.json";    // Music config (SD)
 static const char *ipCfgName  = "/ipconfig.json";   // IP config (flash)
-static const char *cmCfgName = "/cmconfig.json";    // Carmode (flash/SD)
+static const char *cmCfgName  = "/cmconfig.json";   // Carmode (flash/SD)
 
 static const char *fsNoAvail = "File System not available";
 static const char *failFileWrite = "Failed to open file for writing";
@@ -209,8 +209,8 @@ void settings_setup()
 
     } else {
 
-        Serial.println(F("failed.\nThis is very likely a hardware problem."));
-        Serial.println(F("*** All settings/states will be stored on the SD card (if available)"));
+        Serial.println(F("\n***Mounting flash FS failed."));
+        Serial.println(F("*** All settings will be stored on the SD card (if available)"));
 
     }
     
@@ -252,7 +252,7 @@ void settings_setup()
 
     } else {
 
-        Serial.println(F("no SD card found"));
+        Serial.println(F("No SD card found"));
 
     }
 
@@ -260,7 +260,7 @@ void settings_setup()
         if(SD.exists("/TCD_FLASH_RO") || !haveFS) {
             bool writedefault2 = false;
             FlashROMode = true;
-            Serial.println(F("Flash-RO mode: All settings/states stored on SD. Reloading settings."));
+            Serial.println(F("Flash-RO mode: All settings stored on SD. Reloading settings."));
             if(SD.exists(cfgName)) {
                 File configFile = SD.open(cfgName, "r");
                 if(configFile) {
@@ -633,7 +633,7 @@ void write_settings()
 
 bool checkConfigExists()
 {
-    return FlashROMode ? SD.exists(cfgName) : SPIFFS.exists(cfgName);
+    return FlashROMode ? SD.exists(cfgName) : (haveFS && SPIFFS.exists(cfgName));
 }
 
 
@@ -751,7 +751,7 @@ static bool openCfgFileWrite(const char *fn, File& f)
     
     if(configOnSD) {
         haveConfigFile = (f = SD.open(fn, FILE_WRITE));
-    } else {
+    } else if(haveFS) {
         haveConfigFile = (f = SPIFFS.open(fn, FILE_WRITE));
     }
 
@@ -955,12 +955,9 @@ void saveReminder()
 
 static void deleteReminder()
 {
-    if(!haveFS && !configOnSD)
-        return;
-
     if(configOnSD) {
         SD.remove(remCfgName);
-    } else {
+    } else if(haveFS) {
         SPIFFS.remove(remCfgName);
     }
 }
@@ -1280,16 +1277,13 @@ void writeIpSettings()
 
 void deleteIpSettings()
 {
-    if(!haveFS && !FlashROMode)
-        return;
-
     #ifdef TC_DBG
     Serial.println(F("deleteIpSettings: Deleting ip config"));
     #endif
 
     if(FlashROMode) {
         SD.remove(ipCfgName);
-    } else {
+    } else if(haveFS) {
         SPIFFS.remove(ipCfgName);
     }
 }
@@ -1456,7 +1450,7 @@ bool audio_files_present()
     File file;
     size_t ts;
     
-    if(FlashROMode)
+    if(FlashROMode || !haveFS)
         return true;
 
     if(!SPIFFS.exists(audioFiles[SND_ENTER_IDX]))
@@ -1520,9 +1514,7 @@ void rewriteSecondarySettings()
     saveAlarm();
 
     saveReminder();
-
     saveCarMode();
-    
     saveCurVolume();
     
     configOnSD = oldconfigOnSD;

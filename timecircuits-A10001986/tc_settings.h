@@ -34,6 +34,7 @@
 #ifndef _TC_SETTINGS_H
 #define _TC_SETTINGS_H
 
+extern bool haveFS;
 extern bool haveSD;
 extern bool FlashROMode;
 
