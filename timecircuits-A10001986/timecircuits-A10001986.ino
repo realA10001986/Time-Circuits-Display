@@ -91,6 +91,9 @@
 
 /*  Changelog
  *   
+ *  2023/09/13 (A10001986)
+ *    - Add compile time option to disable tt sequence display flicker
+ *      (TT_NO_ANIM)
  *  2023/09/11 (A10001986)
  *    - Guard SPIFFS/LittleFS calls with FS check
  *  2023/09/10 (A10001986)

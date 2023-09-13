@@ -1613,7 +1613,9 @@ void time_loop()
             Serial.printf("TT initiated %d\n", millis());
             #endif
             ettoPulseStartNoLead();
+            #ifndef TT_NO_ANIM
             allOff();
+            #endif
             timetravelP1Delay = TT_P1_DELAY_P2;
             break;
         case 3:
@@ -2348,7 +2350,13 @@ void time_loop()
 
         x = y;
 
-        if(timeTravelP1 > 1) {
+        #ifndef TT_NO_ANIM
+        if(timeTravelP1 > 1)
+        #else
+        if(0) 
+        #endif    
+        {
+            
             int ii = 5, tt;
             switch(timeTravelP1) {
             case 2:

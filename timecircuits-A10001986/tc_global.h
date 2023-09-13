@@ -27,9 +27,9 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION "V2.8.99"          // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "SEP112023"  // 13 chars max
+#define TC_VERSION_EXTRA "SEP132023"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "09112023"   // 12 chars max
+#define TC_VERSION_EXTRA "09132023"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -134,6 +134,9 @@
 
 // Uncomment if AM and PM should be reversed (like in BTTF2/3-version of TCD)
 //#define REV_AMPM
+
+// Uncomment to disable the tt animation
+//#define TT_NO_ANIM
 
 // Use SPIFFS (if defined) or LittleFS (if undefined; esp32-arduino >= 2.x)
 // I stick with SPIFFS for now.
