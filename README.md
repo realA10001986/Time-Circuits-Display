@@ -39,7 +39,7 @@ Features include
 - Support for triggering time travels on [other props](#controlling-other-props) connected by wire; TCD can act as master controller for [SID](https://github.com/realA10001986/SID), [Flux Capacitor](https://github.com/realA10001986/Flux-Capacitor), etc.
 - Built-in installer for default audio files in addition to OTA firmware updates
 
-The code here was formerly based on rudimentary code from/by CircuitSetup. Since Sep 2022, CircuitSetup are distributing this very firmware as their official one (starting with 2.0). The difference between what you get here and CircuitSetup's releases is that the code here might be ahead in development (and uses some different sounds), and the pre-compiled binary has all the features enabled.
+The code here is a rewrite of rudimentary code from/by CircuitSetup. Since Sep 2022, CircuitSetup are distributing this very firmware as their official one (starting with 2.0). The difference between what you get here and CircuitSetup's releases is that the code here might be ahead in development (and uses some different sounds), and the pre-compiled binary has all the features enabled.
 
 ## Installation
 
@@ -49,47 +49,47 @@ There are different alternative ways to install this firmware:
 
 2) Using the Arduino IDE or PlatformIO: Download the sketch source code, all required libraries, compile and upload it. This method is the one for fresh ESP32 boards and/or folks familiar with the programming tool chain. Detailed build information is in [timecircuits-A10001986.ino](https://github.com/realA10001986/Time-Circuits-Display/blob/main/timecircuits-A10001986/timecircuits-A10001986.ino).
 
- *Important: After a firmware update, the displays might stay dark or display "WAIT" for up to a minute after reboot. Do NOT unplug the clock during this time.*
+ *Important: After a firmware update, the displays might stay dark or display "WAIT" for up to a minute after reboot. Do NOT unplug the TCD during this time.*
 
 ### Audio file installation
 
-The firmware comes with a number of sound files which need to be installed separately. These sound files are not updated as often as the firmware itself. If you have previously installed the latest version of the sound-pack, you normally don't have to re-install the audio files when you update the firmware. Only if either a new version of the sound-pack is released, or your clock is quiet after a firmware update (what will the case if you see "WAIT" during boot), a re-installation is needed.
+The firmware comes with a number of sound files which need to be installed separately. These sound files are not updated as often as the firmware itself. If you have previously installed the latest version of the sound-pack, you normally don't have to re-install the audio files when you update the firmware. Only if either a new version of the sound-pack is released, or your TCD is quiet after a firmware update (what will the case if you see "WAIT" during boot), a re-installation is needed.
 
-*If your clock previously ran a firmware from CircuitSetup, a re-installation of the audio files **from this repository** is required. You cannot use CircuitSetup's audio files with the firmware available here, or vice versa.*
+*If your TCD previously ran a firmware from CircuitSetup, a re-installation of the audio files **from this repository** is required. You cannot use CircuitSetup's audio files with the firmware available here, or vice versa.*
 
 - Download "install/sound-pack-xxxxxxxx.zip" and extract it to the root directory of of a FAT32 formatted SD card
-- power down the clock,
+- power down the TCD,
 - insert this SD card into the device's slot and 
-- power up the clock.
+- power up the TCD.
  
-If (and only if) the **exact and complete contents of sound-pack archive** is found on the SD card, the clock will show "INSTALL AUDIO FILES?" after power-up. Press ENTER briefly to toggle between "CANCEL" and "PROCEED". Choose "PROCEED" and hold the ENTER key for 2 seconds.
+If (and only if) the **exact and complete contents of sound-pack archive** is found on the SD card, the TCD will show "INSTALL AUDIO FILES?" after power-up. Press ENTER briefly to toggle between "CANCEL" and "PROCEED". Choose "PROCEED" and hold the ENTER key for 2 seconds.
 
-If you, for whatever reason, chose "CANCEL", you can still invoke the installer through the [keypad menu](#how-to-install-the-default-audio-files), or by rebooting the clock.
+If you, for whatever reason, chose "CANCEL", you can still invoke the installer through the [keypad menu](#how-to-install-the-default-audio-files), or by rebooting the TCD.
 
 After installation, the SD card can be re-used for [other purposes](#sd-card).
 
 ## Short summary of first steps
 
-The first step is to establish access to the Config Portal in order to configure your clock.
+The first step is to establish access to the Config Portal in order to configure your TCD.
 
-As long as the device is unconfigured, as is the case with a brand new clock, or later if it for some reason fails to connect to a configured WiFi network, it starts in "access point" mode, i.e. it creates a WiFi network of its own named "TCD-AP". This is called "Access point mode", or "AP-mode".
+As long as the device is unconfigured, as is the case with a brand new TCD, or later if it for some reason fails to connect to a configured WiFi network, it starts in "access point" mode, i.e. it creates a WiFi network of its own named "TCD-AP". This is called "Access point mode", or "AP-mode".
 
-- Power up the clock and wait until it shows a time (which is probably wrong).
+- Power up the TCD and wait until it shows a time (which is probably wrong).
 - Connect your computer or handheld device to the WiFi network "TCD-AP".
 - Navigate your browser to http://timecircuits.local or http://192.168.4.1 to enter the Config Portal.
  
-If you want your clock to connect to your WiFi network, click on "Configure WiFi". The bare minimum is to select an SSID (WiFi network name) and a WiFi password. 
+If you want your TCD to connect to your WiFi network, click on "Configure WiFi". The bare minimum is to select an SSID (WiFi network name) and a WiFi password. 
 
-Note that the device requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). If the device is inaccessible as a result of incorrect static IPs, hold ENTER when powering it up until the white LED lits; static IP data will be deleted and the device will return to DHCP. 
+Note that the TCD requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). If the device is inaccessible as a result of incorrect static IPs, hold ENTER when powering it up until the white LED lits; static IP data will be deleted and the device will return to DHCP. 
 
-After saving the WiFi network settings, the device reboots and tries to connect to your configured WiFi network. If that fails, it will again start in access point mode.
+After saving the WiFi network settings, the TCD reboots and tries to connect to your configured WiFi network. If that fails, it will again start in access point mode.
 
-The next step is to set the clock's time zone and actual time.
+The next step is to set the TCD's time zone and actual time.
 
-- If your clock is connected to a WiFi network with internet access, it will receive time information through NTP (network time protocol). If the clock shows a wrong time initially, don't worry: This is due to a wrong time zone.
+- If your TCD is connected to a WiFi network with internet access, it will receive time information through NTP (network time protocol). If the TCD shows a wrong time initially, don't worry: This is due to a wrong time zone.
 - If the internet is inaccessible (such as is the case if the TCD is in access point mode), please set your local time through the [keypad menu](#how-to-set-the-real-time-clock-rtc) after setting up the time zone.
 
-In both cases it is, again, important to set the clock's time zone. This is done in the Config Portal, so read on.
+In both cases it is, again, important to set the TCD's time zone. This is done in the Config Portal, so read on.
 
 ### The Config Portal
 
@@ -97,11 +97,11 @@ The Config Portal is accessible exclusively through WiFi. As outlined above, if 
 
 If the operating system on your handheld or computer supports Bonjour (or "mDNS"), you can enter the Config Portal by directing your browser to http://timecircuits.local. (mDNS is supported on Windows 10 version TH2 (1511) [other sources say 1703] and later, Android 13 and later, MacOS, iOS)
 
-If that fails, the way to enter the Config Portal depends on whether the clock is in access point mode or not. 
+If that fails, the way to enter the Config Portal depends on whether the TCD is in access point mode or not. 
 - If it is in access point mode (and your handheld/computer is connected to the WiFi network "TCP-AP"), navigate your browser to http://192.168.4.1 
 - If the device is connected to your WiFi network, you need to find out its IP address first: Hold ENTER on the keypad for 2 seconds, then repeatedly press ENTER until "NET-WORK" is shown, then hold ENTER for 2 seconds. The device will then show its current IP address. Then, on your handheld or computer, navigate to http://a.b.c.d (a.b.c.d being the IP address as shown on the display) in order to enter the Config Portal.
 
-In the main menu, click on "Setup" to configure your clock, first and foremost your time zone. If the time zone isn't set correctly, the clock might show a wrong time, and DST (daylight saving) will not be switched on/off correctly.
+In the main menu, click on "Setup" to configure your TCD, first and foremost your time zone. If the time zone isn't set correctly, the TCD might show a wrong time, and DST (daylight saving) will not be switched on/off correctly.
 
 | ![The_Config_Portal](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/95888ad5-5e3e-4f62-8a6c-e945de1bd281) |
 |:--:| 
@@ -115,11 +115,11 @@ A full reference of the Config Portal is [here](#appendix-a-the-config-portal).
 
 *Destination time* and *Last time departed* are stale. These, by default, work like in the movie: Upon a time travel, *present time* becomes *last time departed*, and *destination time* becomes *present time*.
 
-The clock only supports the [Gregorian Calendar](https://en.wikipedia.org/wiki/Gregorian_calendar), which it pretends to have been used since year 1. The [Julian Calendar](https://en.wikipedia.org/wiki/Julian_calendar) is not taken into account. Therefore, some years that, in the then-used Julian Calendar, were leap years between years 1 and 1582 most of today's Europe (and its Spanish colonies in the Americas), 1700 in DK/NO/NL (except Holland and Zeeland), 1752 in the British Empire (and therefore today's USA, Canada and India), 1753 in Sweden, 1760 in Lorraine, 1872 in Japan, 1912 in China, 1915 in Bulgaria, 1917 in the Ottoman Empire, 1918 in Russia and Serbia and 1923 in Greece, are normal years in the Gregorian one. As a result, dates do not match in those two calender systems, the Julian calendar is currently 13 days behind. I wonder if Doc's TC took all this into account. (Then again, he wanted to see Christ's birth on Dec 25, 0. Luckily, he didn't actually try to travel to that date. Assuming a negative roll-over, he might have ended up in eternity.)
+The TCD only supports the [Gregorian Calendar](https://en.wikipedia.org/wiki/Gregorian_calendar), which it pretends to have been used since year 1. The [Julian Calendar](https://en.wikipedia.org/wiki/Julian_calendar) is not taken into account. Therefore, some years that, in the then-used Julian Calendar, were leap years between years 1 and 1582 most of today's Europe (and its Spanish colonies in the Americas), 1700 in DK/NO/NL (except Holland and Zeeland), 1752 in the British Empire (and therefore today's USA, Canada and India), 1753 in Sweden, 1760 in Lorraine, 1872 in Japan, 1912 in China, 1915 in Bulgaria, 1917 in the Ottoman Empire, 1918 in Russia and Serbia and 1923 in Greece, are normal years in the Gregorian one. As a result, dates do not match in those two calender systems, the Julian calendar is currently 13 days behind. I wonder if Doc's TC took all this into account. (Then again, he wanted to see Christ's birth on Dec 25, 0. Luckily, he didn't actually try to travel to that date. Assuming a negative roll-over, he might have ended up in eternity.)
 
 Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed after 1BC. Nevertheless, it is possible to travel to year 0. In good old Hollywood tradition, I won't let facts and science stand in the way of an authentic movie experience.
 
-If "REPLACE BATTERY" is shown upon boot, the onboard CR2032 battery is depleted and needs to be replaced. Note that, for technical reasons, "REPLACE BATTERY" will also show up the very first time you power-up the clock *after* changing the battery. You can, of course, disregard that message in this case.
+If "REPLACE BATTERY" is shown upon boot, the onboard CR2032 battery is depleted and needs to be replaced. Note that, for technical reasons, "REPLACE BATTERY" will also show up the very first time you power-up the TCD *after* changing the battery. You can, of course, disregard that message in this case.
 
 ### Time-cycling
 
@@ -150,7 +150,7 @@ To toggle WC/RC hybrid mode, type "113" followed by ENTER.
 
 ### Common usage scenarios
 
-####  &#9654; I want my clock to work like in the movie
+####  &#9654; I want my TCD to work like in the movie
 
 In this case, head to the Config Portal and
 - set the **_Time Cycling Interval_** to OFF
@@ -158,7 +158,7 @@ In this case, head to the Config Portal and
 
 Note that *actual* time travel is not supported.
 
-#### 	&#9654; I want my clock to show/cycle movie times
+#### 	&#9654; I want my TCD to show/cycle movie times
 
 In this case, head to the Config Portal and
 - set the **_Time Cycling Interval_** to the desired interval
@@ -166,7 +166,7 @@ In this case, head to the Config Portal and
 
 Time-travelling will interrupt the cycling of movie times for 30 minutes.
 
-#### 	&#9654; I want my clock to always show my favorite *Destination* and *last time departed* times
+#### 	&#9654; I want my TCD to always show my favorite *Destination* and *last time departed* times
 
 In this case, head to the Config Portal and
 - set the **_Time Cycling Interval_** to OFF
@@ -369,7 +369,7 @@ In the movies, the Time Circuits emit a "beep" sound every second, which is only
 The beep can be permanently disabled, permanently enabled, or enabled for 30 or 60 seconds
 - after a destination time is entered (and ENTER is pressed),
 - upon triggering a time travel,
-- after switching on the clock (real power-up or fake power-up).
+- after switching on the TCD (real power-up or fake power-up).
 
 The different modes are selected by typing 000 (disabled), 001 (enabled), 002 (enabled for 30 secs) or 003 (enabled for 60 secs), followed by ENTER. The power-up default is selected in the Config Portal.
 
@@ -389,13 +389,13 @@ To toggle night-mode on/off manually, hold "4".
 
 In the Config Portal, a schedule for night-mode can be programmed. You can choose from currently four time schedule presets, or a daily schedule with selectable start and end hours.
 
-The presets are for (hopefully) typical home, office and shop setups, and they assume the clock to be in use (ie night-mode off) at the following times:
+The presets are for (hopefully) typical home, office and shop setups, and they assume the TCD to be in use (ie night-mode off) at the following times:
 - Home: Mon-Thu 5pm-11pm, Fri 1pm-1am, Sat 9am-1am, Sun 9am-11pm
 - Office (1): Mon-Fri 9am-5pm
 - Office (2): Mon-Thu 7am-5pm, Fri 7am-2pm
 - Shop: Mon-Wed 8am-8pm, Thu-Fri 8am-9pm, Sat 8am-5pm
 
-The *daily* schedule works by entering start and end in the text fields below. The clock will go into night-mode at the defined start hour (xx:00), and return to normal operation at the end hour (yy:00). 
+The *daily* schedule works by entering start and end in the text fields below. The TCD will go into night-mode at the defined start hour (xx:00), and return to normal operation at the end hour (yy:00). 
 
 Night mode schedules are always based on actual local present time.
 
@@ -441,7 +441,7 @@ Preface note on SD cards: For unknown reasons, some SD cards simply do not work 
 
 The SD card, apart from being used to [install](#audio-file-installation) the default audio files, can be used for substituting default sounds, some additional custom sounds, and for music played back by the [Music player](#the-music-player).
 
-Note that the SD card must be inserted before powering up the clock. It is not recognized if inserted while the clock is running. Furthermore, do not remove the SD card while the clock is powered.
+Note that the SD card must be inserted before powering up the TCD. It is not recognized if inserted while the TCD is running. Furthermore, do not remove the SD card while the TCD is powered.
 
 ### Sound file substitution
 
@@ -465,7 +465,7 @@ The following sounds are time-sync'd to display action. If you decide to substit
 - "travelstart.mp3". Played when a time travel starts.
 - "timetravel.mp3". Played when re-entry of a time travel takes place.
 - "shutdown.mp3". Played when the device is fake "powered down" using an external switch (see below)
-- "startup.mp3". Played when the clock is connected to power and finished booting
+- "startup.mp3". Played when the TCD is connected to power and finished booting
 
 If you intend to use the very same SD card that you used for installing the default sound files, please remove the files from the sound-pack from the SD card first.
 
@@ -502,7 +502,7 @@ While the music player is playing music, most sound effects are disabled/muted, 
 
 ## The keypad menu
  
-The keypad menu is an additional way to configure your clock; it only involves the three displays and the keypad. It is controlled by "pressing" or "holding" the ENTER key on the keypad.
+The keypad menu is an additional way to configure your TCD; it only involves the three displays and the keypad. It is controlled by "pressing" or "holding" the ENTER key on the keypad.
 
 A "press" is shorter than 2 seconds, a "hold" is 2 seconds or longer.
 
@@ -535,7 +535,7 @@ Pressing ENTER cycles through the list, holding ENTER selects an item.
 - If the SD card holds the files of the sound-pack archive from this repo, "INSTALL AUDIO FILES" is shown as the first menu item. See the [Audio file installation](#audio-file-installation) section.
 - Hold ENTER to proceed
 - Press ENTER to toggle between "CANCEL" and "PROCEED"
-- Hold ENTER to proceed. If "PROCEED" was chosen, the audio files fill be installed and the clock will reboot.
+- Hold ENTER to proceed. If "PROCEED" was chosen, the audio files fill be installed and the TCD will reboot.
  
 #### How to set up the alarm:
 
@@ -940,15 +940,15 @@ The reason for having two different timers for AP-mode and for station mode is t
 
 After WiFi has been switched off due to timer expiry, it can be re-enabled by holding "7" on the keypad for approx. 2 seconds, in which case the timers are restarted (ie WiFi is again switched off after timer expiry).
 
-Note that if your configured WiFi network was not available when the clock was trying to connect, it will end up in AP-mode. Holding "7" in that case will trigger another attempt to connect to your WiFi network.
+Note that if your configured WiFi network was not available when the TCD was trying to connect, it will end up in AP-mode. Holding "7" in that case will trigger another attempt to connect to your WiFi network.
 
 ## Flash Wear
 
 Flash memory has a somewhat limited life-time. It can be written to only between 10.000 and 100.000 times before becoming unreliable. The firmware writes to the internal flash memory when saving settings and other data. Every time you change settings through the keypad menu or the Config Portal, data is written to flash memory. The same goes for changing alarm settings (including enabling/disabling the alarm), and time travelling if time travels are [persistent](#persistent--non-persistent-time-travels).
 
-In order to reduce the number of write operations and thereby prolong the life of your clock, it is recommended
+In order to reduce the number of write operations and thereby prolong the life of your TCD, it is recommended
 - to uncheck the option **_[Make time travels persistent](#persistent--non-persistent-time-travels)_** in the Config Portal,
-- to use a good-quality SD card and to check **_[Save alarm/volume settings on SD](#-save-alarmvolume-settings-on-sd)_** in the Config Portal; alarm and volume settings are then stored on the SD card (which also suffers from wear but is easy to replace). If you want to swap the SD card but preserve your alarm/volume settings, go to the Config Portal while the old SD card is still in place, uncheck the **_Save alarm/volume settings on SD_** option, click on Save and wait until the clock has rebooted. You can then power down the clock, swap the SD card and power-up again. Then go to the Config Portal, change the option back on and click on Save. Your settings are now on the new SD card.
+- to use a good-quality SD card and to check **_[Save alarm/volume settings on SD](#-save-alarmvolume-settings-on-sd)_** in the Config Portal; alarm and volume settings are then stored on the SD card (which also suffers from wear but is easy to replace). If you want to swap the SD card but preserve your alarm/volume settings, go to the Config Portal while the old SD card is still in place, uncheck the **_Save alarm/volume settings on SD_** option, click on Save and wait until the TCD has rebooted. You can then power down the TCD, swap the SD card and power-up again. Then go to the Config Portal, change the option back on and click on Save. Your settings are now on the new SD card.
 
 ## My custom-made Time Circuits Wall Clock
 
@@ -978,7 +978,7 @@ This leads to the [Setup page](#setup-page).
 
 ##### &#9654; Restart
 
-This reboots the clock. No confirmation dialog is displayed.
+This reboots the TCD. No confirmation dialog is displayed.
 
 ##### &#9654; Update
 
@@ -1026,7 +1026,7 @@ In this decorative mode the device cycles through a list of pre-programmed, movi
 
 The device's hostname in the WiFi network. Defaults to 'timecircuits'. This also is the domain name at which the Config Portal is accessible from a browser in the same local network. The URL of the Config Portal then is http://<i>hostname</i>.local (the default is http://timecircuits.local)
 
-If you have more than one clock in your local network, please give them unique hostnames.
+If you have more than one TCD in your local network, please give them unique hostnames.
 
 ##### &#9654; AP Mode: Network name appendix
 
@@ -1050,7 +1050,7 @@ Number of seconds before a timeout occurs when connecting to a WiFi network. Whe
 
 Selects whether periodic re-connection attempts (between 12am and 6am) should be made after a failure to connect to a configured WiFi network.
 
-In typical home setups with 24/7 WiFi, this option hardly matters. However, if you have connected your clock to your WiFi network, but move it between environments (eg home and car) on a regular basis, uncheck this to keep the clock from searching for your configured WiFi network unnecessarily. 
+In typical home setups with 24/7 WiFi, this option hardly matters. However, if you have connected your TCD to your WiFi network, but move it between environments (eg home and car) on a regular basis, uncheck this to keep the TCD from searching for your configured WiFi network unnecessarily. 
 
 ##### &#9654; WiFi power save timer
 
@@ -1220,7 +1220,7 @@ When checked, songs are shuffled when the device is booted. When unchecked, song
 
 ##### &#9654; Save alarm/volume settings on SD
 
-If this is checked, alarm and volume settings are stored on the SD card. This helps to minimize write operations to the internal flash memory and to prolong the lifetime of your clock. See [Flash Wear](#flash-wear).
+If this is checked, alarm and volume settings are stored on the SD card. This helps to minimize write operations to the internal flash memory and to prolong the lifetime of your TCD. See [Flash Wear](#flash-wear).
 
 ## Appendix B: Sensor wiring
 
