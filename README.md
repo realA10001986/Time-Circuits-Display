@@ -960,7 +960,7 @@ More here: [Link](https://github.com/realA10001986/Time-Circuits-Display/wiki/Ti
 
 ![Time Circuits Switch](https://user-images.githubusercontent.com/76924199/226289995-afc79f34-50d7-4454-988b-a4a26163fba9.jpg)
 
-More here: [Link](https://github.com/realA10001986/Time-Circuits-Display/wiki/Time-Circuits-Switch)
+More here: [Link](https://github.com/realA10001986/Time-Circuits-Display/wiki/TFC-Switch)
 
 ## Appendix A: The Config Portal
 
