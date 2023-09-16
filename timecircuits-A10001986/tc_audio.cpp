@@ -1019,7 +1019,7 @@ void play_file(const char *audio_file, uint16_t flags, float volumeFactor)
     #ifdef USE_SPIFFS
       else if(haveFS && SPIFFS.exists(audio_file) && myFS0->open(audio_file))
     #else    
-      else if(myFS0->open(audio_file))
+      else if(haveFS && myFS0->open(audio_file))
     #endif
     {
         if(!(flags & PA_NOID3TS)) {

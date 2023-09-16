@@ -91,6 +91,8 @@
 
 /*  Changelog
  *   
+ *  2023/09/16 (A10001986)
+ *    - haveFS check before attempting to open audio file from flashFS
  *  2023/09/13 (A10001986)
  *    - Add compile time option to disable tt sequence display flicker
  *      (TT_NO_ANIM)
