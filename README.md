@@ -1,6 +1,6 @@
 # Firmware for Time Circuits Display
 
-This repository holds the most current firmware for CircuitSetup's wonderful [Time Circuits Display](https://circuitsetup.us/product/complete-time-circuits-display-kit/).
+This repository holds the most current firmware for CircuitSetup's wonderful [Time Circuits Display](https://circuitsetup.us/product/complete-time-circuits-display-kit/) (aka TCD).
 
 The hardware is available [here](https://circuitsetup.us/product/complete-time-circuits-display-kit/).
 
@@ -39,13 +39,13 @@ Features include
 - Support for triggering time travels on [other props](#controlling-other-props) connected by wire; TCD can act as master controller for [SID](https://github.com/realA10001986/SID), [Flux Capacitor](https://github.com/realA10001986/Flux-Capacitor), etc.
 - Built-in installer for default audio files in addition to OTA firmware updates
 
-The code here is a rewrite of rudimentary code from/by CircuitSetup. Since Sep 2022, CircuitSetup are distributing this very firmware as their official one (starting with 2.0). The difference between what you get here and CircuitSetup's releases is that the code here might be ahead in development (and uses some different sounds), and the pre-compiled binary has all the features enabled.
+Since Sep 2022, CircuitSetup are distributing this very firmware as their official one (starting with 2.0). The difference between what you get here and CircuitSetup's releases is that the code here might be ahead in development, uses some different sounds, and the pre-compiled binary has all the features enabled.
 
 ## Installation
 
 There are different alternative ways to install this firmware:
 
-1) If a previous version of the Time Circuits firmware was installed on your device, you can upload the provided pre-compiled binary to update to the current version: Enter the [Config Portal](#the-config-portal), click on "Update" and select the pre-compiled binary file provided in this repository ("install/timecircuits-A10001986.ino.nodemcu-32s.bin"). *Note: If the previously installed firmware was from CircuitSetup, you need to re-install the sound-files using the sound-pack from this very repo.*
+1) If a previous version of the TCD firmware was installed on your device, you can upload the provided pre-compiled binary to update to the current version: Enter the [Config Portal](#the-config-portal), click on "Update" and select the pre-compiled binary file provided in this repository ("install/timecircuits-A10001986.ino.nodemcu-32s.bin"). *Note: If the previously installed firmware was from CircuitSetup (ie. pre-installed or downloaded from their github), you need to re-install the sound-files using the sound-pack from this very repo.*
 
 2) Using the Arduino IDE or PlatformIO: Download the sketch source code, all required libraries, compile and upload it. This method is the one for fresh ESP32 boards and/or folks familiar with the programming tool chain. Detailed build information is in [timecircuits-A10001986.ino](https://github.com/realA10001986/Time-Circuits-Display/blob/main/timecircuits-A10001986/timecircuits-A10001986.ino).
 
@@ -55,7 +55,7 @@ There are different alternative ways to install this firmware:
 
 The firmware comes with a number of sound files which need to be installed separately. These sound files are not updated as often as the firmware itself. If you have previously installed the latest version of the sound-pack, you normally don't have to re-install the audio files when you update the firmware. Only if either a new version of the sound-pack is released, or your TCD is quiet after a firmware update (what will the case if you see "WAIT" during boot), a re-installation is needed.
 
-*If your TCD previously ran a firmware from CircuitSetup, a re-installation of the audio files **from this repository** is required. You cannot use CircuitSetup's audio files with the firmware available here, or vice versa.*
+*If your TCD previously ran a firmware from CircuitSetup (ie. pre-installed or downloaded from their github), a re-installation of the audio files **from this repository** is required. You cannot use CircuitSetup's audio files with the firmware available here, or vice versa.*
 
 - Download "install/sound-pack-xxxxxxxx.zip" and extract it to the root directory of of a FAT32 formatted SD card
 - power down the TCD,
