@@ -1,6 +1,6 @@
 # Firmware for Time Circuits Display
 
-This repository holds the most current firmware for CircuitSetup's wonderful [Time Circuits Display](https://circuitsetup.us/product/complete-time-circuits-display-kit/) (aka TCD).
+This repository holds the most current firmware for CircuitSetup's wonderful [Time Circuits Display](https://circuitsetup.us/product/complete-time-circuits-display-kit/) ("TCD").
 
 The hardware is available [here](https://circuitsetup.us/product/complete-time-circuits-display-kit/).
 
