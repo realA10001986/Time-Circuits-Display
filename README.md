@@ -170,7 +170,7 @@ Time-travelling will interrupt the cycling of movie times for 30 minutes.
 
 In this case, head to the Config Portal and
 - set the **_Time Cycling Interval_** to OFF
-- uncheck **_Make time travels persistent**_
+- uncheck **_Make time travels persistent_**
 
 Then enter the [keypad menu](#how-to-enter-datestimes-for-the-destination-and-last-time-departed-displays) and set your favorite *Destination* and *Last time departed* times.
 
