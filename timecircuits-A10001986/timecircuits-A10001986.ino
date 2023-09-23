@@ -91,6 +91,14 @@
 
 /*  Changelog
  *   
+ *  2023/09/23 (A10001986)
+ *    - Add remote control facility through TCD keypad for Flux Capacitor, SID and 
+ *      Plutonium Gauges via BTTFN.
+ *      3xxx = Flux Capacitor, 6xxx = SID, 9xxx = Plutonium Gauges. 
+ *      See docs of respective prop for more information.
+ *    - Add REFILL network command for Plutonium gauges; triggered by
+ *      009ENTER.
+ *    - Fix display of BTTFN client names
  *  2023/09/16 (A10001986)
  *    - haveFS check before attempting to open audio file from flashFS
  *  2023/09/13 (A10001986)

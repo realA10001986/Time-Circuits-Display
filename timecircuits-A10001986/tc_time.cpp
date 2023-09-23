@@ -539,6 +539,10 @@ bool bttfnHaveClients = false;
 #define BTTFN_NOT_REENTRY  3
 #define BTTFN_NOT_ABORT_TT 4
 #define BTTFN_NOT_ALARM    5
+#define BTTFN_NOT_REFILL   6
+#define BTTFN_NOT_FLUX_CMD 7
+#define BTTFN_NOT_SID_CMD  8
+#define BTTFN_NOT_PCG_CMD  9
 #define BTTFN_TYPE_ANY     0    // Any, unknown or no device
 #define BTTFN_TYPE_FLUX    1    // Flux Capacitor
 #define BTTFN_TYPE_SID     2    // SID
@@ -613,7 +617,7 @@ static bool NTPHaveLocalTime();
 // BTTF network stuff
 #ifdef TC_HAVEBTTFN
 static void bttfn_setup();
-static void bttfn_notify(uint8_t event, uint16_t payload = 0);
+static void bttfn_notify(uint8_t targetType, uint8_t event, uint16_t payload = 0);
 static void bttfn_expire_clients();
 #endif
 
@@ -2857,7 +2861,7 @@ static void ettoPulseStartNoLead()
         #ifdef TC_DBG
         digitalWrite(WHITE_LED_PIN, HIGH);
         Serial.printf("ETTO Start (no lead) %d\n", millis());
-    #endif
+        #endif
     }
 }
 
@@ -2869,6 +2873,15 @@ static void ettoPulseEnd()
         digitalWrite(WHITE_LED_PIN, LOW);
         #endif
     }
+}
+
+void send_refill_msg()
+{
+    #ifdef EXTERNAL_TIMETRAVEL_OUT
+    if(useETTO || bttfnHaveClients) {
+        sendNetWorkMsg("REFILL\0", 8, BTTFN_NOT_REFILL);
+    }
+    #endif
 }
 
 // Send notification message via MQTT -or- BTTFN.
@@ -2886,10 +2899,25 @@ static void sendNetWorkMsg(const char *pl, unsigned int len, uint8_t bttfnMsg, u
     }
     #endif
     #ifdef TC_HAVEBTTFN
-    bttfn_notify(bttfnMsg, bttfnPayload);
+    bttfn_notify(BTTFN_TYPE_ANY, bttfnMsg, bttfnPayload);
     #endif
 }
 #endif  // EXTERNAL_TIMETRAVEL_OUT
+
+#ifdef TC_HAVEBTTFN
+void bttfnSendFluxCmd(uint16_t payload)
+{
+    bttfn_notify(BTTFN_TYPE_FLUX, BTTFN_NOT_FLUX_CMD, payload);
+}
+void bttfnSendSIDCmd(uint16_t payload)
+{
+    bttfn_notify(BTTFN_TYPE_SID, BTTFN_NOT_SID_CMD, payload);
+}
+void bttfnSendPCGCmd(uint16_t payload)
+{
+    bttfn_notify(BTTFN_TYPE_PCG, BTTFN_NOT_PCG_CMD, payload);
+}
+#endif
 
 /*
  * Reset present time to actual present time
@@ -4620,8 +4648,8 @@ static bool bttfnValChar(char *s, int i)
     if(a == '-') return true;
     if(a < '0') return false;
     if(a > '9' && a < 'A') return false;
-    if(a < 'Z') return true;
-    if(a > 'a' && a < 'z') {
+    if(a <= 'Z') return true;
+    if(a >= 'a' && a <= 'z') {
         s[i] &= ~0x20;
         return true;
     }
@@ -4873,7 +4901,7 @@ void bttfn_loop()
 }
 
 // Send event notification to known clients
-static void bttfn_notify(uint8_t event, uint16_t payload)
+static void bttfn_notify(uint8_t targetType, uint8_t event, uint16_t payload)
 {
     IPAddress ip;
 
@@ -4902,13 +4930,15 @@ static void bttfn_notify(uint8_t event, uint16_t payload)
     for(int i = 0; i < BTTFN_MAX_CLIENTS; i++) {
         if(!bttfnClientIP[i][0])
             break;
-        ip[0] = bttfnClientIP[i][0];
-        ip[1] = bttfnClientIP[i][1];
-        ip[2] = bttfnClientIP[i][2];
-        ip[3] = bttfnClientIP[i][3];
-        tcdUDP->beginPacket(ip, BTTF_DEFAULT_LOCAL_PORT);
-        tcdUDP->write(BTTFUDPBuf, BTTF_PACKET_SIZE);
-        tcdUDP->endPacket();
+        if(!targetType || targetType == bttfnClientType[i]) {
+            ip[0] = bttfnClientIP[i][0];
+            ip[1] = bttfnClientIP[i][1];
+            ip[2] = bttfnClientIP[i][2];
+            ip[3] = bttfnClientIP[i][3];
+            tcdUDP->beginPacket(ip, BTTF_DEFAULT_LOCAL_PORT);
+            tcdUDP->write(BTTFUDPBuf, BTTF_PACKET_SIZE);
+            tcdUDP->endPacket();
+        }
     }
 }
 #endif

@@ -144,6 +144,7 @@ void time_setup();
 void time_loop();
 void timeTravel(bool doComplete, bool withSpeedo = false);
 void resetPresentTime();
+void send_refill_msg();
 void pauseAuto();
 bool checkIfAutoPaused();
 void endPauseAuto(void);
@@ -195,6 +196,9 @@ void  ntp_short_loop();
 int  bttfnNumClients();
 bool bttfnGetClientInfo(int c, char **id, uint8_t **ip, uint8_t *type);
 void bttfn_loop();
+void bttfnSendFluxCmd(uint16_t payload);
+void bttfnSendSIDCmd(uint16_t payload);
+void bttfnSendPCGCmd(uint16_t payload);
 #endif
 
 #endif

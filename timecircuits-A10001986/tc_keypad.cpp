@@ -798,10 +798,10 @@ void keypad_loop()
                 specDisp = 10;
                 validEntry = true;
                 break;
-            case 000:
-            case 001:
-            case 002:
-            case 003:
+            case 0:
+            case 1:
+            case 2:
+            case 3:
                 setBeepMode(code);
                 #ifdef IS_ACAR_DISPLAY
                 sprintf(atxt, "BEEP MODE  %1d", beepMode);
@@ -812,6 +812,10 @@ void keypad_loop()
                 enterDelay = ENTER_DELAY;
                 specDisp = 10;
                 // Play no sound, ie no xxvalidEntry
+                break;
+            case 9:
+                send_refill_msg();
+                validEntry = true;
                 break;
             case 990:
             case 991:
@@ -959,6 +963,26 @@ void keypad_loop()
             specDisp = 10;
             validEntry = true;
 
+        #ifdef TC_HAVEBTTFN
+        } else if(strLen == DATELEN_TIME && 
+                        (dateBuffer[0] == '3' ||
+                         dateBuffer[0] == '6' || 
+                         dateBuffer[0] == '9')) {
+                      
+            uint16_t cmd = ((dateBuffer[1] - '0') * 100) + read2digs(2);
+            switch(dateBuffer[0]) {
+            case '3':
+                bttfnSendFluxCmd(cmd);
+                break;
+            case '6':
+                bttfnSendSIDCmd(cmd);
+                break;
+            default:
+                bttfnSendPCGCmd(cmd);
+            }
+            validEntry = true;
+        #endif
+        
         } else if(strLen == DATELEN_REM) {
 
             if(read2digs(0) == 77) {
