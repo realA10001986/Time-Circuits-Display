@@ -468,7 +468,7 @@ void keypad_loop()
         isEttKeyPressed = isEttKeyHeld = isEttKeyImmediate = false;
     } else if(isEttKeyPressed) {
         if(!ettDelay || isEttKeyImmediate) {
-            timeTravel(ettLong, true);
+            timeTravel(ettLong, true, isEttKeyImmediate ? false : true);
             ettDelayed = false;
         } else {
             ettNow = millis();
@@ -479,7 +479,7 @@ void keypad_loop()
     }
     if(ettDelayed) {
         if(millis() - ettNow >= ettDelay) {
-            timeTravel(ettLong, true);
+            timeTravel(ettLong, true, true);
             ettDelayed = false;
         }
     }

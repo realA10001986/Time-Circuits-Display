@@ -194,6 +194,7 @@ static unsigned long timetravelP1Now = 0;
 static unsigned long timetravelP1Delay = 0;
 int                  timeTravelP1 = 0;
 static bool          triggerP1 = false;
+static bool          triggerP1NoLead = false;
 static unsigned long triggerP1Now = 0;
 static long          triggerP1LeadTime = 0;
 #ifdef EXTERNAL_TIMETRAVEL_OUT
@@ -589,7 +590,7 @@ static void dispIdleZero(bool force = false);
 #endif
 #endif
 
-static void triggerLongTT();
+static void triggerLongTT(bool noLead = false);
 static void copyPresentToDeparted(bool isReturn);
 
 #ifdef EXTERNAL_TIMETRAVEL_OUT
@@ -1437,7 +1438,7 @@ void time_loop()
                 if(FPBUnitIsOn) {
                     startup = false;
                     startupSound = false;
-                    triggerP1 = 0;
+                    triggerP1 = false;
                     #ifdef EXTERNAL_TIMETRAVEL_OUT
                     triggerETTO = false;
                     ettoPulseEnd();
@@ -1506,7 +1507,7 @@ void time_loop()
     #if defined(EXTERNAL_TIMETRAVEL_OUT) || defined(TC_HAVESPEEDO)
     // Timer for starting P1 if to be delayed
     if(triggerP1 && (millis() - triggerP1Now >= triggerP1LeadTime)) {
-        triggerLongTT();
+        triggerLongTT(triggerP1NoLead);
         triggerP1 = false;
     }
     #endif
@@ -1675,7 +1676,7 @@ void time_loop()
                     if(!GPSabove88) {
                         if(FPBUnitIsOn && !presentTime.getNightMode() &&
                            !startup && !timeTravelP0 && !timeTravelP1 && !timeTravelRE && !timeTravelP2) {
-                            timeTravel(true, false);
+                            timeTravel(true, false, true);
                             GPSabove88 = true;
                         }
                     }
@@ -2546,7 +2547,7 @@ void time_loop()
  *  This is also called from tc_keypad.cpp
  */
 
-void timeTravel(bool doComplete, bool withSpeedo)
+void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
 {
     int   tyr = 0;
     int   tyroffs = 0;
@@ -2639,7 +2640,6 @@ void timeTravel(bool doComplete, bool withSpeedo)
             if(useETTO || bttfnHaveClients) {
 
                 triggerETTO = true;
-                triggerP1 = true;
                 
                 if(currTotDur >= ettoLeadPoint || currTotDur >= pointOfP1) {
 
@@ -2693,15 +2693,16 @@ void timeTravel(bool doComplete, bool withSpeedo)
             } else
             #endif
             if(currTotDur >= pointOfP1) {
-                 triggerP1 = true;
                  triggerP1Now = ttUnivNow;
                  triggerP1LeadTime = 0;
                  timetravelP0Delay = currTotDur - pointOfP1;
             } else {
-                 triggerP1 = true;
                  triggerP1Now = ttUnivNow;
                  triggerP1LeadTime = pointOfP1 - currTotDur + timetravelP0Delay;
             }
+
+            triggerP1 = true;
+            triggerP1NoLead = false;
 
             speedo.setSpeed(timeTravelP0Speed);
             speedo.setBrightness(255);
@@ -2713,7 +2714,12 @@ void timeTravel(bool doComplete, bool withSpeedo)
 
             return;
         }
+        
         // If (actual) speed >= 88, trigger P1 immediately
+        
+        if(!useETTO) {
+            forceNoLead = true;
+        }
     }
     #endif
 
@@ -2727,24 +2733,31 @@ void timeTravel(bool doComplete, bool withSpeedo)
         if(useETTO || bttfnHaveClients) {
 
             long  ettoLeadT = ettoLeadTime;
-            
+            long  P1 = TT_P1_POINT88 + TT_SNDLAT;
+
             triggerP1 = true;
+            triggerP1NoLead = false;
             triggerETTO = true;
+            
+            if(forceNoLead && !useETTO) {
+                P1 = 0;
+                triggerP1NoLead = true;
+            }
 
             bttfnTTLeadTime = ettoLeadTime;
 
             #ifdef TC_HAVEBTTFN
             if(!useETTO) {
-                bttfnTTLeadTime = ettoLeadT = TT_P1_POINT88 + TT_SNDLAT;
+                bttfnTTLeadTime = ettoLeadT = P1;
             }
             #endif
 
-            if(ettoLeadT >= (TT_P1_POINT88 + TT_SNDLAT)) {
+            if(ettoLeadT >= P1) {
                 triggerETTOLeadTime = 0;
-                triggerP1LeadTime = ettoLeadT - (TT_P1_POINT88 + TT_SNDLAT);
+                triggerP1LeadTime = ettoLeadT - P1;
             } else {
                 triggerP1LeadTime = 0;
-                triggerETTOLeadTime = (TT_P1_POINT88 + TT_SNDLAT) - ettoLeadT;
+                triggerETTOLeadTime = P1 - ettoLeadT;
 
                 if(triggerETTOLeadTime > 500) {
                     sendNetWorkMsg("PREPARE\0", 8, BTTFN_NOT_PREPARE);
@@ -2758,7 +2771,7 @@ void timeTravel(bool doComplete, bool withSpeedo)
         }
         #endif
 
-        triggerLongTT();
+        triggerLongTT(forceNoLead);
 
         return;
     }
@@ -2833,11 +2846,12 @@ void timeTravel(bool doComplete, bool withSpeedo)
     #endif
 }
 
-static void triggerLongTT()
+static void triggerLongTT(bool noLead)
 {
-    if(playTTsounds) play_file("/travelstart.mp3", PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
+    if(playTTsounds) play_file( noLead ? "/travelstart2.mp3" : "/travelstart.mp3", 
+                                        PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
     timetravelP1Now = millis();
-    timetravelP1Delay = TT_P1_DELAY_P1;
+    timetravelP1Delay = noLead ? 0 : TT_P1_DELAY_P1;
     timeTravelP1 = 1;
     timeTravelP2 = 0;
 }

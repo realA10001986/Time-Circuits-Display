@@ -91,6 +91,10 @@
 
 /*  Changelog
  *   
+ *  2023/09/24 (A10001986)
+ *    - Make timetravel more immediate for some hardware configurations and in
+ *      some situations. Enhances inter-operability with third party props.
+ *      Requires new sound-pack.
  *  2023/09/23 (A10001986)
  *    - Add remote control facility through TCD keypad for Flux Capacitor, SID and 
  *      Plutonium Gauges via BTTFN.

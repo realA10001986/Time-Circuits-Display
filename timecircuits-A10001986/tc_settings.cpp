@@ -76,7 +76,7 @@ static bool configOnSD = false;
 /* Paranoia: No writes Flash-FS  */
 bool FlashROMode = false;
 
-#define NUM_AUDIOFILES 19
+#define NUM_AUDIOFILES 20
 #define SND_ENTER_IDX  8
 #ifndef TWSOUND
 #define SND_ENTER_LEN   13374
@@ -104,7 +104,8 @@ static const char *audioFiles[NUM_AUDIOFILES] = {
       "/startup.mp3",
       "/timer.mp3",
       "/timetravel.mp3",
-      "/travelstart.mp3"
+      "/travelstart.mp3",
+      "/travelstart2.mp3"
 };
 static const char *IDFN = "/TCD_def_snd.txt";
 
@@ -191,6 +192,8 @@ void settings_setup()
       
         #ifdef TC_DBG
         Serial.println(F("ok, loading settings"));
+        int tBytes = SPIFFS.totalBytes(); int uBytes = SPIFFS.usedBytes();
+        Serial-printf("FlashFS: %d total, %d used\n", tBytes, uBytes);
         #endif
         
         if(SPIFFS.exists(cfgName)) {
@@ -1315,7 +1318,7 @@ static bool check_if_default_audio_present()
       15184, 22983, 33364, 51701,           // ee1, ee2, ee3, ee4
       SND_ENTER_LEN, 125804, 33853, 47228,  // enter, intro, nmoff, nmon
       16747, 151719, 3790, SND_STARTUP_LEN, // ping, reminder, shutdown, startup, 
-      84894, 38899, 135447                  // timer, timetravel, travelstart
+      84894, 38899, 135447, 113713          // timer, timetravel, travelstart, travelstart2
     };
 
     if(!haveSD)

@@ -142,7 +142,7 @@ extern unsigned long beepTimerNow;
 void time_boot();
 void time_setup();
 void time_loop();
-void timeTravel(bool doComplete, bool withSpeedo = false);
+void timeTravel(bool doComplete, bool withSpeedo = false, bool forceNoLead = false);
 void resetPresentTime();
 void send_refill_msg();
 void pauseAuto();
