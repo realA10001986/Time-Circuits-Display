@@ -256,7 +256,7 @@ static void keypadEvent(char key, KeyState kstate)
         switch(key) {
         case '0':    // "0" held down -> time travel
             doKey = false;
-            // Complete timeTravel, with speedo
+            // Complete timeTravel, with speedo, (with Lead)
             timeTravel(true, true);
             break;
         case '9':    // "9" held down -> return from time travel
@@ -468,6 +468,7 @@ void keypad_loop()
         isEttKeyPressed = isEttKeyHeld = isEttKeyImmediate = false;
     } else if(isEttKeyPressed) {
         if(!ettDelay || isEttKeyImmediate) {
+            // (MQTT with lead, otherwise without)
             timeTravel(ettLong, true, isEttKeyImmediate ? false : true);
             ettDelayed = false;
         } else {

@@ -93,11 +93,12 @@
 
 // Time between the phases of (long) time travel
 // Sum of all must be 8000
-#define TT_P1_DELAY_P1  1400                                                                    // Normal
-#define TT_P1_DELAY_P2  (4200-TT_P1_DELAY_P1)                                                   // Light flicker
-#define TT_P1_DELAY_P3  (5800-(TT_P1_DELAY_P2+TT_P1_DELAY_P1))                                  // Off
-#define TT_P1_DELAY_P4  (6800-(TT_P1_DELAY_P3+TT_P1_DELAY_P2+TT_P1_DELAY_P1))                   // Random display I
-#define TT_P1_DELAY_P5  (8000-(TT_P1_DELAY_P4+TT_P1_DELAY_P3+TT_P1_DELAY_P2+TT_P1_DELAY_P1))    // Random display II
+#define TT_P1_TOTAL     8000
+#define TT_P1_DELAY_P1  1400                                                                        // Normal
+#define TT_P1_DELAY_P2  (4200-TT_P1_DELAY_P1)                                                       // Light flicker
+#define TT_P1_DELAY_P3  (5800-(TT_P1_DELAY_P2+TT_P1_DELAY_P1))                                      // Off
+#define TT_P1_DELAY_P4  (6800-(TT_P1_DELAY_P3+TT_P1_DELAY_P2+TT_P1_DELAY_P1))                       // Random display I
+#define TT_P1_DELAY_P5  (TT_P1_TOTAL-(TT_P1_DELAY_P4+TT_P1_DELAY_P3+TT_P1_DELAY_P2+TT_P1_DELAY_P1)) // Random display II
 // ACTUAL POINT OF TIME TRAVEL:
 #define TT_P1_POINT88   1000    // ms into "starttravel" sample, when 88mph is reached.
 #define TT_SNDLAT        400    // DO NOT CHANGE
@@ -597,7 +598,7 @@ static void copyPresentToDeparted(bool isReturn);
 static void ettoPulseStart();
 static void ettoPulseStartNoLead();
 static void ettoPulseEnd();
-static void sendNetWorkMsg(const char *pl, unsigned int len, uint8_t bttfnMsg, uint16_t bttfnPayload = 0);
+static void sendNetWorkMsg(const char *pl, unsigned int len, uint8_t bttfnMsg, uint16_t bttfnPayload = 0, uint16_t bttfnPayload2 = 0);
 #endif
 
 // Time calculations
@@ -618,7 +619,7 @@ static bool NTPHaveLocalTime();
 // BTTF network stuff
 #ifdef TC_HAVEBTTFN
 static void bttfn_setup();
-static void bttfn_notify(uint8_t targetType, uint8_t event, uint16_t payload = 0);
+static void bttfn_notify(uint8_t targetType, uint8_t event, uint16_t payload = 0, uint16_t payload2 = 0);
 static void bttfn_expire_clients();
 #endif
 
@@ -1443,7 +1444,7 @@ void time_loop()
                     triggerETTO = false;
                     ettoPulseEnd();
                     if(useETTO || bttfnHaveClients) {
-                        if(timeTravelP0 || timeTravelP1 || timeTravelRE || timeTravelP2) {
+                        if(timeTravelP0 || (timeTravelP1 > 0) || timeTravelRE || timeTravelP2) {
                             sendNetWorkMsg("ABORT_TT\0", 9, BTTFN_NOT_ABORT_TT);
                         }
                     }
@@ -1515,7 +1516,7 @@ void time_loop()
     #ifdef EXTERNAL_TIMETRAVEL_OUT
     // Timer for start of ETTO signal
     if(triggerETTO && (millis() - triggerETTONow >= triggerETTOLeadTime)) {
-        sendNetWorkMsg("TIMETRAVEL\0", 11, BTTFN_NOT_TT, bttfnTTLeadTime);
+        sendNetWorkMsg("TIMETRAVEL\0", 11, BTTFN_NOT_TT, bttfnTTLeadTime, TT_P1_TOTAL);
         ettoPulseStart();
         triggerETTO = false;
         #ifdef TC_DBG
@@ -1609,7 +1610,7 @@ void time_loop()
     #endif  // TC_HAVESPEEDO
 
     // Time travel animation, phase 1: Display disruption
-    if(timeTravelP1 && (millis() - timetravelP1Now >= timetravelP1Delay)) {
+    if((timeTravelP1 > 0) && (millis() - timetravelP1Now >= timetravelP1Delay)) {
         timeTravelP1++;
         timetravelP1Now = millis();
         switch(timeTravelP1) {
@@ -2718,6 +2719,8 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
         // If (actual) speed >= 88, trigger P1 immediately
         
         if(!useETTO) {
+            // If we have GPS speed and its >= 88, don't waste
+            // time on the lead (unless external props need it)
             forceNoLead = true;
         }
     }
@@ -2733,14 +2736,14 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
         if(useETTO || bttfnHaveClients) {
 
             long  ettoLeadT = ettoLeadTime;
-            long  P1 = TT_P1_POINT88 + TT_SNDLAT;
+            long  P1_88 = TT_P1_POINT88 + TT_SNDLAT;
 
             triggerP1 = true;
             triggerP1NoLead = false;
             triggerETTO = true;
             
             if(forceNoLead && !useETTO) {
-                P1 = 0;
+                P1_88 = 0;
                 triggerP1NoLead = true;
             }
 
@@ -2748,16 +2751,16 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
 
             #ifdef TC_HAVEBTTFN
             if(!useETTO) {
-                bttfnTTLeadTime = ettoLeadT = P1;
+                bttfnTTLeadTime = ettoLeadT = P1_88;
             }
             #endif
 
-            if(ettoLeadT >= P1) {
+            if(ettoLeadT >= P1_88) {
                 triggerETTOLeadTime = 0;
-                triggerP1LeadTime = ettoLeadT - P1;
+                triggerP1LeadTime = ettoLeadT - P1_88;
             } else {
                 triggerP1LeadTime = 0;
-                triggerETTOLeadTime = P1 - ettoLeadT;
+                triggerETTOLeadTime = P1_88 - ettoLeadT;
 
                 if(triggerETTOLeadTime > 500) {
                     sendNetWorkMsg("PREPARE\0", 8, BTTFN_NOT_PREPARE);
@@ -2767,10 +2770,18 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
             ttUnivNow = millis();
             triggerETTONow = triggerP1Now = ttUnivNow;
 
+            // Set now to block input and other interfering actions.
+            // Will be set to something valid in triggerLongTT().
+            timeTravelP1 = -1;
+
             return;
         }
         #endif
 
+        triggerP1 = false;
+        #ifdef EXTERNAL_TIMETRAVEL_OUT
+        triggerETTO = false;
+        #endif
         triggerLongTT(forceNoLead);
 
         return;
@@ -2904,7 +2915,7 @@ void send_refill_msg()
 // Otherwise, send via BTTFN.
 // Props can rely on getting only ONE notification message if they listen
 // to both MQTT and BTTFN.
-static void sendNetWorkMsg(const char *pl, unsigned int len, uint8_t bttfnMsg, uint16_t bttfnPayload)
+static void sendNetWorkMsg(const char *pl, unsigned int len, uint8_t bttfnMsg, uint16_t bttfnPayload, uint16_t bttfnPayload2)
 {
     #ifdef TC_HAVEMQTT
     if(useMQTT && pubMQTT) {
@@ -2913,23 +2924,23 @@ static void sendNetWorkMsg(const char *pl, unsigned int len, uint8_t bttfnMsg, u
     }
     #endif
     #ifdef TC_HAVEBTTFN
-    bttfn_notify(BTTFN_TYPE_ANY, bttfnMsg, bttfnPayload);
+    bttfn_notify(BTTFN_TYPE_ANY, bttfnMsg, bttfnPayload, bttfnPayload2);
     #endif
 }
 #endif  // EXTERNAL_TIMETRAVEL_OUT
 
 #ifdef TC_HAVEBTTFN
-void bttfnSendFluxCmd(uint16_t payload)
+void bttfnSendFluxCmd(uint16_t payload, uint16_t payload2)
 {
-    bttfn_notify(BTTFN_TYPE_FLUX, BTTFN_NOT_FLUX_CMD, payload);
+    bttfn_notify(BTTFN_TYPE_FLUX, BTTFN_NOT_FLUX_CMD, payload, payload2);
 }
-void bttfnSendSIDCmd(uint16_t payload)
+void bttfnSendSIDCmd(uint16_t payload, uint16_t payload2)
 {
-    bttfn_notify(BTTFN_TYPE_SID, BTTFN_NOT_SID_CMD, payload);
+    bttfn_notify(BTTFN_TYPE_SID, BTTFN_NOT_SID_CMD, payload, payload2);
 }
-void bttfnSendPCGCmd(uint16_t payload)
+void bttfnSendPCGCmd(uint16_t payload, uint16_t payload2)
 {
-    bttfn_notify(BTTFN_TYPE_PCG, BTTFN_NOT_PCG_CMD, payload);
+    bttfn_notify(BTTFN_TYPE_PCG, BTTFN_NOT_PCG_CMD, payload, payload2);
 }
 #endif
 
@@ -4915,7 +4926,7 @@ void bttfn_loop()
 }
 
 // Send event notification to known clients
-static void bttfn_notify(uint8_t targetType, uint8_t event, uint16_t payload)
+static void bttfn_notify(uint8_t targetType, uint8_t event, uint16_t payload, uint16_t payload2)
 {
     IPAddress ip;
 
@@ -4932,6 +4943,8 @@ static void bttfn_notify(uint8_t targetType, uint8_t event, uint16_t payload)
     BTTFUDPBuf[5] = event;                // Store event id
     BTTFUDPBuf[6] = payload & 0xff;       // store payload
     BTTFUDPBuf[7] = payload >> 8;         //
+    BTTFUDPBuf[8] = payload2 & 0xff;      // store payload 2
+    BTTFUDPBuf[9] = payload2 >> 8;        //
     
     // Checksum
     uint8_t a = 0;
