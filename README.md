@@ -813,6 +813,8 @@ You need two wires for connecting the TCD to the other prop: TT_OUT (IO14) and G
 |:--:|
 | IO14 on board version 1.2 |
 
+If external gear is connected to TT_OUT/IO14 and you want to use this control feature, check **_Control props connected by wire_** in the Config Portal.
+
 In case you want to design your own props, here's the timing diagram:
 
 1) Option **_Signal Time Travel without 5s lead_** unchecked
@@ -849,7 +851,7 @@ In case you want to design your own props, here's the timing diagram:
                                   TT-OUT/IO14: LOW->HIGH    TT-OUT/IO14: HIGH->LOW
  ```
 
-If external gear is connected to TT_OUT/IO14 and you want to use this control feature, check **_Control props connected by wire_** in the Config Portal.
+In this case, there is no lead. The time travel starts immediately.
 
 For CircuitSetup original props connected by wire, the option **_Signal Time Travel without 5s lead_** should not be set since it skips the "acceleration phase"; however, if that option is - for some reason - set on the TCD, the respective option on the prop must be set, too. If those props are connected wirelessly, this option has no effect.
 
