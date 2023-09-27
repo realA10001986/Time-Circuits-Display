@@ -851,7 +851,7 @@ In case you want to design your own props, here's the timing diagram:
 
 If external gear is connected to TT_OUT/IO14 and you want to use this control feature, check **_Control props connected by wire_** in the Config Portal.
 
-For CircuitSetup original props connected by wire, the option **_Signal Time Travel without 5s lead_** must not be set. If those props are connected wirelessly, this option has no effect.
+For CircuitSetup original props connected by wire, the option **_Signal Time Travel without 5s lead_** should not be set since it skips the "acceleration phase"; however, if that option is - for some reason - set on the TCD, the respective option on the prop must be set, too. If those props are connected wirelessly, this option has no effect.
 
 Note that a wired connection only allows for synchronized time travel sequences, no other communication takes place.
 
@@ -1174,9 +1174,11 @@ This selects whether the TT_OUT/IO14 pin is activated upon a time-travel in orde
 
 ##### &#9654; Signal Time Travel without 5s lead
 
-If this option is unchecked (which is the default), a time travel is signalled for wired props with a 5 second lead, to give the prop time to play an acceleraton sequence. If this option is checked, TT_OUT/IO14 is activated when the time travel actually starts. 
+If this option is unchecked (which is the default), a time travel is signalled for wired props with a 5 second lead, in order to give the prop time to play an acceleraton sequence. If this option is checked, TT_OUT/IO14 is activated when the time travel actually starts. 
 
-For CircuitSetup original props, if they are connected by wire, this option must not be set. For wirelessly connected props this option has no effect. Also see [here](#controlling-other-props).
+For CircuitSetup original props, if they are connected by wire, this option should not be set. If it has to be set (because you are also driving third-party props, for instance), the corresponding option must be set in the prop's Config Portal.
+
+For wirelessly connected props this option has no effect. Also see [here](#controlling-other-props).
 
 ##### &#9654; Provide GPS speed for wireless props
 
