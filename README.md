@@ -807,11 +807,11 @@ You need two wires for connecting the TCD to the other prop: TT_OUT (IO14) and G
 
 | ![ttout](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/b1330e4d-12ba-48ef-a454-3d6167fb2a5d) |
 |:--:|
-| IO14 on TCB 1.3 |
+| TT_OUT/IO14 on board version 1.3 |
 
 | ![ttout](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/112c0240-6a3b-44c3-a15d-5af7477a8791) |
 |:--:|
-| IO14 on TCB 1.2 |
+| IO14 on board version 1.2 |
 
 In case you want to design your own props, here's the timing diagram:
 
@@ -828,7 +828,7 @@ In case you want to design your own props, here's the timing diagram:
              |                                                       |
              |                                                       |
              |                                                       |
-     IO14: LOW->HIGH                                           IO14: HIGH->LOW
+    TT-OUT/IO14: LOW->HIGH                                  TT-OUT/IO14: HIGH->LOW
  ```
 
 "ETTO lead", ie the lead time between TT_OUT/IO14 going high and the actual start of a time travel is defined as 5000ms (ETTO_LEAD_TIME). In this window of time, the prop can play its pre-time-travel (warm-up/acceleration/etc) sequence. The sequence inside the time "tunnel" follows after that lead time, and when IO14 goes LOW, the re-entry into the destination time takes place.
@@ -846,7 +846,7 @@ In case you want to design your own props, here's the timing diagram:
                                            |                         |
                                            |                         |
                                            |                         |
-                                    IO14: LOW->HIGH           IO14: HIGH->LOW
+                                  TT-OUT/IO14: LOW->HIGH    TT-OUT/IO14: HIGH->LOW
  ```
 
 If external gear is connected to TT_OUT/IO14 and you want to use this control feature, check **_Control props connected by wire_** in the Config Portal.
@@ -863,7 +863,7 @@ The TCD can communicate with other compatible props wirelessly, via WiFi. It can
 
 ![bttfn connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/8d9a54bc-12c9-459a-96cf-ab3f7982af24)
 
-On the TCD, no special configuration is required. However, if the TCD is supposed to send out notifications about time travel and alarm to connected BTTFN clients, usage of MQTT must be disabled or the **_Send event notifications_** option in the MQTT section of the Config Portal must be _unchecked_. The TCD only sends out such notifications either via MQTT or BTTFN, never both.
+On the TCD, no special configuration is required. However, if the TCD is supposed to send out notifications about time travel and alarm to connected BTTFN clients, usage of MQTT must be disabled or the **_Send event notifications_** option in the MQTT section of the Config Portal must be _unchecked_. The TCD only sends out such notifications either via BTTFN or MQTT, never both.
 
 On the other prop, such as CircuitSetup's upcoming [Flux Capacitor](https://fc.backtothefutu.re) or [SID](https://sid.backtothefutu.re), the TCD's IP address (not hostname!) must be entered into the *IP address of TCD* field on the Setup page in their Config Portal - that's all.
 
