@@ -801,7 +801,7 @@ Note that the TCD has no internet access while in car mode; this means that it c
 
 The device can tell other props about a time travel, and in essence act as a "master controller" in a setup of several props. It does so via IO14 (labeled "TT OUT" on Control Boards 1.3 and later).
 
-![Wired connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/2e9be0a2-2180-417a-9d04-6f36f7cd1697)
+![Wired connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/9a2f93a9-603c-4389-8973-0c8e09e9af74)
 
 You need two wires for connecting the TCD to the other prop: TT_OUT (IO14) and GND, which need to be connected to the respective pins of the prop.
 
