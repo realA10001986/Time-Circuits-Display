@@ -904,7 +904,7 @@ The TCD can - to a limited extent - be controlled through messages sent to topic
 
 If both the TCD and the other props are connected to the same broker, and the option **_Send event notifications_** is checked on the TCD's side, other compatible props will receive information on time travel and alarm and play their sequences in sync with the TCD. The topic is called  **bttf/tcd/pub**.
 
-![MQTT connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/fdfcaabf-96e9-45b1-a626-ded91f37d128)
+![MQTT connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/51986583-455c-491d-8d9c-4d5b9bf2d8ff)
 
 The timing is identical to the wired protocol, see [here](#controlling-other-props). TIMETRAVEL is sent to **bttf/tcd/pub** when IO14 goes high, ie with a lead time (ETTO LEAD) of 5 seconds. REENTRY is sent when the re-entry sequence starts (ie when IO14 goes low). Note that network traffic has some latency, so timing might not be as exact as a wired connection.
 
