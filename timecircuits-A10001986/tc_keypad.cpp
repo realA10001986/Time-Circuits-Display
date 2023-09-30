@@ -114,6 +114,7 @@ static unsigned long lastKeyPressed = 0;
 #define DATELEN_ALL   12   // mmddyyyyHHMM  dt: month, day, year, hour, min
 #define DATELEN_REM   10   // 77mmddHHMM    set reminder
 #define DATELEN_DATE   8   // mmddyyyy      dt: month, day, year
+#define DATELEN_ECMD   7   // xyyyyyy       6-digit command for FC, SID, PG
 #define DATELEN_QALM   6   // 11HHMM/888xxx 11, hour, min (alarm-set shortcut); 888xxx (mp)
 #define DATELEN_INT    5   // xxxxx         reset
 #define DATELEN_TIME   4   // HHMM          dt: hour, minute
@@ -538,6 +539,9 @@ void keypad_loop()
         if(strLen != DATELEN_ALL  &&
            strLen != DATELEN_REM  &&
            strLen != DATELEN_DATE &&
+           #ifdef TC_HAVEBTTFN
+           strLen != DATELEN_ECMD &&
+           #endif
            #ifdef HAVE_STALE_PRESENT
            strLen != DATELEN_STPR &&
            #endif
@@ -965,12 +969,16 @@ void keypad_loop()
             validEntry = true;
 
         #ifdef TC_HAVEBTTFN
-        } else if(strLen == DATELEN_TIME && 
+        } else if( (strLen == DATELEN_TIME || strLen == DATELEN_ECMD) && 
                         (dateBuffer[0] == '3' ||
                          dateBuffer[0] == '6' || 
                          dateBuffer[0] == '9')) {
                       
-            uint16_t cmd = ((dateBuffer[1] - '0') * 100) + read2digs(2);
+            uint32_t cmd;
+            if(strLen == DATELEN_TIME) 
+                cmd = ((dateBuffer[1] - '0') * 100) + read2digs(2);
+            else 
+                cmd = (read2digs(1) * 10000) + (read2digs(3) * 100) + read2digs(5);
             switch(dateBuffer[0]) {
             case '3':
                 bttfnSendFluxCmd(cmd);

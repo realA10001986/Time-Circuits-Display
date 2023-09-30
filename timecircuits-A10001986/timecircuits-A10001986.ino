@@ -91,6 +91,8 @@
 
 /*  Changelog
  *   
+ *  2023/09/30 (A10001986)
+ *    - Make remote commands for FC, SID, PD 32bit
  *  2023/09/26 (A10001986)
  *    - Add second payload to BTTFN notifications
  *    - Fix delayed TT-P1; sequence-checks would fail during run of delay.

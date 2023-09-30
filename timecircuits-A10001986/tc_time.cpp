@@ -2930,17 +2930,17 @@ static void sendNetWorkMsg(const char *pl, unsigned int len, uint8_t bttfnMsg, u
 #endif  // EXTERNAL_TIMETRAVEL_OUT
 
 #ifdef TC_HAVEBTTFN
-void bttfnSendFluxCmd(uint16_t payload, uint16_t payload2)
+void bttfnSendFluxCmd(uint32_t payload)
 {
-    bttfn_notify(BTTFN_TYPE_FLUX, BTTFN_NOT_FLUX_CMD, payload, payload2);
+    bttfn_notify(BTTFN_TYPE_FLUX, BTTFN_NOT_FLUX_CMD, payload & 0xffff, payload >> 16);
 }
-void bttfnSendSIDCmd(uint16_t payload, uint16_t payload2)
+void bttfnSendSIDCmd(uint32_t payload)
 {
-    bttfn_notify(BTTFN_TYPE_SID, BTTFN_NOT_SID_CMD, payload, payload2);
+    bttfn_notify(BTTFN_TYPE_SID, BTTFN_NOT_SID_CMD, payload & 0xffff, payload >> 16);
 }
-void bttfnSendPCGCmd(uint16_t payload, uint16_t payload2)
+void bttfnSendPCGCmd(uint32_t payload)
 {
-    bttfn_notify(BTTFN_TYPE_PCG, BTTFN_NOT_PCG_CMD, payload, payload2);
+    bttfn_notify(BTTFN_TYPE_PCG, BTTFN_NOT_PCG_CMD, payload & 0xffff, payload >> 16);
 }
 #endif
 
