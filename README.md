@@ -17,7 +17,7 @@ Features include
 - ["Return from Time Travel"](#time-travel): Return to real present time easily
 - ["Decorative mode"](#time-cycling): Movie-accurate time travel times displayed in *destination time* and *last time departed* displays, and cycled in configurable interval
 - [World Clock mode](#world-clock-mode): Show current time in different time zones in *destination time* and/or *last time departed* displays
-- [Presentation mode](): Show a fixed time in *Present Time* display instead of a running clock. Helpful for filming or museums.
+- [Exhibition mode](#exhibition-mode): Show a fixed time in *Present Time* display instead of a running clock. Helpful for filming or museums.
 - [Alarm function](#how-to-set-up-the-alarm): Daily alarms, with weekday selection
 - [Count-down timer](#count-down-timer): Count down from up to 99 minutes
 - [Yearly/monthly reminder](#yearlymonthly-reminder): Get a yearly or monthly acoustic reminder
@@ -147,7 +147,7 @@ For logical reasons, WC mode will be automatically disabled in some situations:
 
 To toggle WC/RC hybrid mode, type "113" followed by ENTER.
 
-#### Exhibition mode
+### Exhibition mode
 
 In this mode, the clock shows a fixed, pre-programmed time in the *Present Time* display. This is useful for exhibitions or for filming.
 
@@ -300,6 +300,10 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
    <tr>
      <td align="left">Disable / enable <a href="#car-mode"><i>car mode</i></a></td>
      <td align="left">990&#9166; / 991&#9166;</td>
+    </tr>
+  <tr>
+     <td align="left">Enable / disable <a href="#exhibition-mode"><i>Exhibition mode</i></a></td>
+     <td align="left">999&#9166;</td>
     </tr>
     <tr>
      <td align="left">Reboot the device</td>
