@@ -149,9 +149,11 @@ To toggle WC/RC hybrid mode, type "113" followed by ENTER.
 
 ### Exhibition mode
 
-In this mode, the clock shows a fixed, pre-programmed time in the *Present Time* display. This is useful for exhibitions or for filming.
+In this mode, the TCD shows a fixed, pre-programmed time in the *Present Time* display. Also after a time travel, the *Present Time* display will stay fixed at the time you travelled to. This is useful for exhibitions or for filming.
 
 To enable this mode, type 999 followed by ENTER. The default fixed time will be displayed. To change this time, type 99mmddyyyyhhMM followed by ENTER. This programmes the given time and enables Exhibition mode. 999 plus ENTER takes you back to normal mode.
+
+Exhibition mode is persistent; the pre-programmed time will be stored and retrieved after a reboot/power-down.
 
 ### Common usage scenarios
 
