@@ -93,6 +93,8 @@
  *   
  *  2023/09/30 (A10001986)
  *    - Make remote commands for FC, SID, PD 32bit
+ *    - Stale Present Time: Make persistent over reboots/power-downs
+ *    * Stale Present Time feature enabled in precompiled binary
  *  2023/09/26 (A10001986)
  *    - Add second payload to BTTFN notifications
  *    - Fix delayed TT-P1; sequence-checks would fail during run of delay.

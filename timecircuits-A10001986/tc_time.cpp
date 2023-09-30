@@ -1011,6 +1011,7 @@ void time_setup()
 
     // Load to display
     #ifdef HAVE_STALE_PRESENT
+    loadStaleTime((void *)&stalePresentTime[0], stalePresent);
     memcpy((void *)&stalePresentTime[1], (void *)&stalePresentTime[0], sizeof(dateStruct));
     if(stalePresent)
         presentTime.setFromStruct(&stalePresentTime[1]);

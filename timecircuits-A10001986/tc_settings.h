@@ -200,6 +200,11 @@ void saveCurVolume();
 bool loadMusFoldNum();
 void saveMusFoldNum();
 
+#ifdef HAVE_STALE_PRESENT
+void loadStaleTime(void *target, bool& currentOn);
+void saveStaleTime(void *source, bool currentOn);
+#endif
+
 void copySettings();
 
 bool loadIpSettings();

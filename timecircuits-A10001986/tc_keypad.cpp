@@ -837,6 +837,7 @@ void keypad_loop()
             #ifdef HAVE_STALE_PRESENT
             case 999:
                 stalePresent = !stalePresent;
+                saveStaleTime((void *)&stalePresentTime[0], stalePresent);
                 validEntry = true;
                 break;
             #endif
@@ -1060,6 +1061,9 @@ void keypad_loop()
                 memcpy((void *)&stalePresentTime[1], (void *)&stalePresentTime[0], sizeof(dateStruct));
 
                 stalePresent = true;
+
+                saveStaleTime((void *)&stalePresentTime[0], stalePresent);
+                
                 validEntry = true;
             } else {
                 invalidEntry = true;

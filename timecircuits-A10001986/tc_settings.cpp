@@ -116,6 +116,9 @@ static const char *volCfgName = "/tcdvolcfg.json";  // Volume config (flash/SD)
 static const char *musCfgName = "/tcdmcfg.json";    // Music config (SD)
 static const char *ipCfgName  = "/ipconfig.json";   // IP config (flash)
 static const char *cmCfgName  = "/cmconfig.json";   // Carmode (flash/SD)
+#ifdef HAVE_STALE_PRESENT
+static const char *stCfgName  = "/stconfig";   // Carmode (flash/SD)
+#endif
 
 static const char *fsNoAvail = "File System not available";
 static const char *failFileWrite = "Failed to open file for writing";
@@ -1081,6 +1084,57 @@ void saveCurVolume()
         Serial.printf("%s: %s\n", funcName, failFileWrite);
     }
 }
+
+/*
+ * Save/load stale present time
+ */
+
+#ifdef HAVE_STALE_PRESENT
+void loadStaleTime(void *target, bool& currentOn)
+{
+    bool haveConfigFile = false;
+    File configFile;
+    uint8_t loadBuf[8];
+    uint16_t sum = 0;
+    
+    if(!haveFS && !configOnSD)
+        return;
+
+    if(configOnSD) {
+        haveConfigFile = readFileFromSD(stCfgName, loadBuf, sizeof(loadBuf));
+    }
+    if(!haveConfigFile && haveFS) {
+        haveConfigFile = readFileFromFS(stCfgName, loadBuf, sizeof(loadBuf));
+    }
+
+    for(uint8_t i = 0; i < 7; i++) {
+        sum += (loadBuf[i] ^ 0x55);
+    }
+    if(((sum & 0xff) == loadBuf[7])) {
+        currentOn = loadBuf[0] ? true : false;
+        memcpy(target, (void *)&loadBuf[1], 6);
+    }
+}
+
+void saveStaleTime(void *source, bool currentOn)
+{
+    uint8_t savBuf[8];
+    uint16_t sum = 0;
+
+    savBuf[0] = currentOn;
+    memcpy((void *)&savBuf[1], source, 6);
+    for(uint8_t i = 0; i < 7; i++) {
+        sum += (savBuf[i] ^ 0x55);
+    }
+    savBuf[7] = sum & 0xff;
+    
+    if(configOnSD) {
+        writeFileToSD(stCfgName, savBuf, sizeof(savBuf));
+    } else if(haveFS) {
+        writeFileToFS(stCfgName, savBuf, sizeof(savBuf));
+    }
+}
+#endif
 
 /* Copy alarm/volume settings from/to SD if user
  * changed "save to SD"-option in CP
