@@ -91,10 +91,12 @@
 
 /*  Changelog
  *   
+ *  2023/10/02 (A10001986)
+ *    - Exhibition mode: Honor "Make time travels persistent" option properly
  *  2023/09/30 (A10001986)
  *    - Make remote commands for FC, SID, PD 32bit
- *    - Stale Present Time: Make persistent over reboots/power-downs
- *    * Stale Present Time feature enabled in precompiled binary
+ *    - Exhibition mode: Make persistent over reboots/power-downs
+ *    * Exhibition mode feature enabled in precompiled binary
  *  2023/09/26 (A10001986)
  *    - Add second payload to BTTFN notifications
  *    - Fix delayed TT-P1; sequence-checks would fail during run of delay.
@@ -125,9 +127,9 @@
  *    - If SD mount fails at 16Mhz, retry at 25Mhz
  *    - If specific config file not found on SD, read from FlashFS
  *  2023/09/08 (A10001986)
- *    - Add custom "stale present time" mode:
- *      ) 99mmddyyyyhhMM sets a stale present time
- *      ) 999 toggles between stale time and normal operation.
+ *    - Add Exhibition mode:
+ *      ) 99mmddyyyyhhMM sets a fixed present time
+ *      ) 999 toggles between fixed time and normal operation.
  *      [feature disabled in precompiled binary]
  *  2023/09/06 (A10001986)
  *    - Change link in CP
