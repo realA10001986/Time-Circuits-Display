@@ -1152,7 +1152,7 @@ void copySettings()
 
     if(configOnSD || !FlashROMode) {
         #ifdef TC_DBG
-        Serial.println(F("copySettings: Copying alarm/vol/etc settings to other medium"));
+        Serial.println(F("copySettings: Copying secondary settings to other medium"));
         #endif
         saveCurVolume();
         saveAlarm();
@@ -1562,20 +1562,19 @@ void rewriteSecondarySettings()
     bool oldconfigOnSD = configOnSD;
     
     #ifdef TC_DBG
-    Serial.println("Re-writing seconday settings");
+    Serial.println("Re-writing secondary settings");
     #endif
     
     writeIpSettings();
 
-    // Create current alarm/volume settings on flash FS
+    // Create current secondary settings on flash FS
     // regardless of SD-option
     configOnSD = false;
-    
-    saveAlarm();
 
+    saveCurVolume();
+    saveAlarm();
     saveReminder();
     saveCarMode();
-    saveCurVolume();
     
     configOnSD = oldconfigOnSD;
 
