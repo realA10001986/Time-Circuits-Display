@@ -25,7 +25,7 @@
 
 // These must not contain any characters other than
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
-#define TC_VERSION "V2.8.99"          // 13 chars max
+#define TC_VERSION "V2.9.99"          // 13 chars max
 #ifndef IS_ACAR_DISPLAY
 #define TC_VERSION_EXTRA "OCT022023"  // 13 chars max
 #else   // A-Car

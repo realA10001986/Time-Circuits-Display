@@ -93,7 +93,7 @@
  *   
  *  2023/10/02 (A10001986)
  *    - Exhibition mode: Honor "Make time travels persistent" option properly
- *  2023/09/30 (A10001986)
+ *  2023/09/30 (A10001986) [released by CS as 2.9]
  *    - Make remote commands for FC, SID, PD 32bit
  *    - Exhibition mode: Make persistent over reboots/power-downs
  *    * Exhibition mode feature enabled in precompiled binary
