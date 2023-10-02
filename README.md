@@ -1231,9 +1231,9 @@ When checked, songs are shuffled when the device is booted. When unchecked, song
 
 #### Other settings
 
-##### &#9654; Save alarm/volume settings on SD
+##### &#9654; Save secondary settings on SD
 
-If this is checked, alarm and volume settings are stored on the SD card. This helps to minimize write operations to the internal flash memory and to prolong the lifetime of your TCD. See [Flash Wear](#flash-wear).
+If this is checked, secondary settings (volume, alarm, reminder, car mode, exhibition mode) are stored on the SD card. This helps to minimize write operations to the internal flash memory and to prolong the lifetime of your TCD. See [Flash Wear](#flash-wear).
 
 ## Appendix B: Sensor wiring
 
