@@ -696,7 +696,7 @@ On earlier Control Boards (1.2 and below), the switch needs shorten the pins lab
 
 ![access_to_io13](https://user-images.githubusercontent.com/76924199/194283241-3bee5fef-f51a-4b1a-a158-ed92292bcf32.jpg)
 
-Here is a close-up of one of my boards; I have soldered some headers on the io ports.
+Here is a close-up of a 1.2 control board; headers have been soldered to the io ports.
 
 ![io13neu](https://user-images.githubusercontent.com/76924199/212369689-f945dcf1-55f9-41e9-8fd7-fc0dbc69906c.jpg)
 
