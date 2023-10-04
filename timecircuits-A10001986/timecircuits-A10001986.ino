@@ -4,7 +4,7 @@
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
  * (C) 2022-2023 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display
- * http://tcd.backtothefutu.re
+ * https://tcd.backtothefutu.re
  *
  * -------------------------------------------------------------------
  * License: MIT
@@ -91,10 +91,12 @@
 
 /*  Changelog
  *   
+ *  2023/10/04 (A10001986)
+ *    - Don't use speedo if not detected
  *  2023/10/02 (A10001986)
  *    - Exhibition mode: Honor "Make time travels persistent" option properly
- *  2023/09/30 (A10001986) [released by CS as 2.9]
- *    - Make remote commands for FC, SID, PD 32bit
+ *  2023/09/30 (A10001986)
+ *    - Make remote commands for FC, SID, PG 32bit
  *    - Exhibition mode: Make persistent over reboots/power-downs
  *    * Exhibition mode feature enabled in precompiled binary
  *  2023/09/26 (A10001986)

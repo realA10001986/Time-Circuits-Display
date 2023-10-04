@@ -4,7 +4,7 @@
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
  * (C) 2022-2023 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display
- * http://tcd.backtothefutu.re
+ * https://tcd.backtothefutu.re
  *
  * Time and Main Controller
  *
@@ -1132,8 +1132,14 @@ void time_setup()
     // Set up speedo display
     #ifdef TC_HAVESPEEDO
     if(useSpeedo) {
-        speedo.begin(atoi(settings.speedoType));
-
+        if(!speedo.begin(atoi(settings.speedoType))) {
+            useSpeedo = false;
+            #ifdef TC_DBG
+            Serial.printf("%sSpeedo not detected\n", funcName);
+            #endif
+        }
+    }
+    if(useSpeedo) {
         speedo.setBrightness(atoi(settings.speedoBright), true);
         speedo.setDot(true);
 
