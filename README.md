@@ -959,7 +959,7 @@ Flash memory has a somewhat limited life-time. It can be written to only between
 
 In order to reduce the number of write operations and thereby prolong the life of your TCD, it is recommended
 - to uncheck the option **_[Make time travels persistent](#persistent--non-persistent-time-travels)_** in the Config Portal,
-- to use a good-quality SD card and to check **_[Save alarm/volume settings on SD](#-save-alarmvolume-settings-on-sd)_** in the Config Portal; alarm and volume settings are then stored on the SD card (which also suffers from wear but is easy to replace). If you want to swap the SD card but preserve your alarm/volume settings, go to the Config Portal while the old SD card is still in place, uncheck the **_Save alarm/volume settings on SD_** option, click on Save and wait until the TCD has rebooted. You can then power down the TCD, swap the SD card and power-up again. Then go to the Config Portal, change the option back on and click on Save. Your settings are now on the new SD card.
+- to use a good-quality SD card and to check **_[Save secondary settings on SD](#-save-secondary-settings-on-sd)_** in the Config Portal; alarm and volume settings are then stored on the SD card (which also suffers from wear but is easy to replace). If you want to swap the SD card but preserve your alarm/volume settings, go to the Config Portal while the old SD card is still in place, uncheck the **_Save secondary settings on SD_** option, click on Save and wait until the TCD has rebooted. You can then power down the TCD, swap the SD card and power-up again. Then go to the Config Portal, change the option back on and click on Save. Your settings are now on the new SD card.
 
 ## My custom-made Time Circuits Wall Clock
 
