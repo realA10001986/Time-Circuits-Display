@@ -545,6 +545,7 @@ bool bttfnHaveClients = false;
 #define BTTFN_NOT_FLUX_CMD 7
 #define BTTFN_NOT_SID_CMD  8
 #define BTTFN_NOT_PCG_CMD  9
+#define BTTFN_NOT_WAKEUP   10
 #define BTTFN_TYPE_ANY     0    // Any, unknown or no device
 #define BTTFN_TYPE_FLUX    1    // Flux Capacitor
 #define BTTFN_TYPE_SID     2    // SID
@@ -2881,6 +2882,24 @@ static void triggerLongTT(bool noLead)
     timeTravelP2 = 0;
 }
 
+void send_refill_msg()
+{
+    #ifdef EXTERNAL_TIMETRAVEL_OUT
+    if(useETTO || bttfnHaveClients) {
+        sendNetWorkMsg("REFILL\0", 7, BTTFN_NOT_REFILL);
+    }
+    #endif
+}
+
+void send_wakeup_msg()
+{
+    #ifdef EXTERNAL_TIMETRAVEL_OUT
+    if(useETTO || bttfnHaveClients) {
+        sendNetWorkMsg("WAKEUP\0", 7, BTTFN_NOT_WAKEUP);
+    }
+    #endif
+}
+
 #ifdef EXTERNAL_TIMETRAVEL_OUT
 static void ettoPulseStart()
 {
@@ -2912,15 +2931,6 @@ static void ettoPulseEnd()
         digitalWrite(WHITE_LED_PIN, LOW);
         #endif
     }
-}
-
-void send_refill_msg()
-{
-    #ifdef EXTERNAL_TIMETRAVEL_OUT
-    if(useETTO || bttfnHaveClients) {
-        sendNetWorkMsg("REFILL\0", 8, BTTFN_NOT_REFILL);
-    }
-    #endif
 }
 
 // Send notification message via MQTT -or- BTTFN.
@@ -3013,6 +3023,9 @@ void resetPresentTime()
 
     // Beep auto mode: Restart timer
     startBeepTimer();
+
+    // Wake up network clients
+    send_wakeup_msg();
 }
 
 static void copyPresentToDeparted(bool isReturn)

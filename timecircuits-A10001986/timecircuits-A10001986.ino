@@ -91,6 +91,13 @@
 
 /*  Changelog
  *   
+ *  2023/10/05 (A10001986)
+ *    - Colons on in night mode
+ *    - Send wakeup to network clients after entering a destination date, upon
+ *      return-from-time-travel, and when a delayed tt (ETT) is triggered. 
+ *      IAW: Whenever the beep timer is(would be) restarted, the wakeup is sent.
+ *    - Auto-expire beep-timer when entering night mode (for consistency with 
+ *      other props)
  *  2023/10/04 (A10001986)
  *    - Don't use speedo if not detected
  *  2023/10/02 (A10001986)

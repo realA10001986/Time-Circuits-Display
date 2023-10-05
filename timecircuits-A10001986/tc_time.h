@@ -145,6 +145,7 @@ void time_loop();
 void timeTravel(bool doComplete, bool withSpeedo = false, bool forceNoLead = false);
 void resetPresentTime();
 void send_refill_msg();
+void send_wakeup_msg();
 void pauseAuto();
 bool checkIfAutoPaused();
 void endPauseAuto(void);
