@@ -91,6 +91,8 @@
 
 /*  Changelog
  *   
+ *  2023/10/10 (A10001986)
+ *    - Fix P1 length sent to BTTFN clients
  *  2023/10/05 (A10001986)
  *    - Colons on in night mode
  *    - Send wakeup to network clients after entering a destination date, upon

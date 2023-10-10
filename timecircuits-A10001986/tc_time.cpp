@@ -100,8 +100,8 @@
 #define TT_P1_DELAY_P4  (6800-(TT_P1_DELAY_P3+TT_P1_DELAY_P2+TT_P1_DELAY_P1))                       // Random display I
 #define TT_P1_DELAY_P5  (TT_P1_TOTAL-(TT_P1_DELAY_P4+TT_P1_DELAY_P3+TT_P1_DELAY_P2+TT_P1_DELAY_P1)) // Random display II
 // ACTUAL POINT OF TIME TRAVEL:
-#define TT_P1_POINT88   1000    // ms into "starttravel" sample, when 88mph is reached.
-#define TT_SNDLAT        400    // DO NOT CHANGE
+#define TT_P1_POINT88   1400    // ms into "starttravel" sample, when 88mph is reached.
+#define TT_P1_EXT       TT_P1_TOTAL - TT_P1_DELAY_P1   // part of P1 between P0 and P2
 
 // Preprocessor config for External Time Travel Output (ETTO):
 // Lead time from trigger (LOW->HIGH) to actual tt (ie when 88mph is reached)
@@ -1158,7 +1158,6 @@ void time_setup()
         ettoLeadPoint = origEttoLeadPoint = ettoBase - ettoLeadTime;   // Can be negative!
         #endif
         pointOfP1 -= TT_P1_POINT88;
-        pointOfP1 -= TT_SNDLAT;     // Correction for sound/mp3 latency
 
         {
             // Calculate total elapsed delay for each mph value
@@ -1526,7 +1525,7 @@ void time_loop()
     #ifdef EXTERNAL_TIMETRAVEL_OUT
     // Timer for start of ETTO signal
     if(triggerETTO && (millis() - triggerETTONow >= triggerETTOLeadTime)) {
-        sendNetWorkMsg("TIMETRAVEL\0", 11, BTTFN_NOT_TT, bttfnTTLeadTime, TT_P1_TOTAL);
+        sendNetWorkMsg("TIMETRAVEL\0", 11, BTTFN_NOT_TT, bttfnTTLeadTime, TT_P1_EXT);
         ettoPulseStart();
         triggerETTO = false;
         #ifdef TC_DBG
@@ -2746,7 +2745,7 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
         if(useETTO || bttfnHaveClients) {
 
             long  ettoLeadT = ettoLeadTime;
-            long  P1_88 = TT_P1_POINT88 + TT_SNDLAT;
+            long  P1_88 = TT_P1_POINT88;
 
             triggerP1 = true;
             triggerP1NoLead = false;
