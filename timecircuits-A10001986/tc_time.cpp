@@ -564,6 +564,12 @@ static char          bttfnClientID[BTTFN_MAX_CLIENTS][13] = { { 0 } };
 static uint8_t       bttfnClientType[BTTFN_MAX_CLIENTS] = { 0 };
 static unsigned long bttfnClientALIVE[BTTFN_MAX_CLIENTS] = { 0 };
 static unsigned long bttfnlastExpire = 0;
+#ifdef TC_BTTFN_MC
+static WiFiUDP       bttfmcUDP;
+static UDP*          tcdmcUDP;
+static byte          BTTFMCBuf[BTTF_PACKET_SIZE];
+static uint32_t      hostNameHash = 0;
+#endif
 #endif
 
 static void myCustomDelay(unsigned int mydel);
@@ -622,6 +628,10 @@ static bool NTPHaveLocalTime();
 static void bttfn_setup();
 static void bttfn_notify(uint8_t targetType, uint8_t event, uint16_t payload = 0, uint16_t payload2 = 0);
 static void bttfn_expire_clients();
+static bool bttfn_handlePacket(uint8_t *buf, bool isMC);
+#ifdef TC_BTTFN_MC
+static void bttfn_checkmc();
+#endif
 #endif
 
 /*
@@ -4818,16 +4828,27 @@ static void bttfn_expire_clients()
 
 static void bttfn_setup()
 {
+    // Prepare hostName hash for discover packets
+    #ifdef TC_BTTFN_MC
+    hostNameHash = 0;
+    unsigned char *s = (unsigned char *)settings.hostName;
+    for ( ; *s; ++s) hostNameHash = 37 * hostNameHash + tolower(*s);
+    #endif
+    
     tcdUDP = &bttfUDP;
     tcdUDP->begin(BTTF_DEFAULT_LOCAL_PORT);
+
+    #ifdef TC_BTTFN_MC
+    tcdmcUDP = &bttfmcUDP;
+    tcdmcUDP->beginMulticast(IPAddress(224, 0, 0, 224), BTTF_DEFAULT_LOCAL_PORT + 1);
+    #endif
 }
 
 void bttfn_loop()
 {
-    uint8_t tip[4] = { 0 };
-    uint8_t a = 0, parm = 0;
-    int16_t temp = 0;
-    //uint8_t reqVersion;
+    #ifdef TC_BTTFN_MC
+    bttfn_checkmc();
+    #endif
 
     int psize = tcdUDP->parsePacket();
 
@@ -4838,66 +4859,119 @@ void bttfn_loop()
     
     tcdUDP->read(BTTFUDPBuf, BTTF_PACKET_SIZE);
 
-    // Check header
-    if(memcmp(BTTFUDPBuf, BTTFUDPHD, 4))
+    if(bttfn_handlePacket(BTTFUDPBuf, false)) {
+        tcdUDP->beginPacket(tcdUDP->remoteIP(), tcdUDP->remotePort());
+        tcdUDP->write(BTTFUDPBuf, BTTF_PACKET_SIZE);
+        tcdUDP->endPacket();
+    }
+}
+
+#ifdef TC_BTTFN_MC
+static void bttfn_checkmc()
+{
+    int psize = tcdmcUDP->parsePacket();
+
+    if(!psize) {
         return;
+    }
+    
+    tcdmcUDP->read(BTTFMCBuf, BTTF_PACKET_SIZE);
+
+    #ifdef TC_DBG
+    Serial.printf("Received multicast packet from %s\n", tcdmcUDP->remoteIP().toString());
+    #endif
+    
+    if(bttfn_handlePacket(BTTFMCBuf, true)) {
+        tcdUDP->beginPacket(tcdmcUDP->remoteIP(), BTTF_DEFAULT_LOCAL_PORT);
+        tcdUDP->write(BTTFMCBuf, BTTF_PACKET_SIZE);
+        tcdUDP->endPacket();
+        #ifdef TC_DBG
+        Serial.println("Sent response");
+        #endif
+    }
+}
+#endif
+    
+static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
+{
+    uint8_t tip[4] = { 0 };
+    uint8_t a = 0, parm = 0;
+    int16_t temp = 0;
+    //uint8_t reqVersion;
+    
+    // Check header
+    if(memcmp(buf, BTTFUDPHD, 4))
+        return false;
 
     // Check checksum
     for(int i = 4; i < BTTF_PACKET_SIZE - 1; i++) {
-        a += BTTFUDPBuf[i] ^ 0x55;
+        a += buf[i] ^ 0x55;
     }
-    if(BTTFUDPBuf[BTTF_PACKET_SIZE - 1] != a)
-        return;
+    if(buf[BTTF_PACKET_SIZE - 1] != a)
+        return false;
 
     // If response marker set, bail - is illegal
-    if(BTTFUDPBuf[4] & 0x80)
-        return;
+    if(buf[4] & 0x80)
+        return false;
         
-    if(BTTFUDPBuf[4] > BTTFN_VERSION)
-        return;
+    if(buf[4] > BTTFN_VERSION)
+        return false;
 
     // For future use
-    //reqVersion = BTTFUDPBuf[4];
+    //reqVersion = buf[4];
 
+    // Check if this is a "discover" packet
+    #ifdef TC_BTTFN_MC
+    if(isMC) {
+        if(buf[5] & 0x80) {
+            if(memcmp(buf+31, (void *)&hostNameHash, 4)) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+    #endif
+    
     // Add response marker to version byte
-    BTTFUDPBuf[4] |= 0x80;
+    buf[4] |= 0x80;
 
     // Store client ip/id for notifications and keypad menu
-    IPAddress t = tcdUDP->remoteIP();
+    IPAddress t = isMC ? tcdmcUDP->remoteIP() : tcdUDP->remoteIP();
     for(int i = 0; i < 4; i++) tip[i] = t[i];
-    storeBTTFNClient(tip, (char *)BTTFUDPBuf + 10, (uint8_t)BTTFUDPBuf[10+13]);
+    storeBTTFNClient(tip, (char *)buf + 10, (uint8_t)buf[10+13]);
 
     // Retrieve (optional) request parameter
-    parm = BTTFUDPBuf[24];
+    parm = buf[24];
     
-    // Clear, but leave serial# (BTTFUDPBuf + 6-9) untouched
-    memset(BTTFUDPBuf + 10, 0, BTTF_PACKET_SIZE - 10);
+    // Clear, but leave serial# (buf + 6-9) untouched
+    memset(buf + 10, 0, BTTF_PACKET_SIZE - 10);
 
-    // Eval query and build reply into BTTFUDPBuf
-    if(BTTFUDPBuf[5] & 0x01) {    // time
+    // Eval query and build reply into buf
+    if(buf[5] & 0x01) {    // time
         DateTime dt;
         myrtcnow(dt);
         temp = dt.year() - presentTime.getYearOffset();
-        BTTFUDPBuf[10] = (uint16_t)temp & 0xff;
-        BTTFUDPBuf[11] = (uint16_t)temp >> 8;
-        BTTFUDPBuf[12] = (uint8_t)dt.month();
-        BTTFUDPBuf[13] = (uint8_t)dt.day();
-        BTTFUDPBuf[14] = (uint8_t)dt.hour();
-        BTTFUDPBuf[15] = (uint8_t)dt.minute();
-        BTTFUDPBuf[16] = (uint8_t)dt.second();
-        BTTFUDPBuf[17] = (uint8_t)dt.dayOfTheWeek();
+        buf[10] = (uint16_t)temp & 0xff;
+        buf[11] = (uint16_t)temp >> 8;
+        buf[12] = (uint8_t)dt.month();
+        buf[13] = (uint8_t)dt.day();
+        buf[14] = (uint8_t)dt.hour();
+        buf[15] = (uint8_t)dt.minute();
+        buf[16] = (uint8_t)dt.second();
+        buf[17] = (uint8_t)dt.dayOfTheWeek();
     }
-    if(BTTFUDPBuf[5] & 0x02) {    // speed  (-1 if unavailable)
+    if(buf[5] & 0x02) {    // speed  (-1 if unavailable)
         temp = -1;
         #ifdef TC_HAVEGPS
         if(useGPS) {
             temp = myGPS.getSpeed();
         }
         #endif
-        BTTFUDPBuf[18] = (uint16_t)temp & 0xff;
-        BTTFUDPBuf[19] = (uint16_t)temp >> 8;
+        buf[18] = (uint16_t)temp & 0xff;
+        buf[19] = (uint16_t)temp >> 8;
     }
-    if(BTTFUDPBuf[5] & 0x04) {    // temperature (-32768 if unavailable)
+    if(buf[5] & 0x04) {    // temperature (-32768 if unavailable)
         temp = -32768;
         #ifdef TC_HAVETEMP
         if(useTemp) {
@@ -4907,36 +4981,36 @@ void bttfn_loop()
             }
         }
         #endif
-        BTTFUDPBuf[20] = (uint16_t)temp & 0xff;
-        BTTFUDPBuf[21] = (uint16_t)temp >> 8;
+        buf[20] = (uint16_t)temp & 0xff;
+        buf[21] = (uint16_t)temp >> 8;
     }
-    if(BTTFUDPBuf[5] & 0x08) {    // lux (-1 if unavailable)
+    if(buf[5] & 0x08) {    // lux (-1 if unavailable)
         int32_t temp32 = -1;
         #ifdef TC_HAVELIGHT
         if(useLight) {
             temp32 = lightSens.readLux();
         }
         #endif
-        BTTFUDPBuf[22] =  (uint32_t)temp32        & 0xff;
-        BTTFUDPBuf[23] = ((uint32_t)temp32 >>  8) & 0xff;
-        BTTFUDPBuf[24] = ((uint32_t)temp32 >> 16) & 0xff;
-        BTTFUDPBuf[25] = ((uint32_t)temp32 >> 24) & 0xff;
+        buf[22] =  (uint32_t)temp32        & 0xff;
+        buf[23] = ((uint32_t)temp32 >>  8) & 0xff;
+        buf[24] = ((uint32_t)temp32 >> 16) & 0xff;
+        buf[25] = ((uint32_t)temp32 >> 24) & 0xff;
     }
-    if(BTTFUDPBuf[5] & 0x10) {    // Status flags
+    if(buf[5] & 0x10) {    // Status flags
         a = 0;
         if(presentTime.getNightMode()) a |= 0x01; // bit 0: Night mode (0: off, 1: on)
         #ifdef FAKE_POWER_ON
         if(!FPBUnitIsOn)               a |= 0x02; // bit 1: Fake power (0: on,  1: off)
         #endif
         // bits 7-2 for future use
-        BTTFUDPBuf[26] = a;
+        buf[26] = a;
     }
-    if(BTTFUDPBuf[5] & 0x20) {    // Request IP of given device type
+    if(buf[5] & 0x20) {    // Request IP of given device type
         if(parm) {
             for(int i = 0; i < BTTFN_MAX_CLIENTS; i++) {
                 if(parm == bttfnClientType[i]) {
                     for(int j = 0; j < 4; j++) {
-                        BTTFUDPBuf[27+j] = bttfnClientIP[i][j];
+                        buf[27+j] = bttfnClientIP[i][j];
                     }
                     break;
                 }
@@ -4947,13 +5021,11 @@ void bttfn_loop()
     // Calc checksum
     a = 0;
     for(int i = 4; i < BTTF_PACKET_SIZE - 1; i++) {
-        a += BTTFUDPBuf[i] ^ 0x55;
+        a += buf[i] ^ 0x55;
     }
-    BTTFUDPBuf[BTTF_PACKET_SIZE - 1] = a;
+    buf[BTTF_PACKET_SIZE - 1] = a;
 
-    tcdUDP->beginPacket(tcdUDP->remoteIP(), tcdUDP->remotePort());
-    tcdUDP->write(BTTFUDPBuf, BTTF_PACKET_SIZE);
-    tcdUDP->endPacket();
+    return true;
 }
 
 // Send event notification to known clients

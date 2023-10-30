@@ -91,7 +91,10 @@
 
 /*  Changelog
  *   
- *  2023/10/10 (A10001986)
+ *  2023/10/30 (A10001986) 
+ *    - BTTFN: Clients can now discover the TCD's IP address through the TCD's 
+ *      hostname. Uses multicast, not DNS.
+ *  2023/10/10 (A10001986) [released by CS as 2.9]
  *    - Fix P1 length sent to BTTFN clients
  *  2023/10/05 (A10001986)
  *    - Colons on in night mode

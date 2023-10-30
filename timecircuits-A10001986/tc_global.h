@@ -27,9 +27,9 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION "V2.9.99"          // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "OCT102023"  // 13 chars max
+#define TC_VERSION_EXTRA "OCT302023"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "10102023"   // 12 chars max
+#define TC_VERSION_EXTRA "10302023"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -112,6 +112,11 @@
 
 // Uncomment for bttf network support
 #define TC_HAVEBTTFN
+
+// Uncomment for bttfn discover (multicast)
+#ifdef TC_HAVEBTTFN
+#define TC_BTTFN_MC
+#endif
 
 // Uncomment to include Exhibition mode
 // 99mmddyyyyhhMM sets (and enables) EM with fixed present time as given; 
