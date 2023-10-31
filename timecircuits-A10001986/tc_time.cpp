@@ -138,6 +138,9 @@ bool                 startup      = false;
 static bool          startupSound = false;
 static unsigned long startupNow   = 0;
 
+static bool          deferredCP = false;
+static unsigned long deferredCPNow = 0;
+
 // For beep-auto-modes
 uint8_t       beepMode = 0;
 bool          beepTimer = false;
@@ -253,6 +256,8 @@ bool timetravelPersistent = true;
 
 // Alarm/HourlySound based on RTC (or presentTime's display)
 static bool alarmRTC = true;
+
+static bool playIntro = false;
 
 bool useGPS      = true;
 bool useGPSSpeed = false;
@@ -630,7 +635,7 @@ static void bttfn_notify(uint8_t targetType, uint8_t event, uint16_t payload = 0
 static void bttfn_expire_clients();
 static bool bttfn_handlePacket(uint8_t *buf, bool isMC);
 #ifdef TC_BTTFN_MC
-static void bttfn_checkmc();
+static bool bttfn_checkmc();
 #endif
 #endif
 
@@ -697,6 +702,8 @@ void time_setup()
         fakePowerOnKey.attachLongPressStop(fpbKeyLongPressStop);
     }
     #endif
+
+    playIntro = (atoi(settings.playIntro) > 0);
 
     // Init external time travel output ("etto")
     #ifdef EXTERNAL_TIMETRAVEL_OUT
@@ -930,8 +937,32 @@ void time_setup()
     // our NTP access, so a WiFiScan does not disturb anything
     // at this point.
     if(WiFi.status() == WL_CONNECTED) {
+        #ifdef TC_HAVEBTTFN
+        if(playIntro
+                     #ifdef FAKE_POWER_ON
+                     || (digitalRead(FAKE_POWER_BUTTON_PIN) == HIGH)
+                     #endif
+                                                                    ) {
+            wifiStartCP();        
+        } else {
+            deferredCP = true;
+        }
+        #else
         wifiStartCP();
+        #endif
     }
+
+    // Preset this for BTTFN status requests during boot
+    #ifdef FAKE_POWER_ON
+    if(waitForFakePowerButton) {
+        FPBUnitIsOn = false;
+    }
+    #endif
+
+    // Start bttf network
+    #ifdef TC_HAVEBTTFN
+    bttfn_setup();
+    #endif
 
     // Load the time for initial display
     myrtcnow(dt);
@@ -1097,6 +1128,11 @@ void time_setup()
     // Load yearly/monthly reminder settings
     loadReminder();
 
+    // Handle early BTTFN requests
+    #ifdef TC_HAVEBTTFN
+    while(bttfn_loop()) {}
+    #endif
+
     // Auto-NightMode
     autoNightModeMode = atoi(settings.autoNMPreset);
     if(autoNightModeMode > AUTONM_NUM_PRESETS) autoNightModeMode = 10;
@@ -1203,6 +1239,11 @@ void time_setup()
     }
     #endif
 
+    // Handle early BTTFN requests
+    #ifdef TC_HAVEBTTFN
+    while(bttfn_loop()) {}
+    #endif
+
     // Set up temperature sensor
     #ifdef TC_HAVETEMP
     useTemp = true;   // Used by default if detected
@@ -1266,18 +1307,6 @@ void time_setup()
     if(useMQTT && pubMQTT) useETTO = true;
     #endif
     #endif
-
-    // Preset this for BTTFN status requests during boot
-    #ifdef FAKE_POWER_ON
-    if(waitForFakePowerButton) {
-        FPBUnitIsOn = false;
-    }
-    #endif
-
-    // Start bttf network
-    #ifdef TC_HAVEBTTFN
-    bttfn_setup();
-    #endif
     
     // Show "REPLACE BATTERY" message if RTC battery is low or depleted
     // Note: This also shows up the first time you power-up the clock
@@ -1289,6 +1318,10 @@ void time_setup()
         presentTime.on();
         myIntroDelay(5000);
         allOff();
+    } else {
+        #ifdef TC_HAVEBTTFN
+        while(bttfn_loop()) {}
+        #endif
     }
 
     if(tzbad) {
@@ -1330,11 +1363,11 @@ void time_setup()
         allOff();
     }
 
-    if(atoi(settings.playIntro)) {
+    if(playIntro) {
         const char *t1 = "             BACK";
         const char *t2 = "TO";
         const char *t3 = "THE FUTURE";
-        
+
         play_file("/intro.mp3", PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
 
         myIntroDelay(1200);
@@ -1373,6 +1406,10 @@ void time_setup()
 
         waitAudioDoneIntro();
         stopAudio();
+    } else {
+        #ifdef TC_HAVEBTTFN
+        while(bttfn_loop()) {}
+        #endif
     }
 
 #ifdef FAKE_POWER_ON
@@ -1403,7 +1440,7 @@ void time_setup()
     }
 #endif
 
-    
+    if(deferredCP) deferredCPNow = millis();
 }
 
 /*
@@ -1488,9 +1525,15 @@ void time_loop()
                 }
             }
             isFPBKeyChange = false;
+            if(deferredCP) deferredCPNow = millis();
         }
     }
     #endif
+
+    if(deferredCP && (millis() - deferredCPNow > 4000)) {
+        wifiStartCP();
+        deferredCP = false;
+    }
 
     // Initiate startup delay, play startup sound
     if(startupSound) {
@@ -4844,17 +4887,19 @@ static void bttfn_setup()
     #endif
 }
 
-void bttfn_loop()
+bool bttfn_loop()
 {
+    bool resmc = false;
+    
     #ifdef TC_BTTFN_MC
-    bttfn_checkmc();
+    resmc = bttfn_checkmc();
     #endif
 
     int psize = tcdUDP->parsePacket();
 
     if(!psize) {
         bttfn_expire_clients();
-        return;
+        return false | resmc;
     }
     
     tcdUDP->read(BTTFUDPBuf, BTTF_PACKET_SIZE);
@@ -4864,15 +4909,17 @@ void bttfn_loop()
         tcdUDP->write(BTTFUDPBuf, BTTF_PACKET_SIZE);
         tcdUDP->endPacket();
     }
+
+    return true;
 }
 
 #ifdef TC_BTTFN_MC
-static void bttfn_checkmc()
+static bool bttfn_checkmc()
 {
     int psize = tcdmcUDP->parsePacket();
 
     if(!psize) {
-        return;
+        return false;
     }
     
     tcdmcUDP->read(BTTFMCBuf, BTTF_PACKET_SIZE);
@@ -4889,6 +4936,8 @@ static void bttfn_checkmc()
         Serial.println("Sent response");
         #endif
     }
+
+    return true;
 }
 #endif
     

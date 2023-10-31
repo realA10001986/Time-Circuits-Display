@@ -1354,6 +1354,10 @@ void wifiStartCP()
     if(wifiInAPMode || wifiIsOff)
         return;
 
+    #ifdef TC_DBG
+    Serial.println("Starting CP");
+    #endif
+
     wm.startWebPortal();
 }
 
