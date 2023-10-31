@@ -977,6 +977,8 @@ void wifi_loop()
 
         }
 
+        stopAudio();
+
         // Write settings if requested, or no settings file exists
         if(shouldSaveConfig > 1 || !checkConfigExists()) {
             write_settings();
@@ -985,8 +987,6 @@ void wifi_loop()
         shouldSaveConfig = 0;
 
         // Reset esp32 to load new settings
-
-        stopAudio();
 
         allOff();
         #ifdef TC_HAVESPEEDO
