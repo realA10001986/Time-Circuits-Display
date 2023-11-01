@@ -816,7 +816,7 @@ Note that the TCD has no internet access while in car mode; this means that it c
 
 The device can tell other props about a time travel, and in essence act as a "master controller" in a setup of several props. It does so via IO14 (labeled "TT OUT" on Control Boards 1.3 and later).
 
-![Wired connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/9a2f93a9-603c-4389-8973-0c8e09e9af74)
+![Wired connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/c0c5c6-1c6f-40b1-8bce-f9c0467eee2c)
 
 You need two wires for connecting the TCD to the other prop: TT_OUT (IO14) and GND, which need to be connected to the respective pins of the prop.
 
@@ -878,7 +878,7 @@ Note that a wired connection only allows for synchronized time travel sequences,
 
 The TCD can communicate with other compatible props wirelessly, via WiFi. It can send out information about a time travel and an alarm, and other props can query the TCD for time, speed and some other data.
 
-![bttfn connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/8d9a54bc-12c9-459a-96cf-ab3f7982af24)
+![bttfn connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/f8fcd415-cd4a-4a82-a3f8-dadf8e531d26)
 
 On the TCD, no special configuration is required. However, if the TCD is supposed to send out notifications about time travel and alarm to connected BTTFN clients, usage of MQTT must be disabled or the **_Send event notifications_** option in the MQTT section of the Config Portal must be _unchecked_. The TCD only sends out such notifications either via BTTFN or MQTT, never both.
 
@@ -921,7 +921,7 @@ The TCD can - to a limited extent - be controlled through messages sent to topic
 
 If both the TCD and the other props are connected to the same broker, and the option **_Send event notifications_** is checked on the TCD's side, other compatible props will receive information on time travel and alarm and play their sequences in sync with the TCD. The topic is called  **bttf/tcd/pub**.
 
-![MQTT connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/51986583-455c-491d-8d9c-4d5b9bf2d8ff)
+![MQTT connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/07e10261-21f7-4219-ab78-606ba1949d4e)
 
 The timing is identical to the wired protocol, see [here](#controlling-other-props). TIMETRAVEL is sent to **bttf/tcd/pub** when IO14 goes high, ie with a lead time (ETTO LEAD) of 5 seconds. REENTRY is sent when the re-entry sequence starts (ie when IO14 goes low). Note that network traffic has some latency, so timing might not be as exact as a wired connection.
 
