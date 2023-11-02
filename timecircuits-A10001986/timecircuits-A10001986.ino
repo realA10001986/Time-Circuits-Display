@@ -69,6 +69,10 @@
  *   and install the following libraries:
  *   - WifiManager (tablatronix, tzapu) https://github.com/tzapu/WiFiManager
  *     (Tested with 2.0.13beta, 2.0.15-rc1, 2.0.16rc2)
+ *     In order to avoid a delay when powering up several BTTFN-connected props,
+ *     change _preloadwifiscan to false in WiFiManager.h before compiling:
+ *     -boolean       _preloadwifiscan        = true;
+ *     +boolean       _preloadwifiscan        = false;
  *   - ArduinoJSON >= 6.19: https://arduinojson.org/v6/doc/installation/
  *
  * - Download the complete firmware source code:
@@ -91,6 +95,11 @@
 
 /*  Changelog
  *   
+ *  2023/11/02 (A10001986)
+ *    * WiFiManager: Disable pre-scanning of WiFi networks when starting the CP.
+ *      Scanning is now only done when accessing the "Configure WiFi" page.
+ *      To do that in your own installation, set _preloadwifiscan to false
+ *      in WiFiManager.h
  *  2023/10/31 (A10001986)
  *    - Further defer starting the Config Portal in some cases to avoid WiFi scan 
  *      that interferes with BTTFN discover and initial communication
