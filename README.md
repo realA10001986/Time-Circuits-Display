@@ -300,15 +300,15 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left">888xxx&#9166;</td>
     </tr>
    <tr>
-     <td align="left">Disable / enable <a href="#car-mode"><i>car mode</i></a></td>
+     <td align="left">Disable / enable <a href="#car-mode"car mode</a></td>
      <td align="left">990&#9166; / 991&#9166;</td>
     </tr>
   <tr>
-     <td align="left">Enable / disable <a href="#exhibition-mode"><i>Exhibition mode</i></a></td>
+     <td align="left">Enable / disable <a href="#exhibition-mode">Exhibition mode</a></td>
      <td align="left">999&#9166;</td>
     </tr>
  <tr>
-     <td align="left">Program time for <a href="#exhibition-mode"><i>Exhibition mode</i></a></td>
+     <td align="left">Program time for <a href="#exhibition-mode">Exhibition mode</a></td>
      <td align="left">99mmddyyyyhhMM&#9166;</td>
     </tr>
     <tr>
