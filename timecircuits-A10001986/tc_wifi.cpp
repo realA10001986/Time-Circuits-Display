@@ -34,7 +34,6 @@
 #include "tc_global.h"
 
 #include <Arduino.h>
-#include <ArduinoJson.h>
 
 #ifdef TC_MDNS
 #include <ESPmDNS.h>
@@ -548,6 +547,11 @@ void wifi_setup()
     wm.setCleanConnect(true);
     //wm.setRemoveDuplicateAPs(false);
 
+    #ifdef WIFIMANAGER_2_0_17
+    wm._preloadwifiscan = false;
+    wm._asyncScan = true;
+    #endif
+
     wm.setMenu(wifiMenu, TC_MENUSIZE);
 
     temp = 0;
@@ -996,11 +1000,14 @@ void wifi_loop()
         destinationTime.showTextDirect("REBOOTING");
         destinationTime.on();
 
+        unmount_fs();
+
         #ifdef TC_DBG
         Serial.println(F("Config Portal: Restarting ESP...."));
         #endif
-
         Serial.flush();
+
+        delay(500);
 
         esp_restart();
     }

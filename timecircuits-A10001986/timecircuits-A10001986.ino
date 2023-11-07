@@ -69,8 +69,9 @@
  *   and install the following libraries:
  *   - WifiManager (tablatronix, tzapu) https://github.com/tzapu/WiFiManager
  *     (Tested with 2.0.13beta, 2.0.15-rc1, 2.0.16rc2)
- *     In order to avoid a delay when powering up several BTTFN-connected props,
- *     change _preloadwifiscan to false in WiFiManager.h before compiling:
+ *     For versions 2.0.16-rc2 and below, in order to avoid a delay when powering up
+ *     several BTTFN-connected props, change _preloadwifiscan to false in WiFiManager.h 
+ *     before compiling:
  *     -boolean       _preloadwifiscan        = true;
  *     +boolean       _preloadwifiscan        = false;
  *   - ArduinoJSON >= 6.19: https://arduinojson.org/v6/doc/installation/
@@ -95,6 +96,24 @@
 
 /*  Changelog
  *   
+ *  TODO: Way (option) to reverse rot enc direction
+ *  2023/11/06-07 (A10001986)
+ *    - Abort audio file installer on first error
+ *    - Add TSL2591 light sensor support (yet untested), since 2561 is discontinued.
+ *    - Fixes for rotatry encoder
+ *    - Fix boot loop when SP_ALWAYS_ON is enabled
+ *  2023/11/05 (A10001986)
+ *    - Settings: (De)serialize JSON from/to buffer instead of file
+ *    - Customize ArduinoJSON compile-time options to reduce bin size
+ *  2023/11/04 (A10001986)
+ *    - Add premlimiary support for a rotary encoder to select "speed" to be 
+ *      displayed on the speedo, and provided to BTTFN clients as (fake) "GPS 
+ *      speed". Only hardware type currently supported is the Adafruit 4991.
+ *    - Unmount filesystems before reboot
+ *    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ *    * Switched to LittleFS. Settings will be reset to defaults, and audio files have
+ *      to be re-installed after updating from any previous version.
+ *    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  *  2023/11/02 (A10001986)
  *    * WiFiManager: Disable pre-scanning of WiFi networks when starting the CP.
  *      Scanning is now only done when accessing the "Configure WiFi" page.
