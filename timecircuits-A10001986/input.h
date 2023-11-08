@@ -6,6 +6,7 @@
  * https://tcd.backtothefutu.re
  *
  * Keypad_I2C Class, TCButton Class: I2C-Keypad and Button handling
+ * TCRotEnc: Rotary Encoder handling
  *
  * Keypad part inspired by "Keypad" library by M. Stanley & A. Brevig
  * Fractions of this code are customized, minimized derivates of parts 
@@ -232,7 +233,6 @@ class TCRotEnc {
 
     private:
         int32_t getEncPos();
-        void    reset(void);
         int     read(uint8_t base, uint8_t reg, uint8_t *buf, uint8_t num);
         void    write(uint8_t base, uint8_t reg, uint8_t *buf, uint8_t num);
 

@@ -6,6 +6,7 @@
  * https://tcd.backtothefutu.re
  *
  * Keypad_I2C Class, TCButton Class: I2C-Keypad and Button handling
+ * TCRotEnc: Rotary Encoder handling
  *
  * Keypad part inspired by "Keypad" library by M. Stanley & A. Brevig
  * Fractions of this code are customized, minimized derivates of parts 
@@ -481,7 +482,7 @@ bool TCRotEnc::begin()
             _st = _addrArr[i+1];
 
             #ifdef TC_DBG
-            const char *tpArr[4] = { "ADA4991", "unknown", "unknown", "unknown" };
+            const char *tpArr[4] = { "ADA4991", "", "", "" };
             Serial.printf("Rotary encoder: Detected %s\n", tpArr[_st]);
             #endif
 
@@ -492,7 +493,11 @@ bool TCRotEnc::begin()
     switch(_st) {
       
     case TC_RE_TYPE_ADA4991:
-        reset();
+
+        // Reset
+        buf[0] = 0xff;
+        write(SEESAW_STATUS_BASE, SEESAW_STATUS_SWRST, &buf[0], 1);
+        
         delay(10);
     
         if(read(SEESAW_STATUS_BASE, SEESAW_STATUS_HW_ID, buf, 1) != 1) {
@@ -538,7 +543,7 @@ void TCRotEnc::zeroPos()
 }
 
 #define HWUPD_DELAY 100   // ms between hw polls
-#define FUPD_DELAY  20    // ms between fakeSpeed updates
+#define FUPD_DELAY  10    // ms between fakeSpeed updates
 
 #define OFF_SLOTS   5
 
@@ -559,10 +564,10 @@ int16_t TCRotEnc::updateFakeSpeed(bool force)
             // If turned in + direction, don't start from 
             // <0, but 0: If we're at -3 (which is displayed
             // as 0), and user turns +, we don't want -2, but 1.
-            if(t - rotEncPos > 0) {
+            if(rotEncPos > t) {
                 if(targetSpeed < 0) targetSpeed = 0;
             }
-            targetSpeed += (t - rotEncPos);
+            targetSpeed += (rotEncPos - t);
             if(targetSpeed < -OFF_SLOTS) targetSpeed = -OFF_SLOTS;
             else if(targetSpeed > 88)    targetSpeed = 88;
         }
@@ -592,7 +597,9 @@ int32_t TCRotEnc::getEncPos()
       
     case TC_RE_TYPE_ADA4991:
         read(SEESAW_ENCODER_BASE, SEESAW_ENCODER_POSITION, buf, 4);
-        return (int32_t)(
+        // Ada4991 reports neg numbers when turned cw, so 
+        // negate value
+        return -(int32_t)(
                     ((uint32_t)buf[0] << 24) | 
                     ((uint32_t)buf[1] << 16) |
                     ((uint32_t)buf[2] <<  8) | 
@@ -601,13 +608,6 @@ int32_t TCRotEnc::getEncPos()
     }
 
     return 0;
-}
-
-void TCRotEnc::reset()
-{
-    uint8_t buf = 0xff;
-    
-    write(SEESAW_STATUS_BASE, SEESAW_STATUS_SWRST, &buf, 1);
 }
 
 int TCRotEnc::read(uint8_t base, uint8_t reg, uint8_t *buf, uint8_t num)

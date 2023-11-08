@@ -10,7 +10,8 @@
  * This is designed for 
  * - MCP9808, TMP117, BMx280, SHT4x, SI7012, AHT20/AM2315C, HTU31D 
  *   temperature/humidity sensors,
- * - BH1750, TSL2561, LTR303/329 and VEML7700/VEML6030 light sensors.
+ * - BH1750, TSL2561, TSL2591, LTR303/329 and VEML7700/VEML6030 light 
+ *   sensors.
  *                             
  * The i2c slave addresses need to be:
  * MCP9808:       0x18                [temperature only]
@@ -1238,7 +1239,7 @@ uint32_t lightSensor::TSL2561CalcLux(uint8_t iGain, uint8_t tInt, uint32_t ch0, 
 #define TSL2591_LUX_COEFC   0.59F
 #define TSL2591_LUX_COEFD   0.86F
 
-#define TLS2691_USE_LEGACY           // Use TAOS/AMS generic (old) lux calculation (written for 2671)
+#define TLS2691_USE_LEGACY           // Use TAOS/AMS generic lux calculation (written for 2671)
 #define LSENS_DBG
 
 int32_t lightSensor::TSL2591CalcLux(uint8_t iGain, uint8_t iTime, uint32_t temp, uint32_t temp1)

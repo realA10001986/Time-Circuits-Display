@@ -83,7 +83,7 @@
 #define VEML6030_ADDR  0x48 // [non-default] (can also be 0x10 but then conflicts with GPS)
 #define VEML7700_ADDR  0x10 // [default] (conflicts with GPS!)
 
-                            // rotary encoder
+                            // rotary encoders
 #define ADDA4991_ADDR  0x36 // [default]
 
 // The time between reentry sound being started and the display coming on
@@ -373,9 +373,9 @@ tempSensor tempSens(7,
 #endif
 #ifdef TC_HAVELIGHT
 lightSensor lightSens(6, 
-            (uint8_t[6*2]){ LTR3xx_ADDR,  LST_LTR3xx,   // must be before TSL2651
-                            TSL2561_ADDR, LST_TSL2561,  // must be after LTR3xx
+            (uint8_t[6*2]){ LTR3xx_ADDR,  LST_LTR3xx,   // must be before TSL26x1
                             TSL2591_ADDR, LST_TSL2591,  // must be after LTR3xx
+                            TSL2561_ADDR, LST_TSL2561,  // must be after LTR3xx
                             BH1750_ADDR,  LST_BH1750,
                             VEML6030_ADDR,LST_VEML7700,
                             VEML7700_ADDR,LST_VEML7700  // must be last
@@ -1320,7 +1320,11 @@ void time_setup()
     #ifdef TC_HAVETEMP
     useTemp = true;   // Used by default if detected
     #ifdef TC_HAVESPEEDO
-    dispTemp = (atoi(settings.dispTemp) > 0);
+    if(!useSpeedo || useGPSSpeed) {
+        dispTemp = false;
+    } else {
+        dispTemp = (atoi(settings.dispTemp) > 0);
+    }
     #else
     dispTemp = false;
     #endif
@@ -1328,10 +1332,10 @@ void time_setup()
         tempSens.setCustomDelayFunc(myCustomDelay);
         tempUnit = (atoi(settings.tempUnit) > 0);
         tempSens.setOffset((float)atof(settings.tempOffs));
+        haveRcMode = true;
         #ifdef TC_HAVESPEEDO
         tempBrightness = atoi(settings.tempBright);
         tempOffNM = (atoi(settings.tempOffNM) > 0);
-        if(!useSpeedo || useGPSSpeed) dispTemp = false;
         if(dispTemp) {
             #ifdef FAKE_POWER_ON
             if(!waitForFakePowerButton) {
@@ -1343,7 +1347,6 @@ void time_setup()
             #endif
         }
         #endif
-        haveRcMode = true;
     } else {
         useTemp = dispTemp = false;
     }
@@ -1642,24 +1645,29 @@ void time_loop()
         animate(true);
         startup = false;
         #ifdef TC_HAVESPEEDO
-        #ifdef TC_HAVE_RE
-        if(dispRotEnc) {
-            speedo.on();
-        }
-        #endif
-        if(useSpeedo && !useGPSSpeed && !dispRotEnc) {
-            #ifdef TC_HAVETEMP
-            updateTemperature(true);
-            if(!dispTemperature(true)) {
+        if(useSpeedo && !useGPSSpeed) {
+            #ifdef TC_HAVE_RE
+            if(dispRotEnc) {
+                speedo.on();
+            } else {
             #endif
-                #ifdef SP_ALWAYS_ON
-                dispIdleZero();
-                #else
-                speedo.off(); // Yes, off.
+                #ifdef TC_HAVETEMP
+                updateTemperature(true);
+                if(dispTemp) {
+                    dispTemperature(true);
+                } else {
                 #endif
-            #ifdef TC_HAVETEMP
+                    #ifdef SP_ALWAYS_ON
+                    dispIdleZero();
+                    #else
+                    speedo.off(); // Yes, off.
+                    #endif
+                #ifdef TC_HAVETEMP
+                }
+                #endif
+            #ifdef TC_HAVE_RE
             }
-            #endif  
+            #endif    
         }
         #endif
     }
@@ -1827,7 +1835,7 @@ void time_loop()
         // seconds change is detected)
 
         #ifdef TC_HAVE_RE
-        if(FPBUnitIsOn && useRotEnc) {
+        if(FPBUnitIsOn && !startup && useRotEnc) {
             fakeSpeed = rotEnc.updateFakeSpeed();
             #ifdef TC_HAVESPEEDO
             dispGPSSpeed();
@@ -3489,7 +3497,6 @@ static void dispGPSSpeed(bool force)
         spdreChgNM = (spdreNM != spdreOldNM);
         spdreOldNM = spdreNM;
         if((spdreChgNM && speedoStatus == SPST_RE) || force || (fakeSpeed != oldFakeSpeed)) {
-            Serial.printf("fakeSpeed %d\n", fakeSpeed);
             if(dispTemp || fakeSpeed >= 0) {
                 speedo.setSpeed(fakeSpeed);
                 speedo.show();
@@ -3505,7 +3512,7 @@ static void dispGPSSpeed(bool force)
                     re_lockTemp();
                 } else {
                     tempLock = false;
-                    tempDispNow = millis() - 2*60*1000;
+                    tempDispNow = millis() - 2*60*1000;   // Force immediate re-display
                 }
             }
             oldFakeSpeed = fakeSpeed;
@@ -5238,11 +5245,14 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
         #ifdef TC_HAVEGPS
         if(useGPS && provGPS2BTTFN) {   // Why "&& provGPS2BTTFN"?
             temp = myGPS.getSpeed();    // Because: If stationary user uses GPS for time only, speed will 
-        }                               // be 0 permanently, and rotary encoder never gets a chance.
+        } else {                        // be 0 permanently, and rotary encoder never gets a chance.
         #endif
-        #ifdef TC_HAVE_RE
-        if(useRotEnc && temp < 0) {
-            temp = fakeSpeed; 
+            #ifdef TC_HAVE_RE
+            if(useRotEnc) {
+                temp = fakeSpeed; 
+            }
+            #endif
+        #ifdef TC_HAVEGPS
         }
         #endif
         buf[18] = (uint16_t)temp & 0xff;

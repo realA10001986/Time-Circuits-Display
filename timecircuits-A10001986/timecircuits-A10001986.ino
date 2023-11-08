@@ -96,8 +96,9 @@
 
 /*  Changelog
  *   
- *  TODO: Way (option) to reverse rot enc direction
- *  2023/11/06-07 (A10001986)
+ *  2023/11/08  (A10001986)
+ *    - Fixes for rot enc (direction; some logic)
+ *  2023/11/06-07 (A10001986) [CS 2.9.1]
  *    - Abort audio file installer on first error
  *    - Add TSL2591 light sensor support (yet untested), since 2561 is discontinued.
  *    - Fixes for rotatry encoder

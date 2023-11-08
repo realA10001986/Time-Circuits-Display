@@ -542,9 +542,6 @@ static bool read_settings(File configFile)
 
 void write_settings()
 {
-    bool success = false;
-    char *buf;
-    size_t bufSize;
     const char *funcName = "write_settings";
     DynamicJsonDocument json(JSON_SIZE);
     //StaticJsonDocument<JSON_SIZE> json;
