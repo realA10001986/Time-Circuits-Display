@@ -33,7 +33,7 @@ Features include
 - Support for time travel [triggered by external source](#external-time-travel-trigger), with selectable delay
 - Support for external display acting as [Speedometer](#speedometer)
 - Support for [GPS receiver](#gps-receiver), used as time source, and for actual [speed](#gps-for-speed) to be displayed on speedo display
-- Support for [rotary encoder]() for manual selection of speed to be displayed on Speedo display
+- Support for [rotary encoder](#rotary-encoder) for manual selection of speed to be displayed on Speedo display
 - Support for [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for "room condition mode" and to display temperature on speedo display while idle
 - Support for wireless communication ("[BTTF-Network](#bttf-network-bttfn)") with compatible other props such as CircuitSetup's [Flux Capacitor](https://fc.backtothefutu.re) and [SID](https://sid.backtothefutu.re) 
 - Support for triggering time travels on [other props](#controlling-other-props) connected by wire
@@ -679,6 +679,7 @@ Note: Sometimes, light sensors report a lux value of -1. This is mostly due to t
 - [Fake Power Switch](#fake-power-switch)
 - [Speedometer](#speedometer)
 - [GPS-Receiver](#gps-receiver)
+- [Rotary encoder](#rotary-encoder)
 - [Temperature Sensor](#room-condition-mode-temperaturehumidity-sensor)
 - [Light Sensor](#night-mode)
 - [Other Props](#controlling-other-props) (Flux Capacitor, SID, ...)
@@ -780,13 +781,12 @@ If other props using GPS speed are connected via [BTTF-Network](#bttf-network-bt
 
 A rotary encoder is, simply put, a turnable knob. If connected to the TCD, this knob allows manually selecting a speed to be displayed on the Speedo display, as well as to be sent to [BTTFN](#bttf-network-bttfn) clients in place of actual (GPS) speed.
 
-The firmware currently only supports the Adafruit 4991 Rotary Encoder; support for other models, including a CircuitSetup original prop, is in the works.
+The firmware currently only supports the Adafruit 4991 Rotary Encoder; a CircuitSetup original prop is in the works.
 
 Notes:
 - The knob is only activated if no GPS receiver is connected, or if the **_Display GPS speed_** is unchecked. GPS speed has priority over the knob.
 - The knob is also activated if no speedo display is connected; it can be operated "blindly" to trigger time travels and its movement is send to BTTFN clients like GPS speed.
 - The speedo displays "0" as long as the knob is not moved; if the knob is turned counter-clockwise a couple of notches, the speedo display will be switched off.
-
 
 ## Room Condition Mode, Temperature/humidity sensor
 
