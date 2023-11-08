@@ -784,8 +784,8 @@ A rotary encoder is, simply put, a turnable knob. If connected to the TCD, this 
 The firmware currently only supports the Adafruit 4991 Rotary Encoder; a CircuitSetup original prop is in the works.
 
 Notes:
-- The knob is only activated if no GPS receiver is connected, or if the **_Display GPS speed_** is unchecked. GPS speed has priority over the knob.
-- The knob is also activated if no speedo display is connected; it can be operated "blindly" to trigger time travels and its movement is send to BTTFN clients like GPS speed.
+- The knob is only evaluated if no GPS receiver is connected, or if the **_Display GPS speed_** is unchecked. GPS speed has priority over the knob.
+- The knob is also evaluated if no speedo display is connected; it can be operated "blindly" to trigger time travels and its movement is send to BTTFN clients like GPS speed (if no GPS receiver is connected, or the option **_Provide GPS speed for wireless props_** is unchecked)
 - The speedo displays "0" as long as the knob is not moved; if the knob is turned counter-clockwise a couple of notches, the speedo display will be switched off.
 
 ## Room Condition Mode, Temperature/humidity sensor
