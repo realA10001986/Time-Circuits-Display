@@ -781,7 +781,7 @@ If other props using GPS speed are connected via [BTTF-Network](#bttf-network-bt
 
 A rotary encoder is, simply put, a turnable knob. If connected to the TCD, this knob allows manually selecting a speed to be displayed on the Speedo display, as well as to be sent to [BTTFN](#bttf-network-bttfn) clients in place of actual (GPS) speed.
 
-The firmware currently only supports the Adafruit 4991 Rotary Encoder; a CircuitSetup original prop is in the works.
+The firmware currently only supports the [Adafruit 4991](https://www.adafruit.com/product/4991) Rotary Encoder; a CircuitSetup original prop is in the works.
 
 Notes:
 - The knob is only evaluated if no GPS receiver is connected, or if the **_Display GPS speed_** is unchecked. GPS speed has priority over the knob.
