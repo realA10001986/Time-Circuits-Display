@@ -6,7 +6,10 @@
  * https://tcd.backtothefutu.re
  *
  * Keypad_I2C Class, TCButton Class: I2C-Keypad and Button handling
- * TCRotEnc: Rotary Encoder handling
+ * 
+ * TCRotEnc: Rotary Encoder handling:
+ * Supports Adafruit 4991, DuPPA I2CEncoder 2.1, DFRobot Gravity 360
+ * DuPPA I2CEncoder 2.1 must be set to i2c address 0x01 (A0 closed).
  *
  * Keypad part inspired by "Keypad" library by M. Stanley & A. Brevig
  * Fractions of this code are customized, minimized derivates of parts 
@@ -198,52 +201,34 @@ class TCButton {
  * TCRotEnc class
  */
 
-#define TC_RE_TYPE_ADA4991    0
-
-// Ada4991
-
-#define SEESAW_STATUS_BASE  0x00
-#define SEESAW_ENCODER_BASE 0x11
-
-#define SEESAW_STATUS_HW_ID   0x01
-#define SEESAW_STATUS_VERSION 0x02
-#define SEESAW_STATUS_SWRST   0x7F
-
-#define SEESAW_ENCODER_STATUS   0x00
-#define SEESAW_ENCODER_INTENSET 0x10
-#define SEESAW_ENCODER_INTENCLR 0x20
-#define SEESAW_ENCODER_POSITION 0x30
-#define SEESAW_ENCODER_DELTA    0x40
-
-#define SEESAW_HW_ID_CODE_SAMD09   0x55
-#define SEESAW_HW_ID_CODE_TINY806  0x84
-#define SEESAW_HW_ID_CODE_TINY807  0x85
-#define SEESAW_HW_ID_CODE_TINY816  0x86
-#define SEESAW_HW_ID_CODE_TINY817  0x87
-#define SEESAW_HW_ID_CODE_TINY1616 0x88
-#define SEESAW_HW_ID_CODE_TINY1617 0x89
+#define TC_RE_TYPE_ADA4991    0     // Adafruit 4991            https://www.adafruit.com/product/4991
+#define TC_RE_TYPE_DUPPAV2    1     // DuPPA I2CEncoder V2.1    https://www.duppa.net/shop/i2cencoder-v2-1/
+#define TC_RE_TYPE_DFRGR360   2     // DFRobot Gravity 360      https://www.dfrobot.com/product-2575.html
+#define TC_RE_TYPE_CS         3     // CircuitSetup             <yet to be designed>
 
 class TCRotEnc {
   
     public:
         TCRotEnc(int numTypes, uint8_t addrArr[], TwoWire *awire = &Wire);
-        bool begin();
-        void zeroPos();
+        bool    begin();
+        void    zeroPos();
         int16_t updateFakeSpeed(bool force = false);
 
     private:
         int32_t getEncPos();
-        int     read(uint8_t base, uint8_t reg, uint8_t *buf, uint8_t num);
-        void    write(uint8_t base, uint8_t reg, uint8_t *buf, uint8_t num);
+        int     read(uint16_t base, uint8_t reg, uint8_t *buf, uint8_t num);
+        void    write(uint16_t base, uint8_t reg, uint8_t *buf, uint8_t num);
+
+        bool    zeroEnc(int offs = 0);
 
         int           _numTypes = 0;
-        uint8_t       _addrArr[4*2];    // up to 4 types fit here
+        uint8_t       _addrArr[6*2];    // up to 6 types fit here
         int8_t        _st = -1;
         
         int           _i2caddr;
         TwoWire       *_wire;
 
-        uint8_t       _hwtype;
+        //uint8_t       _hwtype;
 
         int16_t       fakeSpeed = 0;
         int16_t       targetSpeed = 0;

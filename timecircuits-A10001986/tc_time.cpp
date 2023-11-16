@@ -74,6 +74,7 @@
 #define TMP117_ADDR    0x49 // [non-default]
 #define AHT20_ADDR     0x38 // [default]
 #define HTU31_ADDR     0x41 // [non-default]
+#define MS8607_ADDR    0x76 // [default] +0x40
 
                             // light sensors 
 #define LTR3xx_ADDR    0x29 // [default]                            
@@ -85,6 +86,8 @@
 
                             // rotary encoders
 #define ADDA4991_ADDR  0x36 // [default]
+#define DUPPAV2_ADDR   0x01 // [user configured: A0 closed]
+#define DFRGR360_ADDR  0x54 // [default]
 
 // The time between reentry sound being started and the display coming on
 // Must be sync'd to the sound file used! (startup.mp3/timetravel.mp3)
@@ -356,15 +359,18 @@ clockDisplay departedTime(DISP_LAST, DEPT_TIME_ADDR);
 speedDisplay speedo(SPEEDO_ADDR);
 #endif
 #ifdef TC_HAVE_RE
-static TCRotEnc rotEnc(1, 
-            (uint8_t[1*2]){ ADDA4991_ADDR, TC_RE_TYPE_ADA4991 
+static TCRotEnc rotEnc(3, 
+            (uint8_t[3*2]){ ADDA4991_ADDR, TC_RE_TYPE_ADA4991,
+                            DUPPAV2_ADDR,  TC_RE_TYPE_DUPPAV2,
+                            DFRGR360_ADDR, TC_RE_TYPE_DFRGR360
                           });
 #endif
 #ifdef TC_HAVETEMP
-tempSensor tempSens(7, 
-            (uint8_t[7*2]){ MCP9808_ADDR, MCP9808,
+tempSensor tempSens(8, 
+            (uint8_t[8*2]){ MCP9808_ADDR, MCP9808,
                             BMx280_ADDR,  BMx280,
                             SHT40_ADDR,   SHT40,
+                            MS8607_ADDR,  MS8607,   // before Si7021
                             SI7021_ADDR,  SI7021,
                             TMP117_ADDR,  TMP117,
                             AHT20_ADDR,   AHT20,
@@ -583,7 +589,7 @@ bool bttfnHaveClients = false;
 #define BTTFN_TYPE_ANY     0    // Any, unknown or no device
 #define BTTFN_TYPE_FLUX    1    // Flux Capacitor
 #define BTTFN_TYPE_SID     2    // SID
-#define BTTFN_TYPE_PCG     3    // Plutonium chamber gauge panel
+#define BTTFN_TYPE_PCG     3    // Dash gauge panel
 #ifdef TC_HAVEBTTFN
 #define BTTFN_VERSION              1
 #define BTTF_PACKET_SIZE          48
@@ -4664,7 +4670,7 @@ static void updateDSTFlag(int nisDST)
 /*
  * World Clock
  * Convert local time to other time zone, and copy
- * them to display. If a TW for a display is not
+ * them to display. If a TZ for a display is not
  * configured, it does not touch that display.
  */
 void setDatesTimesWC(DateTime& dt)

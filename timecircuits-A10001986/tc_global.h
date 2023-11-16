@@ -27,9 +27,9 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION "V2.9.99"          // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "NOV082023"  // 13 chars max
+#define TC_VERSION_EXTRA "NOV162023"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "11082023"   // 12 chars max
+#define TC_VERSION_EXTRA "11162023"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -84,7 +84,7 @@
 #define TC_HAVE_RE
 
 // Uncomment for support of a temperature/humidity sensor (MCP9808, BMx280, 
-// SI7021, SHT40, TMP117, AHT20, HTU31D) connected via i2c. Will be used for 
+// SI7021, SHT4x, TMP117, AHT20, HTU31D) connected via i2c. Will be used for 
 // room condition mode and to display ambient temperature on speedometer  
 // display when idle (GPS speed has higher priority, ie if "Display GPS speed"
 // is checked in the Config Portal, temperature will not be shown on speedo).

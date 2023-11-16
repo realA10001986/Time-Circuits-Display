@@ -526,7 +526,7 @@ void wifi_setup()
     wm.setTitle(F("Time Circuits"));
     wm.setDarkMode(false);
 
-    // Hack version number into WiFiManager main page
+    // Hack some stuff into WiFiManager main page
     wm.setCustomMenuHTML(myCustMenu);
 
     // Static IP info is not saved by WiFiManager,

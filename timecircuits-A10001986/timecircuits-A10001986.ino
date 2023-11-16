@@ -96,9 +96,23 @@
 
 /*  Changelog
  *   
+ *  2023/11/16  (A10001986)
+ *    - Finalize support for MS8607 temp+hum sensor; verified working.
+ *  2023/11/15  (A10001986)
+ *    - Finalize support for DFRobot Gravity 360 rotary encoder, verified working. 
+ *    - Logic fixes for all rotary encoders
+ *    * Switched to esp32-arduino 2.0.14 for pre-compiled binary.
+ *  2023/11/13  (A10001986)
+ *    - Prepare support for DuPPa V2.1 rotary encoder (https://www.duppa.net/shop/i2cencoder-v2-1/)
+ *      ("Mini" not supported due to i2c address conflict)
+ *    - Prepare support for DFRobot Gravity 360 rotary encoder (https://www.dfrobot.com/product-2575.html)
+ *  2023/11/10  (A10001986)
+ *    - TSL2591 light sensor verified working
+ *  2023/11/09  (A10001986)
+ *    - Prepare support for MS8607 temp+hum sensor (yet untested)
  *  2023/11/08  (A10001986)
  *    - Fixes for rot enc (direction; some logic)
- *  2023/11/06-07 (A10001986) [CS 2.9.1]
+ *  2023/11/06-07 (A10001986) [released by CS as 2.9.1]
  *    - Abort audio file installer on first error
  *    - Add TSL2591 light sensor support (yet untested), since 2561 is discontinued.
  *    - Fixes for rotatry encoder
