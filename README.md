@@ -417,7 +417,7 @@ Night mode schedules are always based on actual local present time.
 
 #### Sensor-controlled night-mode
 
-You can also connect a light sensor to the device. Four sensor types/models are supported: TSL2561, BH1750, VEML7700/VEML6030, LTR303/LTR329, connected through i2c with their respective default slave address. The VEML7700 can only be connected if no GPS receiver is connected at the same time; the VEML6030 needs its address to be set to  0x48 if a GPS receiver is present at the same time. All these sensor types are readily available on breakout boards from Adafruit or Seeed (Grove). Only one light sensor can be used at the same time. *Note: You cannot connect the sensor chip directly to the TCD control board; most sensors need at least a power converter/level-shifter.* This is why I exclusively used Adafruit or Seeed breakouts ([TSL2561](https://www.adafruit.com/product/439) or [here](https://www.seeedstudio.com/Grove-Digital-Light-Sensor-TSL2561.html), [BH1750](https://www.adafruit.com/product/4681), [VEML7700](https://www.adafruit.com/product/4162), [LTR303](https://www.adafruit.com/product/5610)), which all allow connecting named sensors to the 5V the TCD board operates on. For wiring information, see [here](#appendix-b-sensor-wiring).
+You can also connect a light sensor to the device. Four sensor types/models are supported: TSL2591, TSL2561, BH1750, VEML7700/VEML6030, LTR303/LTR329, connected through i2c with their respective default slave address. The VEML7700 can only be connected if no GPS receiver is connected at the same time; the VEML6030 needs its address to be set to  0x48 if a GPS receiver is present at the same time. All these sensor types are readily available on breakout boards from Adafruit or Seeed (Grove). Only one light sensor can be used at the same time. *Note: You cannot connect the sensor chip directly to the TCD control board; most sensors need at least a power converter/level-shifter.* This is why I exclusively used Adafruit or Seeed breakouts ([TSL2561](https://www.adafruit.com/product/439) or [here](https://www.seeedstudio.com/Grove-Digital-Light-Sensor-TSL2561.html), [BH1750](https://www.adafruit.com/product/4681), [VEML7700](https://www.adafruit.com/product/4162), [LTR303](https://www.adafruit.com/product/5610)), which all allow connecting named sensors to the 5V the TCD board operates on. For wiring information, see [here](#appendix-b-sensor-wiring).
 
 If the measured lux level is below or equal the threshold set in the Config Portal, the device will go into night-mode. To view the currently measured lux level, use the [keypad menu](#how-to-view-sensor-info).
 
@@ -781,7 +781,7 @@ If other props using GPS speed are connected via [BTTF-Network](#bttf-network-bt
 
 A rotary encoder is, simply put, a turnable knob. If connected to the TCD, this knob allows manually selecting a speed to be displayed on the Speedo display, as well as to be sent to [BTTFN](#bttf-network-bttfn) clients in place of actual (GPS) speed.
 
-The firmware currently only supports the [Adafruit 4991](https://www.adafruit.com/product/4991) Rotary Encoder; a CircuitSetup original prop is in the works.
+The firmware currently supports the [Adafruit 4991](https://www.adafruit.com/product/4991) and [DFRobot Gravity 360](https://www.dfrobot.com/product-2575.html) i2c rotary encoders; a CircuitSetup original prop is in the works.
 
 Notes:
 - The knob is only evaluated if no GPS receiver is connected, or if the **_Display GPS speed_** is unchecked. GPS speed has priority over the knob.
