@@ -135,6 +135,10 @@ Set the interval to OFF (0) to disable Time-cycling.
 
 World Clock (WC) mode is another kind of decorative mode where the red and yellow displays show not some stale times, but current time in other time zones. These time zones need to be configured in Config Portal. At least one time zone (for either the red or yellow display) must be configured in order to use WC mode. Optionally, also names for cities/locations for these time zones can be entered in the Config Portal; if a name for a time zone is configured, this name and the time will alternately be shown; if no name is configured, time will be shown permanently. Note that names can only contain letters a-z, numbers 0-9, space and minus.
 
+| ![WC mode](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/9cd1b234-515f-4885-be6e-69b3aa9e7ecf) |
+|:--:|
+| *WC mode* |
+
 WC mode is toggled by typing "112" followed by ENTER. 
 
 For logical reasons, WC mode will be automatically disabled in some situations:
@@ -145,6 +149,10 @@ For logical reasons, WC mode will be automatically disabled in some situations:
 #### WC/RC hybrid mode
 
 [Room Condition (RC) mode](#room-condition-mode-temperaturehumidity-sensor) can be enabled together with WC mode. In that case, only one timezone is used, and the other display shows the temperature. If there is a time zone configured for the red display, the temperature will be shown in the yellow display. If there no time zone for the red display, the temperature will be shown there, and the yellow display will show time for the time zone you set up for the yellow display.
+
+| ![WC/RC hybrid](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/9e3c7b09-a948-4aff-9044-95f7d9df7d8c) |
+|:--:|
+| *WC/RC hybrid mode* |
 
 To toggle WC/RC hybrid mode, type "113" followed by ENTER.
 
