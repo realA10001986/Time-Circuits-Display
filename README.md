@@ -21,7 +21,7 @@ Features include
 - [Alarm function](#how-to-set-up-the-alarm): Daily alarms, with weekday selection
 - [Count-down timer](#count-down-timer): Count down from up to 99 minutes
 - [Yearly/monthly reminder](#yearlymonthly-reminder): Get a yearly or monthly acoustic reminder
-- [Night mode](#night-mode): Dim or switch off displays on schedule, manually or sensor-controlled (&#127381; TLS2961).
+- [Night mode](#night-mode): Dim or switch off displays on schedule, manually or sensor-controlled (&#127381; TLS2591).
 - [Music player](#the-music-player): Play mp3 files located on an SD card
 - [Sound on the hour](#additional-custom-sounds)
 - [SD card](#sd-card) support for custom audio files for effects, and music for the Music Player
