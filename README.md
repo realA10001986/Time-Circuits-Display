@@ -793,6 +793,10 @@ If other props using GPS speed are connected via [BTTF-Network](#bttf-network-bt
 
 A rotary encoder is, simply put, a turnable knob. If connected to the TCD, this knob allows manually selecting a speed to be displayed on the Speedo display, as well as to be sent to [BTTFN](#bttf-network-bttfn) clients in place of actual (GPS) speed.
 
+| [![Watch the video](https://img.youtube.com/vi/Y6uu1SU6YJA/0.jpg)](https://youtu.be/Y6uu1SU6YJA) |
+|:--:|
+| Click to watch the video |
+
 The firmware currently supports the [Adafruit 4991](https://www.adafruit.com/product/4991) and [DFRobot Gravity 360](https://www.dfrobot.com/product-2575.html) i2c rotary encoders; a CircuitSetup original prop is in the works.
 
 Notes:
