@@ -41,6 +41,10 @@ Features include
 
 Since Sep 2022, CircuitSetup are distributing this very firmware as their official one (starting with 2.0). The difference between what you get here and CircuitSetup's releases is that the code here might be ahead in development, uses some different sounds, and the pre-compiled binary has all the features enabled.
 
+| [![Watch the video](https://img.youtube.com/vi/u9oTVXUIOXA/0.jpg)](https://youtu.be/u9oTVXUIOXA) |
+|:--:|
+| Click to watch the video |
+
 ## Installation
 
 There are different alternative ways to install this firmware:
