@@ -62,12 +62,12 @@ class tcSensor {
 enum {
     MCP9808 = 0,      // 0x18 (unsupported: 0x19-0x1f)
     BMx280,           // 0x77 (unsupported: 0x76)
-    SHT40,            // 0x44 (unsupported: 0x45)
+    SHT40,            // 0x44 (unsupported: SHT4x-Bxxx with address 0x45)
     SI7021,           // 0x40
     TMP117,           // 0x49 [non-default] (unsupported: 0x48)
     AHT20,            // 0x38
     HTU31,            // 0x41 [non-default] (unsupported: 0x40)
-    MS8607            // 0x76+0x40 [default]
+    MS8607            // 0x76+0x40
 };
 
 class tempSensor : tcSensor {

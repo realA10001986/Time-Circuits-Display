@@ -69,12 +69,12 @@
                             // temperature sensors
 #define MCP9808_ADDR   0x18 // [default]
 #define BMx280_ADDR    0x77 // [default]
-#define SHT40_ADDR     0x44 // [default]
-#define SI7021_ADDR    0x40 // [default]
+#define SHT40_ADDR     0x44 // Only SHT4x-Axxx, not SHT4x-Bxxx
+#define SI7021_ADDR    0x40 //
 #define TMP117_ADDR    0x49 // [non-default]
-#define AHT20_ADDR     0x38 // [default]
+#define AHT20_ADDR     0x38 //
 #define HTU31_ADDR     0x41 // [non-default]
-#define MS8607_ADDR    0x76 // [default] +0x40
+#define MS8607_ADDR    0x76 // +0x40
 
                             // light sensors 
 #define LTR3xx_ADDR    0x29 // [default]                            
@@ -1744,6 +1744,13 @@ void time_loop()
         #endif
         if((timeTravelP0Speed <= targetSpeed) || (targetSpeed >= 88)) {
             timeTravelP2 = 0;
+            #if defined(TC_HAVEGPS) && defined(NOT_MY_RESPONSIBILITY)
+            if(countToGPSSpeed && targetSpeed >= 88) {
+                // Avoid an immediately repeated time travel
+                // if speed increased in the meantime
+                GPSabove88 = true;
+            }
+            #endif
             #ifdef TC_HAVE_RE
             if(useRotEnc) {
                 re_init();
@@ -2784,9 +2791,15 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
         bttfnTTLeadTime = ettoLeadTime;
         #endif
 
-        #ifdef TC_HAVEGPS
-        if(useGPSSpeed) {
+        #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE)
+        if(useGPSSpeed || dispRotEnc) {
+            #if defined(TC_HAVEGPS) && defined(TC_HAVE_RE)
+            int16_t tempSpeed = useGPSSpeed ? myGPS.getSpeed() : fakeSpeed;
+            #elif defined(TC_HAVEGPS)
             int16_t tempSpeed = myGPS.getSpeed();
+            #else
+            int16_t tempSpeed = fakeSpeed;
+            #endif
             if(tempSpeed >= 0) {
                 timeTravelP0Speed = tempSpeed;
                 timetravelP0Delay = 0;

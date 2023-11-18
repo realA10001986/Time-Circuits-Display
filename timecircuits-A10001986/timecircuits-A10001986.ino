@@ -96,6 +96,9 @@
 
 /*  Changelog
  *   
+ *  2023/11/18  (A10001986)
+ *    - RotEnc: Start from displayed speed when triggering a tt via keypad
+ *      or external trigger
  *  2023/11/16  (A10001986)
  *    - Finalize support for MS8607 temp+hum sensor; verified working.
  *  2023/11/15  (A10001986)
