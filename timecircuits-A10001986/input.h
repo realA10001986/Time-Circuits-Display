@@ -212,7 +212,10 @@ class TCRotEnc {
         TCRotEnc(int numTypes, uint8_t addrArr[], TwoWire *awire = &Wire);
         bool    begin();
         void    zeroPos();
+        void    disabledPos();
         int16_t updateFakeSpeed(bool force = false);
+
+        bool    IsOff();
 
     private:
         int32_t getEncPos();

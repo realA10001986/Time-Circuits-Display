@@ -673,11 +673,21 @@ bool TCRotEnc::begin()
     return true;
 }
 
+// Init dec into "zero" position
 void TCRotEnc::zeroPos()
 {
     zeroEnc();
     rotEncPos = getEncPos();
     fakeSpeed = targetSpeed = 0;
+}
+
+// Init dec into "disabled" position
+void TCRotEnc::disabledPos()
+{
+    zeroEnc(-OFF_SLOTS);
+    rotEncPos = getEncPos();
+    targetSpeed = -OFF_SLOTS;
+    fakeSpeed = -1;
 }
 
 int16_t TCRotEnc::updateFakeSpeed(bool force)
@@ -732,6 +742,11 @@ int16_t TCRotEnc::updateFakeSpeed(bool force)
     if(fakeSpeed >= 0)                return fakeSpeed;
     if(fakeSpeed >= -(OFF_SLOTS - 1)) return 0;
     return -1;
+}
+
+bool TCRotEnc::IsOff()
+{
+    return (fakeSpeed < -(OFF_SLOTS - 1));
 }
 
 int32_t TCRotEnc::getEncPos()

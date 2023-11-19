@@ -640,7 +640,7 @@ static void dispIdleZero(bool force = false);
 #endif
 #endif
 #ifdef TC_HAVE_RE                
-static void re_init();
+static void re_init(bool zero = true);
 static void re_lockTemp();
 #endif
 
@@ -1753,8 +1753,18 @@ void time_loop()
             #endif
             #ifdef TC_HAVE_RE
             if(useRotEnc) {
-                re_init();
-                re_lockTemp();
+                // We MUST reset the encoder; user might have moved
+                // it while we blocked updates during P2.
+                // If fakeSpeed is -1 at this point, it was disabled
+                // when staring P2
+                if(fakeSpeed < 0) {
+                    // Reset enc to "disabled" position
+                    re_init(false);
+                } else {
+                    // Reset enc to "zero" position
+                    re_init();
+                    re_lockTemp();
+                }
             }
             #endif
             if(!useGPSSpeed && !dispRotEnc) {
@@ -1776,6 +1786,11 @@ void time_loop()
             timeTravelP0Speed--;
             speedo.setSpeed(timeTravelP0Speed);
             speedo.show();
+            #ifdef TC_HAVE_RE
+            if(useRotEnc) {
+                fakeSpeed = rotEnc.IsOff() ? -1 : timeTravelP0Speed;
+            }
+            #endif
             #ifdef TC_HAVEGPS
             if(countToGPSSpeed) {
                 if(targetSpeed == timeTravelP0Speed) {
@@ -1848,7 +1863,7 @@ void time_loop()
         // seconds change is detected)
 
         #ifdef TC_HAVE_RE
-        if(FPBUnitIsOn && !startup && useRotEnc) {
+        if(FPBUnitIsOn && useRotEnc && !startup && !timeTravelP2) {
             fakeSpeed = rotEnc.updateFakeSpeed();
             #ifdef TC_HAVESPEEDO
             dispGPSSpeed();
@@ -3060,10 +3075,10 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
         timetravelP0Delay = 2000;
     }
     #endif
-    // If we skip P2, we reset the RotEnc here
-    // This is otherwise done at the end of P2
+    // If there is no P2, we reset the RotEnc here.
+    // This is otherwise done at the end of P2.
     #ifdef TC_HAVE_RE
-    if(!timeTravelP2 && useRotEnc) {
+    if(!timeTravelP2 && useRotEnc && !rotEnc.IsOff()) {
         re_init();
         re_lockTemp();
     }
@@ -3560,7 +3575,9 @@ static bool dispTemperature(bool force)
             return false;
         } else {
             tempLock = false; 
-            force = true;     
+            force = true;
+            // Reset encoder to "disabled" pos
+            re_init(false);   
         }
     }
     #endif
@@ -3608,10 +3625,17 @@ static void dispIdleZero(bool force)
 #endif  // TC_HAVESPEEDO
 
 #ifdef TC_HAVE_RE                
-static void re_init()
+static void re_init(bool zero)
 {                
-    rotEnc.zeroPos();
-    fakeSpeed = 0;
+    if(zero) {
+        // Reset encoder to "zero" pos
+        rotEnc.zeroPos();
+        fakeSpeed = 0;
+    } else {
+        // Reset encoder to "disabled" pos
+        rotEnc.disabledPos();
+        fakeSpeed = -1;
+    }
 }
 
 static void re_lockTemp()
@@ -3998,7 +4022,7 @@ void gps_loop()
     } 
     #endif
     #ifdef TC_HAVE_RE
-    if(useRotEnc) {
+    if(useRotEnc && !timeTravelP2) {
         fakeSpeed = rotEnc.updateFakeSpeed();
         #ifdef TC_HAVESPEEDO
         if(dispRotEnc) dispGPSSpeed();

@@ -96,6 +96,12 @@
 
 /*  Changelog
  *   
+ *  2023/11/19  (A10001986)
+ *    - RotEnc: Transmit speedo count-down in P2 to BTTF clients when tt was
+ *      triggered by RotEnc.
+ *    - RotEnc logic fixes (reset to "disabled" pos if disabled before 
+ *      time travel; don't update during P2; after templock timeout, reset 
+ *      enc to "disabled" pos; etc.)
  *  2023/11/18  (A10001986)
  *    - RotEnc: Start from displayed speed when triggering a tt via keypad
  *      or external trigger
