@@ -718,7 +718,9 @@ Note that the switch actually needs to be a switch with a maintained contact; th
 
 In order to use the Fake Power Switch, check **_Use fake power switch_** in the Config Portal.
 
-[Here](https://github.com/realA10001986/Time-Circuits-Display/wiki/Time-Circuits-Switch) are some hints for building a TFC Switch.
+[Here](https://github.com/realA10001986/Time-Circuits-Display/wiki/TFC-Switch) are some hints for building a TFC Switch like this one:
+
+![TFC Switch](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/df7b0f3a-909a-4b6c-b1d3-95485a7a6c92)
 
 ## External Time Travel Trigger
 
