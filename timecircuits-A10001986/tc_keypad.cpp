@@ -1544,6 +1544,11 @@ void startBeepTimer()
         beepTimerNow = millis();
         muteBeep = false;
     }
+
+    #ifdef TC_DBG
+    Serial.printf("startBeepTimer: Beepmode %d BeepTimer %d, BTNow %d, now %d mute %d\n", 
+        beepMode, beepTimer, beepTimerNow, millis(), muteBeep);
+    #endif
 }
 
 /*

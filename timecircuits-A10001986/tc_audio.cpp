@@ -499,7 +499,7 @@ static void mpren_looper(bool isSetup, bool checking)
         wifi_loop();
         if(!isSetup) {
             ntp_loop();
-            #ifdef TC_HAVEGPS
+            #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE)
             gps_loop();
             #endif
             // audio_loop not required, never

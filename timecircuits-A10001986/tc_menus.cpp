@@ -321,8 +321,8 @@ static void prepareInput(uint16_t number);
 
 static bool checkTimeOut();
 
+static void menudelay(unsigned long mydel);
 static void myssdelay(unsigned long mydel);
-static void myloop();
 
 static void dt_showTextDirect(const char *text, uint16_t flags = CDT_CLEAR)
 {
@@ -549,7 +549,7 @@ void enter_menu()
         // Save to NVM (regardless of persistence mode)
         displaySet->save();
 
-        mydelay(1000);
+        menudelay(1000);
 
     } else if(menuItemNum == MODE_VOL) {
 
@@ -630,7 +630,7 @@ void enter_menu()
             updateConfigPortalValues();
         }
 
-        mydelay(1000);
+        menudelay(1000);
 
     } else if(menuItemNum == MODE_NET) {   // Show network info
 
@@ -698,7 +698,7 @@ quitMenu:
     // Done, turn off displays
     allOff();
 
-    mydelay(500);
+    menudelay(500);
 
     waitForEnterRelease();
 
@@ -728,7 +728,7 @@ quitMenu:
     presentTime.setNightMode(preNM);
     departedTime.setNightMode(depNM);
 
-    myloop();
+    myloops(true);
 
     // make time_loop immediately re-eval auto-nm
     // unless manual-override
@@ -777,7 +777,7 @@ static bool menuSelect(int& number, int mode_min)
 
         } else {
 
-            mydelay(50);
+            menudelay(50);
 
         }
 
@@ -1078,7 +1078,7 @@ static bool setField(uint16_t& number, uint8_t field, int year, int month, uint1
             blinkSwitch = false;
         }
 
-        mydelay(10);
+        menudelay(10);
 
         if(!blinkSwitch && (millis() - blinkNow > 500)) {
             displaySet->onBlink(2);
@@ -1110,7 +1110,7 @@ static bool setField(uint16_t& number, uint8_t field, int year, int month, uint1
     // Display (corrected) number for .5 seconds
     setUpdate((uint16_t)numVal, field, dflags);
 
-    mydelay(500);
+    menudelay(500);
 
     return true;
 }
@@ -1207,7 +1207,7 @@ static void doSetVolume()
                 blinkNow = mm;
             }
 
-            mydelay(50);
+            menudelay(50);
 
         }
 
@@ -1269,7 +1269,7 @@ static void doSetVolume()
                     triggerPlay = false;
                 }
 
-                mydelay(50);
+                menudelay(50);
 
             }
         }
@@ -1290,7 +1290,7 @@ static void doSetVolume()
         if(oldVol != curVolume) {
             saveCurVolume();
         }
-        mydelay(1000);
+        menudelay(1000);
 
     } else {
 
@@ -1389,7 +1389,7 @@ static void doSetMSfx()
                 blinkNow = mm;
             }
 
-            mydelay(50);
+            menudelay(50);
 
         }
 
@@ -1407,7 +1407,7 @@ static void doSetMSfx()
             mp_init();
         }
 
-        mydelay(1000);
+        menudelay(1000);
 
     } else {
 
@@ -1520,7 +1520,7 @@ static void doSetAlarm()
                 blinkNow = mm;
             }
 
-            mydelay(50);
+            menudelay(50);
 
         }
 
@@ -1576,7 +1576,7 @@ static void doSetAlarm()
 
         } else {
 
-            mydelay(50);
+            menudelay(50);
 
             if(!blinkSwitch) {
                 displaySet->onBlink(2);
@@ -1609,7 +1609,7 @@ static void doSetAlarm()
             saveAlarm();
         }
 
-        mydelay(1000);
+        menudelay(1000);
     }
 }
 
@@ -1711,7 +1711,7 @@ static void doSetAutoInterval()
                 blinkNow = mm;
             }
 
-            mydelay(50);
+            menudelay(50);
 
         }
 
@@ -1734,7 +1734,7 @@ static void doSetAutoInterval()
         if(autoTimeIntervals[autoInterval]) 
             endPauseAuto();
 
-        mydelay(1000);
+        menudelay(1000);
 
     }
 }
@@ -1807,7 +1807,7 @@ static bool doSetBrightness(clockDisplay* displaySet)
                 blinkNow = mm;
             }
 
-            mydelay(50);
+            menudelay(50);
 
         }
 
@@ -1875,7 +1875,7 @@ static void doShowSensors()
             
         } else {
 
-            mydelay(50);
+            menudelay(50);
 
             if(millis() - sensNow > 3000) {
                 switch(numberArr[numIdx]) {
@@ -2070,7 +2070,7 @@ static void doShowNetInfo()
 
         } else {
 
-            mydelay(50);
+            menudelay(50);
 
         }
 
@@ -2157,7 +2157,7 @@ void doShowBTTFNInfo()
 
         } else {
 
-            mydelay(50);
+            menudelay(50);
             numCli = bttfnNumClients();
 
         }
@@ -2206,7 +2206,7 @@ void doCopyAudioFiles()
   
         } else {
   
-            mydelay(50);
+            menudelay(50);
 
             if(!blinkSwitch) {
                 departedTime.onBlink(2);
@@ -2231,7 +2231,7 @@ void doCopyAudioFiles()
         #endif
         write_settings();           // Re-write general settings
         if(!copy_audio_files()) {   // Retry copy
-            mydelay(3000);
+            menudelay(3000);
         } else {
             delIDfile = true;
         }
@@ -2242,7 +2242,7 @@ void doCopyAudioFiles()
     if(delIDfile)
         delete_ID_file();
     
-    mydelay(2000);
+    menudelay(2000);
 
     allOff();
     dt_showTextDirect("REBOOTING");
@@ -2303,7 +2303,7 @@ void file_copy_error()
 static bool menuWaitForRelease()
 {
     while(checkEnterPress()) {
-        myloop();
+        myloops(true);
         if(isEnterKeyHeld) {
             isEnterKeyHeld = false;
             return true;
@@ -2338,7 +2338,7 @@ void waitForEnterRelease()
 {
     while(1) {
         while(digitalRead(ENTER_BUTTON_PIN)) {
-            mydelay(10);
+            menudelay(10);
         }
         myssdelay(30);
         if(!digitalRead(ENTER_BUTTON_PIN))
@@ -2354,7 +2354,7 @@ void waitAudioDone()
     int timeout = 200;
 
     while(!checkAudioDone() && timeout--) {
-        mydelay(10);
+        menudelay(10);
     }
 }
 
@@ -2378,16 +2378,16 @@ static bool checkTimeOut()
 }
 
 /*
- * MyDelay:
- * Calls myloop() periodically
+ * MenuDelay:
+ * Calls myloops() periodically
  */
-void mydelay(unsigned long mydel)
+static void menudelay(unsigned long mydel)
 {
     unsigned long startNow = millis();
-    myloop();
+    myloops(true);
     while(millis() - startNow < mydel) {
         delay(5);
-        myloop();
+        myloops(true);
     }
 }
 
@@ -2409,21 +2409,25 @@ static void myssdelay(unsigned long mydel)
 /*
  *  Do this during enter_menu whenever we are caught in a while() loop
  *  This allows other stuff to proceed
+ *  menuMode is true when this is called from the keypad menu
+ *  menuMode is false when called from elsewhere
  */
-static void myloop()
+void myloops(bool menuMode)
 {
     audio_loop();
-    enterkeyScan();   // >= 19ms
-    audio_loop();
-    wifi_loop();
-    audio_loop();
-    ntp_loop();
-    audio_loop();
-    #ifdef TC_HAVEGPS
-    gps_loop();       // >= 12ms
+    if(menuMode) {
+        enterkeyScan();   // >= 19ms
+        audio_loop();
+        wifi_loop();
+        audio_loop();
+        ntp_loop();
+        audio_loop();
+    }
+    #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE)
+    gps_loop(menuMode);  // >= 12ms
     #endif
     #ifdef TC_HAVEBTTFN
-    #ifdef TC_HAVEGPS
+    #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE)
     audio_loop();
     #endif
     bttfn_loop();

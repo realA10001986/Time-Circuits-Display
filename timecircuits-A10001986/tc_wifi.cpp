@@ -1932,8 +1932,11 @@ static void mqttLooper()
 {
     ntp_loop();
     audio_loop();
-    #ifdef TC_HAVEGPS
-    gps_loop();   // does not call any other loops
+    #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE)
+    // No RotEnc since this is called while
+    // time_loop() is active, too. No parallel
+    // polling of RotEnc!!
+    gps_loop(false);   // does not call any other loops
     #endif
 }
 

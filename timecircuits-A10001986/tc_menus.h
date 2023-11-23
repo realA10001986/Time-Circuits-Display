@@ -69,7 +69,8 @@ void file_copy_progress();
 void file_copy_done();
 void file_copy_error();
 
-void mydelay(unsigned long mydel);
 void enterkeyScan();
+
+void myloops(bool menuMode);
 
 #endif

@@ -96,9 +96,14 @@
 
 /*  Changelog
  *   
+ *  2023/11/22  (A10001986)
+ *    - Speed up date/time transmission to BTTFN clients, and add 24hr flag
+ *    - Start beep timer when RotEnc it moved
+ *    - Add signal bit for BTTF clients if "speed" is from GPS or RotEnc
+ *    - Clean up delay methods
  *  2023/11/19  (A10001986)
- *    - RotEnc: Transmit speedo count-down in P2 to BTTF clients when tt was
- *      triggered by RotEnc.
+ *    - RotEnc: Transmit speedo count-down in P2 to BTTF clients if RotEnc
+ *      was in use at the time of the trigger.
  *    - RotEnc logic fixes (reset to "disabled" pos if disabled before 
  *      time travel; don't update during P2; after templock timeout, reset 
  *      enc to "disabled" pos; etc.)

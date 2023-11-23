@@ -158,7 +158,7 @@ static unsigned long deferredCPNow = 0;
 // For beep-auto-modes
 uint8_t       beepMode = 0;
 bool          beepTimer = false;
-unsigned long beepTimeout = 30;
+unsigned long beepTimeout = 30*1000;
 unsigned long beepTimerNow = 0;
 
 // Pause auto-time-cycling if user played with time travel
@@ -203,6 +203,7 @@ static bool          GPSabove88 = false;
 #endif
 #ifdef TC_HAVE_RE
 static int16_t       fakeSpeed = 0;
+static int16_t       oldFSpd = 0;
 static int16_t       oldFakeSpeed = -1;
 static bool          tempLock = false;
 static unsigned long tempLockNow = 0;
@@ -604,6 +605,7 @@ static char          bttfnClientID[BTTFN_MAX_CLIENTS][13] = { { 0 } };
 static uint8_t       bttfnClientType[BTTFN_MAX_CLIENTS] = { 0 };
 static unsigned long bttfnClientALIVE[BTTFN_MAX_CLIENTS] = { 0 };
 static unsigned long bttfnlastExpire = 0;
+static uint8_t       bttfnDateBuf[8];
 #ifdef TC_BTTFN_MC
 static WiFiUDP       bttfmcUDP;
 static UDP*          tcdmcUDP;
@@ -1300,7 +1302,7 @@ void time_setup()
         #endif
         re_init();
         re_lockTemp();
-        fakeSpeed = rotEnc.updateFakeSpeed(true);
+        fakeSpeed = oldFSpd = rotEnc.updateFakeSpeed(true);
         #ifdef TC_HAVESPEEDO
         #ifdef FAKE_POWER_ON
         if(!waitForFakePowerButton) {
@@ -1756,7 +1758,7 @@ void time_loop()
                 // We MUST reset the encoder; user might have moved
                 // it while we blocked updates during P2.
                 // If fakeSpeed is -1 at this point, it was disabled
-                // when staring P2
+                // when starting P2
                 if(fakeSpeed < 0) {
                     // Reset enc to "disabled" position
                     re_init(false);
@@ -1856,8 +1858,6 @@ void time_loop()
         bool didUpdSpeedo = false;
         #endif
 
-        millisNow = millis();
-
         // less timing critical stuff goes here:
         // (Will be skipped in current iteration if
         // seconds change is detected)
@@ -1865,6 +1865,12 @@ void time_loop()
         #ifdef TC_HAVE_RE
         if(FPBUnitIsOn && useRotEnc && !startup && !timeTravelP2) {
             fakeSpeed = rotEnc.updateFakeSpeed();
+            if(fakeSpeed != oldFSpd) {
+                if(FPBUnitIsOn && (fakeSpeed >= 0) && !timeTravelP0 && !timeTravelP1 && !timeTravelRE) {
+                    startBeepTimer();
+                }
+                oldFSpd = fakeSpeed;
+            }
             #ifdef TC_HAVESPEEDO
             dispGPSSpeed();
             #endif
@@ -1875,6 +1881,8 @@ void time_loop()
             }
         }
         #endif
+
+        millisNow = millis();
         
         // Read GPS, and display GPS speed or temperature
         #ifdef TC_HAVEGPS
@@ -1928,12 +1936,10 @@ void time_loop()
         #endif
         #endif
 
-        #ifdef TC_HAVESPEEDO
-        #ifdef SP_ALWAYS_ON
+        #if defined(TC_HAVESPEEDO) && defined(SP_ALWAYS_ON)
         if(useSpeedo && !didUpdSpeedo && !useGPSSpeed && !dispRotEnc) {
             dispIdleZero();
         }
-        #endif
         #endif
         
         #ifdef TC_HAVELIGHT
@@ -1961,7 +1967,7 @@ void time_loop()
       
         if(y == 0) {
 
-            DateTime dt;
+            DateTime gdt;
 
             // Set colon
             destinationTime.setColon(true);
@@ -1986,7 +1992,7 @@ void time_loop()
             #endif
 
             // Read RTC
-            myrtcnow(dt);
+            myrtcnow(gdt);
 
             // Re-adjust time periodically through NTP/GPS
             //
@@ -2010,16 +2016,16 @@ void time_loop()
             //      sync succeeds or the number of attempts exceeds a certain amount.
             // - In any case, do not interrupt any running sequences.
 
-            bool itsTime = ( (dt.minute() == 1) || 
-                             (dt.minute() == 2) ||
+            bool itsTime = ( (gdt.minute() == 1) || 
+                             (gdt.minute() == 2) ||
                              (!haveAuthTime && 
-                              ( ((dt.minute() % resyncInt) == 1) || 
-                                ((dt.minute() % resyncInt) == 2) ||
+                              ( ((gdt.minute() % resyncInt) == 1) || 
+                                ((gdt.minute() % resyncInt) == 2) ||
                                 GPShasTime 
                               )
                              )                  ||
                              (syncTrigger &&
-                              dt.second() == 35
+                              gdt.second() == 35
                              )
                            );
 
@@ -2034,12 +2040,12 @@ void time_loop()
                               authTimeExpired               &&      //      and authtime expired
                               checkMP3Done()                &&      //      and no mp3 being played
                               keypadIsIdle()                &&      //      and keypad is idle (no press for >2mins)
-                              (dt.hour() <= 6)                      //      during night-time
+                              (gdt.hour() <= 6)                     //      during night-time
                             )
                           );
 
             #ifdef TC_DBG
-            if(dt.second() == 35) {
+            if(gdt.second() == 35) {
                 Serial.printf("%s%d %d %d %d %d\n", funcName, couldHaveAuthTime, itsTime, doWiFi, haveAuthTime, syncTrigger);
             }
             #endif
@@ -2054,15 +2060,15 @@ void time_loop()
                     uint64_t oldT;
 
                     if(timeDifference) {
-                        oldT = dateToMins(dt.year() - presentTime.getYearOffset(),
-                                       dt.month(), dt.day(), dt.hour(), dt.minute());
+                        oldT = dateToMins(gdt.year() - presentTime.getYearOffset(),
+                                       gdt.month(), gdt.day(), gdt.hour(), gdt.minute());
                     }
 
                     // Note that the following call will fail if getNTPtime reconnects
                     // WiFi; no current NTP time stamp will be available. Repeated calls
                     // will eventually succeed.
 
-                    if(getNTPOrGPSTime(haveAuthTime, dt)) {
+                    if(getNTPOrGPSTime(haveAuthTime, gdt)) {
 
                         bool wasFakeRTC = false;
                         uint64_t allowedDiff = 61;
@@ -2082,15 +2088,15 @@ void time_loop()
                         authTimeExpired = false;
 
                         // We have just adjusted, don't do it again below
-                        lastYear = dt.year() - presentTime.getYearOffset();
+                        lastYear = gdt.year() - presentTime.getYearOffset();
 
                         #ifdef TC_DBG
                         Serial.printf("%sRTC re-adjusted using NTP or GPS\n", funcName);
                         #endif
 
                         if(timeDifference) {
-                            uint64_t newT = dateToMins(dt.year() - presentTime.getYearOffset(),
-                                                    dt.month(), dt.day(), dt.hour(), dt.minute());
+                            uint64_t newT = dateToMins(gdt.year() - presentTime.getYearOffset(),
+                                                    gdt.month(), gdt.day(), gdt.hour(), gdt.minute());
                             wasFakeRTC = (newT > oldT) ? (newT - oldT > allowedDiff) : (oldT - newT > allowedDiff);
 
                             // User played with RTC; return to actual present time
@@ -2148,7 +2154,7 @@ void time_loop()
             // Detect and handle year changes
 
             {
-                uint16_t thisYear = dt.year() - presentTime.getYearOffset();
+                uint16_t thisYear = gdt.year() - presentTime.getYearOffset();
 
                 if( (thisYear != lastYear) || (thisYear > 9999) ) {
 
@@ -2187,21 +2193,21 @@ void time_loop()
                     correctYr4RTC(rtcYear, yOffs);
     
                     // If year-translation changed, update RTC and save
-                    if((rtcYear != dt.year()) || (yOffs != presentTime.getYearOffset())) {
+                    if((rtcYear != gdt.year()) || (yOffs != presentTime.getYearOffset())) {
     
                         // Update RTC
-                        rtc.adjust(dt.second(), 
-                                   dt.minute(), 
-                                   dt.hour(), 
-                                   dayOfWeek(dt.day(), dt.month(), thisYear),
-                                   dt.day(), 
-                                   dt.month(), 
+                        rtc.adjust(gdt.second(), 
+                                   gdt.minute(), 
+                                   gdt.hour(), 
+                                   dayOfWeek(gdt.day(), gdt.month(), thisYear),
+                                   gdt.day(), 
+                                   gdt.month(), 
                                    rtcYear-2000
                         );
     
                         presentTime.setYearOffset(yOffs);
 
-                        dt.setYear(rtcYear-2000);
+                        gdt.setYear(rtcYear-2000);
     
                         // Save YearOffs to NVM if change is detected
                         if(yOffs != presentTime.loadYOffs()) {
@@ -2221,7 +2227,7 @@ void time_loop()
             // Check every dstChkInt-th minute
             // (Do not use "checkDST && min%x == 0": checkDST
             // might vary, so the one-time-check isn't one)
-            if((dt.minute() % dstChkInt) == 0) {
+            if((gdt.minute() % dstChkInt) == 0) {
 
                 if(!DSTcheckDone) {
 
@@ -2236,8 +2242,8 @@ void time_loop()
 
                         int oldDST = presentTime.getDST();
                         int currTimeMins = 0;
-                        int myDST = timeIsDST(0, dt.year() - presentTime.getYearOffset(), dt.month(), 
-                                                    dt.day(), dt.hour(), dt.minute(), currTimeMins);
+                        int myDST = timeIsDST(0, gdt.year() - presentTime.getYearOffset(), gdt.month(), 
+                                                    gdt.day(), gdt.hour(), gdt.minute(), currTimeMins);
 
                         DSTcheckDone = true;
 
@@ -2262,8 +2268,8 @@ void time_loop()
         
                                 if(myDST == 0) myDiff *= -1;
             
-                                rtcTime = dateToMins(dt.year() - presentTime.getYearOffset(),
-                                                   dt.month(), dt.day(), dt.hour(), dt.minute());
+                                rtcTime = dateToMins(gdt.year() - presentTime.getYearOffset(),
+                                                   gdt.month(), gdt.day(), gdt.hour(), gdt.minute());
             
                                 rtcTime += myDiff;
             
@@ -2273,7 +2279,7 @@ void time_loop()
                                 rtcYear = nyear;
                                 correctYr4RTC(rtcYear, yOffs);
             
-                                rtc.adjust(dt.second(), 
+                                rtc.adjust(gdt.second(), 
                                            nminute, 
                                            nhour, 
                                            dayOfWeek(nday, nmonth, nyear),
@@ -2284,8 +2290,8 @@ void time_loop()
             
                                 presentTime.setYearOffset(yOffs);
 
-                                dt.set(rtcYear-2000, nmonth, nday, 
-                                       nhour, nminute, dt.second());
+                                gdt.set(rtcYear-2000, nmonth, nday, 
+                                       nhour, nminute, gdt.second());
         
                             }
         
@@ -2312,17 +2318,17 @@ void time_loop()
                 presentTime.setFromStruct(&stalePresentTime[1]);
             else
             #endif
-                presentTime.setDateTimeDiff(dt);
+                presentTime.setDateTimeDiff(gdt);
 
             // Handle WC mode (load dates/times for dest/dep display)
             // (Restoring not needed, done elsewhere)
             if(isWcMode()) {
-                if((dt.minute() != wcLastMin) || triggerWC) {
-                    wcLastMin = dt.minute();
-                    setDatesTimesWC(dt);
+                if((gdt.minute() != wcLastMin) || triggerWC) {
+                    wcLastMin = gdt.minute();
+                    setDatesTimesWC(gdt);
                 }
                 // Put city/loc name on for 3 seconds
-                if(dt.second() % 10 == 3) {
+                if(gdt.second() % 10 == 3) {
                     if(haveTZName1) destShowAlt = 3*2;
                     if(haveTZName2) depShowAlt = 3*2;
                 }
@@ -2330,18 +2336,29 @@ void time_loop()
             triggerWC = false;
 
             // Update "lastYear" and save to NVM
-            lastYear = dt.year() - presentTime.getYearOffset();
-            presentTime.saveLastYear(lastYear);            
+            lastYear = gdt.year() - presentTime.getYearOffset();
+            presentTime.saveLastYear(lastYear);
+
+            #ifdef TC_HAVEBTTFN
+            bttfnDateBuf[0] = lastYear & 0xff;
+            bttfnDateBuf[1] = lastYear >> 8; 
+            bttfnDateBuf[2] = (uint8_t)gdt.month();
+            bttfnDateBuf[3] = (uint8_t)gdt.day();
+            bttfnDateBuf[4] = (uint8_t)gdt.hour();
+            bttfnDateBuf[5] = (uint8_t)gdt.minute();
+            bttfnDateBuf[6] = (uint8_t)gdt.second();
+            bttfnDateBuf[7] = (uint8_t)gdt.dayOfTheWeek();
+            #endif
 
             // Debug log beacon
             #ifdef TC_DBG
-            if((dt.second() == 0) && (dt.minute() != dbgLastMin)) {
-                dbgLastMin = dt.minute();
+            if((gdt.second() == 0) && (gdt.minute() != dbgLastMin)) {
+                dbgLastMin = gdt.minute();
                 Serial.printf("%d[%d-(%d)]/%02d/%02d %02d:%02d:00 (Chip Temp %.2f) / WD of PT: %d (%d)\n",
-                      lastYear, dt.year(), presentTime.getYearOffset(), dt.month(), dt.day(), dt.hour(), dbgLastMin,
+                      lastYear, gdt.year(), presentTime.getYearOffset(), gdt.month(), gdt.day(), gdt.hour(), dbgLastMin,
                       rtc.getTemperature(),
                       dayOfWeek(presentTime.getDay(), presentTime.getMonth(), presentTime.getDisplayYear()),
-                      dayOfWeek(dt.day(), dt.month(), dt.year() - presentTime.getYearOffset()));
+                      dayOfWeek(gdt.day(), gdt.month(), gdt.year() - presentTime.getYearOffset()));
             }
             #endif
 
@@ -2351,11 +2368,11 @@ void time_loop()
                 #ifdef TC_HAVELIGHT
                 bool switchNMoff = false;
                 #endif
-                int compHour = alarmRTC ? dt.hour()   : presentTime.getHour();
-                int compMin  = alarmRTC ? dt.minute() : presentTime.getMinute();
-                int weekDay =  alarmRTC ? dayOfWeek(dt.day(), 
-                                                    dt.month(), 
-                                                    dt.year() - presentTime.getYearOffset())
+                int compHour = alarmRTC ? gdt.hour()   : presentTime.getHour();
+                int compMin  = alarmRTC ? gdt.minute() : presentTime.getMinute();
+                int weekDay =  alarmRTC ? dayOfWeek(gdt.day(), 
+                                                    gdt.month(), 
+                                                    gdt.year() - presentTime.getYearOffset())
                                           : 
                                           dayOfWeek(presentTime.getDay(), 
                                                     presentTime.getMonth(), 
@@ -2397,10 +2414,10 @@ void time_loop()
 
                 // Handle reminder
                 if(remMonth > 0 || remDay > 0) {
-                      if( (!remMonth || remMonth == dt.month()) &&
-                          (remDay == dt.day())                  &&
-                          (remHour == dt.hour())                &&
-                          (remMin == dt.minute()) ) {
+                      if( (!remMonth || remMonth == gdt.month()) &&
+                          (remDay == gdt.day())                  &&
+                          (remHour == gdt.hour())                &&
+                          (remMin == gdt.minute()) ) {
                             if(!remDone) {
                                 if( (!(alarmOnOff && (alarmHour == compHour) && (alarmMinute == compMin))) ||
                                     (alarmDone && checkAudioDone()) ) {
@@ -2439,7 +2456,7 @@ void time_loop()
                 }
                 
                 if(autoNightMode && (manualNightMode < 0)) {
-                    if(dt.minute() == 0 || forceReEvalANM) {
+                    if(gdt.minute() == 0 || forceReEvalANM) {
                         if(!autoNMDone || forceReEvalANM) {
                             uint32_t myField;
                             if(autoNightModeMode == 0) {
@@ -2448,7 +2465,7 @@ void time_loop()
                                 const uint32_t *myFieldPtr = autoNMPresets[autoNightModeMode - 1];
                                 myField = myFieldPtr[weekDay];
                             }                       
-                            if(myField & (1 << (23 - dt.hour()))) {
+                            if(myField & (1 << (23 - gdt.hour()))) {
                                 nightModeOn();
                                 timedNightMode = 1;
                             } else {
@@ -2495,7 +2512,7 @@ void time_loop()
             // Handle Time Cycling ("decorative mode")
 
             // Do this on previous minute:59
-            minNext = (dt.minute() == 59) ? 0 : dt.minute() + 1;
+            minNext = (gdt.minute() == 59) ? 0 : gdt.minute() + 1;
 
             // Check if autoPause has run out
             if(autoPaused && (millis() - pauseNow >= pauseDelay)) {
@@ -2503,7 +2520,7 @@ void time_loop()
             }
 
             // Only do this on second 59, check if it's time to do so
-            if((dt.second() == 59)                                      &&
+            if((gdt.second() == 59)                                      &&
                (!autoPaused)                                            &&
                autoTimeIntervals[autoInterval]                          &&
                (minNext % autoTimeIntervals[autoInterval] == 0)         &&
@@ -2561,6 +2578,9 @@ void time_loop()
             if(autoIntAnimRunning)
                 autoIntAnimRunning++;
 
+            #ifdef TC_DBG
+            Serial.printf("Beepmode %d BeepTimer %d, BTNow %d, now %d mute %d\n", beepMode, beepTimer, beepTimerNow, millis(), muteBeep);
+            #endif
         }
 
         x = y;
@@ -3327,6 +3347,8 @@ void fpbKeyLongPressStop()
 /*
  * Delay function for keeping essential stuff alive
  * during Intro playback
+ * DO NOT USE THIS AS SOON AS THE LOOPs() ARE RUNNING
+ * (RotEnc double-polling!)
  * 
  */
 static void myIntroDelay(unsigned int mydel, bool withGPS)
@@ -3339,13 +3361,17 @@ static void myIntroDelay(unsigned int mydel, bool withGPS)
         #ifdef TC_HAVEBTTFN
         bttfn_loop();
         #endif
-        #ifdef TC_HAVEGPS
+        #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE)
         if(withGPS) gps_loop();
         #endif
         if(withGPS) wifi_loop();
     }
 }
 
+/*
+ * DO NOT USE THIS AS SOON AS THE LOOPs() ARE RUNNING
+ * (RotEnc double-polling!) 
+ */
 static void waitAudioDoneIntro()
 {
     int timeout = 100;
@@ -3356,7 +3382,7 @@ static void waitAudioDoneIntro()
         #ifdef TC_HAVEBTTFN
         bttfn_loop();
         #endif
-        #ifdef TC_HAVEGPS
+        #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE)
         gps_loop();
         #endif
         wifi_loop();
@@ -3546,7 +3572,7 @@ static void dispGPSSpeed(bool force)
                     re_lockTemp();
                 } else {
                     tempLock = false;
-                    tempDispNow = millis() - 2*60*1000;   // Force immediate re-display
+                    tempDispNow = millis() - 2*60*1000;   // Force immediate re-display of temp
                 }
             }
             oldFakeSpeed = fakeSpeed;
@@ -3574,10 +3600,10 @@ static bool dispTemperature(bool force)
         if(now - tempLockNow < 5 * 60 * 1000) {
             return false;
         } else {
-            tempLock = false; 
+            tempLock = false;
             force = true;
             // Reset encoder to "disabled" pos
-            re_init(false);   
+            re_init(false);
         }
     }
     #endif
@@ -3630,11 +3656,11 @@ static void re_init(bool zero)
     if(zero) {
         // Reset encoder to "zero" pos
         rotEnc.zeroPos();
-        fakeSpeed = 0;
+        fakeSpeed = oldFSpd = 0;
     } else {
         // Reset encoder to "disabled" pos
         rotEnc.disabledPos();
-        fakeSpeed = -1;
+        fakeSpeed = oldFSpd = -1;
     }
 }
 
@@ -4007,7 +4033,7 @@ static bool gpsHaveTime()
  * custom delay inside, ie no audio_loop()
  */
 #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE)
-void gps_loop()
+void gps_loop(bool withRotEnc)
 {
     if(!useGPS && !useRotEnc)
         return;
@@ -4022,8 +4048,8 @@ void gps_loop()
     } 
     #endif
     #ifdef TC_HAVE_RE
-    if(useRotEnc && !timeTravelP2) {
-        fakeSpeed = rotEnc.updateFakeSpeed();
+    if(withRotEnc && useRotEnc && !timeTravelP2) {
+        fakeSpeed = oldFSpd = rotEnc.updateFakeSpeed(); // Set oldFSpd as well to avoid unwanted beep-restarts
         #ifdef TC_HAVESPEEDO
         if(dispRotEnc) dispGPSSpeed();
         #endif
@@ -4031,6 +4057,20 @@ void gps_loop()
     #endif
 }
 #endif
+
+/*
+ *  Short/medium delay
+ *  This allows other stuff to proceed
+ */
+void mydelay(unsigned long mydel)
+{
+    unsigned long startNow = millis();
+    myloops(false);
+    while(millis() - startNow < mydel) {
+        delay(5);
+        myloops(false);
+    }
+}
 
 /* 
  * Determine if provided year is a leap year 
@@ -5270,18 +5310,9 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
     memset(buf + 10, 0, BTTF_PACKET_SIZE - 10);
 
     // Eval query and build reply into buf
-    if(buf[5] & 0x01) {    // time
-        DateTime dt;
-        myrtcnow(dt);
-        temp = dt.year() - presentTime.getYearOffset();
-        buf[10] = (uint16_t)temp & 0xff;
-        buf[11] = (uint16_t)temp >> 8;
-        buf[12] = (uint8_t)dt.month();
-        buf[13] = (uint8_t)dt.day();
-        buf[14] = (uint8_t)dt.hour();
-        buf[15] = (uint8_t)dt.minute();
-        buf[16] = (uint8_t)dt.second();
-        buf[17] = (uint8_t)dt.dayOfTheWeek();
+    if(buf[5] & 0x01) {    // date/time
+        memcpy(&buf[10], bttfnDateBuf, sizeof(bttfnDateBuf));
+        if(presentTime.get1224()) buf[17] |= 0x80;
     }
     if(buf[5] & 0x02) {    // speed  (-1 if unavailable)
         temp = -1;
@@ -5292,7 +5323,8 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
         #endif
             #ifdef TC_HAVE_RE
             if(useRotEnc) {
-                temp = fakeSpeed; 
+                temp = fakeSpeed;
+                buf[26] |= 0x80;        // Signal that speed is from RotEnc
             }
             #endif
         #ifdef TC_HAVEGPS
@@ -5332,8 +5364,9 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
         #ifdef FAKE_POWER_ON
         if(!FPBUnitIsOn)               a |= 0x02; // bit 1: Fake power (0: on,  1: off)
         #endif
-        // bits 7-2 for future use
-        buf[26] = a;
+        // bits 6-2 for future use
+        // bit 7 used for rotEnc vs GPS, see above
+        buf[26] |= a;
     }
     if(buf[5] & 0x20) {    // Request IP of given device type
         buf[5] &= ~0x20;

@@ -108,10 +108,10 @@ extern dateStruct stalePresentTime[2];
 extern bool FPBUnitIsOn;
 extern bool startup;
 extern bool timeTravelRE;
-extern int  timeTravelP0;
-extern int  timeTravelP1;
-extern int  timeTravelP2;
-extern int  specDisp;
+extern int timeTravelP0;
+extern int timeTravelP1;
+extern int timeTravelP2;
+extern int specDisp;
 
 extern uint8_t  mqttDisp;
 #ifdef TC_HAVEMQTT
@@ -180,7 +180,9 @@ void  pwrNeedFullNow(bool force = false);
 
 #ifdef TC_HAVEGPS
 bool gpsHaveFix();
-void gps_loop();
+#endif
+#if defined(TC_HAVEGPS) || defined(TC_HAVE_RE)
+void gps_loop(bool withRotEnc = true);
 #endif
 
 int   mins2Date(int year, int month, int day, int hour, int mins);
@@ -192,6 +194,8 @@ void  setDatesTimesWC(DateTime& dt);
 
 void  ntp_loop();
 void  ntp_short_loop();
+
+void  mydelay(unsigned long mydel);
 
 #ifdef TC_HAVEBTTFN
 int  bttfnNumClients();
