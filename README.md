@@ -923,7 +923,7 @@ On the other prop, such as CircuitSetup's [Flux Capacitor](https://circuitsetup.
 
 The fact that the devices communicate directly with each other makes BTTFN the ideal solution for car setups. Also, while at home, the devices might be connected to an existing WiFi network, in a car, the TCD can act as access point for Flux Capacitor and SID (ie they are connecting to the *TCD-AP* WiFi network), and those then can talk the TCD wirelessly. The TCD has *car mode* for doing exactly this, see [here](#car-mode) and the documentation of the respective prop. 
 
-To see which BTTFN devices are currently known to the TCD, enter the keypad menu and select "BTTFN CIENTS".
+To see which BTTFN devices are currently known to the TCD, enter the keypad menu and select "BTTFN CLIENTS".
 
 ## Home Assistant / MQTT
 
@@ -1003,12 +1003,6 @@ In order to reduce the number of write operations and thereby prolong the life o
 ![Back to the Future Wall Clock](https://user-images.githubusercontent.com/76924199/214323242-00b7b6da-8fbd-43f5-8ec0-68c06131939e.jpg)
 
 More here: [Link](https://github.com/realA10001986/Time-Circuits-Display/wiki/Time-Circuits-Wall-Clock)
-
-## My custom-made TFC switch
-
-![Time Circuits Switch](https://user-images.githubusercontent.com/76924199/226289995-afc79f34-50d7-4454-988b-a4a26163fba9.jpg)
-
-More here: [Link](https://github.com/realA10001986/Time-Circuits-Display/wiki/TFC-Switch)
 
 ## Appendix A: The Config Portal
 
