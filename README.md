@@ -757,7 +757,7 @@ What you need is a box, the LED segment displays and a HT16K33-based PCB that al
 |:--:|
 | Click to watch the video |
 
-The speedo display shown in this video is based on a fairly well-designed stand-alone replica I purchased on ebay. I removed the electronics inside and wired the LED segments to an Adafruit i2c backpack (from the Adafruit 878 product) and connected it to the TCD. Yes, it is really that simple. (The switch was made by me, see [here](https://github.com/realA10001986/Time-Circuits-Display/wiki/Time-Circuits-Switch), it uses the [Fake Power Switch](#fake-power-switch) feature of the TCD.)
+The speedo display shown in this video is based on a fairly well-designed stand-alone replica I purchased on ebay. I removed the electronics inside and wired the LED segments to an Adafruit i2c backpack (from the Adafruit 878 product) and connected it to the TCD. Yes, it is really that simple. (The TFC switch was made by me, see [here](https://tfc.backtothefutu.re), it uses the [Fake Power Switch](#fake-power-switch) feature of the TCD.)
 
 In order to use the Speedometer display, select the correct display type in the Config Portal. There are two special options in the Speedo Display Type drop-down: *Ada 1911 (left tube)* and *Ada 878 (left tube)*. These two can be used if you connect only one 2-digit-tube to the respective Adafruit i2c backpack, as I did in case of my speedo replica as well as my [Wall Clock](#my-custom-made-time-circuits-wall-clock).
 
