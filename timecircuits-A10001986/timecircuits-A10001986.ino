@@ -96,10 +96,13 @@
 
 /*  Changelog
  *   
+ *  2023/11/24  (A10001986)
+ *    - Support for DuPPA I2CEncoder 2.1 verified working (no changes)
  *  2023/11/22  (A10001986)
  *    - Speed up date/time transmission to BTTFN clients, and add 24hr flag
  *    - Start beep timer when RotEnc it moved
- *    - Add signal bit for BTTF clients if "speed" is from GPS or RotEnc
+ *    - Add signal bit for BTTF clients so that they know if "speed" is from 
+ *      GPS or RotEnc
  *    - Clean up delay methods
  *  2023/11/19  (A10001986)
  *    - RotEnc: Transmit speedo count-down in P2 to BTTF clients if RotEnc

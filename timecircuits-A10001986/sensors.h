@@ -8,9 +8,10 @@
  * Sensor Class: Temperature/humidity and Light Sensor handling
  *
  * This is designed for 
- * - MCP9808, TMP117, BMx280, SHT4x-Ax, SI7012, AHT20/AM2315C, HTU31D 
- *   temperature/humidity sensors,
- * - BH1750, TSL2561, LTR303/329 and VEML7700/VEML6030 light sensors.
+ * - MCP9808, TMP117, BMx280, SHT4x-Ax, SI7012, AHT20/AM2315C, HTU31D, 
+ *   MS8607 temperature/humidity sensors,
+ * - BH1750, TSL2561, TSL2591, LTR303/329 and VEML7700/VEML6030 light 
+ *   sensors.
  * -------------------------------------------------------------------
  * License: MIT
  * 

@@ -27,9 +27,9 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION "V2.9.99"          // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "NOV222023"  // 13 chars max
+#define TC_VERSION_EXTRA "NOV242023"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "11222023"   // 12 chars max
+#define TC_VERSION_EXTRA "11242023"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -75,17 +75,17 @@
 #endif
 
 // Uncomment for rotary encoder support
-// Currently only Adafruit 4991 is supported. The rotary encoder is used
-// to manually select a speed to be displayed on a speed display, and/or
-// to be sent to wirelessly connected props (BTTFN); also, time travels
-// can be triggered by turning the knob up to 88. Turning knob a few
-// notches below 0 switches the speedo off (or allows temperature to be 
-// shown if so configured)
+// Currently Adafruit 4991, DFRobot Gravity 360 and DuPPA I2CEncoder 2.1 are
+// supported. The rotary encoder is used to manually select a speed to be
+// displayed on a speed display, and/or to be sent to wirelessly connected
+// props (BTTFN); also, time travels can be triggered by turning the knob up 
+// to 88. Turning knob a few notches below 0 switches the speedo off (or allows 
+// temperature to be shown, if so configured)
 #define TC_HAVE_RE
 
 // Uncomment for support of a temperature/humidity sensor (MCP9808, BMx280, 
-// SI7021, SHT4x, TMP117, AHT20, HTU31D) connected via i2c. Will be used for 
-// room condition mode and to display ambient temperature on speedometer  
+// SI7021, SHT4x, TMP117, AHT20, HTU31D, MS8607) connected via i2c. Will be used 
+// for room condition mode and to display ambient temperature on speedometer  
 // display when idle (GPS speed has higher priority, ie if "Display GPS speed"
 // is checked in the Config Portal, temperature will not be shown on speedo).
 // See sensors.cpp for supported i2c slave addresses
@@ -105,20 +105,21 @@
 // "fake" powered on. De-activating the switch "fake" powers down the device
 // (ie the displays are switched off, and no keypad input is accepted)
 // GPS speed will be shown on speedo display regardless of this switch.
+// DIY instructions to build a TFC Switch: https://tfc.backtothefutu.re
 // Uncomment to include support for a Fake Power Switch
 #define FAKE_POWER_ON
 
-// External time travel (input) ("ett")
+// External time travel (input) ("ETT")
 // If the pin goes low (by connecting it to GND using a button), a time
 // travel is triggered.
-// Uncomment to include support for ett, see below for pin number
+// Uncomment to include support for ETT, see below for pin number
 // This is also needed to receive commands via MQTT
 #define EXTERNAL_TIMETRAVEL_IN
 
-// External time travel (output) ("etto")
+// External time travel (output) ("ETTO")
 // The defined pin is set HIGH on a time travel, and LOW upon re-entry from 
 // a time travel. See tc_time.c for a timing diagram.
-// Uncomment to include support for etto, see below for pin number
+// Uncomment to include support for ETTO, see below for pin number
 // This is also needed if MQTT or BTTFN is used to trigger external props
 #define EXTERNAL_TIMETRAVEL_OUT
 

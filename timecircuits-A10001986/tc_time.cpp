@@ -2520,7 +2520,7 @@ void time_loop()
             }
 
             // Only do this on second 59, check if it's time to do so
-            if((gdt.second() == 59)                                      &&
+            if((gdt.second() == 59)                                     &&
                (!autoPaused)                                            &&
                autoTimeIntervals[autoInterval]                          &&
                (minNext % autoTimeIntervals[autoInterval] == 0)         &&
@@ -4035,9 +4035,6 @@ static bool gpsHaveTime()
 #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE)
 void gps_loop(bool withRotEnc)
 {
-    if(!useGPS && !useRotEnc)
-        return;
-
     #ifdef TC_HAVEGPS
     if(useGPS && (millis() - lastLoopGPS > GPSupdateFreqMin)) {
         lastLoopGPS = millis();
