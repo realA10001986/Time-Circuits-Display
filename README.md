@@ -27,14 +27,13 @@ Features include
 - [SD card](#sd-card) support for custom audio files for effects, and music for the Music Player
 - Advanced network-accessible [Config Portal](#the-config-portal) for setup with mDNS support for easy access (http://timecircuits.local, hostname configurable)
 - [Keypad-controlled menu](#the-keypad-menu) for adjusting various settings and viewing status through the three displays
-- 24-hour clock mode
 - [Room condition mode](#room-condition-mode-temperaturehumidity-sensor): Display temperature and humidity instead of destination/departed time (requires suitable sensor)
 - Support for external [fake "power switch"](#fake-power-switch)
 - Support for time travel [triggered by external source](#external-time-travel-trigger), with selectable delay
 - Support for external display acting as [Speedometer](#speedometer)
 - Support for [GPS receiver](#gps-receiver), used as time source, and for actual [speed](#gps-for-speed) to be displayed on speedo display
 - Support for [rotary encoder](#rotary-encoder) for manual selection of speed to be displayed on Speedo display (&#127381; DFRobot Gravity 360 added)
-- Support for [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for "room condition mode" and to display temperature on speedo display while idle (&#127381; MS8607 added)
+- Support for [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for "room condition mode" and for displaying temperature on speedo display while idle (&#127381; MS8607 added)
 - Support for wireless communication ("[BTTF-Network](#bttf-network-bttfn)") with compatible other props such as CircuitSetup's [Flux Capacitor](https://fc.backtothefutu.re) and [SID](https://sid.backtothefutu.re) 
 - Support for triggering time travels on [other props](#controlling-other-props) connected by wire
 - [Home Assistant](#home-assistant--mqtt) (MQTT 3.1.1) support
