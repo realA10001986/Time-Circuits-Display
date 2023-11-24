@@ -804,6 +804,7 @@ Notes:
 - The knob is only evaluated if no GPS receiver is connected, or if the **_Display GPS speed_** is unchecked. GPS speed has priority over the knob.
 - The knob is also evaluated if no speedo display is connected; it can be operated "blindly" to trigger time travels and its movement is send to BTTFN clients like GPS speed (if no GPS receiver is connected, or the option **_Provide GPS speed for wireless props_** is unchecked)
 - The speedo displays "0" as long as the knob is not moved; if the knob is turned counter-clockwise a couple of notches, the speedo display will be switched off.
+- The DuPPA I2CEncoder 2.1 needs to be set to address 0x01 (A0 closes, all others open)
 
 ## Room Condition Mode, Temperature/humidity sensor
 
