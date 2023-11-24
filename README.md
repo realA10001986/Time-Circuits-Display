@@ -396,7 +396,8 @@ In the movies, the Time Circuits emit a "beep" sound every second, which is only
 The beep can be permanently disabled, permanently enabled, or enabled for 30 or 60 seconds
 - after a destination time is entered (and ENTER is pressed),
 - upon triggering a time travel,
-- after switching on the TCD (real power-up or fake power-up).
+- after switching on the TCD (real power-up or fake power-up),
+- after changing "speed" using the Rotary Encoder.
 
 The different modes are selected by typing 000 (disabled), 001 (enabled), 002 (enabled for 30 secs) or 003 (enabled for 60 secs), followed by ENTER. The power-up default is selected in the Config Portal.
 
