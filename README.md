@@ -32,7 +32,7 @@ Features include
 - Support for time travel [triggered by external source](#external-time-travel-trigger), with selectable delay
 - Support for external display acting as [Speedometer](#speedometer)
 - Support for [GPS receiver](#gps-receiver), used as time source, and for actual [speed](#gps-for-speed) to be displayed on speedo display
-- Support for [rotary encoder](#rotary-encoder) for manual selection of speed to be displayed on Speedo display (&#127381; DFRobot Gravity 360 added)
+- Support for [rotary encoder](#rotary-encoder) for manual selection of speed to be displayed on Speedo display (&#127381; DFRobot Gravity 360 and DuPPA I2CEncoder 2.1 added)
 - Support for [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for "room condition mode" and for displaying temperature on speedo display while idle (&#127381; MS8607 added)
 - Support for wireless communication ("[BTTF-Network](#bttf-network-bttfn)") with compatible other props such as CircuitSetup's [Flux Capacitor](https://fc.backtothefutu.re) and [SID](https://sid.backtothefutu.re) 
 - Support for triggering time travels on [other props](#controlling-other-props) connected by wire
@@ -798,7 +798,7 @@ A rotary encoder is, simply put, a turnable knob. If connected to the TCD, this 
 |:--:|
 | Click to watch the video |
 
-The firmware currently supports the [Adafruit 4991](https://www.adafruit.com/product/4991) and [DFRobot Gravity 360](https://www.dfrobot.com/product-2575.html) i2c rotary encoders; a CircuitSetup original prop is in the works.
+The firmware currently supports the [Adafruit 4991](https://www.adafruit.com/product/4991), [DFRobot Gravity 360](https://www.dfrobot.com/product-2575.html) and [DuPPA I2CEncoder 2.1](https://www.duppa.net/shop/i2cencoder-v2-1/) i2c rotary encoders; a CircuitSetup original prop is in the works.
 
 Notes:
 - The knob is only evaluated if no GPS receiver is connected, or if the **_Display GPS speed_** is unchecked. GPS speed has priority over the knob.
