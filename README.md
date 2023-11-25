@@ -38,7 +38,7 @@ Features include
 - Support for triggering time travels on [other props](#controlling-other-props) connected by wire
 - [Home Assistant](#home-assistant--mqtt) (MQTT 3.1.1) support
 
-Since Sep 2022, CircuitSetup are distributing this very firmware as their official one (starting with 2.0). The difference between what you get here and CircuitSetup's releases is that the code here might be ahead in development, uses some different sounds, and the pre-compiled binary has all the features enabled.
+The difference between what you get here and CircuitSetup's releases is that the code here might be ahead in development, uses some different sounds, and the pre-compiled binary has all the features enabled.
 
 | [![Watch the video](https://img.youtube.com/vi/u9oTVXUIOXA/0.jpg)](https://youtu.be/u9oTVXUIOXA) |
 |:--:|
