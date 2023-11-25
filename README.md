@@ -1093,7 +1093,9 @@ Number of seconds before a timeout occurs when connecting to a WiFi network. Whe
 
 Selects whether periodic re-connection attempts (between 12am and 6am) should be made after a failure to connect to a configured WiFi network.
 
-In typical home setups with 24/7 WiFi, this option hardly matters. However, if you have connected your TCD to your WiFi network, but move it between environments (eg home and car) on a regular basis, uncheck this to keep the TCD from searching for your configured WiFi network unnecessarily. 
+In typical home setups with 24/7 WiFi, this option hardly matters. However, if you have connected your TCD to your WiFi network, but move it between environments (with and without WiFi access) on a regular basis, uncheck this to keep the TCD from searching for your configured WiFi network unnecessarily.
+
+This option has no effect if the TCD is in [Car Mode](#car-mode).
 
 ##### &#9654; WiFi power save timer
 
