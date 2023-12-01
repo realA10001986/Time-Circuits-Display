@@ -56,7 +56,7 @@ There are different alternative ways to install this firmware:
 
 ### Audio file installation
 
-The firmware comes with a number of sound files which need to be installed separately. These sound files are not updated as often as the firmware itself. If you have previously installed the latest version of the sound-pack, you normally don't have to re-install the audio files when you update the firmware. Only if either a new version of the sound-pack is released, or your TCD is quiet after a firmware update (what will the case if you see "WAIT" during boot), a re-installation is needed.
+The firmware comes with a number of sound files which need to be installed separately. These sound files are not updated as often as the firmware itself. If you have previously installed the latest version of the sound-pack, you normally don't have to re-install the audio files when you update the firmware. Only if either a new version of the sound-pack is released, or your TCD is quiet after a firmware update (what will be the case if you see "WAIT" during boot), a re-installation is needed.
 
 *If your TCD previously ran a firmware from CircuitSetup (ie. pre-installed or downloaded from their github), a re-installation of the audio files **from this repository** is required. You cannot use CircuitSetup's audio files with the firmware available here, or vice versa.*
 
