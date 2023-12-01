@@ -4,7 +4,7 @@ This folder holds all files necessary for immediate installation on your Time Ci
 
 ### Firmware installation
 
-If a previous version of the Time Circuits firmware was installed on your device, you can upload the provided binary to update to the current version: Go to the Config Portal, click on "Update" and select the binary file provided here ("timecircuits-A10001986.ino.nodemcu-32s.bin").
+If a previous version of the Time Circuits firmware is installed on your device, you can upload the provided binary to update to the current version: Go to the Config Portal, click on "Update" and select the binary file provided here ("timecircuits-A10001986.ino.nodemcu-32s.bin").
 
 For a fresh installation, the provided binary is not usable. You'll need to use the Arduino IDE or PlatformIO, download the sketch source code, all required libraries (info in the .ino file) and compile it. Then upload the sketch to the device. This method is the one for fresh ESP32 boards and/or folks familiar with Arduino programming.
 
@@ -14,7 +14,7 @@ The sound pack is not updated as often as the firmware itself. If you have previ
 
 **You cannot mix firmwares and audio files from this repository and CircuitSetup's. If you install the firmware available here, you need to install the audio files from this repository as well, and vice versa.**
 
-- Download "sound-pack-xxxxxxxx.zip" and extract it to the root directory of of a FAT32 formatted SD card
+- Download "sound-pack-xxxxxxxx.zip" and extract it to the root directory of of a FAT32 formatted SD card; the mp3 files need to be in the top-most folder on the SD, I stress this because some unzip tools create a directory in which they put the files.
 - power down the clock,
 - insert this SD card into the device's slot and 
 - power up the clock.
