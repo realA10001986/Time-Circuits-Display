@@ -104,7 +104,7 @@ If that fails, the way to enter the Config Portal depends on whether the TCD is 
 - If it is in access point mode (and your handheld/computer is connected to the WiFi network "TCP-AP"), navigate your browser to http://192.168.4.1 
 - If the device is connected to your WiFi network, you need to find out its IP address first: Hold ENTER on the keypad for 2 seconds, then repeatedly press ENTER until "NET-WORK" is shown, then hold ENTER for 2 seconds. The device will then show its current IP address. Then, on your handheld or computer, navigate to http://a.b.c.d (a.b.c.d being the IP address as shown on the display) in order to enter the Config Portal.
 
-In the main menu, click on "Setup" to configure your TCD, first and foremost your time zone. If the time zone isn't set correctly, the TCD might show a wrong time, and DST (daylight saving) will not be switched on/off correctly.
+In the main menu, click on "Setup" to configure your TCD, first and foremost your [time zone](#appendix-c-time-zones). If the time zone isn't set correctly, the TCD might show a wrong time, and DST (daylight saving) will not be switched on/off correctly.
 
 | ![The_Config_Portal](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/95888ad5-5e3e-4f62-8a6c-e945de1bd281) |
 |:--:| 
@@ -1107,7 +1107,7 @@ See [here](#wifi-power-saving-features)
 
 ##### &#9654; Time zone
 
-The time zone of the place where the device is operated. Has to be in POSIX format. Needs to be set in order to use NTP or GPS, and for DST (daylight saving). Defaults to UTC0. See [here](https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv) or [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/timezones.csv) for a list of valid time zones.
+The time zone of the place where the device is operated in POSIX format. Needs to be set in order to use NTP or GPS, and for DST (daylight saving). Defaults to UTC0. See [here](#appendix-c-time-zones), [here](https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv) or [here](https://tz.backtothefutu.re) for a list of valid time zones.
 
 ##### &#9654; NTP Server
 
