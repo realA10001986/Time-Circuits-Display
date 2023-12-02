@@ -1336,14 +1336,14 @@ Note that you can only use one per device type (temperature/humidity sensor, lig
 Here are the probably most used times zones:
 
 America:
-Eastern Standard Time: EST5EDT,M3.2.0,M11.1.0
-Central Standard Time: 	CST6CDT,M3.2.0,M11.1.0
-Mountain Standard Time: MST7MDT,M3.2.0,M11.1.0 (Arizona: MST7)
-Pacific Standard Time: 	PST8PDT,M3.2.0,M11.1.0
+- Eastern Standard Time: EST5EDT,M3.2.0,M11.1.0
+- Central Standard Time: 	CST6CDT,M3.2.0,M11.1.0
+- Mountain Standard Time: MST7MDT,M3.2.0,M11.1.0 (Arizona: MST7)
+- Pacific Standard Time: 	PST8PDT,M3.2.0,M11.1.0
 
 Europe:
-Western European Time: GMT0BST,M3.5.0/1,M10.5.0
-Central European Time: CET-1CEST,M3.5.0,M10.5.0/3
-Eastern European Time: EET-2EEST,M3.5.0/3,M10.5.0/4
+- Western European Time: GMT0BST,M3.5.0/1,M10.5.0
+- Central European Time: CET-1CEST,M3.5.0,M10.5.0/3
+- Eastern European Time: EET-2EEST,M3.5.0/3,M10.5.0/4
 
 A full list is [here](https://tz.backtothefutu.re).
