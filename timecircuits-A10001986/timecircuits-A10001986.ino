@@ -96,6 +96,8 @@
 
 /*  Changelog
  *   
+ *  2023/12/03  (A10001986)
+ *    - Sound update (new sound-pack)
  *  2023/11/24  (A10001986)
  *    - Support for DuPPA I2CEncoder 2.1 verified working (no changes)
  *  2023/11/22  (A10001986)
@@ -149,7 +151,7 @@
  *  2023/11/02 (A10001986)
  *    * WiFiManager: Disable pre-scanning of WiFi networks when starting the CP.
  *      Scanning is now only done when accessing the "Configure WiFi" page.
- *      To do that in your own installation, set _preloadwifiscan to false
+ *      To do that in your own build-chain, set _preloadwifiscan to false
  *      in WiFiManager.h
  *  2023/10/31 (A10001986)
  *    - Further defer starting the Config Portal in some cases to avoid WiFi scan 
@@ -211,7 +213,7 @@
  *  2023/09/06 (A10001986)
  *    - Change link in CP
  *  2023/09/04 (A10001986)
- *    - Add option to signal time travel on TT_OUT/IO13 without 5 seconds lead. This
+ *    - Add option to signal time travel on TT_OUT/IO14 without 5 seconds lead. This
  *      is for signalling a time travel to third party props. For CircuitSetup
  *      original props (if they are connected by wire) this option must NOT be set.
  *      Time travels are still approx 1.4 seconds delayed (time between button press

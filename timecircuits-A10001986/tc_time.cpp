@@ -2578,7 +2578,7 @@ void time_loop()
             if(autoIntAnimRunning)
                 autoIntAnimRunning++;
 
-            #ifdef TC_DBG
+            #if defined(TC_DBG) && defined(TC_DBGBEEP)
             Serial.printf("Beepmode %d BeepTimer %d, BTNow %d, now %d mute %d\n", beepMode, beepTimer, beepTimerNow, millis(), muteBeep);
             #endif
         }

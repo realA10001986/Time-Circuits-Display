@@ -642,7 +642,11 @@ void keypad_loop()
                 }
                 destinationTime.showTextDirect(atxt, CDT_CLEAR);
                 validEntry = true;
-              
+
+            } else if(code == (getHrs1KYrs(1) ^ 8765917)) {
+
+                play_file("/ee5.mp3", PA_CHECKNM|PA_INTRMUS);
+                
             } else
                 invalidEntry = true;
 
@@ -1545,7 +1549,7 @@ void startBeepTimer()
         muteBeep = false;
     }
 
-    #ifdef TC_DBG
+    #if defined(TC_DBG) && defined(TC_DBGBEEP)
     Serial.printf("startBeepTimer: Beepmode %d BeepTimer %d, BTNow %d, now %d mute %d\n", 
         beepMode, beepTimer, beepTimerNow, millis(), muteBeep);
     #endif
