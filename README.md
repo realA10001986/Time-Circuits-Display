@@ -30,7 +30,7 @@ Features include
 - [Room condition mode](#room-condition-mode-temperaturehumidity-sensor): Display temperature and humidity instead of destination/departed time (requires suitable sensor)
 - Support for external [fake "power switch"](#fake-power-switch)
 - Support for time travel [triggered by external source](#external-time-travel-trigger), with selectable delay
-- Support for external display acting as [Speedometer](#speedometer)
+- Support for external display acting as [Speedometer](#speedometer) (CircuitSetup's [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-pcb/?v=fa868488740a) and others supported)
 - Support for [GPS receiver](#gps-receiver), used as time source, and for actual [speed](#gps-for-speed) to be displayed on speedo display
 - Support for [rotary encoder](#rotary-encoder) for manual selection of speed to be displayed on Speedo display (&#127381; DFRobot Gravity 360 and DuPPA I2CEncoder 2.1 added)
 - Support for [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for "room condition mode" and for displaying temperature on speedo display while idle (&#127381; MS8607 added)
