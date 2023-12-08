@@ -1269,9 +1269,9 @@ When checked, songs are shuffled when the device is booted. When unchecked, song
 
 If this is checked, secondary settings (volume, alarm, reminder, car mode, exhibition mode) are stored on the SD card (if one is present). This helps to minimize write operations to the internal flash memory and to prolong the lifetime of your TCD. See [Flash Wear](#flash-wear).
 
-## Appendix B: Sensor wiring
+## Appendix B: I2C peripheral wiring
 
-The light and temperature sensors, the speedo display as well as the GPS receiver are to be wired as follows:
+The light and temperature sensors, the speedo display, the GPS receiver as well as the Rotary Encoder are to be wired as follows:
 
 On the TCD control board, there are currently three i2c bus breakouts, one of which has a XH header soldered on; it does not matter which one you use to connect your sensors/GPS. To avoid soldering wires directly to the board, I recommend to solder on [XH](https://www.amazon.com/s?k=jst+xh) 4-pin headers to the other two i2c breakouts as well (like in the second picture).
 
@@ -1283,18 +1283,18 @@ Important: The TCD control board delivers and drives the i2c bus on 5V. Most sen
 
 I am no electronics expert and therefore only used readily available sensor breakout boards for testing and in my production pieces.
 
-On most sensor boards the pins are named as follows, and need to be connected to the corresponding pins on the control board:
+On most i2c peripherals the pins are named as follows, and need to be connected to the corresponding pins on the control board:
 
 <table>
     <tr>
-     <td align="center">Sensor PCB</td><td align="center">TCD control board</td>
+     <td align="center">Peripheral PCB</td><td align="center">TCD control board</td>
     </tr>
     <tr>
-     <td align="center">VIN or 5V</a></td>
+     <td align="center">VIN or 5V or "+"</a></td>
      <td align="center">5V</td>
     </tr>
     <tr>
-     <td align="center">GND</td>
+     <td align="center">GND or "-"</td>
      <td align="center">GND</td>
     </tr>
     <tr>
