@@ -616,8 +616,7 @@ float tempSensor::readTemp(bool celsius)
             uint8_t buf[7];
             for(uint8_t i = 0; i < 7; i++) buf[i] = Wire.read();
             if(crc8(AHT20_CRC_INIT, AHT20_CRC_POLY, 6, buf) == buf[6]) {
-                _hum = ((uint32_t)((buf[1] << 12) | (buf[2] << 4) | (buf[3] >> 4))) * 100 / 1048576;
-                if(_hum < 0) _hum = 0;
+                _hum = ((uint32_t)((buf[1] << 12) | (buf[2] << 4) | (buf[3] >> 4))) * 100 >> 20; // / 1048576;
                 temp = ((float)((uint32_t)(((buf[3] & 0x0f) << 16) | (buf[4] << 8) | buf[5]))) * 200.0 / 1048576.0 - 50.0;
             }
         }

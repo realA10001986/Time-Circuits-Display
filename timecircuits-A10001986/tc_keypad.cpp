@@ -825,7 +825,8 @@ void keypad_loop()
                 break;
             case 9:
                 send_refill_msg();
-                validEntry = true;
+                enterDelay = ENTER_DELAY;
+                //validEntry = true;
                 break;
             case 990:
             case 991:

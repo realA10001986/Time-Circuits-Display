@@ -96,6 +96,11 @@
 
 /*  Changelog
  *   
+ *  2023/12/08  (A10001986)
+ *    - Add way to trigger TT from props connected via BTTFN
+ *    - Play no sound on TCD on "refill" command
+ *    - Overrule RotEnc's "fakeSpeed" already in P0 of TT; this avoids a
+ *      mismatch on BTTFN-connected props during their TT sequence.
  *  2023/12/03  (A10001986)
  *    - Sound update (new sound-pack)
  *  2023/11/24  (A10001986)

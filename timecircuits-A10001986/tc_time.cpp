@@ -1734,6 +1734,12 @@ void time_loop()
 
         speedo.setSpeed(timeTravelP0Speed);
         speedo.show();
+
+        #ifdef TC_HAVE_RE
+        if(useRotEnc) {
+            fakeSpeed = rotEnc.IsOff() ? -1 : timeTravelP0Speed;
+        }
+        #endif
     }
 
     // Time travel animation, phase 2: Speed counts down
@@ -1863,7 +1869,7 @@ void time_loop()
         // seconds change is detected)
 
         #ifdef TC_HAVE_RE
-        if(FPBUnitIsOn && useRotEnc && !startup && !timeTravelP2) {
+        if(FPBUnitIsOn && useRotEnc && !startup && !timeTravelP0 && !timeTravelP1 && !timeTravelP2) {
             fakeSpeed = rotEnc.updateFakeSpeed();
             if(fakeSpeed != oldFSpd) {
                 if(FPBUnitIsOn && (fakeSpeed >= 0) && !timeTravelP0 && !timeTravelP1 && !timeTravelRE) {
@@ -5299,6 +5305,21 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
     IPAddress t = isMC ? tcdmcUDP->remoteIP() : tcdUDP->remoteIP();
     for(int i = 0; i < 4; i++) tip[i] = t[i];
     storeBTTFNClient(tip, (char *)buf + 10, (uint8_t)buf[10+13]);
+
+    // Remote time travel?
+    if(!isMC && (buf[5] & 0x80)) {
+        // Skip if busy
+        if(FPBUnitIsOn && !menuActive && !startup &&
+           !timeTravelP0 && !timeTravelP1 && !timeTravelRE) {
+            #ifdef EXTERNAL_TIMETRAVEL_IN
+            isEttKeyPressed = isEttKeyImmediate = true;
+            #endif
+        }
+        buf[5] &= 0x7f;
+        // If no data requested, return and don't send response
+        if(!buf[5])
+            return false;
+    }
 
     // Retrieve (optional) request parameter
     parm = buf[24];
