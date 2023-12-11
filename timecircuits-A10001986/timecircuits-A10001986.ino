@@ -96,6 +96,15 @@
 
 /*  Changelog
  *   
+ *  2023/12/11  (A10001986)
+ *    - Add support for Julian calendar for the period of Jan 1, 1, until either
+ *      Sep 2, 1752, or Oct 4, 1582 (defined at compile time, not user configurable, 
+ *      due to pre-calculated tables).
+ *      Pre-compiled binary uses 1752, the time machine was built in the USA
+ *      after all.
+ *      If the option "Make time travels persistent" is set while updating,
+ *      your present time will be wrong afterwards.
+ *    - 33+ENTER shows weekday of currently displayed "present time" date.
  *  2023/12/08  (A10001986)
  *    - Add way to trigger TT from props connected via BTTFN
  *    - Play no sound on TCD on "refill" command

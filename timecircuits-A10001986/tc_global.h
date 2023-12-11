@@ -27,9 +27,9 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION "V2.9.99"          // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "DEC082023"  // 13 chars max
+#define TC_VERSION_EXTRA "DEC112023"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "12082023"   // 12 chars max
+#define TC_VERSION_EXTRA "12112023"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -144,6 +144,18 @@
 /*************************************************************************
  ***                           Miscellaneous                           ***
  *************************************************************************/
+
+// If this is commented, the TCD uses the Gregorian calendar all the way,
+// ie since year 1. If this is uncommented, the Julian calendar is used
+// until either Sep 2, 1752 or Oct 4, 1582, depending on the following
+// #define.
+#define TC_JULIAN_CAL
+// If this is uncommented, the switch from Julian to Gregorian calendar is
+// after Oct 4, 1582 (after which point most of Europe, including the Spanish 
+// colonies switched); if commented, the date is Sep 2, 1752 (when USA, UK, 
+// Canada switched). Note that in both cases days were skipped; in case of
+// 1582, Oct 15 followed Oct 4; in case of 1752, Sep 14 followed Sep 2.
+//#define JSWITCH_1582
 
 // Uncomment if using real GTE/TRW keypad control board
 //#define GTE_KEYPAD 

@@ -546,18 +546,78 @@ static const unsigned int mon_ydayt24t60[2][13] =
 };
 static const uint64_t mins1kYears[] =
 {
+#ifndef TC_JULIAN_CAL  
              0,  262975680,  525949920,  788924160, 1051898400,
     1314874080, 1577848320, 1840822560, 2103796800, 2366772480,
     2629746720, 2892720960, 3155695200, 3418670880, 3681645120,
     3944619360, 4207593600, 4470569280, 4733543520, 4996517760
+#else
+             0,   52596000,  105192000,  157788000,  210384000, 
+     262980000,  315576000,  368172000,  420768000,  473364000, 
+     525960000,  578556000,  631152000,  683748000,  736344000, 
+     788940000,  841536000,  894132000,  946712160,  999306720, 
+    1051901280, 1104497280, 1157091840, 1209686400, 1262280960, 
+    1314876960, 1367471520, 1420066080, 1472660640, 1525256640, 
+    1577851200, 1630445760, 1683040320, 1735636320, 1788230880, 
+    1840825440, 1893420000, 1946016000, 1998610560, 2051205120, 
+    2103799680, 2156395680, 2208990240, 2261584800, 2314179360, 
+    2366775360, 2419369920, 2471964480, 2524559040, 2577155040, 
+    2629749600, 2682344160, 2734938720, 2787534720, 2840129280, 
+    2892723840, 2945318400, 2997914400, 3050508960, 3103103520, 
+    3155698080, 3208294080, 3260888640, 3313483200, 3366077760, 
+    3418673760, 3471268320, 3523862880, 3576457440, 3629053440, 
+    3681648000, 3734242560, 3786837120, 3839433120, 3892027680, 
+    3944622240, 3997216800, 4049812800, 4102407360, 4155001920, 
+    4207596480, 4260192480, 4312787040, 4365381600, 4417976160, 
+    4470572160, 4523166720, 4575761280, 4628355840, 4680951840, 
+    4733546400, 4786140960, 4838735520, 4891331520, 4943926080, 
+    4996520640, 5049115200, 5101711200, 5154305760, 5206900320
+#endif    
 };
 static const uint32_t hours1kYears[] =
 {
+#ifndef TC_JULIAN_CAL  
                 0,  262975680/60,  525949920/60,  788924160/60, 1051898400/60,
     1314874080/60, 1577848320/60, 1840822560/60, 2103796800/60, 2366772480/60, 
     2629746720/60, 2892720960/60, 3155695200/60, 3418670880/60, 3681645120/60, 
-    3944619360/60, 4207593600/60, 4470569280/60, 4733543520/60, 4996517760/60  
+    3944619360/60, 4207593600/60, 4470569280/60, 4733543520/60, 4996517760/60
+#else
+                0,   52596000/60,  105192000/60,  157788000/60,  210384000/60, 
+     262980000/60,  315576000/60,  368172000/60,  420768000/60,  473364000/60, 
+     525960000/60,  578556000/60,  631152000/60,  683748000/60,  736344000/60, 
+     788940000/60,  841536000/60,  894132000/60,  946712160/60,  999306720/60, 
+    1051901280/60, 1104497280/60, 1157091840/60, 1209686400/60, 1262280960/60, 
+    1314876960/60, 1367471520/60, 1420066080/60, 1472660640/60, 1525256640/60, 
+    1577851200/60, 1630445760/60, 1683040320/60, 1735636320/60, 1788230880/60, 
+    1840825440/60, 1893420000/60, 1946016000/60, 1998610560/60, 2051205120/60, 
+    2103799680/60, 2156395680/60, 2208990240/60, 2261584800/60, 2314179360/60, 
+    2366775360/60, 2419369920/60, 2471964480/60, 2524559040/60, 2577155040/60, 
+    2629749600/60, 2682344160/60, 2734938720/60, 2787534720/60, 2840129280/60, 
+    2892723840/60, 2945318400/60, 2997914400/60, 3050508960/60, 3103103520/60, 
+    3155698080/60, 3208294080/60, 3260888640/60, 3313483200/60, 3366077760/60, 
+    3418673760/60, 3471268320/60, 3523862880/60, 3576457440/60, 3629053440/60, 
+    3681648000/60, 3734242560/60, 3786837120/60, 3839433120/60, 3892027680/60, 
+    3944622240/60, 3997216800/60, 4049812800/60, 4102407360/60, 4155001920/60, 
+    4207596480/60, 4260192480/60, 4312787040/60, 4365381600/60, 4417976160/60, 
+    4470572160/60, 4523166720/60, 4575761280/60, 4628355840/60, 4680951840/60, 
+    4733546400/60, 4786140960/60, 4838735520/60, 4891331520/60, 4943926080/60, 
+    4996520640/60, 5049115200/60, 5101711200/60, 5154305760/60, 5206900320/60
+#endif    
 };
+
+#ifdef TC_JULIAN_CAL
+static int jCentStart   = 1700;      // Start of century when switch took place
+static int jCentEnd     = 1799;      // Last year of century when switch took place
+static int jSwitchYear  = 1752;      // Year in which switch to Gregorian Cal took place
+static int jSwitchMon   = 9;         // Month in which switch to Gregorian Cal took place
+static int jSwitchDay   = 2;         // Last day of Julian Cal
+static int jSwitchSkipD = 11;        // Number of days skipped
+static int jSwitchSkipH = 11 * 24;   // Num hours skipped
+static int mon_yday_jSwitch[13];     // Accumulated days per month in year of Switch
+static int mon_ydayt24t60J[13];      // Accumulated mins per month in year of Switch
+static int jSwitchYrHrs;
+static uint32_t jSwitchHash = 0;
+#endif
 
 #ifdef TC_HAVESPEEDO
 static const int16_t tt_p0_delays[88] =
@@ -660,6 +720,9 @@ static void sendNetWorkMsg(const char *pl, unsigned int len, uint8_t bttfnMsg, u
 #endif
 
 // Time calculations
+#ifdef TC_JULIAN_CAL
+static void calcJulianData();
+#endif
 static bool blockDSTChange(int currTimeMins);
 static void localToDST(int index, int& year, int& month, int& day, int& hour, int& minute, int& isDST);
 static void updateDSTFlag(int nisDST = -1);
@@ -798,7 +861,11 @@ void time_setup()
     }
 
     // Turn on the RTC's 1Hz clock output
-    rtc.clockOutEnable();  
+    rtc.clockOutEnable();
+
+    #ifdef TC_JULIAN_CAL
+    calcJulianData();
+    #endif
 
     // Start the displays
     presentTime.begin();
@@ -1762,9 +1829,9 @@ void time_loop()
             #ifdef TC_HAVE_RE
             if(useRotEnc) {
                 // We MUST reset the encoder; user might have moved
-                // it while we blocked updates during P2.
+                // it while we blocked updates during P0-P2.
                 // If fakeSpeed is -1 at this point, it was disabled
-                // when starting P2
+                // when starting P0
                 if(fakeSpeed < 0) {
                     // Reset enc to "disabled" position
                     re_init(false);
@@ -2957,7 +3024,7 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
             return;
         }
         
-        // If (actual) speed >= 88, trigger P1 immediately
+        // If (GPS or RotEnc) speed >= 88, trigger P1 immediately
         
         if(!useETTO) {
             // If we have GPS speed and its >= 88, don't waste
@@ -3101,6 +3168,7 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
         timetravelP0Delay = 2000;
     }
     #endif
+
     // If there is no P2, we reset the RotEnc here.
     // This is otherwise done at the end of P2.
     #ifdef TC_HAVE_RE
@@ -4078,6 +4146,7 @@ void mydelay(unsigned long mydel)
 /* 
  * Determine if provided year is a leap year 
  */
+#ifndef TC_JULIAN_CAL 
 bool isLeapYear(int year)
 {
     if((year & 3) == 0) { 
@@ -4094,7 +4163,24 @@ bool isLeapYear(int year)
         return false;
     }
 }
-
+#else
+bool isLeapYear(int year)
+{
+    if((year & 3) == 0) {
+        if((year > jSwitchYear) && ((year % 100) == 0)) {
+            if((year % 400) == 0) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
+        }
+    } else {
+        return false;
+    }
+}
+#endif
 /* 
  * Find number of days in a month 
  */
@@ -4109,6 +4195,7 @@ int daysInMonth(int month, int year)
 /*
  *  Convert a date into "minutes since 1/1/0 0:0"
  */
+#ifndef TC_JULIAN_CAL 
 uint64_t dateToMins(int year, int month, int day, int hour, int minute)
 {
     uint64_t total64 = 0;
@@ -4128,10 +4215,56 @@ uint64_t dateToMins(int year, int month, int day, int hour, int minute)
     total64 += minute;
     return total64;
 }
+#else
+uint64_t dateToMins(int year, int month, int day, int hour, int minute)
+{
+    uint64_t total64 = 0;
+    uint32_t total32 = 0;
+    int c = year, d = 0;        // ny0: d=1
+    
+    total32 = hours1kYears[year / 100];
+    if(total32) d = (year / 100) * 100;
+
+    if(c < jCentStart || c > jCentEnd) {
+        while(c-- > d) {
+            total32 += (isLeapYear(c) ? (8760+24) : 8760);
+        }
+        total32 += (mon_yday[isLeapYear(year) ? 1 : 0][month - 1] * 24);
+        total32 += (day - 1) * 24;
+    } else {
+        while(c-- > d) {
+            total32 += ((c == jSwitchYear) ? jSwitchYrHrs : (isLeapYear(c) ? (8760+24) : 8760));
+        }
+        if(year == jSwitchYear) {
+            total32 += (mon_yday_jSwitch[month - 1] * 24);
+            if(month == jSwitchMon) {
+                if(day <= jSwitchDay) {
+                    total32 += (day - 1) * 24;
+                } else if(day > jSwitchDay + jSwitchSkipD) {
+                    total32 += (day - jSwitchSkipD - 1) * 24;
+                } else {
+                  Serial.printf("Bad date!\n");
+                }
+            } else {
+                total32 += (day - 1) * 24;
+            }
+        } else {
+            total32 += (mon_yday[isLeapYear(year) ? 1 : 0][month - 1] * 24);
+            total32 += (day - 1) * 24;
+        }
+    }
+
+    total32 += hour;
+    total64 = (uint64_t)total32 * 60;
+    total64 += minute;
+    return total64;
+}
+#endif
 
 /*
  *  Convert "minutes since 1/1/0 0:0" into date
  */
+#ifndef TC_JULIAN_CAL
 void minsToDate(uint64_t total64, int& year, int& month, int& day, int& hour, int& minute)
 {
     int c = 0, d = 19;    // ny0: c=1
@@ -4178,6 +4311,81 @@ void minsToDate(uint64_t total64, int& year, int& month, int& day, int& hour, in
 
     minute = total32 - (temp * 60);
 }
+#else
+void minsToDate(uint64_t total64, int& year, int& month, int& day, int& hour, int& minute)
+{
+    int c = 0, d = (sizeof(mins1kYears)/sizeof(mins1kYears[0]));    // ny0: c=1
+    int temp;
+    uint32_t total32;
+    
+    year = 0;             // ny0: 1
+    month = day = 1;
+    hour = minute = 0;
+  
+    d = (total64 < mins1kYears[d/2]) ? d / 2 : d - 1;
+
+    while(d >= 0) {
+        if(total64 > mins1kYears[d]) break;
+        d--;
+    }
+    if(d > 0) {
+        total64 -= mins1kYears[d];
+        c = year = d * 100;
+    }
+    
+    total32 = total64;
+
+    if(c < jCentStart || c > jCentEnd) {
+        while(1) {
+            temp = isLeapYear(c++) ? ((8760+24)*60) : (8760*60);
+            if(total32 < temp) break;
+            year++;
+            total32 -= temp;
+        }
+    } else {
+        while(1) {
+            temp = ((c == jSwitchYear) ? jSwitchYrHrs : (isLeapYear(c) ? (8760+24) : 8760)) * 60;
+            c++;
+            if(total32 < temp) break;
+            year++;
+            total32 -= temp;
+        }
+    }
+
+    c = 1;
+    if(year == jSwitchYear) {
+        while(c < 12) {
+            if(total32 < (mon_ydayt24t60J[c])) break;
+            c++;
+        }
+        month = c;
+        total32 -= (mon_ydayt24t60J[c-1]);
+  
+        temp = total32 / (24*60);
+        day = temp + 1;
+        if(month == jSwitchMon && day > jSwitchDay) {
+            day += jSwitchSkipD;
+        }
+        total32 -= (temp * (24*60));
+    } else {      
+        temp = isLeapYear(year) ? 1 : 0;
+        while(c < 12) {
+            if(total32 < (mon_ydayt24t60[temp][c])) break;
+            c++;
+        }
+        month = c;
+        total32 -= (mon_ydayt24t60[temp][c-1]);
+
+        temp = total32 / (24*60);
+        day = temp + 1;
+        total32 -= (temp * (24*60));
+    }
+    temp = total32 / 60;
+    hour = temp;
+
+    minute = total32 - (temp * 60);
+}
+#endif
 
 uint32_t getHrs1KYrs(int index)
 {
@@ -4187,6 +4395,7 @@ uint32_t getHrs1KYrs(int index)
 /*
  * Return doW from given date (year=yyyy)
  */
+#ifndef TC_JULIAN_CAL
 uint8_t dayOfWeek(int d, int m, int y)
 {
     // Sakamoto's method
@@ -4197,6 +4406,55 @@ uint8_t dayOfWeek(int d, int m, int y)
     }
     return (mon_yday[1][m-1] + d + 5) % 7;
 }
+#else
+uint8_t dayOfWeek(int d, int m, int y)
+{
+    const int t[] = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
+    const int u[] = { 5, 1, 0, 3, 5, 1, 3, 6, 2, 4, 0, 2 };
+    
+    // Sakamoto's method
+    if(((y << 16) | (m << 8) | d) > jSwitchHash) {
+        if(m < 3) y -= 1;
+        return (y + y/4 - y/100 + y/400 + t[m-1] + d) % 7;
+    }
+    // For Julian Calendar
+    if(y > 0) {
+        if(m < 3) y -= 1;
+        return (y + y/4 + u[m-1] + d) % 7;
+    }
+    return (mon_yday[1][m-1] + d + 3) % 7;
+}
+#endif
+
+#ifdef TC_JULIAN_CAL
+static void calcJulianData()
+{
+    int l = isLeapYear(jSwitchYear) ? 1 : 0;
+  
+    for(int i = 0; i < 13; i++) {
+        mon_yday_jSwitch[i] = mon_yday[l][i];
+    }
+    for(int i = jSwitchMon; i < 13; i++) {
+        mon_yday_jSwitch[i] -= jSwitchSkipD;
+    }
+    for(int i = 0; i < 13; i++) {
+        mon_ydayt24t60J[i] = mon_yday_jSwitch[i] * 24 * 60;
+    }
+    
+    jSwitchYrHrs = (l ? (8760+24) : 8760) - jSwitchSkipH;
+
+    jSwitchHash = (jSwitchYear << 16) | (jSwitchMon << 8) | jSwitchDay;
+} 
+
+void correctNonExistingDate(int year, int month, int& day)
+{
+  if(year == jSwitchYear && month == jSwitchMon) {
+      if((day > jSwitchDay) && (day <= jSwitchDay + jSwitchSkipD)) {
+          day = jSwitchDay + jSwitchSkipD + 1;
+      }
+  }
+}
+#endif
 
 /*
  * Return RTC-fit year & offs for given real year

@@ -170,6 +170,9 @@ void      minsToDate(uint64_t total, int& year, int& month, int& day, int& hour,
 uint32_t  getHrs1KYrs(int index);
 uint8_t   dayOfWeek(int d, int m, int y);
 void      correctYr4RTC(uint16_t& year, int16_t& offs);
+#ifdef TC_JULIAN_CAL
+void      correctNonExistingDate(int year, int month, int& day);
+#endif
 
 #ifdef FAKE_POWER_ON
 void  fpbKeyPressed();

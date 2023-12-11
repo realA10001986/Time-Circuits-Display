@@ -73,6 +73,26 @@
 #define EE3_DELAY     500
 #define EE4_DELAY    3000
 
+#ifndef TC_JULIAN_CAL
+#define EEXSP1 70667637
+#define EEXSP2 59572453
+#define EEXSP3 97681642
+#define EEXSP4 65998071
+#define EEXSP5 8765917
+#elif !defined(JSWITCH_1582)
+#define EEXSP1 119882773
+#define EEXSP2 125110405
+#define EEXSP3 105941666
+#define EEXSP4 118949015
+#define EEXSP5 1753125
+#else
+#define EEXSP1 119882773
+#define EEXSP2 125110677
+#define EEXSP3 105941666
+#define EEXSP4 118949255
+#define EEXSP5 1753125
+#endif
+
 static const char keys[4*3] = {
      '1', '2', '3',
      '4', '5', '6',
@@ -87,6 +107,10 @@ static const uint8_t colPins[3] = {4, 6, 2};
 static const uint8_t rowPins[4] = {1, 6, 5, 3};
 static const uint8_t colPins[3] = {2, 0, 4};
 #endif
+
+static const char *weekDays[7] = {
+      "SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"
+};
 
 static Keypad_I2C keypad((char *)keys, rowPins, colPins, 4, 3, KEYPAD_ADDR);
 
@@ -643,7 +667,16 @@ void keypad_loop()
                 destinationTime.showTextDirect(atxt, CDT_CLEAR);
                 validEntry = true;
 
-            } else if(code == (getHrs1KYrs(1) ^ 8765917)) {
+            } else if(code == 33) {
+              
+                destinationTime.showTextDirect(
+                    weekDays[dayOfWeek(presentTime.getDay(), presentTime.getMonth(), presentTime.getDisplayYear())], 
+                    CDT_CLEAR
+                );
+                specDisp = 10;
+                validEntry = true;
+
+            } else if(code == (getHrs1KYrs(1) ^ EEXSP5)) {
 
                 play_file("/ee5.mp3", PA_CHECKNM|PA_INTRMUS);
                 
@@ -1054,6 +1087,9 @@ void keypad_loop()
                 if(temp2 < 1)  temp2 = 1;
                 int temp3 = daysInMonth(temp1, stalePresentTime[0].year);
                 if(temp2 > temp3) temp2 = temp3;
+                #ifdef TC_JULIAN_CAL
+                correctNonExistingDate(stalePresentTime[0].year, temp1, temp2);
+                #endif
                 stalePresentTime[0].month = temp1;
                 stalePresentTime[0].day = temp2;
                 
@@ -1120,25 +1156,29 @@ void keypad_loop()
                     _setDay = daysInMonth(_setMonth, _setYear); 
                 }
 
+                #ifdef TC_JULIAN_CAL
+                correctNonExistingDate(_setYear, _setMonth, _setDay);
+                #endif
+
                 // Year: There is no year "0", for crying out loud.
                 // Having said that, we allow it anyway, let the people have
                 // the full movie experience.
                 //if(_setYear < 1) _setYear = 1;
 
                 spTmp = (uint32_t)_setYear << 16 | _setMonth << 8 | _setDay;
-                if((spTmp ^ getHrs1KYrs(7)) == 70667637) {
+                if((spTmp ^ getHrs1KYrs(7)) == EEXSP1) {
                     special = 1;
                     spTxt[EE1_KL1] = '\0';
                     for(int i = EE1_KL1-1; i >= 0; i--) {
                         spTxt[i] = spTxtS1[i] ^ (i == 0 ? 0xff : spTxtS1[i-1]);
                     }
-                } else if((spTmp ^ getHrs1KYrs(8)) == 59572453)  {
+                } else if((spTmp ^ getHrs1KYrs(8)) == EEXSP2)  {
                     if(_setHour >= 9 && _setHour <= 12) {
                         special = 2;
                     }
-                } else if((spTmp ^ getHrs1KYrs(6)) == 97681642)  {
+                } else if((spTmp ^ getHrs1KYrs(6)) == EEXSP3)  {
                     special = 3;
-                } else if((spTmp ^ getHrs1KYrs(8)) == 65998071)  {
+                } else if((spTmp ^ getHrs1KYrs(8)) == EEXSP4)  {
                     special = 4;
                 }
             }

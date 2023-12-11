@@ -1000,7 +1000,7 @@ static void prepareInput(uint16_t number)
  *
  * number - a value we're updating (pre-set and result of input)
  * field - field being modified, this will be displayed as it is updated
- * year, month - check checking maximum day number
+ * year, month - for checking maximum day number, etc.
  *
  */
 static bool setField(uint16_t& number, uint8_t field, int year, int month, uint16_t dflags)
@@ -1009,7 +1009,7 @@ static bool setField(uint16_t& number, uint8_t field, int year, int month, uint1
     int lowerLimit;
     int i;
     uint16_t setNum = 0, prevNum = number;
-    int16_t  numVal = 0;
+    int numVal = 0;
     int numChars = 2;
     bool someupddone = false;
     unsigned long blinkNow = 0;
@@ -1105,6 +1105,11 @@ static bool setField(uint16_t& number, uint8_t field, int year, int month, uint1
     }
     if(numVal < lowerLimit) numVal = lowerLimit;
     if(numVal > upperLimit) numVal = upperLimit;
+    #ifdef TC_JULIAN_CAL
+    if(field == FIELD_DAY) {
+        correctNonExistingDate(year, month, numVal);
+    }
+    #endif
     number = numVal;
 
     // Display (corrected) number for .5 seconds
