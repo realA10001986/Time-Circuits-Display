@@ -262,7 +262,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left">113&#9166;</td>
     </tr>
   <tr>
-     <td align="left">Display weekday of current present time date/td>
+     <td align="left">Display weekday of current <i>present time</i> date</td>
      <td align="left">33&#9166;</td>
     </tr>
     <tr>
