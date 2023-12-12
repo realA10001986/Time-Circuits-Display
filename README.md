@@ -9,7 +9,7 @@ The hardware is available [here](https://circuitsetup.us/product/complete-time-c
 | *This very one is now in the Universal Studios [BTTF Escape Room](https://www.universalorlando.com/web/en/us/things-to-do/entertainment/universals-great-movie-escape) (Orlando)* |
 
 Features include
-- Time keeping for years 1-9999, &#127381; accurately based on Julian and Gregorian calendars
+- Time keeping for years 1-9999, &#127381; accurately based on Julian and Gregorian [calendars](#calendar-system)
 - Support for time zones and automatic DST (Daylight Saving adjustment)
 - Time synchronization via NTP or [GPS](#gps-receiver)
 - Movie-accurate [time travel](#time-travel) function
