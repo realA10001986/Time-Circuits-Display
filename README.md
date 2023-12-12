@@ -9,7 +9,7 @@ The hardware is available [here](https://circuitsetup.us/product/complete-time-c
 | *This very one is now in the Universal Studios [BTTF Escape Room](https://www.universalorlando.com/web/en/us/things-to-do/entertainment/universals-great-movie-escape) (Orlando)* |
 
 Features include
-- Time keeping for years 1-9999, based on Gregorian Calendar
+- Time keeping for years 1-9999, &#127381; accurately based on Julian and Gregorian calendars
 - Support for time zones and automatic DST (Daylight Saving adjustment)
 - Time synchronization via NTP or [GPS](#gps-receiver)
 - Movie-accurate [time travel](#time-travel) function
@@ -118,11 +118,21 @@ A full reference of the Config Portal is [here](#appendix-a-the-config-portal).
 
 *Destination time* and *Last time departed* are stale. These, by default, work like in the movie: Upon a time travel, *present time* becomes *last time departed*, and *destination time* becomes *present time*.
 
-The TCD only supports the [Gregorian Calendar](https://en.wikipedia.org/wiki/Gregorian_calendar), which it pretends to have been used since year 1. The [Julian Calendar](https://en.wikipedia.org/wiki/Julian_calendar) is not taken into account. Therefore, some years that, in the then-used Julian Calendar, were leap years between years 1 and 1582 most of today's Europe (and its Spanish colonies in the Americas), 1700 in DK/NO/NL (except Holland and Zeeland), 1752 in the British Empire (and therefore today's USA, Canada and India), 1753 in Sweden, 1760 in Lorraine, 1872 in Japan, 1912 in China, 1915 in Bulgaria, 1917 in the Ottoman Empire, 1918 in Russia and Serbia and 1923 in Greece, are normal years in the Gregorian one. As a result, dates do not match in those two calender systems, the Julian calendar is currently 13 days behind. I wonder if Doc's TC took all this into account. (Then again, he wanted to see Christ's birth on Dec 25, 0. Luckily, he didn't actually try to travel to that date. Assuming a negative roll-over, he might have ended up in eternity.)
+If "REPLACE BATTERY" is shown upon boot, the onboard CR2032 battery is depleted and needs to be replaced. Note that, for technical reasons, "REPLACE BATTERY" will also show up the very first time you power-up the TCD *after* changing the battery. You can, of course, disregard that message in this case.
+
+### Calendar system
+
+Since Dec 11, 2023, the TCD firmware - historically accurately - uses the [Julian Calendar](https://en.wikipedia.org/wiki/Julian_calendar) calendar from Jan 1, 1, until Sep 2, 1752, and for later dates the [Gregorian](https://en.wikipedia.org/wiki/Gregorian_calendar) one. Sep 2, 1752, was the last day the Julian calendar was used in the USA, Canada and the Commonwealth (UK plus its colonies). Other countries stopped using this calendar system way earlier; most of Europe, including the Spanish colonies, had switched in 1582 already. DK/NO/NL (except Holland and Zeeland) switched in 1700, Japan in 1872, China in 1912, Russia in 1918. 
+
+But since the time machine was built in the USA, using 1752 for the TCD seems appropriate.
+
+So, what does this mean? First off, in the Julian calendar every 4th year is a leap year; in the Gregorian calendar there are some exceptions to this rule. This means, as a result, that the two calendars were drifting apart over time, and dates didn't match. As of 2023, the Julian calendar is 13 days ahead.
+
+Secondly, and as a result of this drift, when countries switched from one to the other calendar system, days were skipped. In case of the switch in 1752, Sep 3 until Sep 13 were skipped, so after Sep 2 came Sep 14. For using the TCD this means that dates entered within that skipped period are corrected to Sep 14.
+
+Earlier versions of the firmware only supported the Gregorian Calendar, which it pretended to have been used since year 1. The Julian Calendar was not taken into account. 
 
 Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed after 1BC. Nevertheless, it is possible to travel to year 0. In good old Hollywood tradition, I won't let facts and science stand in the way of an authentic movie experience.
-
-If "REPLACE BATTERY" is shown upon boot, the onboard CR2032 battery is depleted and needs to be replaced. Note that, for technical reasons, "REPLACE BATTERY" will also show up the very first time you power-up the TCD *after* changing the battery. You can, of course, disregard that message in this case.
 
 ### Time-cycling
 
