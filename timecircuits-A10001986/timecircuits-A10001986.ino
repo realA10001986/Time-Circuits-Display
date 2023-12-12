@@ -96,6 +96,10 @@
 
 /*  Changelog
  *   
+ *  2023/12/12  (A10001986)
+ *    - Display Exhibition Mode status upon enabling/disabling Exh Mode
+ *    - Overwrite Exh Mode time on TT / Return from TT only if Exh Mode is
+ *      currently on.
  *  2023/12/11  (A10001986)
  *    - Add support for Julian calendar for the period of Jan 1, 1, until either
  *      Sep 2, 1752, or Oct 4, 1582 (defined at compile time, not user configurable, 

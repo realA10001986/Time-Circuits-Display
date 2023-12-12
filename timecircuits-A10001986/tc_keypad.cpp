@@ -196,8 +196,16 @@ static void ettKeyHeld();
 static void setupWCMode();
 static void buildRemString(char *buf);
 static void buildRemOffString(char *buf);
+#ifdef HAVE_STALE_PRESENT
+static void buildStalePTStatus(char *buf);
+#endif
 static void mykpddelay(unsigned int mydel);
 static void prepareReboot();
+
+static void dt_showTextDirect(const char *text, uint16_t flags = CDT_CLEAR)
+{
+    destinationTime.showTextDirect(text, flags);
+}
 
 /*
  * keypad_setup()
@@ -600,7 +608,7 @@ void keypad_loop()
                     #endif
                 }
 
-                destinationTime.showTextDirect(atxt, CDT_CLEAR|flags);
+                dt_showTextDirect(atxt, CDT_CLEAR|flags);
                 specDisp = 10;
                 validEntry = true;
 
@@ -625,7 +633,7 @@ void keypad_loop()
                     flags = CDT_COLON;
                 }
 
-                destinationTime.showTextDirect(atxt, CDT_CLEAR|flags);
+                dt_showTextDirect(atxt, CDT_CLEAR|flags);
                 specDisp = 10;
                 validEntry = true;
 
@@ -640,7 +648,7 @@ void keypad_loop()
                     flags = CDT_COLON;
                 }
 
-                destinationTime.showTextDirect(atxt, CDT_CLEAR|flags);
+                dt_showTextDirect(atxt, CDT_CLEAR|flags);
                 specDisp = 10;
                 validEntry = true;
 
@@ -664,12 +672,12 @@ void keypad_loop()
                 } else {
                     strcpy(atxt, "STOPPED");
                 }
-                destinationTime.showTextDirect(atxt, CDT_CLEAR);
+                dt_showTextDirect(atxt, CDT_CLEAR);
                 validEntry = true;
 
             } else if(code == 33) {
               
-                destinationTime.showTextDirect(
+                dt_showTextDirect(
                     weekDays[dayOfWeek(presentTime.getDay(), presentTime.getMonth(), presentTime.getDisplayYear())], 
                     CDT_CLEAR
                 );
@@ -743,7 +751,7 @@ void keypad_loop()
                     #else
                     sprintf(atxt, "SHUFFLE   %s", (code == 555) ? " ON" : "OFF");
                     #endif
-                    destinationTime.showTextDirect(atxt);
+                    dt_showTextDirect(atxt);
                     specDisp = 10;
                     validEntry = true;
                 } else {
@@ -758,7 +766,7 @@ void keypad_loop()
                     #else
                     strcpy(atxt, "NEXT      000");
                     #endif
-                    destinationTime.showTextDirect(atxt);
+                    dt_showTextDirect(atxt);
                     specDisp = 10;
                     validEntry = true;
                 } else {
@@ -771,7 +779,7 @@ void keypad_loop()
                 #else
                 sprintf(atxt, "%s  OFF", tmr);
                 #endif
-                destinationTime.showTextDirect(atxt);
+                dt_showTextDirect(atxt);
                 ctDown = 0;
                 specDisp = 10;
                 validEntry = true;
@@ -780,7 +788,7 @@ void keypad_loop()
                 remMonth = remDay = remHour = remMin = 0;
                 saveReminder();
                 buildRemOffString(atxt);
-                destinationTime.showTextDirect(atxt);
+                dt_showTextDirect(atxt);
                 specDisp = 10;
                 validEntry = true;
                 break;
@@ -837,7 +845,7 @@ void keypad_loop()
                     #endif
                     flags = CDT_COLON;
                 }
-                destinationTime.showTextDirect(atxt, CDT_CLEAR|flags);
+                dt_showTextDirect(atxt, CDT_CLEAR|flags);
                 specDisp = 10;
                 validEntry = true;
                 break;
@@ -851,7 +859,7 @@ void keypad_loop()
                 #else
                 sprintf(atxt, "BEEP MODE   %1d", beepMode);
                 #endif
-                destinationTime.showTextDirect(atxt);
+                dt_showTextDirect(atxt);
                 enterDelay = ENTER_DELAY;
                 specDisp = 10;
                 // Play no sound, ie no xxvalidEntry
@@ -877,6 +885,10 @@ void keypad_loop()
             #ifdef HAVE_STALE_PRESENT
             case 999:
                 stalePresent = !stalePresent;
+                buildStalePTStatus(atxt);
+                dt_showTextDirect(atxt);
+                enterDelay = ENTER_DELAY;
+                specDisp = 10;
                 saveStaleTime((void *)&stalePresentTime[0], stalePresent);
                 validEntry = true;
                 break;
@@ -922,7 +934,7 @@ void keypad_loop()
                     #else
                     sprintf(atxt, "%-8s %02d%02d", alwd, alarmHour, alarmMinute);
                     #endif
-                    destinationTime.showTextDirect(atxt, CDT_COLON);
+                    dt_showTextDirect(atxt, CDT_COLON);
                     specDisp = 10;
                     validEntry = true;
                 } else {
@@ -954,7 +966,7 @@ void keypad_loop()
 
                         buildRemString(atxt);
 
-                        destinationTime.showTextDirect(atxt, CDT_CLEAR|CDT_COLON);
+                        dt_showTextDirect(atxt, CDT_CLEAR|CDT_COLON);
                         specDisp = 10;
 
                         validEntry = true;
@@ -972,7 +984,7 @@ void keypad_loop()
                 #else
                 sprintf(atxt, "NEXT      %03d", num);
                 #endif
-                destinationTime.showTextDirect(atxt);
+                dt_showTextDirect(atxt);
                 specDisp = 10;
                 validEntry = true;
 
@@ -1007,7 +1019,7 @@ void keypad_loop()
                 flags = CDT_COLON;
             }
 
-            destinationTime.showTextDirect(atxt, CDT_CLEAR|flags);
+            dt_showTextDirect(atxt, CDT_CLEAR|flags);
             specDisp = 10;
             validEntry = true;
 
@@ -1063,7 +1075,7 @@ void keypad_loop()
 
                         buildRemString(atxt);
 
-                        destinationTime.showTextDirect(atxt, CDT_CLEAR|CDT_COLON);
+                        dt_showTextDirect(atxt, CDT_CLEAR|CDT_COLON);
                         specDisp = 10;
 
                         validEntry = true;
@@ -1077,6 +1089,7 @@ void keypad_loop()
         } else if(strLen == DATELEN_STPR) {
 
             if(read2digs(0) == 99) {
+                char atxt[16];
                 int temp1 = read2digs(2);
                 int temp2 = read2digs(4);
 
@@ -1108,6 +1121,11 @@ void keypad_loop()
                 stalePresent = true;
 
                 saveStaleTime((void *)&stalePresentTime[0], stalePresent);
+
+                buildStalePTStatus(atxt);
+                dt_showTextDirect(atxt);
+                enterDelay = ENTER_DELAY;
+                specDisp = 10;
                 
                 validEntry = true;
             } else {
@@ -1190,7 +1208,7 @@ void keypad_loop()
 
             switch(special) {
             case 1:
-                destinationTime.showTextDirect(spTxt, CDT_CLEAR|CDT_COLON);
+                dt_showTextDirect(spTxt, CDT_CLEAR|CDT_COLON);
                 specDisp = 1;
                 validEntry = true;
                 break;
@@ -1274,7 +1292,7 @@ void keypad_loop()
             play_file("/baddate.mp3", PA_CHECKNM|enterInterruptsMusic|PA_ALLOWSD);
             enterDelay = BADDATE_DELAY;
             if(!enterInterruptsMusic && mpActive) {
-                destinationTime.showTextDirect("ERROR", CDT_CLEAR);
+                dt_showTextDirect("ERROR", CDT_CLEAR);
                 specDisp = 10;
             }
         }
@@ -1309,7 +1327,7 @@ void keypad_loop()
             for(int i = EE1_KL2-1; i >= 0; i--) {
                 spTxt[i] = spTxtS2[i] ^ (i == 0 ? 0xff : spTxtS2[i-1]);
             }
-            destinationTime.showTextDirect(spTxt);
+            dt_showTextDirect(spTxt);
             timeNow = millis();
             enterWasPressed = true;
             enterDelay = EE1_DELAY3;
@@ -1317,7 +1335,7 @@ void keypad_loop()
             break;
         case 21:
         case 22:
-            destinationTime.showTextDirect(specDisp == 21 ? btxt : ctxt);
+            dt_showTextDirect(specDisp == 21 ? btxt : ctxt);
             specDisp++;
             timeNow = millis();
             enterWasPressed = true;
@@ -1514,6 +1532,17 @@ static void buildRemOffString(char *buf)
     #endif
 }
 
+#ifdef HAVE_STALE_PRESENT
+static void buildStalePTStatus(char *buf)
+{
+    #ifdef IS_ACAR_DISPLAY
+    sprintf(buf, "EXH MODE %s", stalePresent ? " ON" : "OFF");
+    #else
+    sprintf(buf, "EXH MODE  %s", stalePresent ? " ON" : "OFF");
+    #endif
+}
+#endif
+
 static void prepareReboot()
 {
     mp_stop();
@@ -1523,7 +1552,7 @@ static void prepareReboot()
     if(useSpeedo) speedo.off();
     #endif
     destinationTime.resetBrightness();
-    destinationTime.showTextDirect("REBOOTING");
+    dt_showTextDirect("REBOOTING");
     destinationTime.on();
     delay(ENTER_DELAY);
     digitalWrite(WHITE_LED_PIN, LOW);

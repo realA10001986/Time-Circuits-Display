@@ -150,7 +150,7 @@
  *     - After the third display, "SAVING" is displayed briefly and the menu 
  *       is left automatically.
  *
- * How to find out the IP address, WiFi status and MAC address
+ * How to find out the IP address, WiFi status, MAC address, HA Status
  *
  *     - Hold ENTER to invoke main menu
  *     - Press ENTER until "NET-WORK" is shown

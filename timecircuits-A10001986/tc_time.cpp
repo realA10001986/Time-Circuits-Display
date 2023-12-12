@@ -3411,11 +3411,13 @@ static void copyPresentToDeparted(bool isReturn)
     departedTime.setDay(stalePresent ? stalePresentTime[1].day : presentTime.getDay());
     departedTime.setHour(stalePresent ? stalePresentTime[1].hour : presentTime.getHour());
     departedTime.setMinute(stalePresent ? stalePresentTime[1].minute : presentTime.getMinute());
-    stalePresentTime[1].year = isReturn ? stalePresentTime[0].year : destinationTime.getYear();
-    stalePresentTime[1].month = isReturn ? stalePresentTime[0].month : destinationTime.getMonth();
-    stalePresentTime[1].day = isReturn ? stalePresentTime[0].day : destinationTime.getDay();
-    stalePresentTime[1].hour = isReturn ? stalePresentTime[0].hour : destinationTime.getHour();
-    stalePresentTime[1].minute = isReturn ? stalePresentTime[0].minute : destinationTime.getMinute();
+    if(stalePresent) {
+        stalePresentTime[1].year = isReturn ? stalePresentTime[0].year : destinationTime.getYear();
+        stalePresentTime[1].month = isReturn ? stalePresentTime[0].month : destinationTime.getMonth();
+        stalePresentTime[1].day = isReturn ? stalePresentTime[0].day : destinationTime.getDay();
+        stalePresentTime[1].hour = isReturn ? stalePresentTime[0].hour : destinationTime.getHour();
+        stalePresentTime[1].minute = isReturn ? stalePresentTime[0].minute : destinationTime.getMinute();
+    }
     #else
     departedTime.setYear(presentTime.getDisplayYear());
     departedTime.setMonth(presentTime.getMonth());

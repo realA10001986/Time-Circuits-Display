@@ -27,9 +27,9 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION "V2.9.99"          // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "DEC112023"  // 13 chars max
+#define TC_VERSION_EXTRA "DEC122023"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "12112023"   // 12 chars max
+#define TC_VERSION_EXTRA "12122023"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -43,20 +43,20 @@
 // <hostname> is configurable in the Config Portal
 // This needs to be commented if WiFiManager provides mDNS
 #define TC_MDNS
+// Uncomment this if WiFiManager has mDNS enabled
+//#define TC_WM_HAS_MDNS 
 
 // Uncomment when using WiFiManager 2.0.17 or later
-//#define WIFIMANAGER_2_0_17
-
-// Uncomment this if WiFiManager has mDNS enabled
-//#define TC_WM_HAS_MDNS          
+//#define WIFIMANAGER_2_0_17      
 
 /*************************************************************************
  ***                 Configuration for peripherals                     ***
  *************************************************************************/
 
-// Uncomment for support of gps receiver (MT3333-based) connected via i2c 
+// Uncomment for support of GPS receiver (MT3333-based) connected via i2c 
 // (0x10). Can be used as time source and/or to display actual speed on 
-// speedometer display
+// speedometer display. Also needs to be #defined for using CircuitSetup's
+// speedo with integrated GPS receiver.
 #define TC_HAVEGPS
 
 // Uncomment for support of speedo-display connected via i2c (0x70).
@@ -95,7 +95,7 @@
 // or LTR303/329) connected via i2c. Used for night-mode-switching. VEML7700  
 // and GPS cannot be present at the same time since they share the same 
 // i2c slave address. VEML6030 needs to be set to 0x48 if GPS is present.
-// See sensors.cpp for supported i2c slave addresses
+// See sensors.cpp for supported i2c slave addresses.
 #define TC_HAVELIGHT
 
 // Fake Power Switch (TFC drive switch):
@@ -106,21 +106,21 @@
 // (ie the displays are switched off, and no keypad input is accepted)
 // GPS speed will be shown on speedo display regardless of this switch.
 // DIY instructions to build a TFC Switch: https://tfc.backtothefutu.re
-// Uncomment to include support for a Fake Power Switch
+// Uncomment to include support for a Fake Power Switch.
 #define FAKE_POWER_ON
 
 // External time travel (input) ("ETT")
 // If the pin goes low (by connecting it to GND using a button), a time
 // travel is triggered.
 // Uncomment to include support for ETT, see below for pin number
-// This is also needed to receive commands via MQTT
+// This is also needed to receive commands via MQTT and BTTFN-wide TTs.
 #define EXTERNAL_TIMETRAVEL_IN
 
 // External time travel (output) ("ETTO")
 // The defined pin is set HIGH on a time travel, and LOW upon re-entry from 
 // a time travel. See tc_time.c for a timing diagram.
 // Uncomment to include support for ETTO, see below for pin number
-// This is also needed if MQTT or BTTFN is used to trigger external props
+// This is also needed if MQTT or BTTFN is used to trigger external props.
 #define EXTERNAL_TIMETRAVEL_OUT
 
 // Uncomment for HomeAssistant MQTT protocol support
@@ -147,17 +147,16 @@
 
 // If this is commented, the TCD uses the Gregorian calendar all the way,
 // ie since year 1. If this is uncommented, the Julian calendar is used
-// until either Sep 2, 1752 or Oct 4, 1582, depending on the following
-// #define.
+// until either Sep 2, 1752 or Oct 4, 1582, depending on JSWITCH_1582.
 #define TC_JULIAN_CAL
 // If this is uncommented, the switch from Julian to Gregorian calendar is
-// after Oct 4, 1582 (after which point most of Europe, including the Spanish 
+// after Oct 4, 1582 (after which point most of Europe, plus the Spanish 
 // colonies switched); if commented, the date is Sep 2, 1752 (when USA, UK, 
 // Canada switched). Note that in both cases days were skipped; in case of
 // 1582, Oct 15 followed Oct 4; in case of 1752, Sep 14 followed Sep 2.
 //#define JSWITCH_1582
 
-// Uncomment if using real GTE/TRW keypad control board
+// Uncomment if using a real GTE/TRW keypad control board
 //#define GTE_KEYPAD 
 
 // Uncomment for alternate "animation" when entering a destination time
