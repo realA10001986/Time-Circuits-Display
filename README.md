@@ -28,7 +28,7 @@ Features include
 - Advanced network-accessible [Config Portal](#the-config-portal) for setup with mDNS support for easy access (http://timecircuits.local, hostname configurable)
 - [Keypad-controlled menu](#the-keypad-menu) for adjusting various settings and viewing status through the three displays
 - [Room condition mode](#room-condition-mode-temperaturehumidity-sensor): Display temperature and humidity instead of destination/departed time (requires suitable sensor)
-- Support for external [fake "power switch"](#fake-power-switch)
+- Support for external [fake "power switch"](#fake-power-switch) (eg. a TFC drive switch)
 - Support for time travel [triggered by external source](#external-time-travel-trigger), with selectable delay
 - Support for external display acting as [Speedometer](#speedometer) (CircuitSetup's [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-pcb/?v=fa868488740a) and others supported)
 - Support for [GPS receiver](#gps-receiver), used as time source, and for actual [speed](#gps-for-speed) to be displayed on speedo display
