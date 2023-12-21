@@ -177,8 +177,8 @@
 // - Both commented: 1Hz
 // - TC_GPSSPEED500 defined: 2Hz
 // - TC_GPSSPEED250 defined: 4Hz (used only when displaying speed on speedo)
-#define TC_GPSSPEED500
-//#define TC_GPSSPEED250
+//#define TC_GPSSPEED500
+#define TC_GPSSPEED250
 
 // Custom stuff -----
 #define TWSOUND         // Use A10001986's sound files

@@ -2429,7 +2429,7 @@ void myloops(bool menuMode)
         audio_loop();
     }
     #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE)
-    gps_loop(menuMode);  // >= 6ms without delay, >=12 with delay
+    gps_loop(menuMode);  // 6-12ms without delay, 8-13ms with delay
     #endif
     #ifdef TC_HAVEBTTFN
     #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE)
