@@ -40,7 +40,6 @@
 
 #include <Arduino.h>
 #include <Wire.h>
-
 #include "gps.h"
 
 #define GPS_MPH_PER_KNOT  1.15077945
@@ -49,12 +48,81 @@
 // For deeper debugging
 //#define TC_DBG_GPS
 //#define GPS_SPEED_SIMU
+//#define TC_DBG_PRINT_NMEA
 
 #ifdef TC_DBG_GPS
 static int DBGloopCnt = 0;
 #endif
 
-static void defaultDelay(unsigned int mydelay);
+/*
+ * Helpers
+ */
+
+static void defaultDelay(unsigned long mydelay)
+{
+    delay(mydelay);
+}
+
+static bool mystrcmp3(char *src, const char *cmp)
+{
+    if(*(src++) != *(cmp++)) return true;
+    if(*(src++) != *(cmp++)) return true;
+    return (*src != *cmp);
+}
+
+static uint8_t parseHex(char c)
+{
+    if(c < '0')   return 0;
+    if(c <= '9')  return c - '0';
+    if(c < 'A')   return 0;
+    if(c <= 'F')  return c - 'A' + 10;
+    if(c < 'a')   return 0;
+    if(c <= 'f')  return c - 'a' + 10;
+    return 0;
+}
+
+static uint8_t AToI2(char *buf)
+{
+    return ((*buf - '0') * 10) + (*(buf+1) - '0');
+}
+
+static uint16_t AToI4(char *buf)
+{
+    return (AToI2(buf) * 100) + AToI2(buf+2);
+}
+
+static unsigned long getFracs(char *buf)
+{
+    uint16_t f = 0, c = 1000;
+    
+    while(*buf && *buf != ',') {
+        c /= 10;
+        f *= 10;
+        f += (*buf - '0');
+        buf++;
+    }
+
+    return (unsigned long)(f * c);
+}
+
+static char * gotoNext(char *t)
+{
+    return strchr(t, ',') + 1;
+}
+
+static void copy6chars(char *a, char *b)
+{
+    *a++ = *b++;
+    *a++ = *b++;
+    *a++ = *b++;
+    *a++ = *b++;
+    *a++ = *b++;
+    *a = *b;
+}
+
+/*
+ * Class functions
+ */
 
 // Store i2c address
 tcGPS::tcGPS(uint8_t address)
@@ -63,10 +131,11 @@ tcGPS::tcGPS(uint8_t address)
 }
 
 // Start and init the GPS module
-bool tcGPS::begin(unsigned long powerupTime, bool quickUpdates)
+bool tcGPS::begin(unsigned long powerupTime, int quickUpdates, void (*myDelay)(unsigned long))
 {
     uint8_t testBuf;
     int i2clen;
+    char *cmd1, *cmd2;
     
     _customDelayFunc = defaultDelay;
 
@@ -74,7 +143,7 @@ bool tcGPS::begin(unsigned long powerupTime, bool quickUpdates)
     _lenIdx = 0;
 
     fix = false;
-    speed = -1;
+    _speed = -1;
     _haveSpeed = false;
     _haveDateTime = false;
     _haveDateTime2 = false;
@@ -106,39 +175,73 @@ bool tcGPS::begin(unsigned long powerupTime, bool quickUpdates)
     // Send xxRMC and xxZDA only
     // If we use GPS for speed, we need more frequent updates.
     // The value in PKT 314 is a multiplier for the value of PKT 220.
-    // For speed we want updates every second for the RMC sentence,
-    // so we set the fix update to 500/1000ms, and the multiplier to 1.
-    // For mere time, we set the fix update to 5000, and the
-    // multiplier to 1 as well, so we get it every 5th second.
-    if(quickUpdates) {
-        #ifndef TC_GPSSPEED500
-        // Set update rate to 1000ms
-        // RMC 1x per sec, ZDA every 5th second
-        sendCommand("$PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0*30");
-        sendCommand("$PMTK220,1000*1F");
-        #else
+    
+    if(quickUpdates < 0) {
+        // For mere time, we set the fix update to 5000, and the
+        // multiplier to 1 as well, so we get it every 5th second.
+        // $PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0*34
+        // $PMTK220,5000*1B
+        cmd1 = (char *)"1,0,0*34";
+        cmd2 = (char *)"5000*1B";
+    } else if(!quickUpdates) {
+        #if defined(TC_GPSSPEED500) || defined(TC_GPSSPEED250)
         // Set update rate to 500ms
         // RMC 2x per sec, ZDA every 10th second
-        sendCommand("$PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,0*07");
-        sendCommand("$PMTK220,500*2B");
+        // $PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,0*07
+        // $PMTK220,500*2B
+        cmd1 = (char *)"20,0,0*07";
+        cmd2 = (char *)"500*2B";
+        #else
+        // Set update rate to 1000ms
+        // RMC 1x per sec, ZDA every 5th second
+        // $PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0*30
+        // $PMTK220,1000*1F
+        cmd1 = (char *)"5,0,0*30";
+        cmd2 = (char *)"1000*1F";
         #endif
     } else {
-        sendCommand("$PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0*34");
-        // Set update rate to 5000ms
-        sendCommand("$PMTK220,5000*1B");
+        #if defined(TC_GPSSPEED250)
+        // Set update rate to 250ms
+        // RMC 4x per sec, ZDA every 10th second
+        // $PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,40,0,0*01
+        // $PMTK220,250*29"
+        cmd1 = (char *)"40,0,0*01";
+        cmd2 = (char *)"250*29";
+        // For reading 128 bytes per call:
+        _lenLimit = 0x01;
+        _lenArr[0] = 128; _lenArr[1] = 127;
+        #elif defined(TC_GPSSPEED500)
+        // Set update rate to 500ms
+        // RMC 2x per sec, ZDA every 10th second
+        // $PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,0*07
+        // $PMTK220,500*2B
+        cmd1 = (char *)"20,0,0*07";
+        cmd2 = (char *)"500*2B";
+        #else
+        // Set update rate to 1000ms
+        // RMC 1x per sec, ZDA every 5th second
+        // $PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0*30
+        // $PMTK220,1000*1F
+        cmd1 = (char *)"5,0,0*30";
+        cmd2 = (char *)"1000*1F";
+        #endif
     }
+    sendCommand("$PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,", cmd1);
+    sendCommand("$PMTK220,", cmd2);
 
     // No antenna status
-    sendCommand("$PGCMD,33,0*6D");
+    sendCommand(NULL, "$PGCMD,33,0*6D");
 
     // Search for GPS, GLONASS, Galileo satellites
-    //sendCommand("$PMTK353,1,1,1,0,0*2A");   // GPS, GLONASS, Galileo
-    sendCommand("$PMTK353,1,1,0,0,0*2B");     // GPS, GLONASS
-    //sendCommand("$PMTK353,1,0,0,0,0*2A");   // GPS
+    //sendCommand(NULL, "$PMTK353,1,1,1,0,0*2A");   // GPS, GLONASS, Galileo
+    sendCommand(NULL, "$PMTK353,1,1,0,0,0*2B");     // GPS, GLONASS
+    //sendCommand(NULL, "$PMTK353,1,0,0,0,0*2A");   // GPS
 
     // Send "hot start" to clear i2c buffer 
-    sendCommand("$PMTK101*32");
+    sendCommand(NULL, "$PMTK101*32");
     delay(800);
+
+    _customDelayFunc = myDelay;
 
     return true;
 }
@@ -149,20 +252,20 @@ bool tcGPS::begin(unsigned long powerupTime, bool quickUpdates)
  */
 void tcGPS::loop(bool doDelay)
 {
-    unsigned long myNow = millis();
+    unsigned long myNow;
     #ifdef TC_DBG_GPS
     unsigned long myLater;
+    myNow = millis();
     #endif
 
     readAndParse(doDelay);
-    // takes:
-    // 9ms when reading blocks of 32 bytes
-    // 12ms " " " 64 bytes
+    // takes (with delay):
+    // 6ms? when reading blocks of 32 bytes
+    // 8ms " " " 64 bytes   (6ms without delay)  (ex: 11 w/o)
+    // 13ms " " " 128 bytes  (12ms without delay) (ex: 17w/o)
 
     // Speed "simulator" for debugging
     #ifdef GPS_SPEED_SIMU
-    speed = (79 + (rand() % 10));
-    if(speed <= 80) speed -= (79-8);
     _haveSpeed = true;        
     _curspdTS = myNow;
     #endif
@@ -175,6 +278,8 @@ void tcGPS::loop(bool doDelay)
         //Serial.printf("time2: %d %d %d %s.%d\n", _curYear2, _curMonth2, _curDay2, _curTime2, _curFrac2);
     }
     #endif
+
+    myNow = millis();
 
     // Expire time/date info after 15 minutes
     if(_haveDateTime && (myNow - _curTS >= 15*60*1000))
@@ -192,8 +297,18 @@ void tcGPS::loop(bool doDelay)
  *
  */
 int16_t tcGPS::getSpeed()
-{   
-    if(_haveSpeed) return speed;
+{
+    if(_haveSpeed) {
+        #ifdef GPS_SPEED_SIMU
+        // Speed "simulator" for debugging
+        _speed = (79 + (rand() % 10));
+        if(_speed <= 80) _speed -= (79-8);
+        #else
+        _speed = (round(atof(_sbuf) * GPS_MPH_PER_KNOT));
+        if(_speed <= 2) _speed = 0;
+        #endif
+        return _speed;
+    }
 
     return -1;
 }
@@ -303,24 +418,24 @@ bool tcGPS::setDateTime(struct tm *timeinfo)
     Serial.printf("GPS setDateTime(): %s\n", pkt740);  
     #endif
 
-    sendCommand(pkt740);
+    sendCommand(NULL, pkt740);
 
-    sendCommand(pkt335);
+    sendCommand(NULL, pkt335);
 
     return true;
-}
-
-void tcGPS::setCustomDelayFunc(void (*myDelay)(unsigned int))
-{
-    _customDelayFunc = myDelay;
 }
 
 // Private functions ###########################################################
 
 
-void tcGPS::sendCommand(const char *str)
+void tcGPS::sendCommand(const char *prefix, const char *str)
 { 
     Wire.beginTransmission(_address);
+    if(prefix) {
+        for(int i = 0; i < strlen(prefix); i++) {
+            Wire.write((uint8_t)prefix[i]);
+        }
+    }
     for(int i = 0; i < strlen(str); i++) {
         Wire.write((uint8_t)str[i]);
     }
@@ -334,13 +449,13 @@ bool tcGPS::readAndParse(bool doDelay)
 {
     char   curr_char = 0;
     size_t i2clen = 0;
-    int8_t buff_max = 0;
-    int8_t buff_idx = 0;
+    int    buff_max = 0;
+    int    buff_idx = 0;
     bool   haveParsedSome = false;
     unsigned long myNow = millis();
 
     i2clen = Wire.requestFrom(_address, _lenArr[_lenIdx++]);
-    _lenIdx &= GPS_LENBUFLIMIT;
+    _lenIdx &= _lenLimit;
 
     if(i2clen) {
 
@@ -396,8 +511,7 @@ bool tcGPS::readAndParse(bool doDelay)
 bool tcGPS::parseNMEA(char *nmea, unsigned long nmeaTS)
 {
     char *t = nmea, *t2;
-    char buf[16];
-    char *bufp = buf;
+    char *bufp = _sbuf;
 
     if(!checkNMEA(nmea)) {
         #ifdef TC_DBG
@@ -406,20 +520,21 @@ bool tcGPS::parseNMEA(char *nmea, unsigned long nmeaTS)
         return false;
     }
 
-    #ifdef TC_DBG_GPS
+    #if defined(TC_DBG_GPS) && defined(TC_DBG_PRINT_NMEA)
     Serial.print(nmea);
     #endif
 
     if(*(t+3) == 'R') {   // RMC
 
-        t = gotoNext(t);        // Skip to time
-        strncpy(_curTime2, t, 6);
-        _curFrac2 = (*(t+6) == '.') ? getFracs(t+7) : 0;
-        
+        t2 = t = gotoNext(t);   // Skip to time
         t = gotoNext(t);        // Skip to validity
         fix = (*t == 'A');
 
         if(!fix) return true;
+        
+        //strncpy(_curTime2, t2, 6);
+        copy6chars(_curTime2, t2);
+        _curFrac2 = (*(t2+6) == '.') ? getFracs(t2+7) : 0;
 
         t = gotoNext(t);        // Skip to lat
         t = gotoNext(t);        // Skip to n/s
@@ -427,12 +542,12 @@ bool tcGPS::parseNMEA(char *nmea, unsigned long nmeaTS)
         t = gotoNext(t);        // Skip to e/w
         t2 = t = gotoNext(t);   // Skip to speed
         *bufp = 0;
-        while(*t2 && *t2 != ',' && (bufp - 16 < buf))
+        while(*t2 && *t2 != ',' && (bufp - 16 < _sbuf))
             *bufp++ = *t2++;
         *bufp = 0;
-        if(*buf) {
-            speed = (int16_t)(round(atof(buf) * GPS_MPH_PER_KNOT));
-            if(speed <= 2) speed = 0;
+        if(*_sbuf) {
+            //_speed = (int16_t)(round(atof(buf) * GPS_MPH_PER_KNOT));
+            //if(_speed <= 2) _speed = 0;
             _haveSpeed = true;
             _curspdTS = nmeaTS;
         }
@@ -452,7 +567,8 @@ bool tcGPS::parseNMEA(char *nmea, unsigned long nmeaTS)
         // the GPS' own RTC.
         if(fix) {
             t = gotoNext(t);    // Skip to time
-            strncpy(_curTime, t, 6);
+            //strncpy(_curTime, t, 6);
+            copy6chars(_curTime, t);
             _curFrac = (*(t+6) == '.') ? getFracs(t+7) : 0;
             t = gotoNext(t);    // Skip to day
             _curDay = AToI2(t);
@@ -507,55 +623,4 @@ bool tcGPS::checkNMEA(char *nmea)
     return (sum == 0);
 }
 
-bool tcGPS::mystrcmp3(char *src, const char *cmp)
-{
-    if(*(src++) != *(cmp++)) return true;
-    if(*(src++) != *(cmp++)) return true;
-    return (*src != *cmp);
-}
-
-uint8_t tcGPS::parseHex(char c)
-{
-    if(c < '0')   return 0;
-    if(c <= '9')  return c - '0';
-    if(c < 'A')   return 0;
-    if(c <= 'F')  return c - 'A' + 10;
-    if(c < 'a')   return 0;
-    if(c <= 'f')  return c - 'a' + 10;
-    return 0;
-}
-
-uint8_t tcGPS::AToI2(char *buf)
-{
-    return ((*buf - '0') * 10) + (*(buf+1) - '0');
-}
-
-uint16_t tcGPS::AToI4(char *buf)
-{
-    return (AToI2(buf) * 100) + AToI2(buf+2);
-}
-
-unsigned long tcGPS::getFracs(char *buf)
-{
-    uint16_t f = 0, c = 1000;
-    
-    while(*buf && *buf != ',') {
-        c /= 10;
-        f *= 10;
-        f += (*buf - '0');
-        buf++;
-    }
-
-    return (unsigned long)(f * c);
-}
-
-char * tcGPS::gotoNext(char *t)
-{
-    return strchr(t, ',') + 1;
-}
-
-static void defaultDelay(unsigned int mydelay)
-{
-    delay(mydelay);
-}
 #endif

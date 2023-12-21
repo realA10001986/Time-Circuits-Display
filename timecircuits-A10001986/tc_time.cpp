@@ -283,9 +283,8 @@ static bool alarmRTC = true;
 
 static bool playIntro = false;
 
-bool useGPS      = true;
+bool useGPS      = false;
 bool useGPSSpeed = false;
-static bool quickGPSupdates = false;
 static bool provGPS2BTTFN = false;
 
 static bool useRotEnc = false;
@@ -347,7 +346,6 @@ static unsigned long OTPRStarted = 0;
 tcGPS myGPS(GPS_ADDR);
 static unsigned long lastLoopGPS = 0;
 static unsigned long GPSupdateFreq    = 1000;
-static unsigned long GPSupdateFreqMin = 2000;
 #endif
 
 // The TC display objects
@@ -657,13 +655,13 @@ static int jSwitchDay   = 2;         // Last day of Julian Cal
 static int jSwitchSkipD = 11;        // Number of days skipped
 static int jSwitchSkipH = 11 * 24;   // Num hours skipped
 #else
-static int jCentStart   = 1500;
-static int jCentEnd     = 1599;
-static int jSwitchYear  = 1582;         // Year in which switch to Gregorian Cal took place
+static int jCentStart   = 1500;      // Start of century when switch took place
+static int jCentEnd     = 1599;      // Last year of century when switch took place
+static int jSwitchYear  = 1582;      // Year in which switch to Gregorian Cal took place
 static int jSwitchMon   = 10;        // Month in which switch to Gregorian Cal took place
 static int jSwitchDay   = 4;         // Last day of Julian Cal
 static int jSwitchSkipD = 10;        // Number of days skipped
-static int jSwitchSkipH = 10 * 24;     // Num hours skipped
+static int jSwitchSkipH = 10 * 24;   // Num hours skipped
 #endif
 static int mon_yday_jSwitch[13];     // Accumulated days per month in year of Switch
 static int mon_ydayt24t60J[13];      // Accumulated mins per month in year of Switch
@@ -726,7 +724,8 @@ static uint32_t      hostNameHash = 0;
 #endif
 #endif
 
-static void myCustomDelay(unsigned int mydel);
+static void myCustomDelay_Sens(unsigned long mydel);
+static void myCustomDelay_GPS(unsigned long mydel);
 static void myIntroDelay(unsigned int mydel, bool withGPS = true);
 static void waitAudioDoneIntro();
 
@@ -776,7 +775,7 @@ static void sendNetWorkMsg(const char *pl, unsigned int len, uint8_t bttfnMsg, u
 static void calcJulianData();
 #endif
 static bool blockDSTChange(int currTimeMins);
-static void localToDST(int index, int& year, int& month, int& day, int& hour, int& minute, int& isDST);
+static void localToDST(int index, int& year, int& month, int& day, int& hour, int& minute, int& isDST, uint64_t myTimeL = 0);
 static void updateDSTFlag(int nisDST = -1);
 
 /// Native NTP
@@ -835,6 +834,7 @@ void time_setup()
     bool tzbad = false;
     bool haveGPS = false;
     bool isVirgin = false;
+    int quickGPSupdates = -1;
     #ifdef TC_HAVEGPS
     bool haveAuthTimeGPS = false;
     #endif
@@ -856,21 +856,13 @@ void time_setup()
     #ifdef FAKE_POWER_ON
     waitForFakePowerButton = (atoi(settings.fakePwrOn) > 0);
     if(waitForFakePowerButton) {
-        fakePowerOnKey.setPressTicks(10);     // ms after short press is assumed (default 400)
-        fakePowerOnKey.setLongPressTicks(50); // ms after long press is assumed (default 800)
-        fakePowerOnKey.setDebounceTicks(50);
+        fakePowerOnKey.setTicks(50, 10, 50);
         fakePowerOnKey.attachLongPressStart(fpbKeyPressed);
         fakePowerOnKey.attachLongPressStop(fpbKeyLongPressStop);
     }
     #endif
 
     playIntro = (atoi(settings.playIntro) > 0);
-
-    // Init external time travel output ("etto")
-    #ifdef EXTERNAL_TIMETRAVEL_OUT
-    pinMode(EXTERNAL_TIMETRAVEL_OUT_PIN, OUTPUT);
-    digitalWrite(EXTERNAL_TIMETRAVEL_OUT_PIN, LOW);
-    #endif
 
     // RTC setup
     if(!rtc.begin(powerupMillis)) {
@@ -919,7 +911,7 @@ void time_setup()
     calcJulianData();
     #endif
 
-    // Start the displays
+    // Start (reset) the displays
     presentTime.begin();
     destinationTime.begin();
     departedTime.begin();
@@ -985,19 +977,18 @@ void time_setup()
     #endif
 
     provGPS2BTTFN = (atoi(settings.quickGPS) > 0);
-    quickGPSupdates = (useGPSSpeed || provGPS2BTTFN);
+    quickGPSupdates = useGPSSpeed ? 1 : (provGPS2BTTFN ? 0 : -1);
 
     // Check for GPS receiver
     // Do so regardless of usage in order to eliminate
     // VEML7700 light sensor with identical i2c address
-    if(myGPS.begin(powerupMillis, quickGPSupdates)) {
+    if(myGPS.begin(powerupMillis, quickGPSupdates, myCustomDelay_GPS)) {
 
-        myGPS.setCustomDelayFunc(myCustomDelay);
         haveGPS = true;
           
         // Clear so we don't add to stampAge unnecessarily in
         // boot strap
-        GPSupdateFreq = GPSupdateFreqMin = 0;
+        GPSupdateFreq = 0;
         
         // We know now we have a possible source for auth time
         couldHaveAuthTime = true;
@@ -1116,9 +1107,10 @@ void time_setup()
         #ifdef TC_HAVEBTTFN
         if(playIntro
                      #ifdef FAKE_POWER_ON
-                     || (digitalRead(FAKE_POWER_BUTTON_PIN) == HIGH)
+                     || (waitForFakePowerButton && 
+                         (digitalRead(FAKE_POWER_BUTTON_PIN) == HIGH))
                      #endif
-                                                                    ) {
+                                                                      ) {
             wifiStartCP();        
         } else {
             deferredCP = true;
@@ -1258,20 +1250,41 @@ void time_setup()
         // Set ms between GPS polls
         // Need more updates if speed is to be displayed
         // RMC is 72-85 chars, so three fit in the 255 byte buffer.
-        #ifndef TC_GPSSPEED500 
-        // At 1000ms, the buffer fills in 3 seconds.
-        // Then there is ZDA every 5 seconds -> 2.4 / 12.5 seconds.
-        // The update freq of 250ms means the entire buffer is read 
-        // - once per second with speed,
-        // - every 2 seconds without speed.
-        GPSupdateFreq    = quickGPSupdates ? 250 : 500;
-        GPSupdateFreqMin = quickGPSupdates ? 250 : 500;
-        #else
-        // At 500ms, the buffer fills in 1.5 seconds + ZDA
-        // At 200ms, the entire buffer is read in 0.75 secs
-        GPSupdateFreq    = quickGPSupdates ? 200 : 500;
-        GPSupdateFreqMin = quickGPSupdates ? 200 : 500;
-        #endif
+
+        if(quickGPSupdates < 0) {
+            // For time only, the update rate is set to 5 seconds;
+            // We poll every 500ms, so the entire buffer is read every 
+            // 2 seconds.
+            GPSupdateFreq = 500;
+        } else if(!quickGPSupdates) {
+            // For GPS speed for BTTFN clients (but no speed display
+            // on speedo), the update rate is set to 1000ms/500ms,
+            // so the buffer fills in 3000/1500ms. We poll every 
+            // 250/200ms, hence the entire buffer is read in
+            // 1000/800ms.
+            #if defined(TC_GPSSPEED500) || defined(TC_GPSSPEED250)
+            GPSupdateFreq = 200;
+            #else
+            GPSupdateFreq = 250;
+            #endif
+        } else {
+            // For when GPS speed is to be displayed on speedo:
+            // Update rate is set to 1000/500/250ms, so buffer fills in
+            // 3000/1500/750ms.
+            #if defined(TC_GPSSPEED250)
+            // At 250ms update rate, the buffer fills in 750ms (with ZDA: 740ms)
+            // At 100ms readfreq (64 bytes blocks), the entire buffer is read in 400ms
+            //GPSupdateFreq = 100;
+            // At 200ms readfreq (128 bytes blocks), the entire buffer is read in 400ms
+            GPSupdateFreq = 200;
+            #elif defined(TC_GPSSPEED500)
+            // At 500ms update rate, the buffer fills in 1500ms (with ZDA: 1400)
+            // At 200ms readfreq, the entire buffer is read in 800ms
+            GPSupdateFreq = 200;
+            #else
+            GPSupdateFreq = 250;
+            #endif
+        }
     }
     #endif
 
@@ -1455,8 +1468,7 @@ void time_setup()
     #else
     dispTemp = false;
     #endif
-    if(tempSens.begin(powerupMillis)) {
-        tempSens.setCustomDelayFunc(myCustomDelay);
+    if(tempSens.begin(powerupMillis, myCustomDelay_Sens)) {
         tempUnit = (atoi(settings.tempUnit) > 0);
         tempSens.setOffset((float)atof(settings.tempOffs));
         haveRcMode = true;
@@ -1485,9 +1497,7 @@ void time_setup()
     useLight = (atoi(settings.useLight) > 0);
     luxLimit = atoi(settings.luxLimit);
     if(useLight) {
-        if(lightSens.begin(haveGPS, powerupMillis)) {
-            lightSens.setCustomDelayFunc(myCustomDelay);
-        } else {
+        if(!lightSens.begin(haveGPS, powerupMillis, myCustomDelay_Sens)) {
             useLight = false;
         }
     }
@@ -3429,8 +3439,7 @@ static void copyPresentToDeparted(bool isReturn)
 }
 
 // Pause autoInverval-updating for 30 minutes
-// Subsequent calls re-start the pause; therefore, it
-// is not advised to use different pause durations
+// Subsequent calls re-start the pause.
 void pauseAuto(void)
 {
     if(autoTimeIntervals[autoInterval]) {
@@ -3524,17 +3533,28 @@ static void waitAudioDoneIntro()
  * (gps, temp sensor, light sensor). 
  * Do not call gps_loop() or wifi_loop() here!
  */
-static void myCustomDelay(unsigned int mydel)
+static void myCustomDelay_int(unsigned long mydel, uint32_t gran)
 {
     unsigned long startNow = millis();
     audio_loop();
     while(millis() - startNow < mydel) {
-        delay(5);
+        delay(gran);
         audio_loop();
         ntp_short_loop();
     }
 }
-
+static void myCustomDelay_Sens(unsigned long mydel)
+{
+    myCustomDelay_int(mydel, 5);
+}
+static void myCustomDelay_GPS(unsigned long mydel)
+{
+    myCustomDelay_int(mydel, 1);
+}
+void myCustomDelay_KP(unsigned long mydel)
+{
+    myCustomDelay_int(mydel, 1);
+}
 
 // Call this to get full CPU speed
 void pwrNeedFullNow(bool force)
@@ -4057,7 +4077,7 @@ static bool getGPStime(DateTime& dt)
     }
 
     // Determine DST from local nonDST time
-    localToDST(0, nyear, nmonth, nday, nhour, nminute, isDST);
+    localToDST(0, nyear, nmonth, nday, nhour, nminute, isDST, utcMins);
 
     // Get RTC-fit year & offs for given real year
     newYOffs = 0;
@@ -4164,13 +4184,13 @@ static bool gpsHaveTime()
 void gps_loop(bool withRotEnc)
 {
     #ifdef TC_HAVEGPS
-    if(useGPS && (millis() - lastLoopGPS > GPSupdateFreqMin)) {
+    if(useGPS && (millis() - lastLoopGPS > GPSupdateFreq)) {
         lastLoopGPS = millis();
         myGPS.loop(false);
         #ifdef TC_HAVESPEEDO
         if(useGPSSpeed) dispGPSSpeed(true);
         #endif
-    } 
+    }
     #endif
     #ifdef TC_HAVE_RE
     if(withRotEnc && useRotEnc && !timeTravelP2) {
@@ -4297,7 +4317,7 @@ uint64_t dateToMins(int year, int month, int day, int hour, int minute)
                 } else if(day > jSwitchDay + jSwitchSkipD) {
                     total32 += (day - jSwitchSkipD - 1) * 24;
                 } else {
-                  Serial.printf("Bad date!\n");
+                    Serial.printf("Bad date!\n");
                 }
             } else {
                 total32 += (day - 1) * 24;
@@ -4399,8 +4419,8 @@ void minsToDate(uint64_t total64, int& year, int& month, int& day, int& hour, in
     } else {
         while(1) {
             temp = ((c == jSwitchYear) ? jSwitchYrHrs : (isLeapYear(c) ? (8760+24) : 8760)) * 60;
-            c++;
             if(total32 < temp) break;
+            c++;
             year++;
             total32 -= temp;
         }
@@ -4420,7 +4440,6 @@ void minsToDate(uint64_t total64, int& year, int& month, int& day, int& hour, in
         if(month == jSwitchMon && day > jSwitchDay) {
             day += jSwitchSkipD;
         }
-        total32 -= (temp * (24*60));
     } else {      
         temp = isLeapYear(year) ? 1 : 0;
         while(c < 12) {
@@ -4432,8 +4451,9 @@ void minsToDate(uint64_t total64, int& year, int& month, int& day, int& hour, in
 
         temp = total32 / (24*60);
         day = temp + 1;
-        total32 -= (temp * (24*60));
     }
+    total32 -= (temp * (24*60));
+    
     temp = total32 / 60;
     hour = temp;
 
@@ -5012,7 +5032,7 @@ static bool blockDSTChange(int currTimeMins)
  * the WC times, where we get UTC time and have converted it to local
  * nonDST time. There is no need for blocking as there is no ambiguity.
  */
-static void localToDST(int index, int& year, int& month, int& day, int& hour, int& minute, int& isDST)
+static void localToDST(int index, int& year, int& month, int& day, int& hour, int& minute, int& isDST, uint64_t myTimeL)
 {
     if(couldDST[index]) {
       
@@ -5036,7 +5056,7 @@ static void localToDST(int index, int& year, int& month, int& day, int& hour, in
 
         // Translate to DST local time
         if(isDST) {
-            uint64_t myTime = dateToMins(year, month, day, hour, minute);
+            uint64_t myTime = myTimeL ? myTimeL : dateToMins(year, month, day, hour, minute);
 
             myTime += tzDiff[index];
 
@@ -5092,7 +5112,7 @@ void setDatesTimesWC(DateTime& dt)
             parseTZ(1, year);
         }       
 
-        localToDST(1, year, month, day, hour, minute, isDST);
+        localToDST(1, year, month, day, hour, minute, isDST, myTimeL);
 
         destinationTime.setFromParms(year, month, day, hour, minute);
     }
@@ -5105,7 +5125,7 @@ void setDatesTimesWC(DateTime& dt)
             parseTZ(2, year);
         }       
 
-        localToDST(2, year, month, day, hour, minute, isDST);
+        localToDST(2, year, month, day, hour, minute, isDST, myTimeL);
 
         departedTime.setFromParms(year, month, day, hour, minute);
     }

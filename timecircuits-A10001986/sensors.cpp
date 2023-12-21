@@ -64,7 +64,7 @@
 #include <Wire.h>
 #include "sensors.h"
 
-static void defaultDelay(unsigned int mydelay)
+static void defaultDelay(unsigned long mydelay)
 {
     delay(mydelay);
 }
@@ -287,7 +287,7 @@ tempSensor::tempSensor(int numTypes, uint8_t addrArr[])
 }
 
 // Start the display
-bool tempSensor::begin(unsigned long powerupTime)
+bool tempSensor::begin(unsigned long powerupTime, void (*myDelay)(unsigned long))
 {
     bool foundSt = false;
     uint8_t temp, timeOut = 20;
@@ -524,12 +524,9 @@ bool tempSensor::begin(unsigned long powerupTime)
 
     _tempReadNow = millis();
 
-    return true;
-}
-
-void tempSensor::setCustomDelayFunc(void (*myDelay)(unsigned int))
-{
     _customDelayFunc = myDelay;
+
+    return true;
 }
 
 // Read temperature
@@ -878,7 +875,7 @@ lightSensor::lightSensor(int numTypes, uint8_t addrArr[])
     }
 }
 
-bool lightSensor::begin(bool skipLast, unsigned long powerupTime)
+bool lightSensor::begin(bool skipLast, unsigned long powerupTime, void (*myDelay)(unsigned long))
 {
     bool foundSt = false;
     unsigned long millisNow = millis();
@@ -986,12 +983,9 @@ bool lightSensor::begin(bool skipLast, unsigned long powerupTime)
 
     _lastAccess = millis();
 
-    return true;
-}
-
-void lightSensor::setCustomDelayFunc(void (*myDelay)(unsigned int))
-{
     _customDelayFunc = myDelay;
+
+    return true;
 }
 
 int32_t lightSensor::readLux()

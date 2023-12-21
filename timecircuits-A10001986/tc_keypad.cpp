@@ -199,7 +199,6 @@ static void buildRemOffString(char *buf);
 #ifdef HAVE_STALE_PRESENT
 static void buildStalePTStatus(char *buf);
 #endif
-static void mykpddelay(unsigned int mydel);
 static void prepareReboot();
 
 static void dt_showTextDirect(const char *text, uint16_t flags = CDT_CLEAR)
@@ -213,34 +212,22 @@ static void dt_showTextDirect(const char *text, uint16_t flags = CDT_CLEAR)
 void keypad_setup()
 {
     // Set up the keypad
-    keypad.begin();
+    keypad.begin(20, ENTER_HOLD_TIME, myCustomDelay_KP);
 
     keypad.addEventListener(keypadEvent);
-
-    // Set custom delay function
-    // Called between i2c key scan iterations
-    // (calls audio_loop() while waiting)
-    keypad.setCustomDelayFunc(mykpddelay);
-
-    keypad.setScanInterval(20);
-    keypad.setHoldTime(ENTER_HOLD_TIME);
 
     // Set up pin for white LED
     pinMode(WHITE_LED_PIN, OUTPUT);
     digitalWrite(WHITE_LED_PIN, LOW);
 
     // Set up Enter button
-    enterKey.setPressTicks(ENTER_PRESS_TIME);
-    enterKey.setLongPressTicks(ENTER_HOLD_TIME);
-    enterKey.setDebounceTicks(ENTER_DEBOUNCE);
+    enterKey.setTicks(ENTER_DEBOUNCE, ENTER_PRESS_TIME, ENTER_HOLD_TIME);
     enterKey.attachPress(enterKeyPressed);
     enterKey.attachLongPressStart(enterKeyHeld);
 
 #ifdef EXTERNAL_TIMETRAVEL_IN
     // Set up External time travel button
-    ettKey.setPressTicks(ETT_PRESS_TIME);
-    ettKey.setLongPressTicks(ETT_HOLD_TIME);
-    ettKey.setDebounceTicks(ETT_DEBOUNCE);
+    ettKey.setTicks(ETT_DEBOUNCE, ETT_PRESS_TIME, ETT_HOLD_TIME);
     ettKey.attachPress(ettKeyPressed);
     ettKey.attachLongPressStart(ettKeyHeld);
 
@@ -569,21 +556,7 @@ void keypad_loop()
 
         timeNow = millis();
 
-        if(strLen != DATELEN_ALL  &&
-           strLen != DATELEN_REM  &&
-           strLen != DATELEN_DATE &&
-           #ifdef TC_HAVEBTTFN
-           strLen != DATELEN_ECMD &&
-           #endif
-           #ifdef HAVE_STALE_PRESENT
-           strLen != DATELEN_STPR &&
-           #endif
-           (strLen < DATELEN_CMIN ||
-            strLen > DATELEN_CMAX) ) {
-
-            invalidEntry = true;
-
-        } else if(strLen == DATELEN_ALSH) {
+        if(strLen == DATELEN_ALSH) {
 
             char atxt[16];
             uint16_t flags = 0;
@@ -867,7 +840,7 @@ void keypad_loop()
             case 9:
                 send_refill_msg();
                 enterDelay = ENTER_DELAY;
-                //validEntry = true;
+                // Play no sound, ie no xxvalidEntry
                 break;
             case 990:
             case 991:
@@ -1024,7 +997,7 @@ void keypad_loop()
             validEntry = true;
 
         #ifdef TC_HAVEBTTFN
-        } else if( (strLen == DATELEN_TIME || strLen == DATELEN_ECMD) && 
+        } else if((strLen == DATELEN_TIME || strLen == DATELEN_ECMD) && 
                         (dateBuffer[0] == '3' ||
                          dateBuffer[0] == '6' || 
                          dateBuffer[0] == '9')) {
@@ -1131,9 +1104,9 @@ void keypad_loop()
             } else {
                 invalidEntry = true;
             }
-            
-        #endif  
-        } else {
+        #endif
+
+        } else if((strLen == DATELEN_TIME) || (strLen == DATELEN_DATE) || (strLen == DATELEN_ALL)) {
 
             int _setMonth = -1, _setDay = -1, _setYear = -1;
             int _setHour = -1, _setMin = -1, temp1, temp2;
@@ -1283,6 +1256,11 @@ void keypad_loop()
 
             // Send "wakeup" to network clients
             send_wakeup_msg();
+
+        } else {
+
+            invalidEntry = true;
+
         }
 
         if(validEntry) {
@@ -1558,19 +1536,6 @@ static void prepareReboot()
     digitalWrite(WHITE_LED_PIN, LOW);
 }
 
-/*
- * Custom delay function for key scan in keypad_i2c
- */
-static void mykpddelay(unsigned int mydel)
-{
-    unsigned long startNow = millis();
-    audio_loop();
-    while(millis() - startNow < mydel) {
-        delay(1);
-        ntp_short_loop();
-        audio_loop();
-    }
-}
 
 /*
  * Beep

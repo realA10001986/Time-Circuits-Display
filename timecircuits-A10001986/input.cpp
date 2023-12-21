@@ -80,7 +80,7 @@
 #define MAX_ROWS  4
 #define MAX_COLS  3
 
-static void defaultDelay(unsigned int mydelay)
+static void defaultDelay(unsigned long mydelay)
 {
     delay(mydelay);
 }
@@ -107,8 +107,8 @@ Keypad_I2C::Keypad_I2C(char *userKeymap, const uint8_t *row, const uint8_t *col,
     _i2caddr = address;
     _wire = awire;
 
-    setScanInterval(10);
-    setHoldTime(500);
+    _scanInterval = 10;
+    _holdTime = 500;
 
     _keypadEventListener = NULL;
 
@@ -121,8 +121,11 @@ Keypad_I2C::Keypad_I2C(char *userKeymap, const uint8_t *row, const uint8_t *col,
 }
 
 // Initialize I2C
-void Keypad_I2C::begin()
+void Keypad_I2C::begin(unsigned int scanInterval, unsigned int holdTime, void (*myDelay)(unsigned long))
 {
+    _scanInterval = scanInterval;
+    _holdTime = holdTime;
+    
     // Set pins to power-up state
     port_write(0xff);
 
@@ -135,26 +138,13 @@ void Keypad_I2C::begin()
     for(int i = 0; i < _rows; i++) {
         _rowMask |= (1 << _rowPins[i]);
     }
-}
 
-void Keypad_I2C::setScanInterval(unsigned int interval)
-{
-    _scanInterval = (interval < 1) ? 1 : interval;
-}
-
-void Keypad_I2C::setHoldTime(unsigned int hold)
-{
-    _holdTime = hold;
+    _customDelayFunc = myDelay;
 }
 
 void Keypad_I2C::addEventListener(void (*listener)(char, KeyState))
 {
     _keypadEventListener = listener;
-}
-
-void Keypad_I2C::setCustomDelayFunc(void (*myDelay)(unsigned int))
-{
-    _customDelayFunc = myDelay;
 }
 
 // Scan keypad and update key state
@@ -333,24 +323,14 @@ TCButton::TCButton(const int pin, const boolean activeLow, const bool pullupActi
 }
 
 
-// Number of millisec that have to pass by before a click is assumed stable.
-void TCButton::setDebounceTicks(const int ticks)
+// debounce: Number of millisec that have to pass by before a click is assumed stable
+// press:    Number of millisec that have to pass by before a short press is detected
+// lPress:   Number of millisec that have to pass by before a long press is detected
+void TCButton::setTicks(const int debounceTs, const int pressTs, const int lPressTs)
 {
-    _debounceTicks = ticks;
-}
-
-
-// Number of millisec that have to pass by before a short press is detected.
-void TCButton::setPressTicks(const int ticks)
-{
-    _pressTicks = ticks;
-}
-
-
-// Number of millisec that have to pass by before a long press is detected.
-void TCButton::setLongPressTicks(const int ticks)
-{
-    _longPressTicks = ticks;
+    _debounceTicks = debounceTs;
+    _pressTicks = pressTs;
+    _longPressTicks = lPressTs;
 }
 
 // Register function for short press event
@@ -556,10 +536,11 @@ bool TCRotEnc::begin()
 
         _i2caddr = _addrArr[i];
 
-        switch(_addrArr[i+1]) {
-        case TC_RE_TYPE_ADA4991:
-            _wire->beginTransmission(_i2caddr);
-            if(!_wire->endTransmission(true)) {
+        _wire->beginTransmission(_i2caddr);
+        if(!_wire->endTransmission(true)) {
+
+            switch(_addrArr[i+1]) {
+            case TC_RE_TYPE_ADA4991:
                 if(read(SEESAW_STATUS_BASE, SEESAW_STATUS_HW_ID, buf, 1) == 1) {
                     switch(buf[0]) {
                     case SEESAW_HW_ID_CODE_SAMD09:
@@ -577,44 +558,38 @@ bool TCRotEnc::begin()
                         }
                     }
                 }
-            }
-            break;
+                break;
 
-        case TC_RE_TYPE_DUPPAV2:
-            _wire->beginTransmission(_i2caddr);
-            if(!_wire->endTransmission(true)) {
+            case TC_RE_TYPE_DUPPAV2:
                 read(DUV2_BASE, DUV2_IDCODE, buf, 1);
                 if(buf[0] == 0x53) {
                     foundSt = true;
                 }
-            }
-            break;
+                break;
 
-        case TC_RE_TYPE_DFRGR360:
-            _wire->beginTransmission(_i2caddr);
-            if(!_wire->endTransmission(true)) {
+            case TC_RE_TYPE_DFRGR360:
                 read(DFR_BASE, DFR_PID_MSB, buf, 2);
                 if(((buf[0] & 0x3f) == DFR_PID_U) &&
                     (buf[1]         == DFR_PID_L)) {
                     foundSt = true;
                 }
+                break;
+
+            case TC_RE_TYPE_CS:
+                // TODO
+                break;
             }
-            break;
 
-        case TC_RE_TYPE_CS:
-            // TODO
-            break;
-        }
-
-        if(foundSt) {
-            _st = _addrArr[i+1];
-
-            #ifdef TC_DBG
-            const char *tpArr[6] = { "ADA4991", "DuPPa V2.1", "DFRobot Gravity 360", "CircuitSetup", "", "" };
-            Serial.printf("Rotary encoder: Detected %s\n", tpArr[_st]);
-            #endif
-
-            break;
+            if(foundSt) {
+                _st = _addrArr[i+1];
+    
+                #ifdef TC_DBG
+                const char *tpArr[6] = { "ADA4991", "DuPPa V2.1", "DFRobot Gravity 360", "CircuitSetup", "", "" };
+                Serial.printf("Rotary encoder: Detected %s\n", tpArr[_st]);
+                #endif
+    
+                break;
+            }
         }
     }
 
@@ -734,8 +709,6 @@ int16_t TCRotEnc::updateFakeSpeed(bool force)
                 lastFUpd = millis();
             }
         }
-
-        //Serial.printf("fakeSpeed %d\n", fakeSpeed);
 
     }
 

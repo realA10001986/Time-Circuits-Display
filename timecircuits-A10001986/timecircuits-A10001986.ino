@@ -63,7 +63,16 @@
  *   The CH340 is supported out-of-the-box since Mojave. The port is named 
  *   /dev/cu.usbserial-XXXX (XXXX being some random number), and the maximum upload 
  *   speed is 460800.
- *   Windows: No idea. Not been using Windows since 1999.
+ *   Windows:
+ *   For the SLAB CP210x (which is used by NodeMCU-boards distributed by CircuitSetup)
+ *   installing a driver is required:
+ *   https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers?tab=downloads
+ *   After installing this driver, connect your ESP32, start the Device Manager, 
+ *   expand the "Ports (COM & LPT)" list and look for the port with the ESP32 name.
+ *   Choose this port under "Tools" -> "Port" in Arduino IDE.
+ *   For the CH340, another driver is needed. Try connecting the ESP32 and have
+ *   Windows install a driver automatically; otherwise search google for a suitable
+ *   driver. Note that the maximum upload speed is either 115200, or perhaps 460800.
  *
  * - Install required libraries. In the Arduino IDE, go to "Tools" -> "Manage Libraries" 
  *   and install the following libraries:
@@ -96,6 +105,19 @@
 
 /*  Changelog
  *   
+ *  2023/12/21  (A10001986)
+ *    - Some further minor code changes to reduce bin size
+ *    - GPS: Read 128 bytes at a time in 4Hz mode; get rid of delay.
+ *  2023/12/20  (A10001986)
+ *    - Some code size reductions (reduced number of setters in classes)
+ *  2023/12/19  (A10001986)
+ *    - Add 4Hz GPS speed update rate compile time option. This is only for when 
+ *      displaying speed on the speedo, but puts more stress on overall timing.
+ *  2023/12/18  (A10001986)
+ *    - Some minor optimizations when calculating local time (hand previously
+ *      calculated mins to localToDST)
+ *  2023/12/13  (A10001986)
+ *    - Keypad input length check logic fix
  *  2023/12/12  (A10001986)
  *    - Display Exhibition Mode status upon enabling/disabling Exh Mode
  *    - Overwrite Exh Mode time on TT / Return from TT only if Exh Mode is
@@ -1113,11 +1135,13 @@ void setup()
     powerupMillis = millis();
 
     Serial.begin(115200);
+    Serial.println();
 
+    // I2C init
+    // Make sure our i2c buf is 128 bytes
+    Wire.setBufferSize(128);
     // PCF8574 only supports 100kHz, can't go to 400 here.
     Wire.begin(-1, -1, 100000);
-
-    Serial.println();
 
     time_boot();
     settings_setup();

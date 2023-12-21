@@ -101,13 +101,7 @@ class Keypad_I2C {
                    uint8_t numRows, uint8_t numCols,
                    int address, TwoWire *awire = &Wire);
 
-        void begin();
-
-        // Setter for custom delay function
-        void setCustomDelayFunc(void (*myDelay)(unsigned int));
-
-        void setScanInterval(unsigned int interval);
-        void setHoldTime(unsigned int holdTime);
+        void begin(unsigned int scanInterval, unsigned int holdTime, void (*myDelay)(unsigned long));
 
         void addEventListener(void (*listener)(char, KeyState));
 
@@ -143,7 +137,7 @@ class Keypad_I2C {
         TwoWire       *_wire;
 
         // Ptr to custom delay function
-        void (*_customDelayFunc)(unsigned int) = NULL;
+        void (*_customDelayFunc)(unsigned long) = NULL;
 };
 
 /*
@@ -163,9 +157,7 @@ class TCButton {
     public:
         TCButton(const int pin, const boolean activeLow = true, const bool pullupActive = true);
       
-        void setDebounceTicks(const int ticks);
-        void setPressTicks(const int ticks);
-        void setLongPressTicks(const int ticks);
+        void setTicks(const int debounceTs, const int pressTs, const int lPressTs);
       
         void attachPress(void (*newFunction)(void));
         void attachLongPressStart(void (*newFunction)(void));

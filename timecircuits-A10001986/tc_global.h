@@ -27,9 +27,9 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION "V2.9.99"          // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "DEC122023"  // 13 chars max
+#define TC_VERSION_EXTRA "DEC212023"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "12122023"   // 12 chars max
+#define TC_VERSION_EXTRA "12212023"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -65,7 +65,7 @@
 #define SP_NUM_TYPES    12  // Number of speedo display types supported
 #define SP_MIN_TYPE     0
 #ifdef TC_HAVESPEEDO
-// Uncomment to keep speedo showing "00" when neither temp, nor GPS speed, 
+// Uncomment to keep speedo showing "00." when neither temp, nor GPS speed, 
 // nor fake speed through rotary encoder are to be displayed instead of 
 // switching it off when idle.
 //#define SP_ALWAYS_ON
@@ -173,14 +173,20 @@
 // Use SPIFFS (if defined) or LittleFS (if undefined; esp32-arduino >= 2.x)
 //#define USE_SPIFFS
 
-// Uncomment for 2Hz GPS updates for GPS speed (undefined: 1Hz)
+// Rate of GPS speed updates
+// - Both commented: 1Hz
+// - TC_GPSSPEED500 defined: 2Hz
+// - TC_GPSSPEED250 defined: 4Hz (used only when displaying speed on speedo)
 #define TC_GPSSPEED500
+//#define TC_GPSSPEED250
 
 // Custom stuff -----
 #define TWSOUND         // Use A10001986's sound files
 //#define TWPRIVATE     // A10001986's private customizations
 
 #ifdef TWPRIVATE
+#undef TC_GPSSPEED500
+#define TC_GPSSPEED250
 #undef TC_VERSION
 #define TC_VERSION "A10001986P"
 #elif defined(TWSOUND)

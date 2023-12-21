@@ -179,6 +179,8 @@ void  fpbKeyPressed();
 void  fpbKeyLongPressStop();
 #endif
 
+void myCustomDelay_KP(unsigned long mydel);
+
 void  pwrNeedFullNow(bool force = false);
 
 #ifdef TC_HAVEGPS
