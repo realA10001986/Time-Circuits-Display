@@ -151,7 +151,6 @@ void Keypad_I2C::addEventListener(void (*listener)(char, KeyState))
 bool Keypad_I2C::scanKeypad()
 {
     bool keyChanged = false;
-    unsigned long now = millis();
 
     if((millis() - _scanTime) > _scanInterval) {
         keyChanged = scanKeys();

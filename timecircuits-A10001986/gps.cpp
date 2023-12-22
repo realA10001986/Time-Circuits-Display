@@ -253,8 +253,8 @@ bool tcGPS::begin(unsigned long powerupTime, int quickUpdates, void (*myDelay)(u
 void tcGPS::loop(bool doDelay)
 {
     unsigned long myNow;
+    
     #ifdef TC_DBG_GPS
-    unsigned long myLater;
     myNow = millis();
     #endif
 
@@ -262,24 +262,21 @@ void tcGPS::loop(bool doDelay)
     // takes (with delay):
     // 6ms? when reading blocks of 32 bytes
     // 8ms " " " 64 bytes   (6ms without delay)  (ex: 11 w/o)
-    // 13ms " " " 128 bytes  (12ms without delay) (ex: 17w/o)
+    // 13ms " " " 128 bytes  (12ms without delay) (ex: 17 w/o)
+
+    #ifdef TC_DBG_GPS
+    if((DBGloopCnt++) % 10 == 0) {
+        Serial.printf("readAndParse took %d ms\n", millis()-myNow);
+    }
+    #endif
+
+    myNow = millis();
 
     // Speed "simulator" for debugging
     #ifdef GPS_SPEED_SIMU
     _haveSpeed = true;        
     _curspdTS = myNow;
     #endif
-
-    #ifdef TC_DBG_GPS
-    if((DBGloopCnt++) % 10 == 0) {
-        myLater = millis();
-        Serial.printf("readAndParse took %d ms\n", myLater-myNow);
-        //Serial.printf("time:  %d %d %d %s.%d\n", _curYear, _curMonth, _curDay, _curTime, _curFrac);
-        //Serial.printf("time2: %d %d %d %s.%d\n", _curYear2, _curMonth2, _curDay2, _curTime2, _curFrac2);
-    }
-    #endif
-
-    myNow = millis();
 
     // Expire time/date info after 15 minutes
     if(_haveDateTime && (myNow - _curTS >= 15*60*1000))
@@ -383,7 +380,7 @@ bool tcGPS::setDateTime(struct tm *timeinfo)
     char pkt740[64] = "$PMTK740";
     char pktgen[64];
     char temp[8];
-    int checksum = 0;
+    int  checksum1 = 0, checksum2 = 0;
 
     // If the date is clearly invalid, bail
     if(timeinfo->tm_year + 1900 < TCEPOCH_GEN)
@@ -402,25 +399,21 @@ bool tcGPS::setDateTime(struct tm *timeinfo)
     strcat(pkt740, pktgen);
     
     for(int i = 1; pkt335[i] != 0; i++) {
-        checksum ^= pkt335[i];
+        checksum1 ^= pkt335[i];
+        checksum2 ^= pkt740[i];
     }
-    sprintf(temp, "*%02x", (checksum & 0xff));
+    sprintf(temp, "*%02X", (checksum1 & 0xff));
     strcat(pkt335, temp);
 
-    checksum = 0;
-    for(int i = 1; pkt740[i] != 0; i++) {
-        checksum ^= pkt740[i];
-    }
-    sprintf(temp, "*%02x", (checksum & 0xff));
+    sprintf(temp, "*%02X", (checksum2 & 0xff));
     strcat(pkt740, temp);
     
+    sendCommand(NULL, pkt740);
+    sendCommand(NULL, pkt335);
+
     #ifdef TC_DBG
     Serial.printf("GPS setDateTime(): %s\n", pkt740);  
     #endif
-
-    sendCommand(NULL, pkt740);
-
-    sendCommand(NULL, pkt335);
 
     return true;
 }
@@ -532,7 +525,6 @@ bool tcGPS::parseNMEA(char *nmea, unsigned long nmeaTS)
 
         if(!fix) return true;
         
-        //strncpy(_curTime2, t2, 6);
         copy6chars(_curTime2, t2);
         _curFrac2 = (*(t2+6) == '.') ? getFracs(t2+7) : 0;
 
@@ -567,7 +559,6 @@ bool tcGPS::parseNMEA(char *nmea, unsigned long nmeaTS)
         // the GPS' own RTC.
         if(fix) {
             t = gotoNext(t);    // Skip to time
-            //strncpy(_curTime, t, 6);
             copy6chars(_curTime, t);
             _curFrac = (*(t+6) == '.') ? getFracs(t+7) : 0;
             t = gotoNext(t);    // Skip to day

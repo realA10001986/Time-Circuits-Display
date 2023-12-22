@@ -105,6 +105,8 @@
 
 /*  Changelog
  *   
+ *  2023/12/22  (A10001986)
+ *    - Minor GPS changes (use caps for checksum; re-order setDate code)
  *  2023/12/21  (A10001986)
  *    - Some further minor code changes to reduce bin size
  *    - GPS: Read 128 bytes at a time in 4Hz mode; get rid of delay.
