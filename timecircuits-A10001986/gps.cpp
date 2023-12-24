@@ -47,8 +47,8 @@
 
 // For deeper debugging
 //#define TC_DBG_GPS
-//#define GPS_SPEED_SIMU
 //#define TC_DBG_PRINT_NMEA
+//#define GPS_SPEED_SIMU
 
 #ifdef TC_DBG_GPS
 static int DBGloopCnt = 0;
@@ -500,6 +500,9 @@ bool tcGPS::readAndParse(bool doDelay)
     return haveParsedSome;
 }
 
+#if defined(TC_DBG_GPS) && defined(TC_DBG_PRINT_NMEA)
+unsigned long lastMillis = 0;
+#endif
 
 bool tcGPS::parseNMEA(char *nmea, unsigned long nmeaTS)
 {
@@ -514,6 +517,8 @@ bool tcGPS::parseNMEA(char *nmea, unsigned long nmeaTS)
     }
 
     #if defined(TC_DBG_GPS) && defined(TC_DBG_PRINT_NMEA)
+    Serial.printf("%d ", millis() - lastMillis);
+    lastMillis = millis();
     Serial.print(nmea);
     #endif
 

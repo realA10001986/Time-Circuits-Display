@@ -105,6 +105,8 @@
 
 /*  Changelog
  *   
+ *  2023/12/23  (A10001986)
+ *    - GPS: Sync read rate to update rate for smooth speedo display
  *  2023/12/22  (A10001986)
  *    - Minor GPS changes (use caps for checksum; re-order setDate code)
  *  2023/12/21  (A10001986)

@@ -1250,6 +1250,7 @@ void time_setup()
         // Set ms between GPS polls
         // Need more updates if speed is to be displayed
         // RMC is 72-85 chars, so three fit in the 255 byte buffer.
+        // (Must sync readFreq and updFreq for smooth speedo display)
 
         if(quickGPSupdates < 0) {
             // For time only, the update rate is set to 5 seconds;
@@ -1260,10 +1261,10 @@ void time_setup()
             // For GPS speed for BTTFN clients (but no speed display
             // on speedo), the update rate is set to 1000ms/500ms,
             // so the buffer fills in 3000/1500ms. We poll every 
-            // 250/200ms, hence the entire buffer is read in
-            // 1000/800ms.
+            // 250/250ms, hence the entire buffer is read in
+            // 1000/1000ms.
             #if defined(TC_GPSSPEED500) || defined(TC_GPSSPEED250)
-            GPSupdateFreq = 200;
+            GPSupdateFreq = 250;
             #else
             GPSupdateFreq = 250;
             #endif
@@ -1273,14 +1274,14 @@ void time_setup()
             // 3000/1500/750ms.
             #if defined(TC_GPSSPEED250)
             // At 250ms update rate, the buffer fills in 750ms (with ZDA: 740ms)
-            // At 100ms readfreq (64 bytes blocks), the entire buffer is read in 400ms
-            //GPSupdateFreq = 100;
-            // At 200ms readfreq (128 bytes blocks), the entire buffer is read in 400ms
-            GPSupdateFreq = 200;
+            // At 125ms readfreq (64 bytes blocks), the entire buffer is read in 500ms
+            //GPSupdateFreq = 125;
+            // At 250ms readfreq (128 bytes blocks), the entire buffer is read in 500ms
+            GPSupdateFreq = 250;
             #elif defined(TC_GPSSPEED500)
             // At 500ms update rate, the buffer fills in 1500ms (with ZDA: 1400)
-            // At 200ms readfreq, the entire buffer is read in 800ms
-            GPSupdateFreq = 200;
+            // At 250ms readfreq, the entire buffer is read in 1000ms
+            GPSupdateFreq = 250;
             #else
             GPSupdateFreq = 250;
             #endif
