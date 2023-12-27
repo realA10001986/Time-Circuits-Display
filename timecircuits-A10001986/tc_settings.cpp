@@ -728,7 +728,7 @@ static bool checkValidNumParmF(char *text, float lowerLim, float upperLim, float
         }
     }
 
-    f = atof(text);
+    f = strtof(text, NULL);
 
     if(f < lowerLim) {
         sprintf(text, "%1.1f", lowerLim);

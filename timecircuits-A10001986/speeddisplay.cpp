@@ -604,7 +604,7 @@ void speedDisplay::setTemperature(float temp)
         else if(temp <= -10.0) setText("Lo");
         else if(t >= 100.0) setText("Hi");
         else if(temp >= 10.0 || temp < 0.0) {
-            t = (int)((float)round(temp));
+            t = (int)roundf(temp);
             sprintf(buf, "%d", t);
             setText(buf);
         } else {
@@ -617,7 +617,7 @@ void speedDisplay::setTemperature(float temp)
         else if(temp <= -100.0) setText("Low");
         else if(t >= 1000.0) setText("Hi");
         else if(temp >= 100.0 || temp <= -10.0) {
-            t = (int)((float)round(temp));
+            t = (int)roundf(temp);
             sprintf(buf, "%d", t);
             setText(buf);
         } else {

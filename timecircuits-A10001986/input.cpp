@@ -625,7 +625,7 @@ bool TCRotEnc::begin()
         buf[3] = 1;
         write(DUV2_BASE, DUV2_ISTEPB4, &buf[0], 4);
         // Set Min/Max
-        buf[0] = 0x80; buf[3] = 0x00;
+        buf[0] = 0x80; buf[3] = 0x00; // [1], [2] still zero from above
         write(DUV2_BASE, DUV2_CMINB4, &buf[0], 4);
         buf[0] = 0x7f; buf[1] = buf[2] = buf[3] = 0xff;
         write(DUV2_BASE, DUV2_CMAXB4, &buf[0], 4);

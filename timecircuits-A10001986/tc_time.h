@@ -65,7 +65,6 @@ extern bool syncTrigger;
 extern bool doAPretry;
 
 extern uint64_t lastAuthTime64;
-extern uint64_t millisEpoch;
 
 extern clockDisplay destinationTime;
 extern clockDisplay presentTime;
@@ -162,6 +161,7 @@ void animate(bool withLEDs = false);
 void allLampTest();
 void allOff();
 
+uint64_t  millis64();
 bool      isLeapYear(int year);
 int       daysInMonth(int month, int year);
 void      myrtcnow(DateTime& dt);

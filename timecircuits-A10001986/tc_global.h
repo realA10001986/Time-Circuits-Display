@@ -27,9 +27,9 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION "V2.9.99"          // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "DEC232023"  // 13 chars max
+#define TC_VERSION_EXTRA "DEC272023"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "12232023"   // 12 chars max
+#define TC_VERSION_EXTRA "12272023"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -174,15 +174,17 @@
 //#define USE_SPIFFS
 
 // Rate of GPS speed updates
-// - Both commented: 1Hz
+// - All commented: 1Hz
 // - TC_GPSSPEED500 defined: 2Hz
 // - TC_GPSSPEED250 defined: 4Hz (used only when displaying speed on speedo)
+// - TC_GPSSPEED200 defined: 5Hz (used only when displaying speed on speedo)
 //#define TC_GPSSPEED500
-#define TC_GPSSPEED250
+//#define TC_GPSSPEED250
+#define TC_GPSSPEED200
 
 // Custom stuff -----
 #define TWSOUND         // Use A10001986's sound files
-//#define TWPRIVATE     // A10001986's private customizations
+#define TWPRIVATE     // A10001986's private customizations
 
 #ifdef TWPRIVATE
 #undef TC_VERSION

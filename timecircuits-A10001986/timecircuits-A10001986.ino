@@ -105,17 +105,27 @@
 
 /*  Changelog
  *   
+ *  2023/12/27  (A10001986)
+ *    - GPS: Switch to VTG sentence as main speed source for 200ms and 250ms
+ *      polling rates; fake 1 and 2mph (GPS data is unreliable at very low 
+ *      speeds).
+ *  2023/12/26  (A10001986)
+ *    - GPS: Increase speed update for speedo-display to 5Hz; more is pointless
+ *      as speed gets increasingly jumpy (it already is at 5Hz); better pace-
+ *      keeping for GPS polling and displaying speed
+ *    - Properly implement millis64()
+ *    - Convert some remaining double math into float
  *  2023/12/23  (A10001986)
  *    - GPS: Sync read rate to update rate for smooth speedo display
  *  2023/12/22  (A10001986)
- *    - Minor GPS changes (use caps for checksum; re-order setDate code)
+ *    - GPS: Minor changes (use caps for checksum; re-order setDate code)
  *  2023/12/21  (A10001986)
  *    - Some further minor code changes to reduce bin size
  *    - GPS: Read 128 bytes at a time in 4Hz mode; get rid of delay.
  *  2023/12/20  (A10001986)
  *    - Some code size reductions (reduced number of setters in classes)
  *  2023/12/19  (A10001986)
- *    - Add 4Hz GPS speed update rate compile time option. This is only for when 
+ *    - GPS: Add 4Hz speed update rate compile time option. This is only for when 
  *      displaying speed on the speedo, but puts more stress on overall timing.
  *  2023/12/18  (A10001986)
  *    - Some minor optimizations when calculating local time (hand previously

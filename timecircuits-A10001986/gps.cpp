@@ -46,8 +46,8 @@
 #define GPS_KMPH_PER_KNOT 1.852
 
 // For deeper debugging
-//#define TC_DBG_GPS
-//#define TC_DBG_PRINT_NMEA
+#define TC_DBG_GPS
+#define TC_DBG_PRINT_NMEA
 //#define GPS_SPEED_SIMU
 
 #ifdef TC_DBG_GPS
@@ -135,7 +135,9 @@ bool tcGPS::begin(unsigned long powerupTime, int quickUpdates, void (*myDelay)(u
 {
     uint8_t testBuf;
     int i2clen;
+    int rmc, vtg;
     char *cmd1, *cmd2;
+    char cmdbuf[64];
     
     _customDelayFunc = defaultDelay;
 
@@ -176,15 +178,19 @@ bool tcGPS::begin(unsigned long powerupTime, int quickUpdates, void (*myDelay)(u
     // If we use GPS for speed, we need more frequent updates.
     // The value in PKT 314 is a multiplier for the value of PKT 220.
     
+    rmc = 1;
+    vtg = 0;
+    
     if(quickUpdates < 0) {
-        // For mere time, we set the fix update to 5000, and the
+        // For mere time, we set the fix update to 5000ms, and the
         // multiplier to 1 as well, so we get it every 5th second.
         // $PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0*34
         // $PMTK220,5000*1B
         cmd1 = (char *)"1,0,0*34";
         cmd2 = (char *)"5000*1B";
     } else if(!quickUpdates) {
-        #if defined(TC_GPSSPEED500) || defined(TC_GPSSPEED250)
+        // For speedo-less setups, but with GPS-aware BTTFN clients:
+        #if defined(TC_GPSSPEED500) || defined(TC_GPSSPEED250) || defined(TC_GPSSPEED200)
         // Set update rate to 500ms
         // RMC 2x per sec, ZDA every 10th second
         // $PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,0*07
@@ -200,12 +206,37 @@ bool tcGPS::begin(unsigned long powerupTime, int quickUpdates, void (*myDelay)(u
         cmd2 = (char *)"1000*1F";
         #endif
     } else {
-        #if defined(TC_GPSSPEED250)
+        // For when displaying speed on speedo
+        #if defined(TC_GPSSPEED200)
+        // Set update rate to 200ms
+        // --- using RMC:
+        // RMC 5x per sec, ZDA every 10th second
+        // $PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,50,0,0*00
+        // $PMTK220,200*2C
+        //cmd1 = (char *)"50,0,0*00";
+        // ---- using VTG:
+        // VTG 5x per sec, RMC every approx 6th sec, ZDA every 10th second
+        // $PMTK314,0,31,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,50,0,0*32
+        rmc = 31;
+        vtg = 1;
+        cmd1 = (char *)"50,0,0*32";
+        cmd2 = (char *)"200*2C";
+        // For reading 128 bytes per call:
+        _lenLimit = 0x01;
+        _lenArr[0] = 128; _lenArr[1] = 127;
+        #elif defined(TC_GPSSPEED250)
         // Set update rate to 250ms
+        // ---- using RMC
         // RMC 4x per sec, ZDA every 10th second
         // $PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,40,0,0*01
         // $PMTK220,250*29"
-        cmd1 = (char *)"40,0,0*01";
+        // cmd1 = (char *)"40,0,0*01";
+        // ---- using VTG:
+        // VTG 4x per sec, RMC every approx 6th sec, ZDA every 10th second
+        // $PMTK314,0,25,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,40,0,0*36
+        rmc = 25;
+        vtg = 1;
+        cmd1 = (char *)"40,0,0*36";
         cmd2 = (char *)"250*29";
         // For reading 128 bytes per call:
         _lenLimit = 0x01;
@@ -226,7 +257,8 @@ bool tcGPS::begin(unsigned long powerupTime, int quickUpdates, void (*myDelay)(u
         cmd2 = (char *)"1000*1F";
         #endif
     }
-    sendCommand("$PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,", cmd1);
+    sprintf(cmdbuf, "$PMTK314,0,%d,%d,0,0,0,0,0,0,0,0,0,0,0,0,0,0,%s", rmc, vtg, cmd1);
+    sendCommand(NULL, cmdbuf);
     sendCommand("$PMTK220,", cmd2);
 
     // No antenna status
@@ -295,14 +327,24 @@ void tcGPS::loop(bool doDelay)
  */
 int16_t tcGPS::getSpeed()
 {
+    float _speedfk;
+    
     if(_haveSpeed) {
         #ifdef GPS_SPEED_SIMU
         // Speed "simulator" for debugging
         _speed = (79 + (rand() % 10));
         if(_speed <= 80) _speed -= (79-8);
         #else
-        _speed = (round(atof(_sbuf) * GPS_MPH_PER_KNOT));
-        if(_speed <= 2) _speed = 0;
+        _speedfk = strtof(_sbuf, NULL);
+        if(_speedfk >= 2.61) {        // 3.00mph
+            _speed = (int)roundf(_speedfk * GPS_MPH_PER_KNOT);
+        } else if(_speedfk <= 2.00) {  // 2.30mph
+            _speed = 0;
+        } else if(_speedfk <= 2.30) { // 2.65mph
+            _speed = 1;
+        } else {
+            _speed = 2;
+        }
         #endif
         return _speed;
     }
@@ -543,8 +585,6 @@ bool tcGPS::parseNMEA(char *nmea, unsigned long nmeaTS)
             *bufp++ = *t2++;
         *bufp = 0;
         if(*_sbuf) {
-            //_speed = (int16_t)(round(atof(buf) * GPS_MPH_PER_KNOT));
-            //if(_speed <= 2) _speed = 0;
             _haveSpeed = true;
             _curspdTS = nmeaTS;
         }
@@ -557,6 +597,30 @@ bool tcGPS::parseNMEA(char *nmea, unsigned long nmeaTS)
           
         _curTS2 = nmeaTS;
         _haveDateTime2 = true;
+
+    } else if(*(t+3) == 'V') {
+
+        t = gotoNext(t);        // Skip to Course
+        t = gotoNext(t);        // Skip to Reference
+        t = gotoNext(t);        // Skip to Course (2)
+        t = gotoNext(t);        // Skip to Reference (2)
+        t2 = t = gotoNext(t);   // Skip to speed (knots)
+        t = gotoNext(t);        // Skip to Unit
+        t = gotoNext(t);        // Skip to speed (kph)
+        t = gotoNext(t);        // Skip to Unit
+        t = gotoNext(t);        // Skip to Mode
+        fix = (*t != 'N');
+        
+        if(fix) {
+            *bufp = 0;
+            while(*t2 && *t2 != ',' && (bufp - 16 < _sbuf))
+                *bufp++ = *t2++;
+            *bufp = 0;
+            if(*_sbuf) {
+                _haveSpeed = true;
+                _curspdTS = nmeaTS;
+            }
+        }
 
     } else {      // ZDA
 
@@ -599,7 +663,7 @@ bool tcGPS::checkNMEA(char *nmea)
     if(ast - nmea < 16)
         return false;
 
-    if(mystrcmp3(nmea+3, "RMC") && mystrcmp3(nmea+3, "ZDA"))
+    if(mystrcmp3(nmea+3, "RMC") && mystrcmp3(nmea+3, "ZDA") && mystrcmp3(nmea+3, "VTG"))
         return false;
 
     // check checksum

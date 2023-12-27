@@ -1083,8 +1083,8 @@ static float getRawVolume()
                     avg2 += rawVol[i & (VOL_SMOOTH_SIZE-1)];
                 }
             }
-            avg1 = round((float)avg1 / (float)(VOL_SMOOTH_SIZE/2));
-            avg2 = round((float)avg2 / (float)(VOL_SMOOTH_SIZE/2));
+            avg1 = roundf((float)avg1 / (float)(VOL_SMOOTH_SIZE/2));
+            avg2 = roundf((float)avg2 / (float)(VOL_SMOOTH_SIZE/2));
             avg = (abs(avg1-prev_avg) < abs(avg2-prev_avg)) ? avg1 : avg2;
 
             /*

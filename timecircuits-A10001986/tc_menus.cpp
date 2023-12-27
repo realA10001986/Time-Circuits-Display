@@ -896,7 +896,7 @@ static void menuShow(int number)
             pt_on();
             lt_off();
         } else {
-            uint64_t ago = (((uint64_t)millis() + millisEpoch) - lastAuthTime64) / 1000;
+            uint64_t ago = (millis64() - lastAuthTime64) / 1000;
             if(ago > 24*60*60) {
                 sprintf(buf, "%d DAYS", ago / (24*60*60));
             } else if(ago > 60*60) {

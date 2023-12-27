@@ -132,8 +132,10 @@
 #define SECS1900_1970 2208988800ULL
 
 unsigned long        powerupMillis = 0;
-static unsigned long lastMillis = 0;
-uint64_t             millisEpoch = 0;
+
+// millis64
+static unsigned long lastMillis64 = 0;
+static uint64_t      millisEpoch = 0;
 
 static bool    couldHaveAuthTime = false;
 static bool    haveAuthTime = false;
@@ -344,7 +346,7 @@ static unsigned long OTPRStarted = 0;
 // The GPS object
 #ifdef TC_HAVEGPS
 tcGPS myGPS(GPS_ADDR);
-static unsigned long lastLoopGPS = 0;
+static uint64_t      lastLoopGPS = 0;
 static unsigned long GPSupdateFreq    = 1000;
 #endif
 
@@ -995,6 +997,7 @@ void time_setup()
         
         // Fetch data already in Receiver's buffer [120ms]
         for(int i = 0; i < 10; i++) myGPS.loop(true);
+        lastLoopGPS = millis64();
         
         #ifdef TC_DBG
         Serial.printf("%sGPS Receiver found\n", funcName);
@@ -1046,7 +1049,7 @@ void time_setup()
         // So we have authoritative time now
         haveAuthTime = true;
         lastAuthTime = millis();
-        lastAuthTime64 = lastAuthTime;
+        lastAuthTime64 = millis64();
         
         #ifdef TC_DBG
         Serial.printf("%sRTC set through NTP\n", funcName);        
@@ -1070,7 +1073,7 @@ void time_setup()
                     // So we have authoritative time now
                     haveAuthTime = true;
                     lastAuthTime = millis();
-                    lastAuthTime64 = lastAuthTime;
+                    lastAuthTime64 = millis64();
                     haveAuthTimeGPS = true;
                     #ifdef TC_DBG
                     Serial.printf("%sRTC set through GPS\n", funcName);
@@ -1083,6 +1086,7 @@ void time_setup()
             // If we haven't managed to get time here, try
             // a sync in shorter intervals in time_loop.
             if(!haveAuthTimeGPS) resyncInt = 2;
+            lastLoopGPS = millis64();
         }
         #endif
     }
@@ -1250,10 +1254,13 @@ void time_setup()
         // Set ms between GPS polls
         // Need more updates if speed is to be displayed
         // RMC is 72-85 chars, so three fit in the 255 byte buffer.
+        // VTG is 40+ chars, so six fit into the buffer.
+        // We use VTG+RMC+ZDA when displaying speedo on speedo at 200/250ms rates.
+        // Otherwise we go with RMC+ZDA.
         // (Must sync readFreq and updFreq for smooth speedo display)
 
         if(quickGPSupdates < 0) {
-            // For time only, the update rate is set to 5 seconds;
+            // For time only, the fix update rate is set to 5 seconds;
             // We poll every 500ms, so the entire buffer is read every 
             // 2 seconds.
             GPSupdateFreq = 500;
@@ -1263,16 +1270,21 @@ void time_setup()
             // so the buffer fills in 3000/1500ms. We poll every 
             // 250/250ms, hence the entire buffer is read in
             // 1000/1000ms.
-            #if defined(TC_GPSSPEED500) || defined(TC_GPSSPEED250)
+            #if defined(TC_GPSSPEED500) || defined(TC_GPSSPEED250) || defined(TC_GPSSPEED200)
             GPSupdateFreq = 250;
             #else
             GPSupdateFreq = 250;
             #endif
         } else {
             // For when GPS speed is to be displayed on speedo:
-            // Update rate is set to 1000/500/250ms, so buffer fills in
-            // 3000/1500/750ms.
-            #if defined(TC_GPSSPEED250)
+            // Update rate is set to 1000/500/250/200ms, so buffer fills in
+            // 3000/1500/750/600ms.
+            #if defined(TC_GPSSPEED200)
+            // With RMC: At 200ms update rate, the buffer fills in 600ms (with ZDA: 590ms on avg)
+            // With VTG: At 200ms update rate, the buffer fills in 1200ms (with RMC+ZDA: 1100ms on avg)
+            // At 200ms readfreq (128 bytes blocks), the entire buffer is read in 400ms
+            GPSupdateFreq = 200;
+            #elif defined(TC_GPSSPEED250)
             // At 250ms update rate, the buffer fills in 750ms (with ZDA: 740ms)
             // At 125ms readfreq (64 bytes blocks), the entire buffer is read in 500ms
             //GPSupdateFreq = 125;
@@ -1373,7 +1385,7 @@ void time_setup()
         speedo.setDot(true);
 
         // Speed factor for acceleration curve
-        ttP0TimeFactor = (float)atof(settings.speedoFact);
+        ttP0TimeFactor = (float)strtof(settings.speedoFact, NULL);
         if(ttP0TimeFactor < 0.5) ttP0TimeFactor = 0.5;
         if(ttP0TimeFactor > 5.0) ttP0TimeFactor = 5.0;
 
@@ -1471,7 +1483,7 @@ void time_setup()
     #endif
     if(tempSens.begin(powerupMillis, myCustomDelay_Sens)) {
         tempUnit = (atoi(settings.tempUnit) > 0);
-        tempSens.setOffset((float)atof(settings.tempOffs));
+        tempSens.setOffset((float)strtof(settings.tempOffs, NULL));
         haveRcMode = true;
         #ifdef TC_HAVESPEEDO
         tempBrightness = atoi(settings.tempBright);
@@ -1667,12 +1679,6 @@ void time_loop()
     int dbgLastMin;
     const char *funcName = "time_loop: ";
     #endif
-
-    // millisEpoch counter
-    if(millisNow < lastMillis) {
-        millisEpoch += 0x100000000;
-    }
-    lastMillis = millisNow;
 
     #ifdef FAKE_POWER_ON
     if(waitForFakePowerButton) {
@@ -2023,8 +2029,8 @@ void time_loop()
         // Read GPS, and display GPS speed or temperature
         #ifdef TC_HAVEGPS
         if(useGPS) {
-            if(millisNow - lastLoopGPS >= GPSupdateFreq) {
-                lastLoopGPS = millisNow;
+            if(millis64() >= lastLoopGPS) {
+                lastLoopGPS += (uint64_t)GPSupdateFreq;
                 // call loop with doDelay true; delay not needed but
                 // this causes a call of audio_loop() which is good
                 myGPS.loop(true);
@@ -2220,7 +2226,7 @@ void time_loop()
 
                         haveAuthTime = true;
                         lastAuthTime = millis();
-                        lastAuthTime64 = lastAuthTime + millisEpoch;
+                        lastAuthTime64 = millis64();
                         authTimeExpired = false;
 
                         // We have just adjusted, don't do it again below
@@ -3600,6 +3606,22 @@ void myrtcnow(DateTime& dt)
 }
 
 /*
+ * millis64() - 64bit millis()
+ * 
+ */
+uint64_t millis64()
+{
+    unsigned long millisNow64 = millis();
+    
+    if(millisNow64 < lastMillis64) {
+        millisEpoch += 0x100000000;
+    }
+    lastMillis64 = millisNow64;
+
+    return millisEpoch | (uint64_t)millisNow64;
+}
+
+/*
  * World Clock setters/getters
  * 
  */
@@ -3692,7 +3714,7 @@ static void dispGPSSpeed(bool force)
 
     if(useGPSSpeed) {
         #ifdef TC_HAVEGPS
-        if(force || (now - dispGPSnow >= 500)) {
+        if(force || (now - dispGPSnow >= GPSupdateFreq)) {
             speedo.setSpeed(myGPS.getSpeed());
             speedo.show();
             speedo.on();
@@ -4185,8 +4207,8 @@ static bool gpsHaveTime()
 void gps_loop(bool withRotEnc)
 {
     #ifdef TC_HAVEGPS
-    if(useGPS && (millis() - lastLoopGPS > GPSupdateFreq)) {
-        lastLoopGPS = millis();
+    if(useGPS && (millis64() >= lastLoopGPS)) {
+        lastLoopGPS += (uint64_t)GPSupdateFreq;
         myGPS.loop(false);
         #ifdef TC_HAVESPEEDO
         if(useGPSSpeed) dispGPSSpeed(true);
