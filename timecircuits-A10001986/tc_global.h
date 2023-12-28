@@ -2,7 +2,7 @@
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
- * (C) 2022-2023 Thomas Winischhofer (A10001986)
+ * (C) 2022-2024 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display
  * https://tcd.backtothefutu.re
  *
@@ -27,9 +27,9 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION "V2.9.99"          // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "DEC272023"  // 13 chars max
+#define TC_VERSION_EXTRA "DEC282023"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "12272023"   // 12 chars max
+#define TC_VERSION_EXTRA "12282023"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -172,15 +172,6 @@
 
 // Use SPIFFS (if defined) or LittleFS (if undefined; esp32-arduino >= 2.x)
 //#define USE_SPIFFS
-
-// Rate of GPS speed updates
-// - All commented: 1Hz
-// - TC_GPSSPEED500 defined: 2Hz
-// - TC_GPSSPEED250 defined: 4Hz (used only when displaying speed on speedo)
-// - TC_GPSSPEED200 defined: 5Hz (used only when displaying speed on speedo)
-//#define TC_GPSSPEED500
-//#define TC_GPSSPEED250
-#define TC_GPSSPEED200
 
 // Custom stuff -----
 #define TWSOUND         // Use A10001986's sound files

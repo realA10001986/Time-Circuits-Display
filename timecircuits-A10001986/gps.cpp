@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
- * (C) 2022-2023 Thomas Winischhofer (A10001986)
+ * (C) 2022-2024 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display
  * https://tcd.backtothefutu.re
  *
@@ -46,13 +46,30 @@
 #define GPS_KMPH_PER_KNOT 1.852
 
 // For deeper debugging
-#define TC_DBG_GPS
-#define TC_DBG_PRINT_NMEA
+#ifdef TC_DBG
+//#define TC_DBG_GPS
+//#define TC_DBG_PRINT_NMEA
 //#define GPS_SPEED_SIMU
+#endif
 
 #ifdef TC_DBG_GPS
 static int DBGloopCnt = 0;
 #endif
+
+static struct GPSsetupStruct {
+    uint8_t rmc;
+    uint8_t vtg;
+    uint8_t zda;
+    const char *cmd2;
+} GPSSetup[7] = {
+    {  1, 0,  1, "5000*1B" }, // Time only: 5000ms, RMC & ZDA every 5th second
+    {  1, 0,  5, "1000*1F" }, // BTTFN-clients, no speedo, slow: 1000ms, RMC 1x/sec, ZDA every 5th second
+    {  1, 0, 20, "500*2B" },  // BTTFN-clients, no speedo, fast:  500ms, RMC 2x/sec, ZDA every 10th second
+    {  1, 0,  5, "1000*1F" }, // W/speedo, 1000ms: RMC 1x per sec, ZDA every 5th second
+    {  1, 0, 20, "500*2B" },  // W/speedo, 500ms:  RMC 2x per sec, ZDA every 10th second
+    { 25, 1, 40, "250*29" },  // W/speedo, 250ms:  VTG 4x per sec, RMC every approx 6th sec, ZDA every 10th second
+    { 31, 1, 50, "200*2C" }   // W/speedo, 200ms:  VTG 5x per sec, RMC every approx 6th sec, ZDA every 10th second
+};
 
 /*
  * Helpers
@@ -119,6 +136,17 @@ static void copy6chars(char *a, char *b)
     *a++ = *b++;
     *a = *b;
 }
+static void calcNMEAcheckSum(char *cmdbuf)
+{
+    int checksum = 0;
+    char temp[8];
+    
+    for(int i = 1; cmdbuf[i] != 0; i++) {
+        checksum ^= cmdbuf[i];
+    }
+    sprintf(temp, "*%02X", (checksum & 0xff));
+    strcat(cmdbuf, temp);
+}
 
 /*
  * Class functions
@@ -131,13 +159,14 @@ tcGPS::tcGPS(uint8_t address)
 }
 
 // Start and init the GPS module
-bool tcGPS::begin(unsigned long powerupTime, int quickUpdates, void (*myDelay)(unsigned long))
+bool tcGPS::begin(unsigned long powerupTime, int quickUpdates, int speedRate, void (*myDelay)(unsigned long))
 {
     uint8_t testBuf;
     int i2clen;
-    int rmc, vtg;
-    char *cmd1, *cmd2;
-    char cmdbuf[64];
+    //int rmc, vtg;
+    //char *cmd1, *cmd2;
+    char cmdbuf[64], temp[8];
+    int idx;
     
     _customDelayFunc = defaultDelay;
 
@@ -149,6 +178,8 @@ bool tcGPS::begin(unsigned long powerupTime, int quickUpdates, void (*myDelay)(u
     _haveSpeed = false;
     _haveDateTime = false;
     _haveDateTime2 = false;
+
+    speedRate &= 3;
 
     // Give the receiver some time to boot
     unsigned long millisNow = millis();
@@ -174,92 +205,24 @@ bool tcGPS::begin(unsigned long powerupTime, int quickUpdates, void (*myDelay)(u
     } else
         return false;
 
-    // Send xxRMC and xxZDA only
+    // Send xxRMC and xxZDA only, for high rates also xxVTG
     // If we use GPS for speed, we need more frequent updates.
     // The value in PKT 314 is a multiplier for the value of PKT 220.
-    
-    rmc = 1;
-    vtg = 0;
-    
     if(quickUpdates < 0) {
-        // For mere time, we set the fix update to 5000ms, and the
-        // multiplier to 1 as well, so we get it every 5th second.
-        // $PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0*34
-        // $PMTK220,5000*1B
-        cmd1 = (char *)"1,0,0*34";
-        cmd2 = (char *)"5000*1B";
+        idx = 0;
     } else if(!quickUpdates) {
-        // For speedo-less setups, but with GPS-aware BTTFN clients:
-        #if defined(TC_GPSSPEED500) || defined(TC_GPSSPEED250) || defined(TC_GPSSPEED200)
-        // Set update rate to 500ms
-        // RMC 2x per sec, ZDA every 10th second
-        // $PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,0*07
-        // $PMTK220,500*2B
-        cmd1 = (char *)"20,0,0*07";
-        cmd2 = (char *)"500*2B";
-        #else
-        // Set update rate to 1000ms
-        // RMC 1x per sec, ZDA every 5th second
-        // $PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0*30
-        // $PMTK220,1000*1F
-        cmd1 = (char *)"5,0,0*30";
-        cmd2 = (char *)"1000*1F";
-        #endif
+        idx = (!speedRate) ? 1 : 2;
     } else {
-        // For when displaying speed on speedo
-        #if defined(TC_GPSSPEED200)
-        // Set update rate to 200ms
-        // --- using RMC:
-        // RMC 5x per sec, ZDA every 10th second
-        // $PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,50,0,0*00
-        // $PMTK220,200*2C
-        //cmd1 = (char *)"50,0,0*00";
-        // ---- using VTG:
-        // VTG 5x per sec, RMC every approx 6th sec, ZDA every 10th second
-        // $PMTK314,0,31,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,50,0,0*32
-        rmc = 31;
-        vtg = 1;
-        cmd1 = (char *)"50,0,0*32";
-        cmd2 = (char *)"200*2C";
+        idx = speedRate + 3;
         // For reading 128 bytes per call:
         _lenLimit = 0x01;
         _lenArr[0] = 128; _lenArr[1] = 127;
-        #elif defined(TC_GPSSPEED250)
-        // Set update rate to 250ms
-        // ---- using RMC
-        // RMC 4x per sec, ZDA every 10th second
-        // $PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,40,0,0*01
-        // $PMTK220,250*29"
-        // cmd1 = (char *)"40,0,0*01";
-        // ---- using VTG:
-        // VTG 4x per sec, RMC every approx 6th sec, ZDA every 10th second
-        // $PMTK314,0,25,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,40,0,0*36
-        rmc = 25;
-        vtg = 1;
-        cmd1 = (char *)"40,0,0*36";
-        cmd2 = (char *)"250*29";
-        // For reading 128 bytes per call:
-        _lenLimit = 0x01;
-        _lenArr[0] = 128; _lenArr[1] = 127;
-        #elif defined(TC_GPSSPEED500)
-        // Set update rate to 500ms
-        // RMC 2x per sec, ZDA every 10th second
-        // $PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,0*07
-        // $PMTK220,500*2B
-        cmd1 = (char *)"20,0,0*07";
-        cmd2 = (char *)"500*2B";
-        #else
-        // Set update rate to 1000ms
-        // RMC 1x per sec, ZDA every 5th second
-        // $PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0*30
-        // $PMTK220,1000*1F
-        cmd1 = (char *)"5,0,0*30";
-        cmd2 = (char *)"1000*1F";
-        #endif
     }
-    sprintf(cmdbuf, "$PMTK314,0,%d,%d,0,0,0,0,0,0,0,0,0,0,0,0,0,0,%s", rmc, vtg, cmd1);
+    sprintf(cmdbuf, "$PMTK314,0,%d,%d,0,0,0,0,0,0,0,0,0,0,0,0,0,0,%d,0,0", 
+          GPSSetup[idx].rmc, GPSSetup[idx].vtg, GPSSetup[idx].zda);
+    calcNMEAcheckSum(cmdbuf);
     sendCommand(NULL, cmdbuf);
-    sendCommand("$PMTK220,", cmd2);
+    sendCommand("$PMTK220,", GPSSetup[idx].cmd2);
 
     // No antenna status
     sendCommand(NULL, "$PGCMD,33,0*6D");
@@ -327,7 +290,7 @@ void tcGPS::loop(bool doDelay)
  */
 int16_t tcGPS::getSpeed()
 {
-    float _speedfk;
+    float speedfk;
     
     if(_haveSpeed) {
         #ifdef GPS_SPEED_SIMU
@@ -335,12 +298,16 @@ int16_t tcGPS::getSpeed()
         _speed = (79 + (rand() % 10));
         if(_speed <= 80) _speed -= (79-8);
         #else
-        _speedfk = strtof(_sbuf, NULL);
-        if(_speedfk >= 2.61) {        // 3.00mph
-            _speed = (int)roundf(_speedfk * GPS_MPH_PER_KNOT);
-        } else if(_speedfk <= 2.00) {  // 2.30mph
+        // Fake 1 and 2mph; GPS is not reliable at
+        // low speeds, need to ignore everything below
+        // 2.17(=2.5mph) as this much might appear even
+        // at stand-still.
+        speedfk = strtof(_sbuf, NULL);
+        if(speedfk >= 2.61) {        // 3.00mph
+            _speed = (int)roundf(speedfk * GPS_MPH_PER_KNOT);
+        } else if(speedfk <= 2.17) { // 2.50mph
             _speed = 0;
-        } else if(_speedfk <= 2.30) { // 2.65mph
+        } else if(speedfk <= 2.40) { // 2.76mph
             _speed = 1;
         } else {
             _speed = 2;
@@ -439,16 +406,9 @@ bool tcGPS::setDateTime(struct tm *timeinfo)
 
     strcat(pkt335, pktgen);
     strcat(pkt740, pktgen);
-    
-    for(int i = 1; pkt335[i] != 0; i++) {
-        checksum1 ^= pkt335[i];
-        checksum2 ^= pkt740[i];
-    }
-    sprintf(temp, "*%02X", (checksum1 & 0xff));
-    strcat(pkt335, temp);
 
-    sprintf(temp, "*%02X", (checksum2 & 0xff));
-    strcat(pkt740, temp);
+    calcNMEAcheckSum(pkt335);
+    calcNMEAcheckSum(pkt740);
     
     sendCommand(NULL, pkt740);
     sendCommand(NULL, pkt335);

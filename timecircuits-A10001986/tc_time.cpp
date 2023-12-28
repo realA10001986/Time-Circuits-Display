@@ -2,7 +2,7 @@
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
- * (C) 2022-2023 Thomas Winischhofer (A10001986)
+ * (C) 2022-2024 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display
  * https://tcd.backtothefutu.re
  *
@@ -836,8 +836,9 @@ void time_setup()
     bool tzbad = false;
     bool haveGPS = false;
     bool isVirgin = false;
-    int quickGPSupdates = -1;
     #ifdef TC_HAVEGPS
+    int quickGPSupdates = -1;
+    int speedoUpdateRate = 0;
     bool haveAuthTimeGPS = false;
     #endif
     const char *funcName = "time_setup: ";
@@ -980,11 +981,16 @@ void time_setup()
 
     provGPS2BTTFN = (atoi(settings.quickGPS) > 0);
     quickGPSupdates = useGPSSpeed ? 1 : (provGPS2BTTFN ? 0 : -1);
+    #ifdef TC_HAVESPEEDO
+    speedoUpdateRate = atoi(settings.spdUpdRate) & 3;
+    #else
+    speedoUpdateRate = 0;
+    #endif
 
     // Check for GPS receiver
     // Do so regardless of usage in order to eliminate
     // VEML7700 light sensor with identical i2c address
-    if(myGPS.begin(powerupMillis, quickGPSupdates, myCustomDelay_GPS)) {
+    if(myGPS.begin(powerupMillis, quickGPSupdates, speedoUpdateRate, myCustomDelay_GPS)) {
 
         haveGPS = true;
           
@@ -1260,43 +1266,46 @@ void time_setup()
         // (Must sync readFreq and updFreq for smooth speedo display)
 
         if(quickGPSupdates < 0) {
-            // For time only, the fix update rate is set to 5 seconds;
+            // For time only, the fix update rate is set to 5000ms;
             // We poll every 500ms, so the entire buffer is read every 
-            // 2 seconds.
+            // 2 seconds (64 bytes per poll).
             GPSupdateFreq = 500;
         } else if(!quickGPSupdates) {
             // For GPS speed for BTTFN clients (but no speed display
-            // on speedo), the update rate is set to 1000ms/500ms,
+            // on speedo), the fix update rate is set to 1000ms/500ms,
             // so the buffer fills in 3000/1500ms. We poll every 
             // 250/250ms, hence the entire buffer is read in
-            // 1000/1000ms.
-            #if defined(TC_GPSSPEED500) || defined(TC_GPSSPEED250) || defined(TC_GPSSPEED200)
-            GPSupdateFreq = 250;
-            #else
-            GPSupdateFreq = 250;
-            #endif
+            // 1000/1000ms (64 bytes per poll).
+            GPSupdateFreq = 250; //(!speedoUpdateRate) ? 250 : 250;
         } else {
             // For when GPS speed is to be displayed on speedo:
-            // Update rate is set to 1000/500/250/200ms, so buffer fills in
-            // 3000/1500/750/600ms.
-            #if defined(TC_GPSSPEED200)
-            // With RMC: At 200ms update rate, the buffer fills in 600ms (with ZDA: 590ms on avg)
-            // With VTG: At 200ms update rate, the buffer fills in 1200ms (with RMC+ZDA: 1100ms on avg)
-            // At 200ms readfreq (128 bytes blocks), the entire buffer is read in 400ms
-            GPSupdateFreq = 200;
-            #elif defined(TC_GPSSPEED250)
-            // At 250ms update rate, the buffer fills in 750ms (with ZDA: 740ms)
-            // At 125ms readfreq (64 bytes blocks), the entire buffer is read in 500ms
-            //GPSupdateFreq = 125;
-            // At 250ms readfreq (128 bytes blocks), the entire buffer is read in 500ms
-            GPSupdateFreq = 250;
-            #elif defined(TC_GPSSPEED500)
-            // At 500ms update rate, the buffer fills in 1500ms (with ZDA: 1400)
-            // At 250ms readfreq, the entire buffer is read in 1000ms
-            GPSupdateFreq = 250;
-            #else
-            GPSupdateFreq = 250;
-            #endif
+            // We read 128 byte blocks from the receiver in this case.
+            switch(speedoUpdateRate) {
+            case 0:
+                // At 1000ms update rate, the buffer fills in 3000ms (with ZDA: 2900)
+                // At 500ms readfreq (128 bytes blocks), the entire buffer is read in 1000ms
+                // At 250ms readfreq (128 bytes blocks), the entire buffer is read in 500ms
+                // We want as little delay as possible with displaying speed, so we go 250.
+                //GPSupdateFreq = 500;
+                //break;
+            case 1:
+                // At 500ms update rate, the buffer fills in 1500ms (with ZDA: 1400)
+                // At 500ms readfreq (128 bytes blocks), the entire buffer is read in 1000ms
+                // At 250ms readfreq (128 bytes blocks), the entire buffer is read in 500ms
+                // We want as little delay as possible with displaying speed, so we go 250.
+                //GPSupdateFreq = 500;
+                //break;
+            case 2:
+                // With VTG: At 250ms update rate, the buffer fills in 1500ms (with RMC+ZDA: 1400ms on avg)
+                // At 250ms readfreq (128 bytes blocks), the entire buffer is read in 500ms
+                GPSupdateFreq = 250;
+                break;
+            case 3:
+                // With VTG: At 200ms update rate, the buffer fills in 1200ms (with RMC+ZDA: 1100ms on avg)
+                // At 200ms readfreq (128 bytes blocks), the entire buffer is read in 400ms
+                GPSupdateFreq = 200;
+                break;
+            }
         }
     }
     #endif
@@ -3268,7 +3277,9 @@ static void checkForSpeedTT(bool isFake)
             GPSabove88 = true;
             // If this is fake (ie using rotEnc+speedo), we 
             // need to set this to trigger P2 at end of TT
+            #ifdef TC_HAVESPEEDO
             if(isFake) timeTravelP0Speed = 88;
+            #endif
         }
     }
 }

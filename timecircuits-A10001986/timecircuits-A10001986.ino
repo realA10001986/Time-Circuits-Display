@@ -2,7 +2,7 @@
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
- * (C) 2022-2023 Thomas Winischhofer (A10001986)
+ * (C) 2022-2024 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display
  * https://tcd.backtothefutu.re
  *
@@ -105,6 +105,9 @@
 
 /*  Changelog
  *   
+ *  2023/12/28  (A10001986)
+ *    - GPS: Make speedo update rate user-configurable; code simplifications.
+ *    - CP: Save space by building select boxes in loops
  *  2023/12/27  (A10001986)
  *    - GPS: Switch to VTG sentence as main speed source for 200ms and 250ms
  *      polling rates; fake 1 and 2mph (GPS data is unreliable at very low 

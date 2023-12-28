@@ -2,7 +2,7 @@
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
- * (C) 2022-2023 Thomas Winischhofer (A10001986)
+ * (C) 2022-2024 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display
  * https://tcd.backtothefutu.re
  *
@@ -482,6 +482,7 @@ static bool read_settings(File configFile)
         wd |= CopyCheckValidNumParmF(json["speedoFact"], settings.speedoFact, sizeof(settings.speedoFact), 0.5, 5.0, DEF_SPEEDO_FACT);
         #ifdef TC_HAVEGPS
         wd |= CopyCheckValidNumParm(json["useGPSSpeed"], settings.useGPSSpeed, sizeof(settings.useGPSSpeed), 0, 1, DEF_USE_GPS_SPEED);
+        wd |= CopyCheckValidNumParm(json["spdUpdRate"], settings.spdUpdRate, sizeof(settings.spdUpdRate), 0, 3, DEF_SPD_UPD_RATE);
         #endif
         #ifdef TC_HAVETEMP
         wd |= CopyCheckValidNumParm(json["dispTemp"], settings.dispTemp, sizeof(settings.dispTemp), 0, 1, DEF_DISP_TEMP);
@@ -607,6 +608,7 @@ void write_settings()
     json["speedoFact"] = (const char *)settings.speedoFact;
     #ifdef TC_HAVEGPS
     json["useGPSSpeed"] = (const char *)settings.useGPSSpeed;
+    json["spdUpdRate"] = (const char *)settings.spdUpdRate;
     #endif
     #ifdef TC_HAVETEMP
     json["dispTemp"] = (const char *)settings.dispTemp;

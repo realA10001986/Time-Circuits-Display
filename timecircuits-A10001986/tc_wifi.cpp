@@ -2,7 +2,7 @@
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
- * (C) 2022-2023 Thomas Winischhofer (A10001986)
+ * (C) 2022-2024 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display
  * https://tcd.backtothefutu.re
  *
@@ -67,34 +67,41 @@ WiFiClient mqttWClient;
 PubSubClient mqttClient(mqttWClient);
 #endif
 
-static char beepaintCustHTML[820] = "";
-static const char beepCustHTML1[] = "<div class='cmp0'><label for='beepmode'>Power-up beep mode</label><select class='sel0' value='";
-static const char beepCustHTML2[] = "' name='beepmode' id='beepmode' autocomplete='off'><option value='0'";
-static const char beepCustHTML3[] = ">Off</option><option value='1'";
-static const char beepCustHTML4[] = ">On</option><option value='2'";
-static const char beepCustHTML5[] = ">Auto (30 secs)</option><option value='3'";
-static const char beepCustHTML6[] = ">Auto (60 secs)</option></select></div>";
-static const char aintCustHTML1[] = "<div class='cmp0'><label for='rot_int'>Time-cycling interval</label><select class='sel0' value='";
-static const char aintCustHTML2[] = "' name='rot_int' id='rot_int' autocomplete='off'><option value='0'";
-static const char aintCustHTML3[] = ">Off</option><option value='1'";
-static const char aintCustHTML4[] = ">5 minutes</option><option value='2'";
-static const char aintCustHTML5[] = ">10 minutes</option><option value='3'";
-static const char aintCustHTML6[] = ">15 minutes</option><option value='4'";
-static const char aintCustHTML7[] = ">30 minutes</option><option value='5'";
-static const char aintCustHTML8[] = ">60 minutes</option></select></div>";
+static const char *osde = "</option></select></div>";
+static const char *ooe  = "</option><option value='";
 
-static char anmCustHTML[768] = "";
-static const char anmCustHTML1[] = "<div class='cmp0'><label for='anmtim'>Schedule</label><select class='sel0' value='";
-static const char anmCustHTML2[] = "' name='anmtim' id='anmtim' autocomplete='off'><option value='10'";
-static const char anmCustHTML3[] = ">&#10060; Off</option><option value='0'";
-static const char anmCustHTML4[] = ">&#128337; Daily, set hours below</option><option value='1'";
-static const char anmCustHTML5[] = ">&#127968; M-T:17-23/F:13-1/S:9-1/Su:9-23</option><option value='2'";
-static const char anmCustHTML6[] = ">&#127970; M-F:9-17</option><option value='3'";
-static const char anmCustHTML7[] = ">&#127970; M-T:7-17/F:7-14</option><option value='4'";
-static const char anmCustHTML8[] = ">&#128722; M-W:8-20/T-F:8-21/S:8-17</option></select></div>";
+static char beepaintCustHTML[820] = "";
+static const char *beepCustHTMLSrc[6] = {
+    "<div class='cmp0'><label for='beepmode'>Power-up beep mode</label><select class='sel0' value='",
+    "beepmode",
+    ">Off%s1'",
+    ">On%s2'",
+    ">Auto (30 secs)%s3'",
+    ">Auto (60 secs)%s"
+};
+static const char *aintCustHTMLSrc[8] = {
+    "<div class='cmp0'><label for='rot_int'>Time-cycling interval</label><select class='sel0' value='",
+    "rot_int",
+    ">Off%s1'",
+    ">5 minutes%s2'",     // </option><option value='
+    ">10 minutes%s3'",
+    ">15 minutes%s4'",
+    ">30 minutes%s5'",
+    ">60 minutes%s"       // </option></select></div>
+};
+
+static char anmCustHTML[512] = "";
+static const char anmCustHTML1[] = "<div class='cmp0'><label for='anmtim'>Schedule</label><select class='sel0' value='%s' name='anmtim' id='anmtim' autocomplete='off'><option value='10'%s>&#10060; Off%s0'";
+static const char *anmCustHTMLSrc[5] = {
+    "%s>&#128337; Daily, set hours below%s1'",
+    "%s>&#127968; M-T:17-23/F:13-1/S:9-1/Su:9-23%s2'",
+    "%s>&#127970; M-F:9-17%s3'",
+    "%s>&#127970; M-T:7-17/F:7-14%s4'",
+    "%s>&#128722; M-W:8-20/T-F:8-21/S:8-17%s"
+};
 
 #ifdef TC_HAVESPEEDO
-static char spTyCustHTML[1024] = "";
+static char spTyCustHTML[800] = "";
 static const char spTyCustHTML1[] = "<div class='cmp0'><label for='spty'>Speedo display type</label><select class='sel0' value='";
 static const char spTyCustHTML2[] = "' name='spty' id='spty' autocomplete='off'>";
 static const char spTyCustHTMLE[] = "</select></div>";
@@ -102,26 +109,39 @@ static const char spTyOptP1[] = "<option value='";
 static const char spTyOptP2[] = "'>";
 static const char spTyOptP3[] = "</option>";
 static const char *dispTypeNames[SP_NUM_TYPES] = {
-  "CircuitSetup.us\0",
-  "Adafruit 878 (4x7)\0",
-  "Adafruit 878 (4x7;left)\0",
-  "Adafruit 1270 (4x7)\0",
-  "Adafruit 1270 (4x7;left)\0",
-  "Adafruit 1911 (4x14)\0",
-  "Adafruit 1911 (4x14;left)\0",
-  "Grove 0.54\" 2x14\0",
-  "Grove 0.54\" 4x14\0",
-  "Grove 0.54\" 4x14 (left)\0"
+  "CircuitSetup.us",
+  "Adafruit 878 (4x7)",
+  "Adafruit 878 (4x7;left)",
+  "Adafruit 1270 (4x7)",
+  "Adafruit 1270 (4x7;left)",
+  "Adafruit 1911 (4x14)",
+  "Adafruit 1911 (4x14;left)",
+  "Grove 0.54\" 2x14",
+  "Grove 0.54\" 4x14",
+  "Grove 0.54\" 4x14 (left)"
 #ifndef TWPRIVATE
-  ,"Ada 1911 (left tube)\0"
-  ,"Ada 878 (left tube)\0"
+  ,"Ada 1911 (left tube)"
+  ,"Ada 878 (left tube)"
 #else
-  ,"A10001986 wallclock\0"
-  ,"A10001986 speedo replica\0"
+  ,"A10001986 wallclock"
+  ,"A10001986 speedo replica"
 #endif
 };
+#ifdef TC_HAVEGPS
+static char spdRateCustHTML[300] = "";
+static const char *spdRateCustHTMLSrc[6] = 
+{
+  "<div class='cmp0' style='margin-left:20px'><label for='spdrt'>Update rate</label><select class='sel0' value='",
+  "spdrt",
+  ">1Hz%s1'",
+  ">2Hz%s2'",
+  ">4Hz%s3'",
+  ">5Hz%s"
+};
+#endif
 #endif
 
+static const char custHTMLSel[] = " selected";
 static const char *aco = "autocomplete='off'";
 static const char *tznp1 = "City/location name [a-z/0-9/-/ ]";
 
@@ -204,6 +224,7 @@ WiFiManagerParameter custom_useGPSS("uGPSS", "Display GPS speed (0=no, 1=yes)", 
 #else // -------------------- Checkbox hack: --------------
 WiFiManagerParameter custom_useGPSS("uGPSS", "Display GPS speed", settings.useGPSSpeed, 1, "autocomplete='off' title='Check to use a GPS receiver to display actual speed on speedo display' type='checkbox' style='margin-top:12px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
+WiFiManagerParameter custom_updrt(spdRateCustHTML);  // speed update rate
 #endif // TC_HAVEGPS
 #ifdef TC_HAVETEMP
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
@@ -377,7 +398,7 @@ static void setupStaticIP();
 static bool isIp(char *str);
 static IPAddress stringToIp(char *str);
 
-static void getParam(String name, char *destBuf, size_t length);
+static void getParam(String name, char *destBuf, size_t length, int defVal);
 static bool myisspace(char mychar);
 static char* strcpytrim(char* destination, const char* source, bool doFilter = false);
 static char* strcpyfilter(char* destination, const char* source);
@@ -386,6 +407,7 @@ static void mystrcpy(char *sv, WiFiManagerParameter *el);
 static void strcpyCB(char *sv, WiFiManagerParameter *el);
 static void setCBVal(WiFiManagerParameter *el, char *sv);
 #endif
+static void buildSelectMenu(char *target, const char **theHTML, int cnt, char *setting);
 
 #ifdef TC_HAVEMQTT
 static void strcpyutf8(char *dst, const char *src, unsigned int len);
@@ -452,6 +474,7 @@ void wifi_setup()
       &custom_speedoFact,
     #ifdef TC_HAVEGPS
       &custom_useGPSS,
+      &custom_updrt,
     #endif
     #ifdef TC_HAVETEMP
       &custom_useDpTemp, 
@@ -773,14 +796,8 @@ void wifi_loop()
 
             int temp;
 
-            getParam("beepmode", settings.beep, 1);
-            if(strlen(settings.beep) == 0) {
-                sprintf(settings.beep, "%d", DEF_BEEP);
-            }
-            getParam("rot_int", settings.autoRotateTimes, 1);
-            if(strlen(settings.autoRotateTimes) == 0) {
-                sprintf(settings.autoRotateTimes, "%d", DEF_AUTOROTTIMES);
-            }
+            getParam("beepmode", settings.beep, 1, DEF_BEEP);
+            getParam("rot_int", settings.autoRotateTimes, 1, DEF_AUTOROTTIMES);
             strcpytrim(settings.hostName, custom_hostName.getValue(), true);
             if(strlen(settings.hostName) == 0) {
                 strcpy(settings.hostName, DEF_HOSTNAME);
@@ -815,10 +832,8 @@ void wifi_loop()
                 for ( ; *s; ++s) *s = toupper(*s);
             }
             
-            getParam("anmtim", settings.autoNMPreset, 2);
-            if(strlen(settings.autoNMPreset) == 0) {
-                sprintf(settings.autoNMPreset, "%d", DEF_AUTONM_PRESET);
-            }
+            getParam("anmtim", settings.autoNMPreset, 2, DEF_AUTONM_PRESET);
+            
             mystrcpy(settings.autoNMOn, &custom_autoNMOn);
             mystrcpy(settings.autoNMOff, &custom_autoNMOff);
             #ifdef TC_HAVELIGHT
@@ -834,12 +849,12 @@ void wifi_loop()
             #endif
             
             #ifdef TC_HAVESPEEDO
-            getParam("spty", settings.speedoType, 2);
-            if(strlen(settings.speedoType) == 0) {
-                sprintf(settings.speedoType, "%d", DEF_SPEEDO_TYPE);
-            }
+            getParam("spty", settings.speedoType, 2, DEF_SPEEDO_TYPE);
             mystrcpy(settings.speedoBright, &custom_speedoBright);
             mystrcpy(settings.speedoFact, &custom_speedoFact);
+            #ifdef TC_HAVEGPS
+            getParam("spdrt", settings.spdUpdRate, 1, DEF_SPD_UPD_RATE);
+            #endif
             #ifdef TC_HAVETEMP
             mystrcpy(settings.tempBright, &custom_tempBright);
             #endif
@@ -1496,9 +1511,6 @@ static void setupStaticIP()
 
 void updateConfigPortalValues()
 {
-    const char custHTMLSel[] = " selected";
-    int t = atoi(settings.autoRotateTimes);
-    int tb = atoi(settings.beep);
     int tnm = atoi(settings.autoNMPreset);
     #ifdef TC_HAVESPEEDO
     int tt = atoi(settings.speedoType);
@@ -1507,32 +1519,9 @@ void updateConfigPortalValues()
 
     // Make sure the settings form has the correct values
 
-    strcpy(beepaintCustHTML, beepCustHTML1);          // beep mode
-    strcat(beepaintCustHTML, settings.beep);
-    strcat(beepaintCustHTML, beepCustHTML2);
-    if(tb == 0) strcat(beepaintCustHTML, custHTMLSel);
-    strcat(beepaintCustHTML, beepCustHTML3);
-    if(tb == 1) strcat(beepaintCustHTML, custHTMLSel);
-    strcat(beepaintCustHTML, beepCustHTML4);
-    if(tb == 2) strcat(beepaintCustHTML, custHTMLSel);
-    strcat(beepaintCustHTML, beepCustHTML5);
-    if(tb == 3) strcat(beepaintCustHTML, custHTMLSel);
-    strcat(beepaintCustHTML, beepCustHTML6);
-    strcat(beepaintCustHTML, aintCustHTML1);          // aint
-    strcat(beepaintCustHTML, settings.autoRotateTimes);
-    strcat(beepaintCustHTML, aintCustHTML2);
-    if(t == 0) strcat(beepaintCustHTML, custHTMLSel);
-    strcat(beepaintCustHTML, aintCustHTML3);
-    if(t == 1) strcat(beepaintCustHTML, custHTMLSel);
-    strcat(beepaintCustHTML, aintCustHTML4);
-    if(t == 2) strcat(beepaintCustHTML, custHTMLSel);
-    strcat(beepaintCustHTML, aintCustHTML5);
-    if(t == 3) strcat(beepaintCustHTML, custHTMLSel);
-    strcat(beepaintCustHTML, aintCustHTML6);
-    if(t == 4) strcat(beepaintCustHTML, custHTMLSel);
-    strcat(beepaintCustHTML, aintCustHTML7);
-    if(t == 5) strcat(beepaintCustHTML, custHTMLSel);
-    strcat(beepaintCustHTML, aintCustHTML8);
+    beepaintCustHTML[0] = 0;
+    buildSelectMenu(beepaintCustHTML, beepCustHTMLSrc, 6, settings.beep);
+    buildSelectMenu(beepaintCustHTML, aintCustHTMLSrc, 8, settings.autoRotateTimes);
 
     custom_hostName.setValue(settings.hostName, 31);
     custom_sysID.setValue(settings.systemID, 7);
@@ -1549,21 +1538,10 @@ void updateConfigPortalValues()
     custom_timeZoneN1.setValue(settings.timeZoneNDest, DISP_LEN);
     custom_timeZoneN2.setValue(settings.timeZoneNDep, DISP_LEN);
 
-    strcpy(anmCustHTML, anmCustHTML1);
-    strcat(anmCustHTML, settings.autoNMPreset);
-    strcat(anmCustHTML, anmCustHTML2);
-    if(tnm == 10) strcat(anmCustHTML, custHTMLSel);
-    strcat(anmCustHTML, anmCustHTML3);
-    if(tnm == 0) strcat(anmCustHTML, custHTMLSel);
-    strcat(anmCustHTML, anmCustHTML4);
-    if(tnm == 1) strcat(anmCustHTML, custHTMLSel);
-    strcat(anmCustHTML, anmCustHTML5);
-    if(tnm == 2) strcat(anmCustHTML, custHTMLSel);
-    strcat(anmCustHTML, anmCustHTML6);
-    if(tnm == 3) strcat(anmCustHTML, custHTMLSel);
-    strcat(anmCustHTML, anmCustHTML7);
-    if(tnm == 4) strcat(anmCustHTML, custHTMLSel);
-    strcat(anmCustHTML, anmCustHTML8);
+    sprintf(anmCustHTML, anmCustHTML1, settings.autoNMPreset, (tnm == 10) ? custHTMLSel : "", ooe);
+    for(int i = 0; i < 5; i++) {
+        sprintf(anmCustHTML + strlen(anmCustHTML), anmCustHTMLSrc[i], (tnm == i) ? custHTMLSel : "", (i == 4) ? osde : ooe);
+    }
 
     custom_autoNMOn.setValue(settings.autoNMOn, 2);
     custom_autoNMOff.setValue(settings.autoNMOff, 2);
@@ -1580,26 +1558,17 @@ void updateConfigPortalValues()
     #endif
 
     #ifdef TC_HAVESPEEDO
-    strcpy(spTyCustHTML, spTyCustHTML1);
-    strcat(spTyCustHTML, settings.speedoType);
-    strcat(spTyCustHTML, spTyCustHTML2);
-    strcat(spTyCustHTML, spTyOptP1);
-    strcat(spTyCustHTML, "99'");
-    if(tt == 99) strcat(spTyCustHTML, custHTMLSel);
-    strcat(spTyCustHTML, ">None");
-    strcat(spTyCustHTML, spTyOptP3);
+    sprintf(spTyCustHTML, "%s%s%s%s%d'%s>%s%s", spTyCustHTML1, settings.speedoType, spTyCustHTML2, spTyOptP1, 99, (tt == 99) ? custHTMLSel : "", "None", spTyOptP3);
     for (int i = SP_MIN_TYPE; i < SP_NUM_TYPES; i++) {
-        strcat(spTyCustHTML, spTyOptP1);
-        sprintf(spTyBuf, "%d'", i);
-        strcat(spTyCustHTML, spTyBuf);
-        if(tt == i) strcat(spTyCustHTML, custHTMLSel);
-        strcat(spTyCustHTML, ">");
-        strcat(spTyCustHTML, dispTypeNames[i]);
-        strcat(spTyCustHTML, spTyOptP3);
+        sprintf(spTyCustHTML + strlen(spTyCustHTML), "%s%d'%s>%s%s", spTyOptP1, i, (tt == i) ? custHTMLSel : "", dispTypeNames[i], spTyOptP3);
     }
     strcat(spTyCustHTML, spTyCustHTMLE);
     custom_speedoBright.setValue(settings.speedoBright, 2);
     custom_speedoFact.setValue(settings.speedoFact, 3);
+    #ifdef TC_HAVEGPS
+    spdRateCustHTML[0] = 0;
+    buildSelectMenu(spdRateCustHTML, spdRateCustHTMLSrc, 6, settings.spdUpdRate);
+    #endif
     #ifdef TC_HAVETEMP
     custom_tempBright.setValue(settings.tempBright, 2);
     #endif
@@ -1712,6 +1681,20 @@ void updateConfigPortalValues()
     #endif // ---------------------------------------------    
 }
 
+static void buildSelectMenu(char *target, const char **theHTML, int cnt, char *setting)
+{
+    int sr = atoi(setting);
+    
+    strcat(target, theHTML[0]);
+    strcat(target, setting);
+    sprintf(target + strlen(target), "' name='%s' id='%s' autocomplete='off'><option value='0'", theHTML[1], theHTML[1]);
+    for(int i = 0; i < cnt - 2; i++) {
+        if(sr == i) strcat(target, custHTMLSel);
+        sprintf(target + strlen(target), 
+            theHTML[i+2], (i == cnt - 3) ? osde : ooe);
+    }
+}
+
 int wifi_getStatus()
 {
     switch(WiFi.getMode()) {
@@ -1817,11 +1800,14 @@ static IPAddress stringToIp(char *str)
 /*
  * Read parameter from server, for customhmtl input
  */
-static void getParam(String name, char *destBuf, size_t length)
+static void getParam(String name, char *destBuf, size_t length, int defaultVal)
 {
     memset(destBuf, 0, length+1);
     if(wm.server->hasArg(name)) {
         strncpy(destBuf, wm.server->arg(name).c_str(), length);
+    }
+    if(strlen(destBuf) == 0) {
+        sprintf(destBuf, "%d", defaultVal);
     }
 }
 

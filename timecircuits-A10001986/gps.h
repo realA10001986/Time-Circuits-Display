@@ -1,7 +1,7 @@
 /*
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
- * (C) 2022-2023 Thomas Winischhofer (A10001986)
+ * (C) 2022-2024 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display
  * https://tcd.backtothefutu.re
  *
@@ -45,7 +45,7 @@ class tcGPS {
     public:
 
         tcGPS(uint8_t address);
-        bool    begin(unsigned long powerupTime, int quickUpdates, void (*myDelay)(unsigned long));
+        bool    begin(unsigned long powerupTime, int quickUpdates, int speedRate, void (*myDelay)(unsigned long));
 
         void    loop(bool doDelay);
 
