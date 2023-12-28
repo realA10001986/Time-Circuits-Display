@@ -1207,6 +1207,12 @@ Since the DMC-12 wasn't the world's fastest car, it's acceleration figures might
 
 If a GPS receiver is connected, this selects whether to display GPS speed on the speedo display. This only makes sense if the Time Circuits are mounted in a car. See [here](#gps-receiver)
 
+##### &#9654; Update rate
+
+If GPS speed is to be shown on a speedo display (see option immediately above), you can select in what rate the speed should be updated. The choices are once, twice, four times or five times per second.
+
+It appears that the GPS receiver calculates speed on every satellite position update, and the higher the update rate, the shorter the travelled distance, and the higher the error rate. The default is therefore 2Hz (twice per second) as it provides the (IMHO) best combination of quickness and accuracy.
+
 ##### &#9654; Display temperature
 
 Selects whether temperature as received from a suitable sensor is displayed on the speedo display, when it is idle (ie no time travel is in progress).
