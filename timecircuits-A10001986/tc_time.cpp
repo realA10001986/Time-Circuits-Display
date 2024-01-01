@@ -1276,6 +1276,8 @@ void time_setup()
             // so the buffer fills in 3000/1500ms. We poll every 
             // 250/250ms, hence the entire buffer is read in
             // 1000/1000ms (64 bytes per poll).
+            // The max delay to get current speed is therefore 500ms,
+            // which is ok as BTTFN clients only poll once per sec.
             GPSupdateFreq = 250; //(!speedoUpdateRate) ? 250 : 250;
         } else {
             // For when GPS speed is to be displayed on speedo:

@@ -27,9 +27,9 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION "V2.9.99"          // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "DEC282023"  // 13 chars max
+#define TC_VERSION_EXTRA "JAN012024"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "12282023"   // 12 chars max
+#define TC_VERSION_EXTRA "01012024"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -265,15 +265,15 @@
 #define SECS1970_2035 2051222400ULL
 #define SECS1970_2036 2082758400ULL
 
-// NTP baseline data: Prolong life time of NTP
+// NTP baseline data: Prolong life time of NTP and GPS
 // Set this to current year. Stop at 2036.
-#define TCEPOCH       2023
+#define TCEPOCH       2024
 // Set to SECS1970_xxxx, xxxx being current year. Stop at 2036.
-#define TCEPOCH_SECS  SECS1970_2023
+#define TCEPOCH_SECS  SECS1970_2024
 
 // Epoch for general use; increase yearly, no limit
 // Defines the minimum date considered valid
-#define TCEPOCH_GEN   2023
+#define TCEPOCH_GEN   2024
 
 
 #endif

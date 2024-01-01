@@ -105,6 +105,8 @@
 
 /*  Changelog
  *   
+ *  2024/01/01  (A10001986)
+ *    - Switch epoch definitions to 2024
  *  2023/12/28  (A10001986)
  *    - GPS: Make speedo update rate user-configurable; code simplifications.
  *    - CP: Save space by building select boxes in loops
