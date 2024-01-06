@@ -105,6 +105,11 @@
 
 /*  Changelog
  *   
+ *  2024/01/06  (A10001986)
+ *    - Minor optimizations in time loop; fix timer and reminder suppression
+ *      when alarm wouldn't sound because of weekday mismatch
+ *  2024/01/03  (A10001986)
+ *    - Add "aux" network commands for custom props (8xxx and 8xxxxxx)
  *  2024/01/01  (A10001986)
  *    - Switch epoch definitions to 2024
  *  2023/12/28  (A10001986)

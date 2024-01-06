@@ -699,10 +699,12 @@ bool bttfnHaveClients = false;
 #define BTTFN_NOT_SID_CMD  8
 #define BTTFN_NOT_PCG_CMD  9
 #define BTTFN_NOT_WAKEUP   10
+#define BTTFN_NOT_AUX_CMD  11
 #define BTTFN_TYPE_ANY     0    // Any, unknown or no device
 #define BTTFN_TYPE_FLUX    1    // Flux Capacitor
 #define BTTFN_TYPE_SID     2    // SID
 #define BTTFN_TYPE_PCG     3    // Dash gauge panel
+#define BTTFN_TYPE_AUX     4    // Aux (user custom device)
 #ifdef TC_HAVEBTTFN
 #define BTTFN_VERSION              1
 #define BTTF_PACKET_SIZE          48
@@ -889,8 +891,8 @@ void time_setup()
     if(rtc.lostPower()) {
 
         // Lost power and battery didn't keep time, so set current time to 
-        // default time 1/1/2023, 0:0
-        rtc.adjust(0, 0, 0, dayOfWeek(1, 1, 2023), 1, 1, 23);
+        // default time 1/1/2024, 0:0
+        rtc.adjust(0, 0, 0, dayOfWeek(1, 1, 2024), 1, 1, 24);
        
         #ifdef TC_DBG
         Serial.printf("%sRTC lost power, setting default time\n", funcName);
@@ -2121,6 +2123,7 @@ void time_loop()
         if(y == 0) {
 
             DateTime gdt;
+            int currentActualWeekDay;
 
             // Set colon
             destinationTime.setColon(true);
@@ -2492,6 +2495,8 @@ void time_loop()
             lastYear = gdt.year() - presentTime.getYearOffset();
             presentTime.saveLastYear(lastYear);
 
+            currentActualWeekDay = dayOfWeek(gdt.day(), gdt.month(), lastYear);
+
             #ifdef TC_HAVEBTTFN
             bttfnDateBuf[0] = lastYear & 0xff;
             bttfnDateBuf[1] = lastYear >> 8; 
@@ -2500,7 +2505,7 @@ void time_loop()
             bttfnDateBuf[4] = (uint8_t)gdt.hour();
             bttfnDateBuf[5] = (uint8_t)gdt.minute();
             bttfnDateBuf[6] = (uint8_t)gdt.second();
-            bttfnDateBuf[7] = (uint8_t)gdt.dayOfTheWeek();
+            bttfnDateBuf[7] = (uint8_t)currentActualWeekDay;
             #endif
 
             // Debug log beacon
@@ -2511,7 +2516,7 @@ void time_loop()
                       lastYear, gdt.year(), presentTime.getYearOffset(), gdt.month(), gdt.day(), gdt.hour(), dbgLastMin,
                       rtc.getTemperature(),
                       dayOfWeek(presentTime.getDay(), presentTime.getMonth(), presentTime.getDisplayYear()),
-                      dayOfWeek(gdt.day(), gdt.month(), gdt.year() - presentTime.getYearOffset()));
+                      currentActualWeekDay);
             }
             #endif
 
@@ -2523,18 +2528,21 @@ void time_loop()
                 #endif
                 int compHour = alarmRTC ? gdt.hour()   : presentTime.getHour();
                 int compMin  = alarmRTC ? gdt.minute() : presentTime.getMinute();
-                int weekDay =  alarmRTC ? dayOfWeek(gdt.day(), 
-                                                    gdt.month(), 
-                                                    gdt.year() - presentTime.getYearOffset())
+                int weekDay =  alarmRTC ? currentActualWeekDay
                                           : 
                                           dayOfWeek(presentTime.getDay(), 
                                                     presentTime.getMonth(), 
                                                     presentTime.getDisplayYear());
 
+                bool alarmNow = (alarmOnOff && 
+                                 (alarmHour == compHour) && 
+                                 (alarmMinute == compMin) && 
+                                 (alarmWDmasks[alarmWeekday] & (1 << weekDay)));
+                
                 // Sound to play hourly (if available)
                 // Follows setting for alarm as regards the option
-                // of "real actual present time" vs whatever is currently
-                // displayed on presentTime.
+                // of "Alarm base is real present time" vs whatever
+                // is currently displayed in presentTime.
 
                 if(compMin == 0) {
                     if(presentTime.getNightMode() ||
@@ -2543,7 +2551,7 @@ void time_loop()
                        timeTravelP0 ||
                        timeTravelP1 ||
                        timeTravelRE ||
-                       (alarmOnOff && (alarmHour == compHour) && (alarmMinute == compMin))) {
+                       alarmNow) {
                         hourlySoundDone = true;
                     }
                     if(!hourlySoundDone) {
@@ -2557,8 +2565,7 @@ void time_loop()
                 // Handle count-down timer
                 if(ctDown) {
                     if(millis() - ctDownNow > ctDown) {
-                        if( (!(alarmOnOff && (alarmHour == compHour) && (alarmMinute == compMin))) ||
-                            (alarmDone && checkAudioDone()) ) {
+                        if( (!alarmNow) || (alarmDone && checkAudioDone()) ) {
                             play_file("/timer.mp3", PA_INTRMUS|PA_ALLOWSD);
                             ctDown = 0;
                         }
@@ -2567,26 +2574,24 @@ void time_loop()
 
                 // Handle reminder
                 if(remMonth > 0 || remDay > 0) {
-                      if( (!remMonth || remMonth == gdt.month()) &&
-                          (remDay == gdt.day())                  &&
-                          (remHour == gdt.hour())                &&
-                          (remMin == gdt.minute()) ) {
-                            if(!remDone) {
-                                if( (!(alarmOnOff && (alarmHour == compHour) && (alarmMinute == compMin))) ||
-                                    (alarmDone && checkAudioDone()) ) {
-                                        play_file("/reminder.mp3", PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
-                                        remDone = true;
-                                }
+                    if( (!remMonth || remMonth == gdt.month()) &&
+                        (remDay == gdt.day())                  &&
+                        (remHour == gdt.hour())                &&
+                        (remMin == gdt.minute()) ) {
+                        if(!remDone) {
+                            if( (!alarmNow) || (alarmDone && checkAudioDone()) ) {
+                                play_file("/reminder.mp3", PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
+                                remDone = true;
                             }
-                      } else {
-                          remDone = false;
-                      }
+                        }
+                    } else {
+                        remDone = false;
+                    }
                 }
 
                 // Handle alarm
                 if(alarmOnOff) {
-                    if((alarmHour == compHour) && (alarmMinute == compMin) && 
-                                  (alarmWDmasks[alarmWeekday] & (1 << weekDay))) {
+                    if(alarmNow) {
                         if(!alarmDone) {
                             play_file("/alarm.mp3", PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
                             alarmDone = true;
@@ -3370,6 +3375,10 @@ void bttfnSendSIDCmd(uint32_t payload)
 void bttfnSendPCGCmd(uint32_t payload)
 {
     bttfn_notify(BTTFN_TYPE_PCG, BTTFN_NOT_PCG_CMD, payload & 0xffff, payload >> 16);
+}
+void bttfnSendAUXCmd(uint32_t payload)
+{
+    bttfn_notify(BTTFN_TYPE_AUX, BTTFN_NOT_AUX_CMD, payload & 0xffff, payload >> 16);
 }
 #endif
 

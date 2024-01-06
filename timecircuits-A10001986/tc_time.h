@@ -209,6 +209,7 @@ bool bttfn_loop();
 void bttfnSendFluxCmd(uint32_t payload);
 void bttfnSendSIDCmd(uint32_t payload);
 void bttfnSendPCGCmd(uint32_t payload);
+void bttfnSendAUXCmd(uint32_t payload);
 #endif
 
 #endif

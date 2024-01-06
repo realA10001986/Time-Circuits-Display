@@ -999,13 +999,14 @@ void keypad_loop()
         #ifdef TC_HAVEBTTFN
         } else if((strLen == DATELEN_TIME || strLen == DATELEN_ECMD) && 
                         (dateBuffer[0] == '3' ||
-                         dateBuffer[0] == '6' || 
+                         dateBuffer[0] == '6' ||
+                         dateBuffer[0] == '8' ||
                          dateBuffer[0] == '9')) {
                       
             uint32_t cmd;
-            if(strLen == DATELEN_TIME) 
+            if(strLen == DATELEN_TIME)
                 cmd = ((dateBuffer[1] - '0') * 100) + read2digs(2);
-            else 
+            else
                 cmd = (read2digs(1) * 10000) + (read2digs(3) * 100) + read2digs(5);
             switch(dateBuffer[0]) {
             case '3':
@@ -1013,6 +1014,9 @@ void keypad_loop()
                 break;
             case '6':
                 bttfnSendSIDCmd(cmd);
+                break;
+            case '8':
+                bttfnSendAUXCmd(cmd);
                 break;
             default:
                 bttfnSendPCGCmd(cmd);
