@@ -823,7 +823,7 @@ A rotary encoder is, simply put, a turnable knob. On the TCD, rotary encoders ca
 
 The firmware currently supports the [Adafruit 4991](https://www.adafruit.com/product/4991), [DFRobot Gravity 360](https://www.dfrobot.com/product-2575.html) and [DuPPA I2CEncoder 2.1](https://www.duppa.net/shop/i2cencoder-v2-1/) (or [here](https://www.tindie.com/products/saimon/i2cencoder-v21-connect-rotary-encoder-on-i2c-bus/)) i2c rotary encoders; a CircuitSetup original prop is in the works. For the Adafruit and the DuPPa, I recommend buying the PCBs without an actual encoder and soldering on a Bourns PEC11R-42xxy-S0024.
 
-For wiring information, see [here](#appendix-b-i2c-peripheral-wiring).
+For wiring information, see [here](#appendix-b-i2c-peripheral-wiring). Up to two rotary encoders can be connected, one for speed, one for volume.
 
 ### Rotary Encoder for Speed 
 
@@ -841,17 +841,29 @@ Notes:
 
 ### Rotary Encoder for Audio Volume
 
-Coming soon
+The rotary encoder for volume replaces the volume knob on back of the TCD's keypad. The advantage of the rotary encoder is that it is more precise, especially at lower volume levels, and it can be relocated. In order to use the rotary encoder for speed, the TCD's own volume knob must be disabled; this is done by pre-selecting an audio level in the keypad menu.
 
 ### Configuration
 
-In order to use an Encoder for Speed or Volume, it needs to be configured as follows:
+In order to use an encoder for speed or volume, it needs to be configured as follows:
 
   <table>
   <tr><td></td><td>Ada4991</td><td>DFRobot</td><td>DuPPA</td></tr>
   <tr><td>Speed</td><td>Default [0x36]</td><td>SW1=0,SW2=0 [0x54]</td><td>A0 closed [0x01]</td></tr>
   <tr><td>Volume</td><td>A0 closed [0x37]</td><td>SW1=0,SW2=1 [0x55]</td><td>A0,A1 closed [0x03]</td></tr>
   </table>
+
+The numbers in brackets are the resulting i2c address.
+
+The Ada4991 and DuPPA encodes require soldering for configuration. On the DFRobot model, there are tiny DIP-switches.
+
+Here is how they look configured for speed:
+
+![RotEncSpd](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/ae4ee45b-5cbf-45e1-9092-1043367e9af5)
+
+Here is the configuration for volume:
+
+![RotEncVol](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/a13a02ed-ab5b-42f6-9160-96070e1d5a17)
 
 ## Room Condition Mode, Temperature/humidity sensor
 
