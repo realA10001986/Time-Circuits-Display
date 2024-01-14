@@ -855,9 +855,7 @@ In order to use an encoder for speed or volume, it needs to be configured as fol
 
 The numbers in brackets are the resulting i2c address.
 
-The Ada4991 and DuPPA encodes require soldering for configuration. On the DFRobot model, there are tiny DIP-switches.
-
-Here is how they look configured for speed:
+Here is how they look configured for speed (the purple spots are solder joints):
 
 ![RotEncSpd](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/ae4ee45b-5cbf-45e1-9092-1043367e9af5)
 
