@@ -1333,17 +1333,15 @@ If this is checked, secondary settings (volume, alarm, reminder, car mode, exhib
 
 ## Appendix B: I2C peripheral wiring
 
-The light and temperature sensors, the speedo display, the GPS receiver as well as the Rotary Encoder are to be wired as follows:
+The light and temperature sensors, the speedo display, the GPS receiver as well as the Rotary Encoders are to be wired as follows:
 
-On the TCD control board, there are currently three i2c bus breakouts, one of which has a XH header soldered on; it does not matter which one you use to connect your sensors/GPS. To avoid soldering wires directly to the board, I recommend to solder on [XH](https://www.amazon.com/s?k=jst+xh) 4-pin headers to the other two i2c breakouts as well (like in the second picture).
+On the TCD control board, there are currently three i2c bus breakouts, one of which has a XH header soldered on; it does not matter which one you use to connect your sensors/GPS/rotary encoders. To avoid soldering wires directly to the board, I recommend to solder on [XH](https://www.amazon.com/s?k=jst+xh) 4-pin headers to the other two i2c breakouts as well (like in the second picture).
 
 ![i2c](https://user-images.githubusercontent.com/76924199/212406576-fbd71836-1862-4632-a3ac-decbfa6b7eb2.jpg)
 
 ![i2c](https://user-images.githubusercontent.com/76924199/212406002-c6887b39-8bac-49b1-8318-35838fba44d0.jpg)
 
-Important: The TCD control board delivers and drives the i2c bus on 5V. Most sensors/GPS receivers operate on 3.3V. Therefore, you cannot connect the sensor chips directly to the TCD control board without a level-shifter. This goes for the power supply as well as the i2c bus signals (SDA, SCL).
-
-I am no electronics expert and therefore only used readily available sensor breakout boards for testing and in my production pieces.
+Important: The TCD control board delivers and drives the i2c bus on 5V. Most sensors/GPS receivers operate on 3.3V. Therefore, you cannot connect the chips directly to the TCD control board without a level-shifter. This goes for the power supply as well as the i2c bus signals (SDA, SCL). I only use readily available sensor breakout boards that include level-shifters.
 
 On most i2c peripherals the pins are named as follows, and need to be connected to the corresponding pins on the control board:
 
@@ -1369,8 +1367,6 @@ On most i2c peripherals the pins are named as follows, and need to be connected 
     </tr>
 </table>
 
-Do not connect anything to "3Vo".
-
 For longer cables, ie >50cm (>20in), I recommend using a twisted pair cable, and to connect it as follows to avoid cross-talk:
 
 ![i2clongcable](https://user-images.githubusercontent.com/76924199/236399502-8c059fe4-2c1e-4aa4-9132-9ba40da34a91.png)
@@ -1381,17 +1377,19 @@ I had a GPS receiver connected through such a cable and had no issues over a dis
 
 Most sensors either only support one i2c address, or are recognized by the firmware (only) by their default address. For those, nothing must be done in order to use them with the Time Circuits Display.
 
-For the TMP117 and HTU31D sensors, their address needs to changed in order to be recognized by the firmware. On the Adafruit breakouts, this is done by connecting two solder pads on the back side of the PCB:
+Notable exceptions are the TMP117 and HTU31D sensors: Their address needs to changed in order to be recognized by the firmware. On the Adafruit breakouts, this is done by connecting two solder pads on the back side of the PCB:
 
 <img src="https://user-images.githubusercontent.com/76924199/211666279-c578566f-e517-4d70-b50c-929b12c57c86.png">
 
 This image shows the HTU31D PCB's back side. Connect (shorten) those two pads in order to change the address. It looks similar on the TMP117.
 
+For Rotary Encoders, see [here](#configuration).
+
 #### Multiple i2c devices
 
 If going by the book, multiple i2c devices should be daisy chained; however, I had sensors, speedo and GPS receivers run in parallel without issues for months.
 
-Note that you can only use one per device type (temperature/humidity sensor, light sensor, GPS receiver, Speedo display) at a time.
+Note that you can only use one per device type (temperature/humidity sensor, light sensor, GPS receiver, Speedo display) at a time. While two rotary encoders are supported, they must be [configured](#configuration) properly.
 
 ## Appendix C: Time zones
 
