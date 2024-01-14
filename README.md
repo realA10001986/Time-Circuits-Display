@@ -266,11 +266,11 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left">33&#9166;</td>
     </tr>
    <tr>
-     <td align="left">Set audio volume level</td>
+     <td align="left">Select audio volume level</td>
      <td align="left">300 - 319&#9166;</td>
     </tr>
    <tr>
-     <td align="left">Enable volume knob</td>
+     <td align="left">Enable built-in volume knob</td>
      <td align="left">399&#9166;</td>
     </tr>
     <tr>
