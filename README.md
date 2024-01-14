@@ -32,7 +32,7 @@ Features include
 - Support for time travel [triggered by external source](#external-time-travel-trigger), with selectable delay
 - Support for external display acting as [Speedometer](#speedometer) (CircuitSetup's [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-pcb/?v=fa868488740a) and others supported)
 - Support for [GPS receiver](#gps-receiver), used as time source, and for actual [speed](#gps-for-speed) to be displayed on speedo display
-- Support for [rotary encoder](#rotary-encoder) for manual selection of speed to be displayed on Speedo display (&#127381; DFRobot Gravity 360 and DuPPA I2CEncoder 2.1 added)
+- Support for [rotary encoder](#rotary-encoder) for manual selection of speed to be displayed on Speedo display, &#127381; and/or audio volume (&#127381; DFRobot Gravity 360 and DuPPA I2CEncoder 2.1 added)
 - Support for [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for "room condition mode" and for displaying temperature on speedo display while idle (&#127381; MS8607 added)
 - Support for wireless communication ("[BTTF-Network](#bttf-network-bttfn)") with compatible other props such as CircuitSetup's [Flux Capacitor](https://fc.backtothefutu.re) and [SID](https://sid.backtothefutu.re) 
 - Support for triggering time travels on [other props](#controlling-other-props) connected by wire
@@ -261,9 +261,17 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left">Synchronously toggle <a href="#">World Clock mode</a> and <a href="#room-condition-mode-temperaturehumidity-sensor">Room Condition mode</a></td>
      <td align="left">113&#9166;</td>
     </tr>
-  <tr>
+    <tr>
      <td align="left">Display weekday of currently displayed <i>present time</i> date</td>
      <td align="left">33&#9166;</td>
+    </tr>
+   <tr>
+     <td align="left">Set audio volume level</td>
+     <td align="left">300 - 319&#9166;</td>
+    </tr>
+   <tr>
+     <td align="left">Enable volume knob</td>
+     <td align="left">399&#9166;</td>
     </tr>
     <tr>
      <td align="left">Show current <a href="#how-to-set-up-the-alarm">alarm</a> time/weekday</td>
@@ -601,14 +609,16 @@ Note that the alarm is recurring, ie it rings at the programmed time, unless dis
 
 #### How to set the audio volume:
 
-Basically, and by default, the device uses the hardware volume knob to determine the desired volume. You can change this to a fixed-level setting as follows:
+Basically, and by default, the device uses the hardware volume knob to determine the desired volume. You can change this to a preselected level as follows:
 - Hold ENTER to invoke main menu
 - Press ENTER repeatedly until "VOL-UME" is shown
 - Hold ENTER
-- Press ENTER to toggle between "USE VOLUME KNOB" and "FIXED LEVEL"
+- Press ENTER to toggle between "USE VOLUME KNOB" and "SELECT LEVEL"
 - Hold ENTER to proceed
-- If you chose "FIXED LEVEL/"SW", you can now select the desired level by pressing ENTER repeatedly. There are 20 levels available. The volume knob is now ignored.
+- If you chose "SELECT LEVEL", you can now select the desired level by pressing ENTER repeatedly. There are 20 levels available. The volume knob is now ignored.
 - Hold ENTER to save and quit the menu
+
+If you are using a Rotary Encoder for volume, you need to disable the volume knob by preselecting a level here. While the volume knob is active, the Rotary Encoder will do nothing.
 
 #### How to select the music folder number:
 
@@ -809,21 +819,29 @@ If other props using GPS speed are connected via [BTTF-Network](#bttf-network-bt
 
 ## Rotary Encoder
 
-A rotary encoder is, simply put, a turnable knob. If connected to the TCD, this knob allows manually selecting a speed to be displayed on the Speedo display, as well as to be sent to [BTTFN](#bttf-network-bttfn) clients in place of actual (GPS) speed.
-
-| [![Watch the video](https://img.youtube.com/vi/Y6uu1SU6YJA/0.jpg)](https://youtu.be/Y6uu1SU6YJA) |
-|:--:|
-| Click to watch the video |
+A rotary encoder is, simply put, a turnable knob. On the TCD, rotary encoders can be used for speed and/or audio volume.
 
 The firmware currently supports the [Adafruit 4991](https://www.adafruit.com/product/4991), [DFRobot Gravity 360](https://www.dfrobot.com/product-2575.html) and [DuPPA I2CEncoder 2.1](https://www.duppa.net/shop/i2cencoder-v2-1/) (or [here](https://www.tindie.com/products/saimon/i2cencoder-v21-connect-rotary-encoder-on-i2c-bus/)) i2c rotary encoders; a CircuitSetup original prop is in the works. For the Adafruit and the DuPPa, I recommend buying the PCBs without an actual encoder and soldering on a Bourns PEC11R-42xxy-S0024.
 
 For wiring information, see [here](#appendix-b-i2c-peripheral-wiring).
+
+### Rotary Encoder for Speed 
+
+The rotary encoder, if configured for speed, allows manually selecting a speed to be displayed on the Speedo display, as well as to be sent to [BTTFN](#bttf-network-bttfn) clients in place of actual (GPS) speed.
+
+| [![Watch the video](https://img.youtube.com/vi/Y6uu1SU6YJA/0.jpg)](https://youtu.be/Y6uu1SU6YJA) |
+|:--:|
+| Click to watch the video |
 
 Notes:
 - The knob is only evaluated if no GPS receiver is connected, or if the **_Display GPS speed_** is unchecked. GPS speed has priority over the knob.
 - The knob is also evaluated if no speedo display is connected; it can be operated "blindly" to trigger time travels and its movement is send to BTTFN clients like GPS speed (if no GPS receiver is connected, or the option **_Provide GPS speed for wireless props_** is unchecked)
 - The speedo displays "0" as long as the knob is not moved; if the knob is turned counter-clockwise a couple of notches, the speedo display will be switched off.
 - The DuPPA I2CEncoder 2.1 needs to be set to address 0x01 (A0 closed, all others open); RGB-encoders not supported.
+
+### Rotary Encoder for Audio Volume
+
+Coming soon
 
 ## Room Condition Mode, Temperature/humidity sensor
 
