@@ -86,6 +86,9 @@ static bool configOnSD = false;
 /* Paranoia: No writes Flash-FS  */
 bool FlashROMode = false;
 
+/* Cache for volume */
+static uint8_t prevSavedVol = 254;
+
 #define NUM_AUDIOFILES 21
 #define SND_ENTER_IDX  9
 #ifndef TWSOUND
@@ -1002,7 +1005,7 @@ bool loadCurVolume()
         StaticJsonDocument<512> json;
         if(!readJSONCfgFile(json, configFile, funcName)) {
             if(!CopyCheckValidNumParm(json["volume"], temp, sizeof(temp), 0, 255, 255)) {
-                uint8_t ncv = atoi(temp);
+                int ncv = atoi(temp);
                 if((ncv >= 0 && ncv <= 19) || ncv == 255) {
                     curVolume = ncv;
                     writedefault = false;
@@ -1016,17 +1019,23 @@ bool loadCurVolume()
         #ifdef TC_DBG
         Serial.printf("%s: %s\n", funcName, badConfig);
         #endif
-        saveCurVolume();
+        saveCurVolume(false);
+    } else {
+        prevSavedVol = curVolume;
     }
 
     return true;
 }
 
-void saveCurVolume()
+void saveCurVolume(bool useCache)
 {
     const char *funcName = "saveCurVolume";
     char buf[6];
     StaticJsonDocument<512> json;
+
+    if(useCache && (prevSavedVol == curVolume)) {
+        return;
+    }
 
     if(!haveFS && !configOnSD) {
         Serial.printf("%s: %s\n", funcName, fsNoAvail);
@@ -1036,7 +1045,9 @@ void saveCurVolume()
     sprintf(buf, "%d", curVolume);
     json["volume"] = (const char *)buf;
 
-    writeJSONCfgFile(json, volCfgName, configOnSD, funcName);
+    if(writeJSONCfgFile(json, volCfgName, configOnSD, funcName)) {
+        prevSavedVol = curVolume;
+    }
 }
 
 /*
@@ -1106,7 +1117,7 @@ void copySettings()
         #ifdef TC_DBG
         Serial.println(F("copySettings: Copying secondary settings to other medium"));
         #endif
-        saveCurVolume();
+        saveCurVolume(false);
         saveAlarm();
         saveReminder();
         saveCarMode();
@@ -1500,7 +1511,7 @@ void rewriteSecondarySettings()
     // regardless of SD-option
     configOnSD = false;
 
-    saveCurVolume();
+    saveCurVolume(false);
     saveAlarm();
     saveReminder();
     saveCarMode();

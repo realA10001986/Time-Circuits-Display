@@ -202,10 +202,11 @@ class TCRotEnc {
   
     public:
         TCRotEnc(int numTypes, uint8_t addrArr[], TwoWire *awire = &Wire);
-        bool    begin();
-        void    zeroPos();
+        bool    begin(bool forSpeed);
+        void    zeroPos(int offs = 0);
         void    disabledPos();
         int16_t updateFakeSpeed(bool force = false);
+        int     updateVolume(int curVol, bool force = false);
 
         bool    IsOff();
 
@@ -219,6 +220,7 @@ class TCRotEnc {
         int           _numTypes = 0;
         uint8_t       _addrArr[6*2];    // up to 6 types fit here
         int8_t        _st = -1;
+        int8_t        _type = 0;        // 0=speed; 1=vol
         
         int           _i2caddr;
         TwoWire       *_wire;
@@ -230,6 +232,9 @@ class TCRotEnc {
         int32_t       rotEncPos = 0;
         unsigned long lastUpd = 0;
         unsigned long lastFUpd = 0;
+
+        int           dfrgain;
+        int           dfroffslots;
 };
 #endif  // TC_HAVE_RE
 

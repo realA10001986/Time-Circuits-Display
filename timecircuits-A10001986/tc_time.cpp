@@ -84,10 +84,15 @@
 #define VEML6030_ADDR  0x48 // [non-default] (can also be 0x10 but then conflicts with GPS)
 #define VEML7700_ADDR  0x10 // [default] (conflicts with GPS!)
 
-                            // rotary encoders
+                            // rotary encoders for speed
 #define ADDA4991_ADDR  0x36 // [default]
 #define DUPPAV2_ADDR   0x01 // [user configured: A0 closed]
-#define DFRGR360_ADDR  0x54 // [default]
+#define DFRGR360_ADDR  0x54 // [default; SW1=0, SW2=0]
+
+                            // rotary encoders for volume
+#define ADDA4991V_ADDR 0x37 // [A0 closed]
+#define DUPPAV2V_ADDR  0x03 // [user configured: A0+A1 closed]
+#define DFRGR360V_ADDR 0x55 // [SW1=0, SW2=1]
 
 // The time between reentry sound being started and the display coming on
 // Must be sync'd to the sound file used! (startup.mp3/timetravel.mp3)
@@ -209,6 +214,8 @@ static int16_t       oldFSpd = 0;
 static int16_t       oldFakeSpeed = -1;
 static bool          tempLock = false;
 static unsigned long tempLockNow = 0;
+static bool          volChanged;
+static unsigned long volChangedNow;
 static bool          spdreOldNM = false;
 #endif
 bool                 useTemp = false;
@@ -291,6 +298,7 @@ static bool provGPS2BTTFN = false;
 
 static bool useRotEnc = false;
 static bool dispRotEnc = false;
+static bool useRotEncVol = false;
 
 // TZ/DST status & data
 static bool checkDST        = false;
@@ -365,6 +373,12 @@ static TCRotEnc rotEnc(3,
                             DUPPAV2_ADDR,  TC_RE_TYPE_DUPPAV2,
                             DFRGR360_ADDR, TC_RE_TYPE_DFRGR360
                           });
+static TCRotEnc rotEncV(3, 
+            (uint8_t[3*2]){ ADDA4991V_ADDR, TC_RE_TYPE_ADA4991,
+                            DUPPAV2V_ADDR,  TC_RE_TYPE_DUPPAV2,
+                            DFRGR360V_ADDR, TC_RE_TYPE_DFRGR360
+                          });                          
+static TCRotEnc *rotEncVol;
 #endif
 #ifdef TC_HAVETEMP
 tempSensor tempSens(8, 
@@ -977,6 +991,7 @@ void time_setup()
     #ifdef TC_HAVESPEEDO
     if(useSpeedo) {
         // 'useGPSSpeed' strictly means "display GPS speed on speedo"
+        // It is therefore false, if no GPS rec found, or no speed found, or option unchecked
         useGPSSpeed = (atoi(settings.useGPSSpeed) > 0);
     }
     #endif
@@ -1447,33 +1462,43 @@ void time_setup()
     }
     #endif // TC_HAVESPEEDO
 
-    // Set up rotary encoder
-    // This is only even attempted if either no speedo is present, or,
-    // if a speedo is present, GPS speed is not to be displayed on it.
+    // Set up rotary encoders
+    // There are primary and secondary i2c addresses for RotEncs.
+    // Use primary RotEnc for speed, if either no speedo is present, or,
+    // if a speedo is present, GPS speed is not to be displayed on it; or
+    // if no GPS receiver is present.
     #ifdef TC_HAVE_RE
-    if(!useGPSSpeed && rotEnc.begin()) {
-        useRotEnc = true;
-        #ifdef TC_HAVESPEEDO
-        dispRotEnc = useSpeedo;
-        #else
-        dispRotEnc = false;
-        #endif
-        re_init();
-        re_lockTemp();
-        fakeSpeed = oldFSpd = rotEnc.updateFakeSpeed(true);
-        #ifdef TC_HAVESPEEDO
-        #ifdef FAKE_POWER_ON
-        if(!waitForFakePowerButton) {
-        #endif
-            if(dispRotEnc) {
-                dispGPSSpeed(true);
-                speedo.on();
+    if(!useGPSSpeed) {
+        if(rotEnc.begin(true)) {
+            useRotEnc = true;
+            #ifdef TC_HAVESPEEDO
+            dispRotEnc = useSpeedo;
+            #else
+            dispRotEnc = false;
+            #endif
+            re_init();
+            re_lockTemp();
+            fakeSpeed = oldFSpd = rotEnc.updateFakeSpeed(true);
+            #ifdef TC_HAVESPEEDO
+            #ifdef FAKE_POWER_ON
+            if(!waitForFakePowerButton) {
+            #endif
+                if(dispRotEnc) {
+                    dispGPSSpeed(true);
+                    speedo.on();
+                }
+            #ifdef FAKE_POWER_ON
             }
-        #ifdef FAKE_POWER_ON
+            #endif
+            #endif
+            // Temperature-display is now blocked by tempLock
         }
-        #endif
-        #endif
-        // Temperature-display is now blocked by tempLock
+    }
+    // Check for secondary RotEnc for volume on secondary i2c addresses
+    if(rotEncV.begin(false)) {
+        useRotEncVol = true;
+        rotEncVol = &rotEncV;
+        re_vol_reset();
     }
     #endif
 
@@ -2033,6 +2058,18 @@ void time_loop()
                 checkForSpeedTT(dispRotEnc);
             } else if(!fakeSpeed) {
                 GPSabove88 = false;
+            }
+        }
+        if(useRotEncVol) {
+            int oldVol = curVolume;
+            curVolume = rotEncVol->updateVolume(curVolume, false);
+            if(oldVol != curVolume) {
+                volChanged = true;
+                volChangedNow = millis();
+            }
+            if(volChanged && (millis() - volChangedNow > 10*1000)) {
+                volChanged = false;
+                saveCurVolume();
             }
         }
         #endif
@@ -3865,6 +3902,13 @@ static void re_lockTemp()
         tempLockNow = millis();
     }
     #endif
+}
+
+void re_vol_reset()
+{
+    if(useRotEncVol) {
+        rotEncVol->zeroPos((curVolume == 255) ? 0 : curVolume);
+    }
 }
 #endif
 

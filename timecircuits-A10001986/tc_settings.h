@@ -200,7 +200,7 @@ void saveReminder();
 void saveCarMode();
 
 bool loadCurVolume();
-void saveCurVolume();
+void saveCurVolume(bool useCache = true);
 
 bool loadMusFoldNum();
 void saveMusFoldNum();

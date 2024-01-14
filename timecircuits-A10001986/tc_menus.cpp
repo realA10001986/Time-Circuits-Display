@@ -734,6 +734,12 @@ quitMenu:
     // unless manual-override
     if(manualNightMode < 0) forceReEvalANM = true;
 
+    // Re-set RotEnc for volume (ie ignore all
+    // changes while in menu; adjust to cur level)
+    #ifdef TC_HAVE_RE
+    re_vol_reset();
+    #endif
+
     // Restart mp if it was active before entering the menu
     if(mpActive) mp_play();
 }
@@ -1135,7 +1141,7 @@ static void showCurVolHWSW(bool blink)
             lt_showTextDirect("KNOB");
             lt_on();
         } else {
-            dt_showTextDirect("FIXED");
+            dt_showTextDirect("SELECT");
             pt_showTextDirect("LEVEL");
             lt_off();
         }
@@ -1166,7 +1172,7 @@ static void showCurVol(bool blink, bool doComment)
 static void doSetVolume()
 {
     bool volDone = false;
-    uint8_t oldVol = curVolume;
+    int oldVol = curVolume;
     unsigned long playNow;
     bool triggerPlay = false;
     bool blinkSwitch = false;

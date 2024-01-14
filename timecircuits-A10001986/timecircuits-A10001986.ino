@@ -105,6 +105,18 @@
 
 /*  Changelog
  *   
+ *  2024/01/14  (A10001986)
+ *    - RotEnc: There are primary and secondary RotEncs now, ie you can connect
+ *      two rotary encoders, one for Speed (as before), one for Volume.
+ *      The primary RotEnc is used for Speed. A secondary RotEnc can be connected
+ *      for volume. Secondary RotEncs use different i2c addresses.
+ *      Using a RotEnc for volume requires disabling the volume knob by selecting 
+ *      a software-controlled level the keypad menu's "Volume" settings. 
+ *      RotEnc-changed volume is saved 10 seconds after last change.
+ *  2024/01/13  (A10001986)
+ *    - New keypad codes:
+ *      300-319 sets volume level; 399 activates volume pot; those are short-cuts
+ *      to avoid the keypad menu to change the volume selection.
  *  2024/01/06  (A10001986)
  *    - Minor optimizations in time loop; fix timer and reminder suppression
  *      when alarm wouldn't sound because of weekday mismatch

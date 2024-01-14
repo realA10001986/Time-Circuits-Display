@@ -8,8 +8,14 @@
  * Keypad_I2C Class, TCButton Class: I2C-Keypad and Button handling
  * 
  * TCRotEnc: Rotary Encoder handling:
- * Supports Adafruit 4991, DuPPA I2CEncoder 2.1, DFRobot Gravity 360
- * DuPPA I2CEncoder 2.1 must be set to i2c address 0x01 (A0 closed).
+ * Supports Adafruit 4991, DuPPA I2CEncoder 2.1, DFRobot Gravity 360.
+ * For Speed, the encoders must be set to their default i2c address
+ * (DuPPA I2CEncoder 2.1 must be set to i2c address 0x01 (A0 closed)).
+ * For Volume, the encoders must be configured as follows:
+ * - Ada4991: A0 closed (i2c address 0x37)
+ * - DFRobot Gravity 360: SW1 off, SW2 on (i2c address 0x55)
+ * - DuPPA I2CEncoder 2.1: A0 and A1 closed (i2c address 0x03)
+ * 
  *
  * Keypad part inspired by "Keypad" library by M. Stanley & A. Brevig
  * Fractions of this code are customized, minimized derivates of parts 
@@ -510,6 +516,7 @@ enum DUV2_CONF2_PARAM {
 #define DFR_PID_L     0xf6
 
 #define DFR_GAIN_SPD  (1023 / (88 + OFF_SLOTS))
+#define DFR_GAIN_VOL  (1023 / 20)
 
 
 TCRotEnc::TCRotEnc(int numTypes, uint8_t addrArr[], TwoWire *awire)
@@ -523,13 +530,15 @@ TCRotEnc::TCRotEnc(int numTypes, uint8_t addrArr[], TwoWire *awire)
     _wire = awire;
 }
 
-bool TCRotEnc::begin()
+bool TCRotEnc::begin(bool forSpeed)
 {
     bool foundSt = false;
     union {
         uint8_t buf[4];
         int32_t ibuf;
     };
+
+    _type = forSpeed ? 0 : 1;
 
     for(int i = 0; i < _numTypes * 2; i += 2) {
 
@@ -584,7 +593,8 @@ bool TCRotEnc::begin()
     
                 #ifdef TC_DBG
                 const char *tpArr[6] = { "ADA4991", "DuPPa V2.1", "DFRobot Gravity 360", "CircuitSetup", "", "" };
-                Serial.printf("Rotary encoder: Detected %s\n", tpArr[_st]);
+                const char *purpose[2] = { "Speed", "Volume" };
+                Serial.printf("Rotary encoder: Detected %s, used for %s\n", tpArr[_st], purpose[_type]);
                 #endif
     
                 break;
@@ -632,8 +642,10 @@ bool TCRotEnc::begin()
         break;
 
     case TC_RE_TYPE_DFRGR360:
-        buf[0] = DFR_GAIN_SPD;
+        dfrgain = (!_type) ? DFR_GAIN_SPD : DFR_GAIN_VOL;
+        buf[0] = dfrgain;
         write(DFR_BASE, DFR_GAIN_REG, &buf[0], 1);
+        dfroffslots = (!_type) ? OFF_SLOTS : 0;
         break;
 
     case TC_RE_TYPE_CS:
@@ -647,15 +659,15 @@ bool TCRotEnc::begin()
     return true;
 }
 
-// Init dec into "zero" position
-void TCRotEnc::zeroPos()
+// Init dec into "zero" position (vol and speed)
+void TCRotEnc::zeroPos(int offs)
 {
-    zeroEnc();
+    zeroEnc(offs);
     rotEncPos = getEncPos();
     fakeSpeed = targetSpeed = 0;
 }
 
-// Init dec into "disabled" position
+// Init dec into "disabled" position (speed only)
 void TCRotEnc::disabledPos()
 {
     zeroEnc(-OFF_SLOTS);
@@ -721,6 +733,27 @@ bool TCRotEnc::IsOff()
     return (fakeSpeed < -(OFF_SLOTS - 1));
 }
 
+int TCRotEnc::updateVolume(int curVol, bool force)
+{
+    if(curVol == 255)
+        return curVol;
+    
+    if(force || (millis() - lastUpd > HWUPD_DELAY)) {
+
+        lastUpd = millis();
+        
+        int32_t t = rotEncPos;
+        rotEncPos = getEncPos();
+
+        curVol += (rotEncPos - t);
+
+        if(curVol < 0)        curVol = 0;
+        else if(curVol > 19)  curVol = 19;
+    }
+    
+    return curVol;
+}
+
 int32_t TCRotEnc::getEncPos()
 {
     uint8_t buf[4];
@@ -747,7 +780,7 @@ int32_t TCRotEnc::getEncPos()
                 );
     case TC_RE_TYPE_DFRGR360:
         read(DFR_BASE, DFR_COUNT_MSB, buf, 2);
-        return (int32_t)(((buf[0] << 8) | buf[1]) / DFR_GAIN_SPD) - OFF_SLOTS;
+        return (int32_t)(((buf[0] << 8) | buf[1]) / dfrgain) - dfroffslots;
         
     case TC_RE_TYPE_CS:
         break;
@@ -768,7 +801,7 @@ bool TCRotEnc::zeroEnc(int offs)
     
     switch(_st) {
     case TC_RE_TYPE_DFRGR360:   
-        temp = (OFF_SLOTS + offs) * DFR_GAIN_SPD;
+        temp = (dfroffslots + offs) * dfrgain;
         buf[0] = temp >> 8;
         buf[1] = temp & 0xff;
         write(DFR_BASE, DFR_COUNT_MSB, &buf[0], 2);

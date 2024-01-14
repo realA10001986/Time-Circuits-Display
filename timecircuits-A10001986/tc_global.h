@@ -27,9 +27,9 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION "V2.9.99"          // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "JAN062024"  // 13 chars max
+#define TC_VERSION_EXTRA "JAN142024"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "01062024"   // 12 chars max
+#define TC_VERSION_EXTRA "01142024"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -76,11 +76,13 @@
 
 // Uncomment for rotary encoder support
 // Currently Adafruit 4991, DFRobot Gravity 360 and DuPPA I2CEncoder 2.1 are
-// supported. The rotary encoder is used to manually select a speed to be
+// supported.
+// The primary rotary encoder is used to manually select a speed to be
 // displayed on a speed display, and/or to be sent to wirelessly connected
-// props (BTTFN); also, time travels can be triggered by turning the knob up 
-// to 88. Turning knob a few notches below 0 switches the speedo off (or allows 
-// temperature to be shown, if so configured)
+// props (BTTFN); also, time travels can be triggered by turning the knob up
+// to 88. Turning the knob a few notches below 0 switches the speedo off (or
+// allows temperature to be shown, if so configured).
+// A secondary rotary encoder is used for audio volume.
 #define TC_HAVE_RE
 
 // Uncomment for support of a temperature/humidity sensor (MCP9808, BMx280, 

@@ -202,6 +202,10 @@ void  ntp_short_loop();
 
 void  mydelay(unsigned long mydel);
 
+#ifdef TC_HAVE_RE
+void re_vol_reset();
+#endif
+
 #ifdef TC_HAVEBTTFN
 int  bttfnNumClients();
 bool bttfnGetClientInfo(int c, char **id, uint8_t **ip, uint8_t *type);

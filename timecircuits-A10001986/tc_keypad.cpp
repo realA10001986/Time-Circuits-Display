@@ -674,200 +674,220 @@ void keypad_loop()
             if(code == 113 && (!haveRcMode || !haveWcMode)) {
                 code = haveRcMode ? 111 : 112;
             }
-            
-            switch(code) {
-            #ifdef TC_HAVETEMP
-            case 111:               // 111+ENTER: Toggle rc-mode
-                if(haveRcMode) {
-                    toggleRcMode();
-                    if(tempSens.haveHum() || isWcMode()) {
-                        departedTime.off();
-                        needDepTime = true;
-                    }
-                    validEntry = true;
-                } else {
-                    invalidEntry = true;
+
+            if((code >= 300 && code <= 319) || code == 399) {
+
+                int oldVol = curVolume;
+                
+                curVolume = (code == 399) ? 255 : (code - 300);
+                
+                validEntry = true;
+
+                // Re-set RotEnc for current level
+                #ifdef TC_HAVE_RE
+                re_vol_reset();
+                #endif
+                
+                if(oldVol != curVolume) {
+                    saveCurVolume();
                 }
-                break;
-            #endif
-            case 112:               // 112+ENTER: Toggle wc-mode
-                if(haveWcMode) {
-                    toggleWcMode();
-                    if(WcHaveTZ2 || isRcMode()) {
-                        departedTime.off();
-                        needDepTime = true;
+              
+            } else {
+            
+                switch(code) {
+                #ifdef TC_HAVETEMP
+                case 111:               // 111+ENTER: Toggle rc-mode
+                    if(haveRcMode) {
+                        toggleRcMode();
+                        if(tempSens.haveHum() || isWcMode()) {
+                            departedTime.off();
+                            needDepTime = true;
+                        }
+                        validEntry = true;
+                    } else {
+                        invalidEntry = true;
                     }
+                    break;
+                #endif
+                case 112:               // 112+ENTER: Toggle wc-mode
+                    if(haveWcMode) {
+                        toggleWcMode();
+                        if(WcHaveTZ2 || isRcMode()) {
+                            departedTime.off();
+                            needDepTime = true;
+                        }
+                        setupWCMode();
+                        destShowAlt = depShowAlt = 0; // Reset TZ-Name-Animation
+                        validEntry = true;
+                    } else {
+                        invalidEntry = true;
+                    }
+                    break;
+                case 113:               // 113+ENTER: Toggle rc+wc mode
+                    // Dep Time display needed in any case:
+                    // Either for TZ2 or TEMP
+                    departedTime.off();
+                    needDepTime = true;
+                    rcModeState = toggleRcMode();
+                    enableWcMode(rcModeState);
                     setupWCMode();
                     destShowAlt = depShowAlt = 0; // Reset TZ-Name-Animation
                     validEntry = true;
-                } else {
-                    invalidEntry = true;
-                }
-                break;
-            case 113:               // 113+ENTER: Toggle rc+wc mode
-                // Dep Time display needed in any case:
-                // Either for TZ2 or TEMP
-                departedTime.off();
-                needDepTime = true;
-                rcModeState = toggleRcMode();
-                enableWcMode(rcModeState);
-                setupWCMode();
-                destShowAlt = depShowAlt = 0; // Reset TZ-Name-Animation
-                validEntry = true;
-                break;
-            case 222:               // 222+ENTER: Turn shuffle off
-            case 555:               // 555+ENTER: Turn shuffle on
-                if(haveMusic) {
-                    mp_makeShuffle((code == 555));
+                    break;
+                case 222:               // 222+ENTER: Turn shuffle off
+                case 555:               // 555+ENTER: Turn shuffle on
+                    if(haveMusic) {
+                        mp_makeShuffle((code == 555));
+                        #ifdef IS_ACAR_DISPLAY
+                        sprintf(atxt, "SHUFFLE  %s", (code == 555) ? " ON" : "OFF");
+                        #else
+                        sprintf(atxt, "SHUFFLE   %s", (code == 555) ? " ON" : "OFF");
+                        #endif
+                        dt_showTextDirect(atxt);
+                        specDisp = 10;
+                        validEntry = true;
+                    } else {
+                        invalidEntry = true;
+                    }
+                    break;
+                case 888:               // 888+ENTER: Goto song #0
+                    if(haveMusic) {
+                        mp_gotonum(0, mpActive);
+                        #ifdef IS_ACAR_DISPLAY
+                        strcpy(atxt, "NEXT     000");
+                        #else
+                        strcpy(atxt, "NEXT      000");
+                        #endif
+                        dt_showTextDirect(atxt);
+                        specDisp = 10;
+                        validEntry = true;
+                    } else {
+                        invalidEntry = true;
+                    }
+                    break;
+                case 440:
                     #ifdef IS_ACAR_DISPLAY
-                    sprintf(atxt, "SHUFFLE  %s", (code == 555) ? " ON" : "OFF");
+                    sprintf(atxt, "%s OFF", tmr);
                     #else
-                    sprintf(atxt, "SHUFFLE   %s", (code == 555) ? " ON" : "OFF");
+                    sprintf(atxt, "%s  OFF", tmr);
                     #endif
                     dt_showTextDirect(atxt);
+                    ctDown = 0;
                     specDisp = 10;
                     validEntry = true;
-                } else {
-                    invalidEntry = true;
-                }
-                break;
-            case 888:               // 888+ENTER: Goto song #0
-                if(haveMusic) {
-                    mp_gotonum(0, mpActive);
-                    #ifdef IS_ACAR_DISPLAY
-                    strcpy(atxt, "NEXT     000");
-                    #else
-                    strcpy(atxt, "NEXT      000");
-                    #endif
-                    dt_showTextDirect(atxt);
-                    specDisp = 10;
-                    validEntry = true;
-                } else {
-                    invalidEntry = true;
-                }
-                break;
-            case 440:
-                #ifdef IS_ACAR_DISPLAY
-                sprintf(atxt, "%s OFF", tmr);
-                #else
-                sprintf(atxt, "%s  OFF", tmr);
-                #endif
-                dt_showTextDirect(atxt);
-                ctDown = 0;
-                specDisp = 10;
-                validEntry = true;
-                break;
-            case 770:
-                remMonth = remDay = remHour = remMin = 0;
-                saveReminder();
-                buildRemOffString(atxt);
-                dt_showTextDirect(atxt);
-                specDisp = 10;
-                validEntry = true;
-                break;
-            case 777:
-                if(!remMonth && !remDay) {
-                  
+                    break;
+                case 770:
+                    remMonth = remDay = remHour = remMin = 0;
+                    saveReminder();
                     buildRemOffString(atxt);
-                    
-                } else {
-                  
-                    // This does not take DST into account if the next reminder
-                    // is due in the following year. Calculation is off by tzDiff
-                    // (one hour) if DST borders are crossed for an odd number of
-                    // times.
-                    DateTime dt;
-                    myrtcnow(dt);
-                    int  yr = dt.year() - presentTime.getYearOffset();
-                    bool sameYear = true;
-                    int  locDST = 0;
-                    uint32_t locMins = mins2Date(yr, dt.month(), dt.day(), dt.hour(), dt.minute());
-                    uint32_t tgtMins = mins2Date(yr, remMonth ? remMonth : dt.month(), remDay, remHour, remMin);
-                    if(tgtMins < locMins) {
-                        if(remMonth) {
-                            tgtMins = mins2Date(yr + 1, remMonth, remDay, remHour, remMin);
-                            tgtMins += (365*24*60);
-                            if(isLeapYear(yr)) tgtMins += 24*60;
-                            sameYear = false;
-                        } else {
-                            if(dt.month() == 12) {
-                                tgtMins = mins2Date(yr + 1, 1, remDay, remHour, remMin);
+                    dt_showTextDirect(atxt);
+                    specDisp = 10;
+                    validEntry = true;
+                    break;
+                case 777:
+                    if(!remMonth && !remDay) {
+                      
+                        buildRemOffString(atxt);
+                        
+                    } else {
+                      
+                        // This does not take DST into account if the next reminder
+                        // is due in the following year. Calculation is off by tzDiff
+                        // (one hour) if DST borders are crossed for an odd number of
+                        // times.
+                        DateTime dt;
+                        myrtcnow(dt);
+                        int  yr = dt.year() - presentTime.getYearOffset();
+                        bool sameYear = true;
+                        int  locDST = 0;
+                        uint32_t locMins = mins2Date(yr, dt.month(), dt.day(), dt.hour(), dt.minute());
+                        uint32_t tgtMins = mins2Date(yr, remMonth ? remMonth : dt.month(), remDay, remHour, remMin);
+                        if(tgtMins < locMins) {
+                            if(remMonth) {
+                                tgtMins = mins2Date(yr + 1, remMonth, remDay, remHour, remMin);
                                 tgtMins += (365*24*60);
                                 if(isLeapYear(yr)) tgtMins += 24*60;
                                 sameYear = false;
                             } else {
-                                tgtMins = mins2Date(yr, dt.month() + 1, remDay, remHour, remMin);
+                                if(dt.month() == 12) {
+                                    tgtMins = mins2Date(yr + 1, 1, remDay, remHour, remMin);
+                                    tgtMins += (365*24*60);
+                                    if(isLeapYear(yr)) tgtMins += 24*60;
+                                    sameYear = false;
+                                } else {
+                                    tgtMins = mins2Date(yr, dt.month() + 1, remDay, remHour, remMin);
+                                }
                             }
                         }
+                        tgtMins -= locMins;
+                        if(sameYear && couldDST[0] && ((locDST = presentTime.getDST()) >= 0)) {
+                            int curMins;
+                            int tgtDST = timeIsDST(0, yr, remMonth ? remMonth : dt.month() + 1, remDay, remHour, remMin, curMins);
+                            if(!locDST && tgtDST)      tgtMins += getTzDiff();
+                            else if(locDST && !tgtDST) tgtMins -= getTzDiff();
+                        }
+                        uint16_t days = tgtMins / (24*60);
+                        uint16_t hours = (tgtMins % (24*60)) / 60;
+                        uint16_t minutes = tgtMins - (days*24*60) - (hours*60);
+    
+                        #ifdef IS_ACAR_DISPLAY
+                        sprintf(atxt, "    %3dd%2d%02d", days, hours, minutes);
+                        #else
+                        sprintf(atxt, "     %3dd%2d%02d", days, hours, minutes);
+                        #endif
+                        flags = CDT_COLON;
                     }
-                    tgtMins -= locMins;
-                    if(sameYear && couldDST[0] && ((locDST = presentTime.getDST()) >= 0)) {
-                        int curMins;
-                        int tgtDST = timeIsDST(0, yr, remMonth ? remMonth : dt.month() + 1, remDay, remHour, remMin, curMins);
-                        if(!locDST && tgtDST)      tgtMins += getTzDiff();
-                        else if(locDST && !tgtDST) tgtMins -= getTzDiff();
-                    }
-                    uint16_t days = tgtMins / (24*60);
-                    uint16_t hours = (tgtMins % (24*60)) / 60;
-                    uint16_t minutes = tgtMins - (days*24*60) - (hours*60);
-
+                    dt_showTextDirect(atxt, CDT_CLEAR|flags);
+                    specDisp = 10;
+                    validEntry = true;
+                    break;
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                    setBeepMode(code);
                     #ifdef IS_ACAR_DISPLAY
-                    sprintf(atxt, "    %3dd%2d%02d", days, hours, minutes);
+                    sprintf(atxt, "BEEP MODE  %1d", beepMode);
                     #else
-                    sprintf(atxt, "     %3dd%2d%02d", days, hours, minutes);
+                    sprintf(atxt, "BEEP MODE   %1d", beepMode);
                     #endif
-                    flags = CDT_COLON;
-                }
-                dt_showTextDirect(atxt, CDT_CLEAR|flags);
-                specDisp = 10;
-                validEntry = true;
-                break;
-            case 0:
-            case 1:
-            case 2:
-            case 3:
-                setBeepMode(code);
-                #ifdef IS_ACAR_DISPLAY
-                sprintf(atxt, "BEEP MODE  %1d", beepMode);
-                #else
-                sprintf(atxt, "BEEP MODE   %1d", beepMode);
+                    dt_showTextDirect(atxt);
+                    enterDelay = ENTER_DELAY;
+                    specDisp = 10;
+                    // Play no sound, ie no xxvalidEntry
+                    break;
+                case 9:
+                    send_refill_msg();
+                    enterDelay = ENTER_DELAY;
+                    // Play no sound, ie no xxvalidEntry
+                    break;
+                case 990:
+                case 991:
+                    rcModeState = carMode;
+                    carMode = (code == 991);
+                    if(rcModeState != carMode) {
+                        saveCarMode();
+                        prepareReboot();
+                        unmount_fs();
+                        delay(500);
+                        esp_restart();
+                    }
+                    validEntry = true;
+                    break;
+                #ifdef HAVE_STALE_PRESENT
+                case 999:
+                    stalePresent = !stalePresent;
+                    buildStalePTStatus(atxt);
+                    dt_showTextDirect(atxt);
+                    enterDelay = ENTER_DELAY;
+                    specDisp = 10;
+                    saveStaleTime((void *)&stalePresentTime[0], stalePresent);
+                    validEntry = true;
+                    break;
                 #endif
-                dt_showTextDirect(atxt);
-                enterDelay = ENTER_DELAY;
-                specDisp = 10;
-                // Play no sound, ie no xxvalidEntry
-                break;
-            case 9:
-                send_refill_msg();
-                enterDelay = ENTER_DELAY;
-                // Play no sound, ie no xxvalidEntry
-                break;
-            case 990:
-            case 991:
-                rcModeState = carMode;
-                carMode = (code == 991);
-                if(rcModeState != carMode) {
-                    saveCarMode();
-                    prepareReboot();
-                    unmount_fs();
-                    delay(500);
-                    esp_restart();
+                default:
+                    invalidEntry = true;
                 }
-                validEntry = true;
-                break;
-            #ifdef HAVE_STALE_PRESENT
-            case 999:
-                stalePresent = !stalePresent;
-                buildStalePTStatus(atxt);
-                dt_showTextDirect(atxt);
-                enterDelay = ENTER_DELAY;
-                specDisp = 10;
-                saveStaleTime((void *)&stalePresentTime[0], stalePresent);
-                validEntry = true;
-                break;
-            #endif
-            default:
-                invalidEntry = true;
             }
 
         } else if(strLen == DATELEN_INT) {

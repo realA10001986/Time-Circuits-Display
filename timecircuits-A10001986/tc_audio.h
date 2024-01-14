@@ -39,7 +39,7 @@ extern bool audioMute;
 
 extern bool muteBeep;
 
-extern uint8_t curVolume;
+extern int  curVolume;
 
 extern bool haveMusic;
 extern bool mpActive;
