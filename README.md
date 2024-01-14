@@ -843,6 +843,16 @@ Notes:
 
 Coming soon
 
+### Configuration
+
+In order to use an Encoder for Speed or Volume, it needs to be configured as follows:
+
+  <table>
+  <tr><td></td><td>Ada4991</td><td>DFRobot</td><td>DuPPA</td></tr>
+  <tr><td>Speed</td><td>Default [0x36]</td><td>SW1=0,SW2=0 [0x54]</td><td>A0 closed [0x01]</td></tr>
+  <tr><td>Volume</td><td>A0 closed [0x37]</td><td>SW1=0,SW2=1 [0x55]</td><td>A0,A1 closed [0x03]</td></tr>
+  </table>
+
 ## Room Condition Mode, Temperature/humidity sensor
 
 The firmware supports connecting a temperature/humidity sensor for "room condition mode"; in this mode, *destination* and *last departed* times are replaced by temperature and humidity (if applicable), respectively. To toggle between normal and room condition mode, enter "111" and press ENTER. 
