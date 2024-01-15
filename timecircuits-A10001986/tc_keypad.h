@@ -70,4 +70,6 @@ void leds_off();
 
 void enterkeyScan();
 
+void prepareReboot();
+
 #endif

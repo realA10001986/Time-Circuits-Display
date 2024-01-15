@@ -90,7 +90,7 @@
 #define DFRGR360_ADDR  0x54 // [default; SW1=0, SW2=0]
 
                             // rotary encoders for volume
-#define ADDA4991V_ADDR 0x37 // [A0 closed]
+#define ADDA4991V_ADDR 0x37 // [non-default: A0 closed]
 #define DUPPAV2V_ADDR  0x03 // [user configured: A0+A1 closed]
 #define DFRGR360V_ADDR 0x55 // [SW1=0, SW2=1]
 
@@ -214,10 +214,11 @@ static int16_t       oldFSpd = 0;
 static int16_t       oldFakeSpeed = -1;
 static bool          tempLock = false;
 static unsigned long tempLockNow = 0;
-static bool          volChanged;
-static unsigned long volChangedNow;
 static bool          spdreOldNM = false;
 #endif
+static bool          volChanged = false;
+static unsigned long volChangedNow = 0;
+
 bool                 useTemp = false;
 bool                 dispTemp = true;
 bool                 tempOffNM = true;
@@ -1782,6 +1783,7 @@ void time_loop()
                         }
                     }
                     #endif
+                    flushDelayedSave();
                     timeTravelP0 = 0;
                     timeTravelP1 = 0;
                     timeTravelRE = false;
@@ -3911,6 +3913,15 @@ void re_vol_reset()
     }
 }
 #endif
+
+// Called before reboot to save regardless of running delay
+void flushDelayedSave()
+{
+    if(volChanged) {
+        volChanged = false;
+        saveCurVolume();
+    }
+}
 
 // Show all, month after a short delay
 void animate(bool withLEDs)

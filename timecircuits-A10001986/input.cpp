@@ -441,10 +441,12 @@ void TCButton::transitionTo(ButtonState nextState)
 
 // General
 
-#define HWUPD_DELAY 100   // ms between hw polls
+#define HWUPD_DELAY 100   // ms between hw polls for speed
 #define FUPD_DELAY  10    // ms between fakeSpeed updates
 
 #define OFF_SLOTS   5
+
+#define HWUPD_DELAY_VOL 150 // ms between hw polls for volume
 
 // Ada4991
 
@@ -738,7 +740,7 @@ int TCRotEnc::updateVolume(int curVol, bool force)
     if(curVol == 255)
         return curVol;
     
-    if(force || (millis() - lastUpd > HWUPD_DELAY)) {
+    if(force || (millis() - lastUpd > HWUPD_DELAY_VOL)) {
 
         lastUpd = millis();
         

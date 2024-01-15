@@ -206,6 +206,8 @@ void  mydelay(unsigned long mydel);
 void re_vol_reset();
 #endif
 
+void  flushDelayedSave();
+
 #ifdef TC_HAVEBTTFN
 int  bttfnNumClients();
 bool bttfnGetClientInfo(int c, char **id, uint8_t **ip, uint8_t *type);

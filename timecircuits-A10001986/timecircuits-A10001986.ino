@@ -105,6 +105,10 @@
 
 /*  Changelog
  *   
+ *  2024/01/15 (A10001986)
+ *    - Flush outstanding delayed saves before rebooting and on fake-power-off
+ *    - Remove "Restart" menu item from CP, can't let WifiManager reboot behind
+ *      our back.
  *  2024/01/14  (A10001986)
  *    - RotEnc: There are primary and secondary RotEncs now, ie you can connect
  *      two rotary encoders, one for Speed (as before), one for Volume.

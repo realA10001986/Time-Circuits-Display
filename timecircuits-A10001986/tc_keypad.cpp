@@ -199,7 +199,6 @@ static void buildRemOffString(char *buf);
 #ifdef HAVE_STALE_PRESENT
 static void buildStalePTStatus(char *buf);
 #endif
-static void prepareReboot();
 
 static void dt_showTextDirect(const char *text, uint16_t flags = CDT_CLEAR)
 {
@@ -868,7 +867,6 @@ void keypad_loop()
                     if(rcModeState != carMode) {
                         saveCarMode();
                         prepareReboot();
-                        unmount_fs();
                         delay(500);
                         esp_restart();
                     }
@@ -894,7 +892,6 @@ void keypad_loop()
 
             if(!(strncmp(dateBuffer, "64738", 5))) {
                 prepareReboot();
-                unmount_fs();
                 delay(500);
                 esp_restart();
             }
@@ -1545,11 +1542,12 @@ static void buildStalePTStatus(char *buf)
 }
 #endif
 
-static void prepareReboot()
+void prepareReboot()
 {
     mp_stop();
     stopAudio();
     allOff();
+    flushDelayedSave();
     #ifdef TC_HAVESPEEDO
     if(useSpeedo) speedo.off();
     #endif
@@ -1558,8 +1556,8 @@ static void prepareReboot()
     destinationTime.on();
     delay(ENTER_DELAY);
     digitalWrite(WHITE_LED_PIN, LOW);
+    unmount_fs();
 }
-
 
 /*
  * Beep

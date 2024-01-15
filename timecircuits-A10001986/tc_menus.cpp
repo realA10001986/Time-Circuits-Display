@@ -373,6 +373,8 @@ void enter_menu()
     mpActive = mp_stop();
     stopAudio();
 
+    flushDelayedSave();
+
     // start with first menu item
     mode_min = check_allow_CPA() ? MODE_CPA : MODE_ALRM;
     menuItemNum = mode_min;
