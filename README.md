@@ -469,7 +469,7 @@ The check the remaining time, type 44 and press ENTER.
 
 ## Yearly/monthly reminder
 
-The reminder is similar to the alarm, the difference being that the reminder is yearly or monthly, not daily. 
+A reminder is yearly or monthly alarm.
 
 To program a yearly reminder, enter 77mmddhhMM and press ENTER. For example: 7705150900 sets the reminder to May 15 9am. Now a reminder sound will play every year on May 15 at 9am.
 
@@ -481,13 +481,13 @@ Note that, as usual, all fields consist of two digits, and hours are entered in 
 
 Type 77 followed by ENTER to display the programmed reminder, 770 to delete it, and 777 to display the days/hours/minutes until the next reminder.
 
-The reminder only plays a sound file. The current sound-pack contains a default file; if your SD contains a file named "reminder.mp3", this will played instead of the default file.
+At the time the reminder is due, the TCD plays a sound. If your SD contains a file named "reminder.mp3", this will played instead of the default sound.
 
-Note: While the alarm and the sound-on-the-hour adhere to the "Alarm base is real present time" setting in the config portal, the Reminder does not. It is always based on real local time.
+Note: While the alarm and the sound-on-the-hour adhere to the **_Alarm base is real present time_** setting in the config portal, the reminder does not. It is always based on actual local time.
 
 ## SD card
 
-Preface note on SD cards: For unknown reasons, some SD cards simply do not work with this device. For instance, I had no luck with Sandisk Ultra 32GB and  "Intenso" cards. If your SD card is not recognized, check if it is formatted in FAT32 format (not exFAT!). Also, the size must not exceed 32GB (as larger cards cannot be formatted with FAT32). I am currently using Transcend SDHC 4GB cards and those work fine.
+Preface note on SD cards: For unknown reasons, some SD cards simply do not work with this device. For instance, I had no luck with Sandisk Ultra 32GB and  "Intenso" cards. If your SD card is not recognized, check if it is formatted in FAT32 format (not exFAT!). Also, the size must not exceed 32GB (as larger cards cannot be formatted with FAT32). Transcend SDHC 4GB cards work fine.
 
 The SD card, apart from being used to [install](#audio-file-installation) the default audio files, can be used for substituting default sounds, some additional custom sounds, and for music played back by the [Music player](#the-music-player).
 
@@ -609,7 +609,7 @@ Note that the alarm is recurring, ie it rings at the programmed time, unless dis
 
 #### How to set the audio volume:
 
-Basically, and by default, the device uses the hardware volume knob to determine the desired volume. You can change this to a preselected level as follows:
+Basically, and by default, the device uses the built-in hardware volume knob to determine the desired volume. You can change this to a pre-selected level as follows:
 - Hold ENTER to invoke main menu
 - Press ENTER repeatedly until "VOL-UME" is shown
 - Hold ENTER
@@ -618,7 +618,7 @@ Basically, and by default, the device uses the hardware volume knob to determine
 - If you chose "SELECT LEVEL", you can now select the desired level by pressing ENTER repeatedly. There are 20 levels available. The volume knob is now ignored.
 - Hold ENTER to save and quit the menu
 
-If you are using a Rotary Encoder for volume, you need to disable the volume knob by preselecting a level here. While the volume knob is active, the Rotary Encoder will do nothing.
+If you are using a Rotary Encoder for volume, you need to disable the volume knob by pre-selecting a level here. While the built-in volume knob is active, the Rotary Encoder will do nothing.
 
 #### How to select the music folder number:
 
@@ -639,9 +639,7 @@ Note that the Music Folder Number is saved in a config file on the SD card.
 - Hold ENTER to invoke main menu
 - Press ENTER repeatedly until "TIME-CYCLING" is shown
 - Hold ENTER, "INTERVAL" is displayed
-- Press ENTER repeatedly to cycle through the possible Time-cycling Interval values.
-- A value of 0 disables automatic time cycling ("OFF").
-- Non-zero values make the device cycle through a number of pre-programmed times. The value means "minutes" (hence "MIN-UTES") between changes.              
+- Press ENTER repeatedly to cycle through the possible Time-cycling intervals. "0" disables automatic time cycling ("OFF").
 - Hold ENTER to select the value shown and exit the menu ("SAVING" is displayed briefly)
  
 #### How to adjust the display brightness:
