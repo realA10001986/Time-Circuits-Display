@@ -132,6 +132,7 @@ In general, it is safe to power-down the TCD when it is idle or after it has bee
 The only write operations without user interaction and even while fake-powered-down take place
 - in the first second after a year change (Jan 1, 0:00) and
 - in the first second after a change from or to DST (daylight saving time).
+
 In those distinct three seconds per year a power loss should also be avoided.
 
 ### Calendar system
