@@ -120,6 +120,20 @@ A full reference of the Config Portal is [here](#appendix-a-the-config-portal).
 
 If "REPLACE BATTERY" is shown upon boot, the onboard CR2032 battery is depleted and needs to be replaced. Note that, for technical reasons, "REPLACE BATTERY" will also show up the very first time you power-up the TCD *after* changing the battery. You can, of course, disregard that message in this case.
 
+### Powering down the TCD
+
+The TCD sometimes writes data to either the internal flash file system or the SD card. These write operations should not be interrupted by a power loss.
+
+In general, it is safe to power-down the TCD when it is idle or after it has been fake-powered-down. Try to avoid powering down the device
+- when the TCD is clearly busy (such as when copying or renaming audio files);
+- in the first few seconds after a timetravel when **_Make time travels persistent_** is checked;
+- within 15 seconds after an audio volume change through a Rotary Encoder.
+
+The only write operations without user interaction and even while fake-powered-down take place
+- in the first second after a year change (Jan 1, 0:00) and
+- in the first second after a change from or to DST (daylight saving time).
+In those distinct three seconds per year a power loss should also be avoided.
+
 ### Calendar system
 
 Since Dec 11, 2023, the TCD firmware uses the [Julian Calendar](https://en.wikipedia.org/wiki/Julian_calendar) calendar from Jan 1, 1, until Sep 2, 1752, and for later dates the [Gregorian](https://en.wikipedia.org/wiki/Gregorian_calendar) one. Sep 2, 1752, was the last day the Julian calendar was used in the ["First" British Empire](https://en.wikipedia.org/wiki/British_Empire#%22First%22_British_Empire_(1707%E2%80%931783)) (Great Britain and its colonies, including eastern parts of North America, Canada). Other countries stopped using this calendar system way earlier; most of Europe, including Spain plus its colonies worldwide, had switched in 1582 already. DK/NO/NL (except Holland and Zeeland) switched in 1700, Japan in 1872, China in 1912, Russia in 1918.
