@@ -34,7 +34,7 @@ Features include
 - Support for [GPS receiver](#gps-receiver), used as time source and for actual [speed](#gps-for-speed) to be displayed on speedo display
 - Support for [rotary encoders](#rotary-encoder) for manual selection of speed to be displayed on Speedo display, &#127381; and/or audio volume (&#127381; DFRobot Gravity 360 and DuPPA I2CEncoder 2.1 added)
 - Support for [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for "room condition mode" and for displaying temperature on speedo display while idle (&#127381; MS8607 added)
-- Support for wireless communication ("[BTTF-Network](#bttf-network-bttfn)") with compatible other props such as CircuitSetup's [Flux Capacitor](https://fc.backtothefutu.re) and [SID](https://sid.backtothefutu.re) 
+- Wireless communication ("[BTTF-Network](#bttf-network-bttfn)") with compatible other props such as CircuitSetup's [Flux Capacitor](https://fc.backtothefutu.re) and [SID](https://sid.backtothefutu.re) 
 - Support for triggering time travels on [other props](#controlling-other-props) connected by wire
 - [Home Assistant](#home-assistant--mqtt) (MQTT 3.1.1) support
 
