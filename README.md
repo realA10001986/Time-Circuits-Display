@@ -1112,7 +1112,7 @@ Note that the night mode schedules and the Reminder are always based on actual p
 
 ##### &#9654; Play intro
 
-Selects whether the animated "Back to the Future" intro should be played upon power-up.
+Selects whether the animated intro should be played upon power-up.
 
 ##### &#9654; 24-hour clock mode
 
