@@ -969,7 +969,7 @@ Note that a wired connection only allows for synchronized time travel sequences,
 
 ### Connecting props wirelessly
 
-#### Basic-Telematics-Transmission-Framework (BTTF-Network, BTTFN)
+#### BTTF-Network (BTTFN)
 
 The TCD can communicate with other compatible props wirelessly, via WiFi. It can send out information about a time travel and an alarm, and other props can query the TCD for time, speed and some other data.
 
