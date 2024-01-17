@@ -1106,7 +1106,7 @@ int16_t clockDisplay::loadLastYear()
 
     if( (loadBuf[0] == (loadBuf[2] ^ 0xff)) &&
         (loadBuf[1] == (loadBuf[3] ^ 0xff)) ) {
-        
+
         return (int16_t)((loadBuf[1] << 8) | loadBuf[0]);
 
     }

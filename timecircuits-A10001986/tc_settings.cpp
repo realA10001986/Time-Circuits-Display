@@ -184,7 +184,7 @@ void settings_setup()
     // Pre-maturely use ENTER button (initialized again in keypad_setup())
     pinMode(ENTER_BUTTON_PIN, INPUT_PULLUP);
     delay(20);
-    
+
     #ifdef TC_DBG
     Serial.printf("%s: Mounting flash FS... ", funcName);
     #endif
@@ -988,7 +988,6 @@ bool loadCurVolume()
     char temp[6];
     bool writedefault = true;
     File configFile;
-    int ncv;
 
     curVolume = DEFAULT_VOLUME;
 
@@ -1036,7 +1035,7 @@ void saveCurVolume(bool useCache)
     if(useCache && (prevSavedVol == curVolume)) {
         return;
     }
-    
+
     if(!haveFS && !configOnSD) {
         Serial.printf("%s: %s\n", funcName, fsNoAvail);
         return;

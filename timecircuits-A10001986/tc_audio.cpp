@@ -100,8 +100,6 @@ static const float volTable[20] = {
 
 int curVolume = DEFAULT_VOLUME;
 
-static float lastHWVol = 0.0;
-
 static float curVolFact = 1.0;
 static bool  curChkNM   = true;
 static bool  dynVol     = true;
