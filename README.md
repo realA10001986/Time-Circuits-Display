@@ -1,8 +1,8 @@
 # Firmware for Time Circuits Display
 
-This repository holds the most current firmware for CircuitSetup's wonderful [Time Circuits Display](https://circuitsetup.us/product/complete-time-circuits-display-kit/) ("TCD") kit for reproducing an essential and iconic part of the Delorean Time Machine.
+This repository holds the most current firmware for CircuitSetup's wonderful [Time Circuits Display](https://circuitsetup.us/product/complete-time-circuits-display-kit/) ("TCD") kit, enabling you to reproduce an iconic part of the Delorean Time Machine.
 
-The parts are available [here](https://circuitsetup.us/product/complete-time-circuits-display-kit/).
+The kit parts are available [here](https://circuitsetup.us/product/complete-time-circuits-display-kit/).
 
 | ![TCD Front](https://user-images.githubusercontent.com/76924199/200327688-cfa7b1c2-abbd-464d-be6d-5d295e51056e.jpg) |
 |:--:|
