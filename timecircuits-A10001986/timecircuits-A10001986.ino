@@ -105,6 +105,8 @@
 
 /*  Changelog
  *
+ *  2024/01/17 (A10001986)
+ *    - Cleanup
  *  2024/01/16 (A10001986)
  *    - Keypad menu: Propose volume level similar to current knob position when
  *      switching from knob to pre-selected level.

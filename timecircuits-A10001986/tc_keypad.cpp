@@ -655,10 +655,6 @@ void keypad_loop()
                 );
                 specDisp = 10;
                 validEntry = true;
-
-            } else if(code == (getHrs1KYrs(1) ^ EEXSP5)) {
-
-                play_file("/ee5.mp3", PA_CHECKNM|PA_INTRMUS);
                 
             } else
                 invalidEntry = true;

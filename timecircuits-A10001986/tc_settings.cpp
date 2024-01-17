@@ -89,8 +89,8 @@ bool FlashROMode = false;
 /* Cache for volume */
 static uint8_t prevSavedVol = 254;
 
-#define NUM_AUDIOFILES 21
-#define SND_ENTER_IDX  9
+#define NUM_AUDIOFILES 20
+#define SND_ENTER_IDX  8
 #ifndef TWSOUND
 #define SND_ENTER_LEN   13374
 #define SND_STARTUP_LEN 21907
@@ -107,7 +107,6 @@ static const char *audioFiles[NUM_AUDIOFILES] = {
       "/ee2.mp3",
       "/ee3.mp3",
       "/ee4.mp3",
-      "/ee5.mp3",
       "/enter.mp3",
       "/intro.mp3",
       "/nmoff.mp3",
@@ -1306,7 +1305,7 @@ static bool check_if_default_audio_present()
     size_t sizes[10+NUM_AUDIOFILES] = {
       4178, 4178, 4178, 4178, 4178, 4178, 3760, 3760, 4596, 3760, // DTMF
       65230, 71500, 60633, 10478,           // alarm, alarmoff, alarmon, baddate
-      15184, 22983, 33364, 51701, 88190,    // ee1, ee2, ee3, ee4, ee5
+      15184, 22983, 33364, 51701,           // ee1, ee2, ee3, ee4
       SND_ENTER_LEN, 125804, 33853, 47228,  // enter, intro, nmoff, nmon
       16747, 151719, 3790, SND_STARTUP_LEN, // ping, reminder, shutdown, startup, 
       84894, 38899, 135447, 113713          // timer, timetravel, travelstart, travelstart2
