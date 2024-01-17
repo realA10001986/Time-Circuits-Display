@@ -4,7 +4,7 @@
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
  * (C) 2022-2024 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display
- * https://tcd.backtothefutu.re
+ * https://tcd.out-a-ti.me
  *
  * Time and Main Controller
  *
@@ -829,7 +829,7 @@ void time_boot()
     pinMode(EXTERNAL_TIMETRAVEL_OUT_PIN, OUTPUT);
     digitalWrite(EXTERNAL_TIMETRAVEL_OUT_PIN, LOW);
     #endif
-    
+   
     // Start the displays early to clear them
     presentTime.begin();
     destinationTime.begin();
@@ -1167,8 +1167,7 @@ void time_setup()
     uint16_t rtcYear = dt.year() - presentTime.getYearOffset();
 
     // lastYear: The year when the RTC was adjusted for the last time.
-    // If the RTC was just updated, everything is in place, lastYear
-    // will be saved in the time_loop if changed.
+    // If the RTC was just updated, everything is in place.
     // Otherwise load from NVM, and make required re-calculations.
     if(haveAuthTime) {
         lastYear = rtcYear;
@@ -1628,9 +1627,9 @@ void time_setup()
     }
 
     if(playIntro) {
-        const char *t1 = "             BACK";
-        const char *t2 = "TO";
-        const char *t3 = "THE FUTURE";
+        const char t1[] = { 0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x42,0x41,0x43,0x4b,0x00 };
+        const char t2[] = { 0x54,0x4f,0x00 }; 
+        const char t3[] = { 0x54,0x48,0x45,0x20,0x46,0x55,0x54,0x55,0x52,0x45,0x00 };
 
         play_file("/intro.mp3", PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
 

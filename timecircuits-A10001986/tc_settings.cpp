@@ -4,7 +4,7 @@
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
  * (C) 2022-2024 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display
- * https://tcd.backtothefutu.re
+ * https://tcd.out-a-ti.me
  *
  * Settings & file handling
  * 
@@ -184,7 +184,7 @@ void settings_setup()
     // Pre-maturely use ENTER button (initialized again in keypad_setup())
     pinMode(ENTER_BUTTON_PIN, INPUT_PULLUP);
     delay(20);
-
+    
     #ifdef TC_DBG
     Serial.printf("%s: Mounting flash FS... ", funcName);
     #endif
@@ -987,8 +987,8 @@ bool loadCurVolume()
     const char *funcName = "loadCurVolume";
     char temp[6];
     bool writedefault = true;
-    bool haveConfigFile = false;
     File configFile;
+    int ncv;
 
     curVolume = DEFAULT_VOLUME;
 
@@ -1009,7 +1009,7 @@ bool loadCurVolume()
                 if((ncv >= 0 && ncv <= 19) || ncv == 255) {
                     curVolume = ncv;
                     writedefault = false;
-                } 
+                }
             }
         } 
         configFile.close();
@@ -1036,7 +1036,7 @@ void saveCurVolume(bool useCache)
     if(useCache && (prevSavedVol == curVolume)) {
         return;
     }
-
+    
     if(!haveFS && !configOnSD) {
         Serial.printf("%s: %s\n", funcName, fsNoAvail);
         return;

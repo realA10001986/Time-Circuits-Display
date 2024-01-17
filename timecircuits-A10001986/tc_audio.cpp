@@ -4,7 +4,7 @@
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
  * (C) 2022-2024 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display
- * https://tcd.backtothefutu.re
+ * https://tcd.out-a-ti.me
  *
  * Sound handling
  *
@@ -99,6 +99,8 @@ static const float volTable[20] = {
 };
 
 int curVolume = DEFAULT_VOLUME;
+
+static float lastHWVol = 0.0;
 
 static float curVolFact = 1.0;
 static bool  curChkNM   = true;
@@ -1143,6 +1145,19 @@ static float getVolume()
     }
 
     return vol_val;
+}
+
+int getSWVolFromHWVol()
+{
+    float curHWvol = getRawVolume();
+    int i;
+    
+    for(i = 0; i < 20-1; i++) {
+        if(curHWvol <= volTable[i])
+            break;
+    }
+
+    return i;
 }
 
 bool checkAudioDone()

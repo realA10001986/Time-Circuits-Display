@@ -3,7 +3,7 @@
  * CircuitSetup.us Time Circuits Display
  * (C) 2022-2024 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display
- * https://tcd.backtothefutu.re
+ * https://tcd.out-a-ti.me
  * 
  * RTC Class (DS3231/PCF2129 RTC handling) and DateTime Class
  * 

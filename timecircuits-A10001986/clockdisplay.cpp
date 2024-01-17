@@ -4,7 +4,7 @@
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
  * (C) 2022-2024 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display
- * https://tcd.backtothefutu.re
+ * https://tcd.out-a-ti.me
  *
  * Clockdisplay Class: Handles the TC LED segment displays
  *
@@ -95,10 +95,15 @@ static const uint8_t idxtbl[] = {
 
 static const char *nullStr = "";
 
-static const char *fnLastYear = "/tcdly";
 static const char *fnEEPROM[3] = {
     "/tcddt", "/tcdpt", "/tcdlt"
 };
+static const char *fnLastYear = "/tcdly";
+
+
+/*
+ * ClockDisplay class
+ */
 
 // Store i2c address and display ID
 clockDisplay::clockDisplay(uint8_t did, uint8_t address)
@@ -1088,12 +1093,10 @@ int8_t clockDisplay::loadDST()
 // !!! Does not *SET* it, just returns it !!!
 int16_t clockDisplay::loadLastYear()
 {
-    uint8_t loadBuf[4];
+    uint8_t loadBuf[4] = { 0 };
 
     if(!isRTC())
         return -2;
-
-    memset(loadBuf, 0, 4);
 
     if(FlashROMode) {
         readFileFromSD(fnLastYear, loadBuf, 4);
@@ -1103,7 +1106,7 @@ int16_t clockDisplay::loadLastYear()
 
     if( (loadBuf[0] == (loadBuf[2] ^ 0xff)) &&
         (loadBuf[1] == (loadBuf[3] ^ 0xff)) ) {
-
+        
         return (int16_t)((loadBuf[1] << 8) | loadBuf[0]);
 
     }

@@ -4,7 +4,7 @@
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
  * (C) 2022-2024 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display
- * https://tcd.backtothefutu.re
+ * https://tcd.out-a-ti.me
  *
  * -------------------------------------------------------------------
  * License: MIT
@@ -104,7 +104,10 @@
  */
 
 /*  Changelog
- *   
+ *
+ *  2024/01/16 (A10001986)
+ *    - Keypad menu: Propose volume level similar to current knob position when
+ *      switching from knob to pre-selected level.
  *  2024/01/15 (A10001986)
  *    - Flush outstanding delayed saves before rebooting and on fake-power-off
  *    - Remove "Restart" menu item from CP, can't let WifiManager reboot behind

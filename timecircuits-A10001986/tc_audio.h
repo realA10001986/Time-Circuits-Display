@@ -4,7 +4,7 @@
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
  * (C) 2022-2024 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display
- * https://tcd.backtothefutu.re
+ * https://tcd.out-a-ti.me
  *
  * Sound handling
  *
@@ -53,6 +53,7 @@ void play_beep();
 void audio_loop();
 void play_file(const char *audio_file, uint16_t flags, float volumeFactor = 1.0);
 bool check_file_SD(const char *audio_file);
+int getSWVolFromHWVol();
 bool checkAudioDone();
 bool checkMP3Done();
 void stopAudio();

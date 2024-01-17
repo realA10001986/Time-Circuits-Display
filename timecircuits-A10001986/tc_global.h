@@ -4,7 +4,7 @@
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
  * (C) 2022-2024 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display
- * https://tcd.backtothefutu.re
+ * https://tcd.out-a-ti.me
  *
  * Global definitions
  */
@@ -27,9 +27,9 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION "V2.9.99"          // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "JAN152024"  // 13 chars max
+#define TC_VERSION_EXTRA "JAN162024"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "01152024"   // 12 chars max
+#define TC_VERSION_EXTRA "01162024"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -107,7 +107,7 @@
 // "fake" powered on. De-activating the switch "fake" powers down the device
 // (ie the displays are switched off, and no keypad input is accepted)
 // GPS speed will be shown on speedo display regardless of this switch.
-// DIY instructions to build a TFC Switch: https://tfc.backtothefutu.re
+// DIY instructions to build a TFC Switch: https://tfc.out-a-ti.me
 // Uncomment to include support for a Fake Power Switch.
 #define FAKE_POWER_ON
 
