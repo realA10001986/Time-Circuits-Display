@@ -34,7 +34,7 @@ Features include
 - Support for [GPS receiver](#gps-receiver), used as time source and for actual [speed](#gps-for-speed) to be displayed on speedo display
 - Support for [rotary encoders](#rotary-encoder) for manual selection of speed to be displayed on Speedo display, &#127381; and/or audio volume (&#127381; DFRobot Gravity 360 and DuPPA I2CEncoder 2.1 added)
 - Support for [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for "room condition mode" and for displaying temperature on speedo display while idle (&#127381; MS8607 added)
-- Wireless communication ("[BTTF-Network](#bttf-network-bttfn)") with compatible other props such as CircuitSetup's [Flux Capacitor](https://fc.backtothefutu.re) and [SID](https://sid.backtothefutu.re) 
+- Wireless communication ("[BTTF-Network](#bttf-network-bttfn)") with compatible other props such as CircuitSetup's [Flux Capacitor](https://fc.out-a-ti.me) and [SID](https://sid.out-a-ti.me) 
 - Support for triggering time travels on [other props](#controlling-other-props) connected by wire
 - [Home Assistant](#home-assistant--mqtt) (MQTT 3.1.1) support
 
@@ -749,7 +749,7 @@ Note that the switch actually needs to be a switch with a maintained contact; th
 
 In order to use the Fake Power Switch, check **_Use fake power switch_** in the Config Portal.
 
-[Here](https://tfc.backtothefutu.re) are some hints for building a TFC Switch like this one:
+[Here](https://tfc.out-a-ti.me) are some hints for building a TFC Switch like this one:
 
 ![TFC Switch](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/df7b0f3a-909a-4b6c-b1d3-95485a7a6c92)
 
@@ -788,7 +788,7 @@ What you need is a box, the LED segment displays and a HT16K33-based PCB that al
 |:--:|
 | Click to watch the video |
 
-The speedo display shown in this video is based on a fairly well-designed stand-alone replica I purchased on ebay. I removed the electronics inside and wired the LED segments to an Adafruit i2c backpack (from the Adafruit 878 product) and connected it to the TCD. Yes, it is really that simple. (The TFC switch was made by me, see [here](https://tfc.backtothefutu.re), it uses the [Fake Power Switch](#fake-power-switch) feature of the TCD.)
+The speedo display shown in this video is based on a fairly well-designed stand-alone replica I purchased on ebay. I removed the electronics inside and wired the LED segments to an Adafruit i2c backpack (from the Adafruit 878 product) and connected it to the TCD. Yes, it is really that simple. (The TFC switch was made by me, see [here](https://tfc.out-a-ti.me), it uses the [Fake Power Switch](#fake-power-switch) feature of the TCD.)
 
 In order to use the Speedometer display, select the correct display type in the Config Portal. There are two special options in the Speedo Display Type drop-down: *Ada 1911 (left tube)* and *Ada 878 (left tube)*. These two can be used if you connect only one 2-digit-tube to the respective Adafruit i2c backpack, as I did in case of my speedo replica as well as my [Wall Clock](#my-custom-made-time-circuits-wall-clock).
 
@@ -983,7 +983,7 @@ Here is a demonstration of all the props connected through BTTFN:
 
 On the TCD, no special configuration is required. However, if the TCD is supposed to send out notifications about time travel and alarm to connected BTTFN clients, usage of MQTT must be disabled or the **_Send event notifications_** option in the MQTT section of the Config Portal must be _unchecked_. The TCD only sends out such notifications either via BTTFN or MQTT, never both.
 
-On the other prop, such as CircuitSetup's [Flux Capacitor](https://circuitsetup.us/product/flux-capacitor-light-sound-pcb/?v=fa868488740a), [SID](https://sid.backtothefutu.re) or my DIY [Plutonium Gauges](https://dg.backtothefutu.re), the TCD's IP address (or hostname) must be entered into the *IP address or hostname of TCD* field on the Setup page in their Config Portal - that's all.
+On the other prop, such as CircuitSetup's [Flux Capacitor](https://circuitsetup.us/product/flux-capacitor-light-sound-pcb/?v=fa868488740a), [SID](https://sid.out-a-ti.me) or my DIY [Plutonium Gauges](https://dg.out-a-ti.me), the TCD's IP address (or hostname) must be entered into the *IP address or hostname of TCD* field on the Setup page in their Config Portal - that's all.
 
 The fact that the devices communicate directly with each other makes BTTFN the ideal solution for car setups. Also, while at home, the devices might be connected to an existing WiFi network, in a car, the TCD can act as access point for Flux Capacitor and SID (ie they are connecting to the *TCD-AP* WiFi network), and those then can talk the TCD wirelessly. The TCD has *car mode* for doing exactly this, see [here](#car-mode) and the documentation of the respective prop. 
 
@@ -1170,7 +1170,7 @@ See [here](#wifi-power-saving-features)
 
 ##### &#9654; Time zone
 
-The time zone of the place where the device is operated in POSIX format. Needs to be set in order to use NTP or GPS, and for DST (daylight saving). Defaults to UTC0. See [here](#appendix-c-time-zones), [here](https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv) or [here](https://tz.backtothefutu.re) for a list of valid time zones.
+The time zone of the place where the device is operated in POSIX format. Needs to be set in order to use NTP or GPS, and for DST (daylight saving). Defaults to UTC0. See [here](#appendix-c-time-zones), [here](https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv) or [here](https://tz.out-a-ti.me) for a list of valid time zones.
 
 ##### &#9654; NTP Server
 
@@ -1413,4 +1413,4 @@ Europe:
 - Central European Time: CET-1CEST,M3.5.0,M10.5.0/3
 - Eastern European Time: EET-2EEST,M3.5.0/3,M10.5.0/4
 
-A full list is [here](https://tz.backtothefutu.re).
+A full list is [here](https://tz.out-a-ti.me).
