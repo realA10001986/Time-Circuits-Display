@@ -5465,7 +5465,7 @@ static bool NTPHaveLocalTime()
 
 /**************************************************************
  ***                                                        ***
- ***               BTTF-network communication               ***
+ ***     Basic Telematics Transmission Framework (BTTFN)    ***
  ***                                                        ***
  **************************************************************/
 

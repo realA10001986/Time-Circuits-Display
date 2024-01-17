@@ -177,7 +177,7 @@
 
 // Custom stuff -----
 #define TWSOUND         // Use A10001986's sound files
-//#define TWPRIVATE     // A10001986's private customizations
+#define TWPRIVATE     // A10001986's private customizations
 
 #ifdef TWPRIVATE
 #undef TC_VERSION
