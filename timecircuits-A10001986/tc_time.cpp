@@ -697,7 +697,7 @@ static const int16_t tt_p0_delays[88] =
     230, 230, 240, 240, 240, 240, 240, 240, 250, 250,  // 50-59  60mph 8.3s    2.4
     250, 250, 260, 260, 270, 270, 270, 280, 290, 300,  // 60-69  70mph 11.0s   2.7
     320, 330, 350, 370, 370, 380, 380, 390, 400, 410,  // 70-79  80mph 14.7s   3.7
-    410, 410, 410, 410, 410, 410, 410, 410             // 80-87  90mph 18.8s   4,1
+    410, 410, 410, 410, 410, 410, 410, 410             // 80-87  90mph 18.8s   4.1
 };
 static long tt_p0_totDelays[88];
 #endif
@@ -807,7 +807,7 @@ static uint32_t NTPGetSecsSinceTCepoch();
 static bool NTPGetLocalTime(int& year, int& month, int& day, int& hour, int& minute, int& second, int& isDST);
 static bool NTPHaveLocalTime();
 
-// BTTF network stuff
+// Basic Telematics Transmission Framework
 #ifdef TC_HAVEBTTFN
 static void bttfn_setup();
 static void bttfn_notify(uint8_t targetType, uint8_t event, uint16_t payload = 0, uint16_t payload2 = 0);

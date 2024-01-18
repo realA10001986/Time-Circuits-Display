@@ -128,7 +128,7 @@
 // Uncomment for HomeAssistant MQTT protocol support
 #define TC_HAVEMQTT
 
-// Uncomment for bttf network support
+// Uncomment for Basic Telematics Transmission Framework (BTTF-N) support
 #define TC_HAVEBTTFN
 
 // Uncomment for bttfn discover (multicast)
