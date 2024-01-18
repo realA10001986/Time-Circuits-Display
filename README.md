@@ -983,7 +983,7 @@ Here is a demonstration of all the props connected through BTTFN:
 
 On the TCD, no special configuration is required. However, if the TCD is supposed to send out notifications about time travel and alarm to connected BTTFN clients, usage of MQTT must be disabled or the **_Send event notifications_** option in the MQTT section of the Config Portal must be _unchecked_. The TCD only sends out such notifications either via BTTFN or MQTT, never both.
 
-On the other prop, such as CircuitSetup's [Flux Capacitor](https://circuitsetup.us/product/flux-capacitor-light-sound-pcb/?v=fa868488740a), [SID](https://sid.out-a-ti.me) or my DIY [Plutonium Gauges](https://dg.out-a-ti.me), the TCD's IP address (or hostname) must be entered into the *IP address or hostname of TCD* field on the Setup page in their Config Portal - that's all.
+On the other prop, such as CircuitSetup's [Flux Capacitor](https://circuitsetup.us/product/flux-capacitor-light-sound-pcb/), [SID](https://circuitsetup.us/product/delorean-time-machine-status-indicator-display-sid/) or my DIY [Dash Gauges](https://dg.out-a-ti.me), the TCD's IP address (or hostname) must be entered into the *IP address or hostname of TCD* field on the Setup page in their Config Portal - that's all.
 
 The fact that the devices communicate directly with each other makes BTTFN the ideal solution for car setups. Also, while at home, the devices might be connected to an existing WiFi network, in a car, the TCD can act as access point for Flux Capacitor and SID (ie they are connecting to the *TCD-AP* WiFi network), and those then can talk the TCD wirelessly. The TCD has *car mode* for doing exactly this, see [here](#car-mode) and the documentation of the respective prop. 
 
