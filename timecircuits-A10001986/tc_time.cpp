@@ -1627,31 +1627,30 @@ void time_setup()
     }
 
     if(playIntro) {
-        const char t1[] = { 0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x20,0x42,0x41,0x43,0x4b,0x00 };
-        const char t2[] = { 0x54,0x4f,0x00 }; 
-        const char t3[] = { 0x54,0x48,0x45,0x20,0x46,0x55,0x54,0x55,0x52,0x45,0x00 };
+        const char *t1 = "             TIME";
+        const char *t2 = "             CIRCUITS";
+        const char *t3 = "ON";
 
         play_file("/intro.mp3", PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
 
         myIntroDelay(1200);
         destinationTime.setBrightnessDirect(15);
-        presentTime.setBrightnessDirect(0);
+        presentTime.setBrightnessDirect(15);
         departedTime.setBrightnessDirect(0);
-        presentTime.off();
         departedTime.off();
         destinationTime.showTextDirect(t1);
         presentTime.showTextDirect(t2);
         departedTime.showTextDirect(t3);
         destinationTime.on();
+        presentTime.on();
         for(int i = 0; i < 14; i++) {
            myIntroDelay(50, false);
            destinationTime.showTextDirect(&t1[i]);
+           presentTime.showTextDirect(&t2[i]);
         }
         myIntroDelay(500);
-        presentTime.on();
         departedTime.on();
         for(int i = 0; i <= 15; i++) {
-            presentTime.setBrightnessDirect(i);
             departedTime.setBrightnessDirect(i);
             myIntroDelay(100);
         }
