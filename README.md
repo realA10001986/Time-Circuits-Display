@@ -60,7 +60,7 @@ The firmware comes with a number of sound files which need to be installed separ
 
 *If your TCD previously ran a firmware from CircuitSetup (ie. pre-installed or downloaded from their github), a re-installation of the audio files **from this repository** is required. You cannot use CircuitSetup's audio files with the firmware available here, or vice versa.*
 
-- Download "install/sound-pack-xxxxxxxx.zip" and extract it to the root directory of of a FAT32 formatted SD card; the mp3 files need to be in the top-most folder on the SD, I stress this because some unzip tools create a directory in which they put the files.
+- Download "install/sound-pack-xxxxxxxx.zip" and extract it to the root directory of of a FAT32 formatted SD card; the file(s) need to be in the top-most folder on the SD, I stress this because some unzip tools create a directory in which they put the files.
 - power down the TCD,
 - insert this SD card into the device's slot and 
 - power up the TCD.
