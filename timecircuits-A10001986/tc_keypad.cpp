@@ -1009,7 +1009,6 @@ void keypad_loop()
             specDisp = 10;
             validEntry = true;
 
-        #ifdef TC_HAVEBTTFN
         } else if((strLen == DATELEN_TIME || strLen == DATELEN_ECMD) && 
                         (dateBuffer[0] == '3' ||
                          dateBuffer[0] == '6' ||
@@ -1035,7 +1034,6 @@ void keypad_loop()
                 bttfnSendPCGCmd(cmd);
             }
             validEntry = true;
-        #endif
         
         } else if(strLen == DATELEN_REM) {
 

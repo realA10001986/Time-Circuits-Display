@@ -312,9 +312,7 @@ static void doShowSensors();
 #endif
 static void displayIP();
 static void doShowNetInfo();
-#ifdef TC_HAVEBTTFN
 static void doShowBTTFNInfo();
-#endif
 static bool menuWaitForRelease();
 static bool checkEnterPress();
 static void prepareInput(uint16_t number);
@@ -642,7 +640,6 @@ void enter_menu()
         // Show net info
         doShowNetInfo();
 
-    #ifdef TC_HAVEBTTFN
     } else if(menuItemNum == MODE_CLI) {   // Show bttfn clients
 
         allOff();
@@ -650,8 +647,7 @@ void enter_menu()
 
         // Show client info
         doShowBTTFNInfo();
-
-    #endif  
+ 
     #if defined(TC_HAVELIGHT) || defined(TC_HAVETEMP)
     } else if(menuItemNum == MODE_SENS) {   // Show light sensor info
 
@@ -774,9 +770,6 @@ static bool menuSelect(int& number, int mode_min)
             if(number == MODE_SENS && !useLight && !useTemp) number++;
             #else
             if(number == MODE_SENS) number++;
-            #endif
-            #ifndef TC_HAVEBTTFN
-            if(number == MODE_CLI) number++;
             #endif
             if(number > MODE_MAX) number = mode_min;
 
@@ -920,7 +913,6 @@ static void menuShow(int number)
             lt_on();
         }
         break;
-    #ifdef TC_HAVEBTTFN
     case MODE_CLI:
         #ifdef IS_ACAR_DISPLAY
         dt_showTextDirect("BTTFN");
@@ -933,7 +925,6 @@ static void menuShow(int number)
         dt_on();
         lt_off();
         break;
-    #endif
     case MODE_VER:  // Version info
         dt_showTextDirect("VERSION");
         dt_on();
@@ -2100,7 +2091,6 @@ static void doShowNetInfo()
 /*
  * Show BTTFN network clients ##################################
  */
-#ifdef TC_HAVEBTTFN
 static void displayClient(int numCli, int number)
 {
     uint8_t *ip;
@@ -2184,7 +2174,6 @@ void doShowBTTFNInfo()
 
     }
 }
-#endif
 
 /*
  * Install default audio files from SD to flash FS #############
@@ -2259,8 +2248,9 @@ void doCopyAudioFiles()
         delIDfile = true;
     }
 
-    if(delIDfile)
+    if(delIDfile) {
         delete_ID_file();
+    }
     
     menudelay(2000);
 
@@ -2446,10 +2436,8 @@ void myloops(bool menuMode)
     #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE)
     gps_loop(menuMode);  // 6-12ms without delay, 8-13ms with delay
     #endif
-    #ifdef TC_HAVEBTTFN
     #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE)
     audio_loop();
     #endif
     bttfn_loop();
-    #endif
 }

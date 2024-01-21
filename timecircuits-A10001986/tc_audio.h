@@ -30,3 +30,54 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
+#ifndef _TC_AUDIO_H
+#define _TC_AUDIO_H
+
+// By default, use the volume knob
+#define DEFAULT_VOLUME 255
+
+#define PA_CHECKNM 0x0001
+#define PA_INTRMUS 0x0002
+#define PA_ALLOWSD 0x0004
+#define PA_DYNVOL  0x0008
+#define PA_NOID3TS 0x0010
+#define PA_LOOPNOW 0x0020
+
+void  audio_setup();
+void  audio_loop();
+
+void  play_file(const char *audio_file, uint16_t flags, float volumeFactor = 1.0);
+void  play_keypad_sound(char key);
+void  play_hour_sound(int hour);
+void  play_beep();
+
+bool  check_file_SD(const char *audio_file);
+int   getSWVolFromHWVol();
+bool  checkAudioDone();
+bool  checkMP3Done();
+void  stopAudio();
+void  decodeID3(char *artist, char *track);
+
+void  mp_init(bool isSetup = false);
+void  mp_play(bool forcePlay = true);
+bool  mp_stop();
+void  mp_next(bool forcePlay = false);
+void  mp_prev(bool forcePlay = false);
+int   mp_gotonum(int num, bool force = false);
+void  mp_makeShuffle(bool enable);
+int   mp_checkForFolder(int num);
+int   mp_get_currently_playing();
+
+extern bool audioInitDone;
+extern bool audioMute;
+extern bool muteBeep;
+
+extern bool haveMusic;
+extern bool mpActive;
+extern bool haveId3;
+extern char id3[];
+
+extern int  curVolume;
+
+#endif

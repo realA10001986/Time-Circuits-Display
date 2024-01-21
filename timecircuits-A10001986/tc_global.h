@@ -27,9 +27,9 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION "V2.9.99"          // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "JAN182024"  // 13 chars max
+#define TC_VERSION_EXTRA "JAN212024"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "01182024"   // 12 chars max
+#define TC_VERSION_EXTRA "01212024"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -128,13 +128,8 @@
 // Uncomment for HomeAssistant MQTT protocol support
 #define TC_HAVEMQTT
 
-// Uncomment for Basic Telematics Transmission Framework (BTTF-N) support
-#define TC_HAVEBTTFN
-
 // Uncomment for bttfn discover (multicast)
-#ifdef TC_HAVEBTTFN
 #define TC_BTTFN_MC
-#endif
 
 // Uncomment to include Exhibition mode
 // 99mmddyyyyhhMM sets (and enables) EM with fixed present time as given; 

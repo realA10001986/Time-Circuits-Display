@@ -105,10 +105,11 @@
 
 /*  Changelog
  *
+ *  2024/01/21 (A10001986)
+ *    - BTTFN no longer compile time option, always included
+ *    - Major cleanup (code re-ordering, no functional changes)
  *  2024/01/18 (A10001986)
- *    - Cleanup
- *  2024/01/17 (A10001986)
- *    - Cleanup
+ *    - Fix WiFi menu size
  *  2024/01/16 (A10001986)
  *    - Keypad menu: Propose volume level similar to current knob position when
  *      switching from knob to pre-selected level.
@@ -1210,7 +1211,5 @@ void loop()
     audio_loop();
     wifi_loop();
     audio_loop();
-    #ifdef TC_HAVEBTTFN
     bttfn_loop();
-    #endif
 }
