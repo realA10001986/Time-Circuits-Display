@@ -136,6 +136,10 @@
 
 #define SECS1900_1970 2208988800ULL
 
+// Temperature update intervals
+#define TEMP_UPD_INT_L (2*60*1000)
+#define TEMP_UPD_INT_S (30*1000)
+
 unsigned long        powerupMillis = 0;
 
 // millis64
@@ -309,8 +313,6 @@ static const char *badTZ = "Failed to parse TZ\n";
 // "Room condition" mode
 static bool rcMode = false;
 bool        haveRcMode = false;
-#define TEMP_UPD_INT_L (2*60*1000)
-#define TEMP_UPD_INT_S (30*1000)
 
 // WC stuff
 bool        WcHaveTZ1   = false;
