@@ -14,7 +14,7 @@ The sound pack is not updated as often as the firmware itself. If you have previ
 
 **You cannot mix firmwares and audio files from this repository and CircuitSetup's. If you install the firmware available here, you need to install the audio files from this repository as well, and vice versa.**
 
-- Download "sound-pack-xxxxxxxx.zip" and extract it to the root directory of of a FAT32 formatted SD card; the mp3 files need to be in the top-most folder on the SD, I stress this because some unzip tools create a directory in which they put the files.
+- Download "sound-pack-xxxxxxxx.zip" and extract it to the root directory of of a FAT32 formatted SD card; the file(s) need to be in the top-most folder on the SD, I stress this because some unzip tools create a directory in which they put the files.
 - power down the clock,
 - insert this SD card into the device's slot and 
 - power up the clock.
