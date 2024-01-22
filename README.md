@@ -1082,10 +1082,6 @@ Note that this page has nothing to do with Access Point mode; it is strictly for
 
 This leads to the [Setup page](#setup-page).
 
-##### &#9654; Restart
-
-This reboots the TCD. No confirmation dialog is displayed.
-
 ##### &#9654; Update
 
 This leads to the firmware update page. You can select a locally stored firmware image file to upload (such as the ones published here in the install/ folder).
