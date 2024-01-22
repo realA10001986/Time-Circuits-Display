@@ -105,6 +105,9 @@
 
 /*  Changelog
  *
+ *  2024/01/22 (A10001986)
+ *    - Save Exh-mode settings when reformatting Flash FS or when copying from
+ *      or to SD
  *  2024/01/21 (A10001986)
  *    - BTTFN no longer compile time option, always included
  *    - Major cleanup (code re-ordering, no functional changes)

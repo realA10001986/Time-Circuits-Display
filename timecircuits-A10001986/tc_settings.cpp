@@ -1076,7 +1076,8 @@ void loadStaleTime(void *target, bool& currentOn)
         haveConfigFile = readFileFromFS(stCfgName, loadBuf, sizeof(loadBuf));
     }
 
-    if(!haveConfigFile) return;
+    if(!haveConfigFile) 
+        return;
 
     for(uint8_t i = 0; i < 1+(2*sizeof(dateStruct)); i++) {
         sum += (loadBuf[i] ^ 0x55);
@@ -1085,6 +1086,8 @@ void loadStaleTime(void *target, bool& currentOn)
         currentOn = loadBuf[0] ? true : false;
         memcpy(target, (void *)&loadBuf[1], 2*sizeof(dateStruct));
     }
+
+    return;
 }
 
 void saveStaleTime(void *source, bool currentOn)
@@ -1559,10 +1562,10 @@ void formatFlashFS()
  * changed "save to SD"-option in CP
  */
 void copySettings()
-{   
+{       
     if(!haveSD || !haveFS) 
         return;
-
+    
     configOnSD = !configOnSD;
 
     if(configOnSD || !FlashROMode) {
@@ -1573,12 +1576,17 @@ void copySettings()
         saveAlarm();
         saveReminder();
         saveCarMode();
+        #ifdef HAVE_STALE_PRESENT
+        if(stalePresent) {
+            saveStaleTime((void *)&stalePresentTime[0], stalePresent);
+        }
+        #endif
     }
 
     configOnSD = !configOnSD;
 }
 
-// Re-write IP/alarm/reminder/vol settings
+// Re-write secondary settings
 // Used during audio file installation when flash FS needs
 // to be re-formatted.
 // Is never called in FlashROmode
@@ -1600,6 +1608,11 @@ void rewriteSecondarySettings()
     saveAlarm();
     saveReminder();
     saveCarMode();
+    #ifdef HAVE_STALE_PRESENT
+    if(stalePresent) {
+        saveStaleTime((void *)&stalePresentTime[0], stalePresent);
+    }
+    #endif
     
     configOnSD = oldconfigOnSD;
 
