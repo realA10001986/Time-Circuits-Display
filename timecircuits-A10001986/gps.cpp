@@ -56,7 +56,7 @@
 static int DBGloopCnt = 0;
 #endif
 
-static struct GPSsetupStruct {
+static const struct GPSsetupStruct {
     uint8_t rmc;
     uint8_t vtg;
     uint8_t zda;

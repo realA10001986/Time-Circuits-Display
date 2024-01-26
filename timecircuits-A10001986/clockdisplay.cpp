@@ -173,17 +173,11 @@ void clockDisplay::lampTest(bool randomize)
     Wire.beginTransmission(_address);
     Wire.write(0x00);  // start address
 
-    if(randomize) {
-        uint32_t rnd = esp_random();
-        for(int i = 0; i < CD_BUF_SIZE; i++) {
-            Wire.write(((rand() % 0x7f) ^ rnd) & 0x7f);
-            Wire.write((((rand() % 0x7f) ^ (rnd >> 8))) & 0x77);
-        }
-    } else {
-        for(int i = 0; i < CD_BUF_SIZE; i++) {
-            Wire.write(0xaa);
-            Wire.write(0x55);
-        }
+    uint32_t rnd = esp_random();
+
+    for(int i = 0; i < CD_BUF_SIZE; i++) {
+        Wire.write(randomize ? ((rand() % 0x7f) ^ rnd) & 0x7f : 0xaa);
+        Wire.write(randomize ? (((rand() % 0x7f) ^ (rnd >> 8))) & 0x77 : 0x55);
     }
     
     Wire.endTransmission();
@@ -555,7 +549,7 @@ void clockDisplay::setHour(uint16_t hourNum)
 {
     uint16_t seg = 0;
     
-    if(hourNum > 23) 
+    if(hourNum > 23)
         hourNum = 23;
 
     _hour = hourNum;

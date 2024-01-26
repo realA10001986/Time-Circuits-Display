@@ -218,7 +218,7 @@ void writeIpSettings();
 void deleteIpSettings();
 
 void doCopyAudioFiles();
-bool copy_audio_files();
+bool copy_audio_files(bool& delIDfile);
 
 bool check_allow_CPA();
 void delete_ID_file();

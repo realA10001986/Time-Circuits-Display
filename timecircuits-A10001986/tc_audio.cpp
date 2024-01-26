@@ -77,8 +77,8 @@ bool audioMute     = false;
 
 bool muteBeep      = true;
 
-bool haveMusic = false;
-bool mpActive = false;
+bool            haveMusic = false;
+bool            mpActive = false;
 static uint16_t maxMusic = 0;
 static uint16_t *playList = NULL;
 static int      mpCurrIdx = 0;

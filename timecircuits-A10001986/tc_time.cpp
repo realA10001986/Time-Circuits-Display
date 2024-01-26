@@ -5742,6 +5742,9 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
            !timeTravelP0 && !timeTravelP1 && !timeTravelRE) {
             #ifdef EXTERNAL_TIMETRAVEL_IN
             isEttKeyPressed = isEttKeyImmediate = true;
+            #ifdef TC_DBG
+            Serial.printf("BTTFN-wide TT triggered by device type %d\n", buf[10+13]);
+            #endif
             #endif
         }
         buf[5] &= 0x7f;

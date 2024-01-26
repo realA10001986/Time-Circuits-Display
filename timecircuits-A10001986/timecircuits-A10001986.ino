@@ -50,7 +50,7 @@
  * - Go to "Tools" > "Board: ..." -> "ESP32 Arduino" and select your board model (the
  *   CircuitSetup original boards are "NodeMCU-32S")
  *   
- * - Connect your ESP32 board.
+ * - Connect your ESP32 board using a suitable USB cable.
  *   Note that NodeMCU ESP32 boards come in two flavors that differ in which serial 
  *   communications chip is used: Either SLAB CP210x USB-to-UART or CH340. Installing
  *   a driver might be required.
@@ -105,6 +105,11 @@
 
 /*  Changelog
  *
+ *  2024/01/26 (A10001986)
+ *    - Add sound-pack versioning; re-installation required with this FW update
+ *    - Reformat FlashFS only if audio file installation fails due to a write error
+ *    - Some minor bin-size-crunching
+ *    - Allow sound installation in Flash-RO-mode
  *  2024/01/22 (A10001986)
  *    - Save Exh-mode settings when reformatting Flash FS or when copying from
  *      or to SD

@@ -2230,26 +2230,22 @@ void doCopyAudioFiles()
 
     if(!doCancDone || !newCanc) return;
 
-    if(!copy_audio_files()) {
-        // If copy fails, re-format flash FS
+    if((!copy_audio_files(delIDfile)) && !FlashROMode) {
+        // If copy fails because of a write error, re-format flash FS
         lt_showTextDirect("FORMATTING");
-        formatFlashFS();            // Format
-        rewriteSecondarySettings(); // Re-write alarm/reminder/ip/vol settings
+        formatFlashFS();             // Format
+        rewriteSecondarySettings();  // Re-write secondary settings
         #ifdef TC_DBG 
         Serial.println("Re-writing general settings");
         #endif
-        write_settings();           // Re-write general settings
-        if(!copy_audio_files()) {   // Retry copy
-            menudelay(3000);
-        } else {
-            delIDfile = true;
-        }
-    } else {
-        delIDfile = true;
+        write_settings();            // Re-write general settings
+        copy_audio_files(delIDfile); // Retry copy
     }
 
     if(delIDfile) {
         delete_ID_file();
+    } else {
+        menudelay(3000);
     }
     
     menudelay(2000);
@@ -2294,14 +2290,9 @@ void file_copy_progress()
     }
 }
 
-void file_copy_done()
+void file_copy_done(int err)
 {
-    lt_showTextDirect("DONE");
-}
-
-void file_copy_error()
-{
-    lt_showTextDirect("ERROR");
+    lt_showTextDirect(err ? "ERROR" : "DONE");
 }
 
 /*
