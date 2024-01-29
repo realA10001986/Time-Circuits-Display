@@ -1314,7 +1314,7 @@ The username (and optionally the password) to be used when connecting to the bro
 
 ##### &#9654; Topic to display
 
-An optional topic the TCD subscribes to in order to display messages on the *Destination Time" display.
+An optional topic the TCD subscribes to in order to display messages on the *Destination Time* display.
 
 ##### &#9654; Send event notifications
 
