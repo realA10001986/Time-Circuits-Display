@@ -1376,6 +1376,8 @@ For longer cables, ie >50cm (>20in), I recommend using a twisted pair cable, and
 
 I had a GPS receiver connected through such a cable and had no issues over a distance of 5m/16ft.
 
+The CircuitSetup [Speedo Kit](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit/) comes with a twisted pair cable with three pairs. In order to avoid problems, use one pair for each 5V+GND, SDA+GND and SCL+GND.
+
 #### i2c addresses
 
 Most sensors either only support one i2c address, or are recognized by the firmware (only) by their default address. For those, nothing must be done in order to use them with the Time Circuits Display.
