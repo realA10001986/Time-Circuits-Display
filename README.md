@@ -56,16 +56,16 @@ There are different alternative ways to install this firmware:
 
 ### Audio file installation
 
-The firmware comes with a number of sound files which need to be installed separately. These sound files are not updated as often as the firmware itself. If you have previously installed the latest version of the sound-pack, you normally don't have to re-install the audio files when you update the firmware. Only if either a new version of the sound-pack is released, or your TCD is quiet after a firmware update (what will be the case if you see "WAIT" during boot), a re-installation is needed.
+The firmware comes with audio data ("sound-pack") which needs to be installed separately. The audio data is not updated as often as the firmware itself. If you have previously installed the latest version of the sound-pack, you normally don't have to re-install the audio data when you update the firmware. Only if either a new version of the sound-pack is released, or your TCD is quiet after a firmware update (what will be the case if you see "WAIT" during boot), a re-installation is needed.
 
-*If your TCD previously ran a firmware from CircuitSetup (ie. pre-installed or downloaded from their github), a re-installation of the audio files **from this repository** is required. You cannot use CircuitSetup's audio files with the firmware available here, or vice versa.*
+*If your TCD previously ran a firmware from CircuitSetup (ie. pre-installed or downloaded from their github), a re-installation of the audio data **from this repository** is required. You cannot use CircuitSetup's audio data with the firmware available here, or vice versa.*
 
-- Download "install/sound-pack-xxxxxxxx.zip" and extract it to the root directory of of a FAT32 formatted SD card; the file(s) need to be in the top-most folder on the SD, I stress this because some unzip tools create a directory in which they put the files.
+- Download "install/sound-pack-xxxxxxxx.zip" and extract it to the root directory of of a FAT32 formatted SD card; this ZIP contains a ".bin" file that needs to be in the top-most folder on the SD, I stress this because some unzip tools create a directory in which they put the files from the archive.
 - power down the TCD,
 - insert this SD card into the device's slot and 
 - power up the TCD.
  
-If (and only if) the **exact and complete contents of sound-pack archive** is found on the SD card, the TCD will show "INSTALL AUDIO FILES?" after power-up. Press ENTER briefly to toggle between "CANCEL" and "PROCEED". Choose "PROCEED" and hold the ENTER key for 2 seconds.
+If the contents of sound-pack archive is found on the SD card, the TCD will show "INSTALL AUDIO FILES?" after power-up. Press ENTER briefly to toggle between "CANCEL" and "PROCEED". Choose "PROCEED" and hold the ENTER key for 2 seconds.
 
 If you, for whatever reason, chose "CANCEL", you can still invoke the installer through the [keypad menu](#how-to-install-the-default-audio-files), or by rebooting the TCD.
 
