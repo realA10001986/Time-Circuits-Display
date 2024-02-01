@@ -504,29 +504,29 @@ Note that the SD card must be inserted before powering up the TCD. It is not rec
 
 ### Sound file substitution
 
-The provided audio files ("sound-pack") are, after [proper installation](#audio-file-installation), integral part of the firmware and stored in the device's flash memory. 
+The provided audio clips ("sound-pack") are, after [proper installation](#audio-file-installation), integral part of the firmware and stored in the device's flash memory. 
 
-These sounds can be substituted by your own sound files on a FAT32-formatted SD card. These files will be played back directly from the SD card during operation, so the SD card has to remain in the slot. The built-in [Audio file installer](#audio-file-installation) cannot be used to replace default sounds in the device's flash memory with custom sounds.
+These sounds can be substituted by your own sound files on a FAT32-formatted SD card. These files will be played back directly from the SD card during operation, so the SD card has to remain in the slot.
 
 Your replacements need to be put in the root (top-most) directory of the SD card, be in mp3 format (128kbps max) and named as follows:
 - "alarm.mp3". Played when the alarm sounds.
-- "alarmon.mp3". Played when enabling the alarm
-- "alarmoff.mp3". Played when disabling the alarm
-- "nmon.mp3". Played when manually enabling night mode
-- "nmoff.mp3". Played when manually disabling night mode
+- "alarmon.mp3". Played when enabling the alarm,
+- "alarmoff.mp3". Played when disabling the alarm,
+- "nmon.mp3". Played when manually enabling night mode,
+- "nmoff.mp3". Played when manually disabling night mode,
 - "reminder.mp3". Played when the reminder is due.
 - "timer.mp3". Played when the count-down timer expires.
+- "ping.mp3". Played with re-connection WiFi by holding '7' on the keypad.
 
 The following sounds are time-sync'd to display action. If you decide to substitute these with your own, be prepared to lose synchronicity:
-- "enter.mp3". Played when a date was entered and ENTER was pressed
-- "baddate.mp3". Played when a bad (too short or too long) date was entered and ENTER was pressed
-- "intro.mp3": Played during the power-up intro
-- "travelstart.mp3". Played when a time travel starts.
+- "enter.mp3". Played when a date was entered and ENTER was pressed.
+- "baddate.mp3". Played when a bad (too short or too long) date was entered and ENTER was pressed.
+- "intro.mp3": Played during the power-up intro.
+- "travelstart.mp3". Played when a time travel starts (including "acceleration").
+- "travelstart2.mp3". Played when a time travel starts (without "acceleration").
 - "timetravel.mp3". Played when re-entry of a time travel takes place.
-- "shutdown.mp3". Played when the device is fake "powered down" using an external switch (see below)
-- "startup.mp3". Played when the TCD is connected to power and finished booting
-
-If you intend to use the very same SD card that you used for installing the default sound files, please remove the files from the sound-pack from the SD card first.
+- "shutdown.mp3". Played when the device is fake "powered down".
+- "startup.mp3". Played when the TCD is connected to power and finished booting.
 
 ### Additional Custom Sounds
 
@@ -534,10 +534,10 @@ The firmware supports some additional user-provided sound effects, which it will
 
 - "hour.mp3": Will be played every hour, on the hour. This feature is disabled in night mode.
 - "hour-xx.mp3", xx being 00 through 23: Sounds-on-the-hour for specific hours that will be played instead of "hour.mp3". If a sound for a specific hour is not present, "hour.mp3" will be played, if that one exists.
-- "key3.mp3" and/or "key6.mp3": Will be played if you hold the "3"/"6" key for 2 seconds.
+- "key3.mp3"/"key6.mp3": Will be played when holding the "3"/"6" key for 2 seconds.
 - "ha-alert.mp3" will be played when a [HA/MQTT](#home-assistant--mqtt) message is received.
 
-"hour.mp3"/"hour-xx.mp3", "key3.mp3", "key6.mp3" and "ha-alert.mp3" are not provided here. You can use any mp3, with 128kpbs or less.
+"hour.mp3"/"hour-xx.mp3", "key3.mp3"/"key6.mp3" and "ha-alert.mp3" are not provided here. You can use any mp3, with 128kpbs or less.
 
 ## The Music Player
 
