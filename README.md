@@ -498,7 +498,7 @@ Note: While the alarm and the sound-on-the-hour adhere to the **_Alarm base is r
 
 Preface note on SD cards: For unknown reasons, some SD cards simply do not work with this device. For instance, I had no luck with Sandisk Ultra 32GB and  "Intenso" cards. If your SD card is not recognized, check if it is formatted in FAT32 format (not exFAT!). Also, the size must not exceed 32GB (as larger cards cannot be formatted with FAT32). Transcend SDHC 4GB cards work fine.
 
-The SD card, apart from being used to [install](#audio-file-installation) the default audio files, can be used for substituting default sounds, some additional custom sounds, and for music played back by the [Music player](#the-music-player).
+The SD card, apart from being used to [install](#audio-file-installation) the default audio files, can be used for substituting default sounds, some additional custom sounds, and for music played back by the [Music player](#the-music-player). Also, it is recommended to store [secondary settings](#-save-secondary-settings-on-sd) on the SD card to minimize [Flash Wear](#flash-wear).
 
 Note that the SD card must be inserted before powering up the TCD. It is not recognized if inserted while the TCD is running. Furthermore, do not remove the SD card while the TCD is powered.
 
