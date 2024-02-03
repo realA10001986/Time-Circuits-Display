@@ -60,12 +60,12 @@ The firmware comes with audio data ("sound-pack") which needs to be installed se
 
 *If your TCD previously ran a firmware from CircuitSetup (ie. pre-installed or downloaded from their github), a re-installation of the audio data **from this repository** is required. You cannot use CircuitSetup's audio data with the firmware available here, or vice versa.*
 
-- Download "install/sound-pack-xxxxxxxx.zip" and extract it to the root directory of of a FAT32 formatted SD card; this ZIP contains a ".bin" file that needs to be in the top-most folder on the SD, I stress this because some unzip tools create a directory in which they put the files from the archive.
+- Download "install/sound-pack-xxxxxxxx.zip" and extract it to the root directory of of a FAT32 formatted SD card; this ZIP contains a "TCDA.bin" file that needs to be in the top-most folder on the SD, I stress this because some unzip tools create a directory in which they put the files from the archive.
 - power down the TCD,
-- insert this SD card into the device's slot and 
+- insert this SD card into the TCD's slot and 
 - power up the TCD.
  
-If the contents of sound-pack archive is found on the SD card, the TCD will show "INSTALL AUDIO FILES?" after power-up. Press ENTER briefly to toggle between "CANCEL" and "PROCEED". Choose "PROCEED" and hold the ENTER key for 2 seconds.
+If the TCDA.bin file is found on the SD card, the TCD will show "INSTALL AUDIO FILES?" after power-up. Press ENTER briefly to toggle between "CANCEL" and "PROCEED". Choose "PROCEED" and hold the ENTER key for 2 seconds.
 
 If you, for whatever reason, chose "CANCEL", you can still invoke the installer through the [keypad menu](#how-to-install-the-default-audio-files), or by rebooting the TCD.
 
