@@ -1207,7 +1207,7 @@ uint8_t clockDisplay::getLED7AlphaChar(uint8_t value)
     if(value < 32 || value >= 127 + 2)
         return 0;
     
-    if(_corr6 && value == '6')
+    if(value == '6' && _corr6)
         return numDigs[value - 32] | 0x01;
     
     return numDigs[value - 32];
@@ -1221,7 +1221,7 @@ uint16_t clockDisplay::getLEDAlphaChar(uint8_t value)
         return 0;
 
     // For text, use common "6" pattern to conform with 7-seg-part
-    if(_corr6 && value == '6')
+    if(value == '6' && _corr6)
         return alphaChars['6' - 32] | 0x0001;
 
     return alphaChars[value - 32];
@@ -1249,9 +1249,9 @@ uint16_t clockDisplay::makeNum(uint8_t num, uint16_t dflags)
 // (leave buffer intact, directly write to display)
 void clockDisplay::directCol(int col, int segments)
 {
-    if(_yearDot && (col == CD_YEAR_POS + 1)) {
+    if((col == CD_YEAR_POS + 1) && _yearDot) {
         segments |= 0x8000;
-    } else if(_withColon && (col == CD_YEAR_POS)) {
+    } else if((col == CD_YEAR_POS) && _withColon) {
         segments |= 0x8080;
     }
     Wire.beginTransmission(_address);

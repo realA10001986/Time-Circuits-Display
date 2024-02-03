@@ -115,6 +115,9 @@ bool          headLineShown = false;
 bool          blinker       = true;
 unsigned long renNow1, renNow2;
 
+static char       dtmfBuf[] = "/Dtmf-0.mp3\0";    // Not const
+static const char *hsnd     = "/hour.mp3";
+
 static float  getVolume();
 
 static int    mp_findMaxNum();
@@ -312,18 +315,13 @@ void play_file(const char *audio_file, uint16_t flags, float volumeFactor)
  */
 void play_keypad_sound(char key)
 {
-    char buf[16] = "/Dtmf-0.mp3\0";
-
-    if(key) {
-        buf[6] = key;
-        play_file(buf, PA_CHECKNM|PA_NOID3TS|PA_LOOPNOW, 0.6);
-    }
+    dtmfBuf[6] = key;
+    play_file(dtmfBuf, PA_CHECKNM|PA_NOID3TS|PA_LOOPNOW, 0.6);
 }
 
 void play_hour_sound(int hour)
 {
-    char buf[16];
-    const char *hsnd = "/hour.mp3";
+    char buf[32];
 
     if(!haveSD || mpActive) return;
     // Not even called in night mode

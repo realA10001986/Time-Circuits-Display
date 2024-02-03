@@ -293,7 +293,7 @@ static const char *alarmWD[10] = {
       "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"
 };
 
-static bool menuSelect(int& number, int mode_min);
+static bool menuSelect(int& number, int mode_min, DateTime& dt);
 static void menuShow(int number);
 static void setUpdate(uint16_t number, int field, uint16_t dflags = 0);
 static bool setField(uint16_t& number, uint8_t field, int year = 0, int month = 0, uint16_t dflags = 0);
@@ -377,11 +377,10 @@ void enter_menu()
     mode_min = check_allow_CPA() ? MODE_CPA : MODE_ALRM;
     menuItemNum = mode_min;
 
-    // Load the custom times from NVM
-    // Backup current times
+    // Backup currently displayed times
     destinationTime.getToParms(y1, yo1, m1, d1, h1, mi1);
     departedTime.getToParms(y2, yo2, m2, d2, h2, mi2);
-    // Load NWM times
+    // Load the custom times from NVM
     destinationTime.load();
     departedTime.load();
 
@@ -398,7 +397,7 @@ void enter_menu()
     // Wait for ENTER to cycle through main menu,
     // HOLDing ENTER selects current menu "item"
     // (Also sets displaySet to selected display, if applicable)
-    if(!(menuSelect(menuItemNum, mode_min)))
+    if(!(menuSelect(menuItemNum, mode_min, dt)))
         goto quitMenu;
 
     if(menuItemNum >= MODE_PRES && menuItemNum <= MODE_DEPT) {
@@ -407,11 +406,7 @@ void enter_menu()
 
         // Generate pre-set values, which the user may keep (or overwrite)
 
-        uint16_t yearSet;
-        uint16_t monthSet;
-        uint16_t daySet;
-        uint16_t minSet;
-        uint16_t hourSet;
+        uint16_t yearSet, monthSet, daySet, hourSet, minSet;
 
         if(displaySet->isRTC()) {
 
@@ -420,8 +415,8 @@ void enter_menu()
             yearSet = dt.year() - displaySet->getYearOffset();
             monthSet = dt.month();
             daySet = dt.day();
-            minSet = dt.minute();
             hourSet = dt.hour();
+            minSet = dt.minute();
 
         } else {
 
@@ -432,8 +427,8 @@ void enter_menu()
             yearSet = displaySet->getYear();
             monthSet = displaySet->getMonth();
             daySet = displaySet->getDay();
-            minSet = displaySet->getMinute();
             hourSet = displaySet->getHour();
+            minSet = displaySet->getMinute();
 
         }
 
@@ -700,7 +695,9 @@ quitMenu:
 
     waitForEnterRelease();
 
+    // Reset keypad key state and clear input buffer
     resetKeypadState();
+    discardKeypadInput();
 
     // Restore present time
     
@@ -750,7 +747,7 @@ quitMenu:
  *  - false if timeout
  *
  */
-static bool menuSelect(int& number, int mode_min)
+static bool menuSelect(int& number, int mode_min, DateTime& dt)
 {
     timeout = 0;
 
@@ -772,6 +769,11 @@ static bool menuSelect(int& number, int mode_min)
             if(number == MODE_SENS) number++;
             #endif
             if(number > MODE_MAX) number = mode_min;
+
+            if(number == MODE_PRES) {
+                myrtcnow(dt);
+                presentTime.setDateTime(dt);
+            }
 
             // Show only the selected display, or menu item text
             menuShow(number);
@@ -798,29 +800,29 @@ static void menuShow(int number)
     
     switch (number) {
     case MODE_DEST:  // Destination Time
-        dt_on();
-        destinationTime.setColon(false);
-        destinationTime.show();
+        displaySet = &destinationTime;
         pt_off();
         lt_off();
-        displaySet = &destinationTime;
+        dt_on();
+        displaySet->setColon(true);
+        displaySet->show();
         break;
     case MODE_PRES:  // Present Time (RTC)
+        displaySet = &presentTime;
         dt_showTextDirect("SET RTC");
         dt_on();
         pt_on();
-        presentTime.setColon(false);
-        presentTime.show();
         lt_off();
-        displaySet = &presentTime;
+        displaySet->setColon(true);
+        displaySet->show();
         break;
     case MODE_DEPT:  // Last Time Departed
+        displaySet = &departedTime;
         dt_off();
         pt_off();
         lt_on();
-        departedTime.setColon(false);
-        departedTime.show();
-        displaySet = &departedTime;
+        displaySet->setColon(true);
+        displaySet->show();
         break;
     case MODE_VOL:   // Software volume
         #ifdef IS_ACAR_DISPLAY
@@ -947,7 +949,6 @@ static void menuShow(int number)
     case MODE_END:  // end
         dt_showTextDirect("END");
         dt_on();
-        destinationTime.setColon(false);
         pt_off();
         lt_off();
         break;

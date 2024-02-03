@@ -69,20 +69,20 @@
 #define JSON_SIZE 2500
 
 #define NUM_AUDIOFILES 20
+#define AC_FMTV 2
+#define AC_OHSZ (14 + ((10+NUM_AUDIOFILES+1)*(32+4)))
 #ifndef TWSOUND
 #define SND_REQ_VERSION "CS01"
-#define SND_ENTER_LEN   13374
-#define SND_STARTUP_LEN 21907
+#define AC_TS 1159392
 #else
 #define SND_REQ_VERSION "TW01"
-#define SND_ENTER_LEN   12149
-#define SND_STARTUP_LEN 18419
+#define AC_TS 1154679
 #endif
 
 static const char *CONFN  = "/TCDA.bin";
 static const char *CONFND = "/TCDA.old";
 static const char *CONID  = "TCDA";
-static uint32_t   soa = 0;
+static uint32_t   soa = AC_TS;
 static bool       ic = false;
 static uint8_t*   f(uint8_t *d, uint32_t m, int y) { return d; }
 
@@ -118,6 +118,9 @@ bool FlashROMode = false;
 /* If SD contains default audio files */
 static bool allowCPA = false;
 
+/* If current audio data is installed */
+bool haveAudioFiles = false;
+
 /* Music Folder Number */
 uint8_t musFolderNum = 0;
 
@@ -138,8 +141,7 @@ static void loadCarMode();
 
 static bool check_if_default_audio_present();
 static void cfc(File& sfile, int& haveErr, int& haveWriteErr);
-static void open_and_copy(const char *fn, int& haveErr, int& haveWriteErr);
-static bool filecopy(File source, File dest, int& haveWriteErr);
+static bool audio_files_present();
 
 static bool CopyIPParm(const char *json, char *text, uint8_t psize);
 
@@ -303,6 +305,9 @@ void settings_setup()
 
     // Load carMode setting
     loadCarMode();
+
+    // Check if (current) audio data is installed
+    haveAudioFiles = audio_files_present();
     
     // Check if SD contains the default sound files
     if((r = e) && haveSD && (FlashROMode || haveFS)) {
@@ -1264,35 +1269,27 @@ static uint32_t getuint32(uint8_t *buf)
 
 static bool check_if_default_audio_present()
 {
+    uint8_t dbuf[16]; 
     File file;
     size_t ts;
     int i;
-    uint8_t dbuf[32]; 
-    const size_t sizes[10+NUM_AUDIOFILES] = {
-      4178, 4178, 4178, 4178, 4178, 4178, 3760, 3760, 4596, 3760, // DTMF
-      65230, 71500, 60633, 10478,           // alarm, alarmoff, alarmon, baddate
-      15184, 22983, 33364, 51701,           // ee1, ee2, ee3, ee4
-      SND_ENTER_LEN, 125804, 33853, 47228,  // enter, intro, nmoff, nmon
-      16747, 151719, 3790, SND_STARTUP_LEN, // ping, reminder, shutdown, startup, 
-      84894, 38899, 135447, 113713          // timer, timetravel, travelstart, travelstart2
-    };
+
+    ic = false;
 
     if(!haveSD)
         return false;
 
-    for(i = 0; i < 10+NUM_AUDIOFILES; i++) {
-        soa += sizes[i];
-    }
-
     if(SD.exists(CONFN)) {
         if(file = SD.open(CONFN, FILE_READ)) {
+            ts = file.size();
             file.read(dbuf, 14);
             file.close();
             if((!memcmp(dbuf, CONID, 4))             && 
-               ((*(dbuf+4) & 0x7f) == 2)             &&
+               ((*(dbuf+4) & 0x7f) == AC_FMTV)       &&
                (!memcmp(dbuf+5, SND_REQ_VERSION, 4)) &&
                (*(dbuf+9) == (10+NUM_AUDIOFILES+1))  &&
-               (getuint32(dbuf+10) == soa)) {
+               (getuint32(dbuf+10) == soa)           &&
+               (ts > soa + AC_OHSZ)) {
                 ic = true;
                 if(!(*(dbuf+4) & 0x80)) r=f;
             }
@@ -1308,7 +1305,6 @@ static bool check_if_default_audio_present()
 // Sets delIDfile to true if copy fully succeeded
 bool copy_audio_files(bool& delIDfile)
 {
-    char dtmf_buf[16];
     int i, haveErr = 0, haveWriteErr = 0;
 
     if(!allowCPA) {
@@ -1384,19 +1380,25 @@ static void cfc(File& sfile, int& haveErr, int& haveWriteErr)
     }
 }
 
-bool audio_files_present()
+static bool audio_files_present()
 {
     File file;
     uint8_t buf[4];
     const char *fn = "/VER";
-    
-    if(FlashROMode || !haveFS)
-        return true;
 
-    if(!SPIFFS.exists(fn))
-        return false;
-    if(!(file = SPIFFS.open(fn, FILE_READ)))
-        return false;
+    if(FlashROMode) {
+        if(!(file = SD.open(fn, FILE_READ)))
+            return false;
+    } else {
+        // No SD, no FS - don't even bother....
+        if(!haveFS)
+            return true;
+        if(!SPIFFS.exists(fn))
+            return false;
+        if(!(file = SPIFFS.open(fn, FILE_READ)))
+            return false;
+    }
+
     file.read(buf, 4);
     file.close();
 

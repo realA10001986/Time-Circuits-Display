@@ -38,6 +38,8 @@ extern bool haveFS;
 extern bool haveSD;
 extern bool FlashROMode;
 
+extern bool haveAudioFiles;
+
 extern uint8_t musFolderNum;
 
 #define MS(s) XMS(s)
@@ -222,7 +224,6 @@ bool copy_audio_files(bool& delIDfile);
 
 bool check_allow_CPA();
 void delete_ID_file();
-bool audio_files_present();
 
 void waitForEnterRelease();
 

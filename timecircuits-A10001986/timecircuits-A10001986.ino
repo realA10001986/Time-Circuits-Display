@@ -105,6 +105,15 @@
 
 /*  Changelog
  *
+ *  2024/02/03 (A10001986)
+ *    - Check for audio data present also in FlashROMode; better container
+ *      validity check; display hint in CP if current audio not installed
+ *  2024/01/31 (A10001986)
+ *    - Various minor code optimizations (audio, keypad, input, speedo)
+ *  2024/01/30 (A10001986)
+ *    - Keypad menu: Clear input buffer when quitting the menu (ie discard input
+ *      from before entering the menu); Update present time while cycling through 
+ *      menu; activate colon for menu items showing time
  *  2024/01/26 (A10001986)
  *    - Add sound-pack versioning; re-installation required with this FW update
  *    - Reformat FlashFS only if audio file installation fails due to a write error

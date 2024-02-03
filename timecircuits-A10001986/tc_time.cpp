@@ -1604,7 +1604,7 @@ void time_setup()
         #endif
     }
 
-    if(!audio_files_present()) {
+    if(!haveAudioFiles) {
         destinationTime.showTextDirect("PLEASE");
         presentTime.showTextDirect("INSTALL");
         departedTime.showTextDirect("AUDIO FILES");

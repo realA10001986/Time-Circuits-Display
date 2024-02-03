@@ -145,6 +145,8 @@ static const char custHTMLSel[] = " selected";
 static const char *aco = "autocomplete='off'";
 static const char *tznp1 = "City/location name [a-z/0-9/-/ ]";
 
+WiFiManagerParameter custom_aood("<div class='msg P'>Please install/update audio data</div>");
+
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
 WiFiManagerParameter custom_ttrp("ttrp", "Make time travels persistent (0=no, 1=yes)", settings.timesPers, 1, "autocomplete='off'");
 WiFiManagerParameter custom_alarmRTC("artc", "Alarm base is RTC (1) or displayed \"present\" time (0)", settings.alarmRTC, 1, aco);
@@ -428,7 +430,9 @@ void wifi_setup()
     int temp;
     
     WiFiManagerParameter *parmArray[] = {
-      
+
+      &custom_aood,
+
       &custom_sectstart_head, 
       &custom_ttrp, 
       &custom_alarmRTC, 
@@ -577,7 +581,7 @@ void wifi_setup()
 
     wm.setMenu(wifiMenu, TC_MENUSIZE);
 
-    temp = 0;
+    temp = haveAudioFiles ? 1 : 0;
     while(parmArray[temp]) {
         wm.addParameter(parmArray[temp]);
         temp++;

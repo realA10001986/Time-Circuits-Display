@@ -157,11 +157,11 @@ char        timeBuffer[8];
 
 static int dateIndex = 0;
 static int timeIndex = 0;
-static int yearIndex = 0;
 
 bool menuActive = false;
 
 static bool doKey = false;
+static char keySnd[] = "/key3.mp3";   // not const
 
 static unsigned long enterDelay = 0;
 
@@ -182,8 +182,7 @@ static TCButton ettKey = TCButton(EXTERNAL_TIMETRAVEL_IN_PIN,
 
 static void keypadEvent(char key, KeyState kstate);
 static void recordKey(char key);
-static void recordSetTimeKey(char key);
-static void recordSetYearKey(char key);
+static void recordSetTimeKey(char key, bool isYear);
 
 static void enterKeyPressed();
 static void enterKeyHeld();
@@ -255,6 +254,7 @@ static void keypadEvent(char key, KeyState kstate)
 {
     bool mpWasActive = false;
     bool playBad = false;
+    int i;
     
     if(!FPBUnitIsOn || startup || timeTravelP0 || timeTravelP1 || timeTravelRE)
         return;
@@ -284,36 +284,23 @@ static void keypadEvent(char key, KeyState kstate)
             break;
         case '1':    // "1" held down -> toggle alarm on/off
             doKey = false;
-            switch(toggleAlarm()) {
-            case -1:
+            if((i = toggleAlarm()) >= 0) {
+                play_file(i ? "/alarmon.mp3" : "/alarmoff.mp3", PA_CHECKNM|PA_ALLOWSD|PA_DYNVOL);
+            } else {
                 playBad = true;
-                break;
-            case 0:
-                play_file("/alarmoff.mp3", PA_CHECKNM|PA_ALLOWSD|PA_DYNVOL);
-                break;
-            case 1:
-                play_file("/alarmon.mp3", PA_CHECKNM|PA_ALLOWSD|PA_DYNVOL);
-                break;
             }
             break;
         case '4':    // "4" held down -> toggle night-mode on/off
             doKey = false;
-            if(toggleNightMode()) {
-                manualNightMode = 1;
-                play_file("/nmon.mp3", PA_ALLOWSD|PA_DYNVOL);
-            } else {
-                manualNightMode = 0;
-                play_file("/nmoff.mp3", PA_ALLOWSD|PA_DYNVOL);
-            }
+            manualNightMode = toggleNightMode();
+            play_file(manualNightMode ? "/nmon.mp3" : "/nmoff.mp3", PA_ALLOWSD|PA_DYNVOL);
             manualNMNow = millis();
             break;
         case '3':    // "3" held down -> play audio file "key3.mp3"
-            doKey = false;
-            play_file("/key3.mp3", PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
-            break;
         case '6':    // "6" held down -> play audio file "key6.mp3"
             doKey = false;
-            play_file("/key6.mp3", PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
+            keySnd[4] = key;
+            play_file(keySnd, PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
             break;
         case '7':    // "7" held down -> re-enable/re-connect WiFi
             doKey = false;
@@ -361,11 +348,7 @@ static void keypadEvent(char key, KeyState kstate)
     case TCKS_RELEASED:
         if(doKey) {
             if(keypadInMenu) {
-                if(isYearUpdate) {
-                    recordSetYearKey(key);
-                } else {
-                    recordSetTimeKey(key);
-                }
+                recordSetTimeKey(key, isYearUpdate);
             } else {
                 recordKey(key);
             }
@@ -377,6 +360,12 @@ static void keypadEvent(char key, KeyState kstate)
 void resetKeypadState()
 {
     doKey = false;
+}
+
+void discardKeypadInput()
+{
+    dateBuffer[0] = '\0';
+    dateIndex = 0;
 }
 
 static void enterKeyPressed()
@@ -415,23 +404,16 @@ static void recordKey(char key)
     lastKeyPressed = millis();
 }
 
-static void recordSetTimeKey(char key)
+static void recordSetTimeKey(char key, bool isYear)
 {
     timeBuffer[timeIndex++] = key;
     timeBuffer[timeIndex] = '\0';
-    timeIndex &= 0x1;
-}
-
-static void recordSetYearKey(char key)
-{
-    timeBuffer[yearIndex++] = key;
-    timeBuffer[yearIndex] = '\0';
-    yearIndex &= 0x3;
+    timeIndex &= (isYear ? 0x03 : 0x1);
 }
 
 void resetTimebufIndices()
 {
-    timeIndex = yearIndex = 0;
+    timeIndex = 0;
     // Do NOT clear the timeBuffer, might be pre-set
 }
 
@@ -463,8 +445,7 @@ void keypad_loop()
 
     // Discard keypad input after 2 minutes of inactivity
     if(millis() - lastKeyPressed >= 2*60*1000) {
-        dateBuffer[0] = '\0';
-        dateIndex = 0;
+        discardKeypadInput();
     }
 
     // Bail out if sequence played or device is fake-"off"
@@ -514,7 +495,7 @@ void keypad_loop()
         cancelEnterAnim();
         cancelETTAnim();
 
-        timeIndex = yearIndex = 0;
+        timeIndex = 0;
         timeBuffer[0] = '\0';
 
         menuActive = true;
@@ -1637,14 +1618,14 @@ void nightModeOff()
     leds_on();
 }
 
-bool toggleNightMode()
+int toggleNightMode()
 {
     if(destinationTime.getNightMode()) {
         nightModeOff();
-        return false;
+        return 0;
     }
     nightModeOn();
-    return true;
+    return 1;
 }
 
 /*
