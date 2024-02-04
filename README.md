@@ -60,14 +60,17 @@ The firmware comes with audio data ("sound-pack") which needs to be installed se
 
 *If your TCD previously ran a firmware from CircuitSetup (ie. pre-installed or downloaded from their github), installing of the audio data **from this repository** is required. You cannot use CircuitSetup's audio data with the firmware available here, or vice versa.*
 
-- Download "install/sound-pack-xxxxxxxx.zip" and extract it; it contains one file named "TCDA.bin". Copy this file to the root directory of a FAT32 formatted SD card,
-- power down the TCD,
-- insert this SD card into the TCD's slot and 
-- power up the TCD.
- 
-If the TCDA.bin file is found on the SD card, the TCD will show "INSTALL AUDIO FILES?" after power-up. Press ENTER briefly to toggle between "CANCEL" and "PROCEED". Choose "PROCEED" and hold the ENTER key for 2 seconds.
+The first step is to download "install/sound-pack-xxxxxxxx.zip" and extract it. It contains one file named "TCDA.bin".
 
-If you, for whatever reason, chose "CANCEL", you can still invoke the installer through the [keypad menu](#how-to-install-the-default-audio-files), or by rebooting the TCD.
+Then there are two alternative ways to proceed. Note that both methods *require an SD card*.
+
+1) Through the [Config Portal](#the-config-portal). Click on *Update*, select the "TCDA.bin" file in the bottom file selector and click on *Upload*. Note that an SD card must be in the slot during this operation.
+
+2) Via SD card:
+- Copy "TCDA.bin" to the root directory of of a FAT32 formatted SD card;
+- power down the TCD,
+- insert this SD card into the slot and 
+- power up the TCD; the audio data will be installed automatically.
 
 After installation, the SD card can be re-used for [other purposes](#sd-card).
 
@@ -572,7 +575,6 @@ The menu is invoked by holding the ENTER button.
 Data entry, such as for dates and times, is done through the keypad's number keys and works as follows: Whenever a data entry is requested, the field for that data is lit (while the rest of the display is dark) and a pre-set value is shown. If you want to keep that pre-set, press ENTER to proceed to next field. Otherwise press a digit on the keypad; the pre-set is then overwritten by the value entered. 2 digits can be entered (4 for years), upon which the new value is stored and the next field is activated. You can also enter less than 2 digits (4 for years) and press ENTER when done with the field. Note that a month needs to be entered numerically (1-12), and hours need to be entered in 24-hour notation (0-23), regardless of 12-hour or 24-hour mode as per the Config Portal setting.
 
 After invoking the keypad menu, the first step is to choose a menu item. The available items are  
-- install the default audio files ("INSTALL AUDIO FILES")
 - set the alarm ("ALA-RM"),
 - set the audio volume (VOL-UME),
 - set the Music Player folder number ("MUSIC FOLDER NUMBER")
@@ -587,14 +589,6 @@ After invoking the keypad menu, the first step is to choose a menu item. The ava
 - quit the menu ("END").
  
 Pressing ENTER cycles through the list, holding ENTER selects an item.
-
-#### How to install the default audio files:
-
-- Hold ENTER to invoke main menu
-- If the SD card holds the files of the sound-pack archive from this repo, "INSTALL AUDIO FILES" is shown as the first menu item. See the [Audio file installation](#audio-file-installation) section.
-- Hold ENTER to proceed
-- Press ENTER to toggle between "CANCEL" and "PROCEED"
-- Hold ENTER to proceed. If "PROCEED" was chosen, the audio files fill be installed and the TCD will reboot.
  
 #### How to set up the alarm:
 
@@ -627,7 +621,9 @@ Basically, and by default, the device uses the built-in hardware volume knob to 
 - If you chose "SELECT LEVEL", you can now select the desired level by pressing ENTER repeatedly. There are 20 levels available. The volume knob is now ignored.
 - Hold ENTER to save and quit the menu
 
-If you are using a Rotary Encoder for volume, you need to disable the volume knob by pre-selecting a level here. While the built-in volume knob is active, the Rotary Encoder will do nothing.
+You can also quickly set the volume by typing a code on the keypad followed by ENTER. 300-319 select a level, 399 enables the volume knob.
+
+If you are using a Rotary Encoder for volume, you need to disable the volume knob by pre-selecting a level (00-19). While the built-in volume knob is active, the Rotary Encoder will do nothing.
 
 #### How to select the music folder number:
 
