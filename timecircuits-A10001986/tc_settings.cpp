@@ -139,7 +139,6 @@ static bool checkValidNumParmF(char *text, float lowerLim, float upperLim, float
 static void deleteReminder();
 static void loadCarMode();
 
-static bool check_if_default_audio_present();
 static void cfc(File& sfile, int& haveErr, int& haveWriteErr);
 static bool audio_files_present();
 
@@ -1267,7 +1266,7 @@ static uint32_t getuint32(uint8_t *buf)
     return t;
 }
 
-static bool check_if_default_audio_present()
+bool check_if_default_audio_present()
 {
     uint8_t dbuf[16]; 
     File file;
@@ -1617,4 +1616,32 @@ bool writeFileToFS(const char *fn, uint8_t *buf, int len)
         return (bytesw == len);
     } else
         return false;
+}
+
+bool openACFile(File& file)
+{
+    if(haveSD) {
+        if(file = SD.open(CONFN, FILE_WRITE)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+size_t writeACFile(File& file, uint8_t *buf, size_t len)
+{
+    return file.write(buf, len);
+}
+
+void closeACFile(File& file)
+{
+    file.close();
+}
+
+void removeACFile()
+{
+    if(haveSD) {
+        SD.remove(CONFN);
+    }
 }

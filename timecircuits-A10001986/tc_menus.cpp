@@ -196,17 +196,6 @@
  *       press ENTER to toggle between their data.
  *     - Hold ENTER to leave the menu
  *
- * How to install the default audio files:
- *
- *     - Hold ENTER to invoke main menu
- *     - Press ENTER until "INSTALL AUDIO FILES" is shown. If this menu does 
- *       not appear, the SD card isn't configured properly.
- *     - Hold ENTER to proceed
- *     - Press ENTER to toggle between "CANCEL" and "COPY"
- *     - Hold ENTER to proceed. If "COPY" was chosen, the display will guide 
- *       you through the rest of the process. When finished, the clock will
- *       reboot.
- *
  * How to leave the menu:
  *
  *     While the menu is active, repeatedly press ENTER until "END" is displayed.
@@ -228,21 +217,20 @@
 
 #include "tc_menus.h"
 
-#define MODE_CPA  0
-#define MODE_ALRM 1
-#define MODE_VOL  2
-#define MODE_MSFX 3
-#define MODE_AINT 4
-#define MODE_BRI  5
-#define MODE_NET  6
-#define MODE_PRES 7
-#define MODE_DEST 8
-#define MODE_DEPT 9
-#define MODE_SENS 10
-#define MODE_LTS  11
-#define MODE_CLI  12
-#define MODE_VER  13
-#define MODE_END  14
+#define MODE_ALRM 0
+#define MODE_VOL  1
+#define MODE_MSFX 2
+#define MODE_AINT 3
+#define MODE_BRI  4
+#define MODE_NET  5
+#define MODE_PRES 6
+#define MODE_DEST 7
+#define MODE_DEPT 8
+#define MODE_SENS 9
+#define MODE_LTS  10
+#define MODE_CLI  11
+#define MODE_VER  12
+#define MODE_END  13
 #define MODE_MAX  MODE_END
 
 #define FIELD_MONTH   0
@@ -374,8 +362,7 @@ void enter_menu()
     flushDelayedSave();
 
     // start with first menu item
-    mode_min = check_allow_CPA() ? MODE_CPA : MODE_ALRM;
-    menuItemNum = mode_min;
+    menuItemNum = mode_min = MODE_ALRM;
 
     // Backup currently displayed times
     destinationTime.getToParms(y1, yo1, m1, d1, h1, mi1);
@@ -651,14 +638,6 @@ void enter_menu()
 
         doShowSensors();
     #endif
-    
-    } else if(menuItemNum == MODE_CPA) {   // Copy audio files
-
-        allOff();
-        waitForEnterRelease();
-
-        // Copy audio files
-        doCopyAudioFiles();
 
     }                                      // LTS, VERSION, END: Bail out
 
@@ -938,13 +917,6 @@ static void menuShow(int number)
         #else
         lt_off();
         #endif
-        break;
-    case MODE_CPA:  // Install audio files
-        dt_showTextDirect("INSTALL");
-        dt_on();
-        pt_showTextDirect("AUDIO FILES");
-        pt_on();
-        lt_off();
         break;
     case MODE_END:  // end
         dt_showTextDirect("END");
@@ -2182,54 +2154,7 @@ void doShowBTTFNInfo()
 
 void doCopyAudioFiles()
 {
-    bool doCancDone = false;
-    bool newCanc = false;
-    bool blinkSwitch;
     bool delIDfile = false;
-
-    // Cancel/Copy
-    dt_on();
-    pt_on();
-    lt_showTextDirect("CANCEL");
-    departedTime.onBlink(2);
-    blinkSwitch = true;
-
-    timeout = 0;  // reset timeout
-
-    // Wait for enter
-    while(!checkTimeOut() && !doCancDone) {
-
-        // If pressed
-        if(checkEnterPress()) {
-
-            timeout = 0;  // button pressed, reset timeout
-            lt_on();
-            blinkSwitch = false;
-
-            if(!(doCancDone = menuWaitForRelease())) {
-
-                newCanc = !newCanc;
-  
-                lt_showTextDirect(newCanc ? "PROCEED" : "CANCEL");
-  
-            }
-  
-        } else {
-  
-            menudelay(50);
-
-            if(!blinkSwitch) {
-                departedTime.onBlink(2);
-                blinkSwitch = true;
-            }
-  
-        }
-
-    }
-
-    lt_on();
-
-    if(!doCancDone || !newCanc) return;
 
     if((!copy_audio_files(delIDfile)) && !FlashROMode) {
         // If copy fails because of a write error, re-format flash FS
@@ -2268,8 +2193,8 @@ void start_file_copy()
     mp_stop();
     stopAudio();
   
-    dt_showTextDirect("COPYING");
-    pt_showTextDirect("FILES");
+    dt_showTextDirect("INSTALLING");
+    pt_showTextDirect("AUDIO DATA");
     lt_showTextDirect("PLEASE");
     dt_on();
     pt_on();

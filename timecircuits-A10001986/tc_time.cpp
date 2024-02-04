@@ -1587,21 +1587,8 @@ void time_setup()
 
     // Invoke audio file installer if SD content qualifies
     if(check_allow_CPA()) {
-        destinationTime.showTextDirect("INSTALL");
-        presentTime.showTextDirect("AUDIO FILES?");
-        destinationTime.on();
-        presentTime.on();
         doCopyAudioFiles();
-        // We return here only if user cancelled or
-        // if the menu timed-out
-        allOff();
-        waitForEnterRelease();
-        isEnterKeyHeld = false;
-        isEnterKeyPressed = false;
-        #ifdef EXTERNAL_TIMETRAVEL_IN
-        isEttKeyPressed = isEttKeyImmediate = false;
-        isEttKeyHeld = false;
-        #endif
+        // We never return here
     }
 
     if(!haveAudioFiles) {

@@ -213,12 +213,13 @@ void loadStaleTime(void *target, bool& currentOn);
 void saveStaleTime(void *source, bool currentOn);
 #endif
 
-void copySettings();
-
 bool loadIpSettings();
 void writeIpSettings();
 void deleteIpSettings();
 
+void copySettings();
+
+bool check_if_default_audio_present();
 void doCopyAudioFiles();
 bool copy_audio_files(bool& delIDfile);
 
@@ -235,5 +236,11 @@ bool readFileFromSD(const char *fn, uint8_t *buf, int len);
 bool writeFileToSD(const char *fn, uint8_t *buf, int len);
 bool readFileFromFS(const char *fn, uint8_t *buf, int len);
 bool writeFileToFS(const char *fn, uint8_t *buf, int len);
+
+#include <FS.h>
+bool   openACFile(File& file);
+size_t writeACFile(File& file, uint8_t *buf, size_t len);
+void   closeACFile(File& file);
+void   removeACFile();
 
 #endif
