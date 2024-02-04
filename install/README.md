@@ -14,11 +14,16 @@ The sound pack is not updated as often as the firmware itself. If you have previ
 
 **You cannot mix firmwares and audio data from this repository and CircuitSetup's. If you install the firmware from this repository, you need to install the audio data from this repository as well, and vice versa.**
 
-- Download "sound-pack-xxxxxxxx.zip" and extract it. It contains one file named "TCDA.bin". Copy this file to the root directory of of a FAT32 formatted SD card,
-- power down the TCD,
-- insert this SD card into the device's slot and 
-- power up the TCD.
+The first step is to download "install/sound-pack-xxxxxxxx.zip" and extract it. It contains one file named "TCDA.bin".
 
-If the TCDA.bin file is found on the SD card, the TCD will show "INSTALL AUDIO FILES?" after power-up. Press ENTER briefly to toggle between "CANCEL" and "PROCEED". Choose "PROCEED" and hold the ENTER key for 2 seconds.
+Then there are two alternative ways to proceed. Note that both methods *require an SD card*.
+
+1) Through the Config Portal. Click on *Update*, select the "TCDA.bin" file in the bottom file selector and click on *Upload*. Note that an SD card must be in the slot during this operation.
+
+2) Via SD card:
+- Copy "TCDA.bin" to the root directory of of a FAT32 formatted SD card;
+- power down the TCD,
+- insert this SD card into the slot and 
+- power up the TCD; the audio data will be installed automatically.
 
 See also [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/README.md#audio-file-installation).
