@@ -129,8 +129,8 @@ The TCD sometimes writes data to either the internal flash file system or the SD
 
 In general, it is safe to power-down the TCD when it is idle or after it has been fake-powered-down. Try to avoid powering down the TCD
 - when it is clearly busy (such as when copying or renaming audio files);
-- in the first few seconds after a timetravel when **_Make time travels persistent_** is checked;
 - within 15 seconds after an audio volume change through a Rotary Encoder.
+- if [**_Make time travels persistent_**](#persistent--non-persistent-time-travels) is checked: in the first few seconds after a timetravel.
 
 ### Calendar system
 
