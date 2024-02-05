@@ -102,8 +102,11 @@
 
 /*  Changelog
  *
+ *  2024/02/05 (A10001986)
+ *    - Tweaks for audio upload
  *  2024/02/04 (A10001986)
- *    - Include fork of WiFiManager (2.0.16rc2) in order to cut down bin size
+ *    - Include fork of WiFiManager (2.0.16rc2 with minor patches) in order to cut 
+ *      down bin size
  *    - Audio data (TCDA.bin) can now be uploaded through Config Portal ("UPDATE" page). 
  *      Requires an SD card present.
  *  2024/02/03 (A10001986)
