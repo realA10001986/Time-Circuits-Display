@@ -1490,26 +1490,26 @@ void rewriteSecondarySettings()
  */
 static DeserializationError readJSONCfgFile(JsonDocument& json, File& configFile, const char *funcName)
 {
-    char *buf = NULL;
+    const char *buf = NULL;
     size_t bufSize = configFile.size();
     DeserializationError ret;
 
-    if(!(buf = (char *)malloc(bufSize + 1))) {
+    if(!(buf = (const char *)malloc(bufSize + 1))) {
         Serial.printf("%s: Buffer allocation failed (%d)\n", funcName, bufSize);
         return DeserializationError::NoMemory;
     }
 
-    memset(buf, 0, bufSize + 1);
+    memset((void *)buf, 0, bufSize + 1);
 
     configFile.read((uint8_t *)buf, bufSize);
 
     #ifdef TC_DBG
-    Serial.println((const char *)buf);
+    Serial.println(buf);
     #endif
     
     ret = deserializeJson(json, buf);
 
-    free(buf);
+    free((void *)buf);
 
     return ret;
 }

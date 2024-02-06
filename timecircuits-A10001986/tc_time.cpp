@@ -988,12 +988,12 @@ void time_setup()
 
     // Set up GPS receiver
     #ifdef TC_HAVEGPS
-    useGPS = true;    // Use by default if detected
+    useGPS = true;    // Use if detected
     
     #ifdef TC_HAVESPEEDO
     if(useSpeedo) {
         // 'useGPSSpeed' strictly means "display GPS speed on speedo"
-        // It is therefore false, if no GPS rec found, or no speed found, or option unchecked
+        // It is false, if no GPS receiver found, or no speedo found, or option unchecked
         useGPSSpeed = (atoi(settings.useGPSSpeed) > 0);
     }
     #endif
@@ -1432,26 +1432,29 @@ void time_setup()
 
         speedo.off();
 
-        #ifdef SP_ALWAYS_ON
-        #ifdef FAKE_POWER_ON
-        if(!waitForFakePowerButton) {
-        #endif
-            speedo.setSpeed(0);
-            speedo.on();
-            speedo.show();
-            speedoStatus = SPST_ZERO;
-        #ifdef FAKE_POWER_ON
-        }
-        #endif
-        #endif
-
         #ifdef TC_HAVEGPS
         if(useGPSSpeed) {
             // display (actual) speed, regardless of fake power
             dispGPSSpeed(true);
             speedo.on(); 
+        } else {
+        #endif
+            #ifdef SP_ALWAYS_ON
+            #ifdef FAKE_POWER_ON
+            if(!waitForFakePowerButton) {
+            #endif
+                speedo.setSpeed(0);
+                speedo.on();
+                speedo.show();
+                speedoStatus = SPST_ZERO;
+            #ifdef FAKE_POWER_ON
+            }
+            #endif
+            #endif
+        #ifdef TC_HAVEGPS
         }
         #endif
+        
     }
     #endif // TC_HAVESPEEDO
 
@@ -1500,7 +1503,7 @@ void time_setup()
 
     // Set up temperature sensor
     #ifdef TC_HAVETEMP
-    useTemp = true;   // Used by default if detected
+    useTemp = true;   // Use if detected
     #ifdef TC_HAVESPEEDO
     if(!useSpeedo || useGPSSpeed) {
         dispTemp = false;
@@ -2073,15 +2076,18 @@ void time_loop()
         #endif
         
         // Power management: CPU speed
-        // Can only reduce when GPS is not used and WiFi is off
-        if(!pwrLow && checkAudioDone() &&
-                      #ifdef TC_HAVEGPS
-                      !useGPS &&
-                      #endif
-                                 (wifiIsOff || wifiAPIsOff) && (millisNow - pwrFullNow >= 5*60*1000)) {
+        // Can only reduce when GPS is not used, WiFi is off and no sound playing
+        if(!pwrLow &&
+           (wifiIsOff || wifiAPIsOff) && 
+           #ifdef TC_HAVEGPS
+           !useGPS &&
+           #endif
+           muteBeep &&
+           checkAudioDone() && 
+           (millisNow - pwrFullNow >= 5*60*1000)) {
+            
             setCpuFrequencyMhz(80);
             pwrLow = true;
-
             #ifdef TC_DBG
             Serial.printf("Reduced CPU speed to %d\n", getCpuFrequencyMhz());
             #endif
