@@ -136,6 +136,7 @@ static void copy6chars(char *a, char *b)
     *a++ = *b++;
     *a = *b;
 }
+
 static void calcNMEAcheckSum(char *cmdbuf)
 {
     int checksum = 0;

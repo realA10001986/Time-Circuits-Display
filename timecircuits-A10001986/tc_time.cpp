@@ -2082,7 +2082,6 @@ void time_loop()
            #ifdef TC_HAVEGPS
            !useGPS &&
            #endif
-           muteBeep &&
            checkAudioDone() && 
            (millisNow - pwrFullNow >= 5*60*1000)) {
             
