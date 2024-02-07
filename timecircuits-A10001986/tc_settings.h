@@ -62,7 +62,7 @@ extern uint8_t musFolderNum;
 #define DEF_WIFI_APOFFDELAY 0     // 0/10-99; Default 0 = Never power down WiFi in AP-mode
 #define DEF_WIFI_PRETRY     1     // Default: Nightly, periodic WiFi reconnection attempts for time sync
 #define DEF_NTP_SERVER      "pool.ntp.org"
-#define DEF_TIMEZONE        "UTC0"// Default: UTC; Posix format
+#define DEF_TIMEZONE        ""    // Default: UTC; Posix format
 #define DEF_BRIGHT_DEST     10    // 1-15; Default: medium brightness
 #define DEF_BRIGHT_PRES     10
 #define DEF_BRIGHT_DEPA     10

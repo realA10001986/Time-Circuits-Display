@@ -1059,7 +1059,7 @@ void time_setup()
         } while (!NTPHaveTime() && timeout);
     }
 
-    // Parse TZ to check validity.
+    // Parse TZ to check validity and to get difference to UTC
     // (Year does not matter at this point)
     if(!(parseTZ(0, 2022))) {
         tzbad = true;

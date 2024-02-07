@@ -27,9 +27,9 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION "V2.9.99"          // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "FEB062024"  // 13 chars max
+#define TC_VERSION_EXTRA "FEB072024"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "02062024"   // 12 chars max
+#define TC_VERSION_EXTRA "02072024"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -158,8 +158,10 @@
 
 // Uncomment for alternate "animation" when entering a destination time
 // (Does not affect other situations where animation is shown, like time
-// cycling, or when RC mode is active)
+// cycling, or when RC mode is active). Mutually exclusive to a-car mode.
+#ifndef IS_ACAR_DISPLAY
 //#define BTTF3_ANIM
+#endif
 
 // Uncomment if AM and PM should be reversed (like in BTTF2/3-version of TCD)
 //#define REV_AMPM

@@ -76,7 +76,7 @@
  *
  * - Install required libraries. In the Arduino IDE, go to "Tools" -> "Manage Libraries" 
  *   and install the following libraries:
- *   - ArduinoJSON 6 (>= 6.19): https://arduinojson.org/v6/doc/installation/
+ *   - ArduinoJSON (>= 6.19): https://arduinojson.org/v6/doc/installation/
  *
  * - Download the complete firmware source code:
  *   https://github.com/realA10001986/Time-Circuits-Display/archive/refs/heads/main.zip
@@ -101,6 +101,9 @@
 
 /*  Changelog
  *
+ *  2024/02/07 (A10001986)
+ *    - Config Portal: Propose most used time-zones as datalists for time zone
+ *      entry.
  *  2024/02/06 (A10001986)
  *    - Fix reading and parsing of JSON document
  *    - Fixes for using ArduinoJSON 7; not used in bin yet, too immature IMHO.
