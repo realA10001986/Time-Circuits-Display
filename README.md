@@ -403,25 +403,23 @@ Beware that the alarm function, by default, is based on the real actual present 
 
 ### Persistent / Non-persistent time travels
 
-On the Config Portal's "Setup" page, there is an option item named **_Make time travels persistent_**. The default is off.
+On the Config Portal's "Setup" page, there is an option item named **_Make time travels persistent_**. The default is off. 
 
 If time travels are persistent
-- a user-programmed *destination time* is always stored in flash memory, and retrieved from there after a reboot. It can be programmed through the keypad menu, or ahead of a time travel by typing mmddyyyyhhMM/mmddyyyy/hhMM plus ENTER. In both cases, the time is stored in flash memory and retrieved upon power-up/reboot.
-- *last time departed* as displayed at any given point is always stored in flash memory, and retrieved upon power-up/reboot.
+- a user-programmed *destination time* is always saved, and retrieved after a reboot. It can be programmed through the keypad menu, or ahead of a time travel by typing mmddyyyyhhMM/mmddyyyy/hhMM plus ENTER. In both cases, the time is saved and retrieved upon power-up/reboot.
+- *last time departed* as displayed at any given point is always saved, and retrieved upon power-up/reboot.
 - *present time*, be it actual present time or "fake" after time travelling, will continue to run while the device is not powered, as long as its battery lasts, and displayed on power-up/reboot.
 
 If time travels are non-persistent
-- a user-programmed *destination time* is only stored to flash memory when programmed through the keypad menu, but not if entered ahead of a time travel (ie outside of the keypad menu, just by typing mmddyyyyhhMM/mmddyyyy/hhMM plus ENTER).
-- a user-programmed *last time departed* is only stored to flash memory when programmed through the keypad menu, but not if the result of a time travel.
+- a user-programmed *destination time* is only saved when programmed through the keypad menu, but not if entered ahead of a time travel (ie outside of the keypad menu, just by typing mmddyyyyhhMM/mmddyyyy/hhMM plus ENTER).
+- a user-programmed *last time departed* is only saved when programmed through the keypad menu, but not if the result of a time travel.
 - *present time* is always reset to actual present time upon power-up/reboot.
 
-If you want your device to display exactly the same after a power loss, choose persistent (and disable [Time-cycling](#time-cycling)).
+If you want your device to display exactly the same after a power loss, choose persistent (and disable [Time-cycling](#time-cycling)). _Note that 'persistent time travels' require an SD card and the option **_Save secondary settings on SD_** to be checked as well._
 
-If you want to display your favorite *destination time* and *last time departed* upon power-up, and not have time travels overwrite them in flash memory, choose "non-persistent", and program your times through the [keypad menu](#how-to-enter-datestimes-for-the-destination-and-last-time-departed-displays) (and disable [Time-cycling](#time-cycling)). Those times will never be overwritten in flash memory by later time travels. Note, however, that the times displayed might actually change due to time travels.
+If you want to display your favorite *destination time* and *last time departed* upon power-up, and not have time travels overwrite them, choose "non-persistent", and program your times through the [keypad menu](#how-to-enter-datestimes-for-the-destination-and-last-time-departed-displays) (and disable [Time-cycling](#time-cycling)). Those times will never be overwritten by later time travels. Note, however, that the times displayed might actually change due to time travels.
 
 Note that Time-cycling, if enabled, will force the device to cycle through the list of pre-programmed times, regardless of your time travel persistence setting. So, if Time-cycling is enabled, the only effect of persistence is that *Present Time* is kept at what it was before vs. reset to actual present time after a power loss.
-
-Persistent time travels, if done often, will cause [Flash Wear](#flash-wear).
 
 ## Beep on the second
 
@@ -501,7 +499,7 @@ Note: While the alarm and the sound-on-the-hour adhere to the **_Alarm base is r
 
 Preface note on SD cards: For unknown reasons, some SD cards simply do not work with this device. For instance, I had no luck with Sandisk Ultra 32GB and  "Intenso" cards. If your SD card is not recognized, check if it is formatted in FAT32 format (not exFAT!). Also, the size must not exceed 32GB (as larger cards cannot be formatted with FAT32). Transcend SDHC 4GB cards work fine.
 
-The SD card, apart from being used to [install](#audio-file-installation) the built-in audio data, can be used for substituting default sounds, some additional custom sounds, and for music played back by the [Music player](#the-music-player). Also, it is recommended to store [secondary settings](#-save-secondary-settings-on-sd) on the SD card to minimize [Flash Wear](#flash-wear).
+The SD card, apart from being required for [installing](#audio-file-installation) of the built-in audio data, can be used for substituting default sounds, some additional custom sounds, and for music played back by the [Music player](#the-music-player). Also, it is _strongly recommended_ to store [secondary settings](#-save-secondary-settings-on-sd) on the SD card to minimize [Flash Wear](#flash-wear).
 
 Note that the SD card must be inserted before powering up the TCD. It is not recognized if inserted while the TCD is running. Furthermore, do not remove the SD card while the TCD is powered.
 
@@ -664,7 +662,7 @@ Note that the Music Folder Number is saved in a config file on the SD card.
 
 #### How to set the Real Time Clock (RTC):
 
-Adjusting the RTC is useful if you can't use NTP for time keeping, and really helpful when using GPS. Always set your actual local present time here; if you want to display some other time, use the Time Travel function. Note: The time you entered will be overwritten if/when the device has access to authoritative time such as via NTP or GPS. For DST (daylight saving) and GPS, it is essential that you first set the correct time zone in the [Config Portal](#the-config-portal).
+Adjusting the RTC is useful if you can't use NTP for time keeping, and really helpful when using GPS. Always set your actual local present time here; if you want to display some other time, use the Time Travel function. Note: The time you entered will be changed if/when the device has access to authoritative time such as via NTP or GPS. For DST (daylight saving) and GPS, it is essential that you first set the correct time zone in the [Config Portal](#the-config-portal).
 
 - Hold ENTER to invoke main menu
 - Press ENTER repeatedly until "SET RTC" is displayed and the *Present Time* display shows a date and time 
@@ -675,7 +673,7 @@ Adjusting the RTC is useful if you can't use NTP for time keeping, and really he
 
 #### How to enter dates/times for the *Destination* and *Last Time Departed* displays:
 
-Note that when entering dates/times into the *destination time* or *last time departed* displays, the Time-cycling Interval is automatically set to 0. Your entered date/time(s) are shown until overwritten by time travels.
+Note that when entering dates/times into the *destination time* or *last time departed* displays, the Time-cycling Interval is automatically set to 0. Your entered date/time(s) are shown until replaced by time travels.
 
 - Hold ENTER to invoke main menu
 - Press ENTER repeatedly until the desired display is the only one lit and shows a date and time
@@ -1094,16 +1092,6 @@ Clicking this (and saying "yes" in the confirmation dialog) erases the WiFi conf
 
 #### Basic settings
 
-##### &#9654; Make time travels persistent
-
-See [here](#persistent--non-persistent-time-travels)
-
-##### &#9654; Alarm base is real present time
-
-Selects whether the alarm and sound-on-the-hour are based on real, actual present time, or "present" time as displayed (eg after a time travel).
-
-Note that the night mode schedules and the Reminder are always based on actual present time.
-
 ##### &#9654; Play intro
 
 Selects whether the animated intro should be played upon power-up.
@@ -1119,6 +1107,12 @@ Selects the default, power-up ["beep"](#beep-on-the-second) mode. "Auto: xx secs
 ##### &#9654; Time-cycling interval
 
 In this decorative mode the device cycles through a list of pre-programmed, movie-accurate *destination* and *last time departed* times. This mode is enabled by setting the "Time-cycling Interval" to anything but "off". The device will cycle through named list every 5th, 10th, 15th, 30th or 60th minute, and thereby change the displays. Set the interval to "off" to disable. See [here](#time-cycling)
+
+##### &#9654; Alarm base is real present time
+
+Selects whether the alarm and sound-on-the-hour are based on real, actual present time, or "present" time as displayed (eg after a time travel).
+
+Note that the night mode schedules and the Reminder are always based on actual present time.
 
 #### Network & time synchronization settings
 
@@ -1331,6 +1325,10 @@ When checked, songs are shuffled when the device is booted. When unchecked, song
 ##### &#9654; Save secondary settings on SD
 
 If this is checked, secondary settings (volume, alarm, reminder, car mode, exhibition mode) are stored on the SD card (if one is present). This helps to minimize write operations to the internal flash memory and to prolong the lifetime of your TCD. See [Flash Wear](#flash-wear).
+
+##### &#9654; Make time travels persistent
+
+See [here](#persistent--non-persistent-time-travels). This option to take effect requires the _Save secondary settings on SD_ to be checked as well.
 
 ## Appendix B: I2C peripheral wiring
 
