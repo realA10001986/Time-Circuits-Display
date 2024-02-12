@@ -27,9 +27,9 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION "V2.9.99"          // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "FEB072024"  // 13 chars max
+#define TC_VERSION_EXTRA "FEB122024"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "02072024"   // 12 chars max
+#define TC_VERSION_EXTRA "02122024"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -136,6 +136,13 @@
 // 999 toggles between EM and normal operation
 #define HAVE_STALE_PRESENT
 
+// Uncomment to allow "persistent time travels" only if an SD card is
+// present and option "Save secondary setting to SD" is checked. 
+// Saving clock data to ESP32 Flash memory can cause delays of up to 
+// a whopping 1200ms, and thereby audio playback and other issues, 
+// doing severe harm to user experience (and causes flash wear...)
+#define PERSISTENT_SD_ONLY
+
 // --- end of config options
 
 /*************************************************************************
@@ -159,9 +166,7 @@
 // Uncomment for alternate "animation" when entering a destination time
 // (Does not affect other situations where animation is shown, like time
 // cycling, or when RC mode is active). Mutually exclusive to a-car mode.
-#ifndef IS_ACAR_DISPLAY
 //#define BTTF3_ANIM
-#endif
 
 // Uncomment if AM and PM should be reversed (like in BTTF2/3-version of TCD)
 //#define REV_AMPM
@@ -187,6 +192,9 @@
 // Sanitation ----
 #ifndef TC_HAVESPEEDO
 #undef SP_ALWAYS_ON
+#endif
+#ifdef IS_ACAR_DISPLAY
+#undef BTTF3_ANIM
 #endif
 
 /*************************************************************************

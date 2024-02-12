@@ -232,8 +232,13 @@ bool tcGPS::begin(unsigned long powerupTime, int quickUpdates, int speedRate, vo
     //sendCommand(NULL, "$PMTK353,1,0,0,0,0*2A");   // GPS
 
     // Send "hot start" to clear i2c buffer 
-    sendCommand(NULL, "$PMTK101*32");
-    delay(800);
+    //sendCommand(NULL, "$PMTK101*32");
+    //delay(800);
+    // No, might lose fix in the process; empty
+    // buffer by reading it
+    for(int i = 0; i <= _lenLimit; i++) {
+        readAndParse(false);
+    }
 
     _customDelayFunc = myDelay;
 

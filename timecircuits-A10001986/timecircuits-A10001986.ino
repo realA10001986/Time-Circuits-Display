@@ -101,9 +101,33 @@
 
 /*  Changelog
  *
+ *  2024/02/08-12 (A10001986)
+ *    - Time: Time stored in the hardware RTC is now UTC (was local time previously). 
+ *      This simplifies handling and avoids ambiguities in connection with DST. 
+ *      After this update, displayed time will be off unless synced via NTP or GPS.
+ *    - User-set dates/times for Destination and Last Time Departed displays is now
+ *      considered "secondary settings" and saved to SD (if available and corresponding 
+ *      option is set).
+ *    - "Persistent Time Travels" now require the option "Save secondary settings to
+ *      SD" to be checked, and an SD card to be present. Time travel data is no longer 
+ *      saved to esp32 flash memory. Writing to esp32 flash can block for up to 1200ms 
+ *      per display, causing undesired disruptions and a bad user experience.
+ *    - lastYear and yearOffset are now saved together (in esp32 flash memory).
+ *      (presentTime's display specific data is now only the timeDifference.)
+ *    - GPS: Don't "hot restart" receiver in boot process any more
+ *    - CP: Add header to "Saved" page so user can return to main menu (wm.cpp)
+ *    - Time Cycling: Use displayed time, not actual time as interval boundaries
+ *      (except when in Exhibition mode)
+ *    - Do not "return from time travel" if not on a time travel.
+ *    - Exhibition mode: Leave timeDifference alone when time travelling in Exh.
+ *      mode. Previously, a time travel was performed for local time and Exh. mode
+ *      time simultaniously, which was confusing then disabling Exh. mode.
+ *    - Don't call old waitAudioDone[now: Menu] from outside of menu
  *  2024/02/07 (A10001986)
  *    - Config Portal: Propose most used time-zones as datalists for time zone
  *      entry.
+ *    - Fix timedifference after year-rollover 9999->1 (bug introduced with Julian
+ *      calendar)
  *  2024/02/06 (A10001986)
  *    - Fix reading and parsing of JSON document
  *    - Fixes for using ArduinoJSON 7; not used in bin yet, too immature IMHO.

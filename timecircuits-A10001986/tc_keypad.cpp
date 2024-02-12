@@ -280,7 +280,11 @@ static void keypadEvent(char key, KeyState kstate)
             break;
         case '9':    // "9" held down -> return from time travel
             doKey = false;
-            resetPresentTime();
+            if(currentlyOnTimeTravel()) {
+                resetPresentTime();
+            } else {
+                playBad = true;
+            }
             break;
         case '1':    // "1" held down -> toggle alarm on/off
             doKey = false;
@@ -631,7 +635,7 @@ void keypad_loop()
             } else if(code == 33) {
               
                 dt_showTextDirect(
-                    weekDays[dayOfWeek(presentTime.getDay(), presentTime.getMonth(), presentTime.getDisplayYear())], 
+                    weekDays[dayOfWeek(presentTime.getDay(), presentTime.getMonth(), presentTime.getYear())], 
                     CDT_CLEAR
                 );
                 specDisp = 10;
@@ -767,41 +771,32 @@ void keypad_loop()
                         
                     } else {
                       
-                        // This does not take DST into account if the next reminder
-                        // is due in the following year. Calculation is off by tzDiff
-                        // (one hour) if DST borders are crossed for an odd number of
-                        // times.
-                        DateTime dt;
-                        myrtcnow(dt);
-                        int  yr = dt.year() - presentTime.getYearOffset();
-                        bool sameYear = true;
-                        int  locDST = 0;
-                        uint32_t locMins = mins2Date(yr, dt.month(), dt.day(), dt.hour(), dt.minute());
-                        uint32_t tgtMins = mins2Date(yr, remMonth ? remMonth : dt.month(), remDay, remHour, remMin);
+                        DateTime dtu, dtl;
+                        myrtcnow(dtu);
+                        UTCtoLocal(dtu, dtl, 0);
+                        int  ry = dtl.year(), rm = remMonth ? remMonth : dtl.month(), rd = remDay, rh = remHour, rmm = remMin;
+                        LocalToUTC(ry, rm, rd, rh, rmm, 0);
+                        
+                        uint32_t locMins = mins2Date(dtu.year(), dtu.month(), dtu.day(), dtu.hour(), dtu.minute());
+                        uint32_t tgtMins = mins2Date(ry, rm, rd, rh, rmm);
+                        
                         if(tgtMins < locMins) {
                             if(remMonth) {
-                                tgtMins = mins2Date(yr + 1, remMonth, remDay, remHour, remMin);
+                                tgtMins = mins2Date(ry + 1, rm, rd, rh, rmm);
                                 tgtMins += (365*24*60);
-                                if(isLeapYear(yr)) tgtMins += 24*60;
-                                sameYear = false;
+                                if(isLeapYear(ry)) tgtMins += 24*60;
                             } else {
-                                if(dt.month() == 12) {
-                                    tgtMins = mins2Date(yr + 1, 1, remDay, remHour, remMin);
+                                if(dtu.month() == 12) {
+                                    tgtMins = mins2Date(ry + 1, 1, rd, rh, rmm);
                                     tgtMins += (365*24*60);
-                                    if(isLeapYear(yr)) tgtMins += 24*60;
-                                    sameYear = false;
+                                    if(isLeapYear(ry)) tgtMins += 24*60;
                                 } else {
-                                    tgtMins = mins2Date(yr, dt.month() + 1, remDay, remHour, remMin);
+                                    tgtMins = mins2Date(ry, rm + 1, rd, rh, rmm);
                                 }
                             }
                         }
                         tgtMins -= locMins;
-                        if(sameYear && couldDST[0] && ((locDST = presentTime.getDST()) >= 0)) {
-                            int curMins;
-                            int tgtDST = timeIsDST(0, yr, remMonth ? remMonth : dt.month() + 1, remDay, remHour, remMin, curMins);
-                            if(!locDST && tgtDST)      tgtMins += getTzDiff();
-                            else if(locDST && !tgtDST) tgtMins -= getTzDiff();
-                        }
+                        
                         uint16_t days = tgtMins / (24*60);
                         uint16_t hours = (tgtMins % (24*60)) / 60;
                         uint16_t minutes = tgtMins - (days*24*60) - (hours*60);
@@ -1204,8 +1199,8 @@ void keypad_loop()
             if(_setHour >= 0) destinationTime.setHour(_setHour);
             if(_setMin >= 0)  destinationTime.setMinute(_setMin);
 
-            // We only save the new time to NVM if user wants persistence.
-            // Might not be preferred; first, this messes with the user's custom
+            // We only save the new time if user wants persistence.
+            // Might not be preferred; this messes with the user's custom
             // times. Secondly, it wears the flash memory.
             if(timetravelPersistent) {
                 destinationTime.save();
@@ -1464,9 +1459,9 @@ bool keypadIsIdle()
 static void setupWCMode()
 {
     if(isWcMode()) {
-        DateTime dt;
-        myrtcnow(dt);
-        setDatesTimesWC(dt);
+        DateTime dtu;
+        myrtcnow(dtu);
+        setDatesTimesWC(dtu);
     } else if(autoTimeIntervals[autoInterval] == 0 || (timetravelPersistent && checkIfAutoPaused())) {
         // Restore NVM time if either time cycling is off, or
         // if paused; latter only if we have the last

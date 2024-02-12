@@ -7,10 +7,6 @@
  * https://tcd.out-a-ti.me
  *
  * Settings & file handling
- * 
- * Main and IP settings are stored on flash FS only
- * Alarm, Reminder and volume either on SD or on flash FS
- * Music Folder number always on SD
  *
  * -------------------------------------------------------------------
  * License: MIT
@@ -116,7 +112,7 @@ bool haveFS = false;
 /* If a SD card is found */
 bool haveSD = false;
 
-/* Save alarm/volume on SD? */
+/* Save sedondary settings on SD? */
 static bool configOnSD = false;
 
 /* Paranoia: No writes Flash-FS  */
@@ -145,6 +141,9 @@ static bool checkValidNumParmF(char *text, float lowerLim, float upperLim, float
 
 static void deleteReminder();
 static void loadCarMode();
+
+static void setupDisplayConfigOnSD();
+static void saveDisplayData();
 
 static void cfc(File& sfile, int& haveErr, int& haveWriteErr);
 static bool audio_files_present();
@@ -308,6 +307,9 @@ void settings_setup()
 
     // Determine if secondary settings are to be stored on SD
     configOnSD = (haveSD && ((settings.CfgOnSD[0] != '0') || FlashROMode));
+
+    // Setup save target for display objects
+    setupDisplayConfigOnSD();
 
     // Load carMode setting
     loadCarMode();
@@ -1453,6 +1455,7 @@ void formatFlashFS()
 
 /* Copy secondary settings from/to SD if user
  * changed "save to SD"-option in CP
+ * Esp is rebooted afterwards!
  */
 void copySettings()
 {       
@@ -1474,15 +1477,20 @@ void copySettings()
             saveStaleTime((void *)&stalePresentTime[0], stalePresent);
         }
         #endif
+        saveDisplayData();
     }
 
     configOnSD = !configOnSD;
+    setupDisplayConfigOnSD();
 }
 
-// Re-write secondary settings
-// Used during audio file installation when flash FS needs
-// to be re-formatted.
-// Is never called in FlashROmode
+/*
+ * Re-write secondary settings
+ * Used during audio file installation when flash FS needs
+ * to be re-formatted.
+ * Is never called in FlashROmode.
+ * Esp is rebooted afterwards!
+ */
 void rewriteSecondarySettings()
 {
     bool oldconfigOnSD = configOnSD;
@@ -1506,10 +1514,37 @@ void rewriteSecondarySettings()
         saveStaleTime((void *)&stalePresentTime[0], stalePresent);
     }
     #endif
+    saveDisplayData();
     
     configOnSD = oldconfigOnSD;
+    setupDisplayConfigOnSD();
 
     // Music Folder Number is always on SD only
+}
+
+static void setupDisplayConfigOnSD()
+{
+    destinationTime._configOnSD = configOnSD;
+    presentTime._configOnSD = configOnSD;
+    departedTime._configOnSD = configOnSD;
+}
+
+static void saveDisplayData()
+{
+    if(timetravelPersistent) {
+        setupDisplayConfigOnSD();
+        // Save with new _configOnSD setting
+        presentTime.save(true);
+    } else {
+        // Load with old _configOnSD setting
+        destinationTime.load();
+        departedTime.load();
+        // Switch _configOnSD setting
+        setupDisplayConfigOnSD();
+        // Save with new _configOnSD setting
+    }
+    destinationTime.save(true);
+    departedTime.save(true);
 }
 
 /*

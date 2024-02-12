@@ -6,7 +6,7 @@
  * https://github.com/realA10001986/Time-Circuits-Display
  * https://tcd.out-a-ti.me
  *
- * Settings handling
+ * Settings & file handling
  *
  * -------------------------------------------------------------------
  * License: MIT
@@ -45,16 +45,12 @@ extern uint8_t musFolderNum;
 #define MS(s) XMS(s)
 #define XMS(s) #s
 
-// Default settings - change settings in the web interface 192.168.4.1
-// For list of time zones, see 
-// https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv
-
-#define DEF_TIMES_PERS      0     // 0-1;  Default: 0 = TimeTravel not persistent
-#define DEF_ALARM_RTC       1     // 0-1;  Default: 1 = Alarm is RTC-based (otherwise 0 = presentTime-based)
+// Default settings
 #define DEF_PLAY_INTRO      1     // 0-1;  Default: 1 = Play intro
 #define DEF_MODE24          0     // 0-1;  Default: 0 = 12-hour-mode
 #define DEF_BEEP            0     // 0-1:  Default: 0 = annoying beep(tm) off
 #define DEF_AUTOROTTIMES    1     // 0-5;  Default: Auto-rotate every 5th minute
+#define DEF_ALARM_RTC       1     // 0-1;  Default: 1 = Alarm is RTC-based (otherwise 0 = presentTime-based)
 #define DEF_HOSTNAME        "timecircuits"
 #define DEF_WIFI_RETRY      3     // 1-10; Default: 3 retries
 #define DEF_WIFI_TIMEOUT    7     // 7-25; Default: 7 seconds
@@ -93,15 +89,15 @@ extern uint8_t musFolderNum;
 #define DEF_PLAY_TT_SND     1     // Default 1: Play time travel sounds (0: Do not; for use with external equipment)
 #define DEF_SHUFFLE         0     // Music Player: Do not shuffle by default
 #define DEF_CFG_ON_SD       1     // Default: Save secondary settings on SD
+#define DEF_TIMES_PERS      0     // 0-1;  Default: 0 = TimeTravel not persistent
 #define DEF_SD_FREQ         0     // SD/SPI frequency: Default 16MHz
 
 struct Settings {
-    char timesPers[4]       = MS(DEF_TIMES_PERS);
-    char alarmRTC[4]        = MS(DEF_ALARM_RTC);
     char playIntro[4]       = MS(DEF_PLAY_INTRO);
     char mode24[4]          = MS(DEF_MODE24);
     char beep[4]            = MS(DEF_BEEP);
-    char autoRotateTimes[4] = MS(DEF_AUTOROTTIMES);   
+    char autoRotateTimes[4] = MS(DEF_AUTOROTTIMES);
+    char alarmRTC[4]        = MS(DEF_ALARM_RTC);
     char hostName[32]       = DEF_HOSTNAME;
     char systemID[8]        = "";
     char appw[10]           = "";
@@ -164,6 +160,7 @@ struct Settings {
     char playTTsnds[4]      = MS(DEF_PLAY_TT_SND);
     char shuffle[4]         = MS(DEF_SHUFFLE);
     char CfgOnSD[4]         = MS(DEF_CFG_ON_SD);
+    char timesPers[4]       = MS(DEF_TIMES_PERS);
     char sdFreq[4]          = MS(DEF_SD_FREQ);
 #ifdef TC_HAVEMQTT  
     char useMQTT[4]         = "0";

@@ -65,7 +65,6 @@
  *     - show network information ("NET-WORK"),
  *     - enter dates/times for the three displays/set built-in RTC,
  *     - show currently measured data from connected sensors ("SENSORS"),
- *     - install the default audio files ("INSTALL AUDIO FILES")
  *     - quit the menu ("END").
  *
  * Pressing ENTER cycles through the list, holding ENTER selects an item.
@@ -111,6 +110,10 @@
  *       pressing ENTER repeatedly. There are 20 levels available.
  *     - Hold ENTER to save and quit the menu ("SAVING" is displayed
  *       briefly)
+ *       
+ *     Commands 3xx (00-19; 99) also allow configuring the volume; using
+ *     a rotary encoder for volume requires to set a fixed level (and thereby
+ *     disabling the built-in volume knob)
  *
  * How to select the Music Folder Number:
  * 
@@ -281,10 +284,10 @@ static const char *alarmWD[10] = {
       "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"
 };
 
-static bool menuSelect(int& number, int mode_min, DateTime& dt);
+static bool menuSelect(int& number, int mode_min, DateTime& dtu, DateTime& dtl);
 static void menuShow(int number);
-static void setUpdate(uint16_t number, int field, uint16_t dflags = 0);
-static bool setField(uint16_t& number, uint8_t field, int year = 0, int month = 0, uint16_t dflags = 0);
+static void setUpdate(int number, int field, uint16_t dflags = 0);
+static bool setField(int& number, uint8_t field, int year = 0, int month = 0, uint16_t dflags = 0);
 static void showCurVolHWSW();
 static void showCurVol();
 static void doSetVolume();
@@ -303,10 +306,11 @@ static void doShowNetInfo();
 static void doShowBTTFNInfo();
 static bool menuWaitForRelease();
 static bool checkEnterPress();
-static void prepareInput(uint16_t number);
+static void prepareInput(int number);
 
 static bool checkTimeOut();
 
+static void waitAudioDoneMenu();
 static void menudelay(unsigned long mydel);
 static void myssdelay(unsigned long mydel);
 
@@ -340,9 +344,9 @@ void enter_menu()
     bool mpActive;
     bool nonRTCdisplayChanged = false;
     int mode_min;
-    int y1, yo1, m1, d1, h1, mi1;
-    int y2, yo2, m2, d2, h2, mi2;
-    DateTime dt;
+    int y1, m1, d1, h1, mi1;
+    int y2, m2, d2, h2, mi2;
+    DateTime dtu, dtl;
 
     pwrNeedFullNow();
 
@@ -365,15 +369,16 @@ void enter_menu()
     menuItemNum = mode_min = MODE_ALRM;
 
     // Backup currently displayed times
-    destinationTime.getToParms(y1, yo1, m1, d1, h1, mi1);
-    departedTime.getToParms(y2, yo2, m2, d2, h2, mi2);
+    destinationTime.getToParms(y1, m1, d1, h1, mi1);
+    departedTime.getToParms(y2, m2, d2, h2, mi2);
     // Load the custom times from NVM
     destinationTime.load();
     departedTime.load();
 
-    // Load the RTC time into present time
-    myrtcnow(dt);
-    presentTime.setDateTime(dt);
+    // Load local time into present time
+    myrtcnow(dtu);
+    UTCtoLocal(dtu, dtl, 0);
+    presentTime.setDateTime(dtl);
 
     // Show first menu item
     menuShow(menuItemNum);
@@ -384,7 +389,7 @@ void enter_menu()
     // Wait for ENTER to cycle through main menu,
     // HOLDing ENTER selects current menu "item"
     // (Also sets displaySet to selected display, if applicable)
-    if(!(menuSelect(menuItemNum, mode_min, dt)))
+    if(!(menuSelect(menuItemNum, mode_min, dtu, dtl)))
         goto quitMenu;
 
     if(menuItemNum >= MODE_PRES && menuItemNum <= MODE_DEPT) {
@@ -393,17 +398,18 @@ void enter_menu()
 
         // Generate pre-set values, which the user may keep (or overwrite)
 
-        uint16_t yearSet, monthSet, daySet, hourSet, minSet;
+        int yearSet, monthSet, daySet, hourSet, minSet;
 
         if(displaySet->isRTC()) {
 
-            // This is the RTC, get the current date/time
-            myrtcnow(dt);
-            yearSet = dt.year() - displaySet->getYearOffset();
-            monthSet = dt.month();
-            daySet = dt.day();
-            hourSet = dt.hour();
-            minSet = dt.minute();
+            // This is the RTC, get the current local date/time
+            myrtcnow(dtu);
+            UTCtoLocal(dtu, dtl, 0);
+            yearSet = dtl.year();
+            monthSet = dtl.month();
+            daySet = dtl.day();
+            hourSet = dtl.hour();
+            minSet = dtl.minute();
 
         } else {
 
@@ -456,57 +462,44 @@ void enter_menu()
 
         // Have new date & time at this point
 
-        waitAudioDone();
+        waitAudioDoneMenu();
+
+        // Show a save message for a brief moment
+        displaySet->showTextDirect(StrSaving);
 
         if(displaySet->isRTC()) {  // this is the RTC display, set the RTC
 
-            // Update RTC and fake year if neccessary
-            // see comments in tc_time.cpp
-
-            uint16_t newYear = yearSet;
-            int16_t tyroffs = 0;
+            uint16_t rtcYear;
+            int16_t  tyroffs = 0;
+            int ny = yearSet, nm = monthSet, nd = daySet, nh = hourSet, nmm = minSet;
 
             // Set up DST data for now current year
-            if(!(parseTZ(0, yearSet))) {
-                #ifdef TC_DBG
-                Serial.println(F("Menu: Failed to parse TZ"));
-                #endif
-            }
+            parseTZ(0, yearSet);
 
-            // Get RTC-fit year plus offs for given real year
-            correctYr4RTC(newYear, tyroffs);
+            // Convert given local time to UTC
+            // (DST-end ambiguity ignored here)
+            LocalToUTC(ny, nm, nd, nh, nmm, 0);
 
+            // Get RTC-fit year/offs
+            rtcYear = ny;
+            correctYr4RTC(rtcYear, tyroffs);
+
+            // Adjust RTC & yoffs
+            rtc.adjust(0, nmm, nh, dayOfWeek(nd, nm, ny), nd, nm, rtcYear-2000U);
             displaySet->setYearOffset(tyroffs);
 
-            rtc.adjust(0, minSet, hourSet, dayOfWeek(daySet, monthSet, yearSet), daySet, monthSet, newYear-2000U);
-
-            // User entered current local time; set DST flag accordingly
-            // (This assumes user did not set time in the "loop-hour" when
-            // DST is ending, otherwise there's a 50% chance DST is wrong.)
-            if(couldDST[0]) {
-                int currTimeMins;
-                presentTime.setDST(timeIsDST(0, yearSet, monthSet, daySet, hourSet, minSet, currTimeMins));
-                // Saved below
-            } else {
-                presentTime.setDST(0);
-            }
-
-            // Avoid immediate re-adjustment in time_loop
-            lastYear = yearSet;
-            presentTime.saveLastYear(lastYear);
+            // Update & save lastYear & yearOffset
+            lastYear = ny;
+            displaySet->saveClockStateData(lastYear);
 
             // Resetting the RTC invalidates our timeDifference, ie
             // fake present time. Make the user return to present
             // time after setting the RTC
             timeDifference = 0;
 
-            yearSet = newYear;
-
         } else {
 
             // Non-RTC: Setting a static display, turn off autoInverval
-
-            displaySet->setYearOffset(0);
 
             if(autoInterval) {
                 autoInterval = 0;
@@ -517,9 +510,6 @@ void enter_menu()
             nonRTCdisplayChanged = true;
 
         }
-
-        // Show a save message for a brief moment
-        displaySet->showTextDirect(StrSaving);
 
         // update the object
         displaySet->setYear(yearSet);
@@ -604,7 +594,7 @@ void enter_menu()
             presentTime.setBrightness(ptbri2, true);
             departedTime.setBrightness(ltbri2, true);
 
-            // Convert bri values to strings, write to settings, write settings file
+            // Update & write settings file
             sprintf(settings.destTimeBright, "%d", dtbri2);
             sprintf(settings.presTimeBright, "%d", ptbri2);
             sprintf(settings.lastTimeBright, "%d", ltbri2);
@@ -654,11 +644,9 @@ quitMenu:
         } else {
             if(!isWcMode() || !WcHaveTZ1) {
                   destinationTime.setFromParms(y1, m1, d1, h1, mi1); 
-                  destinationTime.setYearOffset(yo1); 
             }
             if(!isWcMode() || !WcHaveTZ2) {
                   departedTime.setFromParms(y2, m2, d2, h2, mi2);
-                  departedTime.setYearOffset(yo2); 
             }
         }
     } else {
@@ -680,17 +668,18 @@ quitMenu:
 
     // Restore present time
     
-    myrtcnow(dt);
+    myrtcnow(dtu);
+    UTCtoLocal(dtu, dtl, 0);
     
     #ifdef HAVE_STALE_PRESENT
     if(stalePresent)
         presentTime.setFromStruct(&stalePresentTime[1]);
     else
     #endif
-        presentTime.setDateTimeDiff(dt);
+        updatePresentTime(dtu, dtl);
 
     if(isWcMode()) {
-        setDatesTimesWC(dt);
+        setDatesTimesWC(dtu);
     }
 
     // all displays on and show
@@ -726,7 +715,7 @@ quitMenu:
  *  - false if timeout
  *
  */
-static bool menuSelect(int& number, int mode_min, DateTime& dt)
+static bool menuSelect(int& number, int mode_min, DateTime& dtu, DateTime& dtl)
 {
     timeout = 0;
 
@@ -750,8 +739,9 @@ static bool menuSelect(int& number, int mode_min, DateTime& dt)
             if(number > MODE_MAX) number = mode_min;
 
             if(number == MODE_PRES) {
-                myrtcnow(dt);
-                presentTime.setDateTime(dt);
+                myrtcnow(dtu);
+                UTCtoLocal(dtu, dtl, 0);
+                presentTime.setDateTime(dtl);
             }
 
             // Show only the selected display, or menu item text
@@ -935,7 +925,7 @@ static void menuShow(int number)
  * field = field to show it in
  *
  */
-static void setUpdate(uint16_t number, int field, uint16_t dflags)
+static void setUpdate(int number, int field, uint16_t dflags)
 {
     switch(field) {
     case FIELD_MONTH:
@@ -957,7 +947,7 @@ static void setUpdate(uint16_t number, int field, uint16_t dflags)
 }
 
 // Prepare timeBuffer
-static void prepareInput(uint16_t number)
+static void prepareInput(int number)
 {
     // Write pre-set into buffer, reset index to 0
     // Upon first key input, the pre-set will be overwritten
@@ -975,12 +965,12 @@ static void prepareInput(uint16_t number)
  * year, month - for checking maximum day number, etc.
  *
  */
-static bool setField(uint16_t& number, uint8_t field, int year, int month, uint16_t dflags)
+static bool setField(int& number, uint8_t field, int year, int month, uint16_t dflags)
 {
     int upperLimit;
     int lowerLimit;
     int i;
-    uint16_t setNum = 0, prevNum = number;
+    int setNum = 0, prevNum = number;
     int numVal = 0;
     int numChars = 2;
     bool someupddone = false;
@@ -1085,7 +1075,7 @@ static bool setField(uint16_t& number, uint8_t field, int year, int month, uint1
     number = numVal;
 
     // Display (corrected) number for .5 seconds
-    setUpdate((uint16_t)numVal, field, dflags);
+    setUpdate(numVal, field, dflags);
 
     menudelay(500);
 
@@ -1453,9 +1443,9 @@ static void doSetAlarm()
     unsigned long blinkNow = millis();
     bool alarmDone = false;
     bool newAlarmOnOff = alarmOnOff;
-    uint16_t newAlarmHour = (alarmHour <= 23) ? alarmHour : 0;
-    uint16_t newAlarmMinute = (alarmMinute <= 59) ? alarmMinute : 0;
-    uint16_t newAlarmWeekday = alarmWeekday;
+    int  newAlarmHour = (alarmHour <= 23) ? alarmHour : 0;
+    int  newAlarmMinute = (alarmMinute <= 59) ? alarmMinute : 0;
+    int  newAlarmWeekday = alarmWeekday;
     #ifdef IS_ACAR_DISPLAY
     const char *almFmt = "%s     %02d%02d";
     #else
@@ -1517,7 +1507,7 @@ static void doSetAlarm()
     prepareInput(newAlarmHour);
     waitForEnterRelease();
     if(!setField(newAlarmHour, FIELD_HOUR, 0, 0, CDD_FORCE24)) {
-        waitAudioDone();    // (keypad; should not be necessary)
+        waitAudioDoneMenu();    // (keypad; should not be necessary)
         return;
     }
 
@@ -1526,7 +1516,7 @@ static void doSetAlarm()
     prepareInput(newAlarmMinute);
     waitForEnterRelease();
     if(!setField(newAlarmMinute, FIELD_MINUTE)) {
-        waitAudioDone();    // (keypad; should not be necessary)
+        waitAudioDoneMenu();    // (keypad; should not be necessary)
         return;
     }
 
@@ -1571,7 +1561,7 @@ static void doSetAlarm()
 
     }
 
-    waitAudioDone();    // For keypad sounds
+    waitAudioDoneMenu();    // For keypad sounds
     allOff();
 
     if(alarmDone) {
@@ -2276,7 +2266,7 @@ void waitForEnterRelease()
     isEnterKeyHeld = false;
 }
 
-void waitAudioDone()
+static void waitAudioDoneMenu()
 {
     int timeout = 200;
 
@@ -2352,8 +2342,6 @@ void myloops(bool menuMode)
     }
     #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE)
     gps_loop(menuMode);  // 6-12ms without delay, 8-13ms with delay
-    #endif
-    #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE)
     audio_loop();
     #endif
     bttfn_loop();
