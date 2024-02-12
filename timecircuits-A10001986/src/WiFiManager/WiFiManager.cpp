@@ -1903,6 +1903,12 @@ void WiFiManager::handleParamSave() {
   doParamSave();
 
   String page = getHTTPHead(FPSTR(S_titleparamsaved)); // @token titleparamsaved
+  // A10001986 inserted
+  String str  = FPSTR(HTTP_ROOT_MAIN);
+  str.replace(FPSTR(T_t),_title);
+  str.replace(FPSTR(T_v), configPortalActive ? _apName : WiFi.localIP().toString()); // use ip if ap is not active for heading
+  page += str;
+  // A10001986 end
   page += FPSTR(HTTP_PARAMSAVED);
   if(_showBack) page += FPSTR(HTTP_BACKBTN); 
   page += FPSTR(HTTP_END);
