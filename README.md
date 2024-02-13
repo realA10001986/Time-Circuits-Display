@@ -1336,7 +1336,7 @@ This procedure ensures that all your settings are copied from the old to the new
 
 ##### &#9654; Make time travels persistent
 
-See [here](#persistent--non-persistent-time-travels). For this option to take effect, it is required that the _Save secondary settings on SD_ is checked as well.
+See [here](#persistent--non-persistent-time-travels). For this option to take effect, it is required that the _Save secondary settings on SD_ is checked as well, and an SD card is present. Time travel data is only ever stored on SD, never in internal flash memory.
 
 ## Appendix B: I2C peripheral wiring
 
