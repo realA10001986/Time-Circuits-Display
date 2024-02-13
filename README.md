@@ -1047,11 +1047,9 @@ Note that if your configured WiFi network was not available when the TCD was try
 
 ## Flash Wear
 
-Flash memory has a somewhat limited life-time. It can be written to only between 10.000 and 100.000 times before becoming unreliable. The firmware writes to the internal flash memory when saving settings and other data. Every time you change settings through the keypad menu or the Config Portal, data is written to flash memory. The same goes for changing alarm settings (including enabling/disabling the alarm), and time travelling if time travels are [persistent](#persistent--non-persistent-time-travels).
+Flash memory has a somewhat limited life-time. It can be written to only between 10.000 and 100.000 times before becoming unreliable. The firmware writes to the internal flash memory when saving settings and other data. Every time you change settings through the keypad menu or the Config Portal, data is written to flash memory.
 
-In order to reduce the number of write operations and thereby prolong the life of your TCD, it is recommended
-- to uncheck the option **_[Make time travels persistent](#persistent--non-persistent-time-travels)_** in the Config Portal,
-- to use a good-quality SD card and to check **_[Save secondary settings on SD](#-save-secondary-settings-on-sd)_** in the Config Portal; secondary settings (alarm, reminder, carmode, exhibition mode) are then stored on the SD card (which also suffers from wear but is easy to replace). If you want to swap the SD card but preserve your secondary settings, go to the Config Portal while the old SD card is still in place, uncheck the **_Save secondary settings on SD_** option, click on Save and wait until the TCD has rebooted. You can then power down the TCD, swap the SD card and power-up again. Then go to the Config Portal, change the option back on and click on Save. Your settings are now on the new SD card.
+In order to reduce the number of write operations and thereby prolong the life of your TCD, it is recommended to use a good-quality SD card and to check **_[Save secondary settings on SD](#-save-secondary-settings-on-sd)_** in the Config Portal; secondary settings (volume, alarm, reminder, carmode state, exhibition mode data and state, time travel data and state) are then stored on the SD card (which also suffers from wear but is easy to replace). See [here](#-save-secondary-settings-on-sd) for more information.
 
 ## My custom-made Time Circuits Wall Clock
 
