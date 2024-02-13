@@ -515,7 +515,7 @@ Your replacements need to be put in the root (top-most) directory of the SD card
 - "nmoff.mp3". Played when manually disabling night mode,
 - "reminder.mp3". Played when the reminder is due.
 - "timer.mp3". Played when the count-down timer expires.
-- "ping.mp3". Played with re-connection WiFi by holding '7' on the keypad.
+- "ping.mp3". Played when re-connecting/re-enabling WiFi by holding '7' on the keypad.
 
 The following sounds are time-sync'd to display action. If you decide to substitute these with your own, be prepared to lose synchronicity:
 - "enter.mp3". Played when a date was entered and ENTER was pressed.
