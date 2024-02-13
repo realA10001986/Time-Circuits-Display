@@ -189,6 +189,8 @@ To enable this mode, type 999 followed by ENTER. The default fixed time will be 
 
 Exhibition mode is persistent; the pre-programmed time will be stored and retrieved after a reboot/power-down.
 
+Not strictly part of Exhibition mode, but related: If you want your TCD to display specific times in the *Destination Time* and/or *Last Time Departed* displays, you can program those times through the [keypad menu](#how-to-enter-datestimes-for-the-destination-and-last-time-departed-displays). Those times will be displayed, but replaced as soon as a time travel takes place. To quickly restore the displays to your pre-programmed times, enter 998 followed by ENTER. Note that this only works if **_Make time travels persistent_** is unchecked in the Config Portal.
+
 ### Common usage scenarios
 
 ####  &#9654; I want my TCD to work like in the movie
@@ -353,6 +355,10 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left">Enable / disable <a href="#exhibition-mode">Exhibition mode</a></td>
      <td align="left">999&#9166;</td>
     </tr>
+  <tr>
+     <td align="left">Restore user destination/last time dep. times</td>
+     <td align="left">998&#9166;</td>
+  </tr>
  <tr>
      <td align="left">Program time for <a href="#exhibition-mode">Exhibition mode</a></td>
      <td align="left">99mmddyyyyhhMM&#9166;</td>
@@ -411,13 +417,13 @@ If time travels are persistent
 - *present time*, be it actual present time or "fake" after time travelling, will continue to run while the device is not powered, as long as its battery lasts, and displayed on power-up/reboot.
 
 If time travels are non-persistent
-- a user-programmed *destination time* is only saved when programmed through the keypad menu, but not if entered ahead of a time travel (ie outside of the keypad menu, just by typing mmddyyyyhhMM/mmddyyyy/hhMM plus ENTER).
+- a user-programmed *destination time* is only saved when programmed through the keypad menu, but not if entered ahead of a time travel (ie outside of the keypad menu, by typing mmddyyyyhhMM/mmddyyyy/hhMM plus ENTER).
 - a user-programmed *last time departed* is only saved when programmed through the keypad menu, but not if the result of a time travel.
 - *present time* is always reset to actual present time upon power-up/reboot.
 
 If you want your device to display exactly the same after a power loss, choose persistent (and disable [Time-cycling](#time-cycling)). _Note that 'persistent time travels' require an SD card and the option **_Save secondary settings on SD_** to be checked as well._
 
-If you want to display your favorite *destination time* and *last time departed* upon power-up, and not have time travels overwrite them, choose "non-persistent", and program your times through the [keypad menu](#how-to-enter-datestimes-for-the-destination-and-last-time-departed-displays) (and disable [Time-cycling](#time-cycling)). Those times will never be overwritten by later time travels. Note, however, that the times displayed might actually change due to time travels.
+If you want to display your favorite *destination time* and *last time departed* upon power-up, and not have time travels overwrite them, choose "non-persistent", and program your times through the [keypad menu](#how-to-enter-datestimes-for-the-destination-and-last-time-departed-displays) (and disable [Time-cycling](#time-cycling)). Later time travels will, of course, change what is displayed, but not overwrite your times in storage. To bring back your stored times to the displays, type 998 followed by ENTER.
 
 Note that Time-cycling, if enabled, will force the device to cycle through the list of pre-programmed times, regardless of your time travel persistence setting. So, if Time-cycling is enabled, the only effect of persistence is that *Present Time* is kept at what it was before vs. reset to actual present time after a power loss.
 
@@ -531,12 +537,13 @@ The following sounds are time-sync'd to display action. If you decide to substit
 
 The firmware supports some additional user-provided sound effects, which it will load from the SD card. If the respective file is present, it will be used. If that file is absent, no sound will be played.
 
+- "ttaccel.mp3": Will be played immediately upon triggering a time travel when a speedo display is connected, during the acceleration phase (ie while the speedo counts up to 88). This sound is then interrupted by the usual time travel sound. You can use, for instance, the sound of a car accelerating for this.
 - "hour.mp3": Will be played every hour, on the hour. This feature is disabled in night mode.
 - "hour-xx.mp3", xx being 00 through 23: Sounds-on-the-hour for specific hours that will be played instead of "hour.mp3". If a sound for a specific hour is not present, "hour.mp3" will be played, if that one exists.
 - "key3.mp3"/"key6.mp3": Will be played when holding the "3"/"6" key for 2 seconds.
 - "ha-alert.mp3" will be played when a [HA/MQTT](#home-assistant--mqtt) message is received.
 
-"hour.mp3"/"hour-xx.mp3", "key3.mp3"/"key6.mp3" and "ha-alert.mp3" are not provided here. You can use any mp3, with 128kpbs or less.
+Those files are not provided here. You can use any mp3, with a bitrate of 128kpbs or less.
 
 ## The Music Player
 
@@ -665,7 +672,7 @@ Note that the Music Folder Number is saved in a config file on the SD card.
 Adjusting the RTC is useful if you can't use NTP for time keeping, and really helpful when using GPS. Always set your actual local present time here; if you want to display some other time, use the Time Travel function. Note: The time you entered will be changed if/when the device has access to authoritative time such as via NTP or GPS. For DST (daylight saving) and GPS, it is essential that you first set the correct time zone in the [Config Portal](#the-config-portal).
 
 - Hold ENTER to invoke main menu
-- Press ENTER repeatedly until "SET RTC" is displayed and the *Present Time* display shows a date and time 
+- Press ENTER repeatedly until "SET CLOCK" is displayed and the *Present Time* display shows a date and time 
 - Hold ENTER until the *Present Time* display goes off except for the first field to enter data into
 - The field to enter data into is shown (exclusively), pre-set with its current value
 - Data entry works as described [above](#the-keypad-menu); remember that months need to be entered numerically (01-12), and hours in 24-hour notation (0-23).
@@ -673,7 +680,7 @@ Adjusting the RTC is useful if you can't use NTP for time keeping, and really he
 
 #### How to enter dates/times for the *Destination* and *Last Time Departed* displays:
 
-Note that when entering dates/times into the *destination time* or *last time departed* displays, the Time-cycling Interval is automatically set to 0. Your entered date/time(s) are shown until replaced by time travels.
+Note that when entering dates/times into the *destination time* or *last time departed* displays, the Time-cycling Interval is automatically set to 0. Your entered date/time(s) are shown until replaced by the results of time travels; you can then quickly bring your times back to the displays by typing 998 followed by ENTER.
 
 - Hold ENTER to invoke main menu
 - Press ENTER repeatedly until the desired display is the only one lit and shows a date and time
