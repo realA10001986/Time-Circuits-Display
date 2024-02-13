@@ -1323,11 +1323,20 @@ When checked, songs are shuffled when the device is booted. When unchecked, song
 
 ##### &#9654; Save secondary settings on SD
 
-If this is checked, secondary settings (volume, alarm, reminder, car mode, exhibition mode) are stored on the SD card (if one is present). This helps to minimize write operations to the internal flash memory and to prolong the lifetime of your TCD. See [Flash Wear](#flash-wear).
+If this is checked, secondary settings (volume, alarm, reminder, car mode state, exhibition mode data and state, time travel state and data) are stored on the SD card (if one is present). This helps to minimize write operations to the internal flash memory and to prolong the lifetime of your TCD. See [Flash Wear](#flash-wear).
+
+Apart from Flash Wear, there is another reason for using an SD card for settings: The alternative is to save data to the ESP32 flash memory. However, writing data to that flash memory can cause delays of up to 1.5 seconds, which interrupt sound playback and have other undesired effects. The TCD needs to save data from time to time, so in order for a smooth experience without unexpected and unwanted delays, please use an SD card and check this option.
+
+If you want copy settings from one SD card to another, do as follows:
+- With the old SD card still in the slot, enter the Config Portal, turn off _Save secondary settings on SD_, and click "SAVE".
+- After the TCD has rebooted, power it down, and swap the SD card for your new one.
+- Power-up the TCD, enter the Config Portal, re-enable _Save secondary settings on SD_, and click "SAVE".
+
+This procedure ensures that all your settings are copied from the old to the new SD card.
 
 ##### &#9654; Make time travels persistent
 
-See [here](#persistent--non-persistent-time-travels). This option to take effect requires the _Save secondary settings on SD_ to be checked as well.
+See [here](#persistent--non-persistent-time-travels). For this option to take effect, it is required that the _Save secondary settings on SD_ is checked as well.
 
 ## Appendix B: I2C peripheral wiring
 
