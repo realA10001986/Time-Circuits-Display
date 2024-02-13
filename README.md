@@ -608,7 +608,7 @@ Note that the alarm is recurring, ie it rings at the programmed time, unless dis
 
 #### How to set the audio volume:
 
-Basically, and by default, the device uses the built-in hardware volume knob to determine the desired volume. You can change this to a pre-selected level as follows:
+By default, the device uses the built-in hardware volume knob to determine the desired volume. You can change this to a pre-selected level as follows:
 - Hold ENTER to invoke main menu
 - Press ENTER repeatedly until "VOL-UME" is shown
 - Hold ENTER
