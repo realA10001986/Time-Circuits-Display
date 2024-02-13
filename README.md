@@ -836,11 +836,10 @@ Notes:
 - The knob is only evaluated if no GPS receiver is connected, or if the **_Display GPS speed_** is unchecked. GPS speed has priority over the knob.
 - The knob is also evaluated if no speedo display is connected; it can be operated "blindly" to trigger time travels and its movement is send to BTTFN clients like GPS speed (if no GPS receiver is connected, or the option **_Provide GPS speed for wireless props_** is unchecked)
 - The speedo displays "0" as long as the knob is not moved; if the knob is turned counter-clockwise a couple of notches, the speedo display will be switched off.
-- The DuPPA I2CEncoder 2.1 needs to be set to address 0x01 (A0 closed, all others open); RGB-encoders not supported.
 
 ### Rotary Encoder for Audio Volume
 
-The rotary encoder for volume replaces the volume knob on back of the TCD's keypad. The advantage of the rotary encoder is that it is more precise, especially at lower volume levels, and it can be relocated. In order to use the rotary encoder for speed, the TCD's own volume knob must be disabled; this is done by pre-selecting an audio level in the keypad menu.
+The rotary encoder for volume replaces the volume knob on back of the TCD's keypad. The advantages of the rotary encoder are that it is more precise, especially at lower volume levels, and it can be relocated. In order to use the rotary encoder for volume, the TCD's own volume knob must be disabled; this is done by pre-selecting an audio level in the keypad menu, or by typing 3xx (xx being 00-19) followed by ENTER.
 
 ### Configuration
 
@@ -852,7 +851,7 @@ In order to use an encoder for speed or volume, it needs to be configured as fol
   <tr><td>Volume</td><td>A0 closed [0x37]</td><td>SW1=0,SW2=1 [0x55]</td><td>A0,A1 closed [0x03]</td></tr>
   </table>
 
-The numbers in brackets are the resulting i2c address.
+The numbers in brackets are the resulting i2c address. (For DuPPA: RGB-encoders not supported.)
 
 Here is how they look configured for speed (the purple spots are solder joints):
 
