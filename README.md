@@ -627,8 +627,8 @@ In order for this menu item to show up, an SD card is required.
 
 - Hold ENTER to invoke main menu
 - Press ENTER repeatedly until "MUSIC FOLDER NUMBER" is shown
-- Hold ENTER, "NUM" is displayed
-- Press ENTER repeatedly to cycle through the possible values. The message "NOT FOUND" appears if either the folder itself or 000.mp3 in that very folder is not present.            
+- Hold ENTER, "FOLDER" and a number is displayed
+- Press ENTER repeatedly to cycle through the possible values. The message "NOT FOUND" appears if either the folder itself or 000.mp3 in that very folder is not present. "PROCESSING REQUIRED" means that the TCD will prepare the folder(eg rename files) after selection.
 - Hold ENTER to select the value shown and exit the menu ("SAVING" is displayed briefly)
 
 If shuffle was enabled before, the new folder is also played in shuffled order.
