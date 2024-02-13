@@ -1051,7 +1051,7 @@ bool clockDisplay::saveNVMData(uint8_t *savBuf, bool noReadChk)
     unsigned long now = millis();
     #endif
 
-    for(uint8_t i = 0; i < 9; i++) {
+    for(int i = 0; i < 9; i++) {
         sum += (savBuf[i] ^ 0x55);
     }
     savBuf[9] = sum & 0xff;

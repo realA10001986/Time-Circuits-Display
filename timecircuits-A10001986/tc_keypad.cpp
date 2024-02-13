@@ -844,6 +844,22 @@ void keypad_loop()
                     }
                     validEntry = true;
                     break;
+                case 998:
+                    if(timetravelPersistent) {
+                        invalidEntry = true;
+                    } else {
+                        departedTime.off();
+                        needDepTime = true;
+                        if(autoTimeIntervals[autoInterval]) {
+                            pauseAuto();
+                        }
+                        enableRcMode(false);
+                        enableWcMode(false);
+                        destinationTime.load();
+                        departedTime.load();
+                        validEntry = true;
+                    }
+                    break;
                 #ifdef HAVE_STALE_PRESENT
                 case 999:
                     stalePresent = !stalePresent;

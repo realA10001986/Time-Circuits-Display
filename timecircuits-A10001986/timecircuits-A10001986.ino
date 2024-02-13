@@ -101,11 +101,24 @@
 
 /*  Changelog
  *
+ *  2024/02/13
+ *    - New user-sound: If SD contains "ttaccel.mp3", this file will be played 
+ *      immediately upon initiating a time travel when a speedo is connected, during 
+ *      the acceleration phase, until the start of the actual time travel (at which 
+ *      point it is interrupted by the usual time travel sound). This sound can
+ *      "bridge" the silence while the speedo counts up.
+ *    - 998 restores destination and last time departed displays to user-stored values
+ *      (ie the ones programmed through the keypad menu, unless overwritten because
+ *      "Persistent Time Travels" were enabled at some point after programming those
+ *      times).
+ *      Command only valid if Persistent Time Travels are off. Pauses time-cycling for
+ *      30 mins. Meant as an extension to Exhibition mode for quickly displaying
+ *      pre-programmed times.
  *  2024/02/08-12 (A10001986)
  *    - Time: Time stored in the hardware RTC is now UTC (was local time previously). 
  *      This simplifies handling and avoids ambiguities in connection with DST. 
  *      After this update, displayed time will be off unless synced via NTP or GPS.
- *    - User-set dates/times for Destination and Last Time Departed displays is now
+ *    - User-set dates/times for Destination and Last Time Departed displays are now
  *      considered "secondary settings" and saved to SD (if available and corresponding 
  *      option is set).
  *    - "Persistent Time Travels" now require the option "Save secondary settings to

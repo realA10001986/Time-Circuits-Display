@@ -202,6 +202,8 @@ static uint8_t       timeTravelP0Speed = 0;
 static long          pointOfP1 = 0;
 static bool          didTriggerP1 = false;
 static float         ttP0TimeFactor = 1.0;
+static bool          havePreTTSound = false;
+static const char    *preTTSound = "/ttaccel.mp3";
 #ifdef TC_HAVEGPS
 static unsigned long dispGPSnow = 0;
 #endif
@@ -952,6 +954,7 @@ void time_setup()
     // Turn on the RTC's 1Hz clock output
     rtc.clockOutEnable();
 
+    // Calculate data for Julian Calendar
     #ifdef TC_JULIAN_CAL
     calcJulianData();
     #endif
@@ -989,7 +992,7 @@ void time_setup()
     // Set initial brightness for present time displqy
     presentTime.setBrightness(atoi(settings.presTimeBright), true);
     
-    // Load present time settings (lastYear, yearOffs)
+    // Load present time clock state (lastYear, yearOffs)
     {
         int16_t tyo;
         lastYear = presentTime.loadClockStateData(tyo);
@@ -1000,7 +1003,7 @@ void time_setup()
     presentTime.load();
 
     if(rtcbad) {
-        // Default date (see above) requires offs 0
+        // Default date (see above) requires yoffs 0
         presentTime.setYearOffset(0);
     }
 
@@ -1037,7 +1040,7 @@ void time_setup()
             if(!speedo.begin(temp)) {
                 useSpeedo = false;
                 #ifdef TC_DBG
-                Serial.printf("%sSpeedo not detected\n", funcName);
+                Serial.printf("%sSpeedo not found\n", funcName);
                 #endif
             }
         }
@@ -1053,6 +1056,8 @@ void time_setup()
         // 'useGPSSpeed' strictly means "display GPS speed on speedo"
         // It is false, if no GPS receiver found, or no speedo found, or option unchecked
         useGPSSpeed = (atoi(settings.useGPSSpeed) > 0);
+
+        havePreTTSound = check_file_SD(preTTSound);
     }
     #endif
 
@@ -1287,7 +1292,7 @@ void time_setup()
         }
     }
 
-    // Load time to presentTime display
+    // Init Exhibition mode and load time to presentTime display
     #ifdef HAVE_STALE_PRESENT
     loadStaleTime((void *)&stalePresentTime[0], stalePresent);
     if(!timetravelPersistent) {
@@ -1299,7 +1304,7 @@ void time_setup()
     #endif
         updatePresentTime(dtu, dtl);
 
-    // Set GPS RTC
+    // Set GPS receiver's RTC
     #ifdef TC_HAVEGPS
     if(useGPS) {
         if(!haveAuthTimeGPS && (haveAuthTime || !rtcbad)) {
@@ -1381,7 +1386,7 @@ void time_setup()
     // Load (copy) autoInterval ("time cycling interval") from settings
     loadAutoInterval();
 
-    // If using auto times, put up the first one
+    // If time cycling enabled, put up the first one
     if(autoTimeIntervals[autoInterval]) {
         destinationTime.setFromStruct(&destinationTimes[0]);
         departedTime.setFromStruct(&departedTimes[0]);
@@ -1453,7 +1458,15 @@ void time_setup()
         ettoBase = pointOfP1;
         ettoLeadPoint = origEttoLeadPoint = ettoBase - ettoLeadTime;   // Can be negative!
         #endif
-        pointOfP1 -= TT_P1_POINT88;
+
+        // No TT sounds to play -> no user-provided sound.
+        if(!playTTsounds) havePreTTSound = false;
+
+        // If we have a user-provided pre-TT sound, we shorten our 
+        // tt sequence and skip the lead (timetravel2)
+        if(!havePreTTSound) {
+            pointOfP1 -= TT_P1_POINT88;
+        }
 
         {
             // Calculate total elapsed delay for each mph value
@@ -3092,6 +3105,14 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
             timetravelP0Now = ttP0Now = ttUnivNow;
             timeTravelP0 = 1;
             timeTravelP2 = 0;
+
+            if(havePreTTSound) {
+                // Don't play preTT sound if not enough time left (< 2sec)
+                if(triggerP1LeadTime > 2000) {
+                    play_file(preTTSound, PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
+                }
+                triggerP1NoLead = true;
+            }
 
             return;
         }

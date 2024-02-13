@@ -321,7 +321,7 @@ void settings_setup()
     if((r = e) && haveSD && (FlashROMode || haveFS)) {
         allowCPA = check_if_default_audio_present();
     }
-
+    
     // Allow user to delete static IP data by holding ENTER
     // while booting
     // (10 secs timeout to wait for button-release to allow

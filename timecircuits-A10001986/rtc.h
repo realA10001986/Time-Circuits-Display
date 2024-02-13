@@ -87,7 +87,6 @@ class DateTime {
     private:
 
         uint16_t _y;    // Year 0-9999
-        uint8_t  _yOff; // Year offset from 2000
         uint8_t  _m;    // Month 1-12
         uint8_t  _d;    // Day 1-31
         uint8_t  _hh;   // Hours 0-23

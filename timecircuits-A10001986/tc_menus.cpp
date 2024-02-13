@@ -778,7 +778,7 @@ static void menuShow(int number)
         break;
     case MODE_PRES:  // Present Time (RTC)
         displaySet = &presentTime;
-        dt_showTextDirect("SET RTC");
+        dt_showTextDirect("SET CLOCK"); //("SET RTC");
         dt_on();
         pt_on();
         lt_off();
@@ -1298,8 +1298,8 @@ static void displayMSfx(int msfx, bool blink, bool doFolderChk)
             lt_off();
             break;
         case -1:
-            pt_showTextDirect("PROCESSING");
-            lt_showTextDirect("REQUIRED");
+            pt_showTextDirect("NEEDS");
+            lt_showTextDirect("PROCESSING");
             break;
         case -2:
             pt_showTextDirect("NO AUDIO");
