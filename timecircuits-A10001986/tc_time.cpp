@@ -200,6 +200,7 @@ static unsigned long timetravelP0Delay = 0;
 static unsigned long ttP0Now = 0;
 static uint8_t       timeTravelP0Speed = 0;
 static long          pointOfP1 = 0;
+static long          pointOfP1NoLead = 0;
 static bool          didTriggerP1 = false;
 static float         ttP0TimeFactor = 1.0;
 static bool          havePreTTSound = false;
@@ -1445,6 +1446,9 @@ void time_setup()
         speedo.setBrightness(atoi(settings.speedoBright), true);
         speedo.setDot(true);
 
+        // No TT sounds to play -> no user-provided sound.
+        if(!playTTsounds) havePreTTSound = false;
+
         // Speed factor for acceleration curve
         ttP0TimeFactor = (float)strtof(settings.speedoFact, NULL);
         if(ttP0TimeFactor < 0.5) ttP0TimeFactor = 0.5;
@@ -1458,18 +1462,11 @@ void time_setup()
         ettoBase = pointOfP1;
         ettoLeadPoint = origEttoLeadPoint = ettoBase - ettoLeadTime;   // Can be negative!
         #endif
-
-        // No TT sounds to play -> no user-provided sound.
-        if(!playTTsounds) havePreTTSound = false;
-
-        // If we have a user-provided pre-TT sound, we shorten our 
-        // tt sequence and skip the lead (timetravel2)
-        if(!havePreTTSound) {
-            pointOfP1 -= TT_P1_POINT88;
-        }
+        pointOfP1NoLead = pointOfP1;  // for lead-less P1
+        pointOfP1 -= TT_P1_POINT88;   // for normal P1
 
         {
-            // Calculate total elapsed delay for each mph value
+            // Calculate total elapsed time for each mph value
             // (in order to time P0/P1 relative to current actual speed)
             long totDelay = 0;
             for(int i = 0; i < 88; i++) {
@@ -1598,8 +1595,10 @@ void time_setup()
     useLight = false;
     #endif
 
-    // Set up tt trigger for external props (wired & mqtt)
-    // useETTO=true means either wired or MQTT (with pub); not BTTFN.
+    // Set up tt trigger for external props (wired & mqtt; not BTTFN)
+    // When useETTO is true, the 5 sec lead is needed (wire or MQTT)
+    // When useETTO is false, no lead is needed.
+    // Rest of flags determine parameters of wired signal.
     #ifdef EXTERNAL_TIMETRAVEL_OUT
     useETTO = useETTOWired = (atoi(settings.useETTO) > 0);
     if(useETTOWired) {
@@ -2976,6 +2975,10 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
     #ifdef TC_HAVESPEEDO
     if(doComplete && useSpeedo && withSpeedo) {
 
+        bool doPreTTSound = havePreTTSound;
+        bool doLeadLessP1 = doPreTTSound;
+        long myPointOfP1  = doPreTTSound ? pointOfP1NoLead : pointOfP1;
+        
         timeTravelP0Speed = 0;
         timetravelP0Delay = 2000;
         triggerP1 = false;
@@ -2985,7 +2988,7 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
         ettoLeadPoint = origEttoLeadPoint;
         bttfnTTLeadTime = ettoLeadTime;
         #endif
-
+        
         #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE)
         if(useGPSSpeed || dispRotEnc) {
             #if defined(TC_HAVEGPS) && defined(TC_HAVE_RE)
@@ -3000,20 +3003,46 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
                 timetravelP0Delay = 0;
                 if(timeTravelP0Speed < 88) {
                     currTotDur = tt_p0_totDelays[timeTravelP0Speed];
+
+                    if(!useETTO) {
+                        if(currTotDur > pointOfP1) {
+                            // If we're past normal P1 start point,
+                            // cut P1 short by skipping lead
+                            // (and skip user's acceleration sound)
+                            myPointOfP1 = pointOfP1NoLead;
+                            doLeadLessP1 = true;
+                            doPreTTSound = false;
+                        } else if(doPreTTSound) {
+                            // Don't play user's acceleration sound if it would
+                            // be played for only a very short time (~2 secs)
+                            // But play with-lead version in that case.
+                            if(currTotDur > (pointOfP1 - 600)) {
+                                myPointOfP1 = pointOfP1;
+                                doLeadLessP1 = false;
+                                doPreTTSound = false;
+                            } else {
+                                myPointOfP1 = pointOfP1NoLead;
+                                doLeadLessP1 = true;
+                            }
+                        }
+                    }
+                    
                     #ifdef EXTERNAL_TIMETRAVEL_OUT
                     if(!useETTO && bttfnHaveClients) {
                         if(currTotDur >= ettoLeadPoint) {
                             // Calc time until 88 for bttfn clients
-                            if(ettoLeadPoint < pointOfP1) {
-                                if(currTotDur >= pointOfP1) {
-                                    ettoLeadPoint = pointOfP1;
-                                    bttfnTTLeadTime = ettoBase - pointOfP1;
+                            if(ettoLeadPoint < myPointOfP1) {
+                                if(currTotDur >= myPointOfP1) {
+                                    ettoLeadPoint = myPointOfP1;
+                                    bttfnTTLeadTime = ettoBase - myPointOfP1;
                                 } else {
                                     ettoLeadPoint = currTotDur;
                                     bttfnTTLeadTime = ettoBase - currTotDur;
                                 }
                                 if(bttfnTTLeadTime > ETTO_LAT) {
                                     bttfnTTLeadTime -= ETTO_LAT;
+                                } else if(bttfnTTLeadTime < 0) {
+                                    bttfnTTLeadTime = 0; // should not happen
                                 }
                             }
                         }
@@ -3023,7 +3052,7 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
             }
         }
         #endif
-
+        
         if(timeTravelP0Speed < 88) {
 
             // If time needed to reach 88mph is shorter than ettoLeadTime
@@ -3035,42 +3064,42 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
 
                 triggerETTO = true;
                 
-                if(currTotDur >= ettoLeadPoint || currTotDur >= pointOfP1) {
+                if(currTotDur >= ettoLeadPoint || currTotDur >= myPointOfP1) {
 
-                    if(currTotDur >= ettoLeadPoint && currTotDur >= pointOfP1) {
+                    if(currTotDur >= ettoLeadPoint && currTotDur >= myPointOfP1) {
 
                         // Both outside our remaining time period:
-                        if(ettoLeadPoint <= pointOfP1) {
+                        if(ettoLeadPoint <= myPointOfP1) {
                             // ETTO first:
                             triggerETTOLeadTime = 0;
-                            triggerP1LeadTime = pointOfP1 - ettoLeadPoint;
+                            triggerP1LeadTime = myPointOfP1 - ettoLeadPoint;
                             timetravelP0Delay = currTotDur - ettoLeadPoint;
-                        } else if(ettoLeadPoint > pointOfP1) {
+                        } else if(ettoLeadPoint > myPointOfP1) {
                             // P1 first:
                             triggerP1LeadTime = 0;
-                            triggerETTOLeadTime = ettoLeadPoint - pointOfP1;
-                            timetravelP0Delay = currTotDur - pointOfP1;
+                            triggerETTOLeadTime = ettoLeadPoint - myPointOfP1;
+                            timetravelP0Delay = currTotDur - myPointOfP1;
                         }
 
                     } else if(currTotDur >= ettoLeadPoint) {
 
                         // etto outside
                         triggerETTOLeadTime = 0;
-                        triggerP1LeadTime = pointOfP1 - ettoLeadPoint;
+                        triggerP1LeadTime = myPointOfP1 - ettoLeadPoint;
                         timetravelP0Delay = currTotDur - ettoLeadPoint;
 
                     } else {
 
                         // P1 outside
                         triggerP1LeadTime = 0;
-                        triggerETTOLeadTime = ettoLeadPoint - pointOfP1;
-                        timetravelP0Delay = currTotDur - pointOfP1;
+                        triggerETTOLeadTime = ettoLeadPoint - myPointOfP1;
+                        timetravelP0Delay = currTotDur - myPointOfP1;
 
                     }
 
                 } else {
 
-                    triggerP1LeadTime = pointOfP1 - currTotDur + timetravelP0Delay;
+                    triggerP1LeadTime = myPointOfP1 - currTotDur + timetravelP0Delay;
                     triggerETTOLeadTime = ettoLeadPoint - currTotDur + timetravelP0Delay;
 
                 }
@@ -3086,17 +3115,17 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
 
             } else
             #endif
-            if(currTotDur >= pointOfP1) {
+            if(currTotDur >= myPointOfP1) {
                  triggerP1Now = ttUnivNow;
                  triggerP1LeadTime = 0;
-                 timetravelP0Delay = currTotDur - pointOfP1;
+                 timetravelP0Delay = currTotDur - myPointOfP1;
             } else {
                  triggerP1Now = ttUnivNow;
-                 triggerP1LeadTime = pointOfP1 - currTotDur + timetravelP0Delay;
+                 triggerP1LeadTime = myPointOfP1 - currTotDur + timetravelP0Delay;
             }
 
             triggerP1 = true;
-            triggerP1NoLead = false;
+            triggerP1NoLead = doLeadLessP1;
 
             speedo.setSpeed(timeTravelP0Speed);
             speedo.setBrightness(255);
@@ -3106,12 +3135,8 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
             timeTravelP0 = 1;
             timeTravelP2 = 0;
 
-            if(havePreTTSound) {
-                // Don't play preTT sound if not enough time left (< 2sec)
-                if(triggerP1LeadTime > 2000) {
-                    play_file(preTTSound, PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
-                }
-                triggerP1NoLead = true;
+            if(doPreTTSound) {
+                play_file(preTTSound, PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
             }
 
             return;

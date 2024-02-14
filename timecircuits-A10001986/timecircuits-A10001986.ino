@@ -101,7 +101,10 @@
 
 /*  Changelog
  *
- *  2024/02/13
+ *  2024/02/14 (A10001986)
+ *    - Tweak acceleration sound logic; use with-lead-version of tt sound if time 
+ *      is too short for the accel sound, but long enough for lead.
+ *  2024/02/13 (A10001986)
  *    - New user-sound: If SD contains "ttaccel.mp3", this file will be played 
  *      immediately upon initiating a time travel when a speedo is connected, during 
  *      the acceleration phase, until the start of the actual time travel (at which 
