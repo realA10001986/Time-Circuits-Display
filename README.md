@@ -160,9 +160,13 @@ Set the interval to OFF (0) to disable Time-cycling.
 
 In World Clock (WC) mode, the red and yellow displays show not some stale times, but current time in other time zones. These time zones need to be configured in Config Portal. At least one time zone (for either the red or yellow display) must be configured in order to use WC mode. Optionally, also names for cities/locations for these time zones can be entered in the Config Portal; if a name for a time zone is configured, this name and the time will be shown alternately. Note that names can only contain letters a-z, numbers 0-9, space and minus.
 
+| [![Watch the video](https://img.youtube.com/vi/Uk1W7D6Ab9Y/0.jpg)](https://youtu.be/Uk1W7D6Ab9Y) |
+|:--:|
+| Click to watch the video |
+
 | ![WC mode](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/9cd1b234-515f-4885-be6e-69b3aa9e7ecf) |
 |:--:|
-| *WC mode* |
+| *World Clock mode* |
 
 WC mode is toggled by typing "112" followed by ENTER. 
 
@@ -170,10 +174,6 @@ For logical reasons, WC mode will be automatically disabled in some situations:
 
 - Time travel. The time travel sequence runs like in non-WC mode: If a time travel is triggered while WC mode is enabled (and no new destination time was entered before), the currently shown *Destination Time* will be the travel target, and the *Last Time Departed* display will show your formerly current time. However: Both *Destination Time* as well as *Last Time Departed* become stale after the time travel as per the nature of the sequence.
 - After entering a destination time. WC mode is disabled at this point, because your new *Destination Time* would be overwritten otherwise.
-
-| [![Watch the video](https://img.youtube.com/vi/Uk1W7D6Ab9Y/0.jpg)](https://youtu.be/Uk1W7D6Ab9Y) |
-|:--:|
-| Click to watch the video |
 
 #### WC/RC hybrid mode
 
