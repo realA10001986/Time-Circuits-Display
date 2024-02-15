@@ -1280,7 +1280,7 @@ This selects whether the TT_OUT/IO14 pin is activated upon a time-travel in orde
 
 ##### &#9654; Signal Time Travel without 5s lead
 
-If this option is unchecked (which is the default), a time travel is signalled for wired props with a 5 second lead, in order to give the prop time to play an acceleraton sequence. If this option is checked, TT_OUT/IO14 is activated when the time travel actually starts. 
+If this option is unchecked (which is the default), a time travel is signalled for wired props with a 5 second lead, in order to give the prop time to play an acceleration sequence. If this option is checked, TT_OUT/IO14 is activated when the time travel actually starts.
 
 For CircuitSetup original props, if they are connected by wire, this option should not be set. If it has to be set (because you are also driving third-party props, for instance), the corresponding option must be set in the prop's Config Portal.
 
