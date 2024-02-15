@@ -356,13 +356,13 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left">990&#9166; / 991&#9166;</td>
     </tr>
   <tr>
-     <td align="left">Enable / disable <a href="#exhibition-mode">Exhibition mode</a></td>
-     <td align="left">999&#9166;</td>
-    </tr>
-  <tr>
      <td align="left">Restore user destination/last time dep. times</td>
      <td align="left">998&#9166;</td>
   </tr>
+  <tr>
+     <td align="left">Enable / disable <a href="#exhibition-mode">Exhibition mode</a></td>
+     <td align="left">999&#9166;</td>
+    </tr>
  <tr>
      <td align="left">Program time for <a href="#exhibition-mode">Exhibition mode</a></td>
      <td align="left">99mmddyyyyhhMM&#9166;</td>
