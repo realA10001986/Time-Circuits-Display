@@ -25,7 +25,7 @@ Features include
 - [Music player](#the-music-player): Play mp3 files located on an SD card
 - [Sound on the hour](#additional-custom-sounds)
 - [SD card](#sd-card) support for custom audio files for effects, and music for the Music Player
-- Advanced network-accessible [Config Portal](#the-config-portal) for setup with mDNS support for easy access (http://timecircuits.local, hostname configurable)
+- Advanced network-accessible [Config Portal](#the-config-portal) for setup (http://timecircuits.local, hostname configurable)
 - [Keypad-controlled menu](#the-keypad-menu) for adjusting various settings and viewing status through the three displays
 - [Room condition mode](#room-condition-mode-temperaturehumidity-sensor): Display temperature and humidity instead of destination/departed time (requires compatible sensor)
 - Support for external [fake "power switch"](#fake-power-switch) (eg. a TFC drive switch)
