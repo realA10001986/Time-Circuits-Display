@@ -201,7 +201,7 @@ Not strictly part of Exhibition mode, but related: If you want your TCD to displ
 
 In this case, head to the Config Portal and
 - set the **_Time Cycling Interval_** to OFF
-- check or uncheck **_Make time travels persistent_** depending on whether you care about keeping your times across reboots
+- check or uncheck **_Make time travels persistent_** depending on whether you care about keeping the displayed times across reboots/power cycles.
 
 Note that *actual* time travel is not supported.
 
@@ -221,7 +221,7 @@ In this case, head to the Config Portal and
 
 Then enter the [keypad menu](#how-to-enter-datestimes-for-the-destination-and-last-time-departed-displays) and set your favorite *Destination* and *Last time departed* times.
 
-Note that time-travelling will naturally lead to the displays showing other times. After a reboot, your times will be displayed again.
+Note that time-travelling will naturally lead to the displays showing other times. After a reboot, your times will be displayed again. To bring them back without rebooting, type 998 followed by ENTER.
 
 ### Keypad reference
 
