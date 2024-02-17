@@ -10,7 +10,7 @@ The kit parts are available [here](https://circuitsetup.us/product/complete-time
 
 Features include
 
-- Clock:
+- Clock-related:
   - Time keeping for years 1-9999, &#127381; accurately based on Julian and Gregorian [calendars](#calendar-system)
   - Support for time zones and automatic DST (Daylight Saving adjustment)
   - Time synchronization via NTP or [GPS](#gps-receiver)
@@ -19,8 +19,8 @@ Features include
   - [Count-down timer](#count-down-timer): Count down from up to 99 minutes
   - [Yearly/monthly reminder](#yearlymonthly-reminder): Get a yearly or monthly acoustic reminder
 - Movie-related:
-  - Movie-accurate [time travel](#time-travel) function
   - Movie-accurate [Beep](#beep-on-the-second) sound every second (4 modes)
+  - Movie-accurate [time travel](#time-travel) function
   - ["Return from Time Travel"](#time-travel): Return to real present time easily
   - ["Decorative mode"](#time-cycling): Movie-accurate time travel times displayed in *destination time* and *last time departed* displays, and cycled in configurable interval
   - [Exhibition mode](#exhibition-mode): Show a fixed time in *Present Time* display instead of a running clock. Helpful for filming or museums.
@@ -31,7 +31,7 @@ Features include
 - [Night mode](#night-mode): Dim or switch off displays on schedule, manually or sensor-controlled.
 - [Music player](#the-music-player): Play mp3 files located on an SD card
 - [Sound on the hour](#additional-custom-sounds)
-- [SD card](#sd-card) support for custom audio files for effects, and music for the Music Player
+- [SD card](#sd-card) support for custom audio files for additional effects and/or replacing default sound effects, and music for the Music Player
 - [Keypad-controlled menu](#the-keypad-menu) for adjusting various settings and viewing status through the three displays
 - Peripherals:
   - Support for external [fake "power switch"](#fake-power-switch) (eg. a TFC drive switch)
