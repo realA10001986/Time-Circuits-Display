@@ -513,43 +513,43 @@ Note: While the alarm and the sound-on-the-hour adhere to the **_Alarm base is r
 
 Preface note on SD cards: For unknown reasons, some SD cards simply do not work with this device. For instance, I had no luck with Sandisk Ultra 32GB and  "Intenso" cards. If your SD card is not recognized, check if it is formatted in FAT32 format (not exFAT!). Also, the size must not exceed 32GB (as larger cards cannot be formatted with FAT32). Transcend SDHC 4GB cards work fine.
 
-The SD card, apart from being required for [installing](#audio-file-installation) of the built-in audio data, can be used for substituting default sounds, some additional custom sounds, and for music played back by the [Music player](#the-music-player). Also, it is _strongly recommended_ to store [secondary settings](#-save-secondary-settings-on-sd) on the SD card to minimize [Flash Wear](#flash-wear).
+The SD card, apart from being required for [installing](#audio-file-installation) of the built-in audio data, can be used for substituting built-in sound effects, some additional custom sound effects, and for music played back by the [Music player](#the-music-player). Also, it is _strongly recommended_ to store [secondary settings](#-save-secondary-settings-on-sd) on the SD card to minimize [Flash Wear](#flash-wear).
 
 Note that the SD card must be inserted before powering up the TCD. It is not recognized if inserted while the TCD is running. Furthermore, do not remove the SD card while the TCD is powered.
 
 ### Sound substitution
 
-The TCD's built-in sounds can be substituted by your own sound files on a FAT32-formatted SD card. These files will be played back directly from the SD card during operation, so the SD card has to remain in the slot.
+The TCD's built-in sound effects can be substituted by your own sound files on a FAT32-formatted SD card. These files will be played back directly from the SD card during operation, so the SD card has to remain in the slot.
 
 Your replacements need to be put in the root (top-most) directory of the SD card, be in mp3 format (128kbps max) and named as follows:
-- "alarm.mp3". Played when the alarm sounds.
-- "alarmon.mp3". Played when enabling the alarm,
-- "alarmoff.mp3". Played when disabling the alarm,
-- "nmon.mp3". Played when manually enabling night mode,
-- "nmoff.mp3". Played when manually disabling night mode,
-- "reminder.mp3". Played when the reminder is due.
-- "timer.mp3". Played when the count-down timer expires.
-- "ping.mp3". Played when re-connecting/re-enabling WiFi by holding '7' on the keypad.
+- "alarm.mp3": Played when the alarm sounds.
+- "alarmon.mp3": Played when enabling the alarm,
+- "alarmoff.mp3": Played when disabling the alarm,
+- "nmon.mp3": Played when manually enabling night mode,
+- "nmoff.mp3": Played when manually disabling night mode,
+- "reminder.mp3": Played when the reminder is due.
+- "timer.mp3": Played when the count-down timer expires.
+- "ping.mp3": Played when re-connecting/re-enabling WiFi by holding '7' on the keypad.
 
 The following sounds are time-sync'd to display action. If you decide to substitute these with your own, be prepared to lose synchronicity:
-- "enter.mp3". Played when a date was entered and ENTER was pressed.
-- "baddate.mp3". Played when a bad (too short or too long) date was entered and ENTER was pressed.
+- "enter.mp3": Played when a date was entered and ENTER was pressed.
+- "baddate.mp3": Played when a bad (too short or too long) date was entered and ENTER was pressed.
 - "intro.mp3": Played during the power-up intro.
-- "travelstart.mp3". Played when a time travel starts (including "acceleration").
-- "travelstart2.mp3". Played when a time travel starts (without "acceleration").
-- "timetravel.mp3". Played when re-entry of a time travel takes place.
-- "shutdown.mp3". Played when the device is fake "powered down".
-- "startup.mp3". Played when the TCD is connected to power and finished booting.
+- "travelstart.mp3": Played when a time travel starts (including "acceleration").
+- "travelstart2.mp3": Played when a time travel starts (without "acceleration").
+- "timetravel.mp3": Played when re-entry of a time travel takes place.
+- "shutdown.mp3": Played when the device is fake "powered down".
+- "startup.mp3": Played when the TCD is starting up.
 
 ### Additional Custom Sounds
 
-The firmware supports some additional user-provided sound effects, which it will load from the SD card. If the respective file is present, it will be used. If that file is absent, no sound will be played.
+The firmware supports some additional, user-provided sound effects, which it will load from the SD card. If the respective file is present, it will be used. If that file is absent, no sound will be played.
 
 - "ttaccel.mp3": Will be played immediately upon triggering a time travel when a speedo display is connected, during the acceleration phase (ie while the speedo counts up to 88). This sound is then interrupted by the usual time travel sound. You can use, for instance, the sound of a car accelerating for this.
 - "hour.mp3": Will be played every hour, on the hour. This feature is disabled in night mode.
 - "hour-xx.mp3", xx being 00 through 23: Sounds-on-the-hour for specific hours that will be played instead of "hour.mp3". If a sound for a specific hour is not present, "hour.mp3" will be played, if that one exists.
 - "key3.mp3"/"key6.mp3": Will be played when holding the "3"/"6" key for 2 seconds.
-- "ha-alert.mp3" will be played when a [HA/MQTT](#home-assistant--mqtt) message is received.
+- "ha-alert.mp3": Will be played when a [HA/MQTT](#home-assistant--mqtt) message is received.
 
 Those files are not provided here. You can use any mp3, with a bitrate of 128kpbs or less.
 
