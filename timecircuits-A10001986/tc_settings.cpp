@@ -91,6 +91,8 @@ static uint8_t*   f(uint8_t *d, uint32_t m, int y) { return d; }
 
 static const char *cfgName    = "/config.json";     // Main config (flash)
 static const char *ipCfgName  = "/ipconfig.json";   // IP config (flash)
+static const char *briCfgName = "/tcdbricfg.json";  // Brightness (flash/SD)
+static const char *ainCfgName = "/tcdaicfg.json";   // Auto-interval (flash/SD)
 static const char *volCfgName = "/tcdvolcfg.json";  // Volume config (flash/SD)
 static const char *almCfgName = "/tcdalmcfg.json";  // Alarm config (flash/SD)
 static const char *remCfgName = "/tcdremcfg.json";  // Reminder config (flash/SD)
@@ -128,6 +130,10 @@ bool haveAudioFiles = false;
 uint8_t musFolderNum = 0;
 
 /* Cache */
+static uint8_t  preSavedDBri = 20;
+static uint8_t  preSavedPBri = 20;
+static uint8_t  preSavedLBri = 20;
+static uint8_t  preSavedAI   = 99;
 static uint8_t  prevSavedVol = 254;
 static uint8_t* (*r)(uint8_t *, uint32_t, int);
 
@@ -138,6 +144,9 @@ static bool CopyCheckValidNumParm(const char *json, char *text, uint8_t psize, i
 static bool CopyCheckValidNumParmF(const char *json, char *text, uint8_t psize, float lowerLim, float upperLim, float setDefault);
 static bool checkValidNumParm(char *text, int lowerLim, int upperLim, int setDefault);
 static bool checkValidNumParmF(char *text, float lowerLim, float upperLim, float setDefault);
+
+static bool loadBrightness();
+static bool loadAutoInterval();
 
 static void deleteReminder();
 static void loadCarMode();
@@ -311,6 +320,12 @@ void settings_setup()
     // Setup save target for display objects
     setupDisplayConfigOnSD();
 
+    // Load display brightness config
+    loadBrightness();
+
+    // Load (copy) autoInterval ("time cycling interval")
+    loadAutoInterval();
+
     // Load carMode setting
     loadCarMode();
 
@@ -399,7 +414,9 @@ static bool read_settings(File configFile)
         wd |= CopyCheckValidNumParm(json["playIntro"], settings.playIntro, sizeof(settings.playIntro), 0, 1, DEF_PLAY_INTRO);
         wd |= CopyCheckValidNumParm(json["mode24"], settings.mode24, sizeof(settings.mode24), 0, 1, DEF_MODE24);
         wd |= CopyCheckValidNumParm(json["beep"], settings.beep, sizeof(settings.beep), 0, 3, DEF_BEEP);
-        wd |= CopyCheckValidNumParm(json["autoRotateTimes"], settings.autoRotateTimes, sizeof(settings.autoRotateTimes), 0, 5, DEF_AUTOROTTIMES);
+        
+        // Transition - now in separate file
+        CopyCheckValidNumParm(json["autoRotateTimes"], settings.autoRotateTimes, sizeof(settings.autoRotateTimes), 0, 5, DEF_AUTOROTTIMES);
 
         if(json["hostName"]) {
             CopyTextParm(settings.hostName, json["hostName"], sizeof(settings.hostName));
@@ -439,9 +456,10 @@ static bool read_settings(File configFile)
             CopyTextParm(settings.timeZoneNDep, json["timeZoneNDep"], sizeof(settings.timeZoneNDep));
         } else wd = true;
 
-        wd |= CopyCheckValidNumParm(json["destTimeBright"], settings.destTimeBright, sizeof(settings.destTimeBright), 0, 15, DEF_BRIGHT_DEST);
-        wd |= CopyCheckValidNumParm(json["presTimeBright"], settings.presTimeBright, sizeof(settings.presTimeBright), 0, 15, DEF_BRIGHT_PRES);
-        wd |= CopyCheckValidNumParm(json["lastTimeBright"], settings.lastTimeBright, sizeof(settings.lastTimeBright), 0, 15, DEF_BRIGHT_DEPA);
+        // Transition - now separate config file
+        CopyCheckValidNumParm(json["destTimeBright"], settings.destTimeBright, sizeof(settings.destTimeBright), 0, 15, DEF_BRIGHT_DEST);
+        CopyCheckValidNumParm(json["presTimeBright"], settings.presTimeBright, sizeof(settings.presTimeBright), 0, 15, DEF_BRIGHT_PRES);
+        CopyCheckValidNumParm(json["lastTimeBright"], settings.lastTimeBright, sizeof(settings.lastTimeBright), 0, 15, DEF_BRIGHT_DEPA);
 
         wd |= CopyCheckValidNumParm(json["dtNmOff"], settings.dtNmOff, sizeof(settings.dtNmOff), 0, 1, DEF_DT_OFF);
         wd |= CopyCheckValidNumParm(json["ptNmOff"], settings.ptNmOff, sizeof(settings.ptNmOff), 0, 1, DEF_PT_OFF);
@@ -558,7 +576,6 @@ void write_settings()
     json["mode24"] = (const char *)settings.mode24;
     json["beep"] = (const char *)settings.beep;
     json["playIntro"] = (const char *)settings.playIntro;
-    json["autoRotateTimes"] = (const char *)settings.autoRotateTimes;
 
     json["hostName"] = (const char *)settings.hostName;
     json["systemID"] = (const char *)settings.systemID;
@@ -576,10 +593,6 @@ void write_settings()
     json["timeZoneDep"] = (const char *)settings.timeZoneDep;
     json["timeZoneNDest"] = (const char *)settings.timeZoneNDest;
     json["timeZoneNDep"] = (const char *)settings.timeZoneNDep;
-    
-    json["destTimeBright"] = (const char *)settings.destTimeBright;
-    json["presTimeBright"] = (const char *)settings.presTimeBright;
-    json["lastTimeBright"] = (const char *)settings.lastTimeBright;
 
     json["dtNmOff"] = (const char *)settings.dtNmOff;
     json["ptNmOff"] = (const char *)settings.ptNmOff;
@@ -765,6 +778,158 @@ static bool openCfgFileRead(const char *fn, File& f)
 
     return haveConfigFile;
 }
+
+/*
+ *  Load/save Brightness settings
+ */
+
+static void updateBriCache()
+{
+    preSavedDBri = atoi(settings.destTimeBright);
+    preSavedPBri = atoi(settings.presTimeBright);
+    preSavedLBri = atoi(settings.lastTimeBright); 
+}
+
+static bool loadBrightness()
+{
+    const char *funcName = "loadBrightness";
+    bool wd = true;
+    File configFile;
+
+    if(!haveFS && !configOnSD) {
+        Serial.printf("%s: %s\n", funcName, fsNoAvail);
+        return false;
+    }
+
+    #ifdef TC_DBG
+    Serial.printf("%s: Loading from %s\n", funcName, configOnSD ? "SD" : "flash FS");
+    #endif
+
+    if(openCfgFileRead(briCfgName, configFile)) {
+
+        DECLARE_S_JSON(512,json);
+        //StaticJsonDocument<512> json;
+
+        wd = false;
+
+        if(!readJSONCfgFile(json, configFile, funcName)) {
+            wd |= CopyCheckValidNumParm(json["dBri"], settings.destTimeBright, sizeof(settings.destTimeBright), 0, 15, DEF_BRIGHT_DEST);
+            wd |= CopyCheckValidNumParm(json["pBri"], settings.presTimeBright, sizeof(settings.presTimeBright), 0, 15, DEF_BRIGHT_PRES);
+            wd |= CopyCheckValidNumParm(json["lBri"], settings.lastTimeBright, sizeof(settings.lastTimeBright), 0, 15, DEF_BRIGHT_DEPA);
+        } 
+        configFile.close();
+    }
+
+    if(wd) {
+        #ifdef TC_DBG
+        Serial.printf("%s: %s\n", funcName, badConfig);
+        #endif
+        saveBrightness();
+    } else {
+        updateBriCache();
+    }
+
+    return true;
+}
+
+void saveBrightness(bool useCache)
+{
+    const char *funcName = "saveBrightness";
+    
+    DECLARE_S_JSON(512,json);
+    //StaticJsonDocument<512> json;
+
+    if(useCache && 
+       (preSavedDBri == atoi(settings.destTimeBright)) &&
+       (preSavedPBri == atoi(settings.presTimeBright)) &&
+       (preSavedLBri == atoi(settings.presTimeBright))) {
+        return;
+    }
+
+    if(!haveFS && !configOnSD) {
+        Serial.printf("%s: %s\n", funcName, fsNoAvail);
+        return;
+    }
+
+    json["dBri"] = (const char *)settings.destTimeBright;
+    json["pBri"] = (const char *)settings.presTimeBright;
+    json["lBri"] = (const char *)settings.lastTimeBright;
+
+    writeJSONCfgFile(json, briCfgName, configOnSD, funcName);
+
+    updateBriCache();
+}
+
+/*
+ *  autoInterval
+ *
+ */
+static bool loadAutoInterval()
+{
+    const char *funcName = "loadAutoInterval";
+    bool wd = true;
+    File configFile;
+
+    if(!haveFS && !configOnSD) {
+        Serial.printf("%s: %s\n", funcName, fsNoAvail);
+        return false;
+    }
+
+    #ifdef TC_DBG
+    Serial.printf("%s: Loading from %s\n", funcName, configOnSD ? "SD" : "flash FS");
+    #endif
+
+    if(openCfgFileRead(ainCfgName, configFile)) {
+
+        DECLARE_S_JSON(512,json);
+        //StaticJsonDocument<512> json;
+
+        wd = false;
+
+        if(!readJSONCfgFile(json, configFile, funcName)) {
+            wd = CopyCheckValidNumParm(json["ai"], settings.autoRotateTimes, sizeof(settings.autoRotateTimes), 0, 5, DEF_AUTOROTTIMES);
+        } 
+        configFile.close();
+    }
+
+    if(wd) {
+        #ifdef TC_DBG
+        Serial.printf("%s: %s\n", funcName, badConfig);
+        #endif
+        saveAutoInterval();
+    } else {
+        autoInterval = (uint8_t)atoi(settings.autoRotateTimes);
+        preSavedAI = autoInterval;
+    }
+
+    return true;
+}
+
+void saveAutoInterval(bool useCache)
+{
+    const char *funcName = "saveAutoInterval";
+    
+    DECLARE_S_JSON(512,json);
+    //StaticJsonDocument<512> json;
+
+    if(useCache && (preSavedAI == autoInterval)) {
+        return;
+    }
+
+    if(!haveFS && !configOnSD) {
+        Serial.printf("%s: %s\n", funcName, fsNoAvail);
+        return;
+    }
+
+    sprintf(settings.autoRotateTimes, "%d", autoInterval);
+
+    json["ai"] = (const char *)settings.autoRotateTimes;
+    
+    writeJSONCfgFile(json, ainCfgName, configOnSD, funcName);
+
+    preSavedAI = autoInterval;
+}
+
 
 /*
  *  Load/save the Volume
@@ -1468,6 +1633,8 @@ void copySettings()
         #ifdef TC_DBG
         Serial.println(F("copySettings: Copying secondary settings to other medium"));
         #endif
+        saveBrightness(false);
+        saveAutoInterval(false);
         saveCurVolume(false);
         saveAlarm();
         saveReminder();
@@ -1505,6 +1672,8 @@ void rewriteSecondarySettings()
     // regardless of SD-option
     configOnSD = false;
 
+    saveBrightness(false);
+    saveAutoInterval(false);
     saveCurVolume(false);
     saveAlarm();
     saveReminder();

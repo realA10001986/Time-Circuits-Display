@@ -1039,6 +1039,9 @@ void wifi_loop()
 
             #endif  // -------------------------
 
+            autoInterval = (uint8_t)atoi(settings.autoRotateTimes);
+            saveAutoInterval();
+
             // Copy secondary settings to other medium if
             // user changed respective option
             if(oldCfgOnSD != settings.CfgOnSD[0]) {

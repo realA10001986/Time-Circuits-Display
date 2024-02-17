@@ -1384,9 +1384,6 @@ void time_setup()
         departedTime.save();
     }
 
-    // Load (copy) autoInterval ("time cycling interval") from settings
-    loadAutoInterval();
-
     // If time cycling enabled, put up the first one
     if(autoTimeIntervals[autoInterval]) {
         destinationTime.setFromStruct(&destinationTimes[0]);

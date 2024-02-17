@@ -191,6 +191,10 @@ void unmount_fs();
 void write_settings();
 bool checkConfigExists();
 
+void saveBrightness(bool useCache = true);
+
+void saveAutoInterval(bool useCache = true);
+
 bool loadAlarm();
 void saveAlarm();
 

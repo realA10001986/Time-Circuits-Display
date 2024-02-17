@@ -98,7 +98,7 @@ static const char *fnEEPROM[3] = {
 static const char *fnSD[3] = {
     "/tcddt.bin", "/tcdpt.bin", "/tcdlt.bin"
 };
-static const char *fnLastYear = "/tcdly";
+static const char *fnLastYear   = "/tcdly";
 static const char *fnLastYearSD = "/tcdly.bin";
 
 

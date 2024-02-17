@@ -60,8 +60,6 @@ int  toggleAlarm();
 int  getAlarm();
 const char *getAlWD(int wd);
 
-bool loadAutoInterval();
-
 void start_file_copy();
 void file_copy_progress();
 void file_copy_done(int err);

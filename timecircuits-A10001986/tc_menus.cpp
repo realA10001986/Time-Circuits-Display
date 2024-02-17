@@ -294,7 +294,6 @@ static void doSetVolume();
 static void displayMSfx(int msfx);
 static void doSetMSfx();
 static void doSetAlarm();
-static void saveAutoInterval();
 static void displayAI(int interval);
 static void doSetAutoInterval();
 static bool doSetBrightness(clockDisplay* displaySet);
@@ -598,8 +597,9 @@ void enter_menu()
             sprintf(settings.destTimeBright, "%d", dtbri2);
             sprintf(settings.presTimeBright, "%d", ptbri2);
             sprintf(settings.lastTimeBright, "%d", ltbri2);
-            write_settings();
-            updateConfigPortalValues();
+            
+            saveBrightness();
+            
         }
 
         menudelay(1000);
@@ -1591,31 +1591,6 @@ static void doSetAlarm()
  *  Time-cycling Interval (aka "autoInterval") #################
  */
 
-/*
- *  Load the autoInterval from Settings in memory (config file is not reloaded)
- *
- */
-bool loadAutoInterval()
-{
-    autoInterval = (uint8_t)atoi(settings.autoRotateTimes);
-    if(autoInterval > 5) {
-        autoInterval = DEF_AUTOROTTIMES;
-        return false;
-    }
-    return true;
-}
-
-/*
- *  Save the autoInterval
- *
- *  It is written to the config file, which is updated accordingly.
- */
-static void saveAutoInterval()
-{
-    // Convert 'autoInterval' to string, write to settings, write settings file
-    sprintf(settings.autoRotateTimes, "%d", autoInterval);
-    write_settings();
-}
 
 static void displayAI(int interval, bool blink, bool doComment)
 { 
