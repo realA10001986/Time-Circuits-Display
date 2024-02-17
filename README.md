@@ -39,7 +39,7 @@ Features include
   - Support for external [Speedometer](#speedometer) (CircuitSetup's [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-pcb/?v=fa868488740a) and others supported)
   - Support for [GPS receiver](#gps-receiver), used as time source and for actual [speed](#gps-for-speed) to be displayed on speedo display
   - Support for [rotary encoders](#rotary-encoder) for manual selection of speed to be displayed on Speedo display, &#127381; and/or audio volume
-  - Support for [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for [Room condition mode](#room-condition-mode-temperaturehumidity-sensor) and for displaying temperature on speedo display while idle
+  - Support for [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for [Room condition mode](#room-condition-mode-temperaturehumidity-sensor) [display temperature and humidity in *destination time* and *last time departed* displays] and for displaying temperature on speedo display while idle
   - Support for triggering time travels on [other props](#controlling-other-props) connected by wire
 
 
