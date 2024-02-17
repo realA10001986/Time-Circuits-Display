@@ -14,32 +14,35 @@ Features include
   - Time keeping for years 1-9999, &#127381; accurately based on Julian and Gregorian [calendars](#calendar-system)
   - Support for time zones and automatic DST (Daylight Saving adjustment)
   - Time synchronization via NTP or [GPS](#gps-receiver)
+  - [World Clock mode](#world-clock-mode): Show current time in different time zones in *destination time* and/or *last time departed* displays
+  - [Alarm function](#how-to-set-up-the-alarm): Daily alarms, with weekday selection
+  - [Count-down timer](#count-down-timer): Count down from up to 99 minutes
+  - [Yearly/monthly reminder](#yearlymonthly-reminder): Get a yearly or monthly acoustic reminder
 - Movie-related:
-- Movie-accurate [time travel](#time-travel) function
-- Movie-accurate [Beep](#beep-on-the-second) sound every second (4 modes)
-- ["Return from Time Travel"](#time-travel): Return to real present time easily
-- ["Decorative mode"](#time-cycling): Movie-accurate time travel times displayed in *destination time* and *last time departed* displays, and cycled in configurable interval
-- [World Clock mode](#world-clock-mode): Show current time in different time zones in *destination time* and/or *last time departed* displays
-- [Exhibition mode](#exhibition-mode): Show a fixed time in *Present Time* display instead of a running clock. Helpful for filming or museums.
-- [Alarm function](#how-to-set-up-the-alarm): Daily alarms, with weekday selection
-- [Count-down timer](#count-down-timer): Count down from up to 99 minutes
-- [Yearly/monthly reminder](#yearlymonthly-reminder): Get a yearly or monthly acoustic reminder
+  - Movie-accurate [time travel](#time-travel) function
+  - Movie-accurate [Beep](#beep-on-the-second) sound every second (4 modes)
+  - ["Return from Time Travel"](#time-travel): Return to real present time easily
+  - ["Decorative mode"](#time-cycling): Movie-accurate time travel times displayed in *destination time* and *last time departed* displays, and cycled in configurable interval
+  - [Exhibition mode](#exhibition-mode): Show a fixed time in *Present Time* display instead of a running clock. Helpful for filming or museums.
 - [Night mode](#night-mode): Dim or switch off displays on schedule, manually or sensor-controlled.
 - [Music player](#the-music-player): Play mp3 files located on an SD card
 - [Sound on the hour](#additional-custom-sounds)
 - [SD card](#sd-card) support for custom audio files for effects, and music for the Music Player
-- Advanced network-accessible [Config Portal](#the-config-portal) for setup (http://timecircuits.local, hostname configurable)
+- Network capabilities:
+  - Advanced network-accessible [Config Portal](#the-config-portal) for setup (http://timecircuits.local, hostname configurable)
+  - [Home Assistant](#home-assistant--mqtt) (MQTT 3.1.1) support
 - [Keypad-controlled menu](#the-keypad-menu) for adjusting various settings and viewing status through the three displays
 - [Room condition mode](#room-condition-mode-temperaturehumidity-sensor): Display temperature and humidity instead of destination/departed time (requires compatible sensor)
-- Support for external [fake "power switch"](#fake-power-switch) (eg. a TFC drive switch)
-- Support for time travel [triggered by external source](#external-time-travel-trigger), with selectable delay
-- Support for external [Speedometer](#speedometer) (CircuitSetup's [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-pcb/?v=fa868488740a) and others supported)
-- Support for [GPS receiver](#gps-receiver), used as time source and for actual [speed](#gps-for-speed) to be displayed on speedo display
-- Support for [rotary encoders](#rotary-encoder) for manual selection of speed to be displayed on Speedo display, &#127381; and/or audio volume
-- Support for [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for "room condition mode" and for displaying temperature on speedo display while idle
-- [Wireless communication](#bttf-network-bttfn) with compatible other props such as CircuitSetup's [Flux Capacitor](https://fc.out-a-ti.me) and [SID](https://sid.out-a-ti.me) 
-- Support for triggering time travels on [other props](#controlling-other-props) connected by wire
-- [Home Assistant](#home-assistant--mqtt) (MQTT 3.1.1) support
+- Peripherals:
+  - Support for external [fake "power switch"](#fake-power-switch) (eg. a TFC drive switch)
+  - Support for time travel [triggered by external source](#external-time-travel-trigger), with selectable delay
+  - Support for external [Speedometer](#speedometer) (CircuitSetup's [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-pcb/?v=fa868488740a) and others supported)
+  - Support for [GPS receiver](#gps-receiver), used as time source and for actual [speed](#gps-for-speed) to be displayed on speedo display
+  - Support for [rotary encoders](#rotary-encoder) for manual selection of speed to be displayed on Speedo display, &#127381; and/or audio volume
+  - Support for [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for "room condition mode" and for displaying temperature on speedo display while idle
+  - [Wireless communication](#bttf-network-bttfn) with compatible other props such as CircuitSetup's [Flux Capacitor](https://fc.out-a-ti.me) and [SID](https://sid.out-a-ti.me) 
+  - Support for triggering time travels on [other props](#controlling-other-props) connected by wire
+
 
 The difference between what you get here and CircuitSetup's releases is that the code here might be ahead in development, uses some different sounds, and the pre-compiled binary has all the features enabled.
 
