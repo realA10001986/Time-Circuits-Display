@@ -31,7 +31,7 @@ Features include
   - [Home Assistant](#home-assistant--mqtt) (MQTT 3.1.1) support
 - [Night mode](#night-mode): Dim or switch off displays on schedule, manually or sensor-controlled.
 - [Music player](#the-music-player): Play mp3 files located on an SD card
-- [SD card](#sd-card) support for custom audio files for additional effects and/or replacing built-in sound effects, and music for the Music Player
+- Support for [SD cards](#sd-card) up to 32GB
 - [Keypad-controlled menu](#the-keypad-menu) for adjusting various settings and viewing status through the three displays
 - Peripherals:
   - Support for external [fake "power switch"](#fake-power-switch) (eg. a TFC drive switch)
@@ -40,7 +40,7 @@ Features include
   - Support for [GPS receiver](#gps-receiver), used as time source and for actual [speed](#gps-for-speed) to be displayed on speedo display
   - Support for [rotary encoders](#rotary-encoder) for manual selection of speed to be displayed on Speedo display, &#127381; and/or audio volume
   - Support for [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for [Room condition mode](#room-condition-mode-temperaturehumidity-sensor) [display temperature and humidity in *destination time* and *last time departed* displays] and for displaying temperature on speedo display while idle
-  - Support for triggering time travels on other props [connected by wire](#controlling-other-props)
+  - Support for triggering time travels on other props [connected by wire](#connecting-props-by-wire)
 
 The difference between what you get here and CircuitSetup's releases is that the code here might be ahead in development, uses some different sounds, and the pre-compiled binary has all the features enabled.
 
