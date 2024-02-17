@@ -9,9 +9,12 @@ The kit parts are available [here](https://circuitsetup.us/product/complete-time
 | *This very one is now in the Universal Studios [BTTF Escape Room](https://www.universalorlando.com/web/en/us/things-to-do/entertainment/universals-great-movie-escape) (Orlando)* |
 
 Features include
-- Time keeping for years 1-9999, &#127381; accurately based on Julian and Gregorian [calendars](#calendar-system)
-- Support for time zones and automatic DST (Daylight Saving adjustment)
-- Time synchronization via NTP or [GPS](#gps-receiver)
+
+- Clock:
+  - Time keeping for years 1-9999, &#127381; accurately based on Julian and Gregorian [calendars](#calendar-system)
+  - Support for time zones and automatic DST (Daylight Saving adjustment)
+  - Time synchronization via NTP or [GPS](#gps-receiver)
+- Movie-related:
 - Movie-accurate [time travel](#time-travel) function
 - Movie-accurate [Beep](#beep-on-the-second) sound every second (4 modes)
 - ["Return from Time Travel"](#time-travel): Return to real present time easily
