@@ -810,10 +810,8 @@ static bool loadBrightness()
         DECLARE_S_JSON(512,json);
         //StaticJsonDocument<512> json;
 
-        wd = false;
-
         if(!readJSONCfgFile(json, configFile, funcName)) {
-            wd |= CopyCheckValidNumParm(json["dBri"], settings.destTimeBright, sizeof(settings.destTimeBright), 0, 15, DEF_BRIGHT_DEST);
+            wd =  CopyCheckValidNumParm(json["dBri"], settings.destTimeBright, sizeof(settings.destTimeBright), 0, 15, DEF_BRIGHT_DEST);
             wd |= CopyCheckValidNumParm(json["pBri"], settings.presTimeBright, sizeof(settings.presTimeBright), 0, 15, DEF_BRIGHT_PRES);
             wd |= CopyCheckValidNumParm(json["lBri"], settings.lastTimeBright, sizeof(settings.lastTimeBright), 0, 15, DEF_BRIGHT_DEPA);
         } 
@@ -884,11 +882,9 @@ static bool loadAutoInterval()
         DECLARE_S_JSON(512,json);
         //StaticJsonDocument<512> json;
 
-        wd = false;
-
         if(!readJSONCfgFile(json, configFile, funcName)) {
             wd = CopyCheckValidNumParm(json["ai"], settings.autoRotateTimes, sizeof(settings.autoRotateTimes), 0, 5, DEF_AUTOROTTIMES);
-        } 
+        }
         configFile.close();
     }
 
