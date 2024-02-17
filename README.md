@@ -588,7 +588,7 @@ After invoking the keypad menu, the first step is to choose a menu item. The ava
 - select the Time-cycling Interval ("TIME-CYCLING"),
 - select the brightness for the three displays ("BRIGHTNESS"),
 - show network information ("NET-WORK"),
-- set the internal Real Time Clock (RTC) ("SET RTC"),
+- set the internal Real Time Clock (RTC) ("SET CLOCK"),
 - enter dates/times for the *Destination* and *Last Time Departed* displays,
 - show light/temperature/humidity sensor info (if such a sensor is connected) ("SENSORS"),
 - show when time was last sync'd with NTP or GPS ("TIME SYNC"),
