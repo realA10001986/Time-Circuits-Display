@@ -88,16 +88,20 @@ As long as the device is unconfigured, as is the case with a brand new TCD, or l
 - Connect your computer or handheld device to the WiFi network "TCD-AP".
 - Navigate your browser to http://timecircuits.local or http://192.168.4.1 to enter the Config Portal.
  
+### Connecting to a WiFi network
+
 If you want your TCD to connect to your WiFi network, click on "Configure WiFi". The bare minimum is to select an SSID (WiFi network name) and a WiFi password. 
 
 Note that the TCD requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). If the device is inaccessible as a result of incorrect static IPs, hold ENTER when powering it up until the white LED lits; static IP data will be deleted and the device will return to DHCP. 
 
 After saving the WiFi network settings, the TCD reboots and tries to connect to your configured WiFi network. If that fails, it will again start in access point mode.
 
+### Time zone and Time
+
 The next step is to set the TCD's time zone and actual time.
 
-- If your TCD is connected to a WiFi network with internet access, it will receive time information through NTP (network time protocol). If the TCD shows a wrong time initially, don't worry: This is due to a wrong time zone.
-- If the internet is inaccessible (such as is the case if the TCD is in access point mode), please set your local time through the [keypad menu](#how-to-set-the-real-time-clock-rtc) after setting up the time zone.
+- If you connected your TCD to a WiFi network with internet access, it will receive time information through NTP (network time protocol). If the TCD shows a wrong time initially, don't worry: This is due to a wrong time zone.
+- If you keep your TCD in access point mode (in which case it cannot access the internet), please set your local time through the [keypad menu](#how-to-set-the-real-time-clock-rtc) after setting up the time zone.
 
 In both cases it is, again, important to set the TCD's time zone. This is done in the Config Portal, so read on.
 
