@@ -90,7 +90,7 @@ As long as the device is unconfigured, as is the case with a brand new TCD, or l
  
 ### Connecting to a WiFi network
 
-If you want your TCD to connect to your WiFi network, click on "Configure WiFi". The bare minimum is to select an SSID (WiFi network name) and a WiFi password. 
+If you want to connect your TCD to a WiFi network, click on "Configure WiFi". The bare minimum is to select an SSID (WiFi network name) and a WiFi password. 
 
 Note that the TCD requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). If the device is inaccessible as a result of incorrect static IPs, hold ENTER when powering it up until the white LED lits; static IP data will be deleted and the device will return to DHCP. 
 
