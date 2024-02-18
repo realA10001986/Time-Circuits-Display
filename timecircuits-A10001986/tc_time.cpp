@@ -269,6 +269,20 @@ static long          origEttoLeadPoint = 0;
 static uint16_t      bttfnTTLeadTime = 0;
 static long          ettoBase;
 #endif
+#ifdef IS_ACAR_DISPLAY
+#define P1JAN011885 "010118851200"
+#define P1JAN011801 "010118011000"
+#define P1ERR900    "  00900 9000"
+#define P1ERR99     "  0099  0000"
+#else
+#define P1JAN011885 "JAN0118851200"
+#define P1JAN011801 "JAN0118011000"
+#define P1ERR900    "   00900 9000"
+#define P1ERR99     "   0099  0000"
+#endif
+static const char *p1errStrs[4] = {
+    P1JAN011885, P1JAN011801, P1ERR900, P1ERR99
+};
 
 // Re-entry sequence
 static unsigned long timetravelNow = 0;
@@ -2768,12 +2782,11 @@ void time_loop()
                 presentTime.on();
                 departedTime.on();
                 while(ii--) {
-                    #ifdef IS_ACAR_DISPLAY
-                    #define JAN011885 "010118851200"
-                    #else
-                    #define JAN011885 "JAN0118851200"
-                    #endif
-                    ((rand() % 10) < 4) ? destinationTime.showTextDirect(JAN011885, CDT_COLON) : destinationTime.show();
+                    tt = rand() % 21;
+                    if(tt < 5) destinationTime.show();
+                    else {
+                        destinationTime.showTextDirect(p1errStrs[(tt - 5) >> 2], CDT_COLON);
+                    }
                     if(!(ii % 2)) destinationTime.setBrightnessDirect((1+(rand() % 10)) & 0x0a);
                     if(ii % 2) presentTime.setBrightnessDirect((1+(rand() % 10)) & 0x0b);
                     ((rand() % 10) < 3) ? departedTime.showTextDirect(">ACS2011GIDUW") : departedTime.show();
@@ -2791,7 +2804,7 @@ void time_loop()
                     else if(tt < 7) { presentTime.show(); presentTime.on(); }
                     else            { presentTime.off(); }
                     tt = (rand() + millis()) % 10;
-                    if(tt < 2)      { destinationTime.showTextDirect("8888888888888"); }
+                    if(tt < 2)      { destinationTime.showTextDirect(p1errStrs[rand() % 4], CDT_COLON); }
                     else if(tt < 6) { destinationTime.show(); destinationTime.on(); }
                     else            { if(!(ii % 2)) destinationTime.setBrightnessDirect(1+(rand() % 8)); }
                     tt = (tt + (rand() + millis())) % 10;

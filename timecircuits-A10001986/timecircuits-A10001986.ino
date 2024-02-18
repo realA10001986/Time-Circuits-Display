@@ -101,6 +101,8 @@
 
 /*  Changelog
  *
+ *  2024/02/17 (A10001986)
+ *    - Minor changes to time travel display disruption in destination time display
  *  2024/02/16 (A10001986)
  *    - Save AutoInterval and brightness in separate config files, remove them from
  *      main config. Both considered "secondary settings", therefore optionally 
