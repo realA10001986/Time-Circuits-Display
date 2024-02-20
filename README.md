@@ -88,7 +88,7 @@ As long as the device is unconfigured, as is the case with a brand new TCD, or l
 - Connect your computer or handheld device to the WiFi network "TCD-AP".
 - Navigate your browser to http://timecircuits.local or http://192.168.4.1 to enter the Config Portal.
  
-### Connecting to a WiFi network
+#### Connecting to a WiFi network
 
 If you want to connect your TCD to a WiFi network, click on "Configure WiFi". The bare minimum is to select an SSID (WiFi network name) and a WiFi password. 
 
@@ -96,7 +96,7 @@ Note that the TCD requests an IP address via DHCP, unless you entered valid data
 
 After saving the WiFi network settings, the TCD reboots and tries to connect to your configured WiFi network. If that fails, it will again start in access point mode.
 
-### Time zone and Time
+#### Time zone and Time
 
 The next step is to set the TCD's time zone and actual time.
 
@@ -105,7 +105,7 @@ The next step is to set the TCD's time zone and actual time.
 
 In both cases it is, again, important to set the TCD's time zone. This is done in the Config Portal, so read on.
 
-### The Config Portal
+## The Config Portal
 
 The Config Portal is accessible exclusively through WiFi. As outlined above, if the device is not connected to a WiFi network, it creates its own WiFi network (named "TCD-AP"), to which your WiFi-enabled hand held device or computer first needs to connect in order to access the Config Portal.
 
