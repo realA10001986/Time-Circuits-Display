@@ -82,7 +82,7 @@ After installation, the SD card can be re-used for [other purposes](#sd-card).
 
 The first step is to establish access to the Config Portal in order to configure your TCD.
 
-As long as the device is unconfigured, as is the case with a brand new TCD, or later if it for some reason fails to connect to a configured WiFi network, it starts in "access point" mode, i.e. it creates a WiFi network of its own named "TCD-AP". This is called "Access point mode", or "AP-mode".
+As long as the device is unconfigured, as is the case with a brand new TCD, or later if it for some reason fails to connect to a configured WiFi network, it creates a WiFi network of its own named "TCD-AP". This is called "Access point mode", or "AP-mode".
 
 - Power up the TCD and wait until it shows a time (which is probably wrong).
 - Connect your computer or handheld device to the WiFi network "TCD-AP".
