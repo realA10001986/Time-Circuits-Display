@@ -700,7 +700,7 @@ Note that the Music Folder Number is saved in a config file on the SD card.
 
 #### How to set the Real Time Clock (RTC):
 
-Adjusting the RTC is useful if you can't use NTP for time keeping, and really helpful when using GPS. Always set your actual local present time here; if you want to display some other time, use the Time Travel function. Note: The time you entered will be changed if/when the device has access to authoritative time such as via NTP or GPS. For DST (daylight saving) and GPS, it is essential that you first set the correct time zone in the [Config Portal](#the-config-portal).
+If you can't use network time (NTP) as a source of time, you need to manually adjust the TCD's clock. Moreover, manual adjustment is a required step when using GPS. Always set your actual local present time here; if you want to display some other time, use the Time Travel function. Note: The time you entered will be changed if/when the device has access to authoritative time such as via NTP or GPS. For DST (daylight saving) and GPS, it is essential that you first set the correct time zone in the [Config Portal](#the-config-portal).
 
 - Hold ENTER to invoke main menu
 - Press ENTER repeatedly until "SET CLOCK" is displayed and the *Present Time* display shows a date and time 
