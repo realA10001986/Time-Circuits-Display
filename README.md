@@ -136,7 +136,7 @@ It can be accessed as follows:
 
 In the main menu, click on "Setup" to configure your TCD. 
 
-| ![The_Config_Portal](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/95888ad5-5e3e-4f62-8a6c-e945de1bd281) |
+| ![The_Config_Portal](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/e499a3f0-e405-4efd-82a4-2bb3b53ec9d6) |
 |:--:| 
 | *The Config Portal's Setup page* |
 
