@@ -76,7 +76,7 @@ Then there are two alternative ways to proceed. Note that both methods *require 
 
 After installation, the SD card can be re-used for [other purposes](#sd-card).
 
-## Beginner's first steps
+## Basic Configuration
 
 The first step is to establish access to the TCD's configuration web site ("Config Portal") in order to configure your TCD:
 
