@@ -112,21 +112,27 @@ After completing these steps, your TCD is basically ready for use; you can also 
 
 ## The Config Portal
 
-The "Config Portal" is the TCD's configuration web site. It can be accessed as follows:
+The "Config Portal" is the TCD's configuration web site. 
+
+| ![The Config Portal](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/45d06a1c-b14c-4af1-92b2-5d3fd5e5ee1d) |
+|:--:| 
+| *The Config Portal's main page* |
+
+It can be accessed as follows:
 
 #### If TCD is in AP mode
 
 - Connect your computer or handheld device to the WiFi network "TCD-AP".
 - Navigate your browser to http://timecircuits.local or http://192.168.4.1 to enter the Config Portal.
 
-### If TCD is connected to WiFi network
+#### If TCD is connected to WiFi network
 
 - Connect your hand-held/computer to the same WiFi network to which the TCD is connected, and
 - navigate your browser to http://timecircuits.local
 
   Accessing the Config Portal through this address requires the operating system of your hand-held/computer to support Bonjour/mDNS: Windows 10 version TH2     (1511) [other sources say 1703] and later, Android 13 and later; MacOS and iOS since the dawn of time.
 
-  If connecting to http://timecircuits.local fails, you need to find out the TCD's IP address: Hold ENTER on the TCD's keypad for 2 seconds, then repeatedly  press ENTER until "NET-WORK" is shown, then hold ENTER for 2 seconds. The device will then show its current IP address. Then, on your handheld or computer, navigate to http://a.b.c.d (a.b.c.d being the IP address as shown on the display) in order to enter the Config Portal.
+  If connecting to http://timecircuits.local fails due to a name resultion error, you need to find out the TCD's IP address: Hold ENTER on the TCD's keypad for 2 seconds, then repeatedly  press ENTER until "NET-WORK" is shown, then hold ENTER for 2 seconds. The device will then show its current IP address. Then, on your handheld or computer, navigate to http://a.b.c.d (a.b.c.d being the IP address as shown on the display) in order to enter the Config Portal.
 
 In the main menu, click on "Setup" to configure your TCD. 
 
