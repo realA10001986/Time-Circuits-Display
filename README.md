@@ -700,7 +700,9 @@ Note that the Music Folder Number is saved in a config file on the SD card.
 
 #### How to set the Real Time Clock (RTC):
 
-If you can't use network time (NTP) as a source of time, you need to manually adjust the TCD's clock. Moreover, manual adjustment is a required step when using GPS. Always set your actual local present time here; if you want to display some other time, use the Time Travel function. Note: The time you entered will be changed if/when the device has access to authoritative time such as via NTP or GPS. For DST (daylight saving) and GPS, it is essential that you first set the correct time zone in the [Config Portal](#the-config-portal).
+If you can't use network time (NTP) as a source of time, you need to manually adjust the TCD's clock. Moreover, manual clock adjustment is a required prerequisite for using [GPS](#gps-receiver). Before setting the TCD's clock, it is essential that you set the correct time zone in the [Config Portal](#the-config-portal).
+
+Always set your actual local present time here; if you want to display some other time, use the Time Travel function. 
 
 - Hold ENTER to invoke main menu
 - Press ENTER repeatedly until "SET CLOCK" is displayed and the *Present Time* display shows a date and time 
@@ -708,6 +710,8 @@ If you can't use network time (NTP) as a source of time, you need to manually ad
 - The field to enter data into is shown (exclusively), pre-set with its current value
 - Data entry works as described [above](#the-keypad-menu); remember that months need to be entered numerically (01-12), and hours in 24-hour notation (0-23).
 - After entering data into all fields, the data is saved and the menu is left automatically.
+
+The time you entered will be re-set/overruled/re-adjusted when the TCD has access to authoritative time via NTP or GPS.
 
 #### How to enter dates/times for the *Destination* and *Last Time Departed* displays:
 
