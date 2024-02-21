@@ -96,7 +96,7 @@ After saving the WiFi network settings, the TCD reboots and tries to connect to 
 
 Assuming the connection could be established, you now enter the Config Portal like this:
 - Connect your hand-held/computer to the same WiFi network to which the TCD is connected, and
-- navigate your browser to http://timecircuits.local (if that fails, please see below on how to connect to the Config Portal)
+- navigate your browser to http://timecircuits.local (if that fails, please see [below](#if-tcd-is-connected-to-wifi-network) on how to connect to the Config Portal)
 
 #### Time zone and Time
 
