@@ -220,7 +220,7 @@ To enable this mode, type 999 followed by ENTER. The default fixed time will be 
 
 Exhibition mode is persistent; the pre-programmed time will be stored and retrieved after a reboot/power-down.
 
-Not strictly part of Exhibition mode, but related: If you want your TCD to display specific times in the *Destination Time* and/or *Last Time Departed* displays, you can program those times through the [keypad menu](#how-to-enter-datestimes-for-the-destination-and-last-time-departed-displays). Those times will be displayed, but replaced as soon as a time travel takes place. To quickly restore the displays to your pre-programmed times, enter 998 followed by ENTER. Note that this only works if **_Make time travels persistent_** is unchecked in the Config Portal.
+Not strictly part of Exhibition mode, but related: If you want your TCD to display specific times in the *Destination Time* and/or *Last Time Departed* displays, you can program those times through the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays). Those times will be displayed, but replaced as soon as a time travel takes place. To quickly restore the displays to your pre-programmed times, enter 998 followed by ENTER. Note that this only works if **_Make time travels persistent_** is unchecked in the Config Portal.
 
 ### Common usage scenarios
 
@@ -246,7 +246,7 @@ In this case, head to the Config Portal and
 - set the **_Time Cycling Interval_** to OFF
 - uncheck **_Make time travels persistent_**
 
-Then enter the [keypad menu](#how-to-enter-datestimes-for-the-destination-and-last-time-departed-displays) and set your favorite *Destination* and *Last time departed* times.
+Then enter the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays) and set your favorite *Destination* and *Last time departed* times.
 
 Note that time-travelling will naturally lead to the displays showing other times. After a reboot, your times will be displayed again. To bring them back without rebooting, type 998 followed by ENTER.
 
@@ -454,7 +454,7 @@ If time travels are non-persistent
 
 If you want your device to display exactly the same after a power loss, choose persistent (and disable [Time-cycling](#time-cycling)). _Note that 'persistent time travels' require an SD card and the option **_Save secondary settings on SD_** to be checked as well._
 
-If you want to display your favorite *destination time* and *last time departed* upon power-up, and not have time travels overwrite them, choose "non-persistent", and program your times through the [keypad menu](#how-to-enter-datestimes-for-the-destination-and-last-time-departed-displays) (and disable [Time-cycling](#time-cycling)). Later time travels will, of course, change what is displayed, but not overwrite your times in storage. To bring back your stored times to the displays, type 998 followed by ENTER.
+If you want to display your favorite *destination time* and *last time departed* upon power-up, and not have time travels overwrite them, choose "non-persistent", and program your times through the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays) (and disable [Time-cycling](#time-cycling)). Later time travels will, of course, change what is displayed, but not overwrite your times in storage. To bring back your stored times to the displays, type 998 followed by ENTER.
 
 Note that Time-cycling, if enabled, will force the device to cycle through the list of pre-programmed times, regardless of your time travel persistence setting. So, if Time-cycling is enabled, the only effect of persistence is that *Present Time* is kept at what it was before vs. reset to actual present time after a power loss.
 
@@ -713,9 +713,7 @@ Always set your actual local present time here; if you want to display some othe
 
 The time you entered will be re-set/overruled/re-adjusted when the TCD has access to authoritative time via NTP or GPS.
 
-#### How to enter dates/times for the *Destination* and *Last Time Departed* displays:
-
-Note that when entering dates/times into the *destination time* or *last time departed* displays, the Time-cycling Interval is automatically set to 0. Your entered date/time(s) are shown until replaced by the results of time travels; you can then quickly bring your times back to the displays by typing 998 followed by ENTER.
+#### How to program dates/times for the *Destination* and *Last Time Departed* displays:
 
 - Hold ENTER to invoke main menu
 - Press ENTER repeatedly until the desired display is the only one lit and shows a date and time
@@ -723,6 +721,12 @@ Note that when entering dates/times into the *destination time* or *last time de
 - The field to enter data into is shown (exclusively), pre-set with its current value
 - Data entry works as described [above](#the-keypad-menu); remember that months need to be entered numerically (01-12), and hours in 24-hour notation (0-23).
 - After entering data into all fields, the data is saved and the menu is left automatically.
+
+Your entered date/time(s) are stored, and shown until replaced by the results of time travels; you can then quickly bring your times back to the displays by typing 998 followed by ENTER.
+
+When entering dates/times into the *destination time* or *last time departed* displays, the Time-cycling Interval is automatically set to 0. 
+
+Note: Your dates/times will be overwritten in storage after a time travel when **_Make time travels persistent_** is checked. Please see [here](#persistent--non-persistent-time-travels) for details.
 
 #### How to view sensor info
 
