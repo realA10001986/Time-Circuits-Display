@@ -449,7 +449,7 @@ If time travels are persistent
 
 If time travels are non-persistent
 - a user-programmed *destination time* is only saved when programmed through the keypad menu, but not if entered ahead of a time travel (ie outside of the keypad menu, by typing mmddyyyyhhMM/mmddyyyy/hhMM plus ENTER).
-- a user-programmed *last time departed* is only saved when programmed through the keypad menu, but not if the result of a time travel.
+- a *last time departed* is only saved when programmed through the keypad menu, but not if the result of a time travel.
 - *present time* is always reset to actual present time upon power-up/reboot.
 
 If you want your device to display exactly the same after a power loss, choose persistent (and disable [Time-cycling](#time-cycling)). _Note that 'persistent time travels' require an SD card and the option **_Save secondary settings on SD_** to be checked as well._
