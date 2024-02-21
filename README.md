@@ -48,19 +48,17 @@ The difference between what you get here and CircuitSetup's releases is that the
 |:--:|
 | Click to watch the video |
 
-## Installation
+## Firmware Installation
 
-There are different alternative ways to install this firmware:
+If a previous version of the TCD firmware is installed on your device, you can update easily using the pre-compiled binary. Enter the [Config Portal](#the-config-portal), click on "Update" and select the pre-compiled binary file provided in this repository ([install/timecircuits-A10001986.ino.nodemcu-32s.bin](https://github.com/realA10001986/Time-Circuits-Display/blob/main/install/timecircuits-A10001986.ino.nodemcu-32s.bin)). *Note: If the previously installed firmware was from CircuitSetup (ie. pre-installed or downloaded from their github), you need to install the sound-pack from this repository afterwards.*
 
-1) If a previous version of the TCD firmware is installed on your device, you can update easily using the pre-compiled binary. Enter the [Config Portal](#the-config-portal), click on "Update" and select the pre-compiled binary file provided in this repository ([install/timecircuits-A10001986.ino.nodemcu-32s.bin](https://github.com/realA10001986/Time-Circuits-Display/blob/main/install/timecircuits-A10001986.ino.nodemcu-32s.bin)). *Note: If the previously installed firmware was from CircuitSetup (ie. pre-installed or downloaded from their github), you need to re-install the sound-pack from this very repo.*
+If you are using a fresh ESP32 board, please see [timecircuits-A10001986.ino](https://github.com/realA10001986/Time-Circuits-Display/blob/main/timecircuits-A10001986/timecircuits-A10001986.ino) for detailed build information.
 
-2) Using the Arduino IDE or PlatformIO: Download the sketch source code, all required libraries, compile and upload it. This method is the one for fresh ESP32 boards and/or folks familiar with the programming tool chain. Detailed build information is in [timecircuits-A10001986.ino](https://github.com/realA10001986/Time-Circuits-Display/blob/main/timecircuits-A10001986/timecircuits-A10001986.ino).
-
- *Important: After a firmware update, the displays might stay dark or display "WAIT" for up to a minute after reboot. Do NOT unplug the TCD during this time.*
+ *After a firmware update, the displays might display "WAIT" for a short while after reboot. Do NOT unplug the TCD during this time.*
 
 ### Audio file installation
 
-The firmware comes with audio data ("sound-pack") which needs to be installed separately. The audio data is not updated as often as the firmware itself. If you have previously installed the latest version of the sound-pack, you normally don't have to re-install the audio data when you update the firmware. Only if the TCD displays "PLEASE INSTALL AUDIO FILES" during boot, an update of the audio data is needed.
+The firmware comes with some audio data ("sound-pack") which needs to be installed separately. The audio data is not updated as often as the firmware itself. If you have previously installed the latest version of the sound-pack, you normally don't have to re-install the audio data when you update the firmware. Only if the TCD displays "PLEASE INSTALL AUDIO FILES" during boot, an update of the audio data is needed.
 
 *If your TCD previously ran a firmware from CircuitSetup (ie. pre-installed or downloaded from their github), installing of the audio data **from this repository** is required. You cannot use CircuitSetup's audio data with the firmware available here, or vice versa.*
 
@@ -78,45 +76,57 @@ Then there are two alternative ways to proceed. Note that both methods *require 
 
 After installation, the SD card can be re-used for [other purposes](#sd-card).
 
-## Short summary of first steps
+## Beginner's first steps
 
-The first step is to establish access to the Config Portal in order to configure your TCD.
-
-As long as the device is unconfigured, as is the case with a brand new TCD, or later if it for some reason fails to connect to a configured WiFi network, it creates a WiFi network of its own named "TCD-AP". This is called "Access point mode", or "AP-mode".
+The first step is to establish access to the TCD's configuration web site ("Config Portal") in order to configure your TCD:
 
 - Power up the TCD and wait until it shows a time (which is probably wrong).
 - Connect your computer or handheld device to the WiFi network "TCD-AP".
 - Navigate your browser to http://timecircuits.local or http://192.168.4.1 to enter the Config Portal.
- 
+
 #### Connecting to a WiFi network
 
-If you want to connect your TCD to a WiFi network, click on "Configure WiFi". The bare minimum is to select an SSID (WiFi network name) and a WiFi password. 
+As long as the device is unconfigured, it creates a WiFi network of its own named "TCD-AP". This is called "Access point mode", or "AP-mode". In this mode, other WiFi devices can connect to the TCD, but the TCD can't access the internet (and therefore not synchronize time).
 
-Note that the TCD requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). If the device is inaccessible as a result of incorrect static IPs, hold ENTER when powering it up until the white LED lits; static IP data will be deleted and the device will return to DHCP. 
+It is ok to leave the TCD in this mode, especially if it is mounted in a car or places with no WiFi networks available. In a typical home setup, however, you might want to connect the TCD to your WiFi network. To do so, click on "Configure WiFi". The bare minimum is to select an SSID (WiFi network name) and a WiFi password.
+
+(Note that the TCD requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). If the device is inaccessible as a result of incorrect static IPs, hold ENTER when powering it up until the white LED lits; static IP data will be deleted and the device will return to DHCP.)
 
 After saving the WiFi network settings, the TCD reboots and tries to connect to your configured WiFi network. If that fails, it will again start in access point mode.
+
+Assuming the connection could be established, you now enter the Config Portal like this:
+- Connect your hand-held/computer to the same WiFi network to which the TCD is connected, and
+- navigate your browser to http://timecircuits.local (if that fails, please see below on how to connect to the Config Portal)
 
 #### Time zone and Time
 
 The next step is to set the TCD's time zone. If the time zone isn't properly configured, the TCD will show a wrong time, and DST (daylight saving) will not be switched on/off correctly.
 
-Enter the Config Portal as described above, click on "SETUP", and specify your [time zone](#-time-zone). Then click "SAVE"; the TCD will reboot.
+Click on "SETUP" on the Config Portal's main page, and specify your [time zone](#-time-zone). Then click "SAVE"; the TCD will reboot.
 
-Now for actual time:
-- If the TCD is connected to a WiFi network with internet access, it will receive time information through NTP (network time protocol).
+Setting actual time:
+- If the TCD is connected to a WiFi network with internet access, it will receive time information through NTP (network time protocol). No user interaction is required.
 - If you keep your TCD in access point mode (in which case it cannot access the internet), please set your local time through the [keypad menu](#how-to-set-the-real-time-clock-rtc).
 
 After completing these steps, your TCD is basically ready for use; you can also continue configuring it to your personal preferences through the Config Portal.
 
 ## The Config Portal
 
-The Config Portal is accessible exclusively through WiFi. As outlined, if the device is not connected to a WiFi network, it creates its own WiFi network (named "TCD-AP"), to which your WiFi-enabled hand held device or computer first needs to connect in order to access the Config Portal.
+The "Config Portal" is the TCD's configuration web site. It can be accessed as follows:
 
-Assuming you are running a current operating system on your hand-held or computer, you can enter the Config Portal by directing your browser to http://timecircuits.local . (Accessing the Config Portal through this address requires Bonjour aka "mDNS"; Windows 10 version TH2 (1511) [other sources say 1703] and later, Android 13 and later, MacOS, iOS.)
+### If TCD is in AP mode
 
-If that fails, the way to enter the Config Portal depends on whether the TCD is in access point mode or not. 
-- If it is in access point mode, and your handheld/computer is connected to the WiFi network "TCP-AP", navigate your browser to http://192.168.4.1 
-- If the device is connected to your WiFi network, you need to find out its IP address first: Hold ENTER on the keypad for 2 seconds, then repeatedly press ENTER until "NET-WORK" is shown, then hold ENTER for 2 seconds. The device will then show its current IP address. Then, on your handheld or computer, navigate to http://a.b.c.d (a.b.c.d being the IP address as shown on the display) in order to enter the Config Portal.
+- Connect your computer or handheld device to the WiFi network "TCD-AP".
+- Navigate your browser to http://timecircuits.local or http://192.168.4.1 to enter the Config Portal.
+
+### If TCD is connected to WiFi network
+
+- Connect your hand-held/computer to the same WiFi network to which the TCD is connected, and
+- navigate your browser to http://timecircuits.local
+
+Accessing the Config Portal through this address requires the operating system of your hand-held/computer to support Bonjour/mDNS: Windows 10 version TH2 (1511) [other sources say 1703] and later, Android 13 and later; MacOS and iOS since the dawn of time.
+
+If connecting to http://timecircuits.local fails, you need to find out the TCD's IP address: Hold ENTER on the TCD's keypad for 2 seconds, then repeatedly press ENTER until "NET-WORK" is shown, then hold ENTER for 2 seconds. The device will then show its current IP address. Then, on your handheld or computer, navigate to http://a.b.c.d (a.b.c.d being the IP address as shown on the display) in order to enter the Config Portal.
 
 In the main menu, click on "Setup" to configure your TCD. 
 
