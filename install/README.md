@@ -6,7 +6,7 @@ This folder holds all files necessary for immediate installation on your Time Ci
 
 If a previous version of the Time Circuits firmware is installed on your device, you can upload the provided binary to update to the current version: Go to the Config Portal, click on "Update" and select the binary file provided here ("timecircuits-A10001986.ino.nodemcu-32s.bin").
 
-For a fresh installation, the provided binary is not usable. Please see xxx for build and installation instructions.
+For a fresh installation, the provided binary is not usable. Please see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/timecircuits-A10001986/timecircuits-A10001986.ino) for build and installation instructions.
 
 ### Audio data installation
 
