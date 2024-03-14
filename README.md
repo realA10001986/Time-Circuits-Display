@@ -830,7 +830,7 @@ The speedo display shown in this video is based on a fairly well-designed stand-
 
 In order to use the Speedometer display, select the correct display type in the Config Portal. There are two special options in the Speedo Display Type drop-down: *Ada 1911 (left tube)* and *Ada 878 (left tube)*. These two can be used if you connect only one 2-digit-tube to the respective Adafruit i2c backpack, as I did in case of my speedo replica as well as my [Wall Clock](#my-custom-made-time-circuits-wall-clock).
 
-Since the I2C bus is already quite long from the control board to the last display in the chain, I recommend soldering another XH 4pin plug onto the control board (there are two additional i2c break-outs available), and to connect the speedometer there.
+Since the I2C bus is already quite long from the control board to the last display in the chain, I recommend soldering another XH 4pin plug onto the control board (there are two additional i2c break-outs available), and to connect the speedometer there. For wiring information, please see [here](#appendix-b-i2c-peripheral-wiring).
 
 ## GPS receiver
 
