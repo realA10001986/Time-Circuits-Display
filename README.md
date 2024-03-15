@@ -1420,7 +1420,7 @@ On most i2c peripherals the pins are named as follows, and need to be connected 
 
 For longer cables, ie >50cm (>20in), I recommend using a twisted pair cable, and to connect it as follows to avoid cross-talk:
 
-![i2clongcable](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/485502ae-2d45-4b3a-ba31-946251f905dd)
+![i2clongcable](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/497fbbf2-55b9-4ebb-93ee-ce349fd866b5)
 
 I had a GPS receiver connected through such a cable and had no issues over a distance of 5m/16ft.
 
