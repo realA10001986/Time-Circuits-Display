@@ -1386,9 +1386,9 @@ See [here](#persistent--non-persistent-time-travels). For this option to take ef
 
 ## Appendix B: I2C peripheral wiring
 
-The light and temperature sensors, the speedo display, the GPS receiver as well as the Rotary Encoders are to be wired as follows:
+The speedo display, the GPS receiver, light and temperature sensors as well as the Rotary Encoders are to be wired as follows:
 
-On the TCD control board, there are currently three i2c bus breakouts, at least one of which has a XH header soldered on; it does not matter which one you use to connect your sensors/GPS/rotary encoders. To avoid soldering wires directly to the board, I recommend to solder on [XH](https://www.amazon.com/s?k=jst+xh) 4-pin headers to the other two i2c breakouts as well (like in the second picture).
+On the TCD control board, there are currently three breakouts named "I2C", at least one of which has a header soldered on; it does not matter which one you use to connect your sensors/speedo/GPS/rotary encoders. I recommend to solder on [XH](https://www.amazon.com/s?k=jst+xh) 4-pin headers to the other two i2c breakouts as well (like in the second picture). When you order a CircuitSetup Speedo, they will include such headers if you request them. Do not solder wires directly to the board!
 
 ![i2c](https://user-images.githubusercontent.com/76924199/212406576-fbd71836-1862-4632-a3ac-decbfa6b7eb2.jpg)
 
@@ -1430,9 +1430,15 @@ The CircuitSetup [Speedo Kit](https://circuitsetup.us/product/delorean-time-mach
 
 >Important: The TCD control board delivers and drives the i2c bus on 5V. Most sensors/GPS receivers operate on 3.3V. Therefore, you cannot connect the chips directly to the TCD control board without a level-shifter. This goes for the power supply as well as the i2c bus signals (SDA, SCL). I only use readily available sensor breakout boards that include level-shifters.
 
+#### Multiple i2c devices
+
+If going by the book, multiple i2c devices should be daisy chained; however, I had sensors, speedo and GPS receivers run in parallel without issues for months.
+
+Note that you can only use one per device type (temperature/humidity sensor, light sensor, GPS receiver, Speedo display) at a time. As regards rotary encoders, one for speed and one for volume can be connected.
+
 #### i2c addresses
 
-Most sensors either only support one i2c address, or are recognized by the firmware (only) by their default address. For those, nothing must be done in order to use them with the Time Circuits Display.
+i2c devices have "addresses". Most sensors either only support one i2c address, or are recognized by the firmware (only) by their default address. For those, nothing must be done in order to use them with the Time Circuits Display.
 
 Notable exceptions are the TMP117 and HTU31D sensors: Their address needs to changed in order to be recognized by the firmware. On the Adafruit breakouts, this is done by connecting two solder pads on the back side of the PCB:
 
@@ -1441,12 +1447,6 @@ Notable exceptions are the TMP117 and HTU31D sensors: Their address needs to cha
 This image shows the HTU31D PCB's back side. Connect (shorten) those two pads in order to change the address. It looks similar on the TMP117.
 
 For Rotary Encoders, see [here](#configuration).
-
-#### Multiple i2c devices
-
-If going by the book, multiple i2c devices should be daisy chained; however, I had sensors, speedo and GPS receivers run in parallel without issues for months.
-
-Note that you can only use one per device type (temperature/humidity sensor, light sensor, GPS receiver, Speedo display) at a time. While two rotary encoders are supported, they must be [configured](#configuration) properly.
 
 ## Appendix C: Time zones
 
