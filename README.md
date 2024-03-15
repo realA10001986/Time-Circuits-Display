@@ -1401,14 +1401,14 @@ On most i2c peripherals the pins are named as follows, and need to be connected 
 <table>
     <tr>
      <td align="center">Peripheral PCB</td><td align="center">TCD control board</td>
+    </tr>    
+    <tr>
+     <td align="center">GND or "-"</td>
+     <td align="center">GND</td>
     </tr>
     <tr>
      <td align="center">VIN or 5V or "+"</a></td>
      <td align="center">5V</td>
-    </tr>
-    <tr>
-     <td align="center">GND or "-"</td>
-     <td align="center">GND</td>
     </tr>
     <tr>
      <td align="center">SDA<br>(SDI on BME280)</td>
