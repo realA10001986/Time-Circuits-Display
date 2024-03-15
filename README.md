@@ -1388,13 +1388,11 @@ See [here](#persistent--non-persistent-time-travels). For this option to take ef
 
 The light and temperature sensors, the speedo display, the GPS receiver as well as the Rotary Encoders are to be wired as follows:
 
-On the TCD control board, there are currently three i2c bus breakouts, one of which has a XH header soldered on; it does not matter which one you use to connect your sensors/GPS/rotary encoders. To avoid soldering wires directly to the board, I recommend to solder on [XH](https://www.amazon.com/s?k=jst+xh) 4-pin headers to the other two i2c breakouts as well (like in the second picture).
+On the TCD control board, there are currently three i2c bus breakouts, at least one of which has a XH header soldered on; it does not matter which one you use to connect your sensors/GPS/rotary encoders. To avoid soldering wires directly to the board, I recommend to solder on [XH](https://www.amazon.com/s?k=jst+xh) 4-pin headers to the other two i2c breakouts as well (like in the second picture).
 
 ![i2c](https://user-images.githubusercontent.com/76924199/212406576-fbd71836-1862-4632-a3ac-decbfa6b7eb2.jpg)
 
 ![i2c](https://user-images.githubusercontent.com/76924199/212406002-c6887b39-8bac-49b1-8318-35838fba44d0.jpg)
-
-Important: The TCD control board delivers and drives the i2c bus on 5V. Most sensors/GPS receivers operate on 3.3V. Therefore, you cannot connect the chips directly to the TCD control board without a level-shifter. This goes for the power supply as well as the i2c bus signals (SDA, SCL). I only use readily available sensor breakout boards that include level-shifters.
 
 On most i2c peripherals the pins are named as follows, and need to be connected to the corresponding pins on the control board:
 
@@ -1429,6 +1427,8 @@ I had a GPS receiver connected through such a cable and had no issues over a dis
 The CircuitSetup [Speedo Kit](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit/) comes with a twisted pair cable with three pairs. The idea is to use each one pair for 5V+GND, SDA+GND and SCL+GND:
 
 ![speedo_i2c](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/068b17b5-b95a-48ab-ac7e-53c47afe0a98)
+
+>Important: The TCD control board delivers and drives the i2c bus on 5V. Most sensors/GPS receivers operate on 3.3V. Therefore, you cannot connect the chips directly to the TCD control board without a level-shifter. This goes for the power supply as well as the i2c bus signals (SDA, SCL). I only use readily available sensor breakout boards that include level-shifters.
 
 #### i2c addresses
 
