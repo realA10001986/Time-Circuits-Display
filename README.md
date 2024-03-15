@@ -1428,7 +1428,7 @@ I had a GPS receiver connected through such a cable and had no issues over a dis
 
 The CircuitSetup [Speedo Kit](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit/) comes with a twisted pair cable with three pairs. In order to avoid problems, use one pair for each 5V+GND, SDA+GND and SCL+GND:
 
-![speedo_i2c](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/0fc7d2e3-501b-49e0-a481-21237cf2e133)
+![speedo_i2c](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/068b17b5-b95a-48ab-ac7e-53c47afe0a98)
 
 #### i2c addresses
 
