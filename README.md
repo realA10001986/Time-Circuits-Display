@@ -1097,12 +1097,6 @@ Flash memory has a somewhat limited life-time. It can be written to only between
 
 In order to reduce the number of write operations and thereby prolong the life of your TCD, it is recommended to use a good-quality SD card and to check **_[Save secondary settings on SD](#-save-secondary-settings-on-sd)_** in the Config Portal; secondary settings (volume, alarm, reminder, carmode state, exhibition mode data and state, time travel data and state) are then stored on the SD card (which also suffers from wear but is easy to replace). See [here](#-save-secondary-settings-on-sd) for more information.
 
-## My custom-made Time Circuits Wall Clock
-
-![Back to the Future Wall Clock](https://user-images.githubusercontent.com/76924199/214323242-00b7b6da-8fbd-43f5-8ec0-68c06131939e.jpg)
-
-More here: [Link](https://github.com/realA10001986/Time-Circuits-Display/wiki/Time-Circuits-Wall-Clock)
-
 ## Appendix A: The Config Portal
 
 ### Main page
