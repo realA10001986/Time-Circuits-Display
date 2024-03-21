@@ -195,7 +195,7 @@ The TCD can tell other props about a time travel. It does so by setting a pin (I
 
 You need two wires for connecting the TCD: TT_OUT (IO14) and GND, which need to be connected to the respective pins of the prop.
 
-| ![ttout](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/b1330e4d-12ba-48ef-a454-3d6167fb2a5d) |
+| ![ttout](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/429439a1-4897-42ef-b765-4922ba511cc2) |
 |:--:|
 | TT_OUT/IO14 on board version 1.3 |
 
