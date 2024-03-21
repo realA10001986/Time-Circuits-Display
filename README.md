@@ -840,7 +840,7 @@ The CircuitSetup [Speedo Kit](https://circuitsetup.us/product/delorean-time-mach
 
 ![speedo_i2c](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/068b17b5-b95a-48ab-ac7e-53c47afe0a98)
 
-If you want to make your own speedo, see [here](DIY/).
+If you want to make your own speedo, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#speedometer).
 
 #### Software setup
 
@@ -861,7 +861,7 @@ If/as long as the GPS receiver has a fix and receives data from satellites, the 
 
 In order to use the GPS receiver as a source of time, no special configuration is required. If it is detected during boot, it will be used.
 
-If you want to use a third party GPS receiver, see [here](DIY/).
+If you want to use a third party GPS receiver, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#gps-receiver).
 
 #### GPS for speed
 
