@@ -788,7 +788,7 @@ If the **_Use fake power switch_** option is checked in the Config Portal, the d
 
 On Control Boards V1.3 and later, there is a dedicated header labeled "Fake PWR" to connect the switch to. The pins to be shortened by the switch are labeled "GND" and "PWR Trigger":
 
-![pwr_trigger](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/59bbcfcb-1898-4d9c-b34f-d1a6cf3892fd)
+![pwr_trigger](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/edc477ed-7588-4133-8b23-3a434ffc871c)
 
 On earlier Control Boards (1.2 and below), the switch needs shorten the pins labeled "IO13" and "GND" as shown here: (The pin headers are not present on original boards)
 
@@ -808,7 +808,7 @@ As mentioned above, a time travel can be triggered by holding "0" on the keypad.
 
 On Control Boards V1.3 and later, there is a dedicated header for the button labeled "Time Travel". The button needs to shorten pins "TT IN" and "GND".
 
-| ![ttin](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/8ec8d88a-f2df-484c-b9b9-1d389dc6d480) |
+| ![ttin](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/ac3a912f-fa2e-40e0-a249-2bb78b5bfa45) |
 |:--:|
 | TT_IN on TCB 1.3 |
 
