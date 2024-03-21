@@ -755,6 +755,23 @@ Note: Your dates/times will be overwritten in storage after a time travel when *
  - While the menu is active, press ENTER repeatedly until "END" is displayed.
  - Hold ENTER to leave the menu
 
+## Car Mode
+
+If the TCD, perhaps along with other props such as Flux Capacitor or SID, is mounted in a car, there are a few things to be considered:
+
+- There is no point in attempting to connect a WiFi network.
+- If the TCD acts as WiFi access point for Flux Capacitor and/or SID, it should boot quickly so that the other props can connect to it as soon as possible.
+
+This is what *car mode* is for: If enabled, the TCD will always boot in AP mode, regardless of a configured WiFi network. This speeds up booting.
+
+To enable *car mode*, type 991 followed by ENTER. The TCD will reboot in AP mode.
+
+To disable *car mode*, type 990 followed by ENTER. The TCD will reboot and attempt to connect to a previously configured WiFi network.
+
+*Car mode* is persistent, i.e. it remains active (even accross reboots and power-downs) until disabled.
+
+>Note that the TCD has no internet access while in car mode; this means that, unless a GPS receiver is present, it cannot update its clock automatically. If the time runs off over time, you need to re-adjust it using the [keypad menu](#how-to-set-the-real-time-clock-rtc).
+
 ## Peripherals and connection
 
 ![The BTTF Prop Family](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/d68bcbae-64ef-4ea1-a424-caf837dc41cb)
@@ -803,12 +820,7 @@ On Control Boards V1.3 and later, there is a dedicated header for the button lab
 |:--:|
 | TT_IN on TCB 1.3 |
 
-Unfortunately, there is no header and no break out for IO27 on TC control boards V1.2 and below. Some soldering is required. The button needs to be 
-connected to the two marked pins in the image below:
-
-![nodemcuio272](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/9ace6814-87d6-48db-babe-39d44c03eaed)
-
-Luckily, there is a row of solder pads right next to the socket on the control board, where a pin header or cable can easily be soldered on:
+Unfortunately, there is no header and no break out for IO27 on TC control boards V1.2 and below. There is, however, a row of solder pads right next to the socket on the control board, where a pin header or cable can easily be soldered on:
 
 | ![tcboard_io27](https://user-images.githubusercontent.com/76924199/194284336-2fe9fa9b-d5e5-49f5-b1cd-b0fd2abdff53.jpg) |
 |:--:|
@@ -871,9 +883,9 @@ If other props using GPS speed are connected via [BTTF-Network](#bttf-network-bt
 
 A rotary encoder is, simply put, a turnable knob. On the TCD, rotary encoders can be used for speed and/or audio volume.
 
-The firmware currently supports the [Adafruit 4991](https://www.adafruit.com/product/4991), [DFRobot Gravity 360](https://www.dfrobot.com/product-2575.html) and [DuPPA I2CEncoder 2.1](https://www.duppa.net/shop/i2cencoder-v2-1/) (or [here](https://www.tindie.com/products/saimon/i2cencoder-v21-connect-rotary-encoder-on-i2c-bus/)) i2c rotary encoders; a CircuitSetup original prop is in the works. For the Adafruit and the DuPPa, I recommend buying the PCBs without an actual encoder and soldering on a Bourns PEC11R-42xxy-S0024.
+For information on supported encoder models/types and configuration, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#rotary-encoder)
 
-For wiring information, see [here](#appendix-b-i2c-peripheral-wiring). Up to two rotary encoders can be connected, one for speed, one for volume.
+Up to two rotary encoders can be connected, one for speed, one for volume.
 
 ### Rotary Encoder for Speed 
 
@@ -892,26 +904,6 @@ Notes:
 
 The rotary encoder for volume replaces the volume knob on back of the TCD's keypad. The advantages of the rotary encoder are that it is more precise, especially at lower volume levels, and it can be relocated. In order to use the rotary encoder for volume, the TCD's own volume knob must be disabled; this is done by pre-selecting an audio level in the keypad menu, or by typing 3xx (xx being 00-19) followed by ENTER.
 
-### Configuration
-
-In order to use an encoder for speed or volume, it needs to be configured as follows:
-
-  <table>
-  <tr><td></td><td>Ada4991</td><td>DFRobot</td><td>DuPPA</td></tr>
-  <tr><td>Speed</td><td>Default [0x36]</td><td>SW1=0,SW2=0 [0x54]</td><td>A0 closed [0x01]</td></tr>
-  <tr><td>Volume</td><td>A0 closed [0x37]</td><td>SW1=0,SW2=1 [0x55]</td><td>A0,A1 closed [0x03]</td></tr>
-  </table>
-
-The numbers in brackets are the resulting i2c address. (For DuPPA: RGB-encoders not supported.)
-
-Here is how they look configured for speed (the purple spots are solder joints):
-
-![RotEncSpd](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/ae4ee45b-5cbf-45e1-9092-1043367e9af5)
-
-Here is the configuration for volume:
-
-![RotEncVol](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/a13a02ed-ab5b-42f6-9160-96070e1d5a17)
-
 ## Room Condition Mode, Temperature/humidity sensor
 
 The firmware supports connecting a temperature/humidity sensor for "room condition mode"; in this mode, *destination* and *last departed* times are replaced by temperature and humidity (if applicable), respectively. To toggle between normal and room condition mode, enter "111" and press ENTER. 
@@ -922,30 +914,9 @@ Room condition mode can be used together with [World Clock mode](#world-clock-mo
 
 Temperature on speedometer display: Unless you do time travelling on a regular basis, the [speedo display](#speedometer) is idle most of the time in a typical home setup. To give it more of a purpose, the firmware can display ambient temperature on the speedo while idle.
 
-#### Sensor hardware
-
 In order to use a temperature/humidity sensor, no special configuration is required. If a sensor is detected by the firmware during boot, it will be used.
 
-The following sensor types are supported: MCP9808 (i2c address 0x18), BMx280 (0x77), SI7021, SHT40/SHT45 (0x44), TMP117 (0x49), AHT20/AM2315C, HTU31D (0x41), MS8607. All of those are readily available on breakout boards from Adafruit or Seeed (Grove). The BMP280 (unlike BME280), MCP9808 and TMP117 work as pure temperature sensors, the others for temperature and humidity. For wiring information, see [here](#appendix-b-i2c-peripheral-wiring).
-
-*Note: You cannot connect the sensor chip directly to the TCD control board; most sensors need at least a power converter/level-shifter.* This is why I exclusively used Adafruit or Seeed breakouts ([MCP9808](https://www.adafruit.com/product/1782), [BME280](https://www.adafruit.com/product/2652), [SI7021](https://www.adafruit.com/product/3251), [SHT40](https://www.adafruit.com/product/4885), [SHT45](https://www.adafruit.com/product/5665), [TMP117](https://www.adafruit.com/product/4821), [AHT20](https://www.adafruit.com/product/4566), [HTU31D](https://www.adafruit.com/product/4832), [MS8607](https://www.adafruit.com/product/4716)), which all allow connecting named sensors to the 5V the TCD board operates on.
-
-## Car Mode
-
-If the TCD, perhaps along with other props such as Flux Capacitor or SID, is mounted in a car, there are a few things to be considered:
-
-- There is no point in attempting to connect a WiFi network.
-- If the TCD acts as WiFi access point for Flux Capacitor and/or SID, it should boot quickly so that the other props can connect to it as soon as possible.
-
-This is what *car mode* is for: If enabled, the TCD will always boot in AP mode, regardless of a configured WiFi network. This speeds up booting.
-
-To enable *car mode*, type 991 followed by ENTER. The TCD will reboot in AP mode.
-
-To disable *car mode*, type 990 followed by ENTER. The TCD will reboot and attempt to connect to a previously configured WiFi network.
-
-*Car mode* is persistent, i.e. it remains active (even accross reboots and power-downs) until disabled.
-
-Note that the TCD has no internet access while in car mode; this means that it cannot update its clock automatically. If the time runs off over time, you need to re-adjust it using the [keypad menu](#how-to-set-the-real-time-clock-rtc).
+For information on supported sensor models/types and configuration, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#temperaturehumidity-sensor)
 
 ## Controlling other props
 
