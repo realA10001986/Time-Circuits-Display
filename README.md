@@ -830,7 +830,7 @@ The firmware supports [CircuitSetups's speedometer display](https://circuitsetup
 |:--:|
 | Click to watch the video |
 
-Full disclosure: The video was shot before the CircuitSetup speedo became available. The speedo shown is a DIY prop and not the - much better looking - CirctuiSetup speedo. The video is only meant to demonstate how the TCD and the speedo inter-operate. (The TFC switch was made by me, see [here](https://tfc.out-a-ti.me), it uses the [Fake Power Switch](#fake-power-switch) feature of the TCD.)
+Full disclosure: The video was shot before the CircuitSetup speedo became available. The speedo shown is a DIY prop and not the - much better looking - CircuitSetup speedo. The video is only meant to demonstate how the TCD and the speedo inter-operate. (The TFC switch was made by me, see [here](https://tfc.out-a-ti.me), it uses the [Fake Power Switch](#fake-power-switch) feature of the TCD.)
 
 The CircuitSetup [Speedo Kit](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit/) needs to be wired as shown below:
 
@@ -840,7 +840,7 @@ If you want to make your own speedo, see [here](https://github.com/realA10001986
 
 #### Software setup
 
-In order to use the Speedometer display, select the correct model/display type in the Config Portal. This is "CircuitSetup" for the CircuitSetup speedo. 
+In order to use the Speedometer display, select the correct model/display type in the Config Portal. This is, surprisingly, "CircuitSetup" for the CircuitSetup speedo. 
 
 ## GPS receiver
 
