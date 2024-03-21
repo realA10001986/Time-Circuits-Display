@@ -19,7 +19,7 @@ What you need is a box, the LED segment displays and a HT16K33-based PCB that al
 
 The product numbers vary with color, the numbers here are the red ones.
 
-Since the I2C bus is already quite long from the control board to the last display in the chain, I recommend soldering another XH 4pin plug onto the control board (there are two additional i2c break-outs available), and to connect the speedometer there. For wiring information, please see [here](#i2c-peripheral-wiring).
+For wiring information, please see [here](#i2c-peripheral-wiring).
 
 #### Software setup
 
