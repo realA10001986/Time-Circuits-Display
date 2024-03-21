@@ -922,55 +922,9 @@ The device can tell other props about a time travel, and in essence act as a "ma
 
 ![Wired connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/489a242d-d48a-427e-986e-1e6df154bccf)
 
-You need two wires for connecting the TCD to the other prop: TT_OUT (IO14) and GND, which need to be connected to the respective pins of the prop.
-
-| ![ttout](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/b1330e4d-12ba-48ef-a454-3d6167fb2a5d) |
-|:--:|
-| TT_OUT/IO14 on board version 1.3 |
-
-| ![ttout](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/112c0240-6a3b-44c3-a15d-5af7477a8791) |
-|:--:|
-| IO14 on board version 1.2 |
+For detailed wiring instructions, please see the documentaton for the prop ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire)); for DIY props, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#other-props).
 
 If external gear is connected to TT_OUT/IO14 and you want to use this control feature, check **_Control props connected by wire_** in the Config Portal.
-
-In case you want to design your own props, here's the timing diagram:
-
-1) Option **_Signal Time Travel without 5s lead_** unchecked
-
-```
-|<---------- speedo acceleration --------->|                         |<-speedo de-acceleration->|
-0....10....20....................xx....87..88------------------------88...87....................0
-                                           |<--Actual Time Travel -->|
-                                           |  (Display disruption)   |
-                                      TT starts                      Reentry phase
-                                           |                         |
-             |<---------ETTO lead--------->|                         |
-             |                                                       |
-             |                                                       |
-             |                                                       |
-    TT-OUT/IO14: LOW->HIGH                                  TT-OUT/IO14: HIGH->LOW
- ```
-
-"ETTO lead", ie the lead time between TT_OUT/IO14 going high and the actual start of a time travel is defined as 5000ms (ETTO_LEAD_TIME). In this window of time, the prop can play its pre-time-travel (warm-up/acceleration/etc) sequence. The sequence inside the time "tunnel" follows after that lead time, and when IO14 goes LOW, the re-entry into the destination time takes place.
-
-2) Option **_Signal Time Travel without 5s lead_** checked
-
-```
-|<---------- speedo acceleration --------->|                         |<-speedo de-acceleration->|
-0....10....20....................xx....87..88------------------------88...87....................0
-                                           |<--Actual Time Travel -->|
-                                           |  (Display disruption)   |
-                                      TT starts                      Reentry phase
-                                           |                         |
-                                           |                         |
-                                           |                         |
-                                           |                         |
-                                           |                         |
-                                  TT-OUT/IO14: LOW->HIGH    TT-OUT/IO14: HIGH->LOW
- ```
-
-In this case, there is no lead. The time travel starts immediately.
 
 For CircuitSetup original props connected by wire, the option **_Signal Time Travel without 5s lead_** should not be set since it skips the "acceleration phase"; however, if that option is - for some reason - set on the TCD, the respective option on the prop must be set, too. If those props are connected wirelessly, this option has no effect.
 
