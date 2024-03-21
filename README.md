@@ -2,7 +2,7 @@
 
 This repository holds the most current firmware for CircuitSetup's wonderful [Time Circuits Display](https://circuitsetup.us/product/complete-time-circuits-display-kit/) ("TCD") kit, enabling you to reproduce an iconic part of the Delorean Time Machine.
 
-The kit parts are available [here](https://circuitsetup.us/product/complete-time-circuits-display-kit/). This TCD replica can be used stand-alone or in combination with several peripherals.
+The kit parts are available [here](https://circuitsetup.us/product/complete-time-circuits-display-kit/). This TCD replica can be used stand-alone or in combination with several [peripherals](#peripherals-and-connection). If you went for the metal enclosure version, it is perfectly fit for mounting in your Delorean.
 
 | ![TCD Front](https://user-images.githubusercontent.com/76924199/200327688-cfa7b1c2-abbd-464d-be6d-5d295e51056e.jpg) |
 |:--:|
@@ -36,7 +36,7 @@ Features include
 - Peripherals:
   - Support for external [fake "power switch"](#fake-power-switch) (eg. a TFC drive switch)
   - Support for time travel [triggered by external source](#external-time-travel-trigger), with selectable delay
-  - Support for external [Speedometer](#speedometer) (CircuitSetup's [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-pcb/?v=fa868488740a) and others supported)
+  - Support for external [Speedometer](#speedometer) (eg. CircuitSetup's [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-pcb/?v=fa868488740a))
   - Support for [GPS receiver](#gps-receiver), used as time source and for actual [speed](#gps-for-speed) to be displayed on speedo display
   - Support for [rotary encoders](#rotary-encoder) for manual selection of speed to be displayed on Speedo display, &#127381; and/or audio volume
   - Support for [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for [Room condition mode](#room-condition-mode-temperaturehumidity-sensor) [display temperature and humidity in *destination time* and *last time departed* displays] and for displaying temperature on speedo display while idle
@@ -53,8 +53,6 @@ The difference between what you get here and CircuitSetup's releases is that the
 If a previous version of the TCD firmware is installed on your device, you can update easily using the pre-compiled binary. Enter the [Config Portal](#the-config-portal), click on "Update" and select the pre-compiled binary file provided in this repository ([install/timecircuits-A10001986.ino.nodemcu-32s.bin](https://github.com/realA10001986/Time-Circuits-Display/blob/main/install/timecircuits-A10001986.ino.nodemcu-32s.bin)). *Note: If the previously installed firmware was from CircuitSetup (ie. pre-installed or downloaded from their github), you need to install the sound-pack from this repository afterwards.*
 
 If you are using a fresh ESP32 board, please see [timecircuits-A10001986.ino](https://github.com/realA10001986/Time-Circuits-Display/blob/main/timecircuits-A10001986/timecircuits-A10001986.ino) for detailed build information.
-
- *After a firmware update, the displays might display "WAIT" for a short while after reboot. Do NOT unplug the TCD during this time.*
 
 ### Audio data installation
 
@@ -77,6 +75,8 @@ Then there are two alternative ways to proceed. Note that both methods *require 
 After installation, the SD card can be re-used for [other purposes](#sd-card).
 
 ## Initial Configuration
+
+>The following instructions only need to be followed once, on fresh TCDs. They do not need to be repeated after a firmware update.
 
 The first step is to establish access to the TCD's configuration web site ("Config Portal") in order to configure your TCD:
 
@@ -132,7 +132,7 @@ It can be accessed as follows:
 
   Accessing the Config Portal through this address requires the operating system of your hand-held/computer to support Bonjour/mDNS: Windows 10 version TH2     (1511) [other sources say 1703] and later, Android 13 and later; MacOS and iOS since the dawn of time.
 
-  If connecting to http://timecircuits.local fails due to a name resultion error, you need to find out the TCD's IP address: Hold ENTER on the TCD's keypad for 2 seconds, then repeatedly  press ENTER until "NET-WORK" is shown, then hold ENTER for 2 seconds. The device will then show its current IP address. Then, on your handheld or computer, navigate to http://a.b.c.d (a.b.c.d being the IP address as shown on the display) in order to enter the Config Portal.
+  If connecting to http://timecircuits.local fails due to a name resolution error, you need to find out the TCD's IP address: Hold ENTER on the TCD's keypad for 2 seconds, then repeatedly  press ENTER until "NET-WORK" is shown, then hold ENTER for 2 seconds. The device will then show its current IP address. Then, on your handheld or computer, navigate to http://a.b.c.d (a.b.c.d being the IP address as shown on the display) in order to enter the Config Portal.
 
 In the main menu, click on "Setup" to configure your TCD. 
 
@@ -148,7 +148,7 @@ A full reference of the Config Portal is [here](#appendix-a-the-config-portal).
 
 *Destination time* and *Last time departed* are stale. These, by default, work like in the movie: Upon a time travel, *present time* becomes *last time departed*, and *destination time* becomes *present time*.
 
-If "REPLACE BATTERY" is shown upon boot, the onboard CR2032 battery is depleted and needs to be replaced. Note that, for technical reasons, "REPLACE BATTERY" will also show up the very first time you power-up the TCD *after* changing the battery. You can, of course, disregard that message in this case.
+>If "REPLACE BATTERY" is shown upon boot, the onboard CR2032 battery is depleted and needs to be replaced. Note that, for technical reasons, "REPLACE BATTERY" will also show up the very first time you power-up the TCD *after* changing the battery. You can, of course, disregard that message in this case.
 
 ### Powering down the TCD
 
@@ -181,8 +181,6 @@ Time-cycling is enabled by setting up a **_Time-cycling Interval_** in the Confi
 
 Time-cycling will, if enabled, change the *Destination* and *Last Time Departed* displays regardless of the times already displayed, for instance as a result from an earlier time travel. Triggering a time-travel will, however, pause time-cycling for 30 minutes.
 
-Set the interval to OFF (0) to disable Time-cycling.
-
 ### World Clock mode
 
 In World Clock (WC) mode, the red and yellow displays show not some stale times, but current time in other time zones. These time zones need to be configured in Config Portal. At least one time zone (for either the red or yellow display) must be configured in order to use WC mode. Optionally, also names for cities/locations for these time zones can be entered in the Config Portal; if a name for a time zone is configured, this name and the time will be shown alternately. Note that names can only contain letters a-z, numbers 0-9, space and minus.
@@ -199,8 +197,8 @@ WC mode is toggled by typing "112" followed by ENTER.
 
 For logical reasons, WC mode will be automatically disabled in some situations:
 
-- Time travel. The time travel sequence runs like in non-WC mode: If a time travel is triggered while WC mode is enabled (and no new destination time was entered before), the currently shown *Destination Time* will be the travel target, and the *Last Time Departed* display will show your formerly current time. However: Both *Destination Time* as well as *Last Time Departed* become stale after the time travel as per the nature of the sequence.
 - After entering a destination time. WC mode is disabled at this point, because your new *Destination Time* would be overwritten otherwise.
+- Time travel. The time travel sequence runs like in non-WC mode: If a time travel is triggered while WC mode is enabled (and no new destination time was entered before), the currently shown *Destination Time* will be the travel target, and the *Last Time Departed* display will show your formerly current time. However: Both *Destination Time* as well as *Last Time Departed* become stale after the time travel as per the nature of the sequence.
 
 #### WC/RC hybrid mode
 
@@ -230,7 +228,7 @@ In this case, head to the Config Portal and
 - set the **_Time Cycling Interval_** to OFF
 - check or uncheck **_Make time travels persistent_** depending on whether you care about keeping the displayed times across reboots/power cycles.
 
-Note that *actual* time travel is not supported.
+>Note that *actual* time travel is not supported.
 
 #### 	&#9654; I want my TCD to show/cycle movie times
 
@@ -442,6 +440,8 @@ Beware that the alarm function, by default, is based on the real actual present 
 
 On the Config Portal's "Setup" page, there is an option item named **_Make time travels persistent_**. The default is off. 
 
+>Note that in order to enable this feature, an SD card is required and the option **_Save secondary settings on SD_** must be checked as well.
+
 If time travels are persistent
 - a user-programmed *destination time* is always saved, and retrieved after a reboot. It can be programmed through the keypad menu, or ahead of a time travel by typing mmddyyyyhhMM/mmddyyyy/hhMM plus ENTER. In both cases, the time is saved and retrieved upon power-up/reboot.
 - *last time departed* as displayed at any given point is always saved, and retrieved upon power-up/reboot.
@@ -452,7 +452,7 @@ If time travels are non-persistent
 - a *last time departed* is only saved when programmed through the keypad menu, but not if the result of a time travel.
 - *present time* is always reset to actual present time upon power-up/reboot.
 
-If you want your device to display exactly the same after a power loss, choose persistent (and disable [Time-cycling](#time-cycling)). _Note that 'persistent time travels' require an SD card and the option **_Save secondary settings on SD_** to be checked as well._
+If you want your device to display exactly the same after a power loss, choose persistent (and disable [Time-cycling](#time-cycling)). 
 
 If you want to display your favorite *destination time* and *last time departed* upon power-up, and not have time travels overwrite them, choose "non-persistent", and program your times through the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays) (and disable [Time-cycling](#time-cycling)). Later time travels will, of course, change what is displayed, but not overwrite your times in storage. To bring back your stored times to the displays, type 998 followed by ENTER.
 
@@ -470,7 +470,7 @@ The beep can be permanently disabled, permanently enabled, or enabled for 30 or 
 
 The different modes are selected by typing 000 (disabled), 001 (enabled), 002 (enabled for 30 secs) or 003 (enabled for 60 secs), followed by ENTER. The power-up default is selected in the Config Portal.
 
-Since the hardware only has one audio channel, the beep is suppressed whenever other sounds are played-back.
+For technical reasons, the beep is suppressed whenever other sounds are played-back.
 
 ## Night mode
 
@@ -498,13 +498,17 @@ Night mode schedules are always based on actual local present time.
 
 #### Sensor-controlled night-mode
 
-You can also connect a light sensor to the device. The following sensor types/models are supported: TSL2591, TSL2561, BH1750, VEML7700/VEML6030, LTR303/LTR329, connected through i2c with their respective default slave address. The VEML7700 can only be connected if no GPS receiver is connected at the same time; the VEML6030 needs its address to be set to  0x48 if a GPS receiver is present at the same time. All these sensor types are readily available on breakout boards from Adafruit or Seeed (Grove). Only one light sensor can be used at the same time. *Note: You cannot connect the sensor chip directly to the TCD control board; most sensors need at least a power converter/level-shifter.* This is why I exclusively used Adafruit or Seeed breakouts ([TSL2591](https://www.adafruit.com/product/1980), [TSL2651](https://www.seeedstudio.com/Grove-Digital-Light-Sensor-TSL2561.html), [BH1750](https://www.adafruit.com/product/4681), [VEML7700](https://www.adafruit.com/product/4162), [LTR303](https://www.adafruit.com/product/5610)), which all allow connecting named sensors to the 5V the TCD board operates on. For wiring information, see [here](#appendix-b-i2c-peripheral-wiring).
+You can also connect a light sensor to your TCD for night-mode switching: When the sensor reports a lux level below or equal the threshold set in the Config Portal, the TCD will go into night-mode.
 
-If the measured lux level is below or equal the threshold set in the Config Portal, the device will go into night-mode. To view the currently measured lux level, use the [keypad menu](#how-to-view-sensor-info).
-
-If both a schedule is enabled and the light sensor option is checked in the Config Portal, the sensor will overrule the schedule only in non-night-mode hours; ie it will never switch off night-mode when night-mode is active according to the schedule.
+If both a schedule and the light sensor are enabled, the sensor will overrule the schedule only in non-night-mode hours; ie it will never switch off night-mode when night-mode is active according to the schedule.
 
 Switching on/off night-mode manually deactivates any schedule and the light sensor for 30 minutes. Afterwards, a programmed schedule and/or the light sensor will overrule the manual setting.
+
+In order to use a light sensor, check the option _Use light sensor_ in the Config Portal. You can observe the measured lux level through the [keypad menu](#how-to-view-sensor-info) to find out about the right lux threshold for your environment.
+
+The following sensor types/models are supported: TSL2591, TSL2561, BH1750, VEML7700/VEML6030, LTR303/LTR329, with their respective default address. The VEML7700 can only be connected if no CircuitSetup Speedo or third-party GPS receiver is connected at the same time; the VEML6030 needs its address to be set to  0x48 if a CircuitSetup Speedo or third party GPS receiver is present at the same time. All these sensor types are readily available on breakout boards from Adafruit or Seeed (Grove). Only one light sensor can be used at the same time. 
+
+>*Note: You cannot connect the sensor chip directly to the TCD control board; most sensors need at least a power converter/level-shifter.*  It is recommended to use Adafruit or Seeed breakouts ([TSL2591](https://www.adafruit.com/product/1980), [TSL2651](https://www.seeedstudio.com/Grove-Digital-Light-Sensor-TSL2561.html), [BH1750](https://www.adafruit.com/product/4681), [VEML7700](https://www.adafruit.com/product/4162), [LTR303](https://www.adafruit.com/product/5610)), which all allow connecting named sensors to the 5V the TCD board operates on. For wiring information, see [here](#appendix-b-i2c-peripheral-wiring).
 
 ## Count-down timer
 
