@@ -454,9 +454,9 @@ If time travels are non-persistent
 
 If you want your device to display exactly the same after a power loss, choose persistent (and disable [Time-cycling](#time-cycling)). 
 
-If you want to display your favorite *destination time* and *last time departed* upon power-up, and not have time travels overwrite them, choose "non-persistent", and program your times through the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays) (and disable [Time-cycling](#time-cycling)). Later time travels will, of course, change what is displayed, but not overwrite your times in storage. To bring back your stored times to the displays, type 998 followed by ENTER.
+If you want to display your favorite *destination time* and *last time departed* upon power-up, and not have time travels overwrite them in storage, choose "non-persistent", and program your times through the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays) (and disable [Time-cycling](#time-cycling)). Later time travels will, of course, change what is displayed, but not overwrite your times in storage. To bring back your stored times to the displays, type 998 followed by ENTER.
 
-Note that Time-cycling, if enabled, will force the device to cycle through the list of pre-programmed times, regardless of your time travel persistence setting. So, if Time-cycling is enabled, the only effect of persistence is that *Present Time* is kept at what it was before vs. reset to actual present time after a power loss.
+>Note that [Time-cycling](#time-cycling), if enabled, will force the device to cycle through the list of pre-programmed times, regardless of your time travel persistence setting. So, if Time-cycling is enabled, the only effect of persistence is that *Present Time* is kept at what it was before vs. reset to actual present time after a power loss.
 
 ## Beep on the second
 
