@@ -34,3 +34,57 @@ If/as long as the GPS receiver has a fix and receives data from satellites, the 
 In order to use the GPS receiver as a source of time, no special configuration is required. If it is detected during boot, it will be used.
 
 For wiring information, see [here](#appendix-b-i2c-peripheral-wiring).
+
+## Rotary Encoder
+
+A rotary encoder is, simply put, a turnable knob. On the TCD, rotary encoders can be used for speed and/or audio volume.
+
+The firmware currently supports the [Adafruit 4991](https://www.adafruit.com/product/4991), [DFRobot Gravity 360](https://www.dfrobot.com/product-2575.html) and [DuPPA I2CEncoder 2.1](https://www.duppa.net/shop/i2cencoder-v2-1/) (or [here](https://www.tindie.com/products/saimon/i2cencoder-v21-connect-rotary-encoder-on-i2c-bus/)) i2c rotary encoders; a CircuitSetup original prop is in the works. For the Adafruit and the DuPPa, I recommend buying the PCBs without an actual encoder and soldering on a Bourns PEC11R-42xxy-S0024.
+
+For wiring information, see [here](#appendix-b-i2c-peripheral-wiring). Up to two rotary encoders can be connected, one for speed, one for volume.
+
+### Rotary Encoder for Speed 
+
+The rotary encoder, if configured for speed, allows manually selecting a speed to be displayed on the Speedo display, as well as to be sent to [BTTFN](#bttf-network-bttfn) clients in place of actual (GPS) speed.
+
+| [![Watch the video](https://img.youtube.com/vi/Y6uu1SU6YJA/0.jpg)](https://youtu.be/Y6uu1SU6YJA) |
+|:--:|
+| Click to watch the video |
+
+### Rotary Encoder for Audio Volume
+
+The rotary encoder for volume replaces the volume knob on back of the TCD's keypad. The advantages of the rotary encoder are that it is more precise, especially at lower volume levels, and it can be relocated. 
+
+### Hardware Configuration
+
+In order to use an encoder for speed or volume, it needs to be configured as follows:
+
+  <table>
+  <tr><td></td><td>Ada4991</td><td>DFRobot</td><td>DuPPA</td></tr>
+  <tr><td>Speed</td><td>Default [0x36]</td><td>SW1=0,SW2=0 [0x54]</td><td>A0 closed [0x01]</td></tr>
+  <tr><td>Volume</td><td>A0 closed [0x37]</td><td>SW1=0,SW2=1 [0x55]</td><td>A0,A1 closed [0x03]</td></tr>
+  </table>
+
+The numbers in brackets are the resulting i2c address. (For DuPPA: RGB-encoders not supported.)
+
+Here is how they look configured for speed (the purple spots are solder joints):
+
+![RotEncSpd](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/ae4ee45b-5cbf-45e1-9092-1043367e9af5)
+
+Here is the configuration for volume:
+
+![RotEncVol](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/a13a02ed-ab5b-42f6-9160-96070e1d5a17)
+
+## Temperature/humidity sensor
+
+The firmware supports connecting a temperature/humidity sensor for "room condition mode"; in this mode, *destination* and *last departed* times are replaced by temperature and humidity (if applicable), respectively. To toggle between normal and room condition mode, enter "111" and press ENTER. 
+
+![rcmode](https://user-images.githubusercontent.com/76924199/208133653-f0fb0a38-51e4-4436-9506-d841ef1bfa6c.jpg)
+
+#### Sensor hardware
+
+The following sensor types are supported: MCP9808 (address 0x18), BMx280 (0x77), SI7021, SHT40/SHT45 (0x44), TMP117 (0x49), AHT20/AM2315C, HTU31D (0x41), MS8607. All of those are readily available on breakout boards from Adafruit or Seeed (Grove). The BMP280 (unlike BME280), MCP9808 and TMP117 work as pure temperature sensors, the others for temperature and humidity. For wiring information, see [here](#appendix-b-i2c-peripheral-wiring).
+
+>Note: You cannot connect the sensor chip directly to the TCD control board; most sensors need at least a voltage converter/level-shifter.* It is recommended to use Adafruit or Seeed breakouts ([MCP9808](https://www.adafruit.com/product/1782), [BME280](https://www.adafruit.com/product/2652), [SI7021](https://www.adafruit.com/product/3251), [SHT40](https://www.adafruit.com/product/4885), [SHT45](https://www.adafruit.com/product/5665), [TMP117](https://www.adafruit.com/product/4821), [AHT20](https://www.adafruit.com/product/4566), [HTU31D](https://www.adafruit.com/product/4832), [MS8607](https://www.adafruit.com/product/4716)), which all allow connecting named sensors to the 5V the TCD board operates on.
+
+
