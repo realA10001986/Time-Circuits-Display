@@ -792,7 +792,7 @@ On Control Boards V1.3 and later, there is a dedicated header labeled "Fake PWR"
 
 On earlier Control Boards (1.2 and below), the switch needs shorten the pins labeled "IO13" and "GND" as shown here: (The pin headers are not present on original boards)
 
-![io13neu](https://user-images.githubusercontent.com/76924199/212369689-f945dcf1-55f9-41e9-8fd7-fc0dbc69906c.jpg)
+![io13](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/308a901b-0932-47d0-88f5-8f7802b06274)
 
 Note that the switch actually needs to be a switch with a maintained contact; the pins need to remain connected for as long as the device is fake-switched-on.
 
