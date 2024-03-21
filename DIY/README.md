@@ -157,10 +157,6 @@ For longer cables, ie >50cm (>20in), I recommend using a twisted pair cable, and
 
 ![i2clongcable](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/497fbbf2-55b9-4ebb-93ee-ce349fd866b5)
 
-The CircuitSetup [Speedo Kit](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit/) comes with a twisted pair cable with three pairs. The idea is to wire the Speedo as shown below:
-
-![speedo_i2c](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/068b17b5-b95a-48ab-ac7e-53c47afe0a98)
-
 >Important: The TCD control board delivers and drives the i2c bus on 5V. Most sensors/GPS receivers operate on 3.3V. Therefore, you cannot connect the chips directly to the TCD control board without a level-shifter. This goes for the power supply as well as the i2c bus signals (SDA, SCL). I only use readily available sensor breakout boards that include level-shifters.
 
 #### Multiple i2c devices
