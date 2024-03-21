@@ -199,7 +199,7 @@ You need two wires for connecting the TCD: TT_OUT (IO14) and GND, which need to 
 |:--:|
 | TT_OUT/IO14 on board version 1.3 |
 
-| ![ttout](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/112c0240-6a3b-44c3-a15d-5af7477a8791) |
+| ![ttout](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/6162c29b-66c5-42e5-b305-1e1ed21d070d) |
 |:--:|
 | IO14 on board version 1.2 |
 
