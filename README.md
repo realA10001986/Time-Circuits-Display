@@ -504,11 +504,7 @@ Switching on/off night-mode manually deactivates any schedule and the light sens
 
 In order to use a light sensor, check the option _Use light sensor_ in the Config Portal. You can observe the measured lux level through the [keypad menu](#how-to-view-sensor-info) to find out about the right lux threshold for your environment.
 
-The following sensor types/models are supported: TSL2591, TSL2561, BH1750, VEML7700/VEML6030, LTR303/LTR329, with their respective default address. The VEML7700 can only be connected if no CircuitSetup Speedo or third-party GPS receiver is connected at the same time; the VEML6030 needs its address to be set to  0x48 if a CircuitSetup Speedo or third party GPS receiver is present at the same time. All these sensor types are readily available on breakout boards from Adafruit or Seeed (Grove). Only one light sensor can be used at the same time.
-
-For wiring information, see [here](#appendix-b-i2c-peripheral-wiring).
-
->*Note: You cannot connect the sensor chip directly to the TCD control board; most sensors need at least a voltage converter/level-shifter.*  It is recommended to use Adafruit or Seeed breakouts ([TSL2591](https://www.adafruit.com/product/1980), [TSL2651](https://www.seeedstudio.com/Grove-Digital-Light-Sensor-TSL2561.html), [BH1750](https://www.adafruit.com/product/4681), [VEML7700](https://www.adafruit.com/product/4162), [LTR303](https://www.adafruit.com/product/5610)), which all allow connecting named sensors to the 5V the TCD board operates on. 
+FOr information on supported sensor models/types and configuration, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#light-sensor).
 
 ## Count-down timer
 
@@ -840,7 +836,9 @@ The firmware supports [CircuitSetups's speedometer display](https://circuitsetup
 
 Full disclosure: The video was shot before the CircuitSetup speedo became available. The speedo shown is a DIY prop and not the - much better looking - CirctuiSetup speedo. The video is only meant to demonstate how the TCD and the speedo inter-operate. (The TFC switch was made by me, see [here](https://tfc.out-a-ti.me), it uses the [Fake Power Switch](#fake-power-switch) feature of the TCD.)
 
-For wiring information, please see [here](#appendix-b-i2c-peripheral-wiring).
+The CircuitSetup [Speedo Kit](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit/) needs to be wired as shown below:
+
+![speedo_i2c](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/068b17b5-b95a-48ab-ac7e-53c47afe0a98)
 
 If you want to make your own speedo, see [here](DIY/).
 
@@ -862,8 +860,6 @@ For using GPS effectively as a long-term source of accurate time, it is therefor
 If/as long as the GPS receiver has a fix and receives data from satellites, the dot in the present time's year field is lit.
 
 In order to use the GPS receiver as a source of time, no special configuration is required. If it is detected during boot, it will be used.
-
-For wiring information, see [here](#appendix-b-i2c-peripheral-wiring).
 
 If you want to use a third party GPS receiver, see [here](DIY/).
 
@@ -1171,7 +1167,7 @@ See [here](#wifi-power-saving-features)
 
 ##### &#9654; Time zone
 
-The time zone of the place where the device is operated in POSIX format. Needs to be set in order to use NTP or GPS, and for DST (daylight saving). Defaults to UTC0. See [here](#appendix-c-time-zones), [here](https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv) or [here](https://tz.out-a-ti.me) for a list of valid time zones.
+The time zone of the place where the device is operated in POSIX format. Needs to be set in order to use NTP or GPS, and for DST (daylight saving). Defaults to UTC0. See [here](#appendix-b-time-zones), [here](https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv) or [here](https://tz.out-a-ti.me) for a list of valid time zones.
 
 ##### &#9654; NTP Server
 
@@ -1354,69 +1350,7 @@ This procedure ensures that all your settings are copied from the old to the new
 
 See [here](#persistent--non-persistent-time-travels). For this option to take effect, it is required that the _Save secondary settings on SD_ is checked as well, and an SD card is present. Time travel data is only ever stored on SD, never in internal flash memory.
 
-## Appendix B: I2C peripheral wiring
-
-The speedo display, the GPS receiver, light and temperature sensors as well as the Rotary Encoders are to be wired as follows:
-
-On the TCD control board, there are currently three breakouts named "I2C", at least one of which has a header soldered on; it does not matter which one you use to connect your sensors/speedo/GPS/rotary encoders. I recommend to solder on [XH](https://www.amazon.com/s?k=jst+xh) 4-pin headers to the other two i2c breakouts as well (like in the second picture). When you order a CircuitSetup Speedo, they will include such headers if you request them. Do not solder wires directly to the board!
-
-![i2c](https://user-images.githubusercontent.com/76924199/212406576-fbd71836-1862-4632-a3ac-decbfa6b7eb2.jpg)
-
-![i2c](https://user-images.githubusercontent.com/76924199/212406002-c6887b39-8bac-49b1-8318-35838fba44d0.jpg)
-
-On most peripherals the pins are named as follows, and need to be connected to the corresponding pins on the control board:
-
-<table>
-    <tr>
-     <td align="center">Peripheral PCB</td><td align="center">TCD control board</td>
-    </tr>    
-    <tr>
-     <td align="center">GND or "-"</td>
-     <td align="center">GND</td>
-    </tr>
-    <tr>
-     <td align="center">VIN or 5V or "+"</a></td>
-     <td align="center">5V</td>
-    </tr>
-    <tr>
-     <td align="center">SDA<br>(SDI on BME280)</td>
-     <td align="center">SDA</td>
-    </tr>
-    <tr>
-     <td align="center">SCL<br>(SCK on BME280)</td>
-     <td align="center">SCL</td>
-    </tr>
-</table>
-
-For longer cables, ie >50cm (>20in), I recommend using a twisted pair cable, and to connect it as follows:
-
-![i2clongcable](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/497fbbf2-55b9-4ebb-93ee-ce349fd866b5)
-
-The CircuitSetup [Speedo Kit](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit/) comes with a twisted pair cable with three pairs. The idea is to wire the Speedo as shown below:
-
-![speedo_i2c](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/068b17b5-b95a-48ab-ac7e-53c47afe0a98)
-
->Important: The TCD control board delivers and drives the i2c bus on 5V. Most sensors/GPS receivers operate on 3.3V. Therefore, you cannot connect the chips directly to the TCD control board without a level-shifter. This goes for the power supply as well as the i2c bus signals (SDA, SCL). I only use readily available sensor breakout boards that include level-shifters.
-
-#### Multiple i2c devices
-
-If going by the book, multiple i2c devices should be daisy chained; however, I had sensors, speedo and GPS receivers run in parallel without issues for months.
-
-Note that you can only use one per device type (temperature/humidity sensor, light sensor, GPS receiver, Speedo display) at a time. As regards rotary encoders, one for speed and one for volume can be connected.
-
-#### i2c addresses
-
-i2c devices have "addresses". Most sensors either only support one i2c address, or are recognized by the firmware (only) by their default address. For those, nothing must be done in order to use them with the Time Circuits Display.
-
-Notable exceptions are the TMP117 and HTU31D sensors: Their address needs to changed in order to be recognized by the firmware. On the Adafruit breakouts, this is done by connecting two solder pads on the back side of the PCB:
-
-<img src="https://user-images.githubusercontent.com/76924199/211666279-c578566f-e517-4d70-b50c-929b12c57c86.png">
-
-This image shows the HTU31D PCB's back side. Connect (shorten) those two pads in order to change the address. It looks similar on the TMP117.
-
-For Rotary Encoders, see [here](#configuration).
-
-## Appendix C: Time zones
+## Appendix B: Time zones
 
 Here are the probably most used times zones:
 
