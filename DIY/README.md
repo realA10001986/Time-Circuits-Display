@@ -87,14 +87,14 @@ The firmware supports connecting a temperature/humidity sensor for "room conditi
 ![rcmode](https://user-images.githubusercontent.com/76924199/208133653-f0fb0a38-51e4-4436-9506-d841ef1bfa6c.jpg)
 
 The following sensor types are supported: 
-- [MCP9808](https://www.adafruit.com/product/1782) (address 0x18),
+- [MCP9808](https://www.adafruit.com/product/1782) (address 0x18 - non-default),
 - [BMx280](https://www.adafruit.com/product/2652) (0x77),
 - [SI7021](https://www.adafruit.com/product/3251),
 - [SHT40](https://www.adafruit.com/product/4885) (0x44),
 - [SHT45](https://www.adafruit.com/product/5665) (0x44),
 - [TMP117](https://www.adafruit.com/product/4821) (0x49),
 - [AHT20/AM2315C](https://www.adafruit.com/product/4566),
-- [HTU31D](https://www.adafruit.com/product/4832) (0x41),
+- [HTU31D](https://www.adafruit.com/product/4832) (0x41 - non-default),
 - [MS8607](https://www.adafruit.com/product/4716)
 
 >The BMP280 (unlike BME280), MCP9808 and TMP117 work as pure temperature sensors, the others for temperature and humidity.
@@ -115,7 +115,7 @@ The following sensor types/models are supported:
 - [TSL2651](https://www.seeedstudio.com/Grove-Digital-Light-Sensor-TSL2561.html),
 - [BH1750](https://www.adafruit.com/product/4681),
 - [VEML7700](https://www.adafruit.com/product/4162),
-- VEML6030,
+- VEML6030 [0x48 - non-default],
 - [LTR303/LTR329](https://www.adafruit.com/product/5610)
 
 >The VEML7700 can only be connected if no CircuitSetup Speedo or third-party GPS receiver is connected at the same time; the VEML6030 needs its address to be set to  0x48 if a CircuitSetup Speedo or third party GPS receiver is present at the same time. 
