@@ -879,7 +879,7 @@ If other props using GPS speed are connected via [BTTF-Network](#bttf-network-bt
 
 A rotary encoder is, simply put, a turnable knob. On the TCD, rotary encoders can be used for speed and/or audio volume.
 
-For information on supported encoder models/types and configuration, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#rotary-encoder)
+For information on supported encoder models/types and configuration, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#rotary-encoder).
 
 Up to two rotary encoders can be connected, one for speed, one for volume.
 
@@ -912,7 +912,7 @@ Temperature on speedometer display: Unless you do time travelling on a regular b
 
 In order to use a temperature/humidity sensor, no special configuration is required. If a sensor is detected by the firmware during boot, it will be used.
 
-For information on supported sensor models/types and configuration, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#temperaturehumidity-sensor)
+For information on supported sensor models/types and configuration, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#temperaturehumidity-sensor).
 
 ## Controlling other props
 
