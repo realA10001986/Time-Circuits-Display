@@ -790,11 +790,7 @@ On Control Boards V1.3 and later, there is a dedicated header labeled "Fake PWR"
 
 ![pwr_trigger](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/59bbcfcb-1898-4d9c-b34f-d1a6cf3892fd)
 
-On earlier Control Boards (1.2 and below), the switch needs shorten the pins labeled "IO13" and "GND" as shown here:
-
-![access_to_io13](https://user-images.githubusercontent.com/76924199/194283241-3bee5fef-f51a-4b1a-a158-ed92292bcf32.jpg)
-
-Here is a close-up of a 1.2 control board; headers have been soldered to the io ports.
+On earlier Control Boards (1.2 and below), the switch needs shorten the pins labeled "IO13" and "GND" as shown here: (The pin headers are not present on original boards)
 
 ![io13neu](https://user-images.githubusercontent.com/76924199/212369689-f945dcf1-55f9-41e9-8fd7-fc0dbc69906c.jpg)
 
