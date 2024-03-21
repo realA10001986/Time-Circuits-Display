@@ -1,6 +1,14 @@
 
 # DIY additions for the Time Circuits Display
 
+## Light sensor
+
+The following sensor types/models are supported: TSL2591, TSL2561, BH1750, VEML7700/VEML6030, LTR303/LTR329, with their respective default address. The VEML7700 can only be connected if no CircuitSetup Speedo or third-party GPS receiver is connected at the same time; the VEML6030 needs its address to be set to  0x48 if a CircuitSetup Speedo or third party GPS receiver is present at the same time. All these sensor types are readily available on breakout boards from Adafruit or Seeed (Grove). Only one light sensor can be used at the same time.
+
+For wiring information, see [here](#appendix-b-i2c-peripheral-wiring).
+
+>*Note: You cannot connect the sensor chip directly to the TCD control board; most sensors need at least a voltage converter/level-shifter.*  It is recommended to use Adafruit or Seeed breakouts ([TSL2591](https://www.adafruit.com/product/1980), [TSL2651](https://www.seeedstudio.com/Grove-Digital-Light-Sensor-TSL2561.html), [BH1750](https://www.adafruit.com/product/4681), [VEML7700](https://www.adafruit.com/product/4162), [LTR303](https://www.adafruit.com/product/5610)), which all allow connecting named sensors to the 5V the TCD board operates on. 
+
 ## Speedometer
 
 | [![Watch the video](https://img.youtube.com/vi/opAZugb_W1Q/0.jpg)](https://youtu.be/opAZugb_W1Q) |
