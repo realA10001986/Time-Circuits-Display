@@ -766,7 +766,7 @@ Note: Your dates/times will be overwritten in storage after a time travel when *
 - [GPS-Receiver](#gps-receiver)
 - [Rotary encoder](#rotary-encoder)
 - [Temperature Sensor](#room-condition-mode-temperaturehumidity-sensor)
-- [Light Sensor](#night-mode)
+- [Light Sensor](#sensor-controlled-night-mode)
 - [Other Props](#controlling-other-props) (Flux Capacitor, SID, ...)
 
 ## Fake power Switch 
