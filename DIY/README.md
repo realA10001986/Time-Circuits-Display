@@ -1,14 +1,6 @@
 
 # DIY additions for the Time Circuits Display
 
-## Light sensor
-
-The following sensor types/models are supported: TSL2591, TSL2561, BH1750, VEML7700/VEML6030, LTR303/LTR329, with their respective default address. The VEML7700 can only be connected if no CircuitSetup Speedo or third-party GPS receiver is connected at the same time; the VEML6030 needs its address to be set to  0x48 if a CircuitSetup Speedo or third party GPS receiver is present at the same time. All these sensor types are readily available on breakout boards from Adafruit or Seeed (Grove). Only one light sensor can be used at the same time.
-
-For wiring information, see [here](#appendix-b-i2c-peripheral-wiring).
-
->*Note: You cannot connect the sensor chip directly to the TCD control board; most sensors need at least a voltage converter/level-shifter.*  It is recommended to use Adafruit or Seeed breakouts ([TSL2591](https://www.adafruit.com/product/1980), [TSL2651](https://www.seeedstudio.com/Grove-Digital-Light-Sensor-TSL2561.html), [BH1750](https://www.adafruit.com/product/4681), [VEML7700](https://www.adafruit.com/product/4162), [LTR303](https://www.adafruit.com/product/5610)), which all allow connecting named sensors to the 5V the TCD board operates on. 
-
 ## Speedometer
 
 | [![Watch the video](https://img.youtube.com/vi/opAZugb_W1Q/0.jpg)](https://youtu.be/opAZugb_W1Q) |
@@ -19,7 +11,7 @@ The speedo display shown in this video is based on a fairly well-designed stand-
 
 What you need is a box, the LED segment displays and a HT16K33-based PCB that allows accessing the LED displays via i2c (address 0x70). There are various readily available LED segment displays with suitable i2c break-outs from Adafruit and Seeed (Grove) that can be used as a basis. Adafruit [878](https://www.adafruit.com/product/878)/[5599](https://www.adafruit.com/product/5599), [1270](https://www.adafruit.com/product/1270) and [1911](https://www.adafruit.com/product/1911), as well as Grove 0.54" 14-segment [2-digit](https://www.seeedstudio.com/Grove-0-54-Red-Dual-Alphanumeric-Display-p-4031.html) or [4-digit](https://www.seeedstudio.com/Grove-0-54-Red-Quad-Alphanumeric-Display-p-4032.html) alphanumeric displays are supported. (The product numbers vary with color, the numbers here are the red ones.)
 
-Since the I2C bus is already quite long from the control board to the last display in the chain, I recommend soldering another XH 4pin plug onto the control board (there are two additional i2c break-outs available), and to connect the speedometer there. For wiring information, please see [here](#appendix-b-i2c-peripheral-wiring).
+Since the I2C bus is already quite long from the control board to the last display in the chain, I recommend soldering another XH 4pin plug onto the control board (there are two additional i2c break-outs available), and to connect the speedometer there. For wiring information, please see [here](#i2c-peripheral-wiring).
 
 #### Software setup
 
@@ -41,7 +33,7 @@ If/as long as the GPS receiver has a fix and receives data from satellites, the 
 
 In order to use the GPS receiver as a source of time, no special configuration is required. If it is detected during boot, it will be used.
 
-For wiring information, see [here](#appendix-b-i2c-peripheral-wiring).
+For wiring information, see [here](#i2c-peripheral-wiring).
 
 ## Rotary Encoder
 
@@ -49,11 +41,11 @@ A rotary encoder is, simply put, a turnable knob. On the TCD, rotary encoders ca
 
 The firmware currently supports the [Adafruit 4991](https://www.adafruit.com/product/4991), [DFRobot Gravity 360](https://www.dfrobot.com/product-2575.html) and [DuPPA I2CEncoder 2.1](https://www.duppa.net/shop/i2cencoder-v2-1/) (or [here](https://www.tindie.com/products/saimon/i2cencoder-v21-connect-rotary-encoder-on-i2c-bus/)) i2c rotary encoders; a CircuitSetup original prop is in the works. For the Adafruit and the DuPPa, I recommend buying the PCBs without an actual encoder and soldering on a Bourns PEC11R-42xxy-S0024.
 
-For wiring information, see [here](#appendix-b-i2c-peripheral-wiring). Up to two rotary encoders can be connected, one for speed, one for volume.
+For wiring information, see [here](#i2c-peripheral-wiring). Up to two rotary encoders can be connected, one for speed, one for volume.
 
 ### Rotary Encoder for Speed 
 
-The rotary encoder, if configured for speed, allows manually selecting a speed to be displayed on the Speedo display, as well as to be sent to [BTTFN](#bttf-network-bttfn) clients in place of actual (GPS) speed.
+The rotary encoder, if configured for speed, allows manually selecting a speed to be displayed on the Speedo display:
 
 | [![Watch the video](https://img.youtube.com/vi/Y6uu1SU6YJA/0.jpg)](https://youtu.be/Y6uu1SU6YJA) |
 |:--:|
@@ -85,14 +77,82 @@ Here is the configuration for volume:
 
 ## Temperature/humidity sensor
 
-The firmware supports connecting a temperature/humidity sensor for "room condition mode"; in this mode, *destination* and *last departed* times are replaced by temperature and humidity (if applicable), respectively. To toggle between normal and room condition mode, enter "111" and press ENTER. 
+The firmware supports connecting a temperature/humidity sensor for "room condition mode":
 
 ![rcmode](https://user-images.githubusercontent.com/76924199/208133653-f0fb0a38-51e4-4436-9506-d841ef1bfa6c.jpg)
 
-#### Sensor hardware
-
-The following sensor types are supported: MCP9808 (address 0x18), BMx280 (0x77), SI7021, SHT40/SHT45 (0x44), TMP117 (0x49), AHT20/AM2315C, HTU31D (0x41), MS8607. All of those are readily available on breakout boards from Adafruit or Seeed (Grove). The BMP280 (unlike BME280), MCP9808 and TMP117 work as pure temperature sensors, the others for temperature and humidity. For wiring information, see [here](#appendix-b-i2c-peripheral-wiring).
+The following sensor types are supported: MCP9808 (address 0x18), BMx280 (0x77), SI7021, SHT40/SHT45 (0x44), TMP117 (0x49), AHT20/AM2315C, HTU31D (0x41), MS8607. All of those are readily available on breakout boards from Adafruit or Seeed (Grove). The BMP280 (unlike BME280), MCP9808 and TMP117 work as pure temperature sensors, the others for temperature and humidity. For wiring information, see [here](#i2c-peripheral-wiring).
 
 >Note: You cannot connect the sensor chip directly to the TCD control board; most sensors need at least a voltage converter/level-shifter.* It is recommended to use Adafruit or Seeed breakouts ([MCP9808](https://www.adafruit.com/product/1782), [BME280](https://www.adafruit.com/product/2652), [SI7021](https://www.adafruit.com/product/3251), [SHT40](https://www.adafruit.com/product/4885), [SHT45](https://www.adafruit.com/product/5665), [TMP117](https://www.adafruit.com/product/4821), [AHT20](https://www.adafruit.com/product/4566), [HTU31D](https://www.adafruit.com/product/4832), [MS8607](https://www.adafruit.com/product/4716)), which all allow connecting named sensors to the 5V the TCD board operates on.
 
+## Light sensor
 
+The firmware supports connecting a light sensor for night-mode switching.
+
+The following sensor types/models are supported: TSL2591, TSL2561, BH1750, VEML7700/VEML6030, LTR303/LTR329, with their respective default address. The VEML7700 can only be connected if no CircuitSetup Speedo or third-party GPS receiver is connected at the same time; the VEML6030 needs its address to be set to  0x48 if a CircuitSetup Speedo or third party GPS receiver is present at the same time. All these sensor types are readily available on breakout boards from Adafruit or Seeed (Grove). Only one light sensor can be used at the same time.
+
+For wiring information, see [here](#i2c-peripheral-wiring).
+
+>Note: You cannot connect the sensor chip directly to the TCD control board; most sensors need at least a voltage converter/level-shifter.*  It is recommended to use Adafruit or Seeed breakouts ([TSL2591](https://www.adafruit.com/product/1980), [TSL2651](https://www.seeedstudio.com/Grove-Digital-Light-Sensor-TSL2561.html), [BH1750](https://www.adafruit.com/product/4681), [VEML7700](https://www.adafruit.com/product/4162), [LTR303](https://www.adafruit.com/product/5610)), which all allow connecting named sensors to the 5V the TCD board operates on.
+
+## I2C peripheral wiring
+
+The speedo display, the GPS receiver, light and temperature sensors as well as the Rotary Encoders are to be wired as follows:
+
+On the TCD control board, there are currently three breakouts named "I2C", at least one of which has a header soldered on; it does not matter which one you use to connect your sensors/speedo/GPS/rotary encoders. I recommend to solder on [XH](https://www.amazon.com/s?k=jst+xh) 4-pin headers to the other two i2c breakouts as well (like in the second picture). When you order a CircuitSetup Speedo, they will include such headers if you request them. Do not solder wires directly to the board!
+
+![i2c](https://user-images.githubusercontent.com/76924199/212406576-fbd71836-1862-4632-a3ac-decbfa6b7eb2.jpg)
+
+![i2c](https://user-images.githubusercontent.com/76924199/212406002-c6887b39-8bac-49b1-8318-35838fba44d0.jpg)
+
+On most peripherals the pins are named as follows, and need to be connected to the corresponding pins on the control board:
+
+<table>
+    <tr>
+     <td align="center">Peripheral PCB</td><td align="center">TCD control board</td>
+    </tr>    
+    <tr>
+     <td align="center">GND or "-"</td>
+     <td align="center">GND</td>
+    </tr>
+    <tr>
+     <td align="center">VIN or 5V or "+"</a></td>
+     <td align="center">5V</td>
+    </tr>
+    <tr>
+     <td align="center">SDA<br>(SDI on BME280)</td>
+     <td align="center">SDA</td>
+    </tr>
+    <tr>
+     <td align="center">SCL<br>(SCK on BME280)</td>
+     <td align="center">SCL</td>
+    </tr>
+</table>
+
+For longer cables, ie >50cm (>20in), I recommend using a twisted pair cable, and to connect it as follows:
+
+![i2clongcable](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/497fbbf2-55b9-4ebb-93ee-ce349fd866b5)
+
+The CircuitSetup [Speedo Kit](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit/) comes with a twisted pair cable with three pairs. The idea is to wire the Speedo as shown below:
+
+![speedo_i2c](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/068b17b5-b95a-48ab-ac7e-53c47afe0a98)
+
+>Important: The TCD control board delivers and drives the i2c bus on 5V. Most sensors/GPS receivers operate on 3.3V. Therefore, you cannot connect the chips directly to the TCD control board without a level-shifter. This goes for the power supply as well as the i2c bus signals (SDA, SCL). I only use readily available sensor breakout boards that include level-shifters.
+
+#### Multiple i2c devices
+
+If going by the book, multiple i2c devices should be daisy chained; however, I had sensors, speedo and GPS receivers run in parallel without issues for months.
+
+Note that you can only use one per device type (temperature/humidity sensor, light sensor, GPS receiver, Speedo display) at a time. As regards rotary encoders, one for speed and one for volume can be connected.
+
+#### i2c addresses
+
+i2c devices have "addresses". Most sensors either only support one i2c address, or are recognized by the firmware (only) by their default address. For those, nothing must be done in order to use them with the Time Circuits Display.
+
+Notable exceptions are the TMP117 and HTU31D sensors: Their address needs to changed in order to be recognized by the firmware. On the Adafruit breakouts, this is done by connecting two solder pads on the back side of the PCB:
+
+<img src="https://user-images.githubusercontent.com/76924199/211666279-c578566f-e517-4d70-b50c-929b12c57c86.png">
+
+This image shows the HTU31D PCB's back side. Connect (shorten) those two pads in order to change the address. It looks similar on the TMP117.
+
+For Rotary Encoders, see [here](#hardware-configuration).
