@@ -434,8 +434,6 @@ Before triggering the time travel, you can also first quickly set a new destinat
 
 To travel back to actual present time, hold "9" for 2 seconds.
 
-Beware that the alarm function, by default, is based on the real actual present time, not the time displayed. This can be changed in the Config Portal.
-
 ### Persistent / Non-persistent time travels
 
 On the Config Portal's "Setup" page, there is an option item named **_Make time travels persistent_**. The default is off. 
@@ -506,17 +504,19 @@ Switching on/off night-mode manually deactivates any schedule and the light sens
 
 In order to use a light sensor, check the option _Use light sensor_ in the Config Portal. You can observe the measured lux level through the [keypad menu](#how-to-view-sensor-info) to find out about the right lux threshold for your environment.
 
-The following sensor types/models are supported: TSL2591, TSL2561, BH1750, VEML7700/VEML6030, LTR303/LTR329, with their respective default address. The VEML7700 can only be connected if no CircuitSetup Speedo or third-party GPS receiver is connected at the same time; the VEML6030 needs its address to be set to  0x48 if a CircuitSetup Speedo or third party GPS receiver is present at the same time. All these sensor types are readily available on breakout boards from Adafruit or Seeed (Grove). Only one light sensor can be used at the same time. 
+The following sensor types/models are supported: TSL2591, TSL2561, BH1750, VEML7700/VEML6030, LTR303/LTR329, with their respective default address. The VEML7700 can only be connected if no CircuitSetup Speedo or third-party GPS receiver is connected at the same time; the VEML6030 needs its address to be set to  0x48 if a CircuitSetup Speedo or third party GPS receiver is present at the same time. All these sensor types are readily available on breakout boards from Adafruit or Seeed (Grove). Only one light sensor can be used at the same time.
 
->*Note: You cannot connect the sensor chip directly to the TCD control board; most sensors need at least a power converter/level-shifter.*  It is recommended to use Adafruit or Seeed breakouts ([TSL2591](https://www.adafruit.com/product/1980), [TSL2651](https://www.seeedstudio.com/Grove-Digital-Light-Sensor-TSL2561.html), [BH1750](https://www.adafruit.com/product/4681), [VEML7700](https://www.adafruit.com/product/4162), [LTR303](https://www.adafruit.com/product/5610)), which all allow connecting named sensors to the 5V the TCD board operates on. For wiring information, see [here](#appendix-b-i2c-peripheral-wiring).
+For wiring information, see [here](#appendix-b-i2c-peripheral-wiring).
+
+>*Note: You cannot connect the sensor chip directly to the TCD control board; most sensors need at least a voltage converter/level-shifter.*  It is recommended to use Adafruit or Seeed breakouts ([TSL2591](https://www.adafruit.com/product/1980), [TSL2651](https://www.seeedstudio.com/Grove-Digital-Light-Sensor-TSL2561.html), [BH1750](https://www.adafruit.com/product/4681), [VEML7700](https://www.adafruit.com/product/4162), [LTR303](https://www.adafruit.com/product/5610)), which all allow connecting named sensors to the 5V the TCD board operates on. 
 
 ## Count-down timer
 
-The firmware features a simple count-down timer. This timer can count down from max 99 minutes and plays a sound when expired.
+The firmware features a simple count-down timer. This timer can count down from max 99 minutes and plays a sound upon expiry.
 
-To set the timer to MM minutes, type 44MM and press ENTER. Note that for minutes, 2 digits must be entered. To cancel a running timer, enter 440 and press ENTER.
-
-The check the remaining time, type 44 and press ENTER.
+- To set the timer to MM minutes, type 44MM and press ENTER. A single-digit number of minutes must be preceeded by 0.
+- To cancel a running timer, type 440 and press ENTER.
+- The check the remaining time, type 44 and press ENTER.
 
 ## Yearly/monthly reminder
 
@@ -528,13 +528,13 @@ To program a monthly reminder, enter 7700ddhhMM and press ENTER. For example: 77
 
 You can also leave out the hhMM part; in that case the time remains unchanged from a previous setting, unless both hour and minute were 0 (zero), in which case the reminder time is set to 9am.
 
-Note that, as usual, all fields consist of two digits, and hours are entered in 24-hour notation.
+Note that all fields consist of two digits, and hours are entered in 24-hour notation.
 
 Type 77 followed by ENTER to display the programmed reminder, 770 to delete it, and 777 to display the days/hours/minutes until the next reminder.
 
-At the time the reminder is due, the TCD plays a sound. If your SD contains a file named "reminder.mp3", this will played instead of the default sound.
+At the time the reminder is due, the TCD plays a sound. If a file named "reminder.mp3" is on your SD card, this will be layed instead of the default sound.
 
-Note: While the alarm and the sound-on-the-hour adhere to the **_Alarm base is real present time_** setting in the config portal, the reminder does not. It is always based on actual local time.
+>Note: While the alarm and the sound-on-the-hour adhere to the **_Alarm base is real present time_** setting in the config portal, the reminder does not. It is always based on actual local time.
 
 ## SD card
 
