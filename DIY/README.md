@@ -53,7 +53,8 @@ The firmware currently supports the
 - [Adafruit 4991](https://www.adafruit.com/product/4991),
 - [DFRobot Gravity 360](https://www.dfrobot.com/product-2575.html) and
 - [DuPPA I2CEncoder 2.1](https://www.duppa.net/shop/i2cencoder-v2-1/) (or [here](https://www.tindie.com/products/saimon/i2cencoder-v21-connect-rotary-encoder-on-i2c-bus/))
-i2c rotary encoders; a CircuitSetup original prop is in the works. For the Adafruit and the DuPPa, I recommend buying the PCBs without an actual encoder and soldering on a Bourns PEC11R-42xxy-S0024.
+
+i2c rotary encoders. For the Adafruit and the DuPPa, I recommend buying the PCBs without an actual encoder and soldering on a Bourns PEC11R-42xxy-S0024.
 
 Up to two rotary encoders can be connected, one for speed, one for volume.
 
@@ -63,11 +64,11 @@ In order to use an encoder for speed or volume, it needs to be configured as fol
 
   <table>
   <tr><td></td><td>Ada4991</td><td>DFRobot</td><td>DuPPA</td></tr>
-  <tr><td>Speed</td><td>Default [0x36]</td><td>SW1=0,SW2=0 [0x54]</td><td>A0 closed [0x01]</td></tr>
-  <tr><td>Volume</td><td>A0 closed [0x37]</td><td>SW1=0,SW2=1 [0x55]</td><td>A0,A1 closed [0x03]</td></tr>
+  <tr><td>Speed</td><td>Default</td><td>SW1=0,SW2=0</td><td>A0 closed</td></tr>
+  <tr><td>Volume</td><td>A0 closed</td><td>SW1=0,SW2=1</td><td>A0,A1 closed</td></tr>
   </table>
 
-The numbers in brackets are the resulting i2c address. (For DuPPA: RGB-encoders not supported.)
+For DuPPA: RGB-encoders not supported.
 
 Here is how they look configured for speed (the purple spots are solder joints):
 
