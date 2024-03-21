@@ -1,6 +1,12 @@
 
 # DIY additions for the Time Circuits Display
 
+- [Speedometer](#speedometer)
+- [GPS receiver](#gps-receiver)
+- [Rotary Encoder](#rotary-encoder)
+- [Temperature/humidity sensor](#temperaturehumidity-sensor)
+- [Light sensor](#light-sensor)
+
 ## Speedometer
 
 | [![Watch the video](https://img.youtube.com/vi/opAZugb_W1Q/0.jpg)](https://youtu.be/opAZugb_W1Q) |
