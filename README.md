@@ -914,17 +914,17 @@ For information on supported sensor models/types and configuration, see [here](h
 
 ### Connecting props by wire
 
-The device can tell other props about a time travel, and in essence act as a "master controller" in a setup of several props. It does so via IO14 (labeled "TT OUT" on Control Boards 1.3 and later).
+The device can tell other props about a time travel, and in essence act as a "master controller" in a setup of several props. 
 
 ![Wired connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/489a242d-d48a-427e-986e-1e6df154bccf)
 
 For detailed wiring instructions, please see the documentaton for the prop ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire)); for DIY props, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#other-props).
 
-If external gear is connected to TT_OUT/IO14 and you want to use this control feature, check **_Control props connected by wire_** in the Config Portal.
+If external gear is connected by wire and you want to use this control feature, check **_Control props connected by wire_** in the Config Portal.
 
-For CircuitSetup original props connected by wire, the option **_Signal Time Travel without 5s lead_** should not be set since it skips the "acceleration phase"; however, if that option is - for some reason - set on the TCD, the respective option on the prop must be set, too. If those props are connected wirelessly, this option has no effect.
+For CircuitSetup original props connected by wire, the option **_Signal Time Travel without 5s lead_** should not be set since it skips the "acceleration phase"; however, if that option is set on the TCD (for instance, if third-party props are connected by wire as well), the respective option on the prop must be set, too. If those props are connected wirelessly, this option has no effect.
 
-Note that a wired connection only allows for synchronized time travel sequences, no other communication takes place. Therefore I strongly recommend a wireless BTTFN connection, see immediately below.
+Note that a wired connection only allows for synchronized time travel sequences, no other communication takes place. A wireless connection allows for more features, see immediately below.
 
 ### Connecting props wirelessly
 
@@ -940,11 +940,11 @@ Here is a demonstration of all the props connected through BTTFN:
 |:--:|
 | Click to watch the video |
 
-On the TCD, no special configuration is required. However, if the TCD is supposed to send out notifications about time travel and alarm to connected BTTFN clients, usage of MQTT must be disabled or the **_Send event notifications_** option in the MQTT section of the Config Portal must be _unchecked_. The TCD only sends out such notifications either via BTTFN or MQTT, never both.
+On the TCD, no special configuration is required. 
 
 On the other prop, such as CircuitSetup's [Flux Capacitor](https://circuitsetup.us/product/flux-capacitor-light-sound-pcb/), [SID](https://circuitsetup.us/product/delorean-time-machine-status-indicator-display-sid/) or my DIY [Dash Gauges](https://dg.out-a-ti.me), the TCD's IP address (or hostname) must be entered into the *IP address or hostname of TCD* field on the Setup page in their Config Portal - that's all.
 
-The fact that the devices communicate directly with each other makes BTTFN the ideal solution for car setups. Also, while at home, the devices might be connected to an existing WiFi network, in a car, the TCD can act as access point for Flux Capacitor and SID (ie they are connecting to the *TCD-AP* WiFi network), and those then can talk the TCD wirelessly. The TCD has *car mode* for doing exactly this, see [here](#car-mode) and the documentation of the respective prop. 
+The fact that the devices communicate directly with each other makes BTTFN the ideal solution for car setups. Also, while at home, the devices might be connected to an existing WiFi network, in a car, the TCD can act as access point for Flux Capacitor and SID (ie they are connecting to the *TCD-AP* WiFi network), and those then can talk the TCD wirelessly. The TCD has *car mode* for aiding this, see [here](#car-mode) and the documentation of the respective prop. 
 
 To see which BTTFN devices are currently known to the TCD, enter the keypad menu and select "BTTFN CLIENTS".
 
@@ -983,11 +983,15 @@ If both the TCD and the other props are connected to the same broker, and the op
 
 ![MQTT connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/07e10261-21f7-4219-ab78-606ba1949d4e)
 
-The timing is identical to the wired protocol, see [here](#controlling-other-props). TIMETRAVEL is sent to **bttf/tcd/pub** when IO14 goes high, ie with a lead time (ETTO LEAD) of 5 seconds. REENTRY is sent when the re-entry sequence starts (ie when IO14 goes low). Note that network traffic has some latency, so timing might not be as exact as a wired connection.
+The timing is identical to the wired protocol; TIMETRAVEL is sent to **bttf/tcd/pub** with a lead time of 5 seconds. REENTRY is sent when the re-entry sequence starts.
 
 When the [alarm](#how-to-set-up-the-alarm) sounds, the TCD can send "ALARM" to **bttf/tcd/pub**.
 
-MQTT and BTTFN can co-exist. The TCD only sends out time travel and alarm notifications through either MQTT or BTTFN, never both. If you have other MQTT-aware devices listening to the TCD's public topic (bttf/tcd/pub) in order to react to time travel or alarm messages, use MQTT (i.e. check **_Send event notifications_**). If only BTTFN-aware devices are to be used, uncheck this option to use BTTFN as it has less latency.
+#### MQTT vs BTTFN
+
+MQTT and BTTFN can co-exist. The TCD only sends out time travel and alarm notifications through _either_ MQTT _or_ BTTFN, never both; selection is done by checking or unchecking the option **_Send event notifications_** in the MQTT section of the Config Portal's Setup page.
+
+If you have other MQTT-aware devices listening to the TCD's public topic (bttf/tcd/pub) in order to react to time travel or alarm messages, use MQTT (i.e. check **_Send event notifications_**). If only BTTFN-aware devices are to be used, uncheck this option to use BTTFN as it has less latency.
 
 ### Setup
 
