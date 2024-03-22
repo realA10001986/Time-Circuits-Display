@@ -985,7 +985,7 @@ If both the TCD and the other props are connected to the same broker, and the op
 
 The timing is identical to the wired protocol; TIMETRAVEL is sent to **bttf/tcd/pub** with a lead time of 5 seconds. REENTRY is sent when the re-entry sequence starts.
 
-When the [alarm](#how-to-set-up-the-alarm) sounds, the TCD can send "ALARM" to **bttf/tcd/pub**.
+When the [alarm](#how-to-set-up-the-alarm) sounds, the TCD sends "ALARM" to **bttf/tcd/pub**.
 
 #### MQTT vs BTTFN
 
