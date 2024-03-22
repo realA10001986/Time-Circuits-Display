@@ -10,6 +10,8 @@
 
 ## Speedometer
 
+Despite CircuitSetup offering a really good and screen-accurate Speedo, you might want to make your own.
+
 | [![Watch the video](https://img.youtube.com/vi/opAZugb_W1Q/0.jpg)](https://youtu.be/opAZugb_W1Q) |
 |:--:|
 | Click to watch the video |
@@ -40,7 +42,7 @@ The CircuitSetup original [speedo](https://circuitsetup.us/product/delorean-time
 - Adafruit Mini GPS PA1010D (product id [4415](https://www.adafruit.com/product/4415)) or the
 - Pimoroni P1010D GPS Breakout ([PIM525](https://shop.pimoroni.com/products/pa1010d-gps-breakout?variant=32257258881107))
   
-or any other MT(K)3333-based GPS receiver, connected through i2c (address 0x10). 
+or any other MT(K)3333-based GPS receiver, connected through i2c (address 0x10). Note that the supply and bus voltage must be 5V.
 
 The GPS receiver can be used as a source of authoritative time (like NTP) and speed of movement.
 
@@ -83,7 +85,7 @@ For wiring information, see [here](#i2c-peripheral-wiring).
 
 ## Temperature/humidity sensor
 
-The firmware supports connecting a temperature/humidity sensor for "room condition mode":
+The firmware supports connecting a temperature/humidity sensor for "room condition mode" and for displaying ambient temperature on a speedo display while idle.
 
 ![rcmode](https://user-images.githubusercontent.com/76924199/208133653-f0fb0a38-51e4-4436-9506-d841ef1bfa6c.jpg)
 
@@ -129,7 +131,7 @@ For wiring information, see [here](#i2c-peripheral-wiring).
 
 ## I2C peripheral wiring
 
-The speedo display, the GPS receiver, light and temperature sensors as well as the Rotary Encoders are to be wired as follows:
+All i2c peripherals described above are to be wired as follows:
 
 On the TCD control board, there are currently three breakouts named "I2C", at least one of which has a header soldered on; it does not matter which one you use to connect your sensors/speedo/GPS/rotary encoders. I recommend to solder on [XH](https://www.amazon.com/s?k=jst+xh) 4-pin headers to the other two i2c breakouts as well (like in the second picture). When you order a CircuitSetup Speedo, they will include such headers if you request them. Do not solder wires directly to the board!
 
