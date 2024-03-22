@@ -50,7 +50,9 @@ The difference between what you get here and CircuitSetup's releases is that the
 
 ## Firmware Installation
 
-If a previous version of the TCD firmware is installed on your device, you can update easily using the pre-compiled binary. Enter the [Config Portal](#the-config-portal), click on "Update" and select the pre-compiled binary file provided in this repository ([install/timecircuits-A10001986.ino.nodemcu-32s.bin](https://github.com/realA10001986/Time-Circuits-Display/blob/main/install/timecircuits-A10001986.ino.nodemcu-32s.bin)). *Note: If the previously installed firmware was from CircuitSetup (ie. pre-installed or downloaded from their github), you need to install the sound-pack from this repository afterwards.*
+If a previous version of the TCD firmware is installed on your device, you can update easily using the pre-compiled binary. Enter the [Config Portal](#the-config-portal), click on "Update" and select the pre-compiled binary file provided in this repository ([install/timecircuits-A10001986.ino.nodemcu-32s.bin](https://github.com/realA10001986/Time-Circuits-Display/blob/main/install/timecircuits-A10001986.ino.nodemcu-32s.bin)). 
+
+>If the previously installed firmware was from CircuitSetup (ie. pre-installed or downloaded from their github), you need to install the sound-pack from this repository afterwards.
 
 If you are using a fresh ESP32 board, please see [timecircuits-A10001986.ino](https://github.com/realA10001986/Time-Circuits-Display/blob/main/timecircuits-A10001986/timecircuits-A10001986.ino) for detailed build information.
 
@@ -58,7 +60,7 @@ If you are using a fresh ESP32 board, please see [timecircuits-A10001986.ino](ht
 
 The firmware comes with some audio data ("sound-pack") which needs to be installed separately. The audio data is not updated as often as the firmware itself. If you have previously installed the latest version of the sound-pack, you normally don't have to re-install the audio data when you update the firmware. Only if the TCD displays "PLEASE INSTALL AUDIO FILES" during boot, an update of the audio data is needed.
 
-*If your TCD previously ran a firmware from CircuitSetup (ie. pre-installed or downloaded from their github), installing of the audio data **from this repository** is required. You cannot use CircuitSetup's audio data with the firmware available here, or vice versa.*
+>If your TCD previously ran a firmware from CircuitSetup (ie. pre-installed or downloaded from their github), installing of the audio data **from this repository** is required. You cannot use CircuitSetup's audio data with the firmware available here, or vice versa.
 
 The first step is to download "install/sound-pack-xxxxxxxx.zip" and extract it. It contains one file named "TCDA.bin".
 
