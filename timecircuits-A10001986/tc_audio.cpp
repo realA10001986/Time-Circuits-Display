@@ -110,6 +110,9 @@ static bool   curChkNM   = true;
 static bool   dynVol     = true;
 static int    sampleCnt = 0;
 
+bool          useLineOut = false;
+static bool   playLineOut = false;
+
 static const char *tcdrdone = "/TCD_DONE.TXT";
 bool          headLineShown = false;
 bool          blinker       = true;
@@ -119,6 +122,7 @@ static char       dtmfBuf[] = "/Dtmf-0.mp3\0";    // Not const
 static const char *hsnd     = "/hour.mp3";
 
 static float  getVolume();
+static void   setLineOut(bool doLineOut);
 
 static int    mp_findMaxNum();
 static void   mp_nextprev(bool forcePlay, bool next);
@@ -248,9 +252,17 @@ void play_file(const char *audio_file, uint16_t flags, float volumeFactor)
         beep->stop();
     }
 
+    playLineOut = (useLineOut && (flags & PA_LINEOUT)) ? true : false;
+    setLineOut(playLineOut);
+
+    if(playLineOut) {
+        dynVol     = false;
+    } else {
+        curChkNM   = (flags & PA_CHECKNM) ? true : false;
+        dynVol     = (flags & PA_DYNVOL) ? true : false;
+    }
+
     curVolFact = volumeFactor;
-    curChkNM   = (flags & PA_CHECKNM) ? true : false;
-    dynVol     = (flags & PA_DYNVOL) ? true : false;
 
     // Reset vol smoothing
     // (user might have turned the pot while no sound was played)
@@ -316,7 +328,7 @@ void play_file(const char *audio_file, uint16_t flags, float volumeFactor)
 void play_keypad_sound(char key)
 {
     dtmfBuf[6] = key;
-    play_file(dtmfBuf, PA_CHECKNM|PA_NOID3TS|PA_LOOPNOW, 0.6);
+    play_file(dtmfBuf, PA_INTSPKR|PA_CHECKNM|PA_NOID3TS|PA_LOOPNOW, 0.6);
 }
 
 void play_hour_sound(int hour)
@@ -328,14 +340,14 @@ void play_hour_sound(int hour)
     
     sprintf(buf, "/hour-%02d.mp3", hour);
     if(SD.exists(buf)) {
-        play_file(buf, PA_ALLOWSD);
+        play_file(buf, PA_INTSPKR|PA_ALLOWSD);
         return;
     }
 
     // Check for file so we do not interrupt anything
     // if the file does not exist
     if(SD.exists(hsnd)) {
-        play_file(hsnd, PA_ALLOWSD);
+        play_file(hsnd, PA_INTSPKR|PA_ALLOWSD);
     }
 }
 
@@ -355,6 +367,8 @@ void play_beep()
     if(beep->isRunning()) {
         beep->stop();
     }
+
+    setLineOut(false);
 
     curVolFact = 0.3;
     curChkNM   = true;
@@ -437,29 +451,42 @@ static float getVolume()
 {
     float vol_val;
 
-    if(curVolume == 255) {
-        vol_val = getRawVolume();
+    if(playLineOut) {
+      
+        vol_val = 0.3 * curVolFact;    // FIXME: What is a good value here?
+        
     } else {
-        vol_val = volTable[curVolume];
-    }
-
-    // If user muted, return 0
-    if(vol_val == 0.0) return vol_val;
-
-    vol_val *= curVolFact;
     
-    // Do not totally mute
-    // 0.02 is the lowest audible gain
-    if(vol_val < 0.02) vol_val = 0.02;
-
-    // Reduce volume in night mode, if requested
-    if(curChkNM && presentTime.getNightMode()) {
-        vol_val *= 0.3;
+        if(curVolume == 255) {
+            vol_val = getRawVolume();
+        } else {
+            vol_val = volTable[curVolume];
+        }
+    
+        // If user muted, return 0
+        if(vol_val == 0.0) return vol_val;
+    
+        vol_val *= curVolFact;
+        
         // Do not totally mute
+        // 0.02 is the lowest audible gain
         if(vol_val < 0.02) vol_val = 0.02;
+    
+        // Reduce volume in night mode, if requested
+        if(curChkNM && presentTime.getNightMode()) {
+            vol_val *= 0.3;
+            // Do not totally mute
+            if(vol_val < 0.02) vol_val = 0.02;
+        }
+
     }
 
     return vol_val;
+}
+
+static void setLineOut(bool doLineOut)
+{
+    // TODO: Possibility to switch between internal speaker and line-out
 }
 
 /*
@@ -870,7 +897,7 @@ static bool mp_play_int(bool force)
 
     mp_buildFileName(fnbuf, playList[mpCurrIdx]);
     if(SD.exists(fnbuf)) {
-        if(force) play_file(fnbuf, PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
+        if(force) play_file(fnbuf, PA_LINEOUT|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
         currPlaying = playList[mpCurrIdx];
         return true;
     }

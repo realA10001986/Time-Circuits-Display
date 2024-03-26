@@ -150,6 +150,7 @@ void      send_wakeup_msg();
 void      bttfnSendFluxCmd(uint32_t payload);
 void      bttfnSendSIDCmd(uint32_t payload);
 void      bttfnSendPCGCmd(uint32_t payload);
+void      bttfnSendVSRCmd(uint32_t payload);
 void      bttfnSendAUXCmd(uint32_t payload);
 
 void      resetPresentTime();

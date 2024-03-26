@@ -43,6 +43,8 @@
 #define PA_DYNVOL  0x0008
 #define PA_NOID3TS 0x0010
 #define PA_LOOPNOW 0x0020
+#define PA_LINEOUT 0x0040
+#define PA_INTSPKR 0x0000
 
 void  audio_setup();
 void  audio_loop();
@@ -79,5 +81,6 @@ extern bool haveId3;
 extern char id3[];
 
 extern int  curVolume;
+extern bool useLineOut;
 
 #endif

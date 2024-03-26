@@ -138,7 +138,7 @@ static unsigned long lastKeyPressed = 0;
 #define DATELEN_ALL   12   // mmddyyyyHHMM  dt: month, day, year, hour, min
 #define DATELEN_REM   10   // 77mmddHHMM    set reminder
 #define DATELEN_DATE   8   // mmddyyyy      dt: month, day, year
-#define DATELEN_ECMD   7   // xyyyyyy       6-digit command for FC, SID, PG
+#define DATELEN_ECMD   7   // xyyyyyy       6-digit command for FC, SID, PG, VSR, AUX
 #define DATELEN_QALM   6   // 11HHMM/888xxx 11, hour, min (alarm-set shortcut); 888xxx (mp)
 #define DATELEN_INT    5   // xxxxx         reset
 #define DATELEN_TIME   4   // HHMM          dt: hour, minute
@@ -289,7 +289,7 @@ static void keypadEvent(char key, KeyState kstate)
         case '1':    // "1" held down -> toggle alarm on/off
             doKey = false;
             if((i = toggleAlarm()) >= 0) {
-                play_file(i ? "/alarmon.mp3" : "/alarmoff.mp3", PA_CHECKNM|PA_ALLOWSD|PA_DYNVOL);
+                play_file(i ? "/alarmon.mp3" : "/alarmoff.mp3", PA_INTSPKR|PA_CHECKNM|PA_ALLOWSD|PA_DYNVOL);
             } else {
                 playBad = true;
             }
@@ -297,22 +297,22 @@ static void keypadEvent(char key, KeyState kstate)
         case '4':    // "4" held down -> toggle night-mode on/off
             doKey = false;
             manualNightMode = toggleNightMode();
-            play_file(manualNightMode ? "/nmon.mp3" : "/nmoff.mp3", PA_ALLOWSD|PA_DYNVOL);
+            play_file(manualNightMode ? "/nmon.mp3" : "/nmoff.mp3", PA_INTSPKR|PA_ALLOWSD|PA_DYNVOL);
             manualNMNow = millis();
             break;
         case '3':    // "3" held down -> play audio file "key3.mp3"
         case '6':    // "6" held down -> play audio file "key6.mp3"
             doKey = false;
             keySnd[4] = key;
-            play_file(keySnd, PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
+            play_file(keySnd, PA_LINEOUT|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
             break;
         case '7':    // "7" held down -> re-enable/re-connect WiFi
             doKey = false;
             if(!wifiOnWillBlock()) {
-                play_file("/ping.mp3", PA_CHECKNM|PA_ALLOWSD);
+                play_file("/ping.mp3", PA_INTSPKR|PA_CHECKNM|PA_ALLOWSD);
             } else {
                 if(haveMusic) mpWasActive = mp_stop();
-                play_file("/ping.mp3", PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD);
+                play_file("/ping.mp3", PA_INTSPKR|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD);
                 waitAudioDone();
             }
             // Enable WiFi / even if in AP mode / with CP
@@ -345,7 +345,7 @@ static void keypadEvent(char key, KeyState kstate)
             break;
         }
         if(playBad) {
-            play_file("/baddate.mp3", PA_CHECKNM|PA_ALLOWSD);
+            play_file("/baddate.mp3", PA_INTSPKR|PA_CHECKNM|PA_ALLOWSD);
         }
         break;
         
@@ -1003,6 +1003,7 @@ void keypad_loop()
 
         } else if((strLen == DATELEN_TIME || strLen == DATELEN_ECMD) && 
                         (dateBuffer[0] == '3' ||
+                         dateBuffer[0] == '5' ||
                          dateBuffer[0] == '6' ||
                          dateBuffer[0] == '8' ||
                          dateBuffer[0] == '9')) {
@@ -1016,11 +1017,14 @@ void keypad_loop()
             case '3':
                 bttfnSendFluxCmd(cmd);
                 break;
+            case '5':
+                bttfnSendAUXCmd(cmd);
+                break;
             case '6':
                 bttfnSendSIDCmd(cmd);
                 break;
             case '8':
-                bttfnSendAUXCmd(cmd);
+                bttfnSendVSRCmd(cmd);
                 break;
             default:
                 bttfnSendPCGCmd(cmd);
@@ -1193,15 +1197,15 @@ void keypad_loop()
                 validEntry = true;
                 break;
             case 2:
-                play_file("/ee2.mp3", PA_CHECKNM|PA_INTRMUS);
+                play_file("/ee2.mp3", PA_INTSPKR|PA_CHECKNM|PA_INTRMUS);
                 enterDelay = EE2_DELAY;
                 break;
             case 3:
-                play_file("/ee3.mp3", PA_CHECKNM|PA_INTRMUS);
+                play_file("/ee3.mp3", PA_INTSPKR|PA_CHECKNM|PA_INTRMUS);
                 enterDelay = EE3_DELAY;
                 break;
             case 4:
-                play_file("/ee4.mp3", PA_CHECKNM|PA_INTRMUS);
+                play_file("/ee4.mp3", PA_INTSPKR|PA_CHECKNM|PA_INTRMUS);
                 enterDelay = EE4_DELAY;
                 break;
             default:
@@ -1271,10 +1275,10 @@ void keypad_loop()
         }
 
         if(validEntry) {
-            play_file("/enter.mp3", PA_CHECKNM|enterInterruptsMusic|PA_ALLOWSD);
+            play_file("/enter.mp3", PA_INTSPKR|PA_CHECKNM|enterInterruptsMusic|PA_ALLOWSD);
             enterDelay = ENTER_DELAY;
         } else if(invalidEntry) {
-            play_file("/baddate.mp3", PA_CHECKNM|enterInterruptsMusic|PA_ALLOWSD);
+            play_file("/baddate.mp3", PA_INTSPKR|PA_CHECKNM|enterInterruptsMusic|PA_ALLOWSD);
             enterDelay = BADDATE_DELAY;
             if(!enterInterruptsMusic && mpActive) {
                 dt_showTextDirect("ERROR", CDT_CLEAR);
@@ -1316,7 +1320,7 @@ void keypad_loop()
             timeNow = millis();
             enterWasPressed = true;
             enterDelay = EE1_DELAY3;
-            play_file("/ee1.mp3", PA_CHECKNM|PA_INTRMUS);
+            play_file("/ee1.mp3", PA_INTSPKR|PA_CHECKNM|PA_INTRMUS);
             break;
         case 21:
         case 22:

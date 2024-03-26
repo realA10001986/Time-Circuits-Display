@@ -101,6 +101,8 @@
 
 /*  Changelog
  *
+ *  2024/03/26 (A10001986)
+ *    - BTTFN: Device type VSR (8xxx) added; AUX is now 5xxx.
  *  2024/02/17 (A10001986)
  *    - Minor changes to time travel display disruption in destination time display
  *  2024/02/16 (A10001986)

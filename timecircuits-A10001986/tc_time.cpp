@@ -754,11 +754,13 @@ bool bttfnHaveClients = false;
 #define BTTFN_NOT_PCG_CMD  9
 #define BTTFN_NOT_WAKEUP   10
 #define BTTFN_NOT_AUX_CMD  11
+#define BTTFN_NOT_VSR_CMD  12
 #define BTTFN_TYPE_ANY     0    // Any, unknown or no device
 #define BTTFN_TYPE_FLUX    1    // Flux Capacitor
 #define BTTFN_TYPE_SID     2    // SID
 #define BTTFN_TYPE_PCG     3    // Dash gauge panel
-#define BTTFN_TYPE_AUX     4    // Aux (user custom device)
+#define BTTFN_TYPE_VSR     4    // VSR
+#define BTTFN_TYPE_AUX     5    // Aux (user custom device)
 #define BTTFN_VERSION              1
 #define BTTF_PACKET_SIZE          48
 #define BTTF_DEFAULT_LOCAL_PORT 1338
@@ -1069,7 +1071,7 @@ void time_setup()
     #ifdef TC_HAVESPEEDO
     if(useSpeedo) {
         // 'useGPSSpeed' strictly means "display GPS speed on speedo"
-        // It is false, if no GPS receiver found, or no speedo found, or option unchecked
+        // It is false if no GPS receiver found, or no speedo found, or option unchecked
         useGPSSpeed = (atoi(settings.useGPSSpeed) > 0);
 
         havePreTTSound = check_file_SD(preTTSound);
@@ -1824,7 +1826,7 @@ void time_loop()
                     cancelEnterAnim(false);
                     cancelETTAnim();
                     mp_stop();
-                    play_file("/shutdown.mp3", PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD);
+                    play_file("/shutdown.mp3", PA_INTSPKR|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD);
                     mydelay(130);
                     allOff();
                     leds_off();
@@ -1850,7 +1852,7 @@ void time_loop()
     // Initiate startup delay, play startup sound
     if(startupSound) {
         startupNow = pauseNow = millis();
-        play_file("/startup.mp3", PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD);
+        play_file("/startup.mp3", PA_INTSPKR|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD);
         startupSound = false;
         // Don't let autoInt interrupt us
         autoPaused = true;
@@ -2568,7 +2570,7 @@ void time_loop()
                 if(ctDown) {
                     if(millis() - ctDownNow > ctDown) {
                         if( (!alarmNow) || (alarmDone && checkAudioDone()) ) {
-                            play_file("/timer.mp3", PA_INTRMUS|PA_ALLOWSD);
+                            play_file("/timer.mp3", PA_INTSPKR|PA_INTRMUS|PA_ALLOWSD);
                             ctDown = 0;
                         }
                     }
@@ -2582,7 +2584,7 @@ void time_loop()
                         (remMin == gdtl.minute()) ) {
                         if(!remDone) {
                             if( (!alarmNow) || (alarmDone && checkAudioDone()) ) {
-                                play_file("/reminder.mp3", PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
+                                play_file("/reminder.mp3", PA_INTSPKR|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
                                 remDone = true;
                             }
                         }
@@ -2595,7 +2597,7 @@ void time_loop()
                 if(alarmOnOff) {
                     if(alarmNow) {
                         if(!alarmDone) {
-                            play_file("/alarm.mp3", PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
+                            play_file("/alarm.mp3", PA_INTSPKR|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
                             alarmDone = true;
                             #ifdef EXTERNAL_TIMETRAVEL_OUT
                             sendNetWorkMsg("ALARM\0", 6, BTTFN_NOT_ALARM);
@@ -2850,7 +2852,7 @@ void time_loop()
                     destinationTime.showTextDirect(mqttMsg + mqttIdx);
                     if(mqttST) {
                         if(!presentTime.getNightMode()) {
-                            play_file(mqttAudioFile, PA_CHECKNM|PA_ALLOWSD);
+                            play_file(mqttAudioFile, PA_INTSPKR|PA_CHECKNM|PA_ALLOWSD);
                         }
                         mqttST = false;
                     }
@@ -3146,7 +3148,7 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
             timeTravelP2 = 0;
 
             if(doPreTTSound) {
-                play_file(preTTSound, PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
+                play_file(preTTSound, PA_LINEOUT|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
             }
 
             return;
@@ -3292,7 +3294,7 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
     timeTravelRE = true;
 
     if(playTTsounds) {
-        play_file("/timetravel.mp3", PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
+        play_file("/timetravel.mp3", PA_LINEOUT|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
     }
 
     // For external props: Signal Re-Entry
@@ -3325,7 +3327,7 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
 static void triggerLongTT(bool noLead)
 {
     if(playTTsounds) play_file( noLead ? "/travelstart2.mp3" : "/travelstart.mp3", 
-                                        PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
+                                        PA_LINEOUT|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
     timetravelP1Now = millis();
     timetravelP1Delay = noLead ? 0 : TT_P1_DELAY_P1;
     timeTravelP1 = 1;
@@ -3431,6 +3433,10 @@ void bttfnSendPCGCmd(uint32_t payload)
 {
     bttfn_notify(BTTFN_TYPE_PCG, BTTFN_NOT_PCG_CMD, payload & 0xffff, payload >> 16);
 }
+void bttfnSendVSRCmd(uint32_t payload)
+{
+    bttfn_notify(BTTFN_TYPE_VSR, BTTFN_NOT_VSR_CMD, payload & 0xffff, payload >> 16);
+}
 void bttfnSendAUXCmd(uint32_t payload)
 {
     bttfn_notify(BTTFN_TYPE_AUX, BTTFN_NOT_AUX_CMD, payload & 0xffff, payload >> 16);
@@ -3500,7 +3506,7 @@ void resetPresentTime()
     }
 
     if(playTTsounds) {
-        play_file("/timetravel.mp3", PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
+        play_file("/timetravel.mp3", PA_LINEOUT|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
     }
 
     timetravelNow = millis();
