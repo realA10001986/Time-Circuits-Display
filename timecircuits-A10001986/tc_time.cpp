@@ -5884,7 +5884,7 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
         buf[18] = (uint16_t)temp & 0xff;
         buf[19] = (uint16_t)temp >> 8;
     }
-    if(buf[5] & 0x04) {    // temperature (-32768 if unavailable)
+    if(buf[5] & 0x04) {    // temperature * 100 (-32768 if unavailable)
         temp = -32768;
         #ifdef TC_HAVETEMP
         if(useTemp) {

@@ -101,6 +101,8 @@
 
 /*  Changelog
  *
+ *  2024/03/27 (A10001986)
+ *    - Bug fix in temperature display
  *  2024/03/26 (A10001986)
  *    - BTTFN: Device type VSR (8xxx) added; AUX is now 5xxx.
  *  2024/02/17 (A10001986)

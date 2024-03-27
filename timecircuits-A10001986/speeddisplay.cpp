@@ -606,7 +606,7 @@ void speedDisplay::setTemperature(float temp)
     case 2:
         if(isnan(temp))        setText(myNan);
         else if(temp <= -10.0) setText("Lo");
-        else if(t >= 100.0)    setText("Hi");
+        else if(temp >= 100.0) setText("Hi");
         else if(temp >= 10.0 || temp < 0.0) {
             t = (int)roundf(temp);
             sprintf(buf, "%d", t);
@@ -619,7 +619,7 @@ void speedDisplay::setTemperature(float temp)
     case 3:
         if(isnan(temp))         setText(myNan);
         else if(temp <= -100.0) setText("Low");
-        else if(t >= 1000.0)    setText("Hi");
+        else if(temp >= 1000.0) setText("Hi");
         else if(temp >= 100.0 || temp <= -10.0) {
             t = (int)roundf(temp);
             sprintf(buf, "%d", t);
