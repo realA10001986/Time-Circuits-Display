@@ -772,7 +772,7 @@ To disable *car mode*, type 990 followed by ENTER. The TCD will reboot and attem
 
 ## Peripherals and connection
 
-![The BTTF Prop Family](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/d68bcbae-64ef-4ea1-a424-caf837dc41cb)
+![The BTTF Prop Family](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/f6baa952-3794-4be8-8178-713e7e1bf092)
 
 - [Fake Power Switch](#fake-power-switch)
 - [Speedometer](#speedometer)
@@ -918,7 +918,7 @@ For information on supported sensor models/types and configuration, see [here](h
 
 The device can tell other props about a time travel, and in essence act as a "master controller" in a setup of several props. 
 
-![Wired connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/489a242d-d48a-427e-986e-1e6df154bccf)
+![Wired connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/be05188d-3c2e-41af-88fb-11bde309a1d7)
 
 For detailed wiring instructions, please see the documentaton for the prop ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire)); for DIY props, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#other-props).
 
@@ -934,7 +934,7 @@ Note that a wired connection only allows for synchronized time travel sequences,
 
 The TCD can communicate with other compatible props wirelessly, via the built-in "**B**asic-**T**elematics-**T**ransmission-**F**ramework" over WiFi. It can send out information about a time travel and an alarm, and other props can query the TCD for time, speed and some other data.
 
-![bttfn connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/f8fcd415-cd4a-4a82-a3f8-dadf8e531d26)
+![bttfn connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/2ef3f755-4be2-4d81-a081-992a95b1b2fc)
 
 Here is a demonstration of all the props connected through BTTFN:
 
@@ -983,7 +983,7 @@ The TCD can - to a limited extent - be controlled through messages sent to topic
 
 If both the TCD and the other props are connected to the same broker, and the option **_Send event notifications_** is checked on the TCD's side, other compatible props will receive information on time travel and alarm and play their sequences in sync with the TCD. The topic is called  **bttf/tcd/pub**.
 
-![MQTT connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/07e10261-21f7-4219-ab78-606ba1949d4e)
+![MQTT connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/4fa5ad53-d51a-4bc0-901e-b84bb74cb85e)
 
 The timing is identical to the wired protocol; TIMETRAVEL is sent to **bttf/tcd/pub** with a lead time of 5 seconds. REENTRY is sent when the re-entry sequence starts.
 
