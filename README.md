@@ -772,7 +772,7 @@ To disable *car mode*, type 990 followed by ENTER. The TCD will reboot and attem
 
 ## Peripherals and connection
 
-![The BTTF Prop Family](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/f6baa952-3794-4be8-8178-713e7e1bf092)
+![The BTTF Prop Family](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/7ad9db2f-2642-4b81-be0a-4767efdfb849)
 
 - [Fake Power Switch](#fake-power-switch)
 - [Speedometer](#speedometer)
@@ -918,7 +918,7 @@ For information on supported sensor models/types and configuration, see [here](h
 
 The device can tell other props about a time travel, and in essence act as a "master controller" in a setup of several props. 
 
-![Wired connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/be05188d-3c2e-41af-88fb-11bde309a1d7)
+![Wired connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/4187e3ca-e6b3-489d-ba9d-b7f681fdb640)
 
 For detailed wiring instructions, please see the documentaton for the prop ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire)); for DIY props, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#other-props).
 
