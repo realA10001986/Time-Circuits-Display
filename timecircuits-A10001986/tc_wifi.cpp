@@ -326,9 +326,9 @@ WiFiManagerParameter custom_pubMQTT("pMQTT", "Send event notifications", setting
 #endif // HAVEMQTT
 
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
-WiFiManagerParameter custom_shuffle("musShu", "Shuffle at startup (0=no, 1=yes)", settings.shuffle, 1, "autocomplete='off'");
+WiFiManagerParameter custom_shuffle("musShu", "Shuffle mode enabled at startup (0=no, 1=yes)", settings.shuffle, 1, "autocomplete='off'");
 #else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_shuffle("musShu", "Shuffle at startup", settings.shuffle, 1, "type='checkbox' style='margin-top:8px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_shuffle("musShu", "Shuffle mode enabled at startup", settings.shuffle, 1, "type='checkbox' style='margin-top:8px'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
 
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------

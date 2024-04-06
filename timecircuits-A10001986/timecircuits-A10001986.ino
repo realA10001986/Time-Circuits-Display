@@ -101,6 +101,8 @@
 
 /*  Changelog
  *
+ *  2024/04/04 (A10001986)
+ *    - Re-phrase "shuffle" Config option
  *  2024/03/27 (A10001986)
  *    - Bug fix in temperature display
  *  2024/03/26 (A10001986)
