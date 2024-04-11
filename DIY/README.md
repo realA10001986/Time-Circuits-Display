@@ -75,11 +75,11 @@ For DuPPA: RGB-encoders not supported.
 
 Here is how they look configured for speed (the purple spots are solder joints):
 
-![RotEncSpd](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/ae4ee45b-5cbf-45e1-9092-1043367e9af5)
+![RotEncSpd](img/RotEncSpd.jpg)
 
 Here is the configuration for volume:
 
-![RotEncVol](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/a13a02ed-ab5b-42f6-9160-96070e1d5a17)
+![RotEncVol](img/RotEncVol.jpg)
 
 For wiring information, see [here](#i2c-peripheral-wiring). 
 
@@ -87,7 +87,7 @@ For wiring information, see [here](#i2c-peripheral-wiring).
 
 The firmware supports connecting a temperature/humidity sensor for "room condition mode" and for displaying ambient temperature on a speedo display while idle.
 
-![rcmode](https://user-images.githubusercontent.com/76924199/208133653-f0fb0a38-51e4-4436-9506-d841ef1bfa6c.jpg)
+![rcmode](img/rcmode.jpg)
 
 The following sensor types are supported: 
 - [MCP9808](https://www.adafruit.com/product/1782) (address 0x18 - non-default),
@@ -135,9 +135,9 @@ All i2c peripherals described above are to be wired as follows:
 
 On the TCD control board, there are currently three breakouts named "I2C", at least one of which has a header soldered on; it does not matter which one you use to connect your sensors/speedo/GPS/rotary encoders. I recommend to solder on [XH](https://www.amazon.com/s?k=jst+xh) 4-pin headers to the other two i2c breakouts as well (like in the second picture). When you order a CircuitSetup Speedo, they will include such headers if you request them. Do not solder wires directly to the board!
 
-![i2c](https://user-images.githubusercontent.com/76924199/212406576-fbd71836-1862-4632-a3ac-decbfa6b7eb2.jpg)
+![i2c](img/i2c1.jpg)
 
-![i2c](https://user-images.githubusercontent.com/76924199/212406002-c6887b39-8bac-49b1-8318-35838fba44d0.jpg)
+![i2c](img/i2c2.jpg)
 
 On most peripherals the pins are named as follows, and need to be connected to the corresponding pins on the control board:
 
@@ -165,7 +165,7 @@ On most peripherals the pins are named as follows, and need to be connected to t
 
 For longer cables, ie >50cm (>20in), I recommend using a twisted pair cable, and to connect it as follows:
 
-![i2clongcable](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/497fbbf2-55b9-4ebb-93ee-ce349fd866b5)
+![i2clongcable](img/i2clongcable.png)
 
 >Important: The TCD control board delivers and drives the i2c bus on 5V. Most sensors/GPS receivers operate on 3.3V. Therefore, you cannot connect the chips directly to the TCD control board without a level-shifter. This goes for the power supply as well as the i2c bus signals (SDA, SCL). I only use readily available sensor breakout boards that include level-shifters.
 
@@ -181,7 +181,7 @@ i2c devices have "addresses". Most sensors either only support one i2c address, 
 
 Notable exceptions are the TMP117 and HTU31D sensors: Their address needs to changed in order to be recognized by the firmware. On the Adafruit breakouts, this is done by connecting two solder pads on the back side of the PCB:
 
-<img src="https://user-images.githubusercontent.com/76924199/211666279-c578566f-e517-4d70-b50c-929b12c57c86.png">
+<img src="img/addrjmp.png">
 
 This image shows the HTU31D PCB's back side. Connect (shorten) those two pads in order to change the address. It looks similar on the TMP117.
 
@@ -193,15 +193,15 @@ For Rotary Encoders, see [here](#hardware-configuration).
 
 The TCD can tell other props about a time travel. It does so by setting a pin (IO14, labeled "TT OUT" on Control Boards 1.3 and later) to high or low.
 
-![Wired connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/489a242d-d48a-427e-986e-1e6df154bccf)
+![Wired connection](img/familiy-wired.png)
 
 You need two wires for connecting the TCD: TT_OUT (IO14) and GND, which need to be connected to the respective pins of the prop.
 
-| ![ttout](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/429439a1-4897-42ef-b765-4922ba511cc2) |
+| ![ttout](img/ttout.jpg) |
 |:--:|
 | TT_OUT/IO14 on board version 1.3 |
 
-| ![ttout](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/6162c29b-66c5-42e5-b305-1e1ed21d070d) |
+| ![ttout](img/ttout12.jpg) |
 |:--:|
 | IO14 on board version 1.2 |
 
