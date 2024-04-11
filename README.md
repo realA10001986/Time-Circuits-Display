@@ -836,7 +836,7 @@ Full disclosure: The video was shot before the CircuitSetup speedo became availa
 
 The CircuitSetup [Speedo Kit](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit/) needs to be wired as shown below:
 
-![speedo_i2c](img/speedo_i2c.png)
+![speedo_i2c](img/speedo_i2c.jpg)
 
 If you want to make your own speedo, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#speedometer).
 
