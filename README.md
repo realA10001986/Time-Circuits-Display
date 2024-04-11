@@ -4,7 +4,7 @@ This repository holds the most current firmware for CircuitSetup's wonderful [Ti
 
 The kit parts are available [here](https://circuitsetup.us/product/complete-time-circuits-display-kit/). This TCD can be used stand-alone or in combination with several [peripherals](#peripherals-and-connection). If you went for the metal enclosure version, it is perfectly fit for mounting in an actual Delorean.
 
-| ![TCD Front](https://user-images.githubusercontent.com/76924199/200327688-cfa7b1c2-abbd-464d-be6d-5d295e51056e.jpg) |
+| ![TCD Front](img/orlando.jpg) |
 |:--:|
 | *This very one is now in the Universal Studios [BTTF Escape Room](https://www.universalorlando.com/web/en/us/things-to-do/entertainment/universals-great-movie-escape) (Orlando)* |
 
@@ -116,7 +116,7 @@ After completing these steps, your TCD is basically ready for use; you can also 
 
 The "Config Portal" is the TCD's configuration web site. 
 
-| ![The Config Portal](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/45d06a1c-b14c-4af1-92b2-5d3fd5e5ee1d) |
+| ![The Config Portal](img/cpm.png) |
 |:--:| 
 | *The Config Portal's main page* |
 
@@ -138,7 +138,7 @@ It can be accessed as follows:
 
 In the main menu, click on "Setup" to configure your TCD. 
 
-| [<img src="https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/e499a3f0-e405-4efd-82a4-2bb3b53ec9d6">](img/cp_setup.png) |
+| [<img src="img/cps-frag.png">](img/cp_setup.png) |
 |:--:| 
 | *Click for full screenshot* |
 
@@ -191,7 +191,7 @@ In World Clock (WC) mode, the red and yellow displays show not some stale times,
 |:--:|
 | Click to watch the video |
 
-| ![WC mode](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/9cd1b234-515f-4885-be6e-69b3aa9e7ecf) |
+| ![WC mode](img/wcmode.jpg) |
 |:--:|
 | *World Clock mode* |
 
@@ -206,7 +206,7 @@ For logical reasons, WC mode will be automatically disabled in some situations:
 
 [Room Condition (RC) mode](#room-condition-mode-temperaturehumidity-sensor) can be enabled together with WC mode. In that case, only one timezone is used, and the other display shows the temperature. If there is a time zone configured for the red display, the temperature will be shown in the yellow display. If there no time zone for the red display, the temperature will be shown there, and the yellow display will show time for the time zone you set up for the yellow display.
 
-| ![WC/RC hybrid](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/9e3c7b09-a948-4aff-9044-95f7d9df7d8c) |
+| ![WC/RC hybrid](hybmode.jpg) |
 |:--:|
 | *WC/RC hybrid mode* |
 
@@ -772,7 +772,7 @@ To disable *car mode*, type 990 followed by ENTER. The TCD will reboot and attem
 
 ## Peripherals and connection
 
-![The BTTF Prop Family](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/7ad9db2f-2642-4b81-be0a-4767efdfb849)
+![The BTTF Prop Family](img/family-head.png)
 
 - [Fake Power Switch](#fake-power-switch)
 - [Speedometer](#speedometer)
@@ -790,11 +790,11 @@ If the **_Use fake power switch_** option is checked in the Config Portal, the d
 
 On Control Boards V1.3 and later, there is a dedicated header labeled "Fake PWR" to connect the switch to. The pins to be shortened by the switch are labeled "GND" and "PWR Trigger":
 
-![pwr_trigger](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/edc477ed-7588-4133-8b23-3a434ffc871c)
+![pwr_trigger](img/fakepwr.jpg)
 
 On earlier Control Boards (1.2 and below), the switch needs shorten the pins labeled "IO13" and "GND" as shown here: (The pin headers are not present on original boards)
 
-![io13](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/308a901b-0932-47d0-88f5-8f7802b06274)
+![pwr_trigger1_2](img/fakepwr12.jpg)
 
 Note that the switch actually needs to be a switch with a maintained contact; the pins need to remain connected for as long as the device is fake-switched-on.
 
@@ -810,13 +810,13 @@ As mentioned above, a time travel can be triggered by holding "0" on the keypad.
 
 On Control Boards V1.3 and later, there is a dedicated header for the button labeled "Time Travel". The button needs to shorten pins "TT IN" and "GND".
 
-| ![ttin](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/ac3a912f-fa2e-40e0-a249-2bb78b5bfa45) |
+| ![ttin](img/ttin.jpg) |
 |:--:|
 | TT_IN on TCB 1.3 |
 
 Unfortunately, there is no header and no break out for IO27 on TC control boards V1.2 and below. There is, however, a row of solder pads right next to the socket on the control board, where a pin header or cable can easily be soldered on:
 
-| ![tcboard_io27](https://user-images.githubusercontent.com/76924199/194284336-2fe9fa9b-d5e5-49f5-b1cd-b0fd2abdff53.jpg) |
+| ![tcboard_io27](img/ttin12.jpg) |
 |:--:|
 | IO27 (TT_IN) on TCB 1.2 |
 
@@ -836,7 +836,7 @@ Full disclosure: The video was shot before the CircuitSetup speedo became availa
 
 The CircuitSetup [Speedo Kit](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit/) needs to be wired as shown below:
 
-![speedo_i2c_2](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/cc8ac29b-5ac3-4ce8-bade-21127feb50df)
+![speedo_i2c](img/speedo_i2c.png)
 
 If you want to make your own speedo, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#speedometer).
 
@@ -902,7 +902,7 @@ The rotary encoder for volume replaces the volume knob on back of the TCD's keyp
 
 The firmware supports connecting a temperature/humidity sensor for "room condition mode"; in this mode, *destination* and *last departed* times are replaced by temperature and humidity (if applicable), respectively. To toggle between normal and room condition mode, enter "111" and press ENTER. 
 
-![rcmode](https://user-images.githubusercontent.com/76924199/208133653-f0fb0a38-51e4-4436-9506-d841ef1bfa6c.jpg)
+![rcmode](img/rcmode.jpg)
 
 Room condition mode can be used together with [World Clock mode](#world-clock-mode); if both are enabled, only one alternative time and only temperature is shown. To toggle RC and WC mode simultaniously, type "113" and press ENTER.
 
@@ -918,7 +918,7 @@ For information on supported sensor models/types and configuration, see [here](h
 
 The device can tell other props about a time travel, and in essence act as a "master controller" in a setup of several props. 
 
-![Wired connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/4187e3ca-e6b3-489d-ba9d-b7f681fdb640)
+![Wired connection](family-wired.png)
 
 For detailed wiring instructions, please see the documentaton for the prop ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire)); for DIY props, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#other-props).
 
@@ -934,7 +934,7 @@ Note that a wired connection only allows for synchronized time travel sequences,
 
 The TCD can communicate with other compatible props wirelessly, via the built-in "**B**asic-**T**elematics-**T**ransmission-**F**ramework" over WiFi. It can send out information about a time travel and an alarm, and other props can query the TCD for time, speed and some other data.
 
-![bttfn connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/2ef3f755-4be2-4d81-a081-992a95b1b2fc)
+![bttfn connection](img/family-wifi-bttfn.png)
 
 Here is a demonstration of all the props connected through BTTFN:
 
@@ -983,7 +983,7 @@ The TCD can - to a limited extent - be controlled through messages sent to topic
 
 If both the TCD and the other props are connected to the same broker, and the option **_Send event notifications_** is checked on the TCD's side, other compatible props will receive information on time travel and alarm and play their sequences in sync with the TCD. The topic is called  **bttf/tcd/pub**.
 
-![MQTT connection](https://github.com/realA10001986/Time-Circuits-Display/assets/76924199/4fa5ad53-d51a-4bc0-901e-b84bb74cb85e)
+![MQTT connection](img/family-wifi-mqtt.png)
 
 The timing is identical to the wired protocol; TIMETRAVEL is sent to **bttf/tcd/pub** with a lead time of 5 seconds. REENTRY is sent when the re-entry sequence starts.
 
