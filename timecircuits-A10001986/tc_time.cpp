@@ -5896,6 +5896,7 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
         #endif
         buf[20] = (uint16_t)temp & 0xff;
         buf[21] = (uint16_t)temp >> 8;
+        if(tempUnit) buf[26] |= 0x40;   // Signal temp unit (0=F, 1=C)
     }
     if(buf[5] & 0x08) {    // lux (-1 if unavailable)
         int32_t temp32 = -1;
@@ -5915,7 +5916,8 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
         #ifdef FAKE_POWER_ON
         if(!FPBUnitIsOn)               a |= 0x02; // bit 1: Fake power (0: on,  1: off)
         #endif
-        // bits 6-2 for future use
+        // bits 5-2 for future use
+        // bit 6 used for temp unit, see above
         // bit 7 used for rotEnc vs GPS, see above
         buf[26] |= a;
     }
