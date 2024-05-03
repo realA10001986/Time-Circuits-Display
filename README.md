@@ -920,7 +920,7 @@ The device can tell other props about a time travel, and in essence act as a "ma
 
 ![Wired connection](img/family-wired.png)
 
-For detailed wiring instructions, please see the documentaton for the prop ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire)); for DIY props, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#other-props).
+For detailed wiring instructions, please see the documentaton for the prop ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [Dash Gauges](https://github.com/realA10001986/Dash-Gauges/blob/main/DIY/README.md#connecting-a-tcd-to-the-dash-gauges-by-wire), [VSR](https://github.com/realA10001986/VSR#connecting-a-tcd-by-wire)); for DIY props, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#other-props).
 
 If external gear is connected by wire and you want to use this control feature, check **_Control props connected by wire_** in the Config Portal.
 
