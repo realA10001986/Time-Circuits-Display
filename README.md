@@ -918,7 +918,7 @@ For information on supported sensor models/types and configuration, see [here](h
 
 The device can tell other props about a time travel, and in essence act as a "master controller" in a setup of several props. 
 
-![Wired connection](family-wired.png)
+![Wired connection](img/family-wired.png)
 
 For detailed wiring instructions, please see the documentaton for the prop ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire)); for DIY props, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#other-props).
 
