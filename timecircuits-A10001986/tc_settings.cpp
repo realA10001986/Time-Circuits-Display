@@ -183,7 +183,8 @@ void settings_setup()
     bool SDres = false;
 
     // Pre-maturely use ENTER button (initialized again in keypad_setup())
-    pinMode(ENTER_BUTTON_PIN, INPUT_PULLUP);
+    // Pin pulled-down on control board
+    pinMode(ENTER_BUTTON_PIN, INPUT);
     delay(20);
 
     #ifdef TC_DBG

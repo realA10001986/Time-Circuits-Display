@@ -101,6 +101,8 @@
 
 /*  Changelog
  *
+ *  2024/05/09 (A10001986)
+ *    - Pre-init ENTER button without pull up
  *  2024/04/12 (A10001986)
  *    - Add temperature unit bit for BTTFN status
  *  2024/04/04 (A10001986)

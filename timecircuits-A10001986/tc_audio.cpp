@@ -142,6 +142,10 @@ void audio_setup()
     audioLogger = &Serial;
     #endif
 
+    // Line-out mute pin
+    pinMode(MUTE_LINEOUT_PIN, OUTPUT);
+    digitalWrite(MUTE_LINEOUT_PIN, LOW);
+
     // Set resolution for volume pot
     analogReadResolution(POT_RESOLUTION);
     analogSetWidth(POT_RESOLUTION);
@@ -487,6 +491,17 @@ static float getVolume()
 static void setLineOut(bool doLineOut)
 {
     // TODO: Possibility to switch between internal speaker and line-out
+    if(useLineOut) {
+        
+        digitalWrite(MUTE_LINEOUT_PIN, doLineOut ? HIGH : LOW);
+        if(doLineOut) {
+            // Switch off MAX98357
+            // Switch on PCM510x
+        } else {
+            // Switch on MAX98357
+            // Switch off PCM510x
+        }
+    }
 }
 
 /*

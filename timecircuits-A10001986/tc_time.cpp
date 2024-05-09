@@ -913,9 +913,6 @@ void time_setup()
     // Pin for monitoring seconds from RTC
     pinMode(SECONDS_IN_PIN, INPUT_PULLDOWN);
 
-    // Status LED
-    pinMode(STATUS_LED_PIN, OUTPUT);
-
     // Init fake power switch
     #ifdef FAKE_POWER_ON
     waitForFakePowerButton = (atoi(settings.fakePwrOn) > 0);

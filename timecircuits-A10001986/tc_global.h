@@ -27,9 +27,9 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION "V2.9.99"          // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "APR122024"  // 13 chars max
+#define TC_VERSION_EXTRA "MAY092024"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "04122024"   // 12 chars max
+#define TC_VERSION_EXTRA "05092024"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -224,6 +224,8 @@
 #define I2S_BCLK_PIN      26
 #define I2S_LRCLK_PIN     25
 #define I2S_DIN_PIN       33
+
+#define MUTE_LINEOUT_PIN   2      // TCD control board 1.4 (preliminary)
 
 // SD Card pins
 #define SD_CS_PIN          5
