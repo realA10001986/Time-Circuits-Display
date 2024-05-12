@@ -27,9 +27,9 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION "V2.9.99"          // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "MAY092024"  // 13 chars max
+#define TC_VERSION_EXTRA "MAY122024"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "05092024"   // 12 chars max
+#define TC_VERSION_EXTRA "05122024"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -148,6 +148,11 @@
 /*************************************************************************
  ***                           Miscellaneous                           ***
  *************************************************************************/
+
+// If this is uncommented, support for line-out support (CB 1.4) is 
+// included. Time travel sounds as well as music from the Music Player
+// will be played over the line-out, and not the built-in speaker.
+//#define TC_HAVELINEOUT
 
 // If this is commented, the TCD uses the Gregorian calendar all the way,
 // ie since year 1. If this is uncommented, the Julian calendar is used

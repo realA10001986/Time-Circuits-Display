@@ -523,6 +523,9 @@ static bool read_settings(File configFile)
         wd |= CopyCheckValidNumParm(json["quickGPS"], settings.quickGPS, sizeof(settings.quickGPS), 0, 1, DEF_QUICK_GPS);
         #endif
         wd |= CopyCheckValidNumParm(json["playTTsnds"], settings.playTTsnds, sizeof(settings.playTTsnds), 0, 1, DEF_PLAY_TT_SND);
+        #ifdef TC_HAVELINEOUT
+        wd |= CopyCheckValidNumParm(json["useLineOut"], settings.useLineOut, sizeof(settings.useLineOut), 0, 1, DEF_USE_LINEOUT);
+        #endif
 
         #ifdef TC_HAVEMQTT
         wd |= CopyCheckValidNumParm(json["useMQTT"], settings.useMQTT, sizeof(settings.useMQTT), 0, 1, 0);
@@ -644,6 +647,9 @@ void write_settings()
     json["quickGPS"] = (const char *)settings.quickGPS;
     #endif
     json["playTTsnds"] = (const char *)settings.playTTsnds;
+    #ifdef TC_HAVELINEOUT
+    json["useLineOut"] = (const char *)settings.useLineOut;
+    #endif
 
     #ifdef TC_HAVEMQTT
     json["useMQTT"] = (const char *)settings.useMQTT;

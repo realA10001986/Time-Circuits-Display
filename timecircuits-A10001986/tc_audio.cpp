@@ -122,7 +122,9 @@ static char       dtmfBuf[] = "/Dtmf-0.mp3\0";    // Not const
 static const char *hsnd     = "/hour.mp3";
 
 static float  getVolume();
+#ifdef TC_HAVELINEOUT
 static void   setLineOut(bool doLineOut);
+#endif
 
 static int    mp_findMaxNum();
 static void   mp_nextprev(bool forcePlay, bool next);
@@ -173,6 +175,12 @@ void audio_setup()
 
     loadMusFoldNum();
     mpShuffle = (settings.shuffle[0] != '0');
+
+    #ifdef TC_HAVELINEOUT
+    useLineOut = (atoi(settings.useLineOut) > 0);
+    #else
+    useLineOut = false;
+    #endif
 
     // MusicPlayer init
     mp_init(true);
@@ -256,15 +264,15 @@ void play_file(const char *audio_file, uint16_t flags, float volumeFactor)
         beep->stop();
     }
 
+    #ifdef TC_HAVELINEOUT
     playLineOut = (useLineOut && (flags & PA_LINEOUT)) ? true : false;
     setLineOut(playLineOut);
-
-    if(playLineOut) {
-        dynVol     = false;
-    } else {
-        curChkNM   = (flags & PA_CHECKNM) ? true : false;
-        dynVol     = (flags & PA_DYNVOL) ? true : false;
-    }
+    #else
+    playLineOut = false;
+    #endif
+    
+    curChkNM   = (flags & PA_CHECKNM) ? true : false;
+    dynVol     = (flags & PA_DYNVOL) ? true : false;
 
     curVolFact = volumeFactor;
 
@@ -372,7 +380,9 @@ void play_beep()
         beep->stop();
     }
 
+    #ifdef TC_HAVELINEOUT
     setLineOut(false);
+    #endif
 
     curVolFact = 0.3;
     curChkNM   = true;
@@ -455,39 +465,32 @@ static float getVolume()
 {
     float vol_val;
 
-    if(playLineOut) {
-      
-        vol_val = 0.3 * curVolFact;    // FIXME: What is a good value here?
-        
+    if(curVolume == 255) {
+        vol_val = getRawVolume();
     } else {
-    
-        if(curVolume == 255) {
-            vol_val = getRawVolume();
-        } else {
-            vol_val = volTable[curVolume];
-        }
-    
-        // If user muted, return 0
-        if(vol_val == 0.0) return vol_val;
-    
-        vol_val *= curVolFact;
-        
-        // Do not totally mute
-        // 0.02 is the lowest audible gain
-        if(vol_val < 0.02) vol_val = 0.02;
-    
-        // Reduce volume in night mode, if requested
-        if(curChkNM && presentTime.getNightMode()) {
-            vol_val *= 0.3;
-            // Do not totally mute
-            if(vol_val < 0.02) vol_val = 0.02;
-        }
+        vol_val = volTable[curVolume];
+    }
 
+    // If user muted, return 0
+    if(vol_val == 0.0) return vol_val;
+
+    vol_val *= curVolFact;
+    
+    // Do not totally mute
+    // 0.02 is the lowest audible gain
+    if(vol_val < 0.02) vol_val = 0.02;
+
+    // Reduce volume in night mode, if requested
+    if(curChkNM && presentTime.getNightMode()) {
+        vol_val *= 0.3;
+        // Do not totally mute
+        if(vol_val < 0.02) vol_val = 0.02;
     }
 
     return vol_val;
 }
 
+#ifdef TC_HAVELINEOUT
 static void setLineOut(bool doLineOut)
 {
     // TODO: Possibility to switch between internal speaker and line-out
@@ -495,14 +498,17 @@ static void setLineOut(bool doLineOut)
         
         digitalWrite(MUTE_LINEOUT_PIN, doLineOut ? HIGH : LOW);
         if(doLineOut) {
+            out->SetOutputModeMono(false);
             // Switch off MAX98357
             // Switch on PCM510x
         } else {
+            out->SetOutputModeMono(true);
             // Switch on MAX98357
             // Switch off PCM510x
         }
     }
 }
+#endif
 
 /*
  * Helpers

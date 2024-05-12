@@ -86,7 +86,8 @@ extern uint8_t musFolderNum;
 #define DEF_USE_ETTO        0     // Default: 0: No external props
 #define DEF_NO_ETTO_LEAD    0     // Default: 0: ETTO with ETTO_LEAD lead time; 1 without
 #define DEF_QUICK_GPS       0     // Default: Slow GPS updates (unless speed is being displayed)
-#define DEF_PLAY_TT_SND     1     // Default 1: Play time travel sounds (0: Do not; for use with external equipment)
+#define DEF_PLAY_TT_SND     1     // Default: 1: Play time travel sounds (0: Do not; for use with external equipment)
+#define DEF_USE_LINEOUT     0     // Default: 0: Play all sound through built-in speaker; 1 Use Line out for music & time travel sound 
 #define DEF_SHUFFLE         0     // Music Player: Do not shuffle by default
 #define DEF_CFG_ON_SD       1     // Default: Save secondary settings on SD
 #define DEF_TIMES_PERS      0     // 0-1;  Default: 0 = TimeTravel not persistent
@@ -158,6 +159,9 @@ struct Settings {
     char quickGPS[4]        = MS(DEF_QUICK_GPS);
 #endif
     char playTTsnds[4]      = MS(DEF_PLAY_TT_SND);
+#ifdef TC_HAVELINEOUT
+    char useLineOut[4]      = MS(DEF_USE_LINEOUT);
+#endif
     char shuffle[4]         = MS(DEF_SHUFFLE);
     char CfgOnSD[4]         = MS(DEF_CFG_ON_SD);
     char timesPers[4]       = MS(DEF_TIMES_PERS);
