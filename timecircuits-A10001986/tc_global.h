@@ -27,9 +27,9 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION "V2.9.99"          // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "MAY122024"  // 13 chars max
+#define TC_VERSION_EXTRA "MAY142024"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "05122024"   // 12 chars max
+#define TC_VERSION_EXTRA "05142024"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -152,7 +152,7 @@
 // If this is uncommented, support for line-out support (CB 1.4) is 
 // included. Time travel sounds as well as music from the Music Player
 // will be played over the line-out, and not the built-in speaker.
-//#define TC_HAVELINEOUT
+#define TC_HAVELINEOUT
 
 // If this is commented, the TCD uses the Gregorian calendar all the way,
 // ie since year 1. If this is uncommented, the Julian calendar is used
@@ -219,26 +219,29 @@
  ***                             GPIO pins                             ***
  *************************************************************************/
 
-#define STATUS_LED_PIN     2      // Status LED (on ESP)
-#define SECONDS_IN_PIN    15      // SQW Monitor 1Hz from the DS3231
-#define ENTER_BUTTON_PIN  16      // enter key
-#define WHITE_LED_PIN     17      // white led
-#define LEDS_PIN          12      // Red/amber/green LEDs (TCD-Control V1.3+)
+#define STATUS_LED_PIN      2      // Status LED (on ESP) (TCD CB <V1.4)
+#define SECONDS_IN_PIN     15      // SQW Monitor 1Hz from the DS3231
+#define ENTER_BUTTON_PIN   16      // enter key
+#define WHITE_LED_PIN      17      // white led
+#define LEDS_PIN           12      // Red/amber/green LEDs (TCD CB V1.3+)
 
 // I2S audio pins
-#define I2S_BCLK_PIN      26
-#define I2S_LRCLK_PIN     25
-#define I2S_DIN_PIN       33
-
-#define MUTE_LINEOUT_PIN   2      // TCD control board 1.4 (preliminary)
+#define I2S_BCLK_PIN       26
+#define I2S_LRCLK_PIN      25
+#define I2S_DIN_PIN        33
 
 // SD Card pins
-#define SD_CS_PIN          5
-#define SPI_MOSI_PIN      23
-#define SPI_MISO_PIN      19
-#define SPI_SCK_PIN       18
+#define SD_CS_PIN           5
+#define SPI_MOSI_PIN       23
+#define SPI_MISO_PIN       19
+#define SPI_SCK_PIN        18
 
-#define VOLUME_PIN        32      // analog input pin
+#define VOLUME_PIN         32      // analog input pin (TCD CB <V1.4
+#define VOLUME_PIN_NEW     34      // analog input pin (TCD CB V1.4 preliminary)
+
+#define MUTE_LINEOUT_PIN    2      // TCD CB 1.4 (preliminary)
+#define SWITCH_LINEOUT_PIN 32      // TCD CB 1.4 (preliminary)
+#define MLO_MIRROR         35      // TCD CB 1.4 (preliminary)
 
 #define FAKE_POWER_BUTTON_PIN       13  // Fake "power" switch
 #define EXTERNAL_TIMETRAVEL_IN_PIN  27  // Externally triggered TT (input)

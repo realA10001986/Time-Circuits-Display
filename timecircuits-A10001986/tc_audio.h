@@ -45,6 +45,7 @@
 #define PA_LOOPNOW 0x0020
 #define PA_LINEOUT 0x0040
 #define PA_INTSPKR 0x0000
+#define PA_ISWAV   0x0080
 
 void  audio_setup();
 void  audio_loop();
@@ -71,6 +72,8 @@ void  mp_makeShuffle(bool enable);
 int   mp_checkForFolder(int num);
 int   mp_get_currently_playing();
 
+extern int  volumePin;
+
 extern bool audioInitDone;
 extern bool audioMute;
 extern bool muteBeep;
@@ -80,7 +83,9 @@ extern bool mpActive;
 extern bool haveId3;
 extern char id3[];
 
-extern int  curVolume;
+extern bool haveLineOut;
 extern bool useLineOut;
+
+extern int  curVolume;
 
 #endif

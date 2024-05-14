@@ -60,7 +60,7 @@
 #include "tc_wifi.h"
 
 static AudioGeneratorMP3 *mp3;
-static AudioGeneratorWAV *beep;
+static AudioGeneratorWAV *wav;
 
 #ifdef USE_SPIFFS
 static AudioFileSourceSPIFFS *myFS0;
@@ -76,6 +76,7 @@ bool audioInitDone = false;
 bool audioMute     = false;
 
 bool muteBeep      = true;
+static bool beepRunning = false;
 
 bool            haveMusic = false;
 bool            mpActive = false;
@@ -96,6 +97,7 @@ static const float volTable[20] = {
     0.35, 0.40, 0.50, 0.60,
     0.70, 0.80, 0.90, 1.00
 };
+int           volumePin = VOLUME_PIN;
 // Resolution for pot, 9-12 allowed
 #define POT_RESOLUTION 9
 int           curVolume = DEFAULT_VOLUME;
@@ -110,6 +112,7 @@ static bool   curChkNM   = true;
 static bool   dynVol     = true;
 static int    sampleCnt = 0;
 
+bool          haveLineOut   = false;
 bool          useLineOut = false;
 static bool   playLineOut = false;
 
@@ -118,7 +121,7 @@ bool          headLineShown = false;
 bool          blinker       = true;
 unsigned long renNow1, renNow2;
 
-static char       dtmfBuf[] = "/Dtmf-0.mp3\0";    // Not const
+static char       dtmfBuf[] = "/Dtmf-0.wav\0";    // Not const
 static const char *hsnd     = "/hour.mp3";
 
 static float  getVolume();
@@ -144,9 +147,15 @@ void audio_setup()
     audioLogger = &Serial;
     #endif
 
-    // Line-out mute pin
-    pinMode(MUTE_LINEOUT_PIN, OUTPUT);
-    digitalWrite(MUTE_LINEOUT_PIN, LOW);
+    // Init line-out
+    if(haveLineOut) {
+        // Switch to internal speaker
+        pinMode(SWITCH_LINEOUT_PIN, OUTPUT);
+        digitalWrite(SWITCH_LINEOUT_PIN, LOW);
+        // Init mute for line-out
+        pinMode(MUTE_LINEOUT_PIN, OUTPUT);
+        digitalWrite(MUTE_LINEOUT_PIN, LOW);
+    }
 
     // Set resolution for volume pot
     analogReadResolution(POT_RESOLUTION);
@@ -156,8 +165,8 @@ void audio_setup()
     out->SetOutputModeMono(true);
     out->SetPinout(I2S_BCLK_PIN, I2S_LRCLK_PIN, I2S_DIN_PIN);
 
-    mp3  = new AudioGeneratorMP3();
-    beep = new AudioGeneratorWAV();
+    mp3 = new AudioGeneratorMP3();
+    wav = new AudioGeneratorWAV();
 
     #ifdef USE_SPIFFS
     myFS0 = new AudioFileSourceSPIFFS();
@@ -177,7 +186,7 @@ void audio_setup()
     mpShuffle = (settings.shuffle[0] != '0');
 
     #ifdef TC_HAVELINEOUT
-    useLineOut = (atoi(settings.useLineOut) > 0);
+    useLineOut = (haveLineOut && (atoi(settings.useLineOut) > 0));
     #else
     useLineOut = false;
     #endif
@@ -196,9 +205,10 @@ void audio_loop()
 {   
     float vol;
     
-    if(beep->isRunning()) {
-        if(!beep->loop()) {
-            beep->stop();
+    if(wav->isRunning()) {
+        if(!wav->loop()) {
+            wav->stop();
+            beepRunning = false;
         }
     } else if(mp3->isRunning()) {
         if(!mp3->loop()) {
@@ -260,8 +270,8 @@ void play_file(const char *audio_file, uint16_t flags, float volumeFactor)
     if(mp3->isRunning()) {
         mp3->stop();
     } 
-    if(beep->isRunning()) {
-        beep->stop();
+    if(wav->isRunning()) {
+        wav->stop();
     }
 
     #ifdef TC_HAVELINEOUT
@@ -297,7 +307,8 @@ void play_file(const char *audio_file, uint16_t flags, float volumeFactor)
             }
             mySD0->seek(pos, SEEK_SET);
         }
-        mp3->begin(mySD0, out);   
+        mp3->begin(mySD0, out);
+        beepRunning = false;
                  
         #ifdef TC_DBG
         Serial.println(F("Playing from SD"));
@@ -309,13 +320,18 @@ void play_file(const char *audio_file, uint16_t flags, float volumeFactor)
       else if(haveFS && myFS0->open(audio_file))
     #endif
     {
-        if(!(flags & PA_NOID3TS)) {
-            buf[0] = 0;
-            myFS0->read((void *)buf, 10);
-            myFS0->seek(skipID3(buf), SEEK_SET);
+        if(!(flags & PA_ISWAV)) {
+            if(!(flags & PA_NOID3TS)) {
+                buf[0] = 0;
+                myFS0->read((void *)buf, 10);
+                myFS0->seek(skipID3(buf), SEEK_SET);
+            }
+            mp3->begin(myFS0, out);
+        } else {
+            wav->begin(myFS0, out);
         }
-        mp3->begin(myFS0, out);
-                  
+        beepRunning = false;
+
         #ifdef TC_DBG
         Serial.println(F("Playing from flash FS"));
         #endif
@@ -327,10 +343,6 @@ void play_file(const char *audio_file, uint16_t flags, float volumeFactor)
         #endif
         
     }
-
-    if(flags & PA_LOOPNOW) {
-        audio_loop();
-    }
 }
 
 /*
@@ -340,7 +352,7 @@ void play_file(const char *audio_file, uint16_t flags, float volumeFactor)
 void play_keypad_sound(char key)
 {
     dtmfBuf[6] = key;
-    play_file(dtmfBuf, PA_INTSPKR|PA_CHECKNM|PA_NOID3TS|PA_LOOPNOW, 0.6);
+    play_file(dtmfBuf, PA_ISWAV|PA_INTSPKR|PA_CHECKNM, 0.6);
 }
 
 void play_hour_sound(int hour)
@@ -366,18 +378,19 @@ void play_hour_sound(int hour)
 void play_beep()
 {
     if(!FPBUnitIsOn     || 
-       mp3->isRunning() || 
        muteBeep         || 
        mpActive         || 
-       audioMute        || 
-       presentTime.getNightMode()) {
+       mp3->isRunning() || 
+       (wav->isRunning() && !beepRunning) || 
+       presentTime.getNightMode() ||
+       audioMute) {
         return;
     }
 
     pwrNeedFullNow();
 
-    if(beep->isRunning()) {
-        beep->stop();
+    if(wav->isRunning()) {
+        wav->stop();
     }
 
     #ifdef TC_HAVELINEOUT
@@ -393,7 +406,8 @@ void play_beep()
     out->SetGain(getVolume());
 
     myPM->open(data_beep_wav, data_beep_wav_len);
-    beep->begin(myPM, out);
+    wav->begin(myPM, out);
+    beepRunning = true;
 }
 
 // Returns value for volume based on the position of the pot
@@ -404,7 +418,7 @@ static float getRawVolume()
     long avg = 0, avg1 = 0, avg2 = 0;
     long raw;
 
-    raw = analogRead(VOLUME_PIN);
+    raw = analogRead(volumePin);
 
     if(anaReadCount > 1) {
       
@@ -493,18 +507,16 @@ static float getVolume()
 #ifdef TC_HAVELINEOUT
 static void setLineOut(bool doLineOut)
 {
-    // TODO: Possibility to switch between internal speaker and line-out
-    if(useLineOut) {
-        
-        digitalWrite(MUTE_LINEOUT_PIN, doLineOut ? HIGH : LOW);
+    if(useLineOut) {       
+        //digitalWrite(MUTE_LINEOUT_PIN, doLineOut ? HIGH : LOW);
         if(doLineOut) {
             out->SetOutputModeMono(false);
-            // Switch off MAX98357
-            // Switch on PCM510x
+            // Switch off MAX98357, switch on PCM510x
+            digitalWrite(SWITCH_LINEOUT_PIN, HIGH);
         } else {
             out->SetOutputModeMono(true);
-            // Switch on MAX98357
-            // Switch off PCM510x
+            // Switch on MAX98357, switch off PCM510x
+            digitalWrite(SWITCH_LINEOUT_PIN, LOW);
         }
     }
 }
@@ -533,13 +545,13 @@ int getSWVolFromHWVol()
 
 bool checkAudioDone()
 {
-    if( mp3->isRunning() || beep->isRunning() ) return false;
+    if( mp3->isRunning() || wav->isRunning() ) return false;
     return true;
 }
 
 bool checkMP3Done()
 {
-    if(mp3->isRunning()) return false;
+    if(mp3->isRunning() || wav->isRunning()) return false;
     return true;
 }
 
@@ -547,8 +559,8 @@ void stopAudio()
 {
     if(mp3->isRunning()) {
         mp3->stop();
-    } else if(beep->isRunning()) {
-        beep->stop();
+    } else if(wav->isRunning()) {
+        wav->stop();
     }
 }
 

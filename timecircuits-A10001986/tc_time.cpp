@@ -937,7 +937,10 @@ void time_setup()
         // Blink white LED forever
         while(1) {
             digitalWrite(WHITE_LED_PIN, r);
-            delay(1000);
+            for(int i = 0; i < 10; i++) {
+                delay(100);
+                wifi_loop();
+            }
             r ^= HIGH;
         }
     }
@@ -1667,7 +1670,7 @@ void time_setup()
         const char *t2 = "             CIRCUITS";
         const char *t3 = "ON";
 
-        play_file("/intro.mp3", PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
+        play_file("/intro.mp3", PA_INTSPKR|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
 
         myIntroDelay(1200);
         destinationTime.setBrightnessDirect(15);

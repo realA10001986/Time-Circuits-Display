@@ -640,7 +640,13 @@ void wifi_setup()
 
     temp = haveAudioFiles ? 1 : 0;
     while(parmArray[temp]) {
+        #ifdef TC_HAVELINEOUT
+        if((parmArray[temp] != &custom_uLo) || haveLineOut) {
+            wm.addParameter(parmArray[temp]);  
+        }
+        #else
         wm.addParameter(parmArray[temp]);
+        #endif
         temp++;
     }
 
@@ -974,7 +980,9 @@ void wifi_loop()
             #endif
             mystrcpy(settings.playTTsnds, &custom_playTTSnd);
             #ifdef TC_HAVELINEOUT
-            mystrcpy(settings.useLineOut, &custom_uLo);
+            if(haveLineOut) {
+                mystrcpy(settings.useLineOut, &custom_uLo);
+            }
             #endif
 
             #ifdef TC_HAVEMQTT
@@ -1037,7 +1045,9 @@ void wifi_loop()
             #endif
             strcpyCB(settings.playTTsnds, &custom_playTTSnd);
             #ifdef TC_HAVELINEOUT
-            strcpyCB(settings.useLineOut, &custom_uLo);
+            if(haveLineOut) {
+                strcpyCB(settings.useLineOut, &custom_uLo);
+            }
             #endif
 
             #ifdef TC_HAVEMQTT
@@ -1682,7 +1692,9 @@ void updateConfigPortalValues()
     #endif
     custom_playTTSnd.setValue(settings.playTTsnds, 1);
     #ifdef TC_HAVELINEOUT
-    custom_uLo.setValue(settings.useLineOut, 1);
+    if(haveLineOut) {
+        custom_uLo.setValue(settings.useLineOut, 1);
+    }
     #endif
     #ifdef TC_HAVEMQTT
     custom_useMQTT.setValue(settings.useMQTT, 1);
@@ -1734,7 +1746,9 @@ void updateConfigPortalValues()
     #endif
     setCBVal(&custom_playTTSnd, settings.playTTsnds);
     #ifdef TC_HAVELINEOUT
-    setCBVal(&custom_uLo, settings.useLineOut);
+    if(haveLineOut) {
+        setCBVal(&custom_uLo, settings.useLineOut);
+    }
     #endif
     #ifdef TC_HAVEMQTT
     setCBVal(&custom_useMQTT, settings.useMQTT);

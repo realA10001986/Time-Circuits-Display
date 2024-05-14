@@ -75,11 +75,11 @@
 #define AC_FMTV 2
 #define AC_OHSZ (14 + ((10+NUM_AUDIOFILES+1)*(32+4)))
 #ifndef TWSOUND
-#define SND_REQ_VERSION "CS01"
-#define AC_TS 1159392
+#define SND_REQ_VERSION "CS02"
+#define AC_TS 1215896
 #else
-#define SND_REQ_VERSION "TW01"
-#define AC_TS 1154679
+#define SND_REQ_VERSION "TW02"
+#define AC_TS 1211183
 #endif
 
 static const char *CONFN  = "/TCDA.bin";
@@ -185,7 +185,38 @@ void settings_setup()
     // Pre-maturely use ENTER button (initialized again in keypad_setup())
     // Pin pulled-down on control board
     pinMode(ENTER_BUTTON_PIN, INPUT);
+
+    // Detect Control Board version 1.4+
+    pinMode(MUTE_LINEOUT_PIN, OUTPUT);
+    digitalWrite(MUTE_LINEOUT_PIN, LOW);
+    pinMode(MLO_MIRROR, INPUT);
+    
     delay(20);
+
+    haveLineOut = false;
+    
+    if(!digitalRead(MLO_MIRROR)) {
+        digitalWrite(MUTE_LINEOUT_PIN, HIGH);
+        delay(20);
+        if(digitalRead(MLO_MIRROR)) {
+            digitalWrite(MUTE_LINEOUT_PIN, LOW);
+            delay(20);
+            if(!digitalRead(MLO_MIRROR)) {
+                haveLineOut = true;
+                #ifdef TC_DBG
+                Serial.println("Control board 1.4+ detected");
+                #endif
+            }
+        }
+    }
+
+    if(haveLineOut) {
+        volumePin = VOLUME_PIN_NEW;
+    } else {
+        volumePin = VOLUME_PIN;
+    }
+
+    pinMode(volumePin, INPUT);
 
     #ifdef TC_DBG
     Serial.printf("%s: Mounting flash FS... ", funcName);
@@ -1502,6 +1533,7 @@ bool check_if_default_audio_present()
 bool copy_audio_files(bool& delIDfile)
 {
     int i, haveErr = 0, haveWriteErr = 0;
+    char dtmfBuf[] = "/Dtmf-0.mp3\0";
 
     if(!allowCPA) {
         delIDfile = false;
@@ -1509,6 +1541,18 @@ bool copy_audio_files(bool& delIDfile)
     }
 
     start_file_copy();
+
+    for(i = 0; i < 10; i++) {
+        if(SPIFFS.exists(dtmfBuf)) {
+            SPIFFS.remove(dtmfBuf);
+            #ifdef TC_DBG
+            Serial.printf("Removed %s\n", dtmfBuf);
+            #endif
+            dtmfBuf[6]++;
+        } else {
+            break;
+        }
+    }
 
     if(ic) {
         File sfile;

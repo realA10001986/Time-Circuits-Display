@@ -101,6 +101,11 @@
 
 /*  Changelog
  *
+ *  2024/05/14 (A10001986)
+ *    - Allow CP access if RTC not found
+ *    - Switched keypad sounds to wav for more immediate play-back
+ *  2024/05/12-13 (A10001986)
+ *    - Some preparations for TCD CB 1.4
  *  2024/05/09 (A10001986)
  *    - Pre-init ENTER button without pull up
  *  2024/04/12 (A10001986)

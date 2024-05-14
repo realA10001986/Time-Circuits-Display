@@ -304,7 +304,7 @@ static void keypadEvent(char key, KeyState kstate)
         case '6':    // "6" held down -> play audio file "key6.mp3"
             doKey = false;
             keySnd[4] = key;
-            play_file(keySnd, PA_LINEOUT|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
+            play_file(keySnd, PA_INTSPKR|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
             break;
         case '7':    // "7" held down -> re-enable/re-connect WiFi
             doKey = false;
