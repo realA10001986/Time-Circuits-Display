@@ -76,7 +76,7 @@
 #define AC_OHSZ (14 + ((10+NUM_AUDIOFILES+1)*(32+4)))
 #ifndef TWSOUND
 #define SND_REQ_VERSION "CS02"
-#define AC_TS 1215896
+#define AC_TS 1236252
 #else
 #define SND_REQ_VERSION "TW02"
 #define AC_TS 1231539
