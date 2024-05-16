@@ -159,9 +159,7 @@ struct Settings {
     char quickGPS[4]        = MS(DEF_QUICK_GPS);
 #endif
     char playTTsnds[4]      = MS(DEF_PLAY_TT_SND);
-#ifdef TC_HAVELINEOUT
-    char useLineOut[4]      = MS(DEF_USE_LINEOUT);
-#endif
+
     char shuffle[4]         = MS(DEF_SHUFFLE);
     char CfgOnSD[4]         = MS(DEF_CFG_ON_SD);
     char timesPers[4]       = MS(DEF_TIMES_PERS);
@@ -216,6 +214,11 @@ void saveMusFoldNum();
 #ifdef HAVE_STALE_PRESENT
 void loadStaleTime(void *target, bool& currentOn);
 void saveStaleTime(void *source, bool currentOn);
+#endif
+
+#ifdef TC_HAVELINEOUT
+void loadLineOut();
+void saveLineOut();
 #endif
 
 bool loadIpSettings();

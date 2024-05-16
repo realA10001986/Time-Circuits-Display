@@ -79,7 +79,7 @@
 #define AC_TS 1215896
 #else
 #define SND_REQ_VERSION "TW02"
-#define AC_TS 1211183
+#define AC_TS 1231539
 #endif
 
 static const char *CONFN  = "/TCDA.bin";
@@ -101,6 +101,9 @@ static const char *stCfgName  = "/stconfig";        // Exhib Mode (flash/SD)
 #endif
 static const char *musCfgName = "/tcdmcfg.json";    // Music config (SD)
 static const char *cmCfgName  = "/cmconfig.json";   // Carmode (flash/SD)
+#ifdef TC_HAVELINEOUT
+static const char *loCfgName  = "/loconfig.json";   // LineOut (flash/SD)
+#endif
 
 static const char *fsNoAvail = "File System not available";
 static const char *failFileWrite = "Failed to open file for writing";
@@ -554,9 +557,6 @@ static bool read_settings(File configFile)
         wd |= CopyCheckValidNumParm(json["quickGPS"], settings.quickGPS, sizeof(settings.quickGPS), 0, 1, DEF_QUICK_GPS);
         #endif
         wd |= CopyCheckValidNumParm(json["playTTsnds"], settings.playTTsnds, sizeof(settings.playTTsnds), 0, 1, DEF_PLAY_TT_SND);
-        #ifdef TC_HAVELINEOUT
-        wd |= CopyCheckValidNumParm(json["useLineOut"], settings.useLineOut, sizeof(settings.useLineOut), 0, 1, DEF_USE_LINEOUT);
-        #endif
 
         #ifdef TC_HAVEMQTT
         wd |= CopyCheckValidNumParm(json["useMQTT"], settings.useMQTT, sizeof(settings.useMQTT), 0, 1, 0);
@@ -678,9 +678,6 @@ void write_settings()
     json["quickGPS"] = (const char *)settings.quickGPS;
     #endif
     json["playTTsnds"] = (const char *)settings.playTTsnds;
-    #ifdef TC_HAVELINEOUT
-    json["useLineOut"] = (const char *)settings.useLineOut;
-    #endif
 
     #ifdef TC_HAVEMQTT
     json["useMQTT"] = (const char *)settings.useMQTT;
@@ -1305,6 +1302,54 @@ void saveStaleTime(void *source, bool currentOn)
     } else if(haveFS) {
         writeFileToFS(stCfgName, savBuf, sizeof(savBuf));
     }
+}
+#endif
+
+/*
+ *  Load/save lineOut
+ */
+
+#ifdef TC_HAVELINEOUT
+void loadLineOut()
+{
+    bool haveConfigFile = false;
+    File configFile;
+
+    if(!haveFS && !configOnSD)
+        return;
+
+    if(!haveLineOut)
+        return;
+
+    if(openCfgFileRead(loCfgName, configFile)) {
+        DECLARE_S_JSON(512,json);
+        //StaticJsonDocument<512> json;
+        if(!readJSONCfgFile(json, configFile, "loadLineOut")) {
+            if(json["LineOut"]) {
+                useLineOut = (atoi(json["LineOut"]) > 0);
+            }
+        } 
+        configFile.close();
+    }
+}
+
+void saveLineOut()
+{
+    char buf[2];
+    DECLARE_S_JSON(512,json);
+    //StaticJsonDocument<512> json;
+
+    if(!haveFS && !configOnSD)
+        return;
+
+    if(!haveLineOut)
+        return;
+
+    buf[0] = useLineOut ? '1' : '0';
+    buf[1] = 0;
+    json["LineOut"] = (const char *)buf;
+
+    writeJSONCfgFile(json, loCfgName, configOnSD, "saveLineOut");
 }
 #endif
 

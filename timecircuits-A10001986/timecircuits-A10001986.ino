@@ -101,6 +101,11 @@
 
 /*  Changelog
  *
+ *  2024/05/16 (A10001986)
+ *    - Re-do DTMF files (added silence to avoid cut-off)
+ *      (Another sound-pack update)
+ *  2024/05/15 (A10001986)
+ *    - Rework line-out setting (350/351 on keypad, instead of option in CP)
  *  2024/05/14 (A10001986)
  *    - Allow CP access if RTC not found
  *    - Switched keypad sounds to wav for more immediate play-back

@@ -308,13 +308,6 @@ WiFiManagerParameter custom_playTTSnd("plyTTS", "Play time travel sounds (0=no, 
 #else // -------------------- Checkbox hack: --------------
 WiFiManagerParameter custom_playTTSnd("plyTTS", "Play time travel sounds", settings.playTTsnds, 1, "autocomplete='off' type='checkbox'", WFM_LABEL_AFTER);
 #endif // -------------------------------------------------
-#ifdef TC_HAVELINEOUT
-#ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
-WiFiManagerParameter custom_uLo("uLo", "Use line out audio (0=no, 1=yes)", settings.useLineOut, 1, "autocomplete='off'");
-#else // -------------------- Checkbox hack: --------------
-WiFiManagerParameter custom_uLo("uLo", "Use line out audio", settings.useLineOut, 1, "autocomplete='off' type='checkbox'", WFM_LABEL_AFTER);
-#endif // -------------------------------------------------
-#endif
 
 #ifdef TC_HAVEMQTT
 #ifdef TC_NOCHECKBOXES  // --- Standard text boxes: -------
@@ -558,9 +551,6 @@ void wifi_setup()
       &custom_qGPS,
     #endif
       &custom_playTTSnd,
-    #ifdef TC_HAVELINEOUT
-      &custom_uLo,
-    #endif
 
     #ifdef TC_HAVEMQTT
       &custom_sectstart, 
@@ -640,13 +630,7 @@ void wifi_setup()
 
     temp = haveAudioFiles ? 1 : 0;
     while(parmArray[temp]) {
-        #ifdef TC_HAVELINEOUT
-        if((parmArray[temp] != &custom_uLo) || haveLineOut) {
-            wm.addParameter(parmArray[temp]);  
-        }
-        #else
         wm.addParameter(parmArray[temp]);
-        #endif
         temp++;
     }
 
@@ -979,11 +963,6 @@ void wifi_loop()
             mystrcpy(settings.quickGPS, &custom_qGPS);
             #endif
             mystrcpy(settings.playTTsnds, &custom_playTTSnd);
-            #ifdef TC_HAVELINEOUT
-            if(haveLineOut) {
-                mystrcpy(settings.useLineOut, &custom_uLo);
-            }
-            #endif
 
             #ifdef TC_HAVEMQTT
             mystrcpy(settings.useMQTT, &custom_useMQTT);
@@ -1044,11 +1023,6 @@ void wifi_loop()
             strcpyCB(settings.quickGPS, &custom_qGPS);
             #endif
             strcpyCB(settings.playTTsnds, &custom_playTTSnd);
-            #ifdef TC_HAVELINEOUT
-            if(haveLineOut) {
-                strcpyCB(settings.useLineOut, &custom_uLo);
-            }
-            #endif
 
             #ifdef TC_HAVEMQTT
             strcpyCB(settings.useMQTT, &custom_useMQTT);
@@ -1691,11 +1665,6 @@ void updateConfigPortalValues()
     custom_qGPS.setValue(settings.quickGPS, 1);
     #endif
     custom_playTTSnd.setValue(settings.playTTsnds, 1);
-    #ifdef TC_HAVELINEOUT
-    if(haveLineOut) {
-        custom_uLo.setValue(settings.useLineOut, 1);
-    }
-    #endif
     #ifdef TC_HAVEMQTT
     custom_useMQTT.setValue(settings.useMQTT, 1);
     #ifdef EXTERNAL_TIMETRAVEL_OUT
@@ -1745,11 +1714,6 @@ void updateConfigPortalValues()
     setCBVal(&custom_qGPS, settings.quickGPS);
     #endif
     setCBVal(&custom_playTTSnd, settings.playTTsnds);
-    #ifdef TC_HAVELINEOUT
-    if(haveLineOut) {
-        setCBVal(&custom_uLo, settings.useLineOut);
-    }
-    #endif
     #ifdef TC_HAVEMQTT
     setCBVal(&custom_useMQTT, settings.useMQTT);
     #ifdef EXTERNAL_TIMETRAVEL_OUT
@@ -1760,7 +1724,7 @@ void updateConfigPortalValues()
     setCBVal(&custom_CfgOnSD, settings.CfgOnSD);
     //setCBVal(&custom_sdFrq, settings.sdFreq);
 
-    #endif // ---------------------------------------------    
+    #endif // --------------------------------------------- 
 }
 
 static void buildSelectMenu(char *target, const char **theHTML, int cnt, char *setting)

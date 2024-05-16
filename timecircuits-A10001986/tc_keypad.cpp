@@ -745,6 +745,21 @@ void keypad_loop()
                         invalidEntry = true;
                     }
                     break;
+                #ifdef TC_HAVELINEOUT
+                case 350:
+                case 351:
+                    if(haveLineOut) {
+                        rcModeState = useLineOut;
+                        useLineOut = (code == 351);
+                        if(rcModeState != useLineOut) {
+                            saveLineOut();
+                        }
+                        validEntry = true;
+                    } else {
+                        invalidEntry = true;
+                    }
+                    break;
+                #endif
                 case 440:
                     #ifdef IS_ACAR_DISPLAY
                     sprintf(atxt, "%s OFF", tmr);

@@ -186,9 +186,9 @@ void audio_setup()
     mpShuffle = (settings.shuffle[0] != '0');
 
     #ifdef TC_HAVELINEOUT
-    useLineOut = (haveLineOut && (atoi(settings.useLineOut) > 0));
-    #else
-    useLineOut = false;
+    if(haveLineOut) {
+        loadLineOut();
+    }
     #endif
 
     // MusicPlayer init
@@ -273,6 +273,7 @@ void play_file(const char *audio_file, uint16_t flags, float volumeFactor)
     if(wav->isRunning()) {
         wav->stop();
     }
+    beepRunning = false;
 
     #ifdef TC_HAVELINEOUT
     playLineOut = (useLineOut && (flags & PA_LINEOUT)) ? true : false;
@@ -308,7 +309,6 @@ void play_file(const char *audio_file, uint16_t flags, float volumeFactor)
             mySD0->seek(pos, SEEK_SET);
         }
         mp3->begin(mySD0, out);
-        beepRunning = false;
                  
         #ifdef TC_DBG
         Serial.println(F("Playing from SD"));
@@ -330,7 +330,6 @@ void play_file(const char *audio_file, uint16_t flags, float volumeFactor)
         } else {
             wav->begin(myFS0, out);
         }
-        beepRunning = false;
 
         #ifdef TC_DBG
         Serial.println(F("Playing from flash FS"));
@@ -396,6 +395,7 @@ void play_beep()
     #ifdef TC_HAVELINEOUT
     setLineOut(false);
     #endif
+    playLineOut = false;
 
     curVolFact = 0.3;
     curChkNM   = true;
@@ -477,29 +477,29 @@ static float getRawVolume()
 
 static float getVolume()
 {
-    float vol_val;
+    float vol_val = 1.0;
 
-    if(curVolume == 255) {
-        vol_val = getRawVolume();
-    } else {
-        vol_val = volTable[curVolume];
+    if(!playLineOut) {
+        if(curVolume == 255) {
+            vol_val = getRawVolume();
+        } else {
+            vol_val = volTable[curVolume];
+        }
+
+        // If user muted, return 0
+        if(vol_val == 0.0) return vol_val;
     }
 
-    // If user muted, return 0
-    if(vol_val == 0.0) return vol_val;
-
     vol_val *= curVolFact;
-    
-    // Do not totally mute
-    // 0.02 is the lowest audible gain
-    if(vol_val < 0.02) vol_val = 0.02;
 
     // Reduce volume in night mode, if requested
     if(curChkNM && presentTime.getNightMode()) {
         vol_val *= 0.3;
-        // Do not totally mute
-        if(vol_val < 0.02) vol_val = 0.02;
     }
+
+    // Do not totally mute
+    // 0.02 is the lowest audible gain
+    if(vol_val < 0.02) vol_val = 0.02;
 
     return vol_val;
 }
@@ -545,13 +545,13 @@ int getSWVolFromHWVol()
 
 bool checkAudioDone()
 {
-    if( mp3->isRunning() || wav->isRunning() ) return false;
+    if(mp3->isRunning() || wav->isRunning()) return false;
     return true;
 }
 
 bool checkMP3Done()
 {
-    if(mp3->isRunning() || wav->isRunning()) return false;
+    if(mp3->isRunning() || (wav->isRunning() && !beepRunning)) return false;
     return true;
 }
 
