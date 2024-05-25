@@ -965,13 +965,13 @@ Only ASCII messages are supported, the maximum length is 255 characters.
 The TCD can - to a limited extent - be controlled through messages sent to topic **bttf/tcd/cmd**. Support commands are
 - TIMETRAVEL: Start a time travel
 - RETURN: Return from time travel
-- BEEP_ON: Enables the *annoying beep*(tm)
-- BEEP_OFF: Disables the *annoying beep*(tm)
+- BEEP_ON: Enables the [beep](#beep-on-the-second)
+- BEEP_OFF: Disables the [beep](#beep-on-the-second)
 - BEEP_30, BEEP_60: Set the beep modes as described [here](#beep-on-the-second)
 - ALARM_ON: Enable the alarm
 - ALARM_OFF: Disable the alarm
-- NIGHTMODE_ON: Enable manual night mode
-- NIGHTMODE_OFF: Disable manual night mode
+- NIGHTMODE_ON: Enable manual [night mode](#night-mode)
+- NIGHTMODE_OFF: Disable manual [night mode](#night-mode)
 - MP_PLAY: Starts the Music Player
 - MP_STOP: Stops the Music Player
 - MP_NEXT: Jump to next song
