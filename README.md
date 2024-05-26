@@ -788,11 +788,11 @@ You probably noticed that the device takes longer to boot than would be required
 
 If the **_Use fake power switch_** option is checked in the Config Portal, the device will power-up, initialize everything, but stay quiet and dark. Only when the fake "power switch" is activated, the device will visually "power up". Likewise, you can also fake "power off" the device using this switch. Fake "off" disables the displays, all audio (except the alarm) and the keypad. Just like in the movie.
 
-On Control Boards V1.3 and later, there is a dedicated header labeled "Fake PWR" to connect the switch to. The pins to be shortened by the switch are labeled "GND" and "PWR Trigger":
+On Control Boards V1.3 and later, there is a dedicated header labeled "Fake PWR" to connect the switch to. The pins to be shorted by the switch are labeled "GND" and "PWR Trigger":
 
 ![pwr_trigger](img/fakepwr.jpg)
 
-On earlier Control Boards (1.2 and below), the switch needs shorten the pins labeled "IO13" and "GND" as shown here: (The pin headers are not present on original boards)
+On earlier Control Boards (1.2 and below), the switch needs short the pins labeled "IO13" and "GND" as shown here: (The pin headers are not present on original boards)
 
 ![pwr_trigger1_2](img/fakepwr12.jpg)
 
@@ -808,7 +808,7 @@ In order to use the Fake Power Switch, check **_Use fake power switch_** in the 
 
 As mentioned above, a time travel can be triggered by holding "0" on the keypad. Since this doesn't really allow for an authentic movie-like experience, the firmware also supports an external trigger, such as a button switch or even another prop to trigger a time travel. Note that, unlike the [Fake Power Switch](#fake-power-switch), this trigger must be a momentary toggle.
 
-On Control Boards V1.3 and later, there is a dedicated header for the button labeled "Time Travel". The button needs to shorten pins "TT IN" and "GND".
+On Control Boards V1.3 and later, there is a dedicated header for the button labeled "Time Travel". The button needs to short pins "TT IN" and "GND".
 
 | ![ttin](img/ttin.jpg) |
 |:--:|
@@ -820,7 +820,7 @@ Unfortunately, there is no header and no break out for IO27 on TC control boards
 |:--:|
 | IO27 (TT_IN) on TCB 1.2 |
 
-In order to trigger a time-travel sequence on the Time Circuits, "TT IN"/IO27 and GND must be shortened for at least 200ms and then opened; the time travel is triggered upon release of the button. If the button is pressed for 3000ms (3 seconds), a ["Return from Time Travel"](#time-travel) is triggered.
+In order to trigger a time-travel sequence on the Time Circuits, "TT IN"/IO27 and GND must be shorted for at least 200ms and then opened; the time travel is triggered upon release of the button. If the button is pressed for 3000ms (3 seconds), a ["Return from Time Travel"](#time-travel) is triggered.
 
 The Config Portal allows configuring a delay for matching/synchronizing the TCD to another prop. The delay, if any, starts running after the button is released. The time travel sequence starts after the delay has expired.
 
