@@ -4,9 +4,8 @@ This repository holds the most current firmware for CircuitSetup's wonderful [Ti
 
 The kit parts are available [here](https://circuitsetup.us/product/complete-time-circuits-display-kit/). This TCD can be used stand-alone or in combination with several [peripherals](#peripherals-and-connection). If you went for the metal enclosure version, it is perfectly fit for mounting in an actual Delorean.
 
-| ![TCD Front](img/orlando.jpg) |
-|:--:|
-| *This very one is now in the Universal Studios [BTTF Escape Room](https://www.universalorlando.com/web/en/us/things-to-do/entertainment/universals-great-movie-escape) (Orlando)* |
+![My TCD](img/mytcd.jpg)
+![My TCD](img/mytcd2.jpg)
 
 Features include
 
