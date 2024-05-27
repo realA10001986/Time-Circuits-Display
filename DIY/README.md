@@ -87,7 +87,9 @@ For wiring information, see [here](#i2c-peripheral-wiring).
 
 The firmware supports connecting a temperature/humidity sensor for "room condition mode" and for displaying ambient temperature on a speedo display while idle.
 
-![rcmode](img/rcmode.jpg)
+| ![RC mode](img/rcmode.jpg) |
+|:--:|
+| *RC mode* |
 
 The following sensor types are supported: 
 - [MCP9808](https://www.adafruit.com/product/1782) (address 0x18 - non-default),
