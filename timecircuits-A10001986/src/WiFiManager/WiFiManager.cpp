@@ -2272,7 +2272,7 @@ String WiFiManager::getInfoData(String id){
     // temperature is not calibrated, varying large offsets are present, use for relative temp changes only
     p = FPSTR(HTTP_INFO_temp);
     p.replace(FPSTR(T_1),(String)temperatureRead());
-    p.replace(FPSTR(T_2),(String)((temperatureRead()+32)*1.8));
+    p.replace(FPSTR(T_2),(String)((temperatureRead()+32)*1.8f));
   }
   // else if(id==F("hall")){ 
   //   p = FPSTR(HTTP_INFO_hall);
@@ -3800,7 +3800,7 @@ String WiFiManager::WiFi_psk(bool persistent) const {
       #ifdef WM_DEBUG_LEVEL
       if(info.wifi_sta_disconnected.reason == WIFI_REASON_NO_AP_FOUND) DEBUG_WM(DEBUG_VERBOSE,F("[EVENT] WIFI_REASON: NO_AP_FOUND"));
       if(info.wifi_sta_disconnected.reason == WIFI_REASON_ASSOC_FAIL){
-        if(_aggresiveReconn) _connectRetries+=4;
+        if(_aggresiveReconn && _connectRetries<4) _connectRetries+=4;
         DEBUG_WM(DEBUG_VERBOSE,F("[EVENT] WIFI_REASON: AUTH FAIL"));
       }  
       #endif
