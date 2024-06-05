@@ -189,7 +189,7 @@ void settings_setup()
     // Pin pulled-down on control board
     pinMode(ENTER_BUTTON_PIN, INPUT);
 
-    // Detect Control Board version 1.4+
+    // Detect switchable Line-Out capability (Control Board version >=1.4.5)
     pinMode(MUTE_LINEOUT_PIN, OUTPUT);
     digitalWrite(MUTE_LINEOUT_PIN, LOW);
     pinMode(MLO_MIRROR, INPUT);
@@ -207,7 +207,7 @@ void settings_setup()
             if(!digitalRead(MLO_MIRROR)) {
                 haveLineOut = true;
                 #ifdef TC_DBG
-                Serial.println("Control board 1.4+ detected");
+                Serial.println("Switchable line-out detected");
                 #endif
             }
         }

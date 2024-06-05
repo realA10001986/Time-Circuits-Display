@@ -25,11 +25,11 @@
 
 // These must not contain any characters other than
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
-#define TC_VERSION "V2.9.99"          // 13 chars max
+#define TC_VERSION "V3.0.99"          // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "MAY162024"  // 13 chars max
+#define TC_VERSION_EXTRA "JUN052024"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "05162024"   // 12 chars max
+#define TC_VERSION_EXTRA "06052024"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -45,9 +45,6 @@
 #define TC_MDNS
 // Uncomment this if WiFiManager has mDNS enabled
 //#define TC_WM_HAS_MDNS 
-
-// Uncomment when using WiFiManager 2.0.17 or later
-//#define WIFIMANAGER_2_0_17      
 
 /*************************************************************************
  ***                 Configuration for peripherals                     ***
@@ -223,7 +220,7 @@
 #define SECONDS_IN_PIN     15      // SQW Monitor 1Hz from the DS3231
 #define ENTER_BUTTON_PIN   16      // enter key
 #define WHITE_LED_PIN      17      // white led
-#define LEDS_PIN           12      // Red/amber/green LEDs (TCD CB V1.3+)
+#define LEDS_PIN           12      // Red/amber/green LEDs (TCD CB >=V1.3)
 
 // I2S audio pins
 #define I2S_BCLK_PIN       26
@@ -236,12 +233,12 @@
 #define SPI_MISO_PIN       19
 #define SPI_SCK_PIN        18
 
-#define VOLUME_PIN         32      // analog input pin (TCD CB <V1.4
-#define VOLUME_PIN_NEW     34      // analog input pin (TCD CB V1.4 preliminary)
+#define VOLUME_PIN         32      // analog input pin (TCD CB <V1.4.5)
+#define VOLUME_PIN_NEW     34      // analog input pin (TCD CB >=V1.4.5 preliminary)
 
-#define MUTE_LINEOUT_PIN    2      // TCD CB 1.4 (preliminary)
-#define SWITCH_LINEOUT_PIN 32      // TCD CB 1.4 (preliminary)
-#define MLO_MIRROR         35      // TCD CB 1.4 (preliminary)
+#define MUTE_LINEOUT_PIN    2      // TCD CB >=1.4.5 (preliminary)
+#define SWITCH_LINEOUT_PIN 32      // TCD CB >=1.4.5 (preliminary)
+#define MLO_MIRROR         35      // TCD CB >=1.4.5 (preliminary)
 
 #define FAKE_POWER_BUTTON_PIN       13  // Fake "power" switch
 #define EXTERNAL_TIMETRAVEL_IN_PIN  27  // Externally triggered TT (input)

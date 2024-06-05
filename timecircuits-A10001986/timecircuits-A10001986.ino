@@ -101,6 +101,9 @@
 
 /*  Changelog
  *
+ *  2024/06/05 (A10001986)
+ *    - Minor fixes for WiFiManager
+ *    * Switched to esp32-arduino 2.0.17 for pre-compiled binary.
  *  2024/05/16 (A10001986)
  *    - Re-do DTMF files (added silence to avoid cut-off)
  *      (Another sound-pack update)
@@ -110,7 +113,7 @@
  *    - Allow CP access if RTC not found
  *    - Switched keypad sounds to wav for more immediate play-back
  *  2024/05/12-13 (A10001986)
- *    - Some preparations for TCD CB 1.4
+ *    - Some preparations for TCD CB 1.4.5
  *  2024/05/09 (A10001986)
  *    - Pre-init ENTER button without pull up
  *  2024/04/12 (A10001986)
@@ -194,7 +197,7 @@
  *    - Reformat FlashFS only if audio file installation fails due to a write error
  *    - Some minor bin-size-crunching
  *    - Allow sound installation in Flash-RO-mode
- *  2024/01/22 (A10001986)
+ *  2024/01/22 (A10001986) [released by CS as 3.0.0]
  *    - Save Exh-mode settings when reformatting Flash FS or when copying from
  *      or to SD
  *  2024/01/21 (A10001986)

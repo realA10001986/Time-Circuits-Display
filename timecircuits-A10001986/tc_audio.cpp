@@ -110,10 +110,10 @@ static long   prev_avg, prev_raw, prev_raw2;
 static float  curVolFact = 1.0;
 static bool   curChkNM   = true;
 static bool   dynVol     = true;
-static int    sampleCnt = 0;
+static int    sampleCnt  = 0;
 
-bool          haveLineOut   = false;
-bool          useLineOut = false;
+bool          haveLineOut = false;
+bool          useLineOut  = false;
 static bool   playLineOut = false;
 
 static const char *tcdrdone = "/TCD_DONE.TXT";
