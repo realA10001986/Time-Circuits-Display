@@ -43,7 +43,7 @@
  *   to "Additional Boards Manager URLs". The list is comma-separated.
  *   
  * - Go to "Tools" > "Board" > "Boards Manager", then search for "esp32", and install 
- *   the latest version by Espressif Systems.
+ *   the latest 2.x version by Espressif Systems.  Versions >=3.x are not supported.
  *   Detailed instructions for this step:
  *   https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html
  *   
