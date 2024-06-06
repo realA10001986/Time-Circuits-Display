@@ -54,7 +54,7 @@ If a previous version of the TCD firmware is installed on your device, you can u
 
 >If the previously installed firmware was from CircuitSetup (ie. pre-installed or downloaded from their github), you need to install the sound-pack from this repository afterwards.
 
-If you are using a fresh ESP32 board, please see [timecircuits-A10001986.ino](https://github.com/realA10001986/Time-Circuits-Display/blob/main/timecircuits-A10001986/timecircuits-A10001986.ino) for detailed build information.
+If you are using a fresh ESP32 board, please see [timecircuits-A10001986.ino](https://github.com/realA10001986/Time-Circuits-Display/blob/main/timecircuits-A10001986/timecircuits-A10001986.ino) for detailed build and upload information.
 
 ### Audio data installation
 
