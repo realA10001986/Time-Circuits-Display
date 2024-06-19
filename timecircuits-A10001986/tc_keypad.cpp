@@ -219,13 +219,13 @@ void keypad_setup()
     digitalWrite(WHITE_LED_PIN, LOW);
 
     // Set up Enter button
-    enterKey.setTicks(ENTER_DEBOUNCE, ENTER_PRESS_TIME, ENTER_HOLD_TIME);
+    enterKey.setTiming(ENTER_DEBOUNCE, ENTER_PRESS_TIME, ENTER_HOLD_TIME);
     enterKey.attachPress(enterKeyPressed);
     enterKey.attachLongPressStart(enterKeyHeld);
 
 #ifdef EXTERNAL_TIMETRAVEL_IN
     // Set up External time travel button
-    ettKey.setTicks(ETT_DEBOUNCE, ETT_PRESS_TIME, ETT_HOLD_TIME);
+    ettKey.setTiming(ETT_DEBOUNCE, ETT_PRESS_TIME, ETT_HOLD_TIME);
     ettKey.attachPress(ettKeyPressed);
     ettKey.attachLongPressStart(ettKeyHeld);
 

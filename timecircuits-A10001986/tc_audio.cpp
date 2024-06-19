@@ -152,9 +152,10 @@ void audio_setup()
         // Switch to internal speaker
         pinMode(SWITCH_LINEOUT_PIN, OUTPUT);
         digitalWrite(SWITCH_LINEOUT_PIN, LOW);
-        // Init mute for line-out
+        // Unmute line-out DAC
         pinMode(MUTE_LINEOUT_PIN, OUTPUT);
-        digitalWrite(MUTE_LINEOUT_PIN, LOW);
+        //digitalWrite(MUTE_LINEOUT_PIN, LOW);  // Mute
+        digitalWrite(MUTE_LINEOUT_PIN, HIGH);   // Unmute
     }
 
     // Set resolution for volume pot
@@ -507,7 +508,8 @@ static float getVolume()
 #ifdef TC_HAVELINEOUT
 static void setLineOut(bool doLineOut)
 {
-    if(useLineOut) {       
+    if(useLineOut) {
+        // Mute/un-mute secondary DAC? No, for now.
         //digitalWrite(MUTE_LINEOUT_PIN, doLineOut ? HIGH : LOW);
         if(doLineOut) {
             out->SetOutputModeMono(false);

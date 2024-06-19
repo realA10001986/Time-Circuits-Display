@@ -917,7 +917,7 @@ void time_setup()
     #ifdef FAKE_POWER_ON
     waitForFakePowerButton = (atoi(settings.fakePwrOn) > 0);
     if(waitForFakePowerButton) {
-        fakePowerOnKey.setTicks(50, 10, 50);
+        fakePowerOnKey.setTiming(50, 10, 50);
         fakePowerOnKey.attachLongPressStart(fpbKeyPressed);
         fakePowerOnKey.attachLongPressStop(fpbKeyLongPressStop);
     }

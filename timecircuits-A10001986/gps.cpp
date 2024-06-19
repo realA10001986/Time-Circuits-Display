@@ -9,8 +9,6 @@
  *
  * This is designed for MTK3333-based modules.
  * 
- * Some ideas taken from the Adafruit_GPS Library
- * https://github.com/adafruit/Adafruit_GPS
  * -------------------------------------------------------------------
  * License: MIT
  * 

@@ -19,7 +19,7 @@
  *
  * Keypad part inspired by "Keypad" library by M. Stanley & A. Brevig
  * Fractions of this code are customized, minimized derivates of parts 
- * of OneButton library by Matthias Hertel.
+ * of the OneButton library by Matthias Hertel.
  * -------------------------------------------------------------------
  * License of Keypad_I2C class: MIT
  * 
@@ -331,11 +331,11 @@ TCButton::TCButton(const int pin, const boolean activeLow, const bool pullupActi
 // debounce: Number of millisec that have to pass by before a click is assumed stable
 // press:    Number of millisec that have to pass by before a short press is detected
 // lPress:   Number of millisec that have to pass by before a long press is detected
-void TCButton::setTicks(const int debounceTs, const int pressTs, const int lPressTs)
+void TCButton::setTiming(const int debounceDur, const int pressDur, const int lPressDur)
 {
-    _debounceTicks = debounceTs;
-    _pressTicks = pressTs;
-    _longPressTicks = lPressTs;
+    _debounceDur = debounceDur;
+    _pressDur = pressDur;
+    _longPressDur = lPressDur;
 }
 
 // Register function for short press event
@@ -372,21 +372,21 @@ void TCButton::scan(void)
         break;
 
     case TCBS_PRESSED:
-        if((!active) && (waitTime < _debounceTicks)) {  // de-bounce
+        if((!active) && (waitTime < _debounceDur)) {  // de-bounce
             transitionTo(_lastState);
         } else if(!active) {
             transitionTo(TCBS_RELEASED);
             _startTime = now;
-        } else if((active) && (waitTime > _longPressTicks)) {
+        } else if(waitTime > _longPressDur) {
             if(_longPressStartFunc) _longPressStartFunc();
             transitionTo(TCBS_LONGPRESS);
         }
         break;
 
     case TCBS_RELEASED:
-        if((active) && (waitTime < _debounceTicks)) {  // de-bounce
+        if((active) && (waitTime < _debounceDur)) {  // de-bounce
             transitionTo(_lastState);
-        } else if((!active) && (waitTime > _pressTicks)) {
+        } else if((!active) && (waitTime > _pressDur)) {
             if(_pressFunc) _pressFunc();
             reset();
         }
@@ -400,9 +400,9 @@ void TCButton::scan(void)
         break;
 
     case TCBS_LONGPRESSEND:
-        if((active) && (waitTime < _debounceTicks)) { // de-bounce
+        if((active) && (waitTime < _debounceDur)) { // de-bounce
             transitionTo(_lastState);
-        } else if(waitTime >= _debounceTicks) {
+        } else if(waitTime >= _debounceDur) {
             if(_longPressStopFunc) _longPressStopFunc();
             reset();
         }
