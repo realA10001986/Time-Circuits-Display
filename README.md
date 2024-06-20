@@ -331,7 +331,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left">300 - 319&#9166;</td>
     </tr>
   <tr>
-     <td align="left">Disable/enable line-out audio for music and time travel sounds</td>
+     <td align="left">Disable/enable <a href="#audio-output">line-out audio</a> for music and time travel sounds</td>
      <td align="left">350&#9166; / 351&#9166;</td>
     </tr>
    <tr>
