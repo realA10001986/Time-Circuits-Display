@@ -222,6 +222,22 @@ Exhibition mode is persistent; the pre-programmed time will be stored and retrie
 
 Not strictly part of Exhibition mode, but related: If you want your TCD to display specific times in the *Destination Time* and/or *Last Time Departed* displays, you can program those times through the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays). Those times will be displayed, but replaced as soon as a time travel takes place. To quickly restore the displays to your pre-programmed times, enter 998 followed by ENTER. Note that this only works if **_Make time travels persistent_** is unchecked in the Config Portal.
 
+### Audio Output
+
+Control boards 1.4.5 and later have two ways of audio output:
+- built-int speaker, or
+- line-out (at line-level, for connecting the TCD to a stereo's line-in)
+
+By default, all audio is played over the speaker. 
+
+Entering 351 followed by ENTER enables playback over line-out for
+- music and
+- time travel sounds.
+
+All other sounds, which are supposed to be emitted by the TCD itself, are always played over the built-in speaker. Note that the TCD's volume control (knob or software-selected level) only have impact on the built-in speaker.
+
+Entering 350 plus ENTER disables line-out output. This setting is persistent over reboots.
+
 ### Common usage scenarios
 
 ####  &#9654; I want my TCD to work like in the movie
@@ -315,7 +331,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left">300 - 319&#9166;</td>
     </tr>
   <tr>
-     <td align="left">Disable/enable line-out audio for time travel sound</td>
+     <td align="left">Disable/enable line-out audio for music and time travel sounds</td>
      <td align="left">350&#9166; / 351&#9166;</td>
     </tr>
    <tr>
