@@ -225,7 +225,7 @@ Not strictly part of Exhibition mode, but related: If you want your TCD to displ
 ### Audio Output
 
 Control boards 1.4.5 and later have two ways of audio output:
-- built-int speaker, or
+- built-in speaker, or
 - line-out (at line-level, for connecting the TCD to a stereo's line-in)
 
 By default, all audio is played over the speaker. 
@@ -234,7 +234,7 @@ Entering 351 followed by ENTER enables playback over line-out for
 - music and
 - time travel sounds.
 
-All other sounds, which are supposed to be emitted by the TCD itself, are always played over the built-in speaker. Note that the TCD's volume control (knob or software-selected level) only have impact on the built-in speaker.
+All other sounds, which are supposed to be emitted by the TCD itself, are always played over the built-in speaker. Note that the TCD's volume control (knob or software-selected level) only has impact on the built-in speaker.
 
 Entering 350 plus ENTER disables line-out output. This setting is persistent over reboots.
 
