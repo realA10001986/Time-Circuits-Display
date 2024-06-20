@@ -314,6 +314,10 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left">Select audio volume level</td>
      <td align="left">300 - 319&#9166;</td>
     </tr>
+  <tr>
+     <td align="left">Disable/enable line-out audio for time travel sound</td>
+     <td align="left">350&#9166; / 351&#9166;</td>
+    </tr>
    <tr>
      <td align="left">Enable built-in volume knob</td>
      <td align="left">399&#9166;</td>
