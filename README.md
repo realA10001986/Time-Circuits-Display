@@ -1343,3 +1343,6 @@ Europe:
 - Eastern European Time: EET-2EEST,M3.5.0/3,M10.5.0/4
 
 A full list is [here](https://tz.out-a-ti.me).
+
+
+_Text & images: (C) Thomas Winischhofer ("A10001986"). See LICENSE._
