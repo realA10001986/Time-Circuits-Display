@@ -21,7 +21,7 @@
  * Fractions of this code are customized, minimized derivates of parts 
  * of the OneButton library by Matthias Hertel.
  * -------------------------------------------------------------------
- * License of Keypad_I2C class: MIT
+ * License of Keypad_I2C class: MIT NON-AI
  * 
  * Permission is hereby granted, free of charge, to any person 
  * obtaining a copy of this software and associated documentation 

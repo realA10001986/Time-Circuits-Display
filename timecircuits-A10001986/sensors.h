@@ -13,7 +13,7 @@
  * - BH1750, TSL2561, TSL2591, LTR303/329 and VEML7700/VEML6030 light 
  *   sensors.
  * -------------------------------------------------------------------
- * License: MIT
+ * License: MIT NON-AI
  * 
  * Permission is hereby granted, free of charge, to any person 
  * obtaining a copy of this software and associated documentation 

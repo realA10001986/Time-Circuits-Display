@@ -9,7 +9,7 @@
  * Sound handling
  *
  * -------------------------------------------------------------------
- * License: MIT
+ * License: MIT NON-AI
  * 
  * Permission is hereby granted, free of charge, to any person 
  * obtaining a copy of this software and associated documentation 
