@@ -42,3 +42,4 @@ The Enter key is made of a small PCB with a computer keyboard switch soldered on
 
 The control board's other LEDs were removed, as was the volume pot; it would be inaccessible anyway.
 
+_Text & images: (C) Thomas Winischhofer ("A10001986"). See LICENSE._
