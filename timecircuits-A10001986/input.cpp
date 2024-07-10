@@ -53,6 +53,15 @@
  * restrictions will be subject to legal action and may be held liable 
  * for any damages resulting from such use.
  *
+ * 4. The source code and the binary form, and any modifications made 
+ * to them may not be used for the purpose of training or improving 
+ * machine learning algorithms, including but not limited to artificial
+ * intelligence, natural language processing, or data mining. This 
+ * condition applies to any derivatives, modifications, or updates 
+ * based on the Software code. Any usage of the source code or the 
+ * binary form in an AI-training dataset is considered a breach of 
+ * this License.
+
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
