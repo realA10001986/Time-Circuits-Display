@@ -13,7 +13,7 @@ Features include
 - Clock-related:
   - Time keeping for years 1-9999, &#127381; accurately based on Julian and Gregorian [calendars](#calendar-system)
   - Support for time zones and automatic DST (Daylight Saving adjustment)
-  - Time synchronization via NTP or [GPS](#gps-receiver)
+  - Time synchronization through Internet ([NTP](https://en.wikipedia.org/wiki/Network_Time_Protocol)) or [GPS](#gps-receiver)
   - [World Clock mode](#world-clock-mode): Show current time in different time zones in *destination time* and/or *last time departed* displays
   - [Alarm function](#how-to-set-up-the-alarm): Daily alarms, with weekday selection
   - [Count-down timer](#count-down-timer): Count down from up to 99 minutes
@@ -235,7 +235,7 @@ Entering 351 followed by ENTER enables playback over line-out for
 - music and
 - time travel sounds.
 
-All other sounds, which are supposed to be emitted by the TCD itself, are always played over the built-in speaker. Note that the TCD's volume control (knob or software-selected level) only has impact on the built-in speaker.
+All other sounds, which are supposed to be emitted by the TCD itself, are always played over the built-in speaker. Note that the TCD's volume control (knob, software-selected level, rotary encoder) only has impact on the built-in speaker.
 
 Entering 350 plus ENTER disables line-out output. This setting is persistent over reboots.
 
@@ -801,7 +801,7 @@ To disable *car mode*, type 990 followed by ENTER. The TCD will reboot and attem
 - [Rotary encoder](#rotary-encoder)
 - [Temperature Sensor](#room-condition-mode-temperaturehumidity-sensor)
 - [Light Sensor](#sensor-controlled-night-mode)
-- [Other Props](#controlling-other-props) (Flux Capacitor, SID, ...)
+- [Other Props](#controlling-other-props) (Flux Capacitor, SID, Dash Gauges, VSR, ...)
 
 ## Fake power Switch 
 
@@ -867,7 +867,9 @@ In order to use the Speedometer display, select the correct model/display type i
 
 ## GPS receiver
 
-The CircuitSetup original [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-pcb/?v=fa868488740a) has a built-in GPS receiver. This GPS receiver can be used as a source of authoritative time (like NTP) and speed of movement.
+A GPS receiver can be used as a source of authoritative time (like NTP) and speed of movement.
+
+The CircuitSetup original [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-pcb/?v=fa868488740a) has a built-in GPS receiver. If you want to use a third party GPS receiver, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#gps-receiver). 
 
 GPS receivers receive signals from satellites, but in order to do so, they need to be "tuned in" (aka get a "fix"). This "tuning" process can take a long time; after first power up, it can take 30 minutes or more for a receiver to be able to determine its position. In order to speed up this process, modern GPS receivers have special "assisting" features. One key element is knowledge of current time, as this helps identifying satellite signals quicker. So, in other words, initially, you need to tell the receiver what it is supposed to tell you. However, as soon as the receiver has received satellite signals for 15-20 minutes, it saves the data it collected to its battery-backed memory and will find a fix within seconds after power-up in the future.
 
@@ -879,8 +881,6 @@ For using GPS effectively as a long-term source of accurate time, it is therefor
 If/as long as the GPS receiver has a fix and receives data from satellites, the dot in the present time's year field is lit.
 
 In order to use the GPS receiver as a source of time, no special configuration is required. If it is detected during boot, it will be used.
-
-If you want to use a third party GPS receiver, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#gps-receiver).
 
 #### GPS for speed
 
@@ -910,7 +910,7 @@ The rotary encoder, if configured for speed, allows manually selecting a speed t
 |:--:|
 | Click to watch the video |
 
-Notes:
+Remarks:
 - The encoder is only evaluated if no GPS receiver is connected, or if the **_Display GPS speed_** is unchecked. GPS speed has priority over the encoder.
 - The encoder is also evaluated if no speedo display is connected; it can be operated "blindly" to trigger time travels and its movement is send to BTTFN clients like GPS speed (if no GPS receiver is connected, or the option **_Provide GPS speed for wireless props_** is unchecked)
 - The speedo displays "0" as long as the encoder is not moved; if the encoder is turned counter-clockwise a couple of notches, the speedo display will be switched off.
