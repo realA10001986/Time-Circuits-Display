@@ -183,8 +183,11 @@ To avoid running out of i2c connectors, and to reduce the cable chaos, I designe
 
 <img src="img/Splitterv1.png" width="600">
 
-12V input: 12V input for the TCD and the TFC switch, using a 5.5/2.1mm standard DC power plug.
-12V output: 12V power for the TCD
+- 12V in: 12V input for the TCD and the TFC switch, using a 5.5/2.1mm standard DC power plug.
+- Input from TCD: Connect those to the TCD control board as indicated above
+- 12V output: 12V power for the TCD
+- four i2c screw connctors for sensors, rotary encoders, Speedo, etc
+- TFC drive switch connector
 
 Production files are in the [splitter](/DIY/Splitter/) folder.
 
