@@ -179,7 +179,11 @@ Note that you can only use one per device type (temperature/humidity sensor, lig
 
 To avoid running out of i2c connectors, and to reduce the cable chaos, I designed a small PCB that acts as a i2c and power splitter:
 
-<img src="img/Splitterv1.png" width=600>
+<img src="img/splitter_1.png" width="415">
+<img src="img/splitter_2.png" width="341">
+
+
+<img src="img/Splitterv1.png" width="600">
 
 12V input: 12V input for the TCD and the TFC switch, using a 5.5/2.1mm standard DC power plug.
 12V output: 12V power for the TCD
