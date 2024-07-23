@@ -184,7 +184,7 @@ To avoid running out of i2c connectors, and to reduce the cable chaos, I designe
 12V input: 12V input for the TCD and the TFC switch, using a 5.5/2.1mm standard DC power plug.
 12V output: 12V power for the TCD
 
-Production files are in the [splitter](/splitter/) folder.
+Production files are in the [splitter](/DIY/splitter/) folder.
 
 #### i2c addresses
 
