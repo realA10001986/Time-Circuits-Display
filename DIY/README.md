@@ -177,6 +177,13 @@ If going by the book, multiple i2c devices should be daisy chained; however, I h
 
 Note that you can only use one per device type (temperature/humidity sensor, light sensor, GPS receiver, Speedo display) at a time. As regards rotary encoders, one for speed and one for volume can be connected.
 
+To avoid running out of i2c connectors, and to reduce the cable chaos, I designed a small PCB that acts as a i2c and power splitter:
+
+<img src="img/Splitterv1.png" width=600>
+
+12V in: Feed 12V for the TFC switch and the TCD here, using a 5.5/2.1mm standard DC power plug.
+
+
 #### i2c addresses
 
 i2c devices have "addresses". Most sensors either only support one i2c address, or are recognized by the firmware (only) by their default address. For those, nothing must be done in order to use them with the Time Circuits Display.
