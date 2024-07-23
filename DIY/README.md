@@ -179,9 +179,7 @@ Note that you can only use one per device type (temperature/humidity sensor, lig
 
 To avoid running out of i2c connectors, and to reduce the cable chaos, I designed a small PCB that acts as a i2c and power splitter:
 
-<img src="img/splitter_1.jpg" width="415">
-<img src="img/splitter_2.jpg" width="341">
-
+<img src="img/splitter_1.jpg" width="415"><img src="img/splitter_2.jpg" width="341">
 
 <img src="img/Splitterv1.png" width="600">
 
