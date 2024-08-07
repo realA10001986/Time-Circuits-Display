@@ -1062,11 +1062,13 @@ This leads to the [Setup page](#setup-page).
 
 ##### &#9654; Update
 
-This leads to the firmware update page. 
+This leads to the firmware and audio update page. 
 
 In order to upload a new firmware binary (such as the ones published here in the install/ folder), select that image file in the top file selector and click "Update".
 
 You can also install the TCD's audio data on this page; download the current sound-pack, extract it and select the resulting TCDA.bin file in the bottom file selector. Finally, click "Upload". Note that an SD card is required for this operation.
+
+Note that either a firmware or audio data can be uploaded at once, not both at the same time.
 
 ##### &#9654; Erase WiFi Config
 
