@@ -527,13 +527,13 @@ Switching on/off night-mode manually deactivates any schedule and the light sens
 
 In order to use a light sensor, check the option _Use light sensor_ in the Config Portal. You can observe the measured lux level through the [keypad menu](#how-to-view-sensor-info) to find out about the right lux threshold for your environment.
 
-FOr information on supported sensor models/types and configuration, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#light-sensor).
+For information on supported sensor models/types and configuration, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#light-sensor).
 
 ## Count-down timer
 
 The firmware features a simple count-down timer. This timer can count down from max 99 minutes and plays a sound upon expiry.
 
-- To set the timer to MM minutes, type 44MM and press ENTER. A single-digit number of minutes must be preceeded by 0.
+- To set the timer to MM minutes, type 44MM and press ENTER. A single-digit number of minutes must be preceded by 0.
 - To cancel a running timer, type 440 and press ENTER.
 - The check the remaining time, type 44 and press ENTER.
 
@@ -853,7 +853,7 @@ The firmware supports [CircuitSetups's speedometer display](https://circuitsetup
 |:--:|
 | Click to watch the video |
 
-Full disclosure: The video was shot before the CircuitSetup speedo became available. The speedo shown is a DIY prop and not the - much better looking - CircuitSetup speedo. The video is only meant to demonstate how the TCD and the speedo inter-operate. (The TFC switch was made by me, see [here](https://tfc.out-a-ti.me), it uses the [Fake Power Switch](#fake-power-switch) feature of the TCD.)
+Full disclosure: The video was shot before the CircuitSetup speedo became available. The speedo shown is a DIY prop and not the - much better looking - CircuitSetup speedo. The video is only meant to demonstrate how the TCD and the speedo inter-operate. (The TFC switch was made by me, see [here](https://tfc.out-a-ti.me), it uses the [Fake Power Switch](#fake-power-switch) feature of the TCD.)
 
 The CircuitSetup [Speedo Kit](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit/) needs to be wired as shown below:
 
@@ -874,7 +874,7 @@ The CircuitSetup original [speedo](https://circuitsetup.us/product/delorean-time
 GPS receivers receive signals from satellites, but in order to do so, they need to be "tuned in" (aka get a "fix"). This "tuning" process can take a long time; after first power up, it can take 30 minutes or more for a receiver to be able to determine its position. In order to speed up this process, modern GPS receivers have special "assisting" features. One key element is knowledge of current time, as this helps identifying satellite signals quicker. So, in other words, initially, you need to tell the receiver what it is supposed to tell you. However, as soon as the receiver has received satellite signals for 15-20 minutes, it saves the data it collected to its battery-backed memory and will find a fix within seconds after power-up in the future.
 
 For using GPS effectively as a long-term source of accurate time, it is therefore essential, that 
-- the TimeCircuit's RTC (real time clock) is initially [set to correct local time](#how-to-set-the-real-time-clock-rtc), 
+- the Time Circuit's RTC (real time clock) is initially [set to correct local time](#how-to-set-the-real-time-clock-rtc), 
 - the correct time zone is defined in the Config Portal,
 - and has been receiving data for 15-20 mins at least once a month.
 
@@ -925,7 +925,7 @@ The firmware supports connecting a temperature/humidity sensor for "room conditi
 
 ![rcmode](img/rcmode.jpg)
 
-Room condition mode can be used together with [World Clock mode](#world-clock-mode); if both are enabled, only one alternative time and only temperature is shown. To toggle RC and WC mode simultaniously, type "113" and press ENTER.
+Room condition mode can be used together with [World Clock mode](#world-clock-mode); if both are enabled, only one alternative time and only temperature is shown. To toggle RC and WC mode simultaneously, type "113" and press ENTER.
 
 Temperature on speedometer display: Unless you do time travelling on a regular basis, the [speedo display](#speedometer) is idle most of the time in a typical home setup. To give it more of a purpose, the firmware can display ambient temperature on the speedo while idle.
 
@@ -941,7 +941,7 @@ The device can tell other props about a time travel, and in essence act as a "ma
 
 ![Wired connection](img/family-wired.png)
 
-For detailed wiring instructions, please see the documentaton for the prop ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [Dash Gauges](https://github.com/realA10001986/Dash-Gauges/blob/main/DIY/README.md#connecting-a-tcd-to-the-dash-gauges-by-wire), [VSR](https://github.com/realA10001986/VSR#connecting-a-tcd-by-wire)); for DIY props, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#other-props).
+For detailed wiring instructions, please see the documentation for the prop ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [Dash Gauges](https://github.com/realA10001986/Dash-Gauges/blob/main/DIY/README.md#connecting-a-tcd-to-the-dash-gauges-by-wire), [VSR](https://github.com/realA10001986/VSR#connecting-a-tcd-by-wire)); for DIY props, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#other-props).
 
 If external gear is connected by wire and you want to use this control feature, check **_Control props connected by wire_** in the Config Portal.
 
@@ -1264,7 +1264,7 @@ This selects whether the TT_OUT/IO14 pin is activated upon a time-travel in orde
 
 ##### &#9654; Signal Time Travel without 5s lead
 
-If this option is unchecked (which is the default), a time travel is signalled for wired props with a 5 second lead, in order to give the prop time to play an acceleration sequence. If this option is checked, TT_OUT/IO14 is activated when the time travel actually starts.
+If this option is unchecked (which is the default), a time travel is signaled for wired props with a 5 second lead, in order to give the prop time to play an acceleration sequence. If this option is checked, TT_OUT/IO14 is activated when the time travel actually starts.
 
 For CircuitSetup original props, if they are connected by wire, this option should not be set. If it has to be set (because you are also driving third-party props, for instance), the corresponding option must be set in the prop's Config Portal.
 
@@ -1286,7 +1286,7 @@ If checked, the TCD will connect to the broker (if configured) and send and rece
 
 ##### &#9654; Broker IP[:port] or domain[:port]
 
-The broker server address. Can be a domain (eg. "myhome.me") or an IP address (eg "192.168.1.5"). The default port is 1883. If different port is to be used, it can be specified after the domain/IP and a colon ":", for example: "192.168.1.5:1884". Specifiying the IP address is preferred over a domain since the DNS call adds to the network overhead. Note that ".local" (MDNS) domains are not supported.
+The broker server address. Can be a domain (eg. "myhome.me") or an IP address (eg "192.168.1.5"). The default port is 1883. If different port is to be used, it can be specified after the domain/IP and a colon ":", for example: "192.168.1.5:1884". Specifying the IP address is preferred over a domain since the DNS call adds to the network overhead. Note that ".local" (MDNS) domains are not supported.
 
 ##### &#9654; User[:Password]
 
