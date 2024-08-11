@@ -787,7 +787,7 @@ To enable *car mode*, type 991 followed by ENTER. The TCD will reboot in AP mode
 
 To disable *car mode*, type 990 followed by ENTER. The TCD will reboot and attempt to connect to a previously configured WiFi network.
 
-*Car mode* is persistent, i.e. it remains active (even accross reboots and power-downs) until disabled.
+*Car mode* is persistent, i.e. it remains active (even across reboots and power-downs) until disabled.
 
 >Note that the TCD has no internet access while in car mode; this means that, unless a GPS receiver is present, it cannot update its clock automatically. If the time runs off over time, you need to re-adjust it using the [keypad menu](#how-to-set-the-real-time-clock-rtc).
 
