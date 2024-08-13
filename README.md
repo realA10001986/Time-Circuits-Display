@@ -93,7 +93,7 @@ As long as the device is unconfigured, it creates a WiFi network of its own name
 
 It is ok to leave the TCD in this mode, especially if it is mounted in a car or places with no WiFi networks available. In a typical home setup, however, you might want to connect the TCD to your WiFi network. To do so, click on "Configure WiFi". The bare minimum is to select an SSID (WiFi network name) and a WiFi password.
 
->Note that the TCD requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). If the device is inaccessible as a result of incorrect static IPs, hold ENTER when powering it up until the white LED lits; static IP data will be deleted and the device will return to DHCP.
+>Note that the TCD requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). If the device is inaccessible as a result of incorrect static IPs, hold ENTER when powering it up until the white LED lights up; static IP data will be deleted and the device will return to DHCP.
 
 After saving the WiFi network settings, the TCD reboots and tries to connect to your configured WiFi network. If that fails, it will again start in access point mode.
 
