@@ -135,7 +135,7 @@ For wiring information, see [here](#i2c-peripheral-wiring).
 
 All i2c peripherals described above are to be wired as follows:
 
-On the TCD control board, there are currently three breakouts named "I2C", at least one of which has a header soldered on; it does not matter which one you use to connect your sensors/speedo/GPS/rotary encoders. I recommend to solder on [XH](https://www.amazon.com/s?k=jst+xh) 4-pin headers to the other two i2c breakouts as well (like in the second picture). When you order a CircuitSetup Speedo, they will include such headers if you request them. Do not solder wires directly to the board!
+On the TCD control board, there are three breakouts named "I2C", at least one of which has a header soldered on; it does not matter which one you use to connect your sensors/speedo/GPS/rotary encoders. On Control Boards version 4, there are screw terminals for the other two i2c connectors; for older boards, I recommend to solder on [XH](https://www.amazon.com/s?k=jst+xh) 4-pin headers to the other two i2c breakouts as well (like in the second picture). When you order a CircuitSetup Speedo, they will include such headers if you request them. Do not solder wires directly to the board!
 
 ![i2c](img/i2c1.jpg)
 
