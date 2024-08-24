@@ -380,7 +380,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left">770&#9166;</td>
     </tr>
     <tr>
-     <td align="left"><a href="#the-music-player">Music Player</a>: Show currently played song number</td>
+     <td align="left"><a href="#the-music-player">Music Player</a>: Show currently played song</td>
      <td align="left">55&#9166;</td>
     </tr>
     <tr>
