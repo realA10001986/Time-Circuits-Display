@@ -189,7 +189,7 @@ To avoid running out of i2c connectors, and to reduce the cable chaos, I designe
 - four i2c screw connctors for sensors, rotary encoders, Speedo, etc
 - TFC drive switch connector
 
-Production files are in the [splitter](/DIY/Splitter/) folder.
+Production files are in the [splitter](Splitter/) folder.
 
 #### i2c addresses
 
