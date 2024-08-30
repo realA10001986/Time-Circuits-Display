@@ -1,6 +1,6 @@
 # Firmware for Time Circuits Display
 
-This repository holds the most current firmware for CircuitSetup's wonderful [Time Circuits Display](https://circuitsetup.us/product/complete-time-circuits-display-kit/) ("TCD") kit, enabling you to reproduce an iconic part of the Delorean Time Machine.
+This [repository](https://tcd.out-a-ti.me) holds the most current firmware for CircuitSetup's wonderful [Time Circuits Display](https://circuitsetup.us/product/complete-time-circuits-display-kit/) ("TCD") kit, enabling you to reproduce an iconic part of the Delorean Time Machine.
 
 The kit parts are available [here](https://circuitsetup.us/product/complete-time-circuits-display-kit/). This TCD can be used stand-alone or in combination with several [peripherals](#peripherals-and-connection). If you went for the metal enclosure version, it is perfectly fit for mounting in an actual Delorean.
 
@@ -527,7 +527,7 @@ Switching on/off night-mode manually deactivates any schedule and the light sens
 
 In order to use a light sensor, check the option _Use light sensor_ in the Config Portal. You can observe the measured lux level through the [keypad menu](#how-to-view-sensor-info) to find out about the right lux threshold for your environment.
 
-For information on supported sensor models/types and configuration, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#light-sensor).
+For information on supported sensor models/types and configuration, see [here](DIY/#light-sensor).
 
 ## Count-down timer
 
@@ -859,7 +859,7 @@ The CircuitSetup [Speedo Kit](https://circuitsetup.us/product/delorean-time-mach
 
 ![speedo_i2c](img/speedo_i2c.jpg)
 
-If you want to make your own speedo, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#speedometer).
+If you want to make your own speedo, see [here](DIY/#speedometer).
 
 #### Software setup
 
@@ -869,7 +869,7 @@ In order to use the Speedometer display, select the correct model/display type i
 
 A GPS receiver can be used as a source of authoritative time (like NTP) and speed of movement.
 
-The CircuitSetup original [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-pcb/?v=fa868488740a) has a built-in GPS receiver. If you want to use a third party GPS receiver, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#gps-receiver). 
+The CircuitSetup original [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-pcb/?v=fa868488740a) has a built-in GPS receiver. If you want to use a third party GPS receiver, see [here](DIY/#gps-receiver). 
 
 GPS receivers receive signals from satellites, but in order to do so, they need to be "tuned in" (aka get a "fix"). This "tuning" process can take a long time; after first power up, it can take 30 minutes or more for a receiver to be able to determine its position. In order to speed up this process, modern GPS receivers have special "assisting" features. One key element is knowledge of current time, as this helps identifying satellite signals quicker. So, in other words, initially, you need to tell the receiver what it is supposed to tell you. However, as soon as the receiver has received satellite signals for 15-20 minutes, it saves the data it collected to its battery-backed memory and will find a fix within seconds after power-up in the future.
 
@@ -898,7 +898,7 @@ If other props using GPS speed are connected via [BTTF-Network](#bttf-network-bt
 
 A rotary encoder is, simply put, a turnable knob. On the TCD, rotary encoders can be used for speed and/or audio volume.
 
-For information on supported encoder models/types and configuration, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#rotary-encoder).
+For information on supported encoder models/types and configuration, see [here](DIY/#rotary-encoder).
 
 Up to two rotary encoders can be connected, one for speed, one for volume.
 
@@ -931,7 +931,7 @@ Temperature on speedometer display: Unless you do time travelling on a regular b
 
 In order to use a temperature/humidity sensor, no special configuration is required. If a sensor is detected by the firmware during boot, it will be used.
 
-For information on supported sensor models/types and configuration, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#temperaturehumidity-sensor).
+For information on supported sensor models/types and configuration, see [here](DIY/#temperaturehumidity-sensor).
 
 ## Controlling other props
 
@@ -941,7 +941,7 @@ The device can tell other props about a time travel, and in essence act as a "ma
 
 ![Wired connection](img/family-wired.png)
 
-For detailed wiring instructions, please see the documentation for the prop ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [Dash Gauges](https://github.com/realA10001986/Dash-Gauges/blob/main/DIY/README.md#connecting-a-tcd-to-the-dash-gauges-by-wire), [VSR](https://github.com/realA10001986/VSR#connecting-a-tcd-by-wire)); for DIY props, see [here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/DIY/README.md#other-props).
+For detailed wiring instructions, please see the documentation for the prop ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [Dash Gauges](https://github.com/realA10001986/Dash-Gauges/blob/main/hardware/README.md#connecting-a-tcd-to-the-dash-gauges-by-wire), [VSR](https://github.com/realA10001986/VSR#connecting-a-tcd-by-wire)); for DIY props, see [here](DIY/#other-props).
 
 If external gear is connected by wire and you want to use this control feature, check **_Control props connected by wire_** in the Config Portal.
 
@@ -965,7 +965,7 @@ Here is a demonstration of all the props connected through BTTFN:
 
 On the TCD, no special configuration is required. 
 
-On the other prop, such as CircuitSetup's [Flux Capacitor](https://circuitsetup.us/product/flux-capacitor-light-sound-pcb/), [SID](https://circuitsetup.us/product/delorean-time-machine-status-indicator-display-sid/) or my DIY [Dash Gauges](https://dg.out-a-ti.me), the TCD's IP address (or hostname) must be entered into the *IP address or hostname of TCD* field on the Setup page in their Config Portal - that's all.
+On the other prop, such as CircuitSetup's [Flux Capacitor](https://circuitsetup.us/product/flux-capacitor-light-sound-pcb/), [SID](https://circuitsetup.us/product/delorean-time-machine-status-indicator-display-sid/) or the [Dash Gauges](https://dg.out-a-ti.me), the TCD's IP address (or hostname) must be entered into the *IP address or hostname of TCD* field on the Setup page in their Config Portal - that's all.
 
 The fact that the devices communicate directly with each other makes BTTFN the ideal solution for car setups. Also, while at home, the devices might be connected to an existing WiFi network, in a car, the TCD can act as access point for Flux Capacitor and SID (ie they are connecting to the *TCD-AP* WiFi network), and those then can talk the TCD wirelessly. The TCD has *car mode* for aiding this, see [here](#car-mode) and the documentation of the respective prop. 
 
