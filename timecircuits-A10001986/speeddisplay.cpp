@@ -406,6 +406,11 @@ void speedDisplay::off()
     _onCache = 0;
 }
 
+bool speedDisplay::getOnOff()
+{
+    return !!_onCache;
+}
+
 // Turn on all LEDs
 #if 0
 void speedDisplay::lampTest()

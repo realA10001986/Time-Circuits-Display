@@ -323,7 +323,7 @@ static void keypadEvent(char key, KeyState kstate)
         case '6':    // "6" held down -> play audio file "key6.mp3"
             doKey = false;
             keySnd[4] = key;
-            play_file(keySnd, PA_INTSPKR|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
+            play_file(keySnd, PA_LINEOUT|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
             break;
         case '7':    // "7" held down -> re-enable/re-connect WiFi
             doKey = false;
@@ -878,6 +878,17 @@ void keypad_loop()
                     }
                     validEntry = true;
                     break;
+                #ifdef TC_HAVE_REMOTE
+                case 992:
+                case 993:
+                    rcModeState = remoteAllowed;
+                    remoteAllowed = (code == 993);
+                    if(rcModeState != remoteAllowed) {
+                        saveRemoteAllowed();
+                    }
+                    validEntry = true;
+                    break;
+                #endif
                 case 998:
                     if(timetravelPersistent) {
                         invalidEntry = true;
@@ -1039,6 +1050,7 @@ void keypad_loop()
                         (dateBuffer[0] == '3' ||
                          dateBuffer[0] == '5' ||
                          dateBuffer[0] == '6' ||
+                         dateBuffer[0] == '7' ||
                          dateBuffer[0] == '8' ||
                          dateBuffer[0] == '9')) {
                       
@@ -1056,6 +1068,9 @@ void keypad_loop()
                 break;
             case '6':
                 bttfnSendSIDCmd(cmd);
+                break;
+            case '7':
+                bttfnSendRemCmd(cmd);
                 break;
             case '8':
                 bttfnSendVSRCmd(cmd);

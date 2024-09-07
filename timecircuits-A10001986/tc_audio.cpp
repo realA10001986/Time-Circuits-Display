@@ -222,9 +222,9 @@ void audio_setup()
  *
  */
 void audio_loop()
-{   
+{
     float vol;
-    
+
     if(wav->isRunning()) {
         if(!wav->loop()) {
             wav->stop();
@@ -296,8 +296,9 @@ void play_file(const char *audio_file, uint16_t flags, float volumeFactor)
     beepRunning = false;
 
     #ifdef TC_HAVELINEOUT
-    playLineOut = (useLineOut && (flags & PA_LINEOUT)) ? true : false;
+    playLineOut = (haveLineOut && useLineOut && (flags & PA_LINEOUT)) ? true : false;
     setLineOut(playLineOut);
+    if(playLineOut) flags &= ~PA_DYNVOL;
     #else
     playLineOut = false;
     #endif
@@ -527,10 +528,10 @@ static float getVolume()
 #ifdef TC_HAVELINEOUT
 static void setLineOut(bool doLineOut)
 {
-    if(useLineOut) {
-        // Mute/un-mute secondary DAC? No, for now.
-        //digitalWrite(MUTE_LINEOUT_PIN, doLineOut ? HIGH : LOW);
-        if(doLineOut) {
+    if(haveLineOut) {
+        if(useLineOut && doLineOut) {
+            // Mute/un-mute secondary DAC? No, for now.
+            //digitalWrite(MUTE_LINEOUT_PIN, doLineOut ? HIGH : LOW);
             out->SetOutputModeMono(false);
             // Switch off MAX98357, switch on PCM510x
             digitalWrite(SWITCH_LINEOUT_PIN, HIGH);

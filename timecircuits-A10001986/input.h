@@ -233,6 +233,7 @@ class TCRotEnc {
         bool    begin(bool forSpeed);
         void    zeroPos(int offs = 0);
         void    disabledPos();
+        void    speedPos(int16_t speed);
         int16_t updateFakeSpeed(bool force = false);
         int     updateVolume(int curVol, bool force = false);
 

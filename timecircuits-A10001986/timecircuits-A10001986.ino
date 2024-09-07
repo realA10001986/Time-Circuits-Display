@@ -62,40 +62,54 @@
  *   to "Additional Boards Manager URLs". The list is comma-separated.
  *   
  * - Go to "Tools" > "Board" > "Boards Manager", then search for "esp32", and install 
- *   the latest 2.x version by Espressif Systems.  Versions >=3.x are not supported.
+ *   the latest 2.x version by Espressif Systems. Versions >=3.x are not supported.
  *   Detailed instructions for this step:
  *   https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html
  *   
- * - Go to "Tools" > "Board: ..." -> "ESP32 Arduino" and select your board model (the
- *   CircuitSetup original boards are "NodeMCU-32S")
+ * - Go to "Tools" > "Board: ..." -> "ESP32 Arduino" and select your board model. For
+ *   CircuitSetup original boards, select "NodeMCU-32S".
  *   
- * - Connect your ESP32 board using a suitable USB cable.
- *   Note that NodeMCU ESP32 boards come in two flavors that differ in which serial 
- *   communications chip is used: Either SLAB CP210x USB-to-UART or CH340. Installing
- *   a driver might be required.
- *   Mac: 
- *   For the SLAB CP210x (which is used by NodeMCU-boards distributed by CircuitSetup)
- *   installing a driver is required:
- *   https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers?tab=downloads
- *   The port ("Tools -> "Port") is named /dev/cu.SLAB_USBtoUART, and the maximum
- *   upload speed ("Tools" -> "Upload Speed") can be used.
- *   The CH340 is supported out-of-the-box since Mojave. The port is named 
- *   /dev/cu.usbserial-XXXX (XXXX being some random number), and the maximum upload 
- *   speed is 460800.
+ * - If you want Arduino IDE to upload the firmware via USB (which is only required for
+ *   fresh ESP32 boards; if a previous version of the firmware is installed on your
+ *   board, you can update through the Config Portal and don't need an USB connection):
+ *   
+ *   Connect your ESP32 board using a suitable USB cable.
+ *   
+ *   Note that ESP32 boards come in two flavors that differ in which serial communications 
+ *   chip is used: Either SiLabs CP210x or WCH CH340. CircuitSetup uses the CP210x.
+ * 
+ *   Mac:
+ *   * CP210x: Since ca. 10.15.7, MacOS comes with a driver for the CP210x. For earlier 
+ *     versions of MacOS, installing a driver is required:
+ *     https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers?tab=downloads
+ *     The port ("Tools -> "Port" in Arduino IDE) is named 
+ *     - /dev/cu.usbserial-xxxx when using the Apple driver, 
+ *     - /dev/cu.SLAB_USBtoUART when using the SiLabs driver. 
+ *     The maximum upload speed ("Tools" -> "Upload Speed" in Arduino IDE) can be used.
+ *     Note: The SiLabs driver has a bug that affects TCD Control Boards V1.4 and later.
+ *     Firmware uploads will fail ("No data received"). Use the Apple driver for those 
+ *     boards.
+ *   * CH340: This chip is supported out-of-the-box since Mojave. 
+ *     The port ("Tools -> "Port" in Arduino IDE) is named /dev/cu.usbserial-XXXX, and 
+ *     the maximum upload speed is 460800.
+ * 
  *   Windows:
- *   For the SLAB CP210x (which is used by NodeMCU-boards distributed by CircuitSetup)
- *   installing a driver is required:
- *   https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers?tab=downloads
- *   After installing this driver, connect your ESP32, start the Device Manager, 
- *   expand the "Ports (COM & LPT)" list and look for the port with the ESP32 name.
- *   Choose this port under "Tools" -> "Port" in Arduino IDE.
- *   For the CH340, another driver is needed. Try connecting the ESP32 and have
- *   Windows install a driver automatically; otherwise search google for a suitable
- *   driver. Note that the maximum upload speed is either 115200, or perhaps 460800.
+ *   * CP210x: Current Windows versions may come with a suitable driver. If the chip 
+ *     is not recognized (ie no Port is created), a driver needs to be installed:
+ *     https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers?tab=downloads
+ *   * CH340: Windows will install a driver when connecting the board; in case it 
+ *     doesn't or it fails doing so, please install this driver:
+ *     http://www.wch-ic.com/downloads/CH341SER_ZIP.html
+ *     Note that the maximum upload speed for the CH340 is apparently 460800.
+ *   After driver installation, connect your ESP32, start the Device Manager, expand 
+ *   the "Ports (COM & LPT)" list and look for the port with the ESP32 name. Choose 
+ *   this port under "Tools" -> "Port" in Arduino IDE.
  *
  * - Install required libraries. In the Arduino IDE, go to "Tools" -> "Manage Libraries" 
  *   and install the following libraries:
  *   - ArduinoJSON (>= 6.19): https://arduinojson.org/v6/doc/installation/
+ *     (Versions 7 and on of this lib are much bigger, so it might happen that the 
+ *     binary does not fit the ESP32's flash memory. Use v6 instead.)
  *
  * - Download the complete firmware source code:
  *   https://github.com/realA10001986/Time-Circuits-Display/archive/refs/heads/main.zip
@@ -103,8 +117,13 @@
  *   double-click on "timecircuits-A10001986.ino". This opens the firmware in the
  *   Arduino IDE.
  *
- * - Go to "Sketch" -> "Upload" to compile and upload the firmware to your ESP32 board.
- *
+ * - For USB connected ESP32 boards: 
+ *   Go to "Sketch" -> "Upload" to compile and upload the firmware to your ESP32 board.
+ *   For OTA updates via the Config Portal:
+ *   Go to "Sketch" -> "Export compiled Binary" to compile the firmware; a ".bin" file 
+ *   is created in the source directory, which can then be uploaded through the Config
+ *   Portal.
+ *   
  * - Install the audio data: 
  *   Method 1:
  *   - Go to Config Portal, click "Update" and upload the audio data (TCDA.bin, extracted
@@ -120,6 +139,24 @@
 
 /*  Changelog
  *
+ *  2024/09/08 (A10001986) [A10001986 3.1]
+ *    - Fix for line-out switching
+ *  2024/09/02 (A10001986)
+ *    - Skip white led blink if fake power switch is on pos during boot
+ *  2024/08/30-31 (A10001986)
+ *    - Many fixes for Remote feature
+ *    - Make rotary encoder react quicker after end of time travel (removed
+ *      4 second delay)
+ *  2024/08/26-29 (A10001986)
+ *    - Add preliminary support for CS/A10001986-modified Futaba remote prop
+ *  2024/08/23 (A10001986)
+ *    - Key3, key6 are now played over line-out (if available and enabled)
+ *  2024/08/05 (A10001986)
+ *    - Audio: Clear DYNVOL flag if sound is played over line-out
+ *    - Intro sound is now played over line-out (if available and enabled)
+ *    - New stereo intro sound (sound-pack update required)
+ *  2024/07/23 (A10001986)
+ *    - Disable ESP32 status led on CB < 1.4.5
  *  2024/06/19 (A10001986)
  *    - Fix: Unmute secondary audio DAC (CB 1.4.5)
  *  2024/06/05 (A10001986)
@@ -187,7 +224,7 @@
  *    - Do not "return from time travel" if not on a time travel.
  *    - Exhibition mode: Leave timeDifference alone when time travelling in Exh.
  *      mode. Previously, a time travel was performed for local time and Exh. mode
- *      time simultaniously, which was confusing then disabling Exh. mode.
+ *      time simultaneously, which was confusing then disabling Exh. mode.
  *    - Don't call old waitAudioDone[now: Menu] from outside of menu
  *  2024/02/07 (A10001986)
  *    - Config Portal: Propose most used time-zones as datalists for time zone

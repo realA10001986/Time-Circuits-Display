@@ -240,6 +240,10 @@ void loadLineOut();
 void saveLineOut();
 #endif
 
+#ifdef TC_HAVE_REMOTE
+void saveRemoteAllowed();
+#endif
+
 bool loadIpSettings();
 void writeIpSettings();
 void deleteIpSettings();

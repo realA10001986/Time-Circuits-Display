@@ -152,12 +152,14 @@ void tcRTC::adjust(byte second, byte minute, byte hour, byte dayOfWeek, byte day
     switch(_rtcType) {
 
     case RTCT_PCF2129:
+        #ifdef HAVE_PCF2129
         buffer[0] = PCF2129_TIME;
         buffer[4] = bin2bcd(dayOfMonth);
         buffer[5] = bin2bcd(dayOfWeek);
         write_bytes(buffer, 8); 
 
         // OSF bit cleared by writing seconds
+        #endif
         break;
 
     case RTCT_DS3231:
@@ -190,6 +192,7 @@ void tcRTC::now(DateTime& dt)
     switch(_rtcType) {
 
     case RTCT_PCF2129:
+        #ifdef HAVE_PCF2129
         read_bytes(PCF2129_TIME, buffer, 7);
         dt.set(bcd2bin(buffer[6]) + 2000U,
                bcd2bin(buffer[5] & 0x7F),
@@ -197,6 +200,8 @@ void tcRTC::now(DateTime& dt)
                bcd2bin(buffer[2]),
                bcd2bin(buffer[1]),
                bcd2bin(buffer[0] & 0x7F));
+        #endif
+        break;
 
     case RTCT_DS3231:
     default:
@@ -220,12 +225,14 @@ void tcRTC::clockOutEnable()
     switch(_rtcType) {
       
     case RTCT_PCF2129:
+        #ifdef HAVE_PCF2129
         readValue = read_register(PCF2129_CLKCTRL);
         // set squarewave to 1Hz
         // Bits 2:0 - 110  sets 1Hz
         readValue &= B11111000;
         readValue |= B00000110;
         write_register(PCF2129_CLKCTRL, readValue);
+        #endif
         break;
 
     case RTCT_DS3231:
@@ -245,12 +252,15 @@ void tcRTC::clockOutEnable()
  */
 bool tcRTC::NeedOTPRefresh()
 {
+    #ifdef HAVE_PCF2129
     if(_rtcType == RTCT_PCF2129)
         return true;
-
+    #endif
+    
     return false;
 }
 
+#ifdef HAVE_PCF2129
 bool tcRTC::OTPRefresh(bool start)
 {
     uint8_t readValue = 0;
@@ -270,6 +280,7 @@ bool tcRTC::OTPRefresh(bool start)
 
     return false;
 }
+#endif
 
 /*
  * Check if RTC is stopped due to power-loss
@@ -282,7 +293,11 @@ bool tcRTC::lostPower(void)
         // Check Oscillator Stop Flag to see 
         // if RTC stopped due to power loss
         // Only works before writing seconds
+        #ifdef HAVE_PCF2129
         return read_register(PCF2129_TIME) >> 7;
+        #else
+        break;
+        #endif
 
     case RTCT_DS3231:
     default:
@@ -299,11 +314,13 @@ bool tcRTC::lostPower(void)
  */
 bool tcRTC::battLow(void)
 {
+    #ifdef HAVE_PCF2129
     switch(_rtcType) {
 
     case RTCT_PCF2129:
         return (read_register(PCF2129_CTRL3) & 0x04) >> 2;
     }
+    #endif
 
     return false;
 }

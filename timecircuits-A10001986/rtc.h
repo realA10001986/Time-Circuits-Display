@@ -138,7 +138,9 @@ class tcRTC
         void clockOutEnable();
 
         bool NeedOTPRefresh();
+        #ifdef HAVE_PCF2129
         bool OTPRefresh(bool start);
+        #endif
 
         bool lostPower(void);
         bool battLow(void);

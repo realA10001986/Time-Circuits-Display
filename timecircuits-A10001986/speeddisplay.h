@@ -106,6 +106,7 @@ class speedDisplay {
         bool begin(int dispType);
         void on();
         void off();
+        bool getOnOff();
         #if 0
         void lampTest();
         #endif

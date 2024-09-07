@@ -316,8 +316,8 @@ int16_t tcGPS::getSpeed()
     if(_haveSpeed) {
         #ifdef GPS_SPEED_SIMU
         // Speed "simulator" for debugging
-        _speed = (79 + (rand() % 10));
-        if(_speed <= 80) _speed -= (79-8);
+        _speed = 66; //(79 + (rand() % 10));
+        //if(_speed <= 80) _speed -= (79-8);
         #else
         // Fake 1 and 2mph; GPS is not reliable at
         // low speeds, need to ignore everything below

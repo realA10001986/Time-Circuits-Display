@@ -102,6 +102,9 @@ extern bool useLight;
 #ifdef TC_HAVELIGHT
 extern lightSensor lightSens;
 #endif
+#ifdef TC_HAVE_REMOTE
+extern bool remoteAllowed;
+#endif
 
 extern tcRTC rtc;
 
@@ -171,6 +174,7 @@ void      bttfnSendSIDCmd(uint32_t payload);
 void      bttfnSendPCGCmd(uint32_t payload);
 void      bttfnSendVSRCmd(uint32_t payload);
 void      bttfnSendAUXCmd(uint32_t payload);
+void      bttfnSendRemCmd(uint32_t payload);
 
 void      resetPresentTime();
 

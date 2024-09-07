@@ -706,6 +706,20 @@ void TCRotEnc::disabledPos()
     fakeSpeed = -1;
 }
 
+// Init dec to speed position (speed only)
+void TCRotEnc::speedPos(int16_t speed)
+{   
+    if(speed < 0) {
+        disabledPos();
+        return;
+    }
+
+    zeroEnc(speed);
+    rotEncPos = getEncPos();
+    
+    fakeSpeed = targetSpeed = speed;
+}
+
 int16_t TCRotEnc::updateFakeSpeed(bool force)
 {
     bool timeout = (millis() - lastUpd > HWUPD_DELAY);
