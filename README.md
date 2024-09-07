@@ -42,6 +42,7 @@ Features include
   - Support for [rotary encoders](#rotary-encoder) for manual selection of speed to be displayed on Speedo display, &#127381; and/or audio volume
   - Support for [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for [Room condition mode](#room-condition-mode-temperaturehumidity-sensor) [display temperature and humidity in *destination time* and *last time departed* displays] and for displaying temperature on speedo display while idle
   - Support for triggering time travels on other props [connected by wire](#connecting-props-by-wire)
+  - &#127381; Support for upcoming Futaba remote control prop: Remote control the speed on the TCD, like in the movie
 
 The difference between what you get here and CircuitSetup's releases is that the code here might be ahead in development, uses some different sounds, and the pre-compiled binary has all the features enabled.
 
