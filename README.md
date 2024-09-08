@@ -4,9 +4,9 @@ This [repository](https://tcd.out-a-ti.me) holds the most current firmware for C
 
 The kit parts are available [here](https://circuitsetup.us/product/complete-time-circuits-display-kit/). This TCD can be used stand-alone or in combination with several [peripherals](#peripherals-and-connection). If you went for the metal enclosure version, it is perfectly fit for mounting in an actual Delorean.
 
-![My TCD](img/mytcd.jpg)
-![My TCD](img/mytcd3.jpg)
-![My TCD](img/mytcd2.jpg)
+![My TCD](img/mytcd_n.jpg)
+![My TCD](img/mytcd3_n.jpg)
+![My TCD](img/mytcd2_n.jpg)
 
 Features include
 
