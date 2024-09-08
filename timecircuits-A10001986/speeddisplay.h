@@ -130,7 +130,7 @@ class speedDisplay {
         void setDot(bool dot01 = true);
         void setColon(bool colon);
 
-        uint8_t getSpeed();
+        int8_t getSpeed();
         bool getDot();
         bool getColon();
 
@@ -158,7 +158,7 @@ class speedDisplay {
         bool _dot01 = false;
         bool _colon = false;
 
-        uint8_t _speed = 1;
+        int8_t _speed = 0;
 
         uint8_t _brightness = 15;
         uint8_t _origBrightness = 15;

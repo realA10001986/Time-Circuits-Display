@@ -141,6 +141,7 @@
  *
  *  2024/09/08 (A10001986) [A10001986 3.1]
  *    - Fix for line-out switching
+ *    - Fix for Remote vs. GPS when no GPS speed is available
  *  2024/09/02 (A10001986)
  *    - Skip white led blink if fake power switch is on pos during boot
  *  2024/08/30-31 (A10001986)

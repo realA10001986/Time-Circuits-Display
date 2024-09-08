@@ -688,7 +688,7 @@ void speedDisplay::setColon(bool colon)
 // Query data ------------------------------------------------------------------
 
 
-uint8_t speedDisplay::getSpeed()
+int8_t speedDisplay::getSpeed()
 {
     return _speed;
 }
