@@ -139,6 +139,13 @@
 
 /*  Changelog
  *
+ *  2024/09/10 (A10001986)
+ *    - Fake GPS speed for BTTFN clients during P0
+ *    - TCD becomes speed master over Remote in P0
+ *  2024/09/09 (A10001986)
+ *    - New custom sounds: "remoteon.mp3"/"remoteoff.mp3" on SD card, will
+ *      be played when Remote is switched on/off. No default sounds.
+ *    - Fix logic which speed to tell BTTFN clients
  *  2024/09/08 (A10001986) [A10001986 3.1]
  *    - Fix for line-out switching
  *    - Fix for Remote vs. GPS when no GPS speed is available

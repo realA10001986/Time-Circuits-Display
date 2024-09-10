@@ -253,6 +253,11 @@ static uint8_t       bttfnRemCurSpdOld = 255;
 static unsigned long lastRemSpdUpd = 0, remSpdCatchUpDelay = 80;
 bool                 remoteAllowed = false;
 static int           remoteWasMaster = 0;
+static bool          haveRemoteOnSound = false;
+static bool          haveRemoteOffSound = false;
+static const char    *remoteOnSound = "/remoteon.mp3";
+static const char    *remoteOffSound = "/remoteoff.mp3";
+static bool          oldptnmrem = false;
 #endif
 #ifdef TC_HAVE_RE
 static int16_t       fakeSpeed = 0;
@@ -796,6 +801,7 @@ bool bttfnHaveClients = false;
 #define BTTFN_NOT_AUX_CMD  11
 #define BTTFN_NOT_VSR_CMD  12
 #define BTTFN_NOT_REM_CMD  13
+#define BTTFN_NOT_REM_SPD  14
 #define BTTFN_TYPE_ANY     0    // Any, unknown or no device
 #define BTTFN_TYPE_FLUX    1    // Flux Capacitor
 #define BTTFN_TYPE_SID     2    // SID
@@ -1136,6 +1142,11 @@ void time_setup()
             }
         }
     }
+    #endif
+
+    #ifdef TC_HAVE_REMOTE
+    haveRemoteOnSound = check_file_SD(remoteOnSound);
+    haveRemoteOffSound = check_file_SD(remoteOffSound);
     #endif
 
     // Set up GPS receiver
@@ -1900,6 +1911,11 @@ void time_loop()
                         }
                     }
                     #endif
+                    #ifdef TC_HAVE_REMOTE
+                    if(timeTravelP0 && bttfnRemoteSpeedMaster) {
+                        bttfn_notify(BTTFN_TYPE_REMOTE, BTTFN_NOT_REM_SPD, 0, 0);
+                    }
+                    #endif
                     timeTravelP0 = 0;
                     timeTravelP1 = 0;
                     timeTravelRE = false;
@@ -2032,15 +2048,19 @@ void time_loop()
         speedo.show();
         //speedoStatus = SPST_TT;
 
+        // Overwrite fakeSpeed/bttfnRemCurSpd for BTTFN clients who keep polling
+        // until P1-ETTO_LEAD
         #ifdef TC_HAVE_RE
-        // Update fakeSpeed for BTTFN clients
         if(useRotEnc) {
             fakeSpeed = rotEnc.IsOff() ? -1 : timeTravelP0Speed;
         }
         #endif
         #ifdef TC_HAVE_REMOTE
         // Update for BTTFN clients
-        bttfnRemCurSpd = timeTravelP0Speed; 
+        bttfnRemCurSpd = timeTravelP0Speed;
+        if(bttfnRemoteSpeedMaster) {
+            bttfn_notify(BTTFN_TYPE_REMOTE, BTTFN_NOT_REM_SPD, timeTravelP0Speed, timeTravelP0);
+        }
         #endif
     }
 
@@ -4304,7 +4324,9 @@ static void updAndDispRemoteSpeed()
         // We do not interfere with P2 here, since P2, by definition, counts the speed
         // down to the then current remote speed; do not overwrite the displayed speed here!
         if(!timeTravelP0 && !timeTravelP1 && !timeTravelRE && !timeTravelP2) {
-            if(speedoStatus != SPST_REM || bttfnRemCurSpd != bttfnOldRemCurSpd) {
+            if(speedoStatus != SPST_REM || 
+               bttfnRemCurSpd != bttfnOldRemCurSpd ||
+               presentTime.getNightMode() != oldptnmrem) {
                 bttfnOldRemCurSpd = bttfnRemCurSpd;
                 speedo.setSpeed(bttfnRemCurSpd);
                 if(speedoStatus == SPST_TEMP) {
@@ -4313,6 +4335,7 @@ static void updAndDispRemoteSpeed()
                 speedo.show();
                 speedo.on();
                 speedoStatus = SPST_REM;
+                oldptnmrem = presentTime.getNightMode();
             }
         }
     }
@@ -6056,6 +6079,14 @@ static void bttfn_expire_clients()
 }
 
 #ifdef TC_HAVE_REMOTE
+static bool checkToPlayRemoteSnd()
+{
+    if(timeTravelP0 || timeTravelP1 || timeTravelRE) return false;
+    if(!checkMP3Done()) return false;
+    if(presentTime.getNightMode()) return false;
+    return true;
+}
+
 static void bttfnMakeRemoteSpeedMaster(bool doit)
 {
     if(bttfnRemoteSpeedMaster == doit) {
@@ -6070,6 +6101,10 @@ static void bttfnMakeRemoteSpeedMaster(bool doit)
         #ifdef TC_DBG
         Serial.println("Remote is now master");
         #endif
+
+        if(haveRemoteOnSound && checkToPlayRemoteSnd()) {
+            play_file(remoteOnSound, PA_LINEOUT|PA_CHECKNM|PA_ALLOWSD);
+        }
 
         // Disable display of RotEnc/GPS/Temp
         #ifdef TC_HAVE_RE
@@ -6115,6 +6150,10 @@ static void bttfnMakeRemoteSpeedMaster(bool doit)
         #ifdef TC_DBG
         Serial.println("Remote is no longer master");
         #endif
+
+        if(haveRemoteOffSound && checkToPlayRemoteSnd()) {
+            play_file(remoteOffSound, PA_LINEOUT|PA_CHECKNM|PA_ALLOWSD);
+        }
         
         #ifdef TC_HAVE_RE
         useRotEnc = bttfnBUseRotEnc;
@@ -6445,24 +6484,35 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
         }
         if(buf[5] & 0x02) {    // speed  (-1 if unavailable)
             temp = -1;
-            #ifdef TC_HAVEGPS
-            if(useGPS && provGPS2BTTFN) {   // Why "&& provGPS2BTTFN"?
-                temp = myGPS.getSpeed();    // Because: If stationary user uses GPS for time only, speed will 
-            } else {                        // be 0 permanently, and rotary encoder never gets a chance.
+            #ifdef TC_HAVE_REMOTE
+            if(bttfnRemoteSpeedMaster) {
+                // bttfnRemCurSpd is P0-speed during P0, see below for reason
+                temp = bttfnRemCurSpd;
+                buf[26] |= 0x20;       // Signal that speed is from Remote
+            } else {
             #endif
-                #ifdef TC_HAVE_RE
-                if(useRotEnc) {
-                    temp = fakeSpeed;
-                    buf[26] |= 0x80;        // Signal that speed is from RotEnc
+                #ifdef TC_HAVEGPS
+                if(useGPS && provGPS2BTTFN) {    
+                    // Why "&& provGPS2BTTFN"?
+                    // Because: If stationary user uses GPS for time only, speed will
+                    // be 0 permanently, and rotary encoder never gets a chance.
+                    // In P0, we transmit a fake speed since the props follow speed
+                    // after triggering a below-88 TT (which at first only triggers a
+                    // wakeup) until the ETTO-timed actual TIMETRAVEL signal
+                    temp = timeTravelP0 ? timeTravelP0Speed : myGPS.getSpeed();    
+                } else {                        
+                #endif
+                    #ifdef TC_HAVE_RE
+                    if(useRotEnc) {
+                        // fakeSpeed is P0-speed during P0, see above for reason
+                        temp = fakeSpeed;
+                        buf[26] |= 0x80;   // Signal that speed is from RotEnc
+                    }
+                    #endif
+                #ifdef TC_HAVEGPS
                 }
                 #endif
-                #ifdef TC_HAVE_REMOTE
-                if(bttfnRemoteSpeedMaster) {
-                    temp = bttfnRemCurSpd;
-                    buf[26] |= 0x20;        // Signal that speed is from Remote
-                }
-                #endif
-            #ifdef TC_HAVEGPS
+            #ifdef TC_HAVE_REMOTE
             }
             #endif
             buf[18] = (uint16_t)temp & 0xff;
@@ -6503,10 +6553,10 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
             #ifdef TC_HAVE_REMOTE
             if(remoteAllowed)              a |= 0x04; // Remote controlling allowed (1) or disabled (0)
             #endif
-            // bits 4-2 for future use
+            // bits 4-3 for future use
             // bit 5 is for "speed from remote", see above
             // bit 6 used for temp unit, see above
-            // bit 7 used for rotEnc vs GPS, see above
+            // bit 7 used for "speed from RotEnc", see above
             buf[26] |= a;
         }
         if(buf[5] & 0x20) {    // Request IP of given device type
