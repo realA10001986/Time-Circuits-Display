@@ -42,7 +42,7 @@ Features include
   - Support for [rotary encoders](#rotary-encoder) for manual selection of speed to be displayed on Speedo display, &#127381; and/or audio volume
   - Support for [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for [Room condition mode](#room-condition-mode-temperaturehumidity-sensor) [display temperature and humidity in *destination time* and *last time departed* displays] and for displaying temperature on speedo display while idle
   - Support for triggering time travels on other props [connected by wire](#connecting-props-by-wire)
-  - &#127381; Support for upcoming Futaba remote control prop: Remote control the speed on the TCD, like in the movie
+  - &#127381; Support for upcoming [Futaba remote control prop](#remote-control-the-tcd): Remote control the speed on the TCD, like in the movie
 
 The difference between what you get here and CircuitSetup's releases is that the code here might be ahead in development, uses some different sounds, and the pre-compiled binary has all the features enabled.
 
@@ -405,7 +405,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left">990&#9166; / 991&#9166;</td>
     </tr>
   <tr>
-     <td align="left">Forbid / allow TCD to be remote controlled</a></td>
+     <td align="left">Forbid / allow TCD to be <a href="#remote-control-the-tcd">remote controlled</a></td>
      <td align="left">992&#9166; / 993&#9166;</td>
     </tr>
   <tr>
