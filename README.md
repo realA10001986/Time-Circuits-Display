@@ -405,6 +405,10 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left">990&#9166; / 991&#9166;</td>
     </tr>
   <tr>
+     <td align="left">Forbid / allow TCD to be remote controlled</a></td>
+     <td align="left">992&#9166; / 993&#9166;</td>
+    </tr>
+  <tr>
      <td align="left">Restore user destination/last time dep. times</td>
      <td align="left">998&#9166;</td>
   </tr>
@@ -1028,6 +1032,10 @@ If you want your TCD to display messages as described above, you also need to sp
 If you want your TCD to publish messages to bttf/tcd/pub (ie if you want to notify other devices about a timetravel and/or alarm), check the **_Send event notifications_** option.
 
 Limitations: MQTT Protocol version 3.1.1; TLS/SSL not supported; ".local" domains (MDNS) not supported; maximum message length 255 characters; server/broker must respond to PING (ICMP) echo requests. For proper operation with low latency, it is recommended that the broker is on your local network. Note that using HA/MQTT will disable WiFi power saving (as described below).
+
+## Remote control the TCD
+
+The upcoming Remote Control board (for use with a Futaba remote control) will allow remote controlling the TCD and its speedo. More information coming soon.
 
 ## WiFi power saving features
 
