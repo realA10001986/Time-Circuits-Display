@@ -139,6 +139,12 @@
 
 /*  Changelog
  *
+ *  2024/09/13 (A10001986)
+ *    - Remote: Override user-configured accel factor when the TCD catches up to  
+ *      the Remote when brake released (so that doing that at 65 still allows for
+ *      the TCD to fully catch up)
+ *  2024/09/11 (A10001986)
+ *    - Fix C99-compliance
  *  2024/09/10 (A10001986)
  *    - Fake GPS speed for BTTFN clients during P0
  *    - TCD becomes speed master over Remote in P0

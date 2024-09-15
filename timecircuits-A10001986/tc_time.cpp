@@ -824,6 +824,7 @@ static uint8_t       bttfnClientIP[BTTFN_MAX_CLIENTS][4]  = { { 0 } };
 static char          bttfnClientID[BTTFN_MAX_CLIENTS][13] = { { 0 } };
 static uint8_t       bttfnClientType[BTTFN_MAX_CLIENTS] = { 0 };
 static unsigned long bttfnClientALIVE[BTTFN_MAX_CLIENTS] = { 0 };
+static uint32_t      bttfnSeqCnt = 1;
 #ifdef TC_HAVE_REMOTE
 static uint32_t      bttfnRemID[BTTFN_MAX_CLIENTS] = { 0 };
 #endif
@@ -852,6 +853,19 @@ static bool bttfnBPovGPS2BTTFN;
 static bool bttfnBDispTemp;
 #endif
 #endif // TC_HAVE_REMOTE
+
+#define GET32(a,b)          \
+    (((a)[b])            |  \
+    (((a)[(b)+1]) << 8)  |  \
+    (((a)[(b)+2]) << 16) |  \
+    (((a)[(b)+3]) << 24))
+//#define GET32(a,b)    *((uint32_t *)((a) + (b)))
+#define SET32(a,b,c)                        \
+    (a)[b]       = ((uint32_t)(c)) & 0xff;  \
+    ((a)[(b)+1]) = ((uint32_t)(c)) >> 8;    \
+    ((a)[(b)+2]) = ((uint32_t)(c)) >> 16;   \
+    ((a)[(b)+3]) = ((uint32_t)(c)) >> 24; 
+//#define SET32(a,b,c)   *((uint32_t *)((a) + (b))) = c
 
 static void myCustomDelay_Sens(unsigned long mydel);
 static void myCustomDelay_GPS(unsigned long mydel);
@@ -4298,8 +4312,8 @@ static void updAndDispRemoteSpeed()
                 if(now - lastRemSpdUpd > remSpdCatchUpDelay) {
                     if(bttfnRemCurSpd < bttfnRemoteSpeed) {
                         bttfnRemCurSpd++;
-                        remSpdCatchUpDelay = bttfnRemCurSpd < 88 ?
-                            (unsigned long)(((float)(tt_p0_delays[bttfnRemCurSpd])) / ttP0TimeFactor) : 40;
+                        remSpdCatchUpDelay = bttfnRemCurSpd < 88 ?    //         ttP0TimeFactor
+                            (unsigned long)(((float)(tt_p0_delays[bttfnRemCurSpd])) / 4.2) : 40;
                     } else {
                         remSpdCatchUpDelay = 40;
                         bttfnRemCurSpd--;
@@ -5754,7 +5768,9 @@ static void NTPSendPacket()
     memcpy(NTPUDPBuf + 12, NTPUDPHD, 4);  // Ref ID, anything
 
     // Transmit, use as id
-    *((uint32_t *)(NTPUDPBuf + 40)) = NTPUDPID = (uint32_t)millis();
+    //*((uint32_t *)(NTPUDPBuf + 40)) = NTPUDPID = (uint32_t)millis();
+    NTPUDPID = (uint32_t)millis();
+    SET32(NTPUDPBuf, 40, NTPUDPID);
 
     myUDP->beginPacket(settings.ntpServer, 123);
     myUDP->write(NTPUDPBuf, NTP_PACKET_SIZE);
@@ -5790,7 +5806,8 @@ static void NTPCheckPacket()
     // Basic validity check
     if((NTPUDPBuf[0] & 0x3f) != 0x24) return;
 
-    if(*((uint32_t *)(NTPUDPBuf + 24)) != NTPUDPID) {
+    //if(*((uint32_t *)(NTPUDPBuf + 24)) != NTPUDPID) {
+    if(GET32(NTPUDPBuf, 24) != NTPUDPID) {
         #ifdef TC_DBG
         Serial.println("NTPCheckPacket: Bad packet ID (outdated packet?)");
         #endif
@@ -6000,7 +6017,8 @@ static void storeBTTFNClient(uint8_t *ip, uint8_t *buf, uint8_t type)
     Serial.printf("Listing device type: %d\n", type);
     #endif
     if((bttfnClientType[i] = type) == BTTFN_TYPE_REMOTE) {
-            bttfnRemID[i] = *((uint32_t *)(buf + 35));
+            //bttfnRemID[i] = *((uint32_t *)(buf + 35));
+            bttfnRemID[i] = GET32(buf, 35);
             #ifdef TC_DBG_1
             Serial.printf("Listing remote id: %d\n", bttfnRemID[i]);
             #endif
@@ -6393,7 +6411,8 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
     #ifdef TC_BTTFN_MC
     if(isMC) {
         if(buf[5] & 0x80) {
-            if(memcmp(buf+31, (void *)&hostNameHash, 4)) {
+            //if(memcmp(buf+31, (void *)&hostNameHash, 4)) {
+            if(GET32(buf, 31) != hostNameHash) {
                 return false;
             }
         } else {
@@ -6438,15 +6457,15 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
     #ifdef TC_HAVE_REMOTE
     if(buf[25] && ctype == BTTFN_TYPE_REMOTE) {
 
+        uint32_t receivedRemID = GET32(buf, 35);
         #ifdef TC_DBG
         bool remIDempty = !registeredRemID;
         #endif
 
         if( remoteAllowed && 
-            (!registeredRemID || registeredRemID == *((uint32_t *)(buf + 35))) ) {
+            (!registeredRemID || registeredRemID == receivedRemID) ) {
 
-            // buf[30]-buf[33] = 32bit unique remote-ID
-            if(!((registeredRemID = *((uint32_t *)(buf + 35))))) {
+            if(!((registeredRemID = receivedRemID))) {
                 #ifdef TC_DBG
                 Serial.printf("Remote ID %d rejected\n", registeredRemID);
                 #endif
@@ -6460,7 +6479,8 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
             // buf[6]-buf[9]: Sequence of packets: 
             // Remote sends separate seq counters for each command type.
             // If seq is < previous, packet is skipped.
-            uint32_t seq = *((uint32_t *)(buf + 6));
+            //uint32_t seq = *((uint32_t *)(buf + 6));
+            uint32_t seq = GET32(buf, 6);
     
             // Eval command from remote: 
             // 25: Command code (0=no command, used for polling like other clients)
@@ -6539,10 +6559,13 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
                 temp32 = lightSens.readLux();
             }
             #endif
+            SET32(buf, 22, temp32);
+            /*
             buf[22] =  (uint32_t)temp32        & 0xff;
             buf[23] = ((uint32_t)temp32 >>  8) & 0xff;
             buf[24] = ((uint32_t)temp32 >> 16) & 0xff;
             buf[25] = ((uint32_t)temp32 >> 24) & 0xff;
+            */
         }
         if(buf[5] & 0x10) {    // Status flags
             a = 0;
@@ -6609,6 +6632,12 @@ static void bttfn_notify(uint8_t targetType, uint8_t event, uint16_t payload, ui
     BTTFUDPBuf[7] = payload >> 8;         //
     BTTFUDPBuf[8] = payload2 & 0xff;      // store payload 2
     BTTFUDPBuf[9] = payload2 >> 8;        //
+
+    if(targetType == BTTFN_TYPE_REMOTE && event == BTTFN_NOT_REM_SPD) {
+        SET32(BTTFUDPBuf, 12, bttfnSeqCnt);
+        bttfnSeqCnt++;
+        if(!bttfnSeqCnt) bttfnSeqCnt = 1;
+    }
     
     // Checksum
     uint8_t a = 0;
