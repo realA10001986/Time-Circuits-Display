@@ -139,6 +139,15 @@
 
 /*  Changelog
  *
+ *  2024/09/28 (A10001986)
+ *    - Revisit UTF8 filtering for MQTT messages and ID3 data.
+ *    - Properly truncate UTF8 strings (MQTT user/topics) if beyond buffer
+ *      size. (Browsers' 'maxlength' is in characters, buffers are in bytes.
+ *      MQTT is generally UTF8, and WiFiManager treats maxlength=buffer size,
+ *      something to deal with at some point.)
+ *  2024/09/22 (A10001986)
+ *    - Sensors: Add logic to update display when sensor wasn't ready at last
+ *      sensor read.
  *  2024/09/13 (A10001986)
  *    - Remote: Override user-configured accel factor when the TCD catches up to  
  *      the Remote when brake released (so that doing that at 65 still allows for

@@ -278,6 +278,7 @@ bool                 tempUnit = DEF_TEMP_UNIT;
 static unsigned long tempReadNow = 0;
 static unsigned long tempDispNow = 0;
 static unsigned long tempUpdInt = TEMP_UPD_INT_L;
+static bool          tempLastNan = true;
 #endif
 
 // The startup sequence
@@ -4107,10 +4108,16 @@ bool isRcMode()
 #ifdef TC_HAVETEMP
 static void updateTemperature(bool force)
 {
+    unsigned long tui = tempUpdInt;
+
     if(!useTemp)
         return;
+
+    if(tempSens.lastTempNan() && (millis() - powerupMillis < 15*1000)) {
+        tui = 5 * 1000;
+    }
         
-    if(force || (millis() - tempReadNow >= tempUpdInt)) {
+    if(force || (millis() - tempReadNow >= tui)) {
         tempSens.readTemp(tempUnit);
         tempReadNow = millis();
     }
@@ -4215,7 +4222,6 @@ static void dispGPSSpeed(bool force)
 static bool dispTemperature(bool force)
 {
     bool tempNM = speedo.getNightMode();
-    bool tempChgNM = false;
     unsigned long now = millis();
 
     if(!dispTemp)
@@ -4237,10 +4243,13 @@ static bool dispTemperature(bool force)
     }
     #endif
 
-    tempChgNM = (tempNM != tempOldNM);
+    force |= (tempNM != tempOldNM);
     tempOldNM = tempNM;
 
-    if(tempChgNM || force || (now - tempDispNow >= 2*60*1000)) {
+    force |= (tempSens.lastTempNan() != tempLastNan);
+    tempLastNan = tempSens.lastTempNan();
+
+    if(force || (now - tempDispNow >= 2*60*1000)) {
         if(tempNM && tempOffNM) {
             speedo.off();
         } else {
@@ -6479,7 +6488,6 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
             // buf[6]-buf[9]: Sequence of packets: 
             // Remote sends separate seq counters for each command type.
             // If seq is < previous, packet is skipped.
-            //uint32_t seq = *((uint32_t *)(buf + 6));
             uint32_t seq = GET32(buf, 6);
     
             // Eval command from remote: 
@@ -6560,12 +6568,6 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
             }
             #endif
             SET32(buf, 22, temp32);
-            /*
-            buf[22] =  (uint32_t)temp32        & 0xff;
-            buf[23] = ((uint32_t)temp32 >>  8) & 0xff;
-            buf[24] = ((uint32_t)temp32 >> 16) & 0xff;
-            buf[25] = ((uint32_t)temp32 >> 24) & 0xff;
-            */
         }
         if(buf[5] & 0x10) {    // Status flags
             a = 0;
@@ -6596,7 +6598,7 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
                 }
             }
         }
-        // 0x40 free; 0x80 taken
+        // 0x40 free; 0x80 taken (TT)
 
     #ifdef TC_HAVE_REMOTE
     }

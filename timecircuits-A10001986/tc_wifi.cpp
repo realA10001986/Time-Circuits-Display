@@ -2055,31 +2055,33 @@ static void setCBVal(WiFiManagerParameter *el, char *sv)
 
 int16_t filterOutUTF8(char *src, char *dst, int srcLen = 0, int maxChars = 99999)
 {
-    int i, j, slen = srcLen ? srcLen : strlen(src);
-    unsigned char c, d, e, f;
+    int i, j, k, slen = srcLen ? srcLen : strlen(src);
+    unsigned char c, d, e;
 
     for(i = 0, j = 0; i < slen && j <= maxChars; i++) {
         c = (unsigned char)src[i];
-        if(c >= 32 && c < 127 - 1) {    // 127 = °, non-std, skip
+        if(c >= 32 && c <= 126) {     // skip 127 = DEL
             if(c >= 'a' && c <= 'z') c &= ~0x20;
-            dst[j++] = c;
-        } else if(c >= 194 && c < 224 && (i+1) < slen) {
-            d = (unsigned char)src[i+1];
-            if(d > 127 && d < 192) i++;
-        } else if(c < 240 && (i+2) < slen) {
-            d = (unsigned char)src[i+1];
-            e = (unsigned char)src[i+2];
-            if(d > 127 && d < 192 && 
-               e > 127 && e < 192) 
-                i+=2;
-        } else if(c < 245 && (i+3) < slen) {
-            d = (unsigned char)src[i+1];
-            e = (unsigned char)src[i+2];
-            f = (unsigned char)src[i+3];
-            if(d > 127 && d < 192 && 
-               e > 127 && e < 192 && 
-               f > 127 && f < 192)
-                i+=3;
+            else if(c == 126) c = '-';   // 126 = ~ but displayed as °, so make '-'
+            dst[j++] = c; 
+        } else {
+            e = 0;
+            if     (c >= 192 && c < 224)  e = 1;
+            else if(c >= 224 && c < 240)  e = 2;
+            else if(c >= 240 && c < 245)  e = 3;    // yes, 245 (otherwise bad UTF8)
+            if(e) {
+                if((i + e) < slen) {
+                    /*
+                    for(k = i + 1, d = 0; k <= i + 1 + e; k++) {
+                        d |= (unsigned char)src[k];
+                    }
+                    if(d > 127 && d < 192) i += e;
+                    */
+                    i += e;   // Why check? Just skip.
+                } else {
+                    break;
+                }
+            }
         }
     }
     dst[j] = 0;
@@ -2088,10 +2090,33 @@ int16_t filterOutUTF8(char *src, char *dst, int srcLen = 0, int maxChars = 99999
 }
 
 #ifdef TC_HAVEMQTT
+static void truncateUTF8(char *src)
+{
+    int i, j, slen = strlen(src);
+    unsigned char c, e;
+
+    for(i = 0; i < slen; i++) {
+        c = (unsigned char)src[i];
+        e = 0;
+        if     (c >= 192 && c < 224)  e = 1;
+        else if(c >= 224 && c < 240)  e = 2;
+        else if(c >= 240 && c < 248)  e = 3;  // Invalid UTF8 >= 245, but consider 4-byte char anyway
+        if(e) {
+            if((i + e) < slen) {
+                i += e;
+            } else {
+                src[i] = 0;
+                return;
+            }
+        }
+    }
+}
+
 static void strcpyutf8(char *dst, const char *src, unsigned int len)
 {
     strncpy(dst, src, len - 1);
     dst[len - 1] = 0;
+    truncateUTF8(dst);
 }
 
 static void mqttLooper()

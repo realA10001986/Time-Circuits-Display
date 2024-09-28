@@ -626,9 +626,11 @@ void speedDisplay::setTemperature(float temp)
     int t, strlenBuf = 0;
     const char *myNan = "----";
 
+    bool tempNan = isnan(temp);
+
     switch(_num_digs) {
     case 2:
-        if(isnan(temp))        setText(myNan);
+        if(tempNan)            setText(myNan);
         else if(temp <= -10.0) setText("Lo");
         else if(temp >= 100.0) setText("Hi");
         else if(temp >= 10.0 || temp < 0.0) {
@@ -641,7 +643,7 @@ void speedDisplay::setTemperature(float temp)
         }
         break;
     case 3:
-        if(isnan(temp))         setText(myNan);
+        if(tempNan)             setText(myNan);
         else if(temp <= -100.0) setText("Low");
         else if(temp >= 1000.0) setText("Hi");
         else if(temp >= 100.0 || temp <= -10.0) {
@@ -654,7 +656,7 @@ void speedDisplay::setTemperature(float temp)
         }
         break;
     default:
-        sprintf(buf, isnan(temp) ? myNan : "%.1f", temp);
+        sprintf(buf, tempNan ? myNan : "%.1f", temp);
         for(int i = 0; i < strlen(buf); i++) {
             if(buf[i] != '.') strlenBuf++;
         }

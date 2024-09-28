@@ -690,6 +690,9 @@ float tempSensor::readTemp(bool celsius)
     if(!isnan(temp)) {
         if(!celsius) temp = temp * 9.0 / 5.0 + 32.0;
         temp += _userOffset;
+        _lastTempNan = false;
+    } else {
+        _lastTempNan = true;
     }
 
     // We use only 2 digits, so truncate

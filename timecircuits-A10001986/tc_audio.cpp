@@ -614,6 +614,7 @@ static void copyId3String(char *src, char *dst, int tagSz, int maxChrs)
           c = *src++;
           if(c >= ' ' && c <= 126)  {
               if(c >= 'a' && c <= 'z') c &= ~0x20;
+              else if(c == 126) c = '-';  // 126 = ~ but displayed as °, so make it '-'
               *dst++ = c;
               *dst = 0;
           }
@@ -627,8 +628,9 @@ static void copyId3String(char *src, char *dst, int tagSz, int maxChrs)
           if(!chr) return;
           if(chr >= 0xd800 && chr <= 0xdbff) {
               src += 2;
-          } else if(chr >= ' ' && chr <= 126) {
+          } else if(chr >= ' ' && chr <= 126) {   
               if(chr >= 'a' && chr <= 'z') chr &= ~0x20;
+              else if(chr == 126) chr = '-';  // 126 = ~ but displayed as °, so make it '-'
               *dst++ = chr & 0xff;
               *dst = 0;
           }

@@ -102,6 +102,7 @@ class tempSensor : tcSensor {
 
         float readTemp(bool celsius = true);
         float readLastTemp() { return _lastTemp; };
+        bool lastTempNan() { return _lastTempNan; };
 
         void setOffset(float myOffs);
 
@@ -118,6 +119,7 @@ class tempSensor : tcSensor {
         unsigned long _delayNeeded = 0;
 
         float  _lastTemp = NAN;
+        bool   _lastTempNan = true;
 
         float  _userOffset = 0.0;
 
