@@ -1035,7 +1035,7 @@ Limitations: MQTT Protocol version 3.1.1; TLS/SSL not supported; ".local" domain
 
 ## Remote control the TCD
 
-The upcoming Remote Control board (for use with a Futaba remote control) will allow remote controlling the TCD and its speedo. More information coming soon.
+The upcoming [Remote Control](https://remote.out-a-ti.me) kit (for use with a Futaba remote control) will allow remote controlling the TCD and its speedo. More information coming soon.
 
 ## WiFi power saving features
 
