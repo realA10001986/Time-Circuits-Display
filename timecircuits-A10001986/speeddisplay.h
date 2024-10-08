@@ -134,11 +134,6 @@ class speedDisplay {
         bool getDot();
         bool getColon();
 
-        #if 0
-        void showTextDirect(const char *text);
-        void setColonDirect(bool colon);
-        #endif
-
     private:
 
         void handleColon();

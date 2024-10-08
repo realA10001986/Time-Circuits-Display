@@ -1817,9 +1817,9 @@ void time_setup()
         
         if(waitForFakePowerButton) {
             fakePowerOnKey.scan();
-            myIntroDelay(100);  // Bridge debounce time
+            myIntroDelay(70);     // Bridge debounce/longpress time
             fakePowerOnKey.scan();
-            if(!isFPBKeyChange) {
+            if(!isFPBKeyPressed) {
                 leds_off();
                 FPBUnitIsOn = false;
                 bootNow = false;
@@ -4321,8 +4321,16 @@ static void updAndDispRemoteSpeed()
                 if(now - lastRemSpdUpd > remSpdCatchUpDelay) {
                     if(bttfnRemCurSpd < bttfnRemoteSpeed) {
                         bttfnRemCurSpd++;
-                        remSpdCatchUpDelay = bttfnRemCurSpd < 88 ?    //         ttP0TimeFactor
-                            (unsigned long)(((float)(tt_p0_delays[bttfnRemCurSpd])) / 4.2) : 40;
+                        if(bttfnRemCurSpd < 88) {
+                            float nD = (float)tt_p0_delays[bttfnRemCurSpd]; // 4.2
+                            int sD = bttfnRemoteSpeed - bttfnRemCurSpd;
+                            if(sD > 4)      nD /= 4.2;
+                            else if(sD > 1) nD /= (float)sD;
+                            else            nD /= 2.0;
+                            remSpdCatchUpDelay = (unsigned long)nD;
+                        } else {
+                            remSpdCatchUpDelay = 40;
+                        }
                     } else {
                         remSpdCatchUpDelay = 40;
                         bttfnRemCurSpd--;

@@ -139,6 +139,10 @@
 
 /*  Changelog
  *
+ *  2024/10/03 (A10001986)
+ *    - Smoothen speedo's catch-up to Remote speed
+ *  2024/10/02 (A10001986)
+ *    - Speedo: Minor (cosmetic) changes
  *  2024/09/28 (A10001986)
  *    - Revisit UTF8 filtering for MQTT messages and ID3 data.
  *    - Properly truncate UTF8 strings (MQTT user/topics) if beyond buffer

@@ -27,9 +27,9 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION "V3.1.0"           // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "SEP282024"  // 13 chars max
+#define TC_VERSION_EXTRA "OCT032024"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "09282024"   // 12 chars max
+#define TC_VERSION_EXTRA "10032024"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
