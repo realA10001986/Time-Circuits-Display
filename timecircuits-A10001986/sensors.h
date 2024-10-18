@@ -9,7 +9,7 @@
  *
  * This is designed for 
  * - MCP9808, TMP117, BMx280, SHT4x-Ax, SI7012, AHT20/AM2315C, HTU31D, 
- *   MS8607 temperature/humidity sensors,
+ *   MS8607, HDC302X temperature/humidity sensors,
  * - BH1750, TSL2561, TSL2591, LTR303/329 and VEML7700/VEML6030 light 
  *   sensors.
  * -------------------------------------------------------------------
@@ -70,8 +70,6 @@ class tcSensor {
         void     write16(uint16_t regno, uint16_t value, bool LSBfirst = false);
         void     write8(uint16_t regno, uint8_t value);
 
-        uint8_t  crc8(uint8_t initVal, uint8_t poly, uint8_t len, uint8_t *buf);
-
         uint8_t _address;
 
         // Ptr to custom delay function
@@ -90,7 +88,8 @@ enum {
     TMP117,           // 0x49 [non-default] (unsupported: 0x48)
     AHT20,            // 0x38
     HTU31,            // 0x41 [non-default] (unsupported: 0x40)
-    MS8607            // 0x76+0x40
+    MS8607,           // 0x76+0x40
+    HDC302X           // 0x45 [non-default] (unsupported: 0x44, 0x46, 0x47)
 };
 
 class tempSensor : tcSensor {
@@ -112,7 +111,7 @@ class tempSensor : tcSensor {
     private:
 
         int     _numTypes = 0;
-        uint8_t _addrArr[8*2];    // up to 8 sensor types fit here
+        uint8_t _addrArr[9*2];    // up to 9 sensor types fit here
         int8_t  _st = -1;
         int8_t  _hum = -1;
         bool    _haveHum = false;
@@ -142,6 +141,8 @@ class tempSensor : tcSensor {
         unsigned long _tempReadNow = 0;
 
         float BMx280_CalcTemp(uint32_t ival, uint32_t hval);
+        void  HDC302x_setDefault(uint16_t reg, uint8_t val1, uint8_t val2);
+        bool  readAndCheck6(uint8_t *buf, uint16_t& t, uint16_t& h, uint8_t crcinit, uint8_t crcpoly);
 };
 #endif
 
@@ -171,10 +172,6 @@ class lightSensor : tcSensor {
         void VEML7700SetAIT(uint16_t ait, bool doWrite = true);
         void VEML7700OnOff(bool enable, bool doWait = true);
 
-        int32_t  LTR3xxCalcLux(uint8_t iGain, uint8_t tInt, uint32_t ch0, uint32_t ch1);
-        uint32_t TSL2561CalcLux(uint8_t iGain, uint8_t tInt, uint32_t ch0, uint32_t ch1);
-        int32_t  TSL2591CalcLux(uint8_t iGain, uint8_t tInt, uint32_t ch0, uint32_t ch1);
-        
         int     _numTypes = 0;
         uint8_t _addrArr[8*2];    // up to 8 sensor types fit here
         int8_t  _st = -1;

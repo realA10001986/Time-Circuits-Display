@@ -94,6 +94,7 @@
 #define AHT20_ADDR     0x38 //
 #define HTU31_ADDR     0x41 // [non-default]
 #define MS8607_ADDR    0x76 // +0x40
+#define HDC302X_ADDR   0x45 // [non-default]
 
                             // light sensors 
 #define LTR3xx_ADDR    0x29 // [default]                            
@@ -457,15 +458,16 @@ static TCRotEnc rotEncV(3,
 static TCRotEnc *rotEncVol;
 #endif
 #ifdef TC_HAVETEMP
-tempSensor tempSens(8, 
-            (uint8_t[8*2]){ MCP9808_ADDR, MCP9808,
+tempSensor tempSens(9, 
+            (uint8_t[9*2]){ MCP9808_ADDR, MCP9808,
                             BMx280_ADDR,  BMx280,
                             SHT40_ADDR,   SHT40,
                             MS8607_ADDR,  MS8607,   // before Si7021
                             SI7021_ADDR,  SI7021,
                             TMP117_ADDR,  TMP117,
                             AHT20_ADDR,   AHT20,
-                            HTU31_ADDR,   HTU31
+                            HTU31_ADDR,   HTU31,
+                            HDC302X_ADDR, HDC302X
                           });
 #endif
 #ifdef TC_HAVELIGHT

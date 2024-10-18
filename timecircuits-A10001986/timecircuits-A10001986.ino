@@ -139,6 +139,8 @@
 
 /*  Changelog
  *
+ *  2024/10/15 (A10001986)
+ *    - Add support for HDC302X temperature/humidity sensor (yet untested)
  *  2024/10/03 (A10001986)
  *    - Smoothen speedo's catch-up to Remote speed
  *  2024/10/02 (A10001986)

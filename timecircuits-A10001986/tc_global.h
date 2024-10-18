@@ -13,7 +13,7 @@
 #define _TC_GLOBAL_H
 
 /*************************************************************************
- ***                           Miscellaneous                           ***
+ ***                     Basic Hardware Definition                     ***
  *************************************************************************/
 
 // Uncomment if month is 2 digits (7-seg), as in the original A-Car display.
@@ -25,11 +25,11 @@
 
 // These must not contain any characters other than
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
-#define TC_VERSION "V3.1.0"           // 13 chars max
+#define TC_VERSION "V3.1.99"          // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "OCT032024"  // 13 chars max
+#define TC_VERSION_EXTRA "OCT152024"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "10032024"   // 12 chars max
+#define TC_VERSION_EXTRA "10152024"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -145,8 +145,6 @@
 // doing severe harm to user experience (and causes flash wear...)
 #define PERSISTENT_SD_ONLY
 
-// --- end of config options
-
 /*************************************************************************
  ***                           Miscellaneous                           ***
  *************************************************************************/
@@ -187,7 +185,10 @@
 // Uncomment for PCF2129 RTC chip support
 //#define HAVE_PCF2129
 
-// Custom stuff -----
+/*************************************************************************
+ ***                           Customization                           ***
+ *************************************************************************/
+
 #define TWSOUND         // Use A10001986's sound files
 //#define TWPRIVATE     // A10001986's private customizations
 
@@ -199,7 +200,10 @@
 #define TC_VERSION "A10001986"
 #endif
 
-// Sanitation ----
+/*************************************************************************
+ ***                             Sanitation                            ***
+ *************************************************************************/
+
 #ifndef TC_HAVESPEEDO
 #undef SP_ALWAYS_ON
 #endif
@@ -296,6 +300,5 @@
 // Epoch for general use; increase yearly, no limit
 // Defines the minimum date considered valid
 #define TCEPOCH_GEN   2024
-
 
 #endif
