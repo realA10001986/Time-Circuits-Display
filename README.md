@@ -1244,9 +1244,9 @@ If you are using your TCD together with a Futaba Remote Control prop, leave this
 
 "Movie-like" was created by measuring the times between each mph on the Remote Control shown in the very first time travel scene in part 1. For steps not shown, interpolation (based on the real-life acceleration curve) was used. The duration of the entire scene was not taken into account as it would result in a 0-88 time of either 11 seconds (counting from releasing the brake) or 36 seconds (counting from pushing up the throttle stick on the remote), which both do not match the mph-increment-timings at all.
 
-##### &#9654; Real-life acceleration factor
+##### &#9654; Factor for Real-life figures
 
-Since the DMC-12 wasn't the world's fastest car, its (real-life) acceleration figures might soon cause boredom if played in real-time as part of the time travel sequence with a speedo display. This factor speeds up the acceleration. 2.0 means twice as fast as the real car.
+Since the DMC-12 wasn't the world's fastest car, its (real-life) acceleration might soon cause boredom if played in real-time as part of the time travel sequence with a speedo display. This factor speeds up the acceleration. 2.0 means twice as fast as the real car.
 
 This settings has no effect if the **_Real-life acceleration figures_** option is unchecked.
 
