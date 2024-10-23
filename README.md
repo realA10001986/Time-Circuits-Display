@@ -1236,7 +1236,9 @@ Brightness of speedo display when displaying speed.
 
 ##### &#9654; Speedo sequence speed factor
 
-Since the DMC-12 wasn't the world's fastest car, it's acceleration figures might soon cause boredom if played in real-time as part of the time travel sequence with a speedo display. This factor speeds up the acceleration. 2.0 means twice as fast as the real car.
+Since the DMC-12 wasn't the world's fastest car, its acceleration figures might soon cause boredom if played in real-time as part of the time travel sequence with a speedo display. This factor speeds up the acceleration. 2.0 means twice as fast as the real car.
+
+If you are using your TCD together with a Futaba Remote Control prop, it is recommended to set this factor to 1.0 in order to closely approximate the Remote's timing (which is matched to the movie).
 
 ##### &#9654; Display GPS speed
 
