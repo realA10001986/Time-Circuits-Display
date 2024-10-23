@@ -1234,15 +1234,27 @@ Type of [speedo](#speedometer) display. Apart from [CircuitSetups's own](https:/
 
 Brightness of speedo display when displaying speed.
 
-##### &#9654; Speedo sequence speed factor
+##### &#9654; Real-life acceleration figures
 
-Since the DMC-12 wasn't the world's fastest car, its acceleration figures might soon cause boredom if played in real-time as part of the time travel sequence with a speedo display. This factor speeds up the acceleration. 2.0 means twice as fast as the real car.
+This option selects the acceleration times for the time travel sequence.
 
-If you are using your TCD together with a Futaba Remote Control prop, it is recommended to set this factor to 1.0 in order to closely approximate the Remote's timing (which is matched to the movie).
+If this option is checked, real-life figures are used. If unchecked, movie-like times apply.
+
+If you are using your TCD together with a Futaba Remote Control prop, leave this unchecked.
+
+"Movie-like" was created by measuring the times between each mph on the Remote Control shown in the very first time travel scene in part 1. For steps not shown, interpolation (based on the real-life acceleration curve) was used. The duration of the entire scene was not taken into account as it would result in a 0-88 time of either 11 seconds (counting from releasing the brake) or 36 seconds (counting from pushing up the throttle stick on the remote), which both do not match the mph-increment-timings at all.
+
+##### &#9654; Real-life acceleration factor
+
+Since the DMC-12 wasn't the world's fastest car, its (real-life) acceleration figures might soon cause boredom if played in real-time as part of the time travel sequence with a speedo display. This factor speeds up the acceleration. 2.0 means twice as fast as the real car.
+
+This settings has no effect if the **_Real-life acceleration figures_** option is unchecked.
 
 ##### &#9654; Display GPS speed
 
-If a GPS receiver is connected, this selects whether to display GPS speed on the speedo display. This only makes sense if the Time Circuits are mounted in a car. See [here](#gps-receiver)
+If a GPS receiver is connected, this selects whether to display GPS speed on the speedo. This only makes sense if the Time Circuits are mounted in a car. See [here](#gps-receiver).
+
+If your TCD/speedo are stationary, such as in a home setup, leave this unchecked (unless you want your speedo to permanently display "0"). Also, if you want to use a [rotary encoder](#rotary-encoder) for speed, this must to be unchecked.
 
 ##### &#9654; Update rate
 
@@ -1288,7 +1300,11 @@ For wirelessly connected props this option has no effect. Also see [here](#contr
 
 ##### &#9654; Provide GPS speed for wireless props
 
-Some [BTTF-Network](#bttf-network-bttfn) clients query the TCD for GPS speed, such as CircuitSetup's Flux Capacitor and SID. Check this option if such clients are connected, so that they get frequent GPS speed updates.
+Many [BTTF-Network](#bttf-network-bttfn) clients can query the TCD for speed. "Speed" can come from various sources: GPS, [rotary encoder](#rotary-encoder), Remote Control.
+
+This option selects whether actual GPS speed is to be transmitted to BTTFN clients. If this option is checked, speed from GPS (if available) takes precedence over speed from a rotary encoder.
+
+If your TCD/speedo are stationary, such as in a home setup, leave this unchecked.
 
 ##### &#9654; Play time travel sounds
 
