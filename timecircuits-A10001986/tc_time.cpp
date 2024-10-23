@@ -773,8 +773,8 @@ static uint64_t tdro = 5258964960;
 uint8_t* e(uint8_t *d, uint32_t m, int y) { return (*r)(d, m, y); }
 
 // Acceleraton times
-#ifdef TC_HAVESPEEDO
-static const int16_t tt_p0_delays[88] =
+#if defined(TC_HAVESPEEDO) || defined(TC_HAVE_REMOTE)
+static const int16_t tt_p0_delays_rl[88] =
 {
       0, 100, 100,  90,  80,  80,  80,  80,  80,  80,  // 0 - 9  10mph 0.8s    0.8=800ms
      80,  80,  80,  80,  80,  80,  80,  80,  80,  80,  // 10-19  20mph 1.6s    0.8
@@ -786,6 +786,19 @@ static const int16_t tt_p0_delays[88] =
     320, 330, 350, 370, 370, 380, 380, 390, 400, 410,  // 70-79  80mph 14.7s   3.7
     410, 410, 410, 410, 410, 410, 410, 410             // 80-87  90mph 18.8s   4.1
 };
+static const int16_t tt_p0_delays_movie[88] =
+{
+      0,  90,  90,  90,  90,  90,  90,  95,  95, 100,  // m0 - 9  10mph  0- 9: 0.83s  (m=measured, i=interpolated)
+    105, 110, 115, 120, 125, 130, 135, 140, 145, 150,  // i10-19  20mph 10-19: 1.27s
+    155, 160, 165, 170, 175, 180, 185, 190, 195, 200,  // i20-29  30mph 20-29: 1.77s
+    200, 200, 202, 203, 204, 205, 206, 207, 208, 209,  // m30-39  40mph 30-39: 2s
+    210, 211, 212, 213, 214, 215, 216, 217, 218, 219,  // i40-49  50mph 40-49: 2.1s
+    220, 221, 222, 223, 224, 225, 226, 227, 228, 229,  // m50-59  60mph 50-59: 2.24s
+    230, 233, 236, 240, 243, 246, 250, 253, 256, 260,  // i60-69  70mph 60-69: 2.47s
+    263, 266, 270, 273, 276, 280, 283, 286, 290, 293,  // m70-79  80mph 70-79: 2.78s
+    296, 300, 300, 303, 303, 306, 310, 310             // i80-88  90mph 80-88: 2.4s   total 17.6 secs
+};
+static const int16_t *tt_p0_delays = tt_p0_delays_movie;
 static long tt_p0_totDelays[88];
 #endif
 
@@ -1557,6 +1570,18 @@ void time_setup()
 
     // Set up speedo display
     #ifdef TC_HAVESPEEDO
+    if(!useSpeedo || (!atoi(settings.speedoAF))) {
+        //tt_p0_delays = tt_p0_delays_movie;  // already initialized
+        ttP0TimeFactor = 1.0;
+    } else {
+        tt_p0_delays = tt_p0_delays_rl;
+        ttP0TimeFactor = (float)strtof(settings.speedoFact, NULL);
+    }
+    #elif defined(TC_HAVE_REMOTE)
+    //tt_p0_delays = tt_p0_delays_movie;  // already initialized
+    #endif
+    
+    #ifdef TC_HAVESPEEDO
     if(useSpeedo) {
         speedo.setBrightness(atoi(settings.speedoBright), true);
         speedo.setDot(true);
@@ -1565,7 +1590,6 @@ void time_setup()
         if(!playTTsounds) havePreTTSound = false;
 
         // Speed factor for acceleration curve
-        ttP0TimeFactor = (float)strtof(settings.speedoFact, NULL);
         if(ttP0TimeFactor < 0.5) ttP0TimeFactor = 0.5;
         if(ttP0TimeFactor > 5.0) ttP0TimeFactor = 5.0;
 

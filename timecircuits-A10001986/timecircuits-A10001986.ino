@@ -139,6 +139,13 @@
 
 /*  Changelog
  *
+ *  2024/10/23 (A10001986)
+ *    - Speedo/acceleration: Implement option to use either real-life figures
+ *      (as before), or movie-like figures (matching the Futaba Remote's times).
+ *      Accel factor only applies to real-life times.
+ *      "Movie-like" is measured/interpolated from mph incrementing times on the 
+ *      Remote control's display.
+ *      If speedo is not found or disabled, movie-like times are used.
  *  2024/10/15 (A10001986)
  *    - Add support for HDC302X temperature/humidity sensor (yet untested)
  *  2024/10/03 (A10001986)
