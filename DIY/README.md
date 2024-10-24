@@ -259,4 +259,4 @@ Here's the timing diagram:
 
 In this case, there is no lead. The time travel starts immediately.
 
-_Text & images: (C) Thomas Winischhofer ("A10001986"). See LICENSE._
+_Text & images: (C) Thomas Winischhofer ("A10001986"). See LICENSE._ Source: https://tcd.out-a-ti.me
