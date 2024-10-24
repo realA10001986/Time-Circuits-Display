@@ -1379,4 +1379,4 @@ Europe:
 A full list is [here](https://tz.out-a-ti.me).
 
 
-_Text & images: (C) Thomas Winischhofer ("A10001986"). See LICENSE._
+_Text & images: (C) Thomas Winischhofer ("A10001986"). See LICENSE._ Source: https://tcd.out-a-ti.me
