@@ -2069,7 +2069,7 @@ static void displayClient(int numCli, int number)
     uint8_t *ip;
     char *id;
     uint8_t type;
-    char idbuf[12];
+    char idbuf[16];
     const char *tpArr[6] = { "[FLUX]", "[SID]", "[GAUGES]", "[VSR]", "[AUX]", "[REMOTE]" };
     
     if(!numCli) {
