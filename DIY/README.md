@@ -207,7 +207,7 @@ For Rotary Encoders, see [here](#hardware-configuration).
 
 ### Connecting props by wire
 
-The TCD can tell other props about a time travel. It does so by setting a pin (IO14, labeled "TT OUT" on Control Boards 1.3 and later) to high or low.
+The TCD can tell other props about a time travel. It does so by setting a pin (IO14, labeled "TT OUT" on Control Boards 1.3 and later) to high or low. "High" is between 2.7V and 3.3V.
 
 ![Wired connection](img/family-wired.png)
 
