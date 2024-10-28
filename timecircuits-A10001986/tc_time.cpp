@@ -868,6 +868,7 @@ static uint8_t       bttfnNotAllSupportMC = 0;
 static uint8_t       bttfnAtLeastOneMC = 0;
 static int16_t       oldBTTFNSpd = -2;
 static uint16_t      oldBTTFNSSrc = 0xffff;
+static unsigned long bttfnLastSpeedNot = 0;
 #endif
 #ifdef TC_HAVE_REMOTE
 static uint32_t      registeredRemID  = 0;
@@ -2116,6 +2117,8 @@ void time_loop()
         // until P1-ETTO_LEAD
         #ifdef TC_HAVE_RE
         if(useRotEnc) {
+            // Need to keep -1, otherwise we can't detect if enc was off
+            // ahead of the tt, see also P2
             fakeSpeed = rotEnc.IsOff() ? -1 : timeTravelP0Speed;
         }
         #endif
@@ -2123,7 +2126,9 @@ void time_loop()
         // Update for BTTFN clients
         bttfnRemCurSpd = timeTravelP0Speed;
         #ifndef TC_BTTFN_MC
-        bttfn_notify(BTTFN_TYPE_REMOTE, BTTFN_NOT_REM_SPD, timeTravelP0Speed, timeTravelP0);
+        if(bttfnRemoteSpeedMaster) {
+            bttfn_notify(BTTFN_TYPE_REMOTE, BTTFN_NOT_REM_SPD, timeTravelP0Speed, timeTravelP0);
+        }
         #endif
         #endif
     }
@@ -2157,7 +2162,8 @@ void time_loop()
                 // We MUST reset the encoder; user might have moved
                 // it while we blocked updates during P0-P2.
                 // If fakeSpeed is -1 at this point, it was disabled
-                // when starting P0
+                // when starting P0 (which is why we don't overwrite
+                // fakeSpeed when enc is off, see above at P0)
                 if(fakeSpeed < 0) {
                     // Reset enc to "disabled" position
                     re_init(false);
@@ -2190,18 +2196,19 @@ void time_loop()
             timetravelP0Now = millis();
             timeTravelP0Speed--;
             speedo.setSpeed(timeTravelP0Speed);
+            speedo.show();
+            //speedoStatus = SPST_TT;
             #ifdef TC_HAVE_REMOTE
-            // Update for BTTFN clients, and in case Remote kicked in during TT
+            // Overwrite for BTTFN clients, and in case Remote kicked in during TT
             // in which case the saved displayed speed would be outdated at the end of P2
             // and the Remote speed code would start count down from the outdated
             // speed again.
             bttfnRemCurSpd = timeTravelP0Speed; 
             #endif
-            speedo.show();
-            //speedoStatus = SPST_TT;
             #ifdef TC_HAVE_RE
             if(useRotEnc) {
-                // Update fakeSpeed for BTTFN clients
+                // Need to keep -1, otherwise we can't detect if enc was off
+                // ahead of the tt, see end of P2
                 fakeSpeed = rotEnc.IsOff() ? -1 : timeTravelP0Speed;
             }
             #endif
@@ -2324,6 +2331,7 @@ void time_loop()
         // (Will be skipped in current iteration if
         // seconds change is detected)
 
+        // Handle Remote
         #ifdef TC_HAVE_REMOTE
         if(bttfnRemoteSpeedMaster != bttfnOldRemoteSpeedMaster) {
             if((bttfnOldRemoteSpeedMaster = bttfnRemoteSpeedMaster)) {
@@ -2354,7 +2362,8 @@ void time_loop()
             }
         }
         #endif
-        
+
+        // Handle RotEnc
         #ifdef TC_HAVE_RE
         if(FPBUnitIsOn && useRotEnc && !startup && !timeTravelP0 && !timeTravelP1 && !timeTravelP2) {
             fakeSpeed = rotEnc.updateFakeSpeed();
@@ -6404,7 +6413,7 @@ bool bttfn_loop()
     tcdUDP->read(BTTFUDPBuf, BTTF_PACKET_SIZE);
 
     if(bttfn_handlePacket(BTTFUDPBuf, false)) {
-        tcdUDP->beginPacket(tcdUDP->remoteIP(), tcdUDP->remotePort());
+        tcdUDP->beginPacket(tcdUDP->remoteIP(), BTTF_DEFAULT_LOCAL_PORT); //tcdUDP->remotePort());
         tcdUDP->write(BTTFUDPBuf, BTTF_PACKET_SIZE);
         tcdUDP->endPacket();
     } else if(!psize) {
@@ -6575,8 +6584,8 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
             memcpy(&buf[10], bttfnDateBuf, sizeof(bttfnDateBuf));
             if(presentTime.get1224()) buf[17] |= 0x80;
         }
-        if(buf[5] & 0x02) {    // speed  (-1 if unavailable) . 
-            temp = -1;         // Deprecated. Client is supposed to support MC-notifications.
+        if(buf[5] & 0x02) {    // speed  (-1 if unavailable)
+            temp = -1;         // (Client is supposed to support MC-notifications instead)
             #ifdef TC_HAVE_REMOTE
             if(bttfnRemoteSpeedMaster) {
                 // bttfnRemCurSpd is P0-speed during P0, see below for reason
@@ -6596,7 +6605,7 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
                 } else {                        
                 #endif
                     #ifdef TC_HAVE_RE
-                    if(useRotEnc) {
+                    if(useRotEnc && FPBUnitIsOn) {  // fakespeed only valid if FP on
                         // fakeSpeed is P0-speed during P0, see above for reason
                         temp = fakeSpeed;
                         buf[26] |= 0x80;   // Signal that speed is from RotEnc
@@ -6695,6 +6704,7 @@ static void bttfn_notify_of_speed()
 {
     int16_t  spd = -1;
     uint16_t ssrc = BTTFN_SSRC_NONE;
+    unsigned long now;
 
     if(!bttfnAtLeastOneMC)
         return;
@@ -6727,11 +6737,13 @@ static void bttfn_notify_of_speed()
         ssrc = BTTFN_SSRC_ROTENC;
     #endif
     }
-    
-    if(spd != oldBTTFNSpd || ssrc != oldBTTFNSSrc) {
+
+    now = millis();
+    if(spd != oldBTTFNSpd || ssrc != oldBTTFNSSrc || (now - bttfnLastSpeedNot > 2775)) {
         oldBTTFNSpd = spd;
         oldBTTFNSSrc = ssrc;
         bttfn_notify(BTTFN_TYPE_ANY, BTTFN_NOT_SPD, (uint16_t)spd, ssrc);
+        bttfnLastSpeedNot = now;
     }
 }
 #endif
@@ -6739,7 +6751,7 @@ static void bttfn_notify_of_speed()
 // Send event notification to known clients
 static void bttfn_notify(uint8_t targetType, uint8_t event, uint16_t payload, uint16_t payload2)
 {
-    IPAddress ip;
+    IPAddress ip(224, 0, 0, 224);
     bool spdNot = false;
 
     // No clients?
@@ -6773,8 +6785,8 @@ static void bttfn_notify(uint8_t targetType, uint8_t event, uint16_t payload, ui
     BTTFUDPBuf[BTTF_PACKET_SIZE - 1] = a;
 
     #ifdef TC_BTTFN_MC
-    if((!bttfnNotAllSupportMC && !targetType) || spdNot) {
-        tcdUDP->beginPacket("224.0.0.224", BTTF_DEFAULT_LOCAL_PORT + 2);
+    if((!targetType && !bttfnNotAllSupportMC) || spdNot) {
+        tcdUDP->beginPacket(ip, BTTF_DEFAULT_LOCAL_PORT + 2);
         tcdUDP->write(BTTFUDPBuf, BTTF_PACKET_SIZE);
         tcdUDP->endPacket();
     } else {

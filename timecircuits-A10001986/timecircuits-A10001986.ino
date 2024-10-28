@@ -139,6 +139,9 @@
 
 /*  Changelog
  *
+ *  2024/10/27 (A10001986)
+ *    - BTTFN: Do regular speed broadcasts every ~3 secs even if speed didn't change.
+ *    - BTTFN: Speed from RotEnc only valid while fake power is on
  *  2024/10/26 (A10001986)
  *    - BTTFN: Use multicast for TCD's notifications, instead of sending out
  *      several packets to individual clients. Only used if all connected clients

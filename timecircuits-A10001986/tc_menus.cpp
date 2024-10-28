@@ -2108,7 +2108,7 @@ static void displayClient(int numCli, int number)
         }
       
         dt_showTextDirect(idbuf);
-
+        
         presentTime.showHalfIPDirect(ip[0], ip[1], CDT_CLEAR);
         departedTime.showHalfIPDirect(ip[2], ip[3], CDT_CLEAR);
         pt_on();
@@ -2132,8 +2132,8 @@ void doShowBTTFNInfo()
 
     oldNumCli = numCli;
 
+    dt_showTextDirect("");
     dt_on();
-
     displayClient(numCli, number);
 
     isEnterKeyHeld = false;
