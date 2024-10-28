@@ -941,20 +941,6 @@ For information on supported sensor models/types and configuration, see [here](D
 
 ## Controlling other props
 
-### Connecting props by wire
-
-The device can tell other props about a time travel, and in essence act as a "master controller" in a setup of several props. 
-
-![Wired connection](img/family-wired.png)
-
-For detailed wiring instructions, please see the documentation for the prop ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [Dash Gauges](https://github.com/realA10001986/Dash-Gauges/blob/main/hardware/README.md#connecting-a-tcd-to-the-dash-gauges-by-wire), [VSR](https://github.com/realA10001986/VSR#connecting-a-tcd-by-wire)); for DIY props, see [here](DIY/#other-props).
-
-If external gear is connected by wire and you want to use this control feature, check **_Control props connected by wire_** in the Config Portal.
-
-For CircuitSetup original props connected by wire, the option **_Signal Time Travel without 5s lead_** should not be set since it skips the "acceleration phase"; however, if that option is set on the TCD (for instance, if third-party props are connected by wire as well), the respective option on the prop must be set, too. If those props are connected wirelessly, this option has no effect.
-
-Note that a wired connection only allows for synchronized time travel sequences, no other communication takes place. A wireless connection allows for more features, see immediately below.
-
 ### Connecting props wirelessly
 
 #### BTTF-Network (BTTFN)
@@ -976,6 +962,22 @@ On the other prop, such as CircuitSetup's [Flux Capacitor](https://circuitsetup.
 The fact that the devices communicate directly with each other makes BTTFN the ideal solution for car setups. Also, while at home, the devices might be connected to an existing WiFi network, in a car, the TCD can act as access point for Flux Capacitor and SID (ie they are connecting to the *TCD-AP* WiFi network), and those then can talk the TCD wirelessly. The TCD has *car mode* for aiding this, see [here](#car-mode) and the documentation of the respective prop. 
 
 To see which BTTFN devices are currently known to the TCD, enter the keypad menu and select "BTTFN CLIENTS".
+
+### Connecting props by wire
+
+The TCD can also tell other props about a time travel through a wire. This is mainly meant for connecting third party props which are not BTTFN-compatible.
+
+A wired connection only allows for synchronized time travel sequences, no other communication takes place. 
+
+![Wired connection](img/family-wired.png)
+
+CircuitSetup/A10001986 original props also support a wired connection, if for whatever reason BTTFN is not an option. For detailed wiring instructions, please see the documentation for the prop ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [Dash Gauges](https://github.com/realA10001986/Dash-Gauges/blob/main/hardware/README.md#connecting-a-tcd-to-the-dash-gauges-by-wire), [VSR](https://github.com/realA10001986/VSR#connecting-a-tcd-by-wire)); for DIY props, see [here](DIY/#other-props).
+
+In order to enable a wired connection, check **_Control props connected by wire_** in the Config Portal.
+
+Normally, a time travel is signalled by wire 5s ahead of the temporal displacement, in order to give the prop time for some kind of "acceleration" sequence. The option **_Signal Time Travel without 5s lead_** disables this lead time, if your prop does not need or support this.
+
+In case CircuitSetup/A10001986 original props are connected by wire, the option **_Signal Time Travel without 5s lead_** should not be set since it skips the "acceleration phase"; however, if that option is set on the TCD (for instance, if third-party props are connected by wire as well), the respective option on the prop must be set, too. This option has no effect for wirelessly connected props.
 
 ## Home Assistant / MQTT
 
