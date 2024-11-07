@@ -27,9 +27,9 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION "V3.1.999"         // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "OCT272024"  // 13 chars max
+#define TC_VERSION_EXTRA "NOV072024"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "10272024"   // 12 chars max
+#define TC_VERSION_EXTRA "11072024"   // 12 chars max
 #endif
 
 //#define TC_DBG              // debug output on Serial
@@ -69,6 +69,9 @@
 // Uncomment to enable the fake-0 on CircuitSetup's speedo; is not usable
 // as a full third digit, just displays "0" when speed to be displayed
 //#define SP_CS_0ON
+// Uncomment to have the Speedo display "--" when there is no GPS fix.
+// When commented, it will display 0.
+//#define GPS_DISPLAY_DASHES
 #endif
 
 // Uncomment for rotary encoder support

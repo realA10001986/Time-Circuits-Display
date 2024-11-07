@@ -139,6 +139,9 @@
 
 /*  Changelog
  *
+ *  2024/11/07 (A10001986)
+ *    - GPS: Display "0" when there is no fix. Old behavior (--) can be compile-time
+ *      configured. Use case: Indoor presentation....
  *  2024/10/27 (A10001986)
  *    - BTTFN: Do regular speed broadcasts every ~3 secs even if speed didn't change.
  *    - BTTFN: Speed from RotEnc only valid while fake power is on
