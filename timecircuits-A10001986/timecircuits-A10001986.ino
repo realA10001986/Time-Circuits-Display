@@ -139,6 +139,9 @@
 
 /*  Changelog
  *
+ *  2024/11/15 (A10001986)
+ *    - Set version number to 3.2.000, in order define a lower limit for Remote
+ *      compatibility. No changes.
  *  2024/11/07 (A10001986)
  *    - GPS: Display "0" when there is no fix. Old behavior (--) can be compile-time
  *      configured. Use case: Indoor presentation....
