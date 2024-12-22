@@ -27,7 +27,7 @@ Features include
   - [Exhibition mode](#exhibition-mode): Show a fixed time in *Present Time* display instead of a running clock. Helpful for filming or museums.
 - Network capabilities:
   - Advanced network-accessible [Config Portal](#the-config-portal) for setup (http://timecircuits.local, hostname configurable)
-  - [Wireless communication](#bttf-network-bttfn) with compatible other props such as CircuitSetup's [Flux Capacitor](https://fc.out-a-ti.me) and [SID](https://sid.out-a-ti.me), as well as the [Dash Gauges](https://dg.out-a-ti.me) and [VSR](https://vsr.out-a-ti.me)
+  - [Wireless communication](#bttf-network-bttfn) with compatible other props such as CircuitSetup's [Flux Capacitor](https://fc.out-a-ti.me) and [SID](https://sid.out-a-ti.me), as well as the [Dash Gauges](https://dg.out-a-ti.me), [VSR](https://vsr.out-a-ti.me) and modified [Futaba Remote Control](https://remote.out-a-ti.me)
   - [Home Assistant](#home-assistant--mqtt) (MQTT 3.1.1) support
 - [Night mode](#night-mode): Dim or switch off displays on schedule, manually or sensor-controlled.
 - [Music player](#the-music-player): Play mp3 files located on an SD card
@@ -37,7 +37,7 @@ Features include
 - Peripherals:
   - Support for external [fake "power switch"](#fake-power-switch) (eg. a TFC drive switch)
   - Support for time travel [triggered by external source](#external-time-travel-trigger), with selectable delay
-  - Support for external [Speedometer](#speedometer) (eg. CircuitSetup's [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-pcb/?v=fa868488740a))
+  - Support for external [Speedometer](#speedometer) (eg. CircuitSetup's [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit))
   - Support for [GPS receiver](#gps-receiver), used as time source and for actual [speed](#gps-for-speed) to be displayed on speedo display
   - Support for [rotary encoders](#rotary-encoder) for manual selection of speed to be displayed on Speedo display, &#127381; and/or audio volume
   - Support for [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for [Room condition mode](#room-condition-mode-temperaturehumidity-sensor) [display temperature and humidity in *destination time* and *last time departed* displays] and for displaying temperature on speedo display while idle
@@ -853,7 +853,7 @@ The Config Portal allows configuring a delay for matching/synchronizing the TCD 
 
 ## Speedometer
 
-The firmware supports [CircuitSetups's speedometer display](https://circuitsetup.us/product/delorean-time-machine-speedometer-pcb/) as part of the time travel sequence and for other purposes.
+The firmware supports [CircuitSetups's speedometer display](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit) as part of the time travel sequence and for other purposes.
 
 | [![Watch the video](https://img.youtube.com/vi/opAZugb_W1Q/0.jpg)](https://youtu.be/opAZugb_W1Q) |
 |:--:|
@@ -875,7 +875,7 @@ In order to use the Speedometer display, select the correct model/display type i
 
 A GPS receiver can be used as a source of authoritative time (like NTP) and speed of movement.
 
-The CircuitSetup original [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-pcb/?v=fa868488740a) has a built-in GPS receiver. If you want to use a third party GPS receiver, see [here](DIY/#gps-receiver). 
+The CircuitSetup original [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit) has a built-in GPS receiver. If you want to use a third party GPS receiver, see [here](DIY/#gps-receiver). 
 
 GPS receivers receive signals from satellites, but in order to do so, they need to be "tuned in" (aka get a "fix"). This "tuning" process can take a long time; after first power up, it can take 30 minutes or more for a receiver to be able to determine its position. In order to speed up this process, modern GPS receivers have special "assisting" features. One key element is knowledge of current time, as this helps identifying satellite signals quicker. So, in other words, initially, you need to tell the receiver what it is supposed to tell you. However, as soon as the receiver has received satellite signals for 15-20 minutes, it saves the data it collected to its battery-backed memory and will find a fix within seconds after power-up in the future.
 
