@@ -2,7 +2,7 @@
  * -------------------------------------------------------------------
  * CircuitSetup.us Time Circuits Display
  * (C) 2021-2022 John deGlavina https://circuitsetup.us
- * (C) 2022-2024 Thomas Winischhofer (A10001986)
+ * (C) 2022-2025 Thomas Winischhofer (A10001986)
  * https://github.com/realA10001986/Time-Circuits-Display
  * https://tcd.out-a-ti.me
  *
@@ -139,11 +139,19 @@
 
 /*  Changelog
  *
- *  2024/11/15 (A10001986)
- *    - Set version number to 3.2.000, in order define a lower limit for Remote
+ *  2025/01/01 (A10001986) [3.2.001]
+ *    - Set epochs to 2025
+ *  2024/12/22 (A10001986)
+ *    - Refine change of 2024/11/07. If the fix is lost, the speedo displays "--" for
+ *      60 seconds and then switches to "00". If the last GPS speed registered (before
+ *      losing the fix) was < 4, it goes to "00" directly. It's nicer to see "--" in a
+ *      tunnel than "00", and the exhibition situation (stationary car, indoors) is
+ *      still covered.
+ *  2024/11/15 (A10001986) [3.2.000]
+ *    - Set version number to 3.2.000, in order define a clear limit for Remote
  *      compatibility. No changes.
  *  2024/11/07 (A10001986)
- *    - GPS: Display "0" when there is no fix. Old behavior (--) can be compile-time
+ *    - GPS: Display "00" when there is no fix. Old behavior (--) can be compile-time
  *      configured. Use case: Indoor presentation....
  *  2024/10/27 (A10001986)
  *    - BTTFN: Do regular speed broadcasts every ~3 secs even if speed didn't change.
