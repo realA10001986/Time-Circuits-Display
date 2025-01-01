@@ -11,7 +11,7 @@ The kit parts are available [here](https://circuitsetup.us/product/complete-time
 Features include
 
 - Clock-related:
-  - Time keeping for years 1-9999, &#127381; accurately based on Julian and Gregorian [calendars](#calendar-system)
+  - Time keeping for years 1-9999, accurately based on Julian and Gregorian [calendars](#calendar-system)
   - Support for time zones and automatic DST (Daylight Saving adjustment)
   - Time synchronization through Internet ([NTP](https://en.wikipedia.org/wiki/Network_Time_Protocol)) or [GPS](#gps-receiver)
   - [World Clock mode](#world-clock-mode): Show current time in different time zones in *destination time* and/or *last time departed* displays
