@@ -101,6 +101,7 @@ The following sensor types are supported:
 - [AHT20/AM2315C](https://www.adafruit.com/product/4566),
 - [HTU31D](https://www.adafruit.com/product/4832) (0x41 - non-default),
 - [MS8607](https://www.adafruit.com/product/4716)
+- [HDC302x](https://www.adafruit.com/product/5989) (0x45 - non-default)
 
 >The BMP280 (unlike BME280), MCP9808 and TMP117 work as pure temperature sensors, the others for temperature and humidity.
 
