@@ -139,6 +139,8 @@
 
 /*  Changelog
  *
+ *  2025/01/07 (A10001986) [3.2.002]
+ *    - Sensors: Fix HDC302x detection and humidity
  *  2025/01/01 (A10001986) [3.2.001]
  *    - Set epochs to 2025
  *  2024/12/22 (A10001986)
