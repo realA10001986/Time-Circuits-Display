@@ -10,7 +10,7 @@
 
 ## Speedometer
 
-Despite CircuitSetup offering a really good and screen-accurate Speedo, you might want to make your own.
+Despite CircuitSetup offering a really good and [screen-accurate Speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit/), you might want to make your own.
 
 | [![Watch the video](https://img.youtube.com/vi/opAZugb_W1Q/0.jpg)](https://youtu.be/opAZugb_W1Q) |
 |:--:|
