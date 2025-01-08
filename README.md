@@ -44,7 +44,7 @@ Features include
   - Support for triggering time travels on other props [connected by wire](#connecting-props-by-wire)
   - &#127381; Support for upcoming [Futaba remote control prop](#futaba-remote-control): Remote control the speed on the TCD, like in the movie
 
-The difference between what you get here and CircuitSetup's releases is that the code here might be ahead in development, uses some different sounds, and the pre-compiled binary has all the features enabled.
+>The difference between what you get here and CircuitSetup's releases is that the code here might be ahead in development, uses some different sounds, and the pre-compiled binary has all the features enabled.
 
 | [![Watch the video](https://img.youtube.com/vi/u9oTVXUIOXA/0.jpg)](https://youtu.be/u9oTVXUIOXA) |
 |:--:|
