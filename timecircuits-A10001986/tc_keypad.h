@@ -70,6 +70,10 @@ bool scanKeypad();
 void resetKeypadState();
 void discardKeypadInput();
 
+#ifdef TC_HAVE_REMOTE
+void injectKeypadKey(char key, int kaction);
+#endif
+
 void keypad_loop();
 
 void resetTimebufIndices();

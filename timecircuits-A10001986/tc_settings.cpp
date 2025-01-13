@@ -1351,6 +1351,9 @@ static void loadRemoteAllowed()
             if(json["Remote"]) {
                 remoteAllowed = (atoi(json["Remote"]) > 0);
             }
+            if(json["RemoteKP"]) {
+                remoteKPAllowed = (atoi(json["RemoteKP"]) > 0);
+            }
         } 
         configFile.close();
     }
@@ -1359,6 +1362,7 @@ static void loadRemoteAllowed()
 void saveRemoteAllowed()
 {
     char buf[2];
+    char buf2[2];
     DECLARE_S_JSON(512,json);
 
     if(!haveFS && !configOnSD)
@@ -1367,6 +1371,9 @@ void saveRemoteAllowed()
     buf[0] = remoteAllowed ? '1' : '0';
     buf[1] = 0;
     json["Remote"] = (const char *)buf;
+    buf2[0] = remoteKPAllowed ? '1' : '0';
+    buf2[1] = 0;
+    json["RemoteKP"] = (const char *)buf2;
 
     writeJSONCfgFile(json, raCfgName, configOnSD);
 }

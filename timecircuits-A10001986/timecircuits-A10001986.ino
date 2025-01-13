@@ -139,6 +139,11 @@
 
 /*  Changelog
  *
+ *  2025/01/11-12 (A10001986) [3.2.003]
+ *    - BTTFN: Add support for requesting currently displayed present, destination, 
+ *      departed times
+ *    - BTTFN: Add support for remote controlling TCD keypad. Supported by FC 1.70
+ *      and SID 1.50, through their IR remote control.
  *  2025/01/07 (A10001986) [3.2.002]
  *    - Sensors: Fix HDC302x detection and humidity
  *  2025/01/01 (A10001986) [3.2.001]
@@ -1408,6 +1413,7 @@ void setup()
     // Make sure our i2c buf is 128 bytes
     Wire.setBufferSize(128);
     // PCF8574 only supports 100kHz, can't go to 400 here.
+    // Also, speedo cable is usually quite long, play it safe.
     Wire.begin(-1, -1, 100000);
 
     time_boot();

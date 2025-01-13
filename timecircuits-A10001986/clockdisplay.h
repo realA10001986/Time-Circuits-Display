@@ -147,6 +147,8 @@ class clockDisplay {
 
         int16_t  getYearOffset();
 
+        void getCompressed(uint8_t *buf, uint8_t& over);
+
         void showMonthDirect(int monthNum, uint16_t dflags = 0);
         void showDayDirect(int dayNum, uint16_t dflags = 0);
         void showHourDirect(int hourNum, uint16_t dflags = 0);

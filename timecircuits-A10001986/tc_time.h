@@ -104,6 +104,7 @@ extern lightSensor lightSens;
 #endif
 #ifdef TC_HAVE_REMOTE
 extern bool remoteAllowed;
+extern bool remoteKPAllowed;
 #endif
 
 extern tcRTC rtc;
