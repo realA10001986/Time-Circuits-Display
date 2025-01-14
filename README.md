@@ -458,7 +458,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
 
 #### Remote controlling the TCD's keypad
 
-The TCD's keypad can be remote controlled through either [Flux Capacitor](https://fc.out-a-ti.me) and [SID](https://sid.out-a-ti.me), using their respective IR remote control. In order to permit keypad remote controlling, enter 995 followed by ENTER. To prohibit remote controlling, enter 994 followed by ENTER. No furher configuration is required on the TCD's side. Please see the [Flux Capacitor](https://fc.out-a-ti.me) and/or [SID](https://sid.out-a-ti.me) documentation for details. 
+The TCD's keypad can be remote controlled through either [Flux Capacitor](https://fc.out-a-ti.me) and [SID](https://sid.out-a-ti.me), using their respective IR remote control. In order to permit keypad remote controlling, enter 995 followed by ENTER. To prohibit remote controlling, enter 994 followed by ENTER. No further configuration is required on the TCD's side. Please see the [Flux Capacitor](https://fc.out-a-ti.me) and/or [SID](https://sid.out-a-ti.me) documentation for details. 
 
 ## Time travel
 
@@ -1046,7 +1046,7 @@ Limitations: MQTT Protocol version 3.1.1; TLS/SSL not supported; ".local" domain
 
 The upcoming kit for modifying a Futaba remote control allows to control the TCD's speedo. The Remote can increase/decrease speed, trigger a time travel, and more. 
 
-In order to permit remote controlling, enter 993 followed by ENTER. To prohibit remote controlling, enter 992 followed by ENTER. No furher configuration is required on the TCD's side.
+In order to permit remote controlling, enter 993 followed by ENTER. To prohibit remote controlling, enter 992 followed by ENTER. No further configuration is required on the TCD's side.
 
 More information is [here](https://remote.out-a-ti.me).
 
