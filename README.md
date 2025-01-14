@@ -408,6 +408,10 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left">Forbid / allow TCD to be <a href="#futaba-remote-control">remote controlled</a></td>
      <td align="left">992&#9166; / 993&#9166;</td>
     </tr>
+   <tr>
+     <td align="left">Forbid / allow TCD keypad to be <a href="#keypad-remote-control">remote controlled</a></td>
+     <td align="left">994&#9166; / 995&#9166;</td>
+    </tr>
   <tr>
      <td align="left">Restore user destination/last time dep. times</td>
      <td align="left">998&#9166;</td>
@@ -453,6 +457,10 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
 </table>
 
 [Here](https://github.com/realA10001986/Time-Circuits-Display/blob/main/CheatSheet.pdf) is a cheat sheet for printing or screen-use. (Note that MacOS' *preview* application has a bug that scrambles the links in the document. Acrobat Reader does it correctly.)
+
+#### Remote controlling the TCD's keypad
+
+The TCD's keypad can be remote controlled through either [Flux Capacitor](https://fc.out-a-ti.me) and [SID](https://sid.out-a-ti.me), through their IR remote control. Please see the FC and/or SID documentation for details.
 
 ## Time travel
 
