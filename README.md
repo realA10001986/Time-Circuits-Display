@@ -600,12 +600,12 @@ The following sounds are time-sync'd to display action. If you decide to substit
 
 The firmware supports some additional, user-provided sound effects, which it will load from the SD card. If the respective file is present, it will be used. If that file is absent, no sound will be played.
 
-- "ttaccel.mp3": Will be played immediately upon triggering a time travel when a speedo display is connected, during the acceleration phase (ie while the speedo counts up to 88). This sound is then interrupted by the usual time travel sound. You can use, for instance, the sound of a car accelerating for this. This sound is played through [line-out](#audio-output), if so configured.
+- "ttaccel.mp3": Will be played immediately upon triggering a time travel when a speedo display is connected, during the acceleration phase (ie while the speedo counts up to 88). This sound is then interrupted by the usual time travel sound. You can use, for instance, the sound of a car accelerating for this. This sound is played through [line-out](#audio-output), if enabled.
 - "hour.mp3": Will be played every hour, on the hour. This feature is disabled in night mode.
 - "hour-xx.mp3", xx being 00 through 23: Sounds-on-the-hour for specific hours that will be played instead of "hour.mp3". If a sound for a specific hour is not present, "hour.mp3" will be played, if that one exists.
-- "key3.mp3"/"key6.mp3": Will be played when holding the "3"/"6" key for 2 seconds. Those sounds are played through [line-out](#audio-output), if so configured.
+- "key3.mp3"/"key6.mp3": Will be played when holding the "3"/"6" key for 2 seconds. Those sounds are played through [line-out](#audio-output), if enabled.
 - "ha-alert.mp3": Will be played when a [HA/MQTT](#home-assistant--mqtt) message is received.
-- "remoteon.mp3" / "remoteoff.mp3": Those are played back if a [Futaba remote control](#futaba-remote-control) takes over speed-control, or relinquishes it, respectively. Those sounds are played through [line-out](#audio-output), if so configured.
+- "remoteon.mp3" / "remoteoff.mp3": Those are played back if a [Futaba remote control](#futaba-remote-control) takes over speed-control, or relinquishes it, respectively. Those sounds are played through [line-out](#audio-output), if enabled.
 
 Those files are not provided here. You can use any mp3, with a bitrate of 128kpbs or less.
 
