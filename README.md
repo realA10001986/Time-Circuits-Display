@@ -39,10 +39,10 @@ Features include
   - Support for time travel [triggered by external source](#external-time-travel-trigger), with selectable delay
   - Support for external [Speedometer](#speedometer) (eg. CircuitSetup's [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit))
   - Support for [GPS receiver](#gps-receiver), used as time source and for actual [speed](#gps-for-speed) to be displayed on speedo display
-  - Support for [rotary encoders](#rotary-encoder) for manual selection of speed to be displayed on Speedo display, &#127381; and/or audio volume
+  - Support for [rotary encoders](#rotary-encoder) for manual selection of speed to be displayed on Speedo display, and/or audio volume
   - Support for [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for [Room condition mode](#room-condition-mode-temperaturehumidity-sensor) [display temperature and humidity in *destination time* and *last time departed* displays] and for displaying temperature on speedo display while idle
   - Support for triggering time travels on other props [connected by wire](#connecting-props-by-wire)
-  - &#127381; Support for upcoming [Futaba remote control prop](#futaba-remote-control): Remote control the speed on the TCD, like in the movie
+  - Support for [Futaba remote control prop](#futaba-remote-control): Remote control the speed on the TCD, like in the movie
 
 >The difference between what you get here and CircuitSetup's releases is that the code here might be ahead in development, uses some different sounds, and the pre-compiled binary has all the features enabled.
 
@@ -1044,11 +1044,13 @@ Limitations: MQTT Protocol version 3.1.1; TLS/SSL not supported; ".local" domain
 
 ## Futaba Remote Control
 
-The upcoming kit for modifying a Futaba remote control allows to control the TCD's speedo. The Remote can increase/decrease speed, trigger a time travel, and more. 
+The upcoming kit for modifying a Futaba remote control allows, among many features, to control the TCD's speedo. The Remote can increase/decrease speed, trigger a time travel, and more. 
 
-In order to permit remote controlling, enter 993 followed by ENTER. To prohibit remote controlling, enter 992 followed by ENTER. No further configuration is required on the TCD's side.
+In order to permit remote controlling, enter 993 followed by ENTER. No further configuration is required on the TCD's side.
 
-More information is [here](https://remote.out-a-ti.me).
+To prohibit remote controlling, enter 992 followed by ENTER. 
+
+For more information, see [here](https://remote.out-a-ti.me).
 
 ## WiFi power saving features
 
