@@ -562,7 +562,7 @@ Note that all fields consist of two digits, and hours are entered in 24-hour not
 
 Type 77 followed by ENTER to display the programmed reminder, 770 to delete it, and 777 to display the days/hours/minutes until the next reminder.
 
-At the time the reminder is due, the TCD plays a sound. If a file named "reminder.mp3" is on your SD card, this will be layed instead of the default sound.
+At the time the reminder is due, the TCD plays a sound. If a file named "reminder.mp3" is on your SD card, this will be played instead of the default sound.
 
 ## SD card
 
