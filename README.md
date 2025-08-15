@@ -204,7 +204,7 @@ For logical reasons, WC mode will be automatically disabled in some situations:
 
 #### WC/RC hybrid mode
 
-[Room Condition (RC) mode](#room-condition-mode-temperaturehumidity-sensor) can be enabled together with WC mode. In that case, only one timezone is used, and the other display shows the temperature. If there is a time zone configured for the red display, the temperature will be shown in the yellow display. If there no time zone for the red display, the temperature will be shown there, and the yellow display will show time for the time zone you set up for the yellow display.
+[Room Condition (RC) mode](#room-condition-mode-temperaturehumidity-sensor) can be enabled together with WC mode. In that case, only one timezone is used, and the other display shows the temperature. If there is a time zone configured for the red display, the temperature will be shown in the yellow display. If there is no time zone for the red display, temperature will be shown there, and the yellow display will show time for the time zone you set up for the yellow display.
 
 | ![WC/RC hybrid](img/hybmode.jpg) |
 |:--:|
