@@ -75,11 +75,11 @@ For DuPPA: RGB-encoders not supported.
 
 Here is how they look configured for speed (the purple spots are solder joints):
 
-![RotEncSpd](img/RotEncSpd.jpg)
+![RotEncSpd](DIY/img/RotEncSpd.jpg)
 
 Here is the configuration for volume:
 
-![RotEncVol](img/RotEncVol.jpg)
+![RotEncVol](DIY/img/RotEncVol.jpg)
 
 For wiring information, see [here](#i2c-peripheral-wiring). 
 
@@ -87,7 +87,7 @@ For wiring information, see [here](#i2c-peripheral-wiring).
 
 The firmware supports connecting a temperature/humidity sensor for "room condition mode" and for displaying ambient temperature on a speedo display while idle.
 
-| ![RC mode](img/rcmode.jpg) |
+| ![RC mode](DIY/img/rcmode.jpg) |
 |:--:|
 | *RC mode* |
 
@@ -138,9 +138,9 @@ All i2c peripherals described above are to be wired as follows:
 
 On the TCD control board, there are three breakouts named "I2C", at least one of which has a header soldered on; it does not matter which one you use to connect your sensors/speedo/GPS/rotary encoders. On Control Boards version 4, there are screw terminals for the other two i2c connectors; for older boards, I recommend to solder on [XH](https://www.amazon.com/s?k=jst+xh) 4-pin headers to the other two i2c breakouts as well (like in the second picture). When you order a CircuitSetup Speedo, they will include such headers if you request them. Do not solder wires directly to the board!
 
-![i2c](img/i2c1.jpg)
+![i2c](DIY/img/i2c1.jpg)
 
-![i2c](img/i2c2.jpg)
+![i2c](DIY/img/i2c2.jpg)
 
 On most peripherals the pins are named as follows, and need to be connected to the corresponding pins on the control board:
 
@@ -168,7 +168,7 @@ On most peripherals the pins are named as follows, and need to be connected to t
 
 For longer cables, ie >50cm (>20in), I recommend using a twisted pair cable, and to connect it as follows:
 
-![i2clongcable](img/i2clongcable.png)
+![i2clongcable](DIY/img/i2clongcable.png)
 
 >Important: The TCD control board delivers and drives the i2c bus on 5V. Most sensors/GPS receivers operate on 3.3V. Therefore, you cannot connect the chips directly to the TCD control board without a level-shifter. This goes for the power supply as well as the i2c bus signals (SDA, SCL). I only use readily available sensor breakout boards that include level-shifters.
 
@@ -180,9 +180,9 @@ Note that you can only use one per device type (temperature/humidity sensor, lig
 
 To avoid running out of i2c connectors, and to reduce the cable chaos, I designed a small PCB that acts as a i2c and power splitter:
 
-<img src="img/splitter_1.jpg" width="415"><img src="img/splitter_2.jpg" width="341">
+<img src="DIY/img/splitter_1.jpg" width="415"><img src="DIY/img/splitter_2.jpg" width="341">
 
-<img src="img/Splitterv1.png" width="600">
+<img src="DIY/img/Splitterv1.png" width="600">
 
 - 12V in: 12V input for the TCD and the TFC switch, using a 5.5/2.1mm standard DC power plug.
 - Input from TCD: Connect those to the TCD control board as indicated above
@@ -190,7 +190,7 @@ To avoid running out of i2c connectors, and to reduce the cable chaos, I designe
 - four i2c screw connctors for sensors, rotary encoders, Speedo, etc
 - TFC drive switch connector
 
-Production files are in the [splitter](Splitter/) folder.
+Production files are in the [DIY/splitter](DIY/Splitter/) folder.
 
 #### i2c addresses
 
@@ -198,7 +198,7 @@ i2c devices have "addresses". Most sensors either only support one i2c address, 
 
 Notable exceptions are the TMP117 and HTU31D sensors: Their address needs to changed in order to be recognized by the firmware. On the Adafruit breakouts, this is done by connecting two solder pads on the back side of the PCB:
 
-<img src="img/addrjmp.png">
+<img src="DIY/img/addrjmp.png">
 
 This image shows the HTU31D PCB's back side. Connect (shorten) those two pads in order to change the address. It looks similar on the TMP117.
 
@@ -210,15 +210,15 @@ For Rotary Encoders, see [here](#hardware-configuration).
 
 The TCD can tell other props about a time travel. It does so by setting a pin (IO14, labeled "TT OUT" on Control Boards 1.3 and later) to high or low. "High" is between 2.7V and 3.3V.
 
-![Wired connection](img/family-wired.png)
+![Wired connection](DIY/img/family-wired.png)
 
 You need two wires for connecting the TCD: TT_OUT (IO14) and GND, which need to be connected to the respective pins of the prop.
 
-| ![ttout](img/ttout.jpg) |
+| ![ttout](DIY/img/ttout.jpg) |
 |:--:|
 | TT_OUT/IO14 on board version 1.3 |
 
-| ![ttout](img/ttout12.jpg) |
+| ![ttout](DIY/img/ttout12.jpg) |
 |:--:|
 | IO14 on board version 1.2 |
 
