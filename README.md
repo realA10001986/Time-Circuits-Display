@@ -538,7 +538,7 @@ Switching on/off night-mode manually deactivates any schedule and the light sens
 
 In order to use a light sensor, check the option _Use light sensor_ in the Config Portal. You can observe the measured lux level through the [keypad menu](#how-to-view-sensor-info) to find out about the right lux threshold for your environment.
 
-For information on supported sensor models/types and configuration, see [here](DIY/#light-sensor).
+For information on supported sensor models/types and configuration, see [here](AddOns.md#light-sensor).
 
 ## Count-down timer
 
@@ -871,7 +871,7 @@ The CircuitSetup [Speedo Kit](https://circuitsetup.us/product/delorean-time-mach
 
 ![speedo_i2c](img/speedo_i2c.jpg)
 
-If you want to make your own speedo, see [here](DIY/#speedometer).
+If you want to make your own speedo, see [here](AddOns.md#speedometer).
 
 #### Software setup
 
@@ -881,7 +881,7 @@ In order to use the Speedometer display, select the correct model/display type i
 
 A GPS receiver can be used as a source of authoritative time (like NTP) and speed of movement.
 
-The CircuitSetup original [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit) has a built-in GPS receiver. If you want to use a third party GPS receiver, see [here](DIY/#gps-receiver). 
+The CircuitSetup original [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit) has a built-in GPS receiver. If you want to use a third party GPS receiver, see [here](AddOns.md#gps-receiver). 
 
 GPS receivers receive signals from satellites, but in order to do so, they need to be "tuned in" (aka get a "fix"). This "tuning" process can take a long time; after first power up, it can take 30 minutes or more for a receiver to be able to determine its position. In order to speed up this process, modern GPS receivers have special "assisting" features. One key element is knowledge of current time, as this helps identifying satellite signals quicker. So, in other words, initially, you need to tell the receiver what it is supposed to tell you. However, as soon as the receiver has received satellite signals for 15-20 minutes, it saves the data it collected to its battery-backed memory and will find a fix within seconds after power-up in the future.
 
@@ -910,7 +910,7 @@ If other props using GPS speed are connected via [BTTF-Network](#bttf-network-bt
 
 A rotary encoder is, simply put, a turnable knob. On the TCD, rotary encoders can be used for speed and/or audio volume.
 
-For information on supported encoder models/types and configuration, see [here](DIY/#rotary-encoder).
+For information on supported encoder models/types and configuration, see [here](AddOns.md#rotary-encoder).
 
 Up to two rotary encoders can be connected, one for speed, one for volume.
 
@@ -943,7 +943,7 @@ Temperature on speedometer display: Unless you do time travelling on a regular b
 
 In order to use a temperature/humidity sensor, no special configuration is required. If a sensor is detected by the firmware during boot, it will be used.
 
-For information on supported sensor models/types and configuration, see [here](DIY/#temperaturehumidity-sensor).
+For information on supported sensor models/types and configuration, see [here](AddOns.md#temperaturehumidity-sensor).
 
 ## Controlling other props
 
@@ -977,7 +977,7 @@ A wired connection only allows for synchronized time travel sequences, no other 
 
 ![Wired connection](img/family-wired.png)
 
-CircuitSetup/A10001986 original props also support a wired connection, if for whatever reason BTTFN is not an option. For detailed wiring instructions, please see the documentation for the prop ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [Dash Gauges](https://github.com/realA10001986/Dash-Gauges/blob/main/hardware/README.md#connecting-a-tcd-to-the-dash-gauges-by-wire), [VSR](https://github.com/realA10001986/VSR#connecting-a-tcd-by-wire)); for DIY props, see [here](DIY/#other-props).
+CircuitSetup/A10001986 original props also support a wired connection, if for whatever reason BTTFN is not an option. For detailed wiring instructions, please see the documentation for the prop ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [Dash Gauges](https://github.com/realA10001986/Dash-Gauges/blob/main/hardware/README.md#connecting-a-tcd-to-the-dash-gauges-by-wire), [VSR](https://github.com/realA10001986/VSR#connecting-a-tcd-by-wire)); for DIY props, see [here](AddOns.md#other-props).
 
 In order to enable a wired connection, check **_Control props connected by wire_** in the Config Portal.
 
