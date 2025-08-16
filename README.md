@@ -963,9 +963,9 @@ Here is a demonstration of all the props connected through BTTFN:
 
 On the TCD, no special configuration is required. 
 
-On the other prop, such as CircuitSetup's [Flux Capacitor](https://circuitsetup.us/product/flux-capacitor-light-sound-pcb/), [SID](https://circuitsetup.us/product/delorean-time-machine-status-indicator-display-sid/) or the [Dash Gauges](https://dg.out-a-ti.me), the TCD's IP address (or hostname) must be entered into the *IP address or hostname of TCD* field on the Setup page in their Config Portal - that's all.
+On the other prop, such as CircuitSetup's [Flux Capacitor](https://circuitsetup.us/product/flux-capacitor-light-sound-pcb/), [SID](https://circuitsetup.us/product/delorean-time-machine-status-indicator-display-sid/) or the [Dash Gauges](https://dg.out-a-ti.me), the [VSR](https://vsr.out-a-ti.me) or the [Futaba Remote Control kit](https://remote.out-a-ti.me), the TCD's IP address or hostname must be entered into the *IP address or hostname of TCD* field on the Setup page in their Config Portal - that's all.
 
-The fact that the devices communicate directly with each other makes BTTFN the ideal solution for car setups. Also, while at home, the devices might be connected to an existing WiFi network, in a car, the TCD can act as access point for Flux Capacitor and SID (ie they are connecting to the *TCD-AP* WiFi network), and those then can talk the TCD wirelessly. The TCD has *car mode* for aiding this, see [here](#car-mode) and the documentation of the respective prop. 
+The fact that the devices communicate directly with each other makes BTTFN the ideal solution for car setups. Also, while at home, all the devices might be connected to an existing WiFi network, in a car, the TCD can act as access point for the other BTTFN-capable props (ie they are connecting to the *TCD-AP* WiFi network), and those then can talk the TCD wirelessly. The TCD has *car mode* for aiding this, see [here](#car-mode) and the documentation of the respective prop. 
 
 To see which BTTFN clients are currently known to the TCD, enter the keypad menu and select "BTTFN CLIENTS".
 
