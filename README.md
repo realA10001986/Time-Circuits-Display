@@ -8,6 +8,10 @@ The kit is available [here](https://circuitsetup.us/product/complete-time-circui
 ![My TCD](img/mytcd3_n.jpg)
 ![My TCD](img/mytcd2_n.jpg)
 
+| [![Watch the video](https://img.youtube.com/vi/1HX0PiZ1YL0/0.jpg)](https://youtu.be/1HX0PiZ1YL0) |
+|:--:|
+| Click to watch the video |
+
 | [![Watch the video](https://img.youtube.com/vi/u9oTVXUIOXA/0.jpg)](https://youtu.be/u9oTVXUIOXA) |
 |:--:|
 | Click to watch the video |
