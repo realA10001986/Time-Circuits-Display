@@ -8,6 +8,10 @@ The kit is available [here](https://circuitsetup.us/product/complete-time-circui
 ![My TCD](img/mytcd3_n.jpg)
 ![My TCD](img/mytcd2_n.jpg)
 
+| [![Watch the video](https://img.youtube.com/vi/u9oTVXUIOXA/0.jpg)](https://youtu.be/u9oTVXUIOXA) |
+|:--:|
+| Click to watch the video |
+
 Features include
 
 - Clock-related:
@@ -45,10 +49,6 @@ Features include
   - Support for [Futaba remote control prop](#futaba-remote-control): Remote control the speed on the TCD, like in the movie
 
 >The difference between what you get here and CircuitSetup's releases is that the code here might be ahead in development, uses some different sounds, and the pre-compiled binary has all the features enabled.
-
-| [![Watch the video](https://img.youtube.com/vi/u9oTVXUIOXA/0.jpg)](https://youtu.be/u9oTVXUIOXA) |
-|:--:|
-| Click to watch the video |
 
 ## Firmware Installation
 
