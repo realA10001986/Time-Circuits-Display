@@ -1264,6 +1264,10 @@ Since the DMC-12 wasn't the world's fastest car, its (real-life) acceleration mi
 
 This settings has no effect if the **_Real-life acceleration figures_** option is unchecked.
 
+##### &#9654; Display speed with leading 0
+
+If this is checked, speed on the Speedo is displayed with a leading 0 for speeds from 0 to 9. Default is off, in accordance with part 1 of the series.
+
 ##### &#9654; Display GPS speed
 
 If a GPS receiver is connected, this selects whether to display GPS speed on the speedo. This only makes sense if the Time Circuits are mounted in a car. See [here](#gps-receiver).
