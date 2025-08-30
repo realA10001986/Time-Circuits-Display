@@ -139,6 +139,8 @@
 
 /*  Changelog
  *
+ *  2025/08/30 (A10001986) [3.2.005]
+ *    - Speedo: Add option to display speed with leading 0. Defaults to off.
  *  2025/01/15-17 (A10001986) [3.2.004]
  *    - Optimize play_key; keyX will be stopped instead of (re)started if it is 
  *      currently played when repeatedly triggered.
