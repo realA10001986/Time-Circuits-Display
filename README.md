@@ -604,7 +604,7 @@ The following sounds are time-sync'd to display action. If you decide to substit
 
 The firmware supports some additional, user-provided sound effects, which it will load from the SD card. If the respective file is present, it will be used. If that file is absent, no sound will be played.
 
-- "ttaccel.mp3": Will be played immediately upon triggering a time travel when a speedo display is connected, during the acceleration phase (ie while the speedo counts up to 88). This sound is then interrupted by the usual time travel sound. You can use, for instance, the sound of a car accelerating for this. This sound is played through [line-out](#audio-output), if enabled.
+- "ttaccel.mp3": Will be played immediately upon triggering a time travel when a speedo is connected, during the acceleration phase (ie while the speedo counts up to 88). This sound is then interrupted by the usual time travel sound. You can use, for instance, the sound of a car accelerating for this. This sound is played through [line-out](#audio-output), if enabled.
 - "hour.mp3": Will be played every hour, on the hour. This feature is disabled in night mode.
 - "hour-xx.mp3", xx being 00 through 23: Sounds-on-the-hour for specific hours that will be played instead of "hour.mp3". If a sound for a specific hour is not present, "hour.mp3" will be played, if that one exists.
 - "key3.mp3"/"key6.mp3": Will be played when holding the "3"/"6" key for 2 seconds. Those sounds are played through [line-out](#audio-output), if enabled.
@@ -900,7 +900,7 @@ In order to use the GPS receiver as a source of time, no special configuration i
 
 #### GPS for speed
 
-One nice feature of GPS is that the receiver can deliver current speed of movement. If the Time Circuits are, for instance, mounted in a car or on a boat, and a [speedo display](#speedometer) is connected, this display will be just that: A real speedometer.
+One nice feature of GPS is that the receiver can deliver current speed of movement. If the Time Circuits are, for instance, mounted in a car or on a boat, and a [speedo](#speedometer) is connected, this display will be just that: A real speedometer.
 
 | [![Watch the video](https://img.youtube.com/vi/wbeXZJaDLa8/0.jpg)](https://youtu.be/wbeXZJaDLa8) |
 |:--:|
@@ -920,7 +920,7 @@ Up to two rotary encoders can be connected, one for speed, one for volume.
 
 ### Rotary Encoder for Speed 
 
-The rotary encoder, if configured for speed, allows manually selecting a speed to be displayed on the Speedo display, as well as to be sent to [BTTFN](#bttf-network-bttfn) clients in place of actual (GPS) speed.
+The rotary encoder, if configured for speed, allows manually selecting a speed to be displayed on the speedo, as well as to be sent to [BTTFN](#bttf-network-bttfn) clients in place of actual (GPS) speed.
 
 | [![Watch the video](https://img.youtube.com/vi/Y6uu1SU6YJA/0.jpg)](https://youtu.be/Y6uu1SU6YJA) |
 |:--:|
@@ -928,8 +928,8 @@ The rotary encoder, if configured for speed, allows manually selecting a speed t
 
 Remarks:
 - The encoder is only evaluated if no GPS receiver is connected, or if the **_Display GPS speed_** is unchecked. GPS speed has priority over the encoder.
-- The encoder is also evaluated if no speedo display is connected; it can be operated "blindly" to trigger time travels and its movement is send to BTTFN clients like GPS speed (if no GPS receiver is connected, or the option **_Provide GPS speed for wireless props_** is unchecked)
-- The speedo displays "0" as long as the encoder is not moved; if the encoder is turned counter-clockwise a couple of notches, the speedo display will be switched off.
+- The encoder is also evaluated if no speedo is connected; it can be operated "blindly" to trigger time travels and its movement is send to BTTFN clients like GPS speed (if no GPS receiver is connected, or the option **_Provide GPS speed for wireless props_** is unchecked)
+- The speedo displays "0" as long as the encoder is not moved; if the encoder is turned counter-clockwise a couple of notches, the speedo will be switched off.
 
 ### Rotary Encoder for Audio Volume
 
@@ -943,7 +943,7 @@ The firmware supports connecting a temperature/humidity sensor for "room conditi
 
 Room condition mode can be used together with [World Clock mode](#world-clock-mode); if both are enabled, only one alternative time and only temperature is shown. To toggle RC and WC mode simultaneously, type "113" and press ENTER.
 
-Temperature on speedometer display: Unless you do time travelling on a regular basis, the [speedo display](#speedometer) is idle most of the time in a typical home setup. To give it more of a purpose, the firmware can display ambient temperature on the speedo while idle.
+Temperature on speedometer display: Unless you do time travelling on a regular basis, the [speedo](#speedometer) is idle most of the time in a typical home setup. To give it more of a purpose, the firmware can display ambient temperature on the speedo while idle.
 
 In order to use a temperature/humidity sensor, no special configuration is required. If a sensor is detected by the firmware during boot, it will be used.
 
@@ -1260,7 +1260,7 @@ If you are using your TCD together with a Futaba Remote Control prop, leave this
 
 ##### &#9654; Factor for Real-life figures
 
-Since the DMC-12 wasn't the world's fastest car, its (real-life) acceleration might soon cause boredom if played in real-time as part of the time travel sequence with a speedo display. This factor speeds up the acceleration. 2.0 means twice as fast as the real car.
+Since the DMC-12 wasn't the world's fastest car, its (real-life) acceleration might soon cause boredom if played in real-time as part of the time travel sequence with a speedo. This factor speeds up the acceleration. 2.0 means twice as fast as the real car.
 
 This settings has no effect if the **_Real-life acceleration figures_** option is unchecked.
 
@@ -1276,13 +1276,13 @@ If your TCD/speedo are stationary, such as in a home setup, leave this unchecked
 
 ##### &#9654; Update rate
 
-If GPS speed is to be shown on a speedo display (see option immediately above), you can select in what rate the speed should be updated. The choices are once, twice, four times or five times per second.
+If GPS speed is to be shown on a speedo (see option immediately above), you can select in what rate the speed should be updated. The choices are once, twice, four times or five times per second.
 
 It appears that the GPS receiver calculates speed on every satellite position update, and the higher the update rate, the shorter the travelled distance, and the higher the error rate. The default is therefore 2Hz (twice per second) as it provides the (IMHO) best combination of quickness and accuracy.
 
 ##### &#9654; Display temperature
 
-Selects whether temperature as received from a suitable sensor is displayed on the speedo display, when it is idle (ie no time travel is in progress).
+Selects whether temperature as received from a suitable sensor is displayed on the speedo, when it is idle (ie no time travel is in progress).
 
 ##### &#9654; Temperature brightness
 
