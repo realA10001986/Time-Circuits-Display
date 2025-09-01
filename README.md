@@ -45,11 +45,11 @@ Features include
 - Peripherals:
   - Support for [fake "power switch"](#fake-power-switch) (eg. a TFC drive switch)
   - Support for time travel [triggered by external source](#external-time-travel-trigger), with selectable delay
-  - Support for [Speedometer](#speedometer) (eg. CircuitSetup's [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit))
-  - Support for [GPS receiver](#gps-receiver), used as time source and for actual [speed](#gps-for-speed) to be displayed on speedo display
-  - Support for [rotary encoders](#rotary-encoder) for manual selection of speed to be displayed on Speedo display, and/or audio volume
+  - Support for [speedometer](#speedometer) (eg. CircuitSetup's [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit))
+  - Support for [GPS receiver](#gps-receiver), used as time source and for actual [speed](#gps-for-speed) to be displayed on speedo
+  - Support for [rotary encoders](#rotary-encoder) for manual selection of speed to be displayed on speedo display, and/or audio volume
   - Support for [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for [Room condition mode](#room-condition-mode-temperaturehumidity-sensor) [display temperature and humidity in *destination time* and *last time departed* displays] and for displaying temperature on speedo display while idle
-  - Support for [Futaba remote control prop](#futaba-remote-control): Remote control the speed on the Speedo, like in the movie
+  - Support for [Futaba remote control prop](#futaba-remote-control): Remote control the speed on the speedo, like in the movie
   - Support for triggering time travels on other props [connected by wire](#connecting-props-by-wire)
   
 >The difference between what you get here and CircuitSetup's releases is that the code here might be ahead in development, uses some different sounds, and the pre-compiled binary has all the features enabled.
