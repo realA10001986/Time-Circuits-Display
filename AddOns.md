@@ -53,7 +53,7 @@ For wiring information, see [here](#i2c-peripheral-wiring).
 A rotary encoder is, simply put, a turnable knob. On the TCD, rotary encoders can be used for speed and/or audio volume.
 
 The firmware currently supports the 
-- [Adafruit 4991](https://www.adafruit.com/product/4991),
+- [Adafruit 4991](https://www.adafruit.com/product/4991)/[5880](https://www.adafruit.com/product/5880),
 - [DFRobot Gravity 360](https://www.dfrobot.com/product-2575.html) and
 - [DuPPA I2CEncoder 2.1](https://www.duppa.net/shop/i2cencoder-v2-1/) (or [here](https://www.tindie.com/products/saimon/i2cencoder-v21-connect-rotary-encoder-on-i2c-bus/))
 
