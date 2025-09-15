@@ -112,9 +112,11 @@ const char HTTP_STYLE[]            PROGMEM = "<style>"
 "button.D{background-color:#dc3630}"
 "button:active{opacity:50% !important;cursor:wait;transition-delay: 0s}"
 // invert
-"body.invert,body.invert a,body.invert h1 {background-color:#060606;color:#fff;}"
-"body.invert .msg{color:#fff;background-color:#282828;border-top:1px solid #555;border-right:1px solid #555;border-bottom:1px solid #555;}"
-"body.invert .q[role=img]{-webkit-filter:invert(1);filter:invert(1);}"
+	// A10001986 commented, unused
+//"body.invert,body.invert a,body.invert h1 {background-color:#060606;color:#fff;}"
+//"body.invert .msg{color:#fff;background-color:#282828;border-top:1px solid #555;border-right:1px solid #555;border-bottom:1px solid #555;}"
+//"body.invert .q[role=img]{-webkit-filter:invert(1);filter:invert(1);}"
+	// --- end
 ":disabled {opacity: 0.5;}"
 "</style>";
 
@@ -149,7 +151,10 @@ const char HTTP_HELP[]             PROGMEM =
 const char HTTP_HELP[]             PROGMEM = "";
 #endif
 
-const char HTTP_UPDATE[] PROGMEM = "Upload new firmware<br/><form method='POST' action='u' enctype='multipart/form-data' onchange=\"(function(el){document.getElementById('uploadbin').style.display = el.value=='' ? 'none' : 'initial';})(this)\"><input type='file' name='update' accept='.bin,application/octet-stream'><button id='uploadbin' type='submit' class='h D'>Update</button></form><small><a href='http://192.168.4.1/update' target='_blank'>* May not function inside captive portal, open in browser http://192.168.4.1</a><small>";
+// A10001986 modified
+//const char HTTP_UPDATE[] PROGMEM = "Upload new firmware<br/><form method='POST' action='u' enctype='multipart/form-data' onchange=\"(function(el){document.getElementById('uploadbin').style.display = el.value=='' ? 'none' : 'initial';})(this)\"><input type='file' name='update' accept='.bin,application/octet-stream'><button id='uploadbin' type='submit' class='h D'>Update</button></form><small><a href='http://192.168.4.1/update' target='_blank'>* May not function inside captive portal, open in browser http://192.168.4.1</a><small>";
+const char HTTP_UPDATE[] PROGMEM = "Upload new firmware<br/><form method='POST' action='u' enctype='multipart/form-data' onchange=\"(function(el){document.getElementById('uploadbin').style.display = el.value=='' ? 'none' : 'initial';})(this)\"><input type='file' name='update' accept='.bin,application/octet-stream'><button id='uploadbin' type='submit' class='h D'>Update</button></form>";
+
 const char HTTP_UPDATE_FAIL[] PROGMEM = "<div class='msg D'><strong>Update failed!</strong><Br/>Reboot device and try again</div>";
 const char HTTP_UPDATE_SUCCESS[] PROGMEM = "<div class='msg S'><strong>Update successful.  </strong> <br/> Device rebooting now...</div>";
 
@@ -175,6 +180,7 @@ const char HTTP_JS[] PROGMEM =
 
 // Info html
 // @todo remove html elements from progmem, repetetive strings
+#ifndef _A10001986_NO_INFO
 #ifdef ESP32
 	const char HTTP_INFO_esphead[]    PROGMEM = "<h3>esp32</h3><hr><dl>";
 	const char HTTP_INFO_chiprev[]    PROGMEM = "<dt>Chip rev</dt><dd>{1}</dd>";
@@ -219,6 +225,7 @@ const char HTTP_INFO_aboutver[]     PROGMEM = "<dt>WiFiManager</dt><dd>{1}</dd>"
 const char HTTP_INFO_aboutarduino[] PROGMEM = "<dt>Arduino</dt><dd>{1}</dd>";
 const char HTTP_INFO_aboutsdk[]     PROGMEM = "<dt>ESP-SDK/IDF</dt><dd>{1}</dd>";
 const char HTTP_INFO_aboutdate[]    PROGMEM = "<dt>Build date</dt><dd>{1}</dd>";
+#endif	// _A10001986_NO_INFO
 
 const char S_brand[]              PROGMEM = "WiFiManager";
 const char S_debugPrefix[]        PROGMEM = "*wm:";
