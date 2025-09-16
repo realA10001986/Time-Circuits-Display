@@ -613,6 +613,18 @@ The firmware supports some additional, user-provided sound effects, which it wil
 
 Those files are not provided here. You can use any mp3, with a bitrate of 128kpbs or less.
 
+### Installing Custom & Replacement Audio Files
+
+As of version 3.3 of the TCD firmware, above mentioned audio files (both replacements and custom sounds) can either be copied to the SD card using a computer, or uploaded through the Config Portal.
+
+Uploading through the Config Portal works exactly like [installing the default audio files](#audio-data-installation); on the main menu, click "UPDATE". Afterwards choose the file to upload in the bottom file selector, and click "UPLOAD". The firmware recognizes mp3 files, and stores them on the SD card. (Unlike with the default files, no further "installation" takes place.)
+
+In order to delete a file from the SD card, upload a file whose names is prefixed with "delete-". For example: To delete "ttaccel.mp3" from the SD card, either rename your "ttaccel.mp3" into "delete-ttaccel.mp3", or create a new file named "delete-ttaccel.mp3", and upload this file. The firmware detects the "delete-" part and, instead of storing the uploaded file, it throws it away and deletes "ttaccel.mp3" from the SD card.
+
+For technical reasons, the TCD must reboot after a file is uploaded in this way.
+
+Please remember that the maximum bitrate for mp3 files is 128kbps. Also note that the uploaded file is stored to the root folder of the SD card, so this way of uploading cannot be used to upload songs for the Music Player. 
+
 ## The Music Player
 
 The firmware contains a simple music player to play mp3 files located on the SD card. 
