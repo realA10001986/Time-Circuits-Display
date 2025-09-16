@@ -8,6 +8,8 @@
  * @author tablatronix
  * @version 0.0.0
  * @license MIT
+ *
+ * Modified by Thomas Winischhofer (A10001986)
  */
 
 #ifndef _WM_CONSTS_H
@@ -17,7 +19,7 @@
 // -----------------------------------------------------------------------------------------------
 // TOKENS
 
-const char WM_VERSION_STR[] PROGMEM = "v2.0.15-rc.1";
+const char WM_VERSION_STR[] PROGMEM = "v2.0.15-A10001986";
 
 const uint8_t _nummenutokens = 11;
 const char * const _menutokens[_nummenutokens] PROGMEM = {
@@ -34,6 +36,7 @@ const char * const _menutokens[_nummenutokens] PROGMEM = {
     "custom"
 };
 
+// Routes
 const char R_root[]               PROGMEM = "/";
 const char R_wifi[]               PROGMEM = "/wifi";
 const char R_wifinoscan[]         PROGMEM = "/0wifi";

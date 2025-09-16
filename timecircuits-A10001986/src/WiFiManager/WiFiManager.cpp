@@ -8,6 +8,8 @@
  * @author tablatronix
  * @version 0.0.0
  * @license MIT
+ *
+ * Modified by Thomas Winischhofer (A10001986)
  */
 
 #include "WiFiManager.h"
@@ -872,7 +874,7 @@ boolean WiFiManager::process(){
  * @return {[type]} [description]
  */
 uint8_t WiFiManager::processConfigPortal(){
-    if(configPortalActive){
+    if(configPortalActive && dnsServer){
       //DNS handler
       dnsServer->processNextRequest();
     }
@@ -1764,7 +1766,9 @@ String WiFiManager::WiFiManager::getScanItemOut(){
         }
 
       }
+	  #ifndef _A10001986_NO_BR
       page += FPSTR(HTTP_BR);
+	  #endif
     }
 
     return page;
@@ -1804,7 +1808,9 @@ String WiFiManager::getStaticOut(){
     page += getIpForm(FPSTR(S_dns),FPSTR(S_staticdns),(_sta_static_dns ? _sta_static_dns.toString() : "")); // @token dns
   }
 
+  #ifndef _A10001986_NO_BR
   if(page!="") page += FPSTR(HTTP_BR); // @todo remove these, use css
+  #endif
 
   return page;
 }
@@ -1873,11 +1879,17 @@ void WiFiManager::getParamOut(String &page){
 	      switch (_params[i]->getLabelPlacement()) {
 	        case WFM_LABEL_BEFORE:
 	          pitem = FPSTR(HTTP_FORM_LABEL);
+			  #ifdef _A10001986_NO_BR
+			  pitem += FPSTR(HTTP_BR);
+			  #endif
 	          pitem += FPSTR(HTTP_FORM_PARAM);
 	          break;
 	        case WFM_LABEL_AFTER:
 	          pitem = FPSTR(HTTP_FORM_PARAM);
 	          pitem += FPSTR(HTTP_FORM_LABEL);
+			  #ifdef _A10001986_NO_BR
+			  pitem += FPSTR(HTTP_BR);
+			  #endif
 	          break;
 	        default:
 	          // WFM_NO_LABEL
@@ -1942,18 +1954,24 @@ unsigned int WiFiManager::getParamOutSize()
         if (_params[i]->getID() != NULL) {
 	       // label before or after, @todo this could be done via floats or CSS and eliminated
 	        switch (_params[i]->getLabelPlacement()) {
-	          case WFM_LABEL_BEFORE:
-	            pitem = FPSTR(HTTP_FORM_LABEL);
-	            pitem += FPSTR(HTTP_FORM_PARAM);
-	            break;
-	          case WFM_LABEL_AFTER:
-	            pitem = FPSTR(HTTP_FORM_PARAM);
-	            pitem += FPSTR(HTTP_FORM_LABEL);
-	            break;
-	          default:
-	            // WFM_NO_LABEL
-	            pitem = FPSTR(HTTP_FORM_PARAM);
-	            break;
+		        case WFM_LABEL_BEFORE:
+		          pitem = FPSTR(HTTP_FORM_LABEL);
+				  #ifdef _A10001986_NO_BR
+				  pitem += FPSTR(HTTP_BR);
+				  #endif
+		          pitem += FPSTR(HTTP_FORM_PARAM);
+		          break;
+		        case WFM_LABEL_AFTER:
+		          pitem = FPSTR(HTTP_FORM_PARAM);
+		          pitem += FPSTR(HTTP_FORM_LABEL);
+				  #ifdef _A10001986_NO_BR
+				  pitem += FPSTR(HTTP_BR);
+				  #endif
+		          break;
+		        default:
+		          // WFM_NO_LABEL
+		          pitem = FPSTR(HTTP_FORM_PARAM);
+		          break;
 	        }
 			// "<label for='{i}'>{t}</label>"; "<br/><input id='{i}' name='{n}' maxlength='{l}' value='{v}' {c}>\n";
 	        ///*if(tok_I)*/ pitem.replace(FPSTR(T_I), (String)FPSTR(S_parampre)+(String)i); // T_I id number -- A10001986 commented
@@ -2009,6 +2027,13 @@ void WiFiManager::handleWifiSave() {
   //SAVE/connect here
   _ssid = server->arg(F("s")).c_str();
   _pass = server->arg(F("p")).c_str();
+  
+  if(_ssid == "" && _pass != ""){
+      _ssid = WiFi_SSID(true); // password change, placeholder ssid, @todo compare pass to old?, confirm ssid is clean
+      #ifdef WM_DEBUG_LEVEL
+      DEBUG_WM(WM_DEBUG_VERBOSE,F("Detected WiFi password change"));
+      #endif    
+  }
 
   #ifdef WM_DEBUG_LEVEL
   String requestinfo = "SERVER_REQUEST\n----------------\n";
@@ -2629,9 +2654,16 @@ boolean WiFiManager::captivePortal() {
   DEBUG_WM(DEBUG_MAX,"-> " + server->hostHeader());
   #endif
   
-  if(!_enableCaptivePortal) return false; // skip redirections, @todo maybe allow redirection even when no cp ? might be useful
+  if(!_enableCaptivePortal || !configPortalActive) return false; // skip redirections, if cp not enabled or not in ap mode
   
   String serverLoc =  toStringIp(server->client().localIP());
+  if(serverLoc == "0.0.0.0"){
+      if ((WiFi.status()) != WL_CONNECTED)
+        serverLoc = toStringIp(WiFi.softAPIP());
+      else
+        serverLoc = toStringIp(WiFi.localIP());
+  }
+	
   if(_httpPort != 80) serverLoc += ":" + (String)_httpPort; // add port if not default
   bool doredirect = serverLoc != server->hostHeader(); // redirect if hostheader not server ip, prevent redirect loops
   // doredirect = !isIp(server->hostHeader()) // old check
@@ -2694,6 +2726,11 @@ void WiFiManager::reportStatus(String &page){
       }
       else if(_lastconxresult == WL_CONNECT_FAILED){
         // connect failed
+        str.replace(FPSTR(T_c),"D");
+        str.replace(FPSTR(T_r),FPSTR(HTTP_STATUS_OFFFAIL));
+      }
+	  else if(_lastconxresult == WL_CONNECTION_LOST){
+        // connect failed, MOST likely 4WAY_HANDSHAKE_TIMEOUT/incorrect password, state is ambiguous however
         str.replace(FPSTR(T_c),"D");
         str.replace(FPSTR(T_r),FPSTR(HTTP_STATUS_OFFFAIL));
       }
@@ -3161,7 +3198,7 @@ void WiFiManager::setShowStaticFields(boolean alwaysShow){
  */
 void WiFiManager::setShowDnsFields(boolean alwaysShow){
   if(_disableIpFields) _staShowDns = alwaysShow ? 1 : -1;
-  _staShowDns = alwaysShow ? 1 : 0;
+  else 				   _staShowDns = alwaysShow ? 1 : 0;
 }
 
 /**
@@ -3559,7 +3596,7 @@ void WiFiManager::DEBUG_WM(wm_debuglevel_t level,Generic text,Genericb textb) {
     uint32_t free = info.total_free_bytes;
     uint16_t max  = info.largest_free_block;
     uint8_t frag = 100 - (max * 100) / free;
-    _debugPort.printf("[MEM] free: %5d | max: %5d | frag: %3d%% \n", free, max, frag);    
+    _debugPort.printf("[MEM] free: %5u | max: %5d | frag: %3d%% \n", free, max, frag);    
     #endif
   }
 

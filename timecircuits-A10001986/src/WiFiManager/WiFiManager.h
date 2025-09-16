@@ -8,6 +8,8 @@
  * @author tablatronix
  * @version 0.0.0
  * @license MIT
+ *
+ * Modified by Thomas Winischhofer (A10001986)
  */
 
 
@@ -25,13 +27,14 @@
 // A10001986 added start
 #define WM_NOHELP
 #define WM_NODEBUG
-#define _A10001986_NO_INFO
+#define _A10001986_NO_INFO				// Skip unused functions
 #define _A10001986_NO_RESET
 #define _A10001986_NO_EXIT
 #define _A10001986_NO_CLOSE
 #define _A10001986_NO_STATUS
 #define _A10001986_NO_RESETSETTINGS
-#define _A10001986_STR_RESERVE
+#define _A10001986_STR_RESERVE			// Use String.reserve()
+#define _A10001986_NO_BR				// Kill superfluous <br>s in HTML
 //#define _A10001986_DBG
 // A10001986 end
 
@@ -546,7 +549,7 @@ class WiFiManager
     unsigned long _startconn              = 0; // ms for timing wifi connects
 
     // defaults
-    const byte    DNS_PORT                = 53;
+    const uint8_t DNS_PORT                = 53;
     String        _apName                 = "no-net";
     String        _apPassword             = "";
     String        _ssid                   = ""; // var temp ssid
