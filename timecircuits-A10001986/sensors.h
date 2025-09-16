@@ -103,7 +103,7 @@ class tempSensor : tcSensor {
         float readLastTemp() { return _lastTemp; };
         bool lastTempNan() { return _lastTempNan; };
 
-        void setOffset(float myOffs);
+        void setOffset(float myOffs) { _userOffset = myOffs; }
 
         bool haveHum() { return _haveHum; };
         int  readHum() { return _hum; };
@@ -163,7 +163,7 @@ class lightSensor : tcSensor {
         lightSensor(int numTypes, uint8_t addrArr[]);
         bool begin(bool skipLast, unsigned long powerupTime, void (*myDelay)(unsigned long));
 
-        int32_t readLux();
+        int32_t readLux() { return _lux; }
         
         void loop();
 

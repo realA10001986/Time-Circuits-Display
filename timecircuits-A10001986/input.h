@@ -136,7 +136,7 @@ class Keypad_I2C {
 
         void begin(unsigned int scanInterval, unsigned int holdTime, void (*myDelay)(unsigned long));
 
-        void addEventListener(void (*listener)(char, KeyState));
+        void addEventListener(void (*listener)(char, KeyState)) { _keypadEventListener = listener; }
 
         bool scanKeypad();
 
@@ -192,9 +192,9 @@ class TCButton {
       
         void setTiming(const int debounceDur, const int pressDur, const int lPressDur);
       
-        void attachPress(void (*newFunction)(void));
-        void attachLongPressStart(void (*newFunction)(void));
-        void attachLongPressStop(void (*newFunction)(void));
+        void attachPress(void (*newFunction)(void))          { _pressFunc = newFunction; }
+        void attachLongPressStart(void (*newFunction)(void)) { _longPressStartFunc = newFunction; }
+        void attachLongPressStop(void (*newFunction)(void))  { _longPressStopFunc = newFunction; }
 
         void scan(void);
 

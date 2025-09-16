@@ -276,6 +276,8 @@ bool writeFileToFS(const char *fn, uint8_t *buf, int len);
 bool   openACFile(File& file);
 size_t writeACFile(File& file, uint8_t *buf, size_t len);
 void   closeACFile(File& file);
-void   removeACFile();
+void   removeACFile(bool isUPLFile);
+bool   openUploadFile(const char *fn, File& file, bool& isDel);
+void   renameUploadFile();
 
 #endif

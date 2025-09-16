@@ -1224,7 +1224,7 @@ void time_setup()
     #ifdef TC_HAVESPEEDO
     speedoUpdateRate = atoi(settings.spdUpdRate) & 3;
     #else
-    speedoUpdateRate = 0;
+    speedoUpdateRate = provGPS2BTTFN ? 1 : 0;
     #endif
 
     // Check for GPS receiver
@@ -1363,15 +1363,16 @@ void time_setup()
     // Start bttf network
     bttfn_setup();
 
-    // Load UTC time from RTC (requires valid pt's yearOffset)
+    // Load UTC time from RTC (requires valid yearOffset)
     myrtcnow(dtu);
 
-    // rtcYear: Current UTC-year (as read from the RTC-Yoffs)
+    // rtcYear: Current UTC-year (as read from the RTC, minus Yoffs)
     uint16_t rtcYear = dtu.year();
 
     // lastYear: The UTC-year when the RTC was adjusted for the last time.
-    // If the RTC was just updated, everything is in place.
-    // Otherwise use value loaded from NVM and make required re-calculations.
+    // If the RTC was just updated (haveAuthTime), everything is in place.
+    // Otherwise use lastYear loaded from NVM, compare it to RTC year, and 
+    // make required re-calculations (based on RTC year) if they don't match.
     if(haveAuthTime) {
         lastYear = rtcYear;
     }
@@ -1488,8 +1489,7 @@ void time_setup()
             // so the buffer fills in 3000/1500ms. We poll every 
             // 250/250ms, hence the entire buffer is read in
             // 1000/1000ms (64 bytes per poll).
-            // The max delay to get current speed is therefore 500ms,
-            // which is ok as BTTFN clients only poll once per sec.
+            // The max delay to get current speed is therefore 500ms.
             GPSupdateFreq = 250; //(!speedoUpdateRate) ? 250 : 250;
         } else {
             // For when GPS speed is to be displayed on speedo:
@@ -6779,7 +6779,7 @@ static void bttfn_notify_of_speed()
         ssrc = BTTFN_SSRC_REM;
     #endif
     #ifdef TC_HAVEGPS
-    } else if(useGPS && provGPS2BTTFN) {    
+    } else if(useGPS && provGPS2BTTFN) {
         // Why "&& provGPS2BTTFN"?
         // Because: If stationary user uses GPS for time only, speed will
         // be 0 permanently, and rotary encoder never gets a chance.

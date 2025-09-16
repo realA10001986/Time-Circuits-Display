@@ -175,11 +175,6 @@ void Keypad_I2C::begin(unsigned int scanInterval, unsigned int holdTime, void (*
     _customDelayFunc = myDelay;
 }
 
-void Keypad_I2C::addEventListener(void (*listener)(char, KeyState))
-{
-    _keypadEventListener = listener;
-}
-
 // Scan keypad and update key state
 bool Keypad_I2C::scanKeypad()
 {
@@ -363,24 +358,6 @@ void TCButton::setTiming(const int debounceDur, const int pressDur, const int lP
     _debounceDur = debounceDur;
     _pressDur = pressDur;
     _longPressDur = lPressDur;
-}
-
-// Register function for short press event
-void TCButton::attachPress(void (*newFunction)(void))
-{
-    _pressFunc = newFunction;
-}
-
-// Register function for long press start event
-void TCButton::attachLongPressStart(void (*newFunction)(void))
-{
-    _longPressStartFunc = newFunction;
-}
-
-// Register function for long press stop event
-void TCButton::attachLongPressStop(void (*newFunction)(void))
-{
-    _longPressStopFunc = newFunction;
 }
 
 // Check input of the pin and advance the state machine

@@ -740,11 +740,6 @@ float tempSensor::readTemp(bool celsius)
     return temp;
 }
 
-void tempSensor::setOffset(float myOffs)
-{
-    _userOffset = myOffs;
-}
-
 // Private functions ###########################################################
 
 float tempSensor::BMx280_CalcTemp(uint32_t ival, uint32_t hval)
@@ -1100,11 +1095,6 @@ bool lightSensor::begin(bool skipLast, unsigned long powerupTime, void (*myDelay
     _customDelayFunc = myDelay;
 
     return true;
-}
-
-int32_t lightSensor::readLux()
-{
-    return _lux;
 }
 
 void lightSensor::loop()

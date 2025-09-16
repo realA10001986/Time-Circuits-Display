@@ -93,12 +93,12 @@
 #define NUM_AUDIOFILES 20
 #define AC_FMTV 2
 #define AC_OHSZ (14 + ((10+NUM_AUDIOFILES+1)*(32+4)))
-#ifndef TWSOUND
-#define SND_REQ_VERSION "CS03"
-#define AC_TS 1236252
-#else
+#ifdef TWSOUND
 #define SND_REQ_VERSION "TW03"
 #define AC_TS 1231539
+#else
+#define SND_REQ_VERSION "CS03"
+#define AC_TS 1236252
 #endif
 
 static const char *CONFN  = "/TCDA.bin";
@@ -107,6 +107,7 @@ static const char *CONID  = "TCDA";
 static uint32_t   soa = AC_TS;
 static bool       ic = false;
 static uint8_t*   f(uint8_t *d, uint32_t m, int y) { return d; }
+static char       *uploadFileName = NULL;
 
 static const char *cfgName    = "/config.json";     // Main config (flash)
 static const char *ipCfgName  = "/ipconfig.json";   // IP config (flash)
@@ -298,8 +299,7 @@ void settings_setup()
 
     } else {
 
-        Serial.println(F("*** Mounting flash FS failed."));
-        Serial.println(F("*** Settings will be stored on SD card (if available)"));
+        Serial.println(F("*** Mounting flash FS failed. Using SD (if available)"));
 
     }
     
@@ -349,7 +349,7 @@ void settings_setup()
         if(SD.exists("/TCD_FLASH_RO") || !haveFS) {
             bool writedefault2 = false;
             FlashROMode = true;
-            Serial.println(F("Flash-RO mode: All settings stored on SD. Reloading settings."));
+            Serial.println(F("Flash-RO mode: Using SD only."));
             if(SD.exists(cfgName)) {
                 File configFile = SD.open(cfgName, "r");
                 if(configFile) {
@@ -413,7 +413,7 @@ void settings_setup()
 
         unsigned long mnow = millis();
 
-        Serial.printf("Deleting ip config; temporarily clearing AP mode WiFi password\n");
+        Serial.println("Deleting ip config; temporarily clearing AP mode WiFi password");
 
         deleteIpSettings();
 
@@ -1983,9 +1983,88 @@ void closeACFile(File& file)
     file.close();
 }
 
-void removeACFile()
+void removeACFile(bool isUPLFile)
 {
     if(haveSD) {
-        SD.remove(CONFN);
+        if(!isUPLFile) {
+            SD.remove(CONFN);
+        } else if(uploadFileName) {
+            SD.remove(uploadFileName);
+        }
+    }
+}
+
+bool openUploadFile(const char *fn, File& file, bool& isDel)
+{
+    if(haveSD) {
+
+        isDel = false;
+
+        if(!strlen(fn))
+            return false;
+      
+        if(!(uploadFileName = (char *)malloc(strlen(fn)+4)))
+            return false;
+
+        uploadFileName[0] = '/';
+        uploadFileName[1] = '-';
+        uploadFileName[2] = 0;
+        strcat(uploadFileName, fn);
+        
+        #ifdef TC_DBG
+        Serial.printf("openUploadFile: uploadFilename: %s\n", uploadFileName);
+        #endif
+
+        if((strlen(uploadFileName) <= 9) ||
+           (strstr(uploadFileName, "/-delete-") != uploadFileName)) {
+    
+            if((file = SD.open(uploadFileName, FILE_WRITE))) {
+                isDel = false;
+                return true;
+            }
+
+        } else {
+
+            uploadFileName[8] = '/';
+            #ifdef TC_DBG
+            Serial.printf("openUploadFile: Deleting %s\n", uploadFileName+8);
+            #endif
+            SD.remove(uploadFileName+8);
+            isDel = true;
+          
+        }
+
+        free(uploadFileName);
+        uploadFileName = NULL;
+    }
+
+    return false;
+}
+
+void renameUploadFile()
+{
+    if(haveSD && uploadFileName) {
+
+        char *t = (char *)malloc(strlen(uploadFileName)+4);
+        t[0] = uploadFileName[0];
+        t[1] = 0;
+        strcat(t, uploadFileName+2);
+        
+        #ifdef TC_DBG
+        Serial.printf("renameUploadFile [1]: Deleting %s\n", t);
+        #endif
+        
+        SD.remove(t);
+        
+        #ifdef TC_DBG
+        Serial.printf("renameUploadFile [2]: Renaming %s to %s\n", uploadFileName, t);
+        #endif
+        
+        SD.rename(uploadFileName, t);
+        
+        free(t);
+
+        free(uploadFileName);
+        uploadFileName = NULL;
     }
 }
