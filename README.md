@@ -102,7 +102,7 @@ It is ok to leave the TCD in this mode, especially if it is mounted in a car or 
 
 >Note that the TCD requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). If the device is inaccessible as a result of incorrect static IPs, hold ENTER when powering it up until the white LED lights up; static IP data will be deleted and the device will return to DHCP.
 
-After saving the WiFi network settings, the TCD reboots and tries to connect to your configured WiFi network. If that fails, it will again start in access point mode.
+After saving the WiFi network settings, the TCD reboots and tries to connect to your selected WiFi network. If that fails, it will again start in access point mode.
 
 Assuming the connection could be established, you now enter the Config Portal like this:
 - Connect your hand-held/computer to the same WiFi network to which the TCD is connected, and
