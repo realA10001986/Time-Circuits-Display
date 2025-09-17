@@ -92,6 +92,16 @@ The first step is to establish access to the TCD's configuration web site ("Conf
 - Connect your computer or handheld device to the WiFi network "TCD-AP".
 - Navigate your browser to http://timecircuits.local or http://192.168.4.1 to enter the Config Portal.
 
+#### Time zone and Time
+
+The next step in initial configuration is to set the TCD's time zone. If the time zone isn't properly configured, the TCD will show a wrong time, and DST (daylight saving) will not be switched on/off correctly.
+
+Click on "Setup" on the Config Portal's main page, and specify your [time zone](#-time-zone). Then click "SAVE"; the TCD will reboot.
+
+Setting actual time:
+- If the TCD is going to be connected to a WiFi network with internet access as described in the following section, it will receive time information through NTP (network time protocol). No user interaction is required.
+- If you are going to keep your TCD in access point mode (in which case it cannot access the internet), please set your local time through the [keypad menu](#how-to-set-the-real-time-clock-rtc).
+
 #### Connecting to a WiFi network
 
 The TCD knows two ways of WiFi operation: Either it creates its own WiFi network, or it connects to a pre-existing WiFi network.
@@ -102,23 +112,11 @@ It is ok to leave the TCD in this mode, especially if it is mounted in a car or 
 
 >Note that the TCD requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). If the device is inaccessible as a result of incorrect static IPs, hold ENTER when powering it up until the white LED lights up; static IP data will be deleted and the device will return to DHCP.
 
+>In order to use BTTFN, all props must be connected to the same network; this can be your local (WiFi) network, or the TCD's own WiFi network in AP mode. In order to use MQTT, your TCD must be connected to the same network your broker is connected to.
+
 After saving the WiFi network settings, the TCD reboots and tries to connect to your selected WiFi network. If that fails, it will again start in access point mode.
 
-Assuming the connection could be established, you now enter the Config Portal like this:
-- Connect your hand-held/computer to the same WiFi network to which the TCD is connected, and
-- navigate your browser to http://timecircuits.local (if that fails, please see [below](#if-tcd-is-connected-to-wifi-network) on how to connect to the Config Portal)
-
-#### Time zone and Time
-
-The next step is to set the TCD's time zone. If the time zone isn't properly configured, the TCD will show a wrong time, and DST (daylight saving) will not be switched on/off correctly.
-
-Click on "SETUP" on the Config Portal's main page, and specify your [time zone](#-time-zone). Then click "SAVE"; the TCD will reboot.
-
-Setting actual time:
-- If the TCD is connected to a WiFi network with internet access, it will receive time information through NTP (network time protocol). No user interaction is required.
-- If you keep your TCD in access point mode (in which case it cannot access the internet), please set your local time through the [keypad menu](#how-to-set-the-real-time-clock-rtc).
-
-After completing these steps, your TCD is basically ready for use; you can also continue configuring it to your personal preferences through the Config Portal.
+After completing these steps, your TCD is ready for use; you can also continue configuring it to your personal preferences through the Config Portal.
 
 ## The Config Portal
 
@@ -144,7 +142,7 @@ It can be accessed as follows:
 
   If connecting to http://timecircuits.local fails due to a name resolution error, you need to find out the TCD's IP address: Hold ENTER on the TCD's keypad for 2 seconds, then repeatedly  press ENTER until "NET-WORK" is shown, then hold ENTER for 2 seconds. The device will then show its current IP address. Then, on your handheld or computer, navigate to http://a.b.c.d (a.b.c.d being the IP address as shown on the display) in order to enter the Config Portal.
 
-In the main menu, click on "Setup" to configure your TCD. 
+In the main menu, click on "SETUP" to configure your TCD. 
 
 | [<img src="img/cps-frag.png">](img/cp_setup.png) |
 |:--:| 
