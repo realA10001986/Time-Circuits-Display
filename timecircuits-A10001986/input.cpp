@@ -525,7 +525,7 @@ enum DUV2_CONF2_PARAM {
 #define DFR_GAIN_VOL  (1023 / 20)
 
 
-TCRotEnc::TCRotEnc(int numTypes, uint8_t addrArr[], TwoWire *awire)
+TCRotEnc::TCRotEnc(int numTypes, const uint8_t addrArr[], TwoWire *awire)
 {
     _numTypes = min(6, numTypes);
 

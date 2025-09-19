@@ -107,7 +107,8 @@ static const char *CONID  = "TCDA";
 static uint32_t   soa = AC_TS;
 static bool       ic = false;
 static uint8_t*   f(uint8_t *d, uint32_t m, int y) { return d; }
-static char       *uploadFileName = NULL;
+static char       *uploadFileNames[MAX_SIM_UPLOADS] = { NULL };
+static char       *uploadRealFileNames[MAX_SIM_UPLOADS] = { NULL };
 
 static const char *cfgName    = "/config.json";     // Main config (flash)
 static const char *ipCfgName  = "/ipconfig.json";   // IP config (flash)
@@ -127,7 +128,6 @@ static const char *loCfgName  = "/loconfig.json";   // LineOut (flash/SD)
 #ifdef TC_HAVE_REMOTE
 static const char *raCfgName  = "/raconfig.json";   // RemoteAllowed (flash/SD)
 #endif
-
 
 static const char *fsNoAvail = "File System not available";
 static const char *failFileWrite = "Failed to open file for writing";
@@ -403,6 +403,10 @@ void settings_setup()
     // Check if SD contains the default sound files
     if((r = e) && haveSD && (FlashROMode || haveFS)) {
         allowCPA = check_if_default_audio_present();
+    }
+
+    for(int i = 0; i < MAX_SIM_UPLOADS; i++) {
+        uploadFileNames[i] = NULL;
     }
     
     // Allow user to delete static IP data by holding ENTER
@@ -1962,15 +1966,120 @@ bool writeFileToFS(const char *fn, uint8_t *buf, int len)
         return false;
 }
 
-bool openACFile(File& file)
+/*
+ * File upload
+ */
+
+static char *allocateUploadFileName(const char *fn, int idx)
 {
-    if(haveSD) {
-        if(file = SD.open(CONFN, FILE_WRITE)) {
-            return true;
-        }
+    char *t = NULL;
+
+    if(uploadFileNames[idx]) {
+        free(uploadFileNames[idx]);
+    }
+    if(uploadRealFileNames[idx]) {
+        free(uploadRealFileNames[idx]);
+    }
+    uploadFileNames[idx] = uploadRealFileNames[idx] = NULL;
+
+    if(!strlen(fn))
+        return NULL;
+  
+    if(!(uploadFileNames[idx] = (char *)malloc(strlen(fn)+4)))
+        return NULL;
+
+    if(!(uploadRealFileNames[idx] = (char *)malloc(strlen(fn)+4))) {
+        free(uploadFileNames[idx]);
+        uploadFileNames[idx] = NULL;
+        return NULL;
     }
 
-    return false;
+    return uploadRealFileNames[idx];
+}
+
+bool openUploadFile(String& fn, File& file, int idx, bool haveAC, int& opType, int& errNo)
+{
+    char *uploadFileName = NULL;
+    bool ret = false;
+    
+    if(haveSD) {
+
+        errNo = 0;
+        opType = 0;  // 0=normal, 1=AC, -1=deletion
+
+        if(!(uploadFileName = allocateUploadFileName(fn.c_str(), idx))) {
+            errNo = UPL_MEMERR;
+            return false;
+        }
+        strcpy(uploadFileNames[idx], fn.c_str());
+        
+        uploadFileName[0] = '/';
+        uploadFileName[1] = '-';
+        uploadFileName[2] = 0;
+
+        if(fn.length() > 4 && fn.endsWith(".mp3")) {
+
+            strcat(uploadFileName, fn.c_str());
+
+            if((strlen(uploadFileName) > 9) &&
+               (strstr(uploadFileName, "/-delete-") == uploadFileName)) {
+
+                #ifdef TC_DBG
+                char t = uploadFileName[8];
+                #endif
+                
+                uploadFileName[8] = '/';
+                
+                #ifdef TC_DBG
+                Serial.printf("openUploadFile: Deleting %s\n", uploadFileName+8);
+                #endif
+                
+                SD.remove(uploadFileName+8);
+                
+                #ifdef TC_DBG
+                uploadFileName[8] = t;
+                #endif
+                
+                opType = -1;
+            }
+
+        } else if(fn.endsWith(".bin")) {
+
+            if(!haveAC) {
+                strcat(uploadFileName, CONFN+1);  // Skip '/', already there
+                opType = 1;
+            } else {
+                errNo = UPL_DPLBIN;
+                opType = -1;
+            }
+
+        } else {
+
+            errNo = UPL_UNKNOWN;
+            opType = -1;
+            // ret must be false!
+
+        }
+
+        #ifdef TC_DBG
+        Serial.printf("openUploadFile: uploadFilename: %s opType %d\n", uploadFileName, opType);
+        #endif
+
+        if(opType >= 0) {
+            if((file = SD.open(uploadFileName, FILE_WRITE))) {
+                ret = true;
+            } else {
+                errNo = UPL_OPENERR;
+            }
+        }
+
+    } else {
+      
+        errNo = UPL_NOSDERR;
+        
+    }
+
+    return ret;
 }
 
 size_t writeACFile(File& file, uint8_t *buf, size_t len)
@@ -1983,66 +2092,46 @@ void closeACFile(File& file)
     file.close();
 }
 
-void removeACFile(bool isUPLFile)
+void removeACFile(int idx)
 {
     if(haveSD) {
-        if(!isUPLFile) {
-            SD.remove(CONFN);
-        } else if(uploadFileName) {
-            SD.remove(uploadFileName);
+        if(uploadRealFileNames[idx]) {
+            SD.remove(uploadRealFileNames[idx]);
         }
     }
 }
 
-bool openUploadFile(const char *fn, File& file, bool& isDel)
+int getUploadFileNameLen(int idx)
 {
-    if(haveSD) {
+    if(idx >= MAX_SIM_UPLOADS) return 0; 
+    if(!uploadFileNames[idx]) return 0;
+    return strlen(uploadFileNames[idx]);
+}
 
-        isDel = false;
+char *getUploadFileName(int idx)
+{
+    if(idx >= MAX_SIM_UPLOADS) return NULL; 
+    return uploadFileNames[idx];
+}
 
-        if(!strlen(fn))
-            return false;
-      
-        if(!(uploadFileName = (char *)malloc(strlen(fn)+4)))
-            return false;
+void freeUploadFileNames()
+{
+    for(int i = 0; i < MAX_SIM_UPLOADS; i++) {
+        if(uploadFileNames[i]) {
+            free(uploadFileNames[i]);
+            uploadFileNames[i] = NULL;
+        }
+        if(uploadRealFileNames[i]) {
+            free(uploadRealFileNames[i]);
+            uploadRealFileNames[i] = NULL;
+        }
+    }
+}
 
-        uploadFileName[0] = '/';
-        uploadFileName[1] = '-';
-        uploadFileName[2] = 0;
-        strcat(uploadFileName, fn);
-        
-        #ifdef TC_DBG
-        Serial.printf("openUploadFile: uploadFilename: %s\n", uploadFileName);
-        #endif
-
-        if((strlen(uploadFileName) <= 9) ||
-           (strstr(uploadFileName, "/-delete-") != uploadFileName)) {
+void renameUploadFile(int idx)
+{
+    char *uploadFileName = uploadRealFileNames[idx];
     
-            if((file = SD.open(uploadFileName, FILE_WRITE))) {
-                isDel = false;
-                return true;
-            }
-
-        } else {
-
-            uploadFileName[8] = '/';
-            #ifdef TC_DBG
-            Serial.printf("openUploadFile: Deleting %s\n", uploadFileName+8);
-            #endif
-            SD.remove(uploadFileName+8);
-            isDel = true;
-          
-        }
-
-        free(uploadFileName);
-        uploadFileName = NULL;
-    }
-
-    return false;
-}
-
-void renameUploadFile()
-{
     if(haveSD && uploadFileName) {
 
         char *t = (char *)malloc(strlen(uploadFileName)+4);
@@ -2063,8 +2152,5 @@ void renameUploadFile()
         SD.rename(uploadFileName, t);
         
         free(t);
-
-        free(uploadFileName);
-        uploadFileName = NULL;
     }
 }

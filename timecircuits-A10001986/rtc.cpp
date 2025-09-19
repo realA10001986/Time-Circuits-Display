@@ -85,7 +85,7 @@
  * tcRTC Class for DS3231/PCF2129
  ****************************************************************/
 
-tcRTC::tcRTC(int numTypes, uint8_t addrArr[])
+tcRTC::tcRTC(int numTypes, const uint8_t addrArr[])
 {
     _numTypes = min(2, numTypes);
 

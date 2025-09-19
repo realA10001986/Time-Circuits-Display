@@ -139,6 +139,12 @@
 
 /*  Changelog
  *
+ *  2025/09/19 (A10001986) [3.3.1]
+ *    - Extend mp3 upload by allowing multiple (max 16) mp3 files to be uploaded
+ *      at once. The TCDA.bin file can be uploaded at the same time as well.
+ *  2025/09/17-18 (A10001986)
+ *    - WiFi Manager: Remove some more unused code to reduce bin size. Reduce 
+ *      HTML output by removing "quality icon" styles where not needed. 
  *  2025/09/15 (A10001986) [3.3.0]
  *    - Refine mp3 upload facility; allow deleting files from SD by prefixing
  *      filename with "delete-".

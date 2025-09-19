@@ -234,7 +234,7 @@ class TCButton {
 class TCRotEnc {
   
     public:
-        TCRotEnc(int numTypes, uint8_t addrArr[], TwoWire *awire = &Wire);
+        TCRotEnc(int numTypes, const uint8_t addrArr[], TwoWire *awire = &Wire);
         bool    begin(bool forSpeed);
         void    zeroPos(int offs = 0);
         void    disabledPos();
