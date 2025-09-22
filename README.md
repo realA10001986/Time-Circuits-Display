@@ -1090,11 +1090,13 @@ In order to reduce the number of write operations and thereby prolong the life o
 
 ### Main page
 
-##### &#9654; Configure WiFi
+##### &#9654; Connect to WiFi
 
-Clicking this leads to the WiFi configuration page. On that page, you can connect your TCD to your WiFi network by selecting/entering the SSID (WiFi network name) as well as a password (WPA2). By default, the TCD requests an IP address via DHCP. However, you can also configure a static IP for the TCD by entering the IP, netmask, gateway and DNS server. All four fields must be filled for a valid static IP configuration. If you want to stick to DHCP, leave those four fields empty.
+Click this to connect your TCD to your local WiFi network. All you need to do is either to click on one of the networks listed at the top or to enter a WiFi network name (SSID), and optionally a passwort (WPAx).
 
-Note that this page has nothing to do with Access Point mode; it is strictly for connecting your TCD to an existing WiFi network as a client.
+>By default, the FC requests an IP address via DHCP. However, you can also configure a static IP for the FC by entering the IP, netmask, gateway and DNS server. All four fields must be filled for a valid static IP configuration. If you want to stick to DHCP, leave those four fields empty.
+
+Note that this page is strictly for connecting your TCD to an existing WiFi network. If your TCD is supposed to operate stand-alone, it runs in "access point mode" (AP-Mode). Settings for AP mode are on the Setup page.
 
 ##### &#9654; Setup
 
@@ -1106,15 +1108,15 @@ This leads to the firmware and audio upload page.
 
 In order to upload a new firmware binary (such as the ones published here in the install/ folder), select that image file in the top file selector and click "Update".
 
-You can also install the TCD's audio data on this page; download the current sound-pack, extract it and select the resulting TCDA.bin file in the bottom file selector. Finally, click "Upload". Note that an SD card is required for this operation.
+You can also install the TCD's sound-pack on this page; download the current sound-pack, extract it and select the resulting TCDA.bin file in the bottom file selector. Finally, click "Upload". Note that an SD card is required for this operation.
 
-Note that either a firmware or audio data can be uploaded at once, not both at the same time.
+Note that either a firmware or sound-pack can be uploaded at once, not both at the same time.
 
-Finally, this page is also for uploading [custom or replacement sound files](#installing-custom--replacement-audio-files) to the SD card. Select an mp3 file in the bottom file selector and click upload. (Requires firmware 3.3 or later.)
+Finally, this page is also for uploading [custom or replacement sound files](#installing-custom--replacement-audio-files) to the SD card. Select one or more mp3 file in the bottom file selector and click upload. (Requires firmware 3.3 or later. Maximum 16 files at a time.)
 
 ##### &#9654; Erase WiFi Config
 
-Clicking this (and saying "yes" in the confirmation dialog) erases the WiFi configuration (WiFi network and password) and reboots the device; it will restart in "access point" mode. See [here](#initial-configuration).
+Clicking this (and saying "yes" in the confirmation dialog) erases the WiFi connection configuration (as set up through the Connect to WiFi page) and reboots the device; it will restart in "access point" (AP) mode. See [here](#initial-configuration).
 
 ---
 
@@ -1126,10 +1128,6 @@ Clicking this (and saying "yes" in the confirmation dialog) erases the WiFi conf
 
 Selects whether the animated intro should be played upon power-up.
 
-##### &#9654; 24-hour clock mode
-
-Selects 24-hour clock mode, ie hours go from 0 to 23, "AM" and "PM" are permanently dark.
-
 ##### &#9654; Power-up beep mode
 
 Selects the default, power-up ["beep"](#beep-on-the-second) mode. "Auto: xx secs" enables the beep for xx seconds after entering a destination time, after triggering a time travel, and upon (real or fake) power-on. Can be changed at any time by typing 000 (off), 001 (on), 002 (Auto 30secs) or 003 (Auto 60secs) followed by ENTER.
@@ -1138,53 +1136,29 @@ Selects the default, power-up ["beep"](#beep-on-the-second) mode. "Auto: xx secs
 
 In this decorative mode the device cycles through a list of pre-programmed, movie-accurate *destination* and *last time departed* times. This mode is enabled by setting the "Time-cycling Interval" to anything but "off". The device will cycle through named list every 5th, 10th, 15th, 30th or 60th minute, and thereby change the displays. Set the interval to "off" to disable. See [here](#time-cycling)
 
+##### &#9654; Skip display disruption animation
+
+If this is checked, the TCD will not show the display disruption animation during a time travel.
+
+##### &#9654; Date entry animation like in part 3
+
+If this is checked, the TCD will show a different animation upon entering a Destination time, as shown in part 3 of the Series.
+
+##### &#9654; Play time travel sounds
+
+If other props are connected, they might bring their own time travel sound effects. In this case, you can uncheck this to disable the Time Circuit's own time travel sounds. Note that this only covers sounds played during time travel, not other sound effects.
+
 ##### &#9654; Alarm base is real present time
 
 Selects whether the alarm and sound-on-the-hour are based on real, actual present time, or "present" time as displayed (eg after a time travel).
 
 Note that the night mode schedules and the Reminder are always based on actual present time.
 
-#### Network & time synchronization settings
+##### &#9654; 24-hour clock mode
 
-##### &#9654; Hostname
+Selects 24-hour clock mode, ie hours go from 0 to 23, "AM" and "PM" are permanently dark.
 
-The device's hostname in the WiFi network. Defaults to 'timecircuits'. This also is the domain name at which the Config Portal is accessible from a browser in the same local network. The URL of the Config Portal then is http://<i>hostname</i>.local (the default is http://timecircuits.local)
-
-If you have more than one TCD in your local network, please give them unique hostnames.
-
-##### &#9654; AP Mode: Network name appendix
-
-By default, if the TCD creates a WiFi network of its own ("AP-mode"), this network is named "TCD-AP". In case you have multiple TCDs in your vicinity, you can have a string appended to create a unique network name. If you, for instance, enter "-ABC" here, the WiFi network name will be "TCD-AP-ABC". Characters A-Z, a-z, 0-9 and - are allowed.
-
-##### &#9654; AP Mode: WiFi password
-
-By default, and if this field is empty, the TCD's own WiFi network ("AP-mode") will be unprotected. If you want to protect your TCD access point, enter your password here. It needs to be 8 characters in length and only characters A-Z, a-z, 0-9 and - are allowed.
-
-If you forget this password and are thereby locked out of your TCD, power-down, hold the ENTER key, power-up and wait until the white LED flashes, then release the ENTER key. The TCD will boot and start the access point temporarily without a password. Then connect to the TCD's AP with your computer or handheld, enter the Config Portal ( http://192.168.4.1 ) and either look up or change your AP WiFi password. Note that this ENTER-key-procedure is not persistent: When you reboot or re-power the TCD, the AP will be password protected again.
-
-##### &#9654; WiFi connection attempts
-
-Number of times the firmware tries to reconnect to a WiFi network, before falling back to AP-mode. See [here](#short-summary-of-first-steps)
-
-##### &#9654; WiFi connection timeout
-
-Number of seconds before a timeout occurs when connecting to a WiFi network. When a timeout happens, another attempt is made (see immediately above), and if all attempts fail, the device falls back to AP-mode. See [here](#short-summary-of-first-steps)
-
-##### &#9654; Periodic reconnection attempts
-
-Selects whether periodic re-connection attempts (between 12am and 6am) should be made after a failure to connect to a configured WiFi network.
-
-In typical home setups with 24/7 WiFi, this option hardly matters. However, if you have connected your TCD to your WiFi network, but move it between environments (with and without WiFi access) on a regular basis, uncheck this to keep the TCD from searching for your configured WiFi network unnecessarily.
-
-This option has no effect if the TCD is in [Car Mode](#car-mode).
-
-##### &#9654; WiFi power save timer
-
-See [here](#wifi-power-saving-features)
-
-##### &#9654; WiFi power save timer for AP-mode
-
-See [here](#wifi-power-saving-features)
+#### Time Synchronization settings
 
 ##### &#9654; Time zone
 
@@ -1207,6 +1181,12 @@ The time zone for the yellow display in [World Clock mode](#world-clock-mode). D
 ##### &#9654; City/location name
 
 For each World Clock time zones, a city or location name can be configured. For example "SYDNEY" or "LORD HOWE". This name will be shown every few seconds alternately with time.
+
+#### Music Player settings
+
+##### &#9654; Shuffle at startup
+
+When checked, songs are shuffled when the device is booted. When unchecked, songs will be played in order.
 
 #### Night-mode
 
@@ -1262,6 +1242,10 @@ Type of [speedo](#speedometer) display. Apart from [CircuitSetups's own](https:/
 
 Brightness of speedo display when displaying speed.
 
+##### &#9654; Switch speedo off when idle
+
+If this is checked, the Speedo is switched off when idle, ie when no time travel takes place, no GPS speed  and no temperature are available. If checked, the speedo shows "0." in those situations. Having this checked will wear the LEDs of your speedo in the long run.
+
 ##### &#9654; Real-life acceleration figures
 
 This option selects the acceleration times for the time travel sequence.
@@ -1316,21 +1300,51 @@ Check this if you want to use a fake power switch. See [here](#fake-power-switch
 
 Selects a delay (in milliseconds) from when pressing the external time travel button until the time travel sequence starts. See [here](#external-time-travel-trigger).
 
-#### Settings for other peripherals
+#### Network settings (WiFi client)
 
-##### &#9654; Control props connected by wire
+##### &#9654; Hostname
 
-This selects whether the TT_OUT/IO14 pin is activated upon a time-travel in order to play synchronized time travel sequences on other props, if those props are connected by wire. See [here](#controlling-other-props).
+The device's hostname in the WiFi network. Defaults to 'timecircuits'. This also is the domain name at which the Config Portal is accessible from a browser in the same local network. The URL of the Config Portal then is http://<i>hostname</i>.local (the default is http://timecircuits.local)
 
-##### &#9654; Signal Time Travel without 5s lead
+If you have more than one TCD in your local network, please give them unique hostnames.
 
-If this option is unchecked (which is the default), a time travel is signaled for wired props with a 5 second lead, in order to give the prop time to play an acceleration sequence. If this option is checked, TT_OUT/IO14 is activated when the time travel actually starts.
+##### &#9654; WiFi connection attempts
 
-For CircuitSetup original props, if they are connected by wire, this option should not be set. If it has to be set (because you are also driving third-party props, for instance), the corresponding option must be set in the prop's Config Portal.
+Number of times the firmware tries to reconnect to a WiFi network, before falling back to AP-mode. See [here](#short-summary-of-first-steps)
 
-For wirelessly connected props this option has no effect. Also see [here](#controlling-other-props).
+##### &#9654; WiFi connection timeout
 
-Note that time travels triggered by a rotary encoder or when GPS speed hits 88mph are always signalled without lead. The lead time is only appicable for time travels where the TCD controls the acceleration.
+Number of seconds before a timeout occurs when connecting to a WiFi network. When a timeout happens, another attempt is made (see immediately above), and if all attempts fail, the device falls back to AP-mode. See [here](#short-summary-of-first-steps)
+
+##### &#9654; Periodic reconnection attempts
+
+Selects whether periodic re-connection attempts (between 12am and 6am) should be made after a failure to connect to a configured WiFi network.
+
+In typical home setups with 24/7 WiFi, this option hardly matters. However, if you have connected your TCD to your WiFi network, but move it between environments (with and without WiFi access) on a regular basis, uncheck this to keep the TCD from searching for your configured WiFi network unnecessarily.
+
+This option has no effect if the TCD is in [Car Mode](#car-mode).
+
+##### &#9654; WiFi power save timer
+
+See [here](#wifi-power-saving-features)
+
+#### Network settings (AP mode)
+
+##### &#9654; Network name appendix
+
+By default, if the TCD creates a WiFi network of its own ("AP-mode"), this network is named "TCD-AP". In case you have multiple TCDs in your vicinity, you can have a string appended to create a unique network name. If you, for instance, enter "-ABC" here, the WiFi network name will be "TCD-AP-ABC". Characters A-Z, a-z, 0-9 and - are allowed.
+
+##### &#9654; WiFi password
+
+By default, and if this field is empty, the TCD's own WiFi network ("AP-mode") will be unprotected. If you want to protect your TCD access point, enter your password here. It needs to be 8 characters in length and only characters A-Z, a-z, 0-9 and - are allowed.
+
+If you forget this password and are thereby locked out of your TCD, power-down, hold the ENTER key, power-up and wait until the white LED flashes, then release the ENTER key. The TCD will boot and start the access point temporarily without a password. Then connect to the TCD's AP with your computer or handheld, enter the Config Portal ( http://192.168.4.1 ) and either look up or change your AP WiFi password. Note that this ENTER-key-procedure is not persistent: When you reboot or re-power the TCD, the AP will be password protected again.
+
+##### &#9654; WiFi power save timer
+
+See [here](#wifi-power-saving-features)
+
+#### BTTFN settings
 
 ##### &#9654; Provide GPS speed for wireless props
 
@@ -1339,10 +1353,6 @@ Many [BTTF-Network](#bttf-network-bttfn) clients can query the TCD for speed. "S
 This option selects whether actual GPS speed is to be transmitted to BTTFN clients. If this option is checked, speed from GPS (if available) takes precedence over speed from a rotary encoder.
 
 If your TCD/speedo are stationary, such as in a home setup, leave this unchecked.
-
-##### &#9654; Play time travel sounds
-
-If other props are connected, they might bring their own time travel sound effects. In this case, you can uncheck this to disable the Time Circuit's own time travel sounds. Note that this only covers sounds played during time travel, not other sound effects.
 
 #### Home Assistant / MQTT settings
 
@@ -1368,11 +1378,21 @@ Check this if you want the TCD to send notifications on time travel and alarm vi
 
 Note that if this option is checked, the TCD will not send out such notifications via [BTTF-Network](#bttf-network-bttfn).
 
-#### Music Player settings
+#### Settings for other peripherals
 
-##### &#9654; Shuffle at startup
+##### &#9654; Control props connected by wire
 
-When checked, songs are shuffled when the device is booted. When unchecked, songs will be played in order.
+This selects whether the TT_OUT/IO14 pin is activated upon a time-travel in order to play synchronized time travel sequences on other props, if those props are connected by wire. See [here](#controlling-other-props).
+
+##### &#9654; Signal Time Travel without 5s lead
+
+If this option is unchecked (which is the default), a time travel is signaled for wired props with a 5 second lead, in order to give the prop time to play an acceleration sequence. If this option is checked, TT_OUT/IO14 is activated when the time travel actually starts.
+
+For CircuitSetup original props, if they are connected by wire, this option should not be set. If it has to be set (because you are also driving third-party props, for instance), the corresponding option must be set in the prop's Config Portal.
+
+For wirelessly connected props this option has no effect. Also see [here](#controlling-other-props).
+
+Note that time travels triggered by a rotary encoder or when GPS speed hits 88mph are always signalled without lead. The lead time is only appicable for time travels where the TCD controls the acceleration.
 
 #### Other settings
 
@@ -1394,6 +1414,12 @@ This procedure ensures that all your settings are copied from the old to the new
 ##### &#9654; Make time travels persistent
 
 See [here](#persistent--non-persistent-time-travels). For this option to take effect, it is required that the _Save secondary settings on SD_ is checked as well, and an SD card is present. Time travel data is only ever stored on SD, never in internal flash memory.
+
+#### Hardware settings
+
+##### &#9654; Reverse AM/PM like in parts 2/3
+
+If this is checked, the TCD will reverse the AM and PM lights, as seen in parts 2 and 3 of the Series. This is under "hardware settings" as it requires attaching the labels in a different manner.
 
 ## Appendix B: Time zones
 
