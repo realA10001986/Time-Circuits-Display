@@ -1120,7 +1120,7 @@ Clicking this (and saying "yes" in the confirmation dialog) erases the WiFi conn
 
 ### Setup page
 
-#### Basic settings
+#### <ins>Basic settings</ins>
 
 ##### &#9654; Play intro
 
@@ -1156,7 +1156,7 @@ Note that the night mode schedules and the Reminder are always based on actual p
 
 Selects 24-hour clock mode, ie hours go from 0 to 23, "AM" and "PM" are permanently dark.
 
-#### Time Synchronization settings
+#### <ins>Time Synchronization settings</ins>
 
 ##### &#9654; Time zone
 
@@ -1166,7 +1166,7 @@ The time zone of the place where the device is operated in POSIX format. Needs t
 
 Name of your preferred NTP (network time protocol) server for time synchronization. Leave this empty to disable NTP.
 
-#### World Clock mode
+#### <ins>World Clock mode</ins>
 
 ##### &#9654; Time zone for Destination Time display
 
@@ -1180,13 +1180,15 @@ The time zone for the yellow display in [World Clock mode](#world-clock-mode). D
 
 For each World Clock time zones, a city or location name can be configured. For example "SYDNEY" or "LORD HOWE". This name will be shown every few seconds alternately with time.
 
-#### Music Player settings
+#### <ins>Music Player settings</ins>
 
 ##### &#9654; Shuffle at startup
 
 When checked, songs are shuffled when the device is booted. When unchecked, songs will be played in order.
 
-#### Night-mode
+Shuffle mode can be changed at any time through the keypad (222 / 555); however, such a change is not saved.
+
+#### <ins>Night-mode</ins>
 
 ##### &#9654; Destination time off in night mode
 
@@ -1220,7 +1222,7 @@ Select whether to use a light sensor's data to enable night-mode. See [here](#ni
 
 If the light sensor reports a number of lux below or equal to this value, night-mode is activated. See [here](#night-mode).
 
-#### Temperature/humidity sensor settings
+#### <ins>Temperature/humidity sensor settings</ins>
 
 ##### &#9654; Display in °Celsius
 
@@ -1230,7 +1232,7 @@ Selects between Fahrenheit and Celsius for temperature display. See [here](#room
 
 This offset, which can range from -3.0 to 3.0, is added to the sensor measurement, in order to compensate sensor inaccuracy or suboptimal sensor placement.
 
-#### Speedometer settings
+#### <ins>Speedometer settings</ins>
 
 ##### &#9654; Speedo display type
 
@@ -1288,7 +1290,7 @@ Brightness of speedo display when displaying temperature.
 
 Selects whether the temperature display is dimmed or switched of in night mode.
 
-#### External switches/buttons
+#### <ins>External switches/buttons</ins>
 
 ##### &#9654; Use fake power switch
 
@@ -1298,13 +1300,13 @@ Check this if you want to use a fake power switch. See [here](#fake-power-switch
 
 Selects a delay (in milliseconds) from when pressing the external time travel button until the time travel sequence starts. See [here](#external-time-travel-trigger).
 
-#### Network settings (WiFi client)
+#### <ins>Network settings</ins>
 
 ##### &#9654; Hostname
 
 The device's hostname in the WiFi network. Defaults to 'timecircuits'. This also is the domain name at which the Config Portal is accessible from a browser in the same local network. The URL of the Config Portal then is http://<i>hostname</i>.local (the default is http://timecircuits.local)
 
-If you have more than one TCD in your local network, please give them unique hostnames.
+This setting applies to both AP-mode and when your TCD is connected to a WiFi network. If you have more than one TCD in your local network, please give them unique hostnames.
 
 ##### &#9654; WiFi connection attempts
 
@@ -1326,13 +1328,13 @@ This option has no effect if the TCD is in [Car Mode](#car-mode).
 
 See [here](#wifi-power-saving-features)
 
-#### Network settings (AP mode)
+#### <ins>Network settings for AP-mode</ins>
 
-##### &#9654; Network name appendix
+##### &#9654; Network name(SSID) appendix
 
-By default, if the TCD creates a WiFi network of its own ("AP-mode"), this network is named "TCD-AP". In case you have multiple TCDs in your vicinity, you can have a string appended to create a unique network name. If you, for instance, enter "-ABC" here, the WiFi network name will be "TCD-AP-ABC". Characters A-Z, a-z, 0-9 and - are allowed.
+By default, when your TCD creates a WiFi network of its own ("AP-mode"), this network is named "TCD-AP". In case you have multiple TCDs in your vicinity, you can have a string appended to create a unique network name. If you, for instance, enter "-ABC" here, the WiFi network name will be "TCD-AP-ABC". Characters A-Z, a-z, 0-9 and - are allowed.
 
-##### &#9654; WiFi password
+##### &#9654; Password
 
 By default, and if this field is empty, the TCD's own WiFi network ("AP-mode") will be unprotected. If you want to protect your TCD access point, enter your password here. It needs to be 8 characters in length and only characters A-Z, a-z, 0-9 and - are allowed.
 
@@ -1342,7 +1344,7 @@ If you forget this password and are thereby locked out of your TCD, power-down, 
 
 See [here](#wifi-power-saving-features)
 
-#### BTTFN settings
+#### <ins>Settings for BTTFN communication</ins>
 
 ##### &#9654; Provide GPS speed for wireless props
 
@@ -1352,7 +1354,7 @@ This option selects whether actual GPS speed is to be transmitted to BTTFN clien
 
 If your TCD/speedo are stationary, such as in a home setup, leave this unchecked.
 
-#### Home Assistant / MQTT settings
+#### <ins>Home Assistant / MQTT settings</ins>
 
 ##### &#9654; Use Home Assistant (MQTT 3.1.1)
 
@@ -1376,7 +1378,7 @@ Check this if you want the TCD to send notifications on time travel and alarm vi
 
 Note that if this option is checked, the TCD will not send out such notifications via [BTTF-Network](#bttf-network-bttfn).
 
-#### Settings for other peripherals
+#### <ins>Settings for wired peripherals</ins>
 
 ##### &#9654; Control props connected by wire
 
@@ -1392,7 +1394,7 @@ For wirelessly connected props this option has no effect. Also see [here](#contr
 
 Note that time travels triggered by a rotary encoder or when GPS speed hits 88mph are always signalled without lead. The lead time is only appicable for time travels where the TCD controls the acceleration.
 
-#### Other settings
+#### <ins>Other settings</ins>
 
 ##### &#9654; Save secondary settings on SD
 
@@ -1413,7 +1415,7 @@ This procedure ensures that all your settings are copied from the old to the new
 
 See [here](#persistent--non-persistent-time-travels). For this option to take effect, it is required that the _Save secondary settings on SD_ is checked as well, and an SD card is present. Time travel data is only ever stored on SD, never in internal flash memory.
 
-#### Hardware settings
+#### <ins>Hardware settings</ins>
 
 ##### &#9654; Reverse AM/PM like in parts 2/3
 
