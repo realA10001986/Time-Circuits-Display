@@ -1110,8 +1110,6 @@ In order to upload a new firmware binary (such as the ones published here in the
 
 You can also install the TCD's sound-pack on this page; download the current sound-pack, extract it and select the resulting TCDA.bin file in the bottom file selector. Finally, click "Upload". Note that an SD card is required for this operation.
 
-Note that either a firmware or sound-pack can be uploaded at once, not both at the same time.
-
 Finally, this page is also for uploading [custom or replacement sound files](#installing-custom--replacement-audio-files) to the SD card. Select one or more mp3 file in the bottom file selector and click upload. (Requires firmware 3.3 or later. Maximum 16 files at a time.)
 
 ##### &#9654; Erase WiFi Config
