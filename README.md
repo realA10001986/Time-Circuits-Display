@@ -1092,7 +1092,27 @@ In order to reduce the number of write operations and thereby prolong the life o
 
 ##### &#9654; WiFi Configuration
 
-Click this to connect your TCD to your local WiFi network. All you need to do is either to click on one of the networks listed at the top or to enter a WiFi network name (SSID), and optionally a passwort (WPAx).
+##### &#9654; Settings
+
+This leads to the [Settings page](#settings-page).
+
+##### &#9654; Update
+
+This leads to the firmware and audio upload page. 
+
+In order to upload a new firmware binary (such as the ones published here in the install/ folder), select that image file in the top file selector and click "Update".
+
+You can also install the TCD's sound-pack on this page; download the current sound-pack, extract it and select the resulting TCDA.bin file in the bottom file selector. Finally, click "Upload". Note that an SD card is required for this operation.
+
+Finally, this page is also for uploading [custom or replacement sound files](#installing-custom--replacement-audio-files) to the SD card. Select one or more mp3 file in the bottom file selector and click upload. (Requires firmware 3.3 or later. Maximum 16 files at a time.)
+
+---
+
+### Settings page
+
+This page is about how to either connect your TCD to your local WiFi network, or using AP mode. 
+
+In order to connect your TCD to your WiFi network, all you need to do is either to click on one of the networks listed at the top or to enter a WiFi network name (SSID), and optionally a passwort (WPAx).
 
 >By default, the FC requests an IP address via DHCP. However, you can also configure a static IP for the FC by entering the IP, netmask, gateway and DNS server. All four fields must be filled for a valid static IP configuration. If you want to stick to DHCP, leave those four fields empty.
 
@@ -1141,20 +1161,6 @@ If you forget this password and are thereby locked out of your TCD, power-down, 
 ##### &#9654; WiFi power save timer
 
 See [here](#wifi-power-saving-features)
-
-##### &#9654; Settings
-
-This leads to the [Settings page](#settings-page).
-
-##### &#9654; Update
-
-This leads to the firmware and audio upload page. 
-
-In order to upload a new firmware binary (such as the ones published here in the install/ folder), select that image file in the top file selector and click "Update".
-
-You can also install the TCD's sound-pack on this page; download the current sound-pack, extract it and select the resulting TCDA.bin file in the bottom file selector. Finally, click "Upload". Note that an SD card is required for this operation.
-
-Finally, this page is also for uploading [custom or replacement sound files](#installing-custom--replacement-audio-files) to the SD card. Select one or more mp3 file in the bottom file selector and click upload. (Requires firmware 3.3 or later. Maximum 16 files at a time.)
 
 ---
 
