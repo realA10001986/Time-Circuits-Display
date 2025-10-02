@@ -1094,7 +1094,7 @@ In order to reduce the number of write operations and thereby prolong the life o
 
 ##### &#9654; Settings
 
-This leads to the [Settings page](#settings-page).
+This leads to the [Settings page](#settings).
 
 ##### &#9654; Update
 
@@ -1108,7 +1108,7 @@ Finally, this page is also for uploading [custom or replacement sound files](#in
 
 ---
 
-### Settings page
+### WiFi Configuration
 
 This page is about how to either connect your TCD to your local WiFi network, or using AP mode. 
 
@@ -1164,7 +1164,7 @@ See [here](#wifi-power-saving-features)
 
 ---
 
-### Settings page
+### Settings
 
 #### <ins>Basic settings</ins>
 
