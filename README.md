@@ -1110,9 +1110,11 @@ Finally, this page is also for uploading [custom or replacement sound files](#in
 
 ### WiFi Configuration
 
-This page is about how to either connect your TCD to your local WiFi network, or using AP mode. 
+Through this page you can either connect your TCD to your local WiFi network, or configure AP mode. 
 
-In order to connect your TCD to your WiFi network, all you need to do is either to click on one of the networks listed at the top or to enter a WiFi network name (SSID), and optionally a passwort (WPAx).
+#### <ins>Connecting to a WiFi network</ins>
+
+In order to connect your TCD to your WiFi network, all you need to do is either to click on one of the networks listed at the top or to enter a __WiFi network name (SSID)__, and optionally a __passwort__ (WPAx).
 
 >By default, the FC requests an IP address via DHCP. However, you can also configure a static IP for the FC by entering the IP, netmask, gateway and DNS server. All four fields must be filled for a valid static IP configuration. If you want to stick to DHCP, leave those four fields empty.
 
@@ -1157,6 +1159,10 @@ By default, when your TCD creates a WiFi network of its own ("AP-mode"), this ne
 By default, and if this field is empty, the TCD's own WiFi network ("AP-mode") will be unprotected. If you want to protect your TCD access point, enter your password here. It needs to be 8 characters in length and only characters A-Z, a-z, 0-9 and - are allowed.
 
 If you forget this password and are thereby locked out of your TCD, power-down, hold the ENTER key, power-up and wait until the white LED flashes, then release the ENTER key. The TCD will boot and start the access point temporarily without a password. Then connect to the TCD's AP with your computer or handheld, enter the Config Portal ( http://192.168.4.1 ) and either look up or change your AP WiFi password. Note that this ENTER-key-procedure is not persistent: When you reboot or re-power the TCD, the AP will be password protected again.
+
+##### &#9654; WiFi channel
+
+Here you can select one out of 13 channels, or have the TCD choose a random channel for you. The default channel is 1.
 
 ##### &#9654; WiFi power save timer
 
