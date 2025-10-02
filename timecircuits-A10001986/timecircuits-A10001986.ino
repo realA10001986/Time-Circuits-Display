@@ -139,13 +139,33 @@
 
 /*  Changelog
  *
+ *  2025/09/22-10/02 (A10001986)
+ *    - WiFi Manager overhaul; many changes to Config Portal.
+ *      WiFi-related settings moved to WiFi Configuration page.
+ *      Note: If the TCD is in AP-mode, due to memory contraints, mp3 playback
+ *      will be stopped when accessing Config Portal web pages from now on.
+ *      This had lead to sound stutter and incomplete page loads in the past.
+ *    - Various code optimizations to minimize code size and used RAM
+ *  2025/09/22 (A10001986)
+ *    - Config Portal: Re-order settings; remove non-checkbox-code.
+ *  2025/09/21 (A10001986)
+ *    - Turn former compile-time option "SP_ALWAYS_ON" into run-time option
+ *      "Switch off speedo when idle". SP_ALWAYS_ON still exists but now only
+ *      defines the default setting.
+ *    - Turn former BTTF3_ANIM (for part-3-like date entry animation), REV_AM_PM 
+ *      (for reversing AM/PM) and SKIP_TT (for skipping the time-tunnel display
+ *      animation) options into run-time options. All default to off.
+ *  2025/09/20 (A10001986)
+ *    - Config Portal: Display image links to currently connected BTTFN clients 
+ *      in top menu
+ *    - Config Portal: Add "install sound pack" banner to main menu
  *  2025/09/19 (A10001986) [3.3.1]
  *    - Extend mp3 upload by allowing multiple (max 16) mp3 files to be uploaded
  *      at once. The TCDA.bin file can be uploaded at the same time as well.
  *  2025/09/17-18 (A10001986)
  *    - WiFi Manager: Remove some more unused code to reduce bin size. Reduce 
  *      HTML output by removing "quality icon" styles where not needed. 
- *  2025/09/15 (A10001986) [3.3.0]
+ *  2025/09/15 (A10001986) [3.3]
  *    - Refine mp3 upload facility; allow deleting files from SD by prefixing
  *      filename with "delete-".
  *    - WiFi manager: Remove lots of <br> tags; makes Safari display the
@@ -762,7 +782,7 @@
  *    - Using MQTT now disables WiFi power save
  *    - Disable modem sleep to avoid delays in CP and MQTT
  *  2023/04/29 (A10001986)
- *    - BETA: Add HomeAssitant/MQTT 3.1.1 support. MTQQ code by Nicholas O'Leary; adapted,
+ *    - BETA: Add HomeAssitant/MQTT 3.1.1 support. MQTT code by Nicholas O'Leary; adapted,
  *      optimized and minimized by me. Only unencrypted traffic, no TLS/SSL support.
  *      Used in three ways:
  *      1) User can send messages to configurable subscribed topic, which are displayed 
@@ -771,7 +791,7 @@
  *      reception of a message.
  *      2) User can send commands to TCD (topic "bttf/tcd/cmd"), for example TIMETRAVEL
  *      or RETURN (as in "return from time travel").
- *      3) TCD can trigger time travel via MTQQ (topic "bttf/tcd/pub"). This works like
+ *      3) TCD can trigger time travel via MQTT (topic "bttf/tcd/pub"). This works like
  *      the "external time travel" for wired props.
  *      Broker can be configured using IP or domain, optionally with :xxxx for port
  *      number ("192.168.3.5:1234"); the default port is 1883.  User and password are 
