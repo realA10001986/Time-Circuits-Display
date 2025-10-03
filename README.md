@@ -819,7 +819,7 @@ To disable *car mode*, type 990 followed by ENTER. The TCD will reboot and attem
 
 >Note that the TCD has no internet access while in car mode; this means that, unless a GPS receiver is present, it cannot update its clock automatically. If the time runs off over time, you need to re-adjust it using the [keypad menu](#how-to-set-the-real-time-clock-rtc).
 
-> Alternatively, you could use a WiFi-enabled smartphone as access point for the props. An iPhone with the Personal Hotspot enabled does nicely.
+> Alternatively, you could use a WiFi-enabled smartphone as access point for the props. An iPhone with the Personal Hotspot enabled does nicely, if your carrier permits enough simultanious connections.
 
 ## Peripherals and connection
 
