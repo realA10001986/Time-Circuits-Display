@@ -1092,6 +1092,8 @@ In order to reduce the number of write operations and thereby prolong the life o
 
 ##### &#9654; WiFi Configuration
 
+This leads to the [WiFi configuration page](#wifi-configuration)
+
 ##### &#9654; Settings
 
 This leads to the [Settings page](#settings).
@@ -1112,7 +1114,7 @@ Finally, this page is also for uploading [custom or replacement sound files](#in
 
 Through this page you can either connect your TCD to your local WiFi network, or configure AP mode. 
 
-#### <ins>Connecting to a WiFi network</ins>
+#### <ins>Connecting to an existing WiFi network</ins>
 
 In order to connect your TCD to your WiFi network, all you need to do is either to click on one of the networks listed at the top or to enter a __WiFi network name (SSID)__, and optionally a __passwort__ (WPAx).
 
@@ -1120,13 +1122,15 @@ In order to connect your TCD to your WiFi network, all you need to do is either 
 
 ##### &#9654; Erase Saved WiFi Network
 
-Clicking this (and saying "yes" in the confirmation dialog) erases the currently saved WiFi network connection and reboots the device; it will restart in "access point" (AP) mode. See [here](#connecting-to-a-wifi-network).
+Clicking this button (and selecting "yes" in the confirmation dialog) erases the currently saved WiFi network connection and reboots the device; it will restart in "access point" (AP) mode. See [here](#connecting-to-a-wifi-network).
 
 ##### &#9654; Hostname
 
 The device's hostname in the WiFi network. Defaults to 'timecircuits'. This also is the domain name at which the Config Portal is accessible from a browser in the same local network. The URL of the Config Portal then is http://<i>hostname</i>.local (the default is http://timecircuits.local)
 
-This setting applies to both AP-mode and when your TCD is connected to a WiFi network. If you have more than one TCD in your local network, please give them unique hostnames.
+If you have more than one TCD in your local network, please give them unique hostnames.
+
+_This setting applies to both AP-mode and when your TCD is connected to a WiFi network._ 
 
 ##### &#9654; WiFi connection attempts
 
@@ -1148,7 +1152,7 @@ This option has no effect if the TCD is in [Car Mode](#car-mode).
 
 See [here](#wifi-power-saving-features)
 
-#### <ins>Network settings for AP-mode</ins>
+#### <ins>Settings for AP-mode</ins>
 
 ##### &#9654; Network name(SSID) appendix
 
@@ -1156,7 +1160,7 @@ By default, when your TCD creates a WiFi network of its own ("AP-mode"), this ne
 
 ##### &#9654; Password
 
-By default, and if this field is empty, the TCD's own WiFi network ("AP-mode") will be unprotected. If you want to protect your TCD access point, enter your password here. It needs to be 8 characters in length and only characters A-Z, a-z, 0-9 and - are allowed.
+By default, and if this field is empty, the TCD's own WiFi network ("TCD-AP") will be unprotected. If you want to protect your TCD access point, enter your password here. It needs to be 8 characters in length and only characters A-Z, a-z, 0-9 and - are allowed.
 
 If you forget this password and are thereby locked out of your TCD, power-down, hold the ENTER key, power-up and wait until the white LED flashes, then release the ENTER key. The TCD will boot and start the access point temporarily without a password. Then connect to the TCD's AP with your computer or handheld, enter the Config Portal ( http://192.168.4.1 ) and either look up or change your AP WiFi password. Note that this ENTER-key-procedure is not persistent: When you reboot or re-power the TCD, the AP will be password protected again.
 
