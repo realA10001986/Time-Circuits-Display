@@ -806,7 +806,7 @@ Note: Your dates/times will be overwritten in storage after a time travel when *
 
 If the TCD, perhaps along with other props such as Flux Capacitor or SID, is mounted in a car, there are a few things to be considered:
 
-- There is no point in attempting to connect a WiFi network.
+- There is no point in attempting to connect to a WiFi network, there most likely isn't one.
 - If the TCD acts as WiFi access point for Flux Capacitor and/or SID, it should boot quickly so that the other props can connect to it as soon as possible.
 
 This is what *car mode* is for: If enabled, the TCD will always boot in AP mode, regardless of a configured WiFi network. This speeds up booting.
@@ -818,6 +818,8 @@ To disable *car mode*, type 990 followed by ENTER. The TCD will reboot and attem
 *Car mode* is persistent, i.e. it remains active (even across reboots and power-downs) until disabled.
 
 >Note that the TCD has no internet access while in car mode; this means that, unless a GPS receiver is present, it cannot update its clock automatically. If the time runs off over time, you need to re-adjust it using the [keypad menu](#how-to-set-the-real-time-clock-rtc).
+
+> Alternatively, you could use a WiFi-enabled smartphone as access point for the props. An iPhone with the Personal Hotspot enabled does nicely.
 
 ## Peripherals and connection
 
