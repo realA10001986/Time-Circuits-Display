@@ -1102,7 +1102,7 @@ void wifi_loop()
     // unusally long, in bad cases 100s of ms. It's worse 
     // closer to playback start.
     // This hack skips Webserver-handling inside wm.process() 
-    // if an mp3 playback started within the last first 3 seconds.
+    // if an mp3 playback started within the last 3 seconds.
     wm.process(!checkAudioStarted());
 
     // WiFi power management
