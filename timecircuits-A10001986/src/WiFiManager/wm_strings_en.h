@@ -40,9 +40,9 @@ const char HTTP_ROOT_MAIN[]        PROGMEM = "<h1>{t}</h1><h3>{v}</h3>";
 
 const char * const HTTP_PORTAL_MENU[] PROGMEM = {
     "<form action='/wifi' method='get' onsubmit='d=ge(\"wbut\");if(d){d.disabled=true;d.innerHTML=\"Please wait\"}'><button id='wbut'>WiFi Configuration</button></form>\n",
-    "<form action='/0wifi' method='get'><button>WiFi Configuration (No scan)</button></form>\n",
+    "",   // unused, otherwise: "<form action='/0wifi' method='get'><button>WiFi Configuration (No scan)</button></form>\n",
     "<form action='/param' method='get'><button>Settings</button></form>\n",
-    "<form action='/erase' method='get'><button class='D'>Erase</button></form>\n",
+    "",   // unused, otherwise: "<form action='/erase' method='get'><button class='D'>Erase</button></form>\n",
     "<form action='/update' method='get'><button>Update</button></form>\n",
     "<hr>", // sep
     ""      // custom, if _customMenuHTML is NULL
@@ -57,33 +57,32 @@ const char HTTP_FORM_END[]         PROGMEM = "<button type='submit'>Save</button
 const char HTTP_FORM_WIFI[]        PROGMEM = "<div class='sects'><div class='headl'>WiFi connection: Network selection</div><label for='s'>Network name (SSID)</label><input id='s' name='s' maxlength='32' autocorrect='off' autocapitalize='none' placeholder='{V}' oninput='if(this.placeholder.length>0&&this.value.length==0){ge(\"p\").placeholder=\"********\";}'><br/><label for='p'>Password</label><input id='p' name='p' maxlength='64' type='password' placeholder='{p}'><input type='checkbox' onclick='f()'> Show password when typing";
 const char HTTP_FORM_WIFI_END[]    PROGMEM = "</div>";
 const char HTTP_WIFI_ITEM[]        PROGMEM = "<div><a href='#p' onclick='c(this);return false;' data-ssid='{V}'>{v}</a><div role='img' aria-label='{r}%' title='{r}%' class='q q-{q} {i}'></div></div>";
-const char HTTP_FORM_SECTION_HEAD[] PROGMEM = "<div class='sects'><div class='headl'>WiFi connection: IP settings</div>";
+const char HTTP_FORM_SECTION_HEAD[] PROGMEM = "<div class='sects'><div class='headl'>WiFi connection: Static IP settings</div>";
 const char HTTP_FORM_SECTION_FOOT[] PROGMEM = "</div>";
 const char HTTP_FORM_WIFI_PH[]     PROGMEM = "placeholder='Leave this section empty to use DHCP'";
 const char HTTP_MSG_NONETWORKS[]   PROGMEM = "<div class='msg'>No networks found. Click 'WiFi Scan' to re-scan.</div>";
 const char HTTP_MSG_SCANFAIL[]     PROGMEM = "<div class='msg D'>Scan failed. Click 'WiFi Scan' to retry.</div>";
 const char HTTP_MSG_NOSCAN[]       PROGMEM = "<div class='msg'>Device busy, WiFi scan prohibited.<br/>Click 'WiFi Scan' after animation sequence has finished.</div>";
-const char HTTP_SCAN_LINK[]        PROGMEM = "<form action='/wifi?refresh=1' method='POST' onsubmit='d=ge(\"wrefr\");if(d){d.disabled=true;d.innerHTML=\"Please wait\"}'><button id='wrefr' name='refresh' value='1'>WiFi Scan</button></form>";
-const char HTTP_ERASE_BUTTON[]     PROGMEM = "<button form='erform' type='submit'>Erase saved WiFi network</button>";
-const char HTTP_ERASE_FORM[]       PROGMEM = "<form id='erform' action='/erase' method='get' onsubmit='return confirm(\"Delete WiFi connection settings? Device will reboot in access point mode.\");'></form>";
+const char HTTP_SCAN_LINK[]        PROGMEM = "<form action='/wifi?refresh=1' method='POST' onsubmit='if(confirm(\"This will reload the page, changes are not saved. Proceed?\")){d=ge(\"wrefr\");if(d){d.disabled=true;d.innerHTML=\"Please wait\"}return true;}return false;'><button id='wrefr' name='refresh' value='1'>WiFi Scan</button></form>";
+const char HTTP_ERASE_BUTTON[]     PROGMEM = "<button form='erform' type='submit'>Forget saved WiFi network</button>";
+const char HTTP_ERASE_FORM[]       PROGMEM = "<form id='erform' action='/erase' method='get' onsubmit='return confirm(\"Forget saved WiFi network, including static IP settings?\\n\\nDevice will restart in access point mode.\\nChanges made below will NOT be saved.\");'></form>";
 
 const char HTTP_SAVED[]            PROGMEM = "<div class='msg'>Credentials saved.<br/>";
 const char HTTP_SAVED_NORMAL[]     PROGMEM = "Trying to connect to network.<br />In case of error, device boots in AP mode.</div>";
-const char HTTP_SAVED_CARMODE[]    PROGMEM = "Device is run in <strong>car mode<strong> and will <strong>not</strong><br/>connect to network after reboot.</div>";
+const char HTTP_SAVED_CARMODE[]    PROGMEM = "Device is run in <strong>car mode<strong> and will <strong>not</strong><br/>connect to saved WiFi network after reboot.</div>";
 const char HTTP_PARAMSAVED[]       PROGMEM = "<div class='msg S'>Settings saved. Rebooting.<br/></div>";
 
 const char HTTP_UPDATE[]           PROGMEM = "Upload new firmware<br/><form method='POST' action='u' enctype='multipart/form-data' onsubmit=\"var aa=ge('uploadbin');if(aa){aa.disabled=true;aa.innerHTML='Please wait'}aa=ge('uacb');if(aa){aa.disabled=true}\" onchange=\"(function(el){ge('uploadbin').style.display=el.value==''?'none':'initial';})(this)\"><input type='file' name='update' accept='.bin,application/octet-stream'><button id='uploadbin' type='submit' class='h D'>Update</button></form>";
 const char HTTP_UPLOADSND1[]       PROGMEM = "Upload sound pack (";
-const char HTTP_UPLOADSND2[]       PROGMEM = ".bin)<br>and/or .mp3 file(s)<br><form method='POST' action='uac' enctype='multipart/form-data' onsubmit=\"var aa=ge('uacb');if(aa){aa.disabled=true;aa.innerHTML='Please wait'}aa=ge('uploadbin');if(aa){aa.disabled=true}\" onchange=\"(function(el){ge('uacb').style.display=el.value==''?'none':'initial';})(this)\"><input type='file' name='upac' multiple accept='.bin,application/octet-stream,.mp3,audio/mpeg'><button id='uacb' type='submit' class='h D'>Upload</button></form>";
+const char HTTP_UPLOADSND2[]       PROGMEM = ".bin)<br>and/or .mp3 file(s)<br><form method='POST' action='uac' enctype='multipart/form-data' onsubmit=\"var aa=ge('uacb');if(aa){aa.disabled=true;aa.innerHTML='Please wait'}aa=ge('uploadbin');if(aa){aa.disabled=true}\" onchange=\"(function(el){ge('uacb').style.display=el.value==''?'none':'initial';})(this)\"><input type='file' name='upac' multiple accept='.bin,application/octet-stream,.mp3,audio/mpeg'><button id='uacb' type='submit' class='h'>Upload</button></form>";
 const char HTTP_UPDATE_FAIL1[]     PROGMEM = "<div class='msg D'><strong>Update failed.</strong><br/>";
 const char HTTP_UPDATE_FAIL2[]     PROGMEM = "</div>";
 const char HTTP_UPDATE_SUCCESS[]   PROGMEM = "<div class='msg S'><strong>Update successful.</strong><br/>Device rebooting.</div>";
 
-const char HTTP_ERASED[]           PROGMEM = "<div class='msg S'>WiFi connection config erased.<br />Rebooting in AP mode.<br/></div>";
+const char HTTP_ERASED[]           PROGMEM = "<div class='msg S'>The WiFi network has been forgotten.<br />Restarting in AP mode.<br/></div>";
 
 const char HTTP_BACKBTN[]          PROGMEM = "<hr><form action='/' method='get'><button>Back</button></form>";
 
-const char HTTP_ERROR[]            PROGMEM = "<div class='msg D'>An error occured. Rebooting.<br/></div>";
 const char HTTP_STATUS_ON[]        PROGMEM = "<div class='msg S'><strong>Connected</strong> to {v}<br/><em><small>with IP {i}</small></em></div>";
 const char HTTP_STATUS_OFF[]       PROGMEM = "<div class='msg {c}'><strong>Not connected</strong> to {v}{r}<br/><em><small>Currently operating in {V}</small></em></div>";
 const char HTTP_STATUS_APMODE[]    PROGMEM = "AP-mode";
@@ -146,7 +145,7 @@ const char S_GET[]                PROGMEM = "GET";
 const char S_POST[]               PROGMEM = "POST";
 const char S_NA[]                 PROGMEM = "Unknown";
 const char S_passph[]             PROGMEM = "********";
-const char S_titlewifisaved[]     PROGMEM = "Credentials saved";
+const char S_titlewifisaved[]     PROGMEM = "Credentials and settings saved";
 const char S_titlewifisettings[]  PROGMEM = "Settings saved";
 const char S_titlewifi[]          PROGMEM = "WiFi Config";
 const char S_titleparam[]         PROGMEM = "Settings";

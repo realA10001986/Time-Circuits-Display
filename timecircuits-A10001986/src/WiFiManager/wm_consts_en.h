@@ -185,4 +185,4 @@ typedef union {
 
 */
 
-#endif
+#endif  // _WM_CONSTS_H
