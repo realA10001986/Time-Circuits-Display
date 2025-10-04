@@ -361,7 +361,7 @@ static const int8_t wifiMenu[TC_MENUSIZE] = {
 
 static const char myTitle[] = AA_TITLE;
 static const char apName[]  = "TCD-AP";
-static const char myHead[]  = "<link rel='shortcut icon' type='image/png' href='data:image/png;base64," AA_ICON "'><script>window.onload=function(){xx=false;document.title=xxx='" AA_TITLE "';id=-1;ar=['/u','/uac','/wifisave','/paramsave','/erase'];ti=['Firmware upload','','WiFi Configuration','Settings','Erase WiFi Config'];if(ge('s')&&ge('dns')){xx=true;yyy=ti[2]}if(ge('uploadbin')||(id=ar.indexOf(wlp()))>=0){xx=true;if(id>=2){yyy=ti[id]}else{yyy=ti[0]};aa=gecl('wrap');if(aa.length>0){if(ge('uploadbin')){aa[0].style.textAlign='center';}aa=getn('H3');if(aa.length>0){aa[0].remove()}aa=getn('H1');if(aa.length>0){aa[0].remove()}}}if(ge('ttrp')||wlp()=='/param'){xx=true;yyy=ti[3];}if(ge('ebnew')){xx=true;bb=getn('H3');aa=getn('H1');yyy=bb[0].innerHTML;ff=aa[0].parentNode;ff.style.position='relative';}if(xx){zz=(Math.random()>0.8);dd=document.createElement('div');dd.classList.add('tpm0');dd.innerHTML='<div class=\"tpm\" onClick=\"window.location=\\'/\\'\"><div class=\"tpm2\"><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAZQTFRFSp1tAAAA635cugAAAAJ0Uk5T/wDltzBKAAAA'+(zz?'bUlEQVR42tzXwRGAQAwDMdF/09QQQ24MLkDj77oeTiPA1wFGQiHATOgDGAp1AFOhDWAslAHMhS6AQKgCSIQmgEgoAsiEHoBQqAFIhRaAWCgByIVXAMuAdcA6YBlwALAKePzgd71QAByP71uAAQC+xwvdcFg7UwAAAABJRU5ErkJggg==':'gElEQVR42tzXQQqDABAEwcr/P50P2BBUdMhee6j7+lw8i4BCD8MiQAjHYRAghAh7ADWMMAcQww5jADHMsAYQwwxrADHMsAYQwwxrADHMsAYQwwxrgLgOPwKeAjgrrACcFkYAzgu3AN4C3AV4D3AP4E3AHcDF+8d/YQB4/Pn+CjAAMaIIJuYVQ04AAAAASUVORK5CYII=')+'\" class=\"tpm3\"></div><H1 class=\"tpmh1\"'+(zz?' style=\"margin-left:1.4em\"':'')+'>'+xxx+'</H1>'+'<H3 class=\"tpmh3\"'+(zz?' style=\"padding-left:5em\"':'')+'>'+yyy+'</div></div>';}if(ge('ebnew')){bb[0].remove();aa[0].replaceWith(dd);}else if(xx){aa=gecl('wrap');if(aa.length>0){aa[0].insertBefore(dd,aa[0].firstChild);aa[0].style.position='relative';}}}</script><style type='text/css'>H1,H2{margin-top:0px;margin-bottom:0px;text-align:center;}H3{margin-top:0px;margin-bottom:5px;text-align:center;}button{transition-delay:250ms;margin-top:10px;margin-bottom:10px;font-variant-caps:all-small-caps;border-bottom:0.2em solid #225a98}br{display:block;font-size:1px;content:''}input[type='checkbox']{display:inline-block;margin-top:10px}input{border:thin inset}small{display:none}em > small{display:inline}form{margin-block-end:0;}.tpm{cursor:pointer;border:1px solid black;border-radius:5px;padding:0 0 0 0px;min-width:18em;}.tpm2{position:absolute;top:-0.7em;z-index:130;left:0.7em;}.tpm3{width:4em;height:4em;}.tpmh1{font-variant-caps:all-small-caps;font-weight:normal;margin-left:2.2em;overflow:clip;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI Semibold',Roboto,'Helvetica Neue',Verdana,Helvetica}.tpmh3{background:#000;font-size:0.6em;color:#ffa;padding-left:7.2em;margin-left:0.5em;margin-right:0.5em;border-radius:5px}.tpm0{position:relative;width:20em;padding:5px 0px 5px 0px;margin:0 auto 0 auto;}.cmp0{margin:0;padding:0;}.sel0{font-size:90%;width:auto;margin-left:10px;vertical-align:baseline;}.mt5{margin-top:5px!important}.mb10{margin-bottom:10px!important}.mb0{margin-bottom:0px!important}.mb15{margin-bottom:15px!important}</style>";
+static const char myHead[]  = "<link rel='shortcut icon' type='image/png' href='data:image/png;base64," AA_ICON "'><script>window.onload=function(){xx=false;document.title=xxx='" AA_TITLE "';id=-1;ar=['/u','/uac','/wifisave','/paramsave','/erase'];ti=['Firmware upload','','WiFi Configuration','Settings','WiFi Configuration'];if(ge('s')&&ge('dns')){xx=true;yyy=ti[2]}if(ge('uploadbin')||(id=ar.indexOf(wlp()))>=0){xx=true;if(id>=2){yyy=ti[id]}else{yyy=ti[0]};aa=gecl('wrap');if(aa.length>0){if(ge('uploadbin')){aa[0].style.textAlign='center';}aa=getn('H3');if(aa.length>0){aa[0].remove()}aa=getn('H1');if(aa.length>0){aa[0].remove()}}}if(ge('ttrp')||wlp()=='/param'){xx=true;yyy=ti[3];}if(ge('ebnew')){xx=true;bb=getn('H3');aa=getn('H1');yyy=bb[0].innerHTML;ff=aa[0].parentNode;ff.style.position='relative';}if(xx){zz=(Math.random()>0.8);dd=document.createElement('div');dd.classList.add('tpm0');dd.innerHTML='<div class=\"tpm\" onClick=\"window.location=\\'/\\'\"><div class=\"tpm2\"><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAZQTFRFSp1tAAAA635cugAAAAJ0Uk5T/wDltzBKAAAA'+(zz?'bUlEQVR42tzXwRGAQAwDMdF/09QQQ24MLkDj77oeTiPA1wFGQiHATOgDGAp1AFOhDWAslAHMhS6AQKgCSIQmgEgoAsiEHoBQqAFIhRaAWCgByIVXAMuAdcA6YBlwALAKePzgd71QAByP71uAAQC+xwvdcFg7UwAAAABJRU5ErkJggg==':'gElEQVR42tzXQQqDABAEwcr/P50P2BBUdMhee6j7+lw8i4BCD8MiQAjHYRAghAh7ADWMMAcQww5jADHMsAYQwwxrADHMsAYQwwxrADHMsAYQwwxrgLgOPwKeAjgrrACcFkYAzgu3AN4C3AV4D3AP4E3AHcDF+8d/YQB4/Pn+CjAAMaIIJuYVQ04AAAAASUVORK5CYII=')+'\" class=\"tpm3\"></div><H1 class=\"tpmh1\"'+(zz?' style=\"margin-left:1.4em\"':'')+'>'+xxx+'</H1>'+'<H3 class=\"tpmh3\"'+(zz?' style=\"padding-left:5em\"':'')+'>'+yyy+'</div></div>';}if(ge('ebnew')){bb[0].remove();aa[0].replaceWith(dd);}else if(xx){aa=gecl('wrap');if(aa.length>0){aa[0].insertBefore(dd,aa[0].firstChild);aa[0].style.position='relative';}}}</script><style type='text/css'>H1,H2{margin-top:0px;margin-bottom:0px;text-align:center;}H3{margin-top:0px;margin-bottom:5px;text-align:center;}button{transition-delay:250ms;margin-top:10px;margin-bottom:10px;font-variant-caps:all-small-caps;border-bottom:0.2em solid #225a98}br{display:block;font-size:1px;content:''}input[type='checkbox']{display:inline-block;margin-top:10px}input{border:thin inset}small{display:none}em > small{display:inline}form{margin-block-end:0;}.tpm{cursor:pointer;border:1px solid black;border-radius:5px;padding:0 0 0 0px;min-width:18em;}.tpm2{position:absolute;top:-0.7em;z-index:130;left:0.7em;}.tpm3{width:4em;height:4em;}.tpmh1{font-variant-caps:all-small-caps;font-weight:normal;margin-left:2.2em;overflow:clip;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI Semibold',Roboto,'Helvetica Neue',Verdana,Helvetica}.tpmh3{background:#000;font-size:0.6em;color:#ffa;padding-left:7.2em;margin-left:0.5em;margin-right:0.5em;border-radius:5px}.tpm0{position:relative;width:20em;padding:5px 0px 5px 0px;margin:0 auto 0 auto;}.cmp0{margin:0;padding:0;}.sel0{font-size:90%;width:auto;margin-left:10px;vertical-align:baseline;}.mt5{margin-top:5px!important}.mb10{margin-bottom:10px!important}.mb0{margin-bottom:0px!important}.mb15{margin-bottom:15px!important}</style>";
 static const char* myCustMenu = "<img id='ebnew' style='display:block;margin:10px auto 10px auto;' src='data:image/png;base64,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'><div style='font-size:11px;margin-left:auto;margin-right:auto;text-align:center;'>Version " UNI_VERSION " (" UNI_VERSION_EXTRA ")<br>Powered by A10001986 <a href='https://tcd.out-a-ti.me' target=_blank>[Home]</a></div>";
 
 static const char* cliImages[] = {
@@ -442,12 +442,11 @@ static uint16_t      mqttPingsExpired = 0;
 static void wifiOff(bool force);
 static void wifiConnect(bool deferConfigPortal = false);
 static void saveParamsCallback();
-static void saveConfigCallback(bool, String& ssid);
-static void preConnectCallback();
+static void saveWiFiCallback(const char *ssid, const char *pass);
 static void preUpdateCallback();
 static void postUpdateCallback(bool);
 static void eraseCallback(bool);
-static void preSaveConfigCallback();
+static void preSaveWiFiCallback();
 static int  menuOutLenCallback();
 static void menuOutCallback(String& page);
 static void wifiDelayReplacement(unsigned int mydel);
@@ -631,14 +630,26 @@ void wifi_setup()
     wm.setDebugOutput(false);
     #endif
 
+    // Transition from NVS-saved data to own management:
+    if(!settings.ssid[0] && settings.ssid[1] == 'X') {
+        
+        // Read NVS-stored WiFi data
+        wm.getStoredCredentials(settings.ssid, sizeof(settings.ssid) - 1, settings.pass, sizeof(settings.pass) - 1);
+
+        #ifdef TC_DBG
+        Serial.printf("WiFi Transition: ssid '%s' pass '%s'\n", settings.ssid, settings.pass);
+        #endif
+
+        write_settings();
+    }
+
     wm.setHostname(settings.hostName);
 
     wm.showUploadContainer(true, AA_CONTAINER);
 
-    wm.setPreSaveConfigCallback(preSaveConfigCallback);
-    wm.setSaveConfigCallback(saveConfigCallback);
+    wm.setPreSaveWiFiCallback(preSaveWiFiCallback);
+    wm.setSaveWiFiCallback(saveWiFiCallback);
     wm.setSaveParamsCallback(saveParamsCallback);
-    wm.setPreConnectCallback(preConnectCallback);
     wm.setPreOtaUpdateCallback(preUpdateCallback);
     wm.setPostOtaUpdateCallback(postUpdateCallback);
     wm.setWebServerCallback(setupWebServerCallback);
@@ -701,6 +712,18 @@ void wifi_setup()
     }
 
     updateConfigPortalValues();
+
+    if(!carMode) {
+        wifiHaveSTAConf = (settings.ssid[0] != 0);
+        #ifdef TC_DBG
+        Serial.printf("WiFi network configured: %s (%s)\n", wifiHaveSTAConf ? "YES" : "NO", 
+                    wifiHaveSTAConf ? (const char *)settings.ssid : "n/a");
+        #endif
+        // No point in retry when we have no WiFi config'd
+        if(!wifiHaveSTAConf) {
+            wm.setConnectRetries(1);
+        }
+    }
 
     // Read settings for WiFi powersave countdown
     wifiOffDelay = (unsigned long)atoi(settings.wifiOffDelay);
@@ -867,20 +890,11 @@ void wifi_loop()
         mqttClient.loop();
     }
 #endif
-
-    // For some reason (probably memory allocation doing some
-    // garbage collection), the first HTTPSend (triggered in
-    // wm.process()) after initiating mp3 playback takes
-    // unusally long, in bad cases 100s of ms. It's worse 
-    // closer to playback start.
-    // This hack skips Webserver-handling inside wm.process() 
-    // if an mp3 playback started within the last first 3 seconds.
-    wm.process(!checkAudioStarted());
     
     if(shouldSaveIPConfig) {
 
         #ifdef TC_DBG
-        Serial.println(F("WiFi: Saving IP config"));
+        Serial.println("WiFi: Saving IP config");
         #endif
 
         mp_stop();
@@ -893,7 +907,7 @@ void wifi_loop()
     } else if(shouldDeleteIPConfig) {
 
         #ifdef TC_DBG
-        Serial.println(F("WiFi: Deleting IP config"));
+        Serial.println("WiFi: Deleting IP config");
         #endif
 
         mp_stop();
@@ -915,7 +929,7 @@ void wifi_loop()
         stopAudio();
 
         #ifdef TC_DBG
-        Serial.println(F("Config Portal: Saving config"));
+        Serial.println("Config Portal: Saving config");
         #endif
 
         // Only read parms if the user actually clicked SAVE on the wifi config or params pages
@@ -924,7 +938,9 @@ void wifi_loop()
             // Parameters on WiFi Config page
 
             // Note: Parameters that need to grabbed from the server directly
-            // through getParam() must be handled in preSaveConfigCallback().
+            // through getParam() must be handled in preSaveWiFiCallback().
+
+            // ssid, pass copied to settings in saveWiFiCallback()
 
             strcpytrim(settings.hostName, custom_hostName.getValue(), true);
             if(strlen(settings.hostName) == 0) {
@@ -1071,14 +1087,23 @@ void wifi_loop()
         // Reset esp32 to load new settings
 
         #ifdef TC_DBG
-        Serial.println(F("Config Portal: Restarting ESP...."));
+        Serial.println("Config Portal: Restarting ESP....");
         #endif
         Serial.flush();
 
         prepareReboot();
-        delay(500);
+        delay(1000);
         esp_restart();
     }
+
+    // For some reason (probably memory allocation doing some
+    // garbage collection), the first HTTPSend (triggered in
+    // wm.process()) after initiating mp3 playback takes
+    // unusally long, in bad cases 100s of ms. It's worse 
+    // closer to playback start.
+    // This hack skips Webserver-handling inside wm.process() 
+    // if an mp3 playback started within the last first 3 seconds.
+    wm.process(!checkAudioStarted());
 
     // WiFi power management
     // If a delay > 0 is configured, WiFi is powered-down after timer has
@@ -1099,7 +1124,7 @@ void wifi_loop()
                 wifiIsOff = false;
                 syncTrigger = false;
                 #ifdef TC_DBG
-                Serial.println(F("WiFi (AP-mode) is off. Hold '7' to re-enable."));
+                Serial.println("WiFi (AP-mode) is off. Hold '7' to re-enable.");
                 #endif
             }
         }
@@ -1112,7 +1137,7 @@ void wifi_loop()
                 wifiAPIsOff = false;
                 syncTrigger = false;
                 #ifdef TC_DBG
-                Serial.println(F("WiFi (STA-mode) is off. Hold '7' to re-enable."));
+                Serial.println("WiFi (STA-mode) is off. Hold '7' to re-enable.");
                 #endif
             }
         }
@@ -1129,16 +1154,16 @@ static void wifiConnect(bool deferConfigPortal)
         strcat(realAPName, settings.systemID);
     }
     
-    if(carMode) {
-        wm.startConfigPortal(realAPName, settings.appw);
+    if(carMode || !settings.ssid[0]) {
+        wm.startConfigPortal(realAPName, settings.appw, settings.ssid, settings.pass);
         doOnlyAP = true;
     }
     
     // Automatically connect using saved credentials if they exist
     // If connection fails it starts an access point with the specified name
-    if(!doOnlyAP && wm.autoConnect(realAPName, settings.appw)) {
+    if(!doOnlyAP && wm.autoConnect(settings.ssid, settings.pass, realAPName, settings.appw)) {
         #ifdef TC_DBG
-        Serial.println(F("WiFi connected"));
+        Serial.println("WiFi connected");
         #endif
 
         // Since WM 2.0.13beta, starting the CP invokes an async
@@ -1177,7 +1202,7 @@ static void wifiConnect(bool deferConfigPortal)
     } else {
 
         #ifdef TC_DBG
-        Serial.println(F("Config portal running in AP-mode"));
+        Serial.println("Config portal running in AP-mode");
         #endif
 
         {
@@ -1432,45 +1457,34 @@ void wifiStartCP()
     wm.startWebPortal();
 }
 
-// This is called when the WiFi config changes. We read out
-// thew WM "WiFi Configuration" parameters and save them.
-static void saveConfigCallback(bool success, String& ssid)
+// This is called when the WiFi config is to be saved. We set
+// a flag for the loop to read out and save the new WiFi config.
+// SSID and password are copied to settings here.
+static void saveWiFiCallback(const char *ssid, const char *pass)
 {
-    // success is true if WM could connect to the newly
-    // configured wifi, false if it failed or didn't try.
-    // We do not use this here, we reboot anyway.
-
-    // ssid is the new ssid to connect to.
-    // We don't need that here.
-
+    // ssid is the (new?) ssid to connect to, pass the password.
+    // (We don't need to compare to the old ones since the
+    // settings are saved in any case)
+    memset(settings.ssid, 0, sizeof(settings.ssid));
+    strncpy(settings.ssid, ssid, sizeof(settings.ssid) - 1);
+    #ifdef TC_DBG
+    Serial.printf("saveWiFiCallback: New ssid '%s'\n", settings.ssid);
+    #endif
+    
+    memset(settings.pass, 0, sizeof(settings.pass));
+    strncpy(settings.pass, pass, sizeof(settings.pass) - 1);
+    #ifdef TC_DBG
+    Serial.printf("saveWiFiCallback: New pass '%s'\n", settings.pass);
+    #endif
+    
     shouldSaveConfig = 1;
 }
 
-// This is the callback from the actual Params page. We read out
-// thew WM "Settings" parameters and save them. 
+// This is the callback from the actual Params page. We set
+// a flag for the loop to read out and save the new settings.
 static void saveParamsCallback()
 {
     shouldSaveConfig = 2;
-}
-
-static void preConnectCallback()
-{
-    if(!carMode) {
-        wifi_config_t conf;
-        esp_wifi_get_config(WIFI_IF_STA, &conf);
-        wifiHaveSTAConf = (conf.sta.ssid[0] != 0);
-        #ifdef TC_DBG
-        Serial.printf("WiFi network configured: %s (%s)\n", wifiHaveSTAConf ? "YES" : "NO", 
-                    wifiHaveSTAConf ? (const char *)conf.sta.ssid : "n/a");
-        #endif
-        // No point in retry when we have no WiFi config'd
-        if(!wifiHaveSTAConf) {
-            wm.setConnectRetries(1);
-        }
-    }
-
-    // Remove ourselves, this is only ever required to be called once.
-    wm.setPreConnectCallback(NULL);
 }
 
 // This is called before a firmware updated is initiated.
@@ -1518,25 +1532,44 @@ static void postUpdateCallback(bool res)
     }
 }
 
-// This is called right before rebooting after erasing WiFi config.
+// This is called upon "Forget wifi network".
 static void eraseCallback(bool isPre)
 {
     if(isPre) {
-        // Pre-Erase: Stop sound, erase() writes to NVS
+
+        // Pre-Erase: Stop sound, we write to NVS
         mp_stop();
         stopAudio();
+
     } else {
-        // Post-Erase: Prepare reboot
+
+        // Actual Erase: Delete ssid and pass, as well
+        // as static IP config, save, and reboot
+
+        #ifdef TC_DBG
+        Serial.println("forgetting stored network");
+        #endif
+
+        if(settings.ssid[0] || settings.pass[0]) {
+            memset(settings.ssid, 0, sizeof(settings.ssid));
+            memset(settings.pass, 0, sizeof(settings.pass));
+            write_settings();
+        }
+
+        deleteIpSettings();
+        
         Serial.flush();
         prepareReboot();
         delay(1000);
+        esp_restart();
+        
     }
 }
 
 // Grab static IP and other parameters from WiFiManager's server.
 // Since there is no public method for this, we steal the HTML
 // form parameters in this callback.
-static void preSaveConfigCallback()
+static void preSaveWiFiCallback()
 {
     char ipBuf[20] = "";
     char gwBuf[20] = "";
@@ -1545,7 +1578,7 @@ static void preSaveConfigCallback()
     bool invalConf = false;
 
     #ifdef TC_DBG
-    Serial.println("preSaveConfigCallback");
+    Serial.println("preSaveWiFiCallback");
     #endif
 
     // clear as strncpy might leave us unterminated
@@ -1583,12 +1616,24 @@ static void preSaveConfigCallback()
         Serial.println("All IPs valid");
         #endif
 
-        strcpy(ipsettings.ip, ipBuf);
-        strcpy(ipsettings.gateway, gwBuf);
-        strcpy(ipsettings.netmask, snBuf);
-        strcpy(ipsettings.dns, dnsBuf);
-
-        shouldSaveIPConfig = true;
+        shouldSaveIPConfig = (strcmp(ipsettings.ip, ipBuf)      ||
+                              strcmp(ipsettings.gateway, gwBuf) ||
+                              strcmp(ipsettings.netmask, snBuf) ||
+                              strcmp(ipsettings.dns, dnsBuf));
+          
+        if(shouldSaveIPConfig) {
+            strcpy(ipsettings.ip, ipBuf);
+            strcpy(ipsettings.gateway, gwBuf);
+            strcpy(ipsettings.netmask, snBuf);
+            strcpy(ipsettings.dns, dnsBuf);
+            #ifdef TC_DBG
+            Serial.println("New static IP config");
+            #endif
+        } else {
+            #ifdef TC_DBG
+            Serial.println("Static IP config unchanged");
+            #endif
+        }
 
     } else {
 
@@ -2276,7 +2321,7 @@ static void handleUploadDone()
     freeUploadFileNames();
     
     String str(buf);
-    wm.server->send(200, F("text/html"), str);
+    wm.server->send(200, "text/html", str);
 
     // Reboot required even for mp3 upload, because for most files, we check
     // during boot if they exist (to avoid repeatedly failing open() calls)

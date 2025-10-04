@@ -139,7 +139,14 @@
 
 /*  Changelog
  *
- *  2025/09/22-10/02 (A10001986)
+ *  2025/10/03-04 (A10001986) [3.4.1]
+ *    - More WiFiManager changes. We no longer use NVS-stored WiFi configs, 
+ *      all is managed by our own settings. (No details are known, but it
+ *      appears as if the core saves some data to NVS on every reboot, this
+ *      is totally not needed for our purposes, nor in the interest of 
+ *      flash longevity.)
+ *    - Save static IP only if changed
+ *  2025/09/22-10/03 (A10001986) [3.4]
  *    - WiFi Manager overhaul; many changes to Config Portal.
  *      WiFi-related settings moved to WiFi Configuration page.
  *      Note: If the TCD is in AP-mode, due to memory contraints, mp3 playback

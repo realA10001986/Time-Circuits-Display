@@ -263,7 +263,7 @@ void settings_setup()
     } else {
 
         #ifdef TC_DBG
-        Serial.print(F("failed, formatting... "));
+        Serial.print("failed, formatting... ");
         #endif
 
         destinationTime.showTextDirect("WAIT");
@@ -278,7 +278,7 @@ void settings_setup()
     if(haveFS) {
       
         #ifdef TC_DBG
-        Serial.println(F("ok, loading settings"));
+        Serial.println("ok, loading settings");
         int tBytes = SPIFFS.totalBytes(); int uBytes = SPIFFS.usedBytes();
         Serial-printf("FlashFS: %d total, %d used\n", tBytes, uBytes);
         #endif
@@ -299,7 +299,7 @@ void settings_setup()
 
     } else {
 
-        Serial.println(F("*** Mounting flash FS failed. Using SD (if available)"));
+        Serial.println("*** Mounting flash FS failed. Using SD (if available)");
 
     }
     
@@ -327,7 +327,7 @@ void settings_setup()
     if(SDres) {
 
         #ifdef TC_DBG
-        Serial.println(F("ok"));
+        Serial.println("ok");
         #endif
 
         uint8_t cardType = SD.cardType();
@@ -341,7 +341,7 @@ void settings_setup()
 
     } else {
 
-        Serial.println(F("No SD card found"));
+        Serial.println("No SD card found");
 
     }
 
@@ -349,7 +349,7 @@ void settings_setup()
         if(SD.exists("/TCD_FLASH_RO") || !haveFS) {
             bool writedefault2 = false;
             FlashROMode = true;
-            Serial.println(F("Flash-RO mode: Using SD only."));
+            Serial.println("Flash-RO mode: Using SD only.");
             if(SD.exists(cfgName)) {
                 File configFile = SD.open(cfgName, "r");
                 if(configFile) {
@@ -409,8 +409,8 @@ void settings_setup()
         uploadFileNames[i] = uploadRealFileNames[i] = NULL;
     }
     
-    // Allow user to delete static IP data by holding ENTER
-    // while booting
+    // Allow user to delete static IP data and temporarily clear
+    // AP password by holding ENTER while booting
     // (10 secs timeout to wait for button-release to allow
     // to run fw without control board attached)
     if(digitalRead(ENTER_BUTTON_PIN)) {
@@ -439,14 +439,14 @@ void unmount_fs()
     if(haveFS) {
         SPIFFS.end();
         #ifdef TC_DBG
-        Serial.println(F("Unmounted Flash FS"));
+        Serial.println("Unmounted Flash FS");
         #endif
         haveFS = false;
     }
     if(haveSD) {
         SD.end();
         #ifdef TC_DBG
-        Serial.println(F("Unmounted SD card"));
+        Serial.println("Unmounted SD card");
         #endif
         haveSD = false;
     }
@@ -481,6 +481,15 @@ static bool read_settings(File configFile)
 
         // WiFi Configuration
 
+        memset(settings.ssid, 0, sizeof(settings.ssid));
+        memset(settings.pass, 0, sizeof(settings.pass));
+        if(json["ssid"]) {
+            strncpy(settings.ssid, json["ssid"], sizeof(settings.ssid) - 1);
+            if(json["pass"]) {
+                strncpy(settings.pass, json["pass"], sizeof(settings.pass) - 1);
+            }
+        } else settings.ssid[1] = 'X';  // marker for "no ssid tag in config file", ie read from NVS
+        
         if(json["hostName"]) {
             CopyTextParm(settings.hostName, json["hostName"], sizeof(settings.hostName));
         } else wd = true;
@@ -631,6 +640,13 @@ void write_settings()
     #ifdef TC_DBG
     Serial.printf("%s: Writing config file\n", funcName);
     #endif
+
+    // Write this only if either set, or also present in file read earlier
+    if(settings.ssid[0] || settings.ssid[1] != 'X') {
+        json["ssid"] = (const char *)settings.ssid;
+        json["pass"] = (const char *)settings.pass;
+    }
+    
     json["hostName"] = (const char *)settings.hostName;
     json["wifiConRetries"] = (const char *)settings.wifiConRetries;
     json["wifiConTimeout"] = (const char *)settings.wifiConTimeout;
@@ -1502,7 +1518,7 @@ bool loadIpSettings()
         // config file is invalid - delete it
 
         #ifdef TC_DBG
-        Serial.println(F("loadIpSettings: IP settings invalid; deleting file"));
+        Serial.println("loadIpSettings: IP settings invalid; deleting file");
         #endif
         
         deleteIpSettings();
@@ -1550,7 +1566,7 @@ void writeIpSettings()
 void deleteIpSettings()
 {
     #ifdef TC_DBG
-    Serial.println(F("deleteIpSettings: Deleting ip config"));
+    Serial.println("deleteIpSettings: Deleting ip config");
     #endif
 
     if(FlashROMode) {
@@ -1753,7 +1769,7 @@ void delete_ID_file()
 void formatFlashFS()
 {
     #ifdef TC_DBG
-    Serial.println(F("Formatting flash FS"));
+    Serial.println("Formatting flash FS");
     #endif
     SPIFFS.format();
 }
@@ -1788,7 +1804,7 @@ void copySettings()
 
     if(configOnSD || !FlashROMode) {
         #ifdef TC_DBG
-        Serial.println(F("copySettings: Copying secondary settings to other medium"));
+        Serial.println("copySettings: Copying secondary settings to other medium");
         #endif
         writeAllSecSettings();
     }

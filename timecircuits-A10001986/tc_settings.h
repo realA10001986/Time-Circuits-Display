@@ -124,7 +124,10 @@ extern uint8_t musFolderNum;
 #define DEF_REVAMPM         0     // Default: 0: AM/PM like in P1, 1: AM/PM like in P2/P3
 
 struct Settings {
-    char hostName[32]       = DEF_HOSTNAME;
+    char ssid[34]           = "";
+    char pass[66]           = "";
+
+    char hostName[34]       = DEF_HOSTNAME;
     char wifiConRetries[4]  = MS(DEF_WIFI_RETRY);
     char wifiConTimeout[4]  = MS(DEF_WIFI_TIMEOUT);
     char wifiPRetry[4]      = MS(DEF_WIFI_PRETRY);

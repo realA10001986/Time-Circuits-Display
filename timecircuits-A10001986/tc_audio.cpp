@@ -369,7 +369,7 @@ void play_file(const char *audio_file, uint16_t flags, float volumeFactor)
         mp3->begin(mySD0, out);
         audioplaystart = millis();
         #ifdef TC_DBG
-        Serial.println(F("Playing from SD"));
+        Serial.println("Playing from SD");
         #endif
     }
     #ifdef USE_SPIFFS
@@ -389,12 +389,12 @@ void play_file(const char *audio_file, uint16_t flags, float volumeFactor)
             //audioplaystart = 0; // is cleared by stop(), used only for mp3 playback
         }
         #ifdef TC_DBG
-        Serial.println(F("Playing from flash FS"));
+        Serial.println("Playing from flash FS");
         #endif
     } else {
         key_playing = 0;
         #ifdef TC_DBG
-        Serial.println(F("Audio file not found"));
+        Serial.println("Audio file not found");
         #endif
     }
 }

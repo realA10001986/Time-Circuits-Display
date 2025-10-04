@@ -1035,7 +1035,7 @@ void time_setup()
     const char *funcName = "time_setup: ";
     #endif
 
-    Serial.println(F("Time Circuits Display version " TC_VERSION " " TC_VERSION_EXTRA));
+    Serial.println("Time Circuits Display version " TC_VERSION " " TC_VERSION_EXTRA);
 
     // Power management: Set CPU speed
     // to maximum and start timer
@@ -2121,7 +2121,7 @@ void time_loop()
         ettoPulseStart();
         triggerETTO = false;
         #ifdef TC_DBG
-        Serial.println(F("ETTO triggered"));
+        Serial.println("ETTO triggered");
         #endif
     }
     #endif
@@ -3962,7 +3962,7 @@ void pauseAuto(void)
         autoPaused = true;
         pauseNow = millis();
         #ifdef TC_DBG
-        Serial.println(F("pauseAuto: autoInterval paused for 30 minutes"));
+        Serial.println("pauseAuto: autoInterval paused for 30 minutes");
         #endif
     }
 }
@@ -4742,7 +4742,7 @@ static bool getNTPTime(bool weHaveAuthTime, DateTime& dt)
         } else {
 
             #ifdef TC_DBG
-            Serial.println(F("getNTPTime: No current NTP timestamp available"));
+            Serial.println("getNTPTime: No current NTP timestamp available");
             #endif
 
             return false;
@@ -4751,7 +4751,7 @@ static bool getNTPTime(bool weHaveAuthTime, DateTime& dt)
     } else {
 
         #ifdef TC_DBG
-        Serial.println(F("getNTPTime: WiFi not connected, NTP time sync skipped"));
+        Serial.println("getNTPTime: WiFi not connected, NTP time sync skipped");
         #endif
         
         return false;
@@ -4836,7 +4836,7 @@ static bool setGPStime()
         return false;
 
     #ifdef TC_DBG
-    Serial.println(F("setGPStime() called"));
+    Serial.println("setGPStime() called");
     #endif
 
     myrtcnow(dt);

@@ -913,7 +913,7 @@ void keypad_loop()
                     if(rcModeState != carMode) {
                         saveCarMode();
                         prepareReboot();
-                        delay(500);
+                        delay(1000);
                         esp_restart();
                     }
                     validEntry = true;
@@ -974,7 +974,7 @@ void keypad_loop()
 
             if(!(strncmp(dateBuffer, "64738", 5))) {
                 prepareReboot();
-                delay(500);
+                delay(1000);
                 esp_restart();
             }
 
