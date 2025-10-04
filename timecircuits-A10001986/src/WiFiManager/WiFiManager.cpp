@@ -514,7 +514,8 @@ bool WiFiManager::startAP()
     ret = WiFi.softAP(_apName,
             (strlen(_apPassword) > 0) ? _apPassword : NULL,
             (channel > 0) ? channel : 1,
-            _apHidden);
+            _apHidden,
+            6);
 
     #ifndef WM_NODEBUG
     if(_debugLevel >= DEBUG_DEV) debugSoftAPConfig();
