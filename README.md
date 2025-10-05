@@ -136,6 +136,7 @@ It can be accessed as follows:
 
 - Connect your computer or handheld device to the WiFi network "TCD-AP".
 - Navigate your browser to http://timecircuits.local or http://192.168.4.1 to enter the Config Portal.
+- (For proper operation, please disconnect your computer or handheld from TCD-AP when you are done with configuring your TCD. These devices can cause high network traffic, resulting in severe performance penalties.)
 
 #### If TCD is connected to WiFi network
 
