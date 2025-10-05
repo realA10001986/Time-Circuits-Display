@@ -139,6 +139,17 @@
 
 /*  Changelog
  *
+ *  2025/10/04 (A10001986) [3.4.3]
+ *    - Let DNS server in AP mode only resolve our domain (hostname)
+ *  2025/10/04 (A10001986) [3.4.2]
+ *    - Allow 6 clients in AP mode instead of 4. So all props can connect
+ *      to the TCD in AP mode, plus one admin computer/hand held.
+ *      HOWEVER: Under normal use, do NOT connect a computer or phone to
+ *      the TCD in AP mode unless for configuration changes. That computer 
+ *      might think it is connected to the internet, send DNS queries, which 
+ *      the TCD AP will all answer with its own IP, resulting in lots of 
+ *      page loads from the TCD, leading to packet loss, slowdowns or 
+ *      out-of-sync animations.
  *  2025/10/03-04 (A10001986) [3.4.1]
  *    - More WiFiManager changes. We no longer use NVS-stored WiFi configs, 
  *      all is managed by our own settings. (No details are known, but it
@@ -149,8 +160,8 @@
  *  2025/09/22-10/03 (A10001986) [3.4]
  *    - WiFi Manager overhaul; many changes to Config Portal.
  *      WiFi-related settings moved to WiFi Configuration page.
- *      Note: If the TCD is in AP-mode, due to memory contraints, mp3 playback
- *      will be stopped when accessing Config Portal web pages from now on.
+ *      Note: If the TCD is in AP-mode, mp3 playback will be stopped when
+ *      accessing Config Portal web pages from now on.
  *      This had lead to sound stutter and incomplete page loads in the past.
  *    - Various code optimizations to minimize code size and used RAM
  *  2025/09/22 (A10001986)
