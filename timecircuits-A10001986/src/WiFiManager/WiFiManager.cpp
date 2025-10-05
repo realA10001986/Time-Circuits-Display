@@ -8,7 +8,7 @@
  * @version 2.0.15+A10001986
  * @license MIT
  *
- * Adapteded by Thomas Winischhofer (A10001986)
+ * Adapted by Thomas Winischhofer (A10001986)
  * Relevant changes until Sep 17, 2025 backported
  */
 
@@ -489,6 +489,7 @@ bool WiFiManager::startAP()
     #endif
 
     // setup optional soft AP static ip config
+    #ifdef WM_AP_STATIC_IP
     if(_ap_static_ip) {
 
         #ifdef WM_DEBUG_LEVEL
@@ -503,6 +504,7 @@ bool WiFiManager::startAP()
 
         }
     }
+    #endif
 
     #ifdef WM_DEBUG_LEVEL
     if(channel > 0) {
@@ -514,8 +516,8 @@ bool WiFiManager::startAP()
     ret = WiFi.softAP(_apName,
             (strlen(_apPassword) > 0) ? _apPassword : NULL,
             (channel > 0) ? channel : 1,
-            _apHidden,
-            6);
+            false,
+            _ap_max_clients);
 
     #ifndef WM_NODEBUG
     if(_debugLevel >= DEBUG_DEV) debugSoftAPConfig();
@@ -619,16 +621,21 @@ void WiFiManager::setupDNSD()
 {
     dnsServer.reset(new DNSServer());
 
-    // The DNS server is a single-domain DNS, only useful
-    // for captive resolving.
-    // Setup the DNS server redirecting all the domains to the apIP
-    dnsServer->setErrorReplyCode(DNSReplyCode::NoError);
+    // The DNS server is a single-domain DNS.
+    // If a hostname is set, we let it resolve it to our IP.
+    // If no hostname is set, we resolve ALL requests to our IP.
+
+    if(!*_hostname) {
+        dnsServer->setErrorReplyCode(DNSReplyCode::NoError);
+    }
 
     #ifdef WM_DEBUG_LEVEL
     DEBUG_WM(DEBUG_DEV,F("dns server started with ip: "), WiFi.softAPIP());
     #endif
 
-    dnsServer->start(DNS_PORT, F("*"), WiFi.softAPIP());
+    dnsServer->start(DNS_PORT,
+              *_hostname ? String(_hostname) : F("*"),
+              WiFi.softAPIP());
 }
 
 void WiFiManager::setupMDNS()
@@ -887,16 +894,10 @@ uint8_t WiFiManager::connectWifi(const char *ssid, const char *pass)
 
         wifiConnectNew(ssid, pass);
 
-        if(_saveTimeout > 0) {
-            // use default save timeout for saves to prevent bugs in
-            // esp->waitforconnectresult loop
-            connRes = waitForConnectResult(_saveTimeout);
-        } else {
-            connRes = waitForConnectResult();
-        }
+        connRes = waitForConnectResult();
 
         #ifdef WM_DEBUG_LEVEL
-        DEBUG_WM(DEBUG_VERBOSE,F("Connection result:"),getWLStatusString(connRes));
+        DEBUG_WM(DEBUG_VERBOSE,F("Connection result:"), getWLStatusString(connRes));
         #endif
 
         retry++;
@@ -1577,13 +1578,6 @@ void WiFiManager::WiFi_scanComplete(int16_t networksFound)
     #ifdef _A10001986_DBG
     Serial.printf("Callback: Async scan finished, %d networks\n", networksFound);
     #endif
-
-    #if 0
-    #ifdef WM_DEBUG_LEVEL
-    DEBUG_WM(DEBUG_VERBOSE,F("WiFi Scan ASYNC completed"), "in "+(String)(_lastscan - _startscan)+" ms");
-    DEBUG_WM(DEBUG_VERBOSE,F("WiFi Scan ASYNC found:"),networksFound);
-    #endif
-    #endif
 }
 
 int16_t WiFiManager::WiFi_waitForScan()
@@ -1626,21 +1620,6 @@ int16_t WiFiManager::WiFi_waitForScan()
     return res;
 }
 
-int16_t WiFiManager::WiFi_scanNetworks()
-{
-    return WiFi_scanNetworks(false, false);
-}
-
-int16_t WiFiManager::WiFi_scanNetworks(unsigned int cachetime, bool async)
-{
-    return WiFi_scanNetworks(millis() - _lastscan > cachetime, async);
-}
-
-int16_t WiFiManager::WiFi_scanNetworks(unsigned int cachetime)
-{
-    return WiFi_scanNetworks(millis() - _lastscan > cachetime, false);
-}
-
 int16_t WiFiManager::WiFi_scanNetworks(bool force, bool async)
 {
     if(!_numNetworks && _autoforcerescan) {
@@ -1660,7 +1639,9 @@ int16_t WiFiManager::WiFi_scanNetworks(bool force, bool async)
         int16_t res;
 
         _numNetworks = 0;
+        #ifdef WM_DEBUG_LEVEL
         _startscan = millis();
+        #endif
 
         if(async && _asyncScan) {
 
@@ -1896,8 +1877,8 @@ String WiFiManager::getIpForm(const char *id, const char *title, IPAddress& valu
 
 String WiFiManager::getStaticOut(unsigned int estPageSize)
 {
-    bool showSta = ((_staShowStaticFields || _sta_static_ip) && _staShowStaticFields >= 0);
-    bool showDns = ((_staShowDns || _sta_static_dns) && _staShowDns >= 0);
+    bool showSta = (_staShowStaticFields || _sta_static_ip);
+    bool showDns = (_staShowDns || _sta_static_dns);
 
     String page;
     if(estPageSize) {
@@ -1925,8 +1906,8 @@ String WiFiManager::getStaticOut(unsigned int estPageSize)
 unsigned int WiFiManager::getStaticLen()
 {
     unsigned int mySize = 0;
-    bool showSta = ((_staShowStaticFields || _sta_static_ip) && _staShowStaticFields >= 0);
-    bool showDns = ((_staShowDns || _sta_static_dns) && _staShowDns >= 0);
+    bool showSta = (_staShowStaticFields || _sta_static_ip);
+    bool showDns = (_staShowDns || _sta_static_dns);
 
     if(showSta || showDns) {
         mySize += STRLEN(HTTP_FORM_SECTION_HEAD);
@@ -2695,10 +2676,6 @@ void WiFiManager::handleNotFound()
 // METHODS
 
 /**
- * reset wifi settings, clean stored ap password
- */
-
-/**
  * [stopConfigPortal description]
  * @return {[type]} [description]
  */
@@ -2729,7 +2706,7 @@ bool WiFiManager::disconnect()
 
 /**
  * reboot the device
- * @access public
+ * @access private
  */
 void WiFiManager::reboot()
 {
@@ -2759,12 +2736,16 @@ void WiFiManager::setConnectTimeout(unsigned long seconds)
  */
 void WiFiManager::setConnectRetries(uint8_t numRetries)
 {
-    _connectRetries = constrain(numRetries,1,10);
+    _connectRetries = constrain(numRetries, 1, 10);
 }
 
-uint8_t WiFiManager::getConnectRetries()
+/**
+ * setHttpPort
+ * @param uint16_t port webserver port number default 80
+ */
+void WiFiManager::setHttpPort(uint16_t port)
 {
-    return _connectRetries;
+    _httpPort = port;
 }
 
 /**
@@ -2777,45 +2758,20 @@ void WiFiManager::setCleanConnect(bool enable)
 }
 
 /**
- * [setConnectTimeout description
- * @access public
- * @param {[type]} unsigned long seconds [description]
- */
-void WiFiManager::setSaveConnectTimeout(unsigned long seconds)
-{
-    _saveTimeout = seconds * 1000;
-}
-
-/**
- * [setDebugOutput description]
- * @access public
- * @param {[type]} bool debug [description]
- */
-void WiFiManager::setDebugOutput(bool debug)
-{
-    _debug = debug;
-
-}
-
-void WiFiManager::setDebugOutput(bool debug, String prefix)
-{
-    _debugPrefix = prefix;
-    setDebugOutput(debug);
-}
-
-/**
  * [setAPStaticIPConfig description]
  * @access public
  * @param {[type]} IPAddress ip [description]
  * @param {[type]} IPAddress gw [description]
  * @param {[type]} IPAddress sn [description]
  */
+#ifdef WM_AP_STATIC_IP
 void WiFiManager::setAPStaticIPConfig(IPAddress ip, IPAddress gw, IPAddress sn)
 {
     _ap_static_ip = ip;
     _ap_static_gw = gw;
     _ap_static_sn = sn;
 }
+#endif
 
 /**
  * [setSTAStaticIPConfig description]
@@ -2879,9 +2835,9 @@ void WiFiManager::setPreConnectCallback(void(*func)())
 }
 
 /**
- * setWebServerCallback, set a callback after webserver is reset, and before routes are setup
- * if we set webserver handlers before wm, they are used and wm is not by esp webserver
- * on events cannot be overrided once set, and are not mutiples
+ * setWebServerCallback, set a callback after webserver is reset, and
+ * before routes are set up
+ * on events cannot be overridden once set, and are not multiples
  * @access public
  * @param {[type]} void (*func)(void)
  */
@@ -2921,7 +2877,8 @@ void WiFiManager::setSaveParamsCallback(void(*func)())
 }
 
 /**
- * setPreSaveParamsCallback, set a pre save params callback on params save prior to anything else
+ * setPreSaveParamsCallback, set a pre save params callback on params
+ * save prior to anything else
  * @access public
  * @param {[type]} void (*func)(void)
  */
@@ -2931,7 +2888,7 @@ void WiFiManager::setPreSaveParamsCallback(void(*func)())
 }
 
 /**
- * setPreOtaUpdateCallback, set a callback to fire before OTA update
+ * setxxxOtaUpdateCallback, set a callback to fire before OTA update
  * or after, respectively.
  * @access public
  * @param {[type]} void (*func)(void)
@@ -3004,7 +2961,7 @@ void WiFiManager::setGPCallback(void(*func)(int))
 
 /**
  * set custom head html
- * custom element will be added to head, eg. new meta,style,script tag etc.
+ * custom element will be added to head
  * @access public
  * @param char element
  */
@@ -3026,7 +2983,7 @@ void WiFiManager::setCustomMenuHTML(const char* html)
 
 /**
  * toggle wifiscan hiding of duplicate ssid names
- * if this is false, wifiscan will remove duplicat Access Points - defaut true
+ * if this is false, wifiscan will remove duplicat Access Points - default true
  * @access public
  * @param bool removeDuplicates [true]
  */
@@ -3037,38 +2994,36 @@ void WiFiManager::setRemoveDuplicateAPs(bool removeDuplicates)
 
 /**
  * toggle showing static ip form fields
- * if enabled, then the static ip, gateway, subnet fields will be visible, even if not set in code
+ * if enabled, then the static ip, gateway, subnet fields will be visible
  * @since $dev
  * @access public
  * @param bool alwaysShow [false]
  */
-void WiFiManager::setShowStaticFields(bool alwaysShow)
+void WiFiManager::setShowStaticFields(bool doShow)
 {
-    if(_disableIpFields) _staShowStaticFields = alwaysShow ? 1 : -1;
-    else _staShowStaticFields = alwaysShow ? 1 : 0;
+    _staShowStaticFields = doShow;
 }
 
 /**
  * toggle showing dns fields
- * if enabled, then the dns1 field will be visible, even if not set in code
+ * if enabled, then the dns field will be visible, even if not set in code
  * @since $dev
  * @access public
  * @param bool alwaysShow [false]
  */
-void WiFiManager::setShowDnsFields(bool alwaysShow)
+void WiFiManager::setShowDnsFields(bool doShow)
 {
-    if(_disableIpFields) _staShowDns = alwaysShow ? 1 : -1;
-    else _staShowDns = alwaysShow ? 1 : 0;
+    _staShowDns = doShow;
 }
 
 /**
  * set the hostname (dhcp client id)
  * @since $dev
  * @access public
- * @param  char* hostname 32 character hostname to use for sta+ap in esp32
+ * @param  char* hostname 32 character hostname to use for sta+ap
  * @return bool false if hostname is not valid
  */
-bool  WiFiManager::setHostname(const char * hostname)
+bool WiFiManager::setHostname(const char * hostname)
 {
     memset(_hostname, 0, sizeof(_hostname));
     strncpy(_hostname, hostname, sizeof(_hostname) - 1);
@@ -3085,35 +3040,14 @@ void WiFiManager::setWiFiAPChannel(int32_t channel)
 }
 
 /**
- * set the soft ap hidden
- * @param bool   wifi ap hidden, default is false
+ * set the soft ap max client number
+ * @param int
  */
-void WiFiManager::setWiFiAPHidden(bool hidden)
+void WiFiManager::setWiFiAPMaxClients(int newmax)
 {
-    _apHidden = hidden;
-}
-
-/**
- * check if the config portal is running
- * @return bool true if active
- */
-bool WiFiManager::getConfigPortalActive()
-{
-    return configPortalActive;
-}
-
-/**
- * [getConfigPortalActive description]
- * @return bool true if active
- */
-bool WiFiManager::getWebPortalActive()
-{
-    return webPortalActive;
-}
-
-String WiFiManager::getWiFiHostname()
-{
-    return (String)WiFi.getHostname();
+    if(newmax > 10) newmax = 10;
+    else if(newmax < 1) newmax = 1;
+    _ap_max_clients = newmax;
 }
 
 /**
@@ -3136,7 +3070,6 @@ void WiFiManager::showUploadContainer(bool enable, const char *contName)
 
 /**
  * set menu items and order
- * if param is present in menu , params will be removed from wifi page automatically
  * eg.
  *  const int8_t menu[size] = {WM_MENU_WIFI, WM_MENU_PARAM};
  *  WiFiManager.setMenu(menu , size);
@@ -3167,7 +3100,64 @@ void WiFiManager::setCarMode(bool enable)
     _carMode = enable;
 }
 
+/**
+ * [setDebugOutput description]
+ * @access public
+ * @param {[type]} bool debug [description]
+ */
+void WiFiManager::setDebugOutput(bool debug)
+{
+    _debug = debug;
+
+}
+
+void WiFiManager::setDebugOutput(bool debug, String prefix)
+{
+    _debugPrefix = prefix;
+    setDebugOutput(debug);
+}
+
+/**
+ * setCountry
+ * @since $dev
+ * @param String cc country code, must be defined in WiFiSetCountry, US, JP, CN
+ */
+#ifndef _A10001986_NO_COUNTRY
+void WiFiManager::setCountry(String cc)
+{
+    _wificountry = cc;
+}
+#endif
+
 // GETTERS
+
+/**
+ * check if the config portal is running
+ * @return bool true if active
+ */
+bool WiFiManager::getConfigPortalActive()
+{
+    return configPortalActive;
+}
+
+/**
+ * [getConfigPortalActive description]
+ * @return bool true if active
+ */
+bool WiFiManager::getWebPortalActive()
+{
+    return webPortalActive;
+}
+
+String WiFiManager::getWiFiHostname()
+{
+    return (String)WiFi.getHostname();
+}
+
+uint8_t WiFiManager::getConnectRetries()
+{
+    return _connectRetries;
+}
 
 /**
  * return the last known connection result
@@ -3194,51 +3184,6 @@ void WiFiManager::getDefaultAPName(char *apName)
         *apName = toupper((unsigned char) *apName);
         apName++;
     }
-}
-
-/**
- * setCountry
- * @since $dev
- * @param String cc country code, must be defined in WiFiSetCountry, US, JP, CN
- */
-#ifndef _A10001986_NO_COUNTRY
-void WiFiManager::setCountry(String cc)
-{
-    _wificountry = cc;
-}
-#endif
-
-/**
- * setHttpPort
- * @param uint16_t port webserver port number default 80
- */
-void WiFiManager::setHttpPort(uint16_t port)
-{
-    _httpPort = port;
-}
-
-// HELPERS
-
-/**
- * getWiFiSSID
- * @since $dev
- * @param
- * @return String
- */
-String WiFiManager::getWiFiSSID()
-{
-    return String(_ssid);
-}
-
-/**
- * getWiFiPass
- * @since $dev
- * @param
- * @return String
- */
-String WiFiManager::getWiFiPass()
-{
-    return _pass;
 }
 
 const char * WiFiManager::getHTTPSTART(int& titleStart)
@@ -3271,6 +3216,8 @@ int WiFiManager::getRSSIasQuality(int RSSI)
     }
     return 2 * (RSSI + 100);
 }
+
+// HELPERS
 
 /** IP to String? */
 String WiFiManager::toStringIp(IPAddress ip)
