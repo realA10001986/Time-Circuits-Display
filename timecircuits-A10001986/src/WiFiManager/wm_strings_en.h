@@ -1,6 +1,8 @@
 /**
  * wm_strings_en.h
  *
+ * Based on:
+ *
  * WiFiManager, a library for the ESP32/Arduino platform
  *
  * @author Creator tzapu
@@ -28,10 +30,7 @@ const char HTTP_SCRIPT[]           PROGMEM = "<script>"
     "function getn(x){return document.getElementsByTagName(x)}"
     "function ge(x){return document.getElementById(x)}"
     "function gecl(x){return document.getElementsByClassName(x)}"
-    "function c(l){ge('s').value=l.getAttribute('data-ssid')||l.innerText||l.textContent;"
-    "p=l.nextElementSibling.classList.contains('l');"
-    "ge('p').disabled=!p;if(p){ge('p').placeholder='';ge('p').focus();}};"
-    "function f(){var x=ge('p');x.type==='password'?x.type='text':x.type='password';}"
+    "function f(){x=ge('p');x.type==='password'?x.type='text':x.type='password';}"
     "</script>";
 
 const char HTTP_HEAD_END[]         PROGMEM = "</head><body><div class='wrap'>";
@@ -54,9 +53,9 @@ const char HTTP_FORM_PARAM_HEAD[]  PROGMEM = "<hr>";
 const char HTTP_FORM_PARAM[]       PROGMEM = "<input id='{i}' name='{n}' maxlength='{l}' value='{v}' {c}>\n"; // do not remove newline!
 const char HTTP_FORM_END[]         PROGMEM = "<button type='submit'>Save</button></form>";
 
-const char HTTP_FORM_WIFI[]        PROGMEM = "<div class='sects'><div class='headl'>WiFi connection: Network selection</div><label for='s'>Network name (SSID)</label><input id='s' name='s' maxlength='32' autocorrect='off' autocapitalize='none' placeholder='{V}' oninput='if(this.placeholder.length>0&&this.value.length==0){ge(\"p\").placeholder=\"********\";}'><br/><label for='p'>Password</label><input id='p' name='p' maxlength='64' type='password' placeholder='{p}'><input type='checkbox' onclick='f()'> Show password when typing";
+const char HTTP_FORM_WIFI[]        PROGMEM = "<div class='sects'><div class='headl'>WiFi connection: Network selection</div><label for='s'>Network name (SSID)</label><input id='s' name='s' maxlength='32' autocorrect='off' autocapitalize='none' placeholder='{V}' oninput='h=ge(\"p\");h.disabled=false;if(!this.value.length&&this.placeholder.length){h.placeholder=h.getAttribute(\"data-ph\")||\"********\";}else{h.placeholder=\"\"}'><br/><label for='p'>Password</label><input id='p' name='p' maxlength='64' type='password' placeholder='{p}' data-ph='{p}'><input type='checkbox' onclick='f()'> Show password when typing";
 const char HTTP_FORM_WIFI_END[]    PROGMEM = "</div>";
-const char HTTP_WIFI_ITEM[]        PROGMEM = "<div><a href='#p' onclick='c(this);return false;' data-ssid='{V}'>{v}</a><div role='img' aria-label='{r}%' title='{r}%' class='q q-{q} {i}'></div></div>";
+const char HTTP_WIFI_ITEM[]        PROGMEM = "<div><a href='#p' onclick='return c(this)' data-ssid='{V}'>{v}</a><div role='img' aria-label='{r}%' title='{r}%' class='q q-{q} {i}'></div></div>";
 const char HTTP_FORM_SECTION_HEAD[] PROGMEM = "<div class='sects'><div class='headl'>WiFi connection: Static IP settings</div>";
 const char HTTP_FORM_SECTION_FOOT[] PROGMEM = "</div>";
 const char HTTP_FORM_WIFI_PH[]     PROGMEM = "placeholder='Leave this section empty to use DHCP'";
@@ -78,6 +77,7 @@ const char HTTP_UPLOADSND2[]       PROGMEM = ".bin)<br>and/or .mp3 file(s)<br><f
 const char HTTP_UPDATE_FAIL1[]     PROGMEM = "<div class='msg D'><strong>Update failed.</strong><br/>";
 const char HTTP_UPDATE_FAIL2[]     PROGMEM = "</div>";
 const char HTTP_UPDATE_SUCCESS[]   PROGMEM = "<div class='msg S'><strong>Update successful.</strong><br/>Device rebooting.</div>";
+const char HTTP_UPLOAD_SDMSG[]     PROGMEM = "<div class='msg' style='text-align:left'>In order to upload the sound-pack,<br/>please insert an SD card.</div>";
 
 const char HTTP_ERASED[]           PROGMEM = "<div class='msg S'>The WiFi network has been forgotten.<br />Restarting in AP mode.<br/></div>";
 
@@ -119,7 +119,7 @@ const char HTTP_STYLE[]            PROGMEM = "<style>"
     ":disabled {opacity:0.5;}"
     "</style>";
 
-// quality icons
+// quality icons plus some specific JS
 const char HTTP_STYLE_QI[]         PROGMEM = "<style>"
     ".q{height:16px;margin:0;padding:0 5px;text-align:right;min-width:38px;float:right}"
     ".q.q-0:after{background-position-x:0}.q.q-1:after{background-position-x:-16px}"
@@ -134,29 +134,33 @@ const char HTTP_STYLE_QI[]         PROGMEM = "<style>"
     "@media (-webkit-min-device-pixel-ratio:2),(min-resolution:192dpi){.q:before,.q:after{"
     "background-image:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALwAAAAgCAMAAACfM+KhAAAALVBMVEX///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAOrOgAAAADnRSTlMAESIzRGZ3iJmqu8zd7gKjCLQAAACmSURBVHgB7dDBCoMwEEXRmKlVY3L//3NLhyzqIqSUggy8uxnhCR5Mo8xLt+14aZ7wwgsvvPA/ofv9+44334UXXngvb6XsFhO/VoC2RsSv9J7x8BnYLW+AjT56ud/uePMdb7IP8Bsc/e7h8Cfk912ghsNXWPpDC4hvN+D1560A1QPORyh84VKLjjdvfPFm++i9EWq0348XXnjhhT+4dIbCW+WjZim9AKk4UZMnnCEuAAAAAElFTkSuQmCC');"
     "background-size: 95px 16px;}}"
-    "</style>";
+    "</style>"
+    "<script>function c(l){ge('s').value=l.getAttribute('data-ssid')||l.innerText||l.textContent;"
+    "p=l.nextElementSibling.classList.contains('l');pp=ge('p');"
+    "pp.disabled=!p;pp.placeholder='';if(p){pp.focus()}return false;}"
+    "</script>";
 
 const char A_paramsave[]          PROGMEM = "paramsave";
 const char A_wifisave[]           PROGMEM = "wifisave";
 
-const char S_brand[]              PROGMEM = "WiFiManager";
-const char S_debugPrefix[]        PROGMEM = "*wm:";
-const char S_GET[]                PROGMEM = "GET";
-const char S_POST[]               PROGMEM = "POST";
-const char S_NA[]                 PROGMEM = "Unknown";
-const char S_passph[]             PROGMEM = "********";
-const char S_titlewifisaved[]     PROGMEM = "Credentials and settings saved";
-const char S_titlewifisettings[]  PROGMEM = "Settings saved";
-const char S_titlewifi[]          PROGMEM = "WiFi Config";
+const char S_titlewifi[]          PROGMEM = "WiFi Configuration";
 const char S_titleparam[]         PROGMEM = "Settings";
-const char S_titleparamsaved[]    PROGMEM = "Settings saved";
-const char S_titleerase[]         PROGMEM = "Erase";
 const char S_titleupd[]           PROGMEM = "Upload";
+
+const char S_passph[]             PROGMEM = "********";
 const char S_staticip[]           PROGMEM = "Static IP";
 const char S_staticgw[]           PROGMEM = "Static gateway";
 const char S_staticdns[]          PROGMEM = "Static DNS";
 const char S_subnet[]             PROGMEM = "Subnet mask";
+
+const char S_brand[]              PROGMEM = "WiFiManager";
+
+const char S_GET[]                PROGMEM = "GET";
+const char S_POST[]               PROGMEM = "POST";
+const char S_NA[]                 PROGMEM = "Unknown";
+
 const char S_notfound[]           PROGMEM = "404 File not found\n\n";
+const char S_debugPrefix[]        PROGMEM = "*wm:";
 
 // debug strings
 #ifdef WM_DEBUG_LEVEL

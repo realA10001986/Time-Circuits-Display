@@ -1,6 +1,8 @@
 /**
  * wm_consts.h
  *
+ * Based on:
+ *
  * WiFiManager, a library for the ESP32/Arduino platform
  *
  * @author Creator tzapu

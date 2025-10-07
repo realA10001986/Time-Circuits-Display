@@ -1,6 +1,8 @@
 /**
  * WiFiManager.h
  *
+ * Based on:
+ *
  * WiFiManager, a library for the ESP32/Arduino platform
  *
  * @author Creator tzapu
@@ -15,12 +17,15 @@
 #ifndef WiFiManager_h
 #define WiFiManager_h
 
-#define WM_NODEBUG
-//#define WM_AP_STATIC_IP
+//#define WM_DODEBUG
 //#define _A10001986_DBG
+
 #define _A10001986_NO_COUNTRY
 
-// #define WM_MDNS            // includes MDNS
+// #define WM_AP_STATIC_IP
+// #define WM_APCALLBACK
+// #define WM_PRECONNECTCB
+// #define WM_MDNS
 
 #define WM_G(string_literal)  (String(FPSTR(string_literal)).c_str())
 
@@ -107,8 +112,8 @@
 #define WM_DEBUG_LEVEL DEBUG_NOTIFY
 #endif
 
-    // override debug level OFF
-#ifdef WM_NODEBUG
+// override debug level OFF
+#ifndef WM_DODEBUG
 #undef WM_DEBUG_LEVEL
 #endif
 
@@ -118,7 +123,6 @@ class WiFiManagerParameter {
         Create custom parameters that can be added to the WiFiManager setup web page
         @id is used for HTTP queries and must not contain spaces nor other special characters
     */
-    WiFiManagerParameter();
     WiFiManagerParameter(const char *custom);
     WiFiManagerParameter(const char *(*CustomHTMLGenerator)(const char *));
     WiFiManagerParameter(const char *id, const char *label);
@@ -212,10 +216,14 @@ class WiFiManager
     // SET CALLBACKS
 
     // called after AP mode and config portal has started
+    #ifdef WM_APCALLBACK
     void          setAPCallback(void(*func)(WiFiManager*));
+    #endif
 
     // called after wifi hw init, but before connection attempts
+    #ifdef WM_PRECONNECTCB
     void          setPreConnectCallback(void(*func)());
+    #endif
 
     // called after webserver has started
     void          setWebServerCallback(void(*func)());
@@ -307,7 +315,7 @@ class WiFiManager
     void          setTitle(const char *title);
 
     // show audio upload on Update page
-    void          showUploadContainer(bool enable, const char *contName);
+    void          showUploadContainer(bool enable, const char *contName, bool showMsg = false);
 
     // Custom
     void          setCarMode(bool enable);
@@ -357,7 +365,7 @@ class WiFiManager
     void          setDebugOutput(bool debug);
     void          setDebugOutput(bool debug, String prefix); // log line prefix, default "*wm:"
     // debug output the softap config
-    #ifndef WM_NODEBUG
+    #ifdef WM_DODEBUG
     void          debugSoftAPConfig();
     #endif
 
@@ -431,6 +439,7 @@ class WiFiManager
     char          _title[64]              = "WiFiManager"; // app title
 
     bool          _showUploadSnd          = false;  // Show upload audio on Update page
+    bool          _showContMsg            = false;
     char          _sndContName[8]         = "";     // File name of BIN file to upload
 
     // internal options
@@ -564,8 +573,12 @@ class WiFiManager
     int           _max_wifi_params;
     WiFiManagerParameter** _wifiparams = NULL;
 
+    bool         _uplError             = false;
+
     // callbacks
+    #ifdef WM_APCALLBACK
     void (*_apcallback)(WiFiManager*);
+    #endif
     void (*_webservercallback)(void);
     void (*_savewificallback)(const char *, const char *);
     void (*_presavewificallback)(void);
@@ -579,8 +592,11 @@ class WiFiManager
 	  void (*_delayreplacement)(unsigned int);
 	  void (*_gpcallback)(int);
 	  bool (*_prewifiscancallback)(void);
+	  #ifdef WM_PRECONNECTCB
 	  void (*_preconnectcallback)(void);
+	  #endif
 
+    #if 0
     template <class T>
     auto optionalIPFromString(T *obj, const char *s) -> decltype(  obj->fromString(s)  ) {
         return  obj->fromString(s);
@@ -588,6 +604,7 @@ class WiFiManager
     auto optionalIPFromString(...) -> bool {
         return false;
     }
+    #endif
 
     // debugging
     typedef enum {
