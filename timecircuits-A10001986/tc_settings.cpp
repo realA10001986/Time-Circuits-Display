@@ -70,6 +70,8 @@
 #include <LittleFS.h>
 #endif
 
+#include <Update.h>
+
 #include "tc_settings.h"
 #include "tc_menus.h"
 #include "tc_audio.h"
@@ -128,6 +130,8 @@ static const char *loCfgName  = "/loconfig.json";   // LineOut (flash/SD)
 #ifdef TC_HAVE_REMOTE
 static const char *raCfgName  = "/raconfig.json";   // RemoteAllowed (flash/SD)
 #endif
+static const char fwfn[]      = "/tcdfw.bin";
+static const char fwfnold[]   = "/tcdfw.old";
 
 static const char *fsNoAvail = "File System not available";
 static const char *failFileWrite = "Failed to open file for writing";
@@ -196,6 +200,8 @@ static bool writeJSONCfgFile(const JsonDocument& json, const char *fn, bool useS
 extern void start_file_copy();
 extern void file_copy_progress();
 extern void file_copy_done(int err);
+
+static void firmware_update();
 
 /*
  * settings_setup()
@@ -346,6 +352,9 @@ void settings_setup()
     }
 
     if(haveSD) {
+
+        firmware_update();
+
         if(SD.exists("/TCD_FLASH_RO") || !haveFS) {
             bool writedefault2 = false;
             FlashROMode = true;
@@ -2188,3 +2197,70 @@ void renameUploadFile(int idx)
         free(t);
     }
 }
+
+// Emergency firmware update from SD card
+static void fw_error_blink(int n)
+{
+    bool leds = false;
+
+    for(int i = 0; i < n; i++) {
+        leds = !leds;
+        digitalWrite(WHITE_LED_PIN, leds ? HIGH : LOW);
+        digitalWrite(LEDS_PIN, leds ? LOW : HIGH);
+        delay(500);
+    }
+    digitalWrite(WHITE_LED_PIN, LOW);
+    digitalWrite(LEDS_PIN, LOW);
+}
+
+static void firmware_update()
+{
+    const char *upderr = "Firmware update error %d\n";
+    uint8_t  buf[1024];
+    unsigned int lastMillis = millis();
+    bool     leds = false;
+    size_t   s;
+
+    if(!SD.exists(fwfn))
+        return;
+    
+    File myFile = SD.open(fwfn, FILE_READ);
+    
+    if(!myFile)
+        return;
+
+    pinMode(LEDS_PIN, OUTPUT);
+    pinMode(WHITE_LED_PIN, OUTPUT);
+    
+    if(!Update.begin(UPDATE_SIZE_UNKNOWN)) {
+        Serial.printf(upderr, Update.getError());
+        fw_error_blink(5);
+        return;
+    }
+
+    while((s = myFile.read(buf, 1024))) {
+        if(Update.write(buf, s) != s) {
+            break;
+        }
+        if(millis() - lastMillis > 1000) {
+            leds = !leds;
+            digitalWrite(LEDS_PIN, leds ? HIGH : LOW);
+            digitalWrite(WHITE_LED_PIN, leds ? HIGH : LOW);
+            lastMillis = millis();
+        }
+    }
+    
+    if(Update.hasError() || !Update.end(true)) {
+        Serial.printf(upderr, Update.getError());
+        fw_error_blink(5);
+    } 
+    myFile.close();
+    // Rename/remove in any case, we don't
+    // want an update loop hammer our flash
+    SD.remove(fwfnold);
+    SD.rename(fwfn, fwfnold);
+    unmount_fs();
+    delay(1000);
+    fw_error_blink(0);
+    esp_restart();
+}    

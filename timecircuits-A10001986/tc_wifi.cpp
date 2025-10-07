@@ -54,11 +54,12 @@
 
 #include <Arduino.h>
 
-#ifdef TC_MDNS
+#include "src/WiFiManager/WiFiManager.h"
+
+#ifndef WM_MDNS
+#define TC_MDNS
 #include <ESPmDNS.h>
 #endif
-
-#include "src/WiFiManager/WiFiManager.h"
 
 #include "clockdisplay.h"
 #include "tc_menus.h"
@@ -170,7 +171,7 @@ static const char *spdRateCustHTMLSrc[6] =
     ">5Hz%s"
 };
 #endif
-#endif
+#endif  //TC_HAVESPEEDO
 
 static const char *apChannelCustHTMLSrc[16] = {
     "<div class='cmp0'><label for='apchnl'>WiFi channel</label><select class='sel0' value='",
@@ -200,6 +201,7 @@ static const char *wmBuildUpdateRate(const char *dest);
 #endif
 #endif
 static const char *wmBuildApChnl(const char *dest);
+static const char *wmBuildHaveSD(const char *dest);
 
 static const char *osde = "</option></select></div>";
 static const char *ooe  = "</option><option value='";
@@ -207,6 +209,8 @@ static const char custHTMLSel[] = " selected";
 
 static const char *aco = "autocomplete='off'";
 static const char *tznp1 = "City/location name [a-z/0-9/-/ ]";
+
+static const char haveNoSD[] = "<div class='c' style='background-color:#dc3630;color:#fff;font-size:80%;border-radius:5px'><i>No SD card present</i></div>";
 
 // WiFi Configuration
 
@@ -224,7 +228,7 @@ WiFiManagerParameter custom_wifiOffDelay("wifioff", "Power save timer<br><span s
 WiFiManagerParameter custom_sysID("sysID", "Network name (SSID) appendix<br><span style='font-size:80%'>Will be appended to \"TCD-AP\" [a-z/0-9/-]</span>", settings.systemID, 7, "pattern='[A-Za-z0-9\\-]+'");
 WiFiManagerParameter custom_appw("appw", "Password<br><span style='font-size:80%'>Password to protect TCD-AP. Empty or 8 characters [a-z/0-9/-]<br><b>Write this down, you might lock yourself out!</b></span>", settings.appw, 8, "minlength='8' pattern='[A-Za-z0-9\\-]+'");
 WiFiManagerParameter custom_apch(wmBuildApChnl);
-WiFiManagerParameter custom_wifiAPOffDelay("wifiAPoff", "WiFi power save timer<br><span style='font-size:80%'>(10-99[minutes]; 0=off)</span>", settings.wifiAPOffDelay, 2, "type='number' min='0' max='99' title='WiFi-AP will be shut down after chosen number of minutes after power-on. 0 means never.'");
+WiFiManagerParameter custom_wifiAPOffDelay("wifiAPoff", "Power save timer<br><span style='font-size:80%'>(10-99[minutes]; 0=off)</span>", settings.wifiAPOffDelay, 2, "type='number' min='0' max='99' title='WiFi-AP will be shut down after chosen number of minutes after power-on. 0 means never.'");
 
 // Settings
 
@@ -315,6 +319,7 @@ WiFiManagerParameter custom_useETTO("uEtto", "Control props connected by wire", 
 WiFiManagerParameter custom_noETTOL("uEtNL", "Signal Time Travel without 5s lead", settings.noETTOLead, 1, "autocomplete='off' type='checkbox' class='mt5' style='margin-left:20px'", WFM_LABEL_AFTER);
 #endif // EXTERNAL_TIMETRAVEL_OUT
 
+WiFiManagerParameter custom_haveSD(wmBuildHaveSD);
 WiFiManagerParameter custom_CfgOnSD("CfgOnSD", "Save secondary settings on SD <span style='font-size:80%'>(Avoids flash wear)</span>", settings.CfgOnSD, 1, "autocomplete='off' type='checkbox' class='mt5'", WFM_LABEL_AFTER);
 #ifdef PERSISTENT_SD_ONLY
 WiFiManagerParameter custom_ttrp("ttrp", "Make time travels persistent <span style='font-size:80%'>(Requires SD card)</span>", settings.timesPers, 1, "type='checkbox' class='mt5' style='margin-left:20px'", WFM_LABEL_AFTER);
@@ -613,6 +618,7 @@ void wifi_setup()
     #endif
 
       &custom_sectstart,
+      &custom_haveSD,
       &custom_CfgOnSD,
       #ifdef PERSISTENT_SD_ONLY
       &custom_ttrp,
@@ -635,7 +641,7 @@ void wifi_setup()
     if(!settings.ssid[0] && settings.ssid[1] == 'X') {
         
         // Read NVS-stored WiFi data
-        wm.getStoredCredentials(settings.ssid, sizeof(settings.ssid) - 1, settings.pass, sizeof(settings.pass) - 1);
+        wm.getStoredCredentials(settings.ssid, sizeof(settings.ssid), settings.pass, sizeof(settings.pass));
 
         #ifdef TC_DBG
         Serial.printf("WiFi Transition: ssid '%s' pass '%s'\n", settings.ssid, settings.pass);
@@ -646,7 +652,7 @@ void wifi_setup()
 
     wm.setHostname(settings.hostName);
 
-    wm.showUploadContainer(true, AA_CONTAINER);
+    wm.showUploadContainer(haveSD, AA_CONTAINER, true);
 
     wm.setPreSaveWiFiCallback(preSaveWiFiCallback);
     wm.setSaveWiFiCallback(saveWiFiCallback);
@@ -1168,10 +1174,7 @@ static void wifiConnect(bool deferConfigPortal)
         Serial.println("WiFi connected");
         #endif
 
-        // Since WM 2.0.13beta, starting the CP invokes an async
-        // WiFi scan. This interferes with network access for a 
-        // few seconds after connecting. So, during boot, we start
-        // the CP later, to allow a quick NTP update.
+        // During boot, we start the CP later, to allow a quick NTP update.
         if(!deferConfigPortal) {
             wm.startWebPortal();
         }
@@ -2062,6 +2065,14 @@ static const char *wmBuildApChnl(const char *dest)
     buildSelectMenu(str, apChannelCustHTMLSrc, 16, settings.apChnl);
     
     return str;
+}
+
+static const char *wmBuildHaveSD(const char *dest)
+{
+    if(dest || haveSD)
+        return NULL;
+
+    return haveNoSD;
 }
 
 /*

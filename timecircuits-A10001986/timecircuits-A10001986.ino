@@ -124,31 +124,38 @@
  *   is created in the source directory, which can then be uploaded through the Config
  *   Portal.
  *   
- * - Install the audio data: 
+ * - Install the sound-pack: 
  *   Method 1:
- *   - Go to Config Portal, click "Update" and upload the audio data (TCDA.bin, extracted
+ *   - Go to Config Portal, click "Update" and upload the sound-pack (TCDA.bin, extracted
  *     from install/sound-pack-xxxxxxxx.zip) through the bottom file selector.
  *     A FAT32 (not ExFAT!) formatted SD card must be present in the slot during this 
  *     operation.
  *   Method 2:
  *   - Copy TCDA.bin to the top folder of a FAT32 (not ExFAT!) formatted SD card (max 
  *     32GB) and put this card into the slot while the TCD is powered down. 
- *   - Now power-up. The audio data will now be installed. When finished, the TCD will 
+ *   - Now power-up. The sound-pack will now be installed. When finished, the TCD will 
  *     reboot.
  */
 
 /*  Changelog
  *
- *  2025/10/04 (A10001986) [3.4.3]
+ *  2025/10/07 (A10001986) [3.5]
+ *    - Add emergency firmware update via SD (for dev purposes)
+ *    - WM fixes (Upload, etc)
+ *  2025/10/06 (A10001986)
+ *    - WM: Skip setting static IP params in Save
+ *    - Add "No SD present" banner in Config Portal if no SD present
+ *  2025/10/05 (A10001986)
+ *    - CP: Show msg instead of upload file input if no sd card is present
+ *  2025/10/05 (A10001986) [3.4.3]
  *    - Let DNS server in AP mode only resolve our domain (hostname)
  *  2025/10/04 (A10001986) [3.4.2]
  *    - Allow 6 clients in AP mode instead of 4. So all props can connect
  *      to the TCD in AP mode, plus one admin computer/hand held.
  *      HOWEVER: Under normal use, do NOT connect a computer or phone to
  *      the TCD in AP mode unless for configuration changes. That computer 
- *      might think it is connected to the internet, send DNS queries, which 
- *      the TCD AP will all answer with its own IP, resulting in lots of 
- *      page loads from the TCD, leading to packet loss, slowdowns or 
+ *      might think it is connected to the internet, resulting in lots of 
+ *      network traffic, leading to packet loss, slowdowns or 
  *      out-of-sync animations.
  *  2025/10/03-04 (A10001986) [3.4.1]
  *    - More WiFiManager changes. We no longer use NVS-stored WiFi configs, 

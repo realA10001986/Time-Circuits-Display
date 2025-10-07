@@ -218,14 +218,10 @@ bool tcGPS::begin(unsigned long powerupTime, int quickUpdates, int speedRate, vo
     } else
         return false;
 
-    _buffer = (char *)malloc(GPS_MAX_I2C_LEN);
+    _buffer = (char *)malloc(GPS_MAX_I2C_LEN + GPS_MAXLINELEN);
     if(!_buffer) return false;
 
-    _line1 = (char *)malloc(GPS_MAXLINELEN);
-    if(!_line1) {
-        free((void *)_buffer);
-        return false;
-    }
+    _line1 = _buffer + GPS_MAX_I2C_LEN;
 
     _currentline = _line1;
     _lenIdx = 0;

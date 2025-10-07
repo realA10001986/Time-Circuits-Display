@@ -25,27 +25,15 @@
 
 // These must not contain any characters other than
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
-#define TC_VERSION_REV   "V3.4.3"       // 13 chars max
+#define TC_VERSION_REV   "V3.5.0"     // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "OCT052025"  // 13 chars max
+#define TC_VERSION_EXTRA "OCT072025"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "10052025"   // 12 chars max
+#define TC_VERSION_EXTRA "10072025"   // 12 chars max
 #endif
 #define TC_VERSION TC_VERSION_REV
 
 //#define TC_DBG              // debug output on Serial
-
-/*************************************************************************
- ***                     mDNS (Bonjour) support                        ***
- *************************************************************************/
-
-// Supply mDNS service
-// Allows accessing the Config Portal via http://hostname.local
-// <hostname> is configurable in the Config Portal
-// This needs to be commented if WiFiManager provides mDNS
-#define TC_MDNS
-// Uncomment this if WiFiManager has mDNS enabled
-//#define TC_WM_HAS_MDNS 
 
 /*************************************************************************
  ***                 Configuration for peripherals                     ***
