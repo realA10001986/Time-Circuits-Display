@@ -20,11 +20,10 @@
 //#define WM_DODEBUG
 //#define _A10001986_DBG
 
-#define _A10001986_NO_COUNTRY
-
 // #define WM_AP_STATIC_IP
 // #define WM_APCALLBACK
 // #define WM_PRECONNECTCB
+// #define WM_EVENTCB
 // #define WM_MDNS
 
 #define WM_G(string_literal)  (String(FPSTR(string_literal)).c_str())
@@ -100,7 +99,7 @@
     //#define WM_ARDUINOVERCHECK_204 ESP_ARDUINO_VERSION <= ESP_ARDUINO_VERSION_VAL(2, 0, 5)
     //#ifdef WM_ARDUINOVERCHECK_204
     // The way to do it would be:
-    //#if ESP_ARDUINO_VERSION > ESP_ARDUINO_VERSION_VAL(2,0,4)
+    //#if ESP_ARDUINO_VERSION <= ESP_ARDUINO_VERSION_VAL(2,0,5)
         #define WM_DISCONWORKAROUND
     //#endif
 #else
@@ -225,6 +224,10 @@ class WiFiManager
     void          setPreConnectCallback(void(*func)());
     #endif
 
+    #ifdef WM_EVENTCB
+    void          setWiFiEventCallback(void(*func)(WiFiEvent_t event));
+    #endif
+
     // called after webserver has started
     void          setWebServerCallback(void(*func)());
 
@@ -272,9 +275,6 @@ class WiFiManager
     // set min quality percentage to include in scan, defaults to 8% if not specified
     void          setMinimumSignalQuality(int quality = 8);
 
-    // if this is true, remove duplicated Access Points - defaut true
-    void          setRemoveDuplicateAPs(bool removeDuplicates);
-
     // sets a custom ip /gateway /subnet configuration
     #ifdef WM_AP_STATIC_IP
     void          setAPStaticIPConfig(IPAddress ip, IPAddress gw, IPAddress sn);
@@ -297,11 +297,6 @@ class WiFiManager
 
     // clean connect, always disconnect before connecting
     void          setCleanConnect(bool enable); // default false
-
-    // set the country code for wifi settings, CN
-    #ifndef _A10001986_NO_COUNTRY
-    void          setCountry(String cc);
-    #endif
 
     // set port of webserver, 80
     void          setHttpPort(uint16_t port);
@@ -361,6 +356,8 @@ class WiFiManager
     // get hostname helper
     String        getWiFiHostname();
 
+    bool          getBestAPChannel(int32_t& channel, int& quality);
+
     // toggle debug output
     void          setDebugOutput(bool debug);
     void          setDebugOutput(bool debug, String prefix); // log line prefix, default "*wm:"
@@ -402,6 +399,8 @@ class WiFiManager
     #ifdef WM_DEBUG_LEVEL
     unsigned long _startscan              = 0; // ms for timing wifi scans
     #endif
+    unsigned long _bestChCacheTime        = 0;
+    uint16_t      _bestChCache            = 0;
 
     // SSIDs and passwords
     const uint8_t DNS_PORT                = 53;
@@ -414,8 +413,10 @@ class WiFiManager
     unsigned long _connectTimeout         = 0; // ms stop trying to connect to ap if set
 
     bool          _cleanConnect           = false; // disconnect before connect in connectwifi, increases stability on connects
+    #if 0
     bool          _disableSTA             = false; // disable sta when starting ap, always
     bool          _disableSTAConn         = true;  // disable sta when starting ap, if sta is not connected ( stability )
+    #endif
     int32_t       _apChannel              = 0;     // default channel to use for ap, 0 for auto
     int           _ap_max_clients         = 4;     // softap max clients
     uint16_t      _httpPort               = 80;    // port for webserver
@@ -425,12 +426,12 @@ class WiFiManager
                                                    // https://github.com/tzapu/WiFiManager/issues/1067
 
     wifi_event_id_t wm_event_id           = 0;
-    static uint8_t  _lastconxresulttmp;            // tmp var for esp32 callback
+    static uint8_t  _lastconxresulttmp;            // for wifi event callback
+    static bool     _gotip;                        // for wifi event callback
 
     int           _minimumQuality         = -1;    // filter wifiscan ap by this rssi
     bool          _staShowStaticFields    = false;
     bool          _staShowDns             = false;
-    bool          _removeDuplicateAPs     = true;  // remove dup aps from wifiscan
     bool          _showBack               = false; // show back button
     char          _hostname[34]           = "";    // hostname for dhcp, and/or MDNS
 
@@ -449,10 +450,6 @@ class WiFiManager
     bool          _autoforcerescan        = false; // automatically force rescan if scan networks is 0, ignoring cache
 
     bool          _carMode                = false; // Custom
-
-    #ifndef _A10001986_NO_COUNTRY
-    String        _wificountry            = "";  // country code, @todo define in strings lang
-    #endif
 
     bool          _hasBegun               = false; // flag wm loaded,unloaded
     void          _begin();
@@ -474,8 +471,8 @@ class WiFiManager
     bool          setStaticConfig();
     bool          wifiConnectNew(const char *ssid, const char *pass);
 
-    uint8_t       waitForConnectResult();
-    uint8_t       waitForConnectResult(uint32_t timeout);
+    uint8_t       waitForConnectResult(bool haveStatic);
+    uint8_t       waitForConnectResult(bool haveStatic, uint32_t timeout);
 
     // webserver handlers
 	  unsigned int  getHTTPHeadLength(const char *title, bool includeQI = false);
@@ -501,9 +498,9 @@ class WiFiManager
 
   	// WiFi page
   	int           getScanItemStart();
-  	void          sortNetworks(int n, int *indices);
-  	unsigned int  getScanItemsLen(int n, bool scanErr, int *indices, unsigned int& maxItemSize);
-    String        getScanItemsOut(int n, bool scanErr, int *indices, unsigned int maxItemSize);
+  	void          sortNetworks(int n, int *indices, int& haveDupes, bool removeDupes);
+  	unsigned int  getScanItemsLen(int n, bool scanErr, int *indices, unsigned int& maxItemSize, bool showall);
+    String        getScanItemsOut(int n, bool scanErr, int *indices, unsigned int maxItemSize, bool showall);
 	  String        getIpForm(const char *id, const char *title, IPAddress& value, const char *ph = NULL);
     String        getStaticOut(unsigned int estPageSize = 0);
 	  unsigned int  getStaticLen();
@@ -530,8 +527,6 @@ class WiFiManager
     void          processConfigPortal(bool handleWeb);
 
     // wifi platform abstractions
-    bool          WiFi_Disconnect();
-    bool          WiFi_enableSTA(bool enable);
     uint8_t       WiFi_softap_num_stations();
     void          WiFi_installEventHandler();
     String        WiFi_SSID() const;
@@ -540,10 +535,6 @@ class WiFiManager
     int16_t       WiFi_scanNetworks(bool force, bool async);
 	  int16_t       WiFi_waitForScan();
 	  void          WiFi_scanComplete(int16_t networksFound);
-
-    #ifndef _A10001986_NO_COUNTRY
-    bool          WiFiSetCountry();
-    #endif
 
     void          WiFiEvent(WiFiEvent_t event, arduino_event_info_t info);
 
@@ -557,6 +548,8 @@ class WiFiManager
 
     // get default ap esp uses, esp_chipid
     void          getDefaultAPName(char *apname);
+
+    bool          _getbestapchannel(int32_t& channel, int& quality);
 
     // reboot esp32
     void          reboot();
@@ -594,6 +587,9 @@ class WiFiManager
 	  bool (*_prewifiscancallback)(void);
 	  #ifdef WM_PRECONNECTCB
 	  void (*_preconnectcallback)(void);
+	  #endif
+	  #ifdef WM_EVENTCB
+	  void (_wifieventcallback)(WiFiEvent_t event);
 	  #endif
 
     #if 0

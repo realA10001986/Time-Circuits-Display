@@ -18,6 +18,7 @@
 #include "wm_strings_en.h"
 
 uint8_t WiFiManager::_lastconxresulttmp = WL_IDLE_STATUS;
+bool    WiFiManager::_gotip = false;
 
 #define STRLEN(x) (sizeof(x)-1)
 
@@ -378,10 +379,6 @@ bool WiFiManager::autoConnect(const char *ssid, const char *pass, const char *ap
         return false;
     }
 
-    #ifndef _A10001986_NO_COUNTRY
-    WiFiSetCountry();
-    #endif
-
     // Install WiFi event handler
     WiFi_installEventHandler();
 
@@ -401,7 +398,7 @@ bool WiFiManager::autoConnect(const char *ssid, const char *pass, const char *ap
         #endif
 
         connected = true;
-        setStaticConfig();
+        setStaticConfig();    // Can this still be done when connected?
     }
 
     if((!ssid || !*ssid) && !connected) {
@@ -420,6 +417,11 @@ bool WiFiManager::autoConnect(const char *ssid, const char *pass, const char *ap
 
         _lastconxresult = WL_CONNECTED;
 
+        // Needs to be set AFTER WiFi is up
+        #ifndef WM_NOCOUNTRY
+        esp_wifi_set_country_code("01", true);
+        #endif
+
         // init mDNS
         setupMDNS();
 
@@ -431,6 +433,12 @@ bool WiFiManager::autoConnect(const char *ssid, const char *pass, const char *ap
     #ifdef WM_DEBUG_LEVEL
     DEBUG_WM(F("AutoConnect: Not connected"));
     #endif
+
+    // Disable STA if enabled
+    if(WiFi.getMode() & WIFI_STA) {
+        WiFi.enableSTA(false);
+        delay(500);
+    }
 
     // Start softAP and config portal
 
@@ -450,7 +458,36 @@ bool WiFiManager::startAP()
     DEBUG_WM(F("StartAP with SSID: "), _apName);
     #endif
 
-    // setup optional soft AP static ip config
+    #ifdef WM_DEBUG_LEVEL
+    if(channel > 0) {
+        DEBUG_WM(DEBUG_VERBOSE,F("Starting AP on channel:"), channel);
+    }
+    #endif
+
+    // Enable AP mode. This is also called by softAP(), but
+    // letting it be done there leads to a series of AP_START,
+    // AP_STOP, AP_START events, difficult to follow.
+    // In order to wait orderly, we do it here first.
+
+    _gotip = false;
+    if(!(WiFi.getMode() & WIFI_AP)) {
+        if(WiFi.enableAP(true)) {
+            unsigned long timeoutmillis = millis() + 3000;
+            while(millis() < timeoutmillis) {
+                if(_gotip) break;
+                _delay(100);
+            }
+        } else {
+            #ifdef _A10001986_DBG
+            Serial.println("Error enabling AP mode");
+            #endif
+        }
+    }
+
+    // Set up optional soft AP static ip config
+    // This enables AP mode if not already enabled, it might
+    // cause another series of AP_STOP, AP_START events.
+    // We don't use it, so I never tested it.
     #ifdef WM_AP_STATIC_IP
     if(_ap_static_ip) {
 
@@ -464,11 +501,11 @@ bool WiFiManager::startAP()
     }
     #endif
 
-    #ifdef WM_DEBUG_LEVEL
-    if(channel > 0) {
-        DEBUG_WM(DEBUG_VERBOSE,F("Starting AP on channel:"), channel);
-    }
-    #endif
+    // Now fire softAP() which does not much beyond setting our
+    // config and restart the AP, and comparing the then current
+    // AP config to the desired one.
+
+    _gotip = false;
 
     // start soft AP; default channel is 1 here and in esp library
     ret = WiFi.softAP(_apName,
@@ -477,11 +514,18 @@ bool WiFiManager::startAP()
             false,
             _ap_max_clients);
 
+    // Wait for AP_START event to make sure we can fully use the AP
+    if(ret) {
+        unsigned long timeoutmillis = millis() + 1000;
+        while(millis() < timeoutmillis) {
+            if(_gotip) break;
+            _delay(100);
+        }
+    }
+
     #ifdef WM_DODEBUG
     if(_debugLevel >= DEBUG_DEV) debugSoftAPConfig();
     #endif
-
-    _delay(500); // slight delay to make sure we get an AP IP
 
     #ifdef WM_DEBUG_LEVEL
     if(!ret) DEBUG_WM(DEBUG_ERROR,F("[ERROR] There was a problem starting the AP"));
@@ -490,7 +534,10 @@ bool WiFiManager::startAP()
 
     // set ap hostname (seems ok to do this after softAP())
     if(ret && *_hostname) {
-        WiFi.softAPsetHostname(_hostname);
+        bool test = WiFi.softAPsetHostname(_hostname);
+        #ifdef _A10001986_DBG
+        if(!test) Serial.println("Failed to set AP hostname");
+        #endif
     }
 
     return ret;
@@ -642,23 +689,39 @@ bool WiFiManager::startConfigPortal(char const *apName, char const *apPassword, 
 
     // Shutdown sta if not connected, or else this will hang
     // channel scanning, and softap will not respond
+    // -- Apparently obsolete, not required.
+    #if 0
     if(_disableSTA || (!WiFi.isConnected() && _disableSTAConn)) {
 
         #ifdef WM_DISCONWORKAROUND    // see WiFiManager.h
         WiFi.mode(WIFI_AP_STA);
         #endif
 
-        WiFi_Disconnect();
+        WiFi.disconnect()();
 
-        WiFi_enableSTA(false);
+        WiFi.enableSTA(false);
 
         #ifdef WM_DEBUG_LEVEL
         DEBUG_WM(DEBUG_VERBOSE,F("Disabling STA"));
         #endif
 
     }
+    #endif
+
+    // Disconnect if connected and disable STA if enabled
+    if(WiFi.isConnected()) {
+        WiFi.disconnect();
+        delay(50);
+    }
+    if(WiFi.getMode() & WIFI_STA) {
+        WiFi.enableSTA(false);
+        delay(500);
+    }
 
     configPortalActive = true;
+
+    // Install WiFi event handler
+    WiFi_installEventHandler();
 
     // start access point
     #ifdef WM_DEBUG_LEVEL
@@ -667,8 +730,9 @@ bool WiFiManager::startConfigPortal(char const *apName, char const *apPassword, 
 
     startAP();
 
-    #ifndef _A10001986_NO_COUNTRY
-    WiFiSetCountry();
+    // Needs to be set AFTER WiFi is up
+    #ifndef WM_NOCOUNTRY
+    esp_wifi_set_country_code("01", true);
     #endif
 
     // do AP callback if set
@@ -690,9 +754,6 @@ bool WiFiManager::startConfigPortal(char const *apName, char const *apPassword, 
     #ifdef WM_DEBUG_LEVEL
     DEBUG_WM(DEBUG_VERBOSE,F("Config Portal Running"));
     #endif
-
-    // Install WiFi event handler
-    WiFi_installEventHandler();
 
     return true;
 }
@@ -798,13 +859,13 @@ uint8_t WiFiManager::connectWifi(const char *ssid, const char *pass)
     uint8_t connRes = (uint8_t)WL_NO_SSID_AVAIL;
 
     // set Static IP if provided
-    setStaticConfig();
+    bool haveStatic = setStaticConfig();
 
     // disconnect before begin, in case anything is hung, this causes a 2 seconds delay for connect
     // @todo find out what status is when this is needed, can we detect it
     // and handle it, say in between states or idle_status to avoid these
 
-    if(_cleanConnect) WiFi_Disconnect();
+    if(_cleanConnect) WiFi.disconnect();
 
     // if retry without delay (via begin()), the IDF is still busy even after returning status
     // E (5130) wifi:sta is connecting, return error
@@ -820,9 +881,11 @@ uint8_t WiFiManager::connectWifi(const char *ssid, const char *pass)
             #endif
         }
 
+        _gotip = false;
+
         wifiConnectNew(ssid, pass);
 
-        connRes = waitForConnectResult();
+        connRes = waitForConnectResult(haveStatic);
 
         #ifdef WM_DEBUG_LEVEL
         DEBUG_WM(DEBUG_VERBOSE,F("Connection result:"), getWLStatusString(connRes));
@@ -881,12 +944,13 @@ bool WiFiManager::setStaticConfig()
     DEBUG_WM(DEBUG_DEV,F("STA static IP:"), _sta_static_ip);
     #endif
 
-    bool ret = true;
-
     if(_sta_static_ip) {
+        bool ret;
+
         #ifdef WM_DEBUG_LEVEL
         DEBUG_WM(DEBUG_VERBOSE,F("Custom static IP/GW/Subnet/DNS"));
         #endif
+
         if(_sta_static_dns) {
             ret = WiFi.config(_sta_static_ip, _sta_static_gw, _sta_static_sn, _sta_static_dns);
         } else {
@@ -897,14 +961,16 @@ bool WiFiManager::setStaticConfig()
         if(!ret) DEBUG_WM(DEBUG_ERROR,F("[ERROR] wifi config failed"));
         else DEBUG_WM(F("STA IP set:"), WiFi.localIP());
         #endif
+
+        return ret;
     }
 
-    return ret;
+    return false;
 }
 
-uint8_t WiFiManager::waitForConnectResult()
+uint8_t WiFiManager::waitForConnectResult(bool haveStatic)
 {
-    return waitForConnectResult(_connectTimeout);
+    return waitForConnectResult(haveStatic, _connectTimeout);
 }
 
 /**
@@ -912,30 +978,61 @@ uint8_t WiFiManager::waitForConnectResult()
  * @param  uint16_t timeout  in seconds
  * @return uint8_t  WL Status
  */
-uint8_t WiFiManager::waitForConnectResult(uint32_t timeout)
+uint8_t WiFiManager::waitForConnectResult(bool haveStatic, uint32_t timeout)
 {
+    unsigned long timeoutmillis;
+    uint8_t status;
+
+    // Event 7 (GOT_IP) is fired both with a static config
+    // as well as DHCP. So we overrule the parameter in order
+    // to wait in both cases.
+    haveStatic = false;
+
     if(!timeout) {
         #ifdef WM_DEBUG_LEVEL
         DEBUG_WM(F("connectTimeout not set, waitForConnectResult..."));
         #endif
 
-        return WiFi.waitForConnectResult();
+        status = WiFi.waitForConnectResult();
+
+        if(status == WL_CONNECTED) {
+            if(!haveStatic) {
+                timeoutmillis = millis() + 5000;
+                while(millis() < timeoutmillis) {
+                    if(_gotip) break;
+                    _delay(100);
+                }
+            }
+            return status;
+        }
     }
 
-    unsigned long timeoutmillis = millis() + timeout;
+    timeoutmillis = millis() + timeout;
 
     #ifdef WM_DEBUG_LEVEL
     DEBUG_WM(DEBUG_VERBOSE,timeout,F("ms timeout, waiting for connect..."));
     #endif
 
-    uint8_t status = WiFi.status();
+    status = WiFi.status();
 
     while(millis() < timeoutmillis) {
 
         status = WiFi.status();
-        // @todo detect additional states, connect happens, then dhcp then get ip,
-        // there is some delay here, make sure not to timeout if waiting on IP
-        if(status == WL_CONNECTED || status == WL_CONNECT_FAILED) {
+
+        if(status == WL_CONNECT_FAILED) {
+
+            return status;
+
+        } else if(status == WL_CONNECTED) {
+
+            if(!haveStatic) {
+                timeoutmillis = millis() + 5000;
+                while(millis() < timeoutmillis) {
+                    if(_gotip) break;
+                    _delay(100);
+                }
+            }
+
             return status;
         }
 
@@ -1522,8 +1619,8 @@ int16_t WiFiManager::WiFi_scanNetworks(bool force, bool async)
         force = true;
     }
 
-    // Use cache if called again within _scancachetime
-    if(!_lastscan || (millis() - _lastscan > _scancachetime)) {
+    // Use cache if available
+    if(!_lastscan) {
         force = true;
     }
 
@@ -1580,7 +1677,7 @@ int16_t WiFiManager::WiFi_scanNetworks(bool force, bool async)
     return 0;
 }
 
-void WiFiManager::sortNetworks(int n, int *indices)
+void WiFiManager::sortNetworks(int n, int *indices, int& haveDupes, bool removeDupes)
 {
     if(n == 0) {
 
@@ -1609,14 +1706,17 @@ void WiFiManager::sortNetworks(int n, int *indices)
         }
 
         // remove duplicates (must be RSSI sorted to remove the weaker one here)
-        if(_removeDuplicateAPs) {
+        {
             String cssid;
             for(int i = 0; i < n; i++) {
                 if(indices[i] == -1) continue;
                 cssid = WiFi.SSID(indices[i]);
                 for(int j = i + 1; j < n; j++) {
                     if(cssid == WiFi.SSID(indices[j])) {
-                        indices[j] = -1; // set dup aps to index -1
+                        haveDupes++;
+                        if(removeDupes) {
+                            indices[j] = -1; // set dup aps to index -1
+                        }
                     }
                 }
             }
@@ -1624,7 +1724,7 @@ void WiFiManager::sortNetworks(int n, int *indices)
     }
 }
 
-unsigned int WiFiManager::getScanItemsLen(int n, bool scanErr, int *indices, unsigned int& maxItemSize)
+unsigned int WiFiManager::getScanItemsLen(int n, bool scanErr, int *indices, unsigned int& maxItemSize, bool showall)
 {
     unsigned int mySize = 0;
 
@@ -1643,7 +1743,7 @@ unsigned int WiFiManager::getScanItemsLen(int n, bool scanErr, int *indices, uns
         maxItemSize = 0;
 
         for(int i = 0; i < n; i++) {
-            if(indices[i] == -1) continue; // skip dups
+            if(indices[i] == -1) continue;
 
             // <div><a href='#p' onclick='c(this)' data-ssid='{V}'>{v}</a>
             // <div role='img' aria-label='{r}%' title='{r}%' class='q q-{q} {i}'></div></div>
@@ -1653,12 +1753,19 @@ unsigned int WiFiManager::getScanItemsLen(int n, bool scanErr, int *indices, uns
             if(_minimumQuality == -1 || _minimumQuality < rssiperc) {
 
                 String SSID = WiFi.SSID(indices[i]);
-                if(SSID == "") continue;
+                if(SSID == "") {
+                    if(showall) {
+                        SSID = "[Hidden]";
+                    } else {
+                        continue;
+                    }
+                }
 
                 mySize += STRLEN(HTTP_WIFI_ITEM) - (6*3);
                 mySize += htmlEntitiesLen(SSID);
                 mySize += htmlEntitiesLen(SSID, true);
-                mySize += ((2*3)+1+1); // 2xrssi perc, mapped percentage, enc class
+                mySize += (5+3+1+1);     // rssi, rssi perc, mapped percentage, enc class
+                if(showall) mySize += 6; // chnlnum
 
                 if(mySize > maxItemSize) maxItemSize = mySize;
 
@@ -1679,9 +1786,10 @@ unsigned int WiFiManager::getScanItemsLen(int n, bool scanErr, int *indices, uns
     return mySize;
 }
 
-String WiFiManager::getScanItemsOut(int n, bool scanErr, int *indices, unsigned int maxItemSize)
+String WiFiManager::getScanItemsOut(int n, bool scanErr, int *indices, unsigned int maxItemSize, bool showall)
 {
     String page;
+    char chnlnum[8];
 
      if(scanErr) {
 
@@ -1696,31 +1804,47 @@ String WiFiManager::getScanItemsOut(int n, bool scanErr, int *indices, unsigned 
         String item;
         if(maxItemSize) item.reserve(maxItemSize);
 
-        // <div><a href='#p' onclick='c(this)' data-ssid='{V}'>{v}</a>
+        // <div><a href='#p' onclick='{t}}(this)' data-ssid='{V}'>{v}</a>
         // <div role='img' aria-label='{r}%' title='{r}%' class='q q-{q} {i}'></div></div>
 
         // display networks in page
         for(int i = 0; i < n; i++) {
-            if(indices[i] == -1) continue; // skip dups
+            if(indices[i] == -1) continue;
 
             #ifdef WM_DEBUG_LEVEL
             DEBUG_WM(DEBUG_VERBOSE,F("AP: "),(String)WiFi.RSSI(indices[i]) + " " + (String)WiFi.SSID(indices[i]));
             #endif
 
-            int rssiperc = getRSSIasQuality(WiFi.RSSI(indices[i]));
+            int rssi = WiFi.RSSI(indices[i]);
+            int rssiperc = getRSSIasQuality(rssi);
 
             if(_minimumQuality == -1 || _minimumQuality < rssiperc) {
 
                 uint8_t enc_type = WiFi.encryptionType(indices[i]);
                 String SSID = WiFi.SSID(indices[i]);
+                String func = "c";
 
-                if(SSID == "") continue;
+                if(SSID == "") {
+                    if(showall) {
+                        SSID = "[Hidden]";
+                        func = "d";
+                    } else {
+                        continue;
+                    }
+                }
 
                 item = FPSTR(HTTP_WIFI_ITEM);
 
-                item.replace(FPSTR(T_V), htmlEntities(SSID)); // ssid no encoding
+                item.replace(FPSTR(T_t), func);
+                item.replace(FPSTR(T_V), htmlEntities(SSID));       // ssid no encoding
                 item.replace(FPSTR(T_v), htmlEntities(SSID, true)); // ssid no encoding
-                item.replace(FPSTR(T_r), (String)rssiperc); // rssi percentage 0-100
+                if(showall) {
+                    sprintf(chnlnum, " (%d)", WiFi.channel(indices[i]));
+                    item.replace(FPSTR(T_c), chnlnum);              // channel
+                } else {
+                    item.replace(FPSTR(T_c), "");
+                }
+                item.replace(FPSTR(T_r), (String)rssi);             // rssi percentage 0-100
                 item.replace(FPSTR(T_q), (String)int(round(map(rssiperc,0,100,1,4)))); //quality icon 1-4
                 item.replace(FPSTR(T_i), (enc_type != WM_WIFIOPEN) ? "l" : "");
 
@@ -1829,15 +1953,19 @@ void WiFiManager::buildWifiPage(bool scan, String& page)
     unsigned int bufSize = 0, statBufSize = 0, repSize = 0;
     unsigned int maxScanItemSize = 0;
     unsigned int maxItemSize = 0;
-    bool scanErr = false, scanallowed = true, showrefresh = false;
+    int numDupes = 0;
+    bool scanErr = false, scanallowed = true, showrefresh = false, haveShowAll = false;
     bool force = server->hasArg(F("refresh"));
+    bool showall = server->hasArg(F("showall"));
     int n = 0;
 
     String SSID = WiFi_SSID();
     unsigned int SSID_len = SSID.length();
 
+    if(showall) scan = true;
+
     // No scan (unless forced) if we have a configured network
-    if(scan && !force && SSID != "") {
+    if(scan && !force && !showall && SSID != "") {
         scan = false;
         showrefresh = true;
     }
@@ -1847,7 +1975,7 @@ void WiFiManager::buildWifiPage(bool scan, String& page)
     // We use the cache then, if still valid.
     if(scan && _prewifiscancallback) {
         if(!(scanallowed = _prewifiscancallback())) {
-            if(!_autoforcerescan && _lastscan && (millis() - _lastscan < _scancachetime - 20)) {
+            if(!_autoforcerescan && _lastscan) {
                 scanallowed = true;
                 force = false;
             } else {
@@ -1882,7 +2010,7 @@ void WiFiManager::buildWifiPage(bool scan, String& page)
 
     int indices[n];
     if(scan) {
-        sortNetworks(n, indices);
+        sortNetworks(n, indices, numDupes, !showall);
     }
 
     bufSize = getHTTPHeadLength(S_titlewifi, scan);
@@ -1891,7 +2019,11 @@ void WiFiManager::buildWifiPage(bool scan, String& page)
     } else if(!scanallowed) {
         bufSize += STRLEN(HTTP_MSG_NOSCAN);
     } else if(scan) {
-        bufSize += getScanItemsLen(n, scanErr, indices, maxScanItemSize);
+        bufSize += getScanItemsLen(n, scanErr, indices, maxScanItemSize, showall);
+        if(!showall /*&& numDupes*/) {
+            bufSize += STRLEN(HTTP_SHOWALL);
+            haveShowAll = true;
+        }
     }
     bufSize += (STRLEN(HTTP_FORM_START) - 3 + STRLEN(A_wifisave));
     bufSize += (STRLEN(HTTP_FORM_WIFI) - (3*3) + SSID_len + (2*STRLEN(S_passph)));
@@ -1906,6 +2038,9 @@ void WiFiManager::buildWifiPage(bool scan, String& page)
     bufSize += STRLEN(HTTP_SCAN_LINK);
     if(SSID_len) {
         bufSize += STRLEN(HTTP_ERASE_FORM);
+    }
+    if(haveShowAll) {
+        bufSize += STRLEN(HTTP_SHOWALL_FORM);
     }
     if(_showBack) bufSize += STRLEN(HTTP_BACKBTN);
     repSize = reportStatusLen();
@@ -1924,7 +2059,10 @@ void WiFiManager::buildWifiPage(bool scan, String& page)
     } else if(!scanallowed) {
         page += FPSTR(HTTP_MSG_NOSCAN);
     } else if(scan) {
-        page += getScanItemsOut(n, scanErr, indices, maxScanItemSize);
+        page += getScanItemsOut(n, scanErr, indices, maxScanItemSize, showall);
+        if(haveShowAll) {
+            page += FPSTR(HTTP_SHOWALL);
+        }
     }
 
     String pitem;
@@ -1952,6 +2090,9 @@ void WiFiManager::buildWifiPage(bool scan, String& page)
     page += FPSTR(HTTP_SCAN_LINK);
     if(SSID_len) {
         page += FPSTR(HTTP_ERASE_FORM);
+    }
+    if(haveShowAll) {
+        page += FPSTR(HTTP_SHOWALL_FORM);
     }
     if(_showBack) page += FPSTR(HTTP_BACKBTN);
     reportStatus(page, repSize);
@@ -2578,7 +2719,7 @@ bool WiFiManager::disconnect()
     #ifdef WM_DEBUG_LEVEL
     DEBUG_WM(F("Disconnecting"));
     #endif
-    return WiFi_Disconnect();
+    return WiFi.disconnect();
 }
 
 /**
@@ -2708,6 +2849,19 @@ void WiFiManager::setAPCallback(void(*func)(WiFiManager*))
 void WiFiManager::setPreConnectCallback(void(*func)())
 {
     _preconnectcallback = func;
+}
+#endif
+
+/**
+ * setWiFiEventCallback, set a callback when a wifi event
+ * is received.
+ * @access public
+ * @param {[type]} void (*func)(WiFiManager* wminstance)
+ */
+#ifdef WM_EVENTCB
+void WiFiManager::setWiFiEventCallback(void(*func)(WiFiEvent_t event))
+{
+    _wifieventcallback = func;
 }
 #endif
 
@@ -2859,17 +3013,6 @@ void WiFiManager::setCustomMenuHTML(const char* html)
 }
 
 /**
- * toggle wifiscan hiding of duplicate ssid names
- * if this is false, wifiscan will remove duplicat Access Points - default true
- * @access public
- * @param bool removeDuplicates [true]
- */
-void WiFiManager::setRemoveDuplicateAPs(bool removeDuplicates)
-{
-    _removeDuplicateAPs = removeDuplicates;
-}
-
-/**
  * toggle showing static ip form fields
  * if enabled, then the static ip, gateway, subnet fields will be visible
  * @since $dev
@@ -2996,18 +3139,6 @@ void WiFiManager::setDebugOutput(bool debug, String prefix)
     setDebugOutput(debug);
 }
 
-/**
- * setCountry
- * @since $dev
- * @param String cc country code, must be defined in WiFiSetCountry, US, JP, CN
- */
-#ifndef _A10001986_NO_COUNTRY
-void WiFiManager::setCountry(String cc)
-{
-    _wificountry = cc;
-}
-#endif
-
 // GETTERS
 
 /**
@@ -3096,6 +3227,205 @@ int WiFiManager::getRSSIasQuality(int RSSI)
     return 2 * (RSSI + 100);
 }
 
+bool WiFiManager::_getbestapchannel(int32_t& channel, int& quality)
+{
+    int32_t myarr[13];
+    bool    chfree[13];
+    int32_t minRSSIch = 0;
+    int32_t minRSSI = 1, j, k;
+    int32_t chmax[3];
+    int32_t chlp[3];
+    int i, mainfree = 0, mainrfree = 0;
+
+    quality = 1;
+
+    for(i = 0; i < 13; i++) {
+        myarr[i] = -1000;
+        chfree[i] = true;
+    }
+    for(i = 0; i < 3; i++) {
+      chmax[i] = 1;
+      chlp[i] = 1;
+    }
+
+    #define TAKE_AS_FREE -84
+
+    if(_numNetworks > 0 && _lastscan) {
+        for(i = 0; i < _numNetworks; i++) {
+            j = WiFi.channel(i);
+            if(j >= 1 && j <= 13) {
+                j--;
+                k = WiFi.RSSI(i);
+                // Take channels with very bad RSSI as free
+                if(j == 0 || j == 5|| j == 10 || k > TAKE_AS_FREE) {
+                    chfree[j] = false;
+                    if(myarr[j] < k) myarr[j] = k;
+                }
+                if(k < minRSSI) {
+                    minRSSI = k;
+                    minRSSIch = j + 1;
+                }
+            }
+        }
+
+        #define CHFREE(x) (chfree[x-1])
+        #define CHRSSI(x) (myarr[x-1])
+        #define MAX3(a, b, c) (((a) > (b)) ? (((a) > (c)) ? (a) : (c)) : (((b) > (c)) ? (b) : (c)))
+
+        // If all main channels (1,6,11) are somewhat taken, see
+        // if their RSSI is below TAKE_AS_FREE, and count them as
+        // unused if that is the case.
+        if(!CHFREE(1) && !CHFREE(6) && !CHFREE(11)) {
+            if(CHRSSI(1)  <= TAKE_AS_FREE) { CHFREE(1)  = true; CHRSSI(1)  = -1000; }
+            if(CHRSSI(6)  <= TAKE_AS_FREE) { CHFREE(6)  = true; CHRSSI(6)  = -1000; }
+            if(CHRSSI(11) <= TAKE_AS_FREE) { CHFREE(11) = true; CHRSSI(11) = -1000; }
+        }
+
+        // Check if 1, 6, 11 are entirely free (no overlapping channels used)
+        // (and find the maximum RSSI of overlapping used channels in the process)
+        if(CHFREE(1)) {
+            if(CHFREE(2) && CHFREE(3)) {
+                if(CHFREE(4)) { channel = 1; return true; }
+                chlp[0] = CHRSSI(4);
+                mainrfree++;
+            }
+            chmax[0] = MAX3(CHRSSI(2), CHRSSI(3), CHRSSI(4));
+            mainfree++;
+        }
+        if(CHFREE(6)) {
+            if(CHFREE(3) && CHFREE(4) && CHFREE(5) &&
+               CHFREE(7) && CHFREE(8) && CHFREE(9)) { channel = 6; return true; }
+            chmax[1]  = MAX3(CHRSSI(7), CHRSSI(8), CHRSSI(9));
+            int32_t ch6max1 = MAX3(CHRSSI(3), CHRSSI(4), CHRSSI(5));
+            if(ch6max1 > chmax[1]) chmax[1] = ch6max1;
+            if(CHFREE(4) && CHFREE(5) && CHFREE(7) && CHFREE(8)) {
+                chlp[1] = CHRSSI(3);
+                if(chlp[1] < CHRSSI(9)) chlp[1] = CHRSSI(9);
+                mainrfree++;
+            }
+            mainfree++;
+        }
+        if(CHFREE(11)) {
+            if(CHFREE(10) && CHFREE(9) && CHFREE(8) &&
+               CHFREE(12) && CHFREE(13)) { channel = 11; return true; }
+            chmax[2] = MAX3(CHRSSI(8), CHRSSI(9), CHRSSI(10));
+            if(CHRSSI(12) > chmax[2]) chmax[2] = CHRSSI(12);
+            if(CHRSSI(13) > chmax[2]) chmax[2] = CHRSSI(13);
+            if(CHFREE(9) && CHFREE(10) && CHFREE(12)) {
+                chlp[2] = CHRSSI(8);
+                if(chlp[2] < CHRSSI(13)) chlp[2] = CHRSSI(13);
+                mainrfree++;
+            }
+            mainfree++;
+        }
+
+        // Find lowest RSSI on least problematic overlapping channels
+        if(mainrfree) {
+            if(chlp[0] <= chlp[1]) {
+                if(chlp[0] < chlp[2]) { channel = 1; }
+                else { channel = 11; }
+            } else if(chlp[1] < chlp[2]) {
+                channel = 6;
+            } else {
+                channel = 11;
+            }
+            return true;
+        }
+
+        quality = 0;
+
+        // If two or more of the "main" channels are free, find minimum RSSI of
+        // used overlapping neighbor channels
+        if(mainfree > 1) {
+            if(chmax[0] <= chmax[1]) {
+                if(chmax[0] < chmax[2]) { channel = 1; }
+                else { channel = 11; }
+            } else if(chmax[1] < chmax[2]) {
+                channel = 6;
+            } else {
+                channel = 11;
+            }
+            return true;
+        }
+
+        // If only one of the mains is free, check neighborhood.
+        #define MINRSSI -75
+        if(CHFREE(1)) {
+            if(CHRSSI(2) < MINRSSI && CHRSSI(3) < MINRSSI) {
+                channel = 1; return true;
+            }
+        } else if(CHFREE(6)) {
+            if(CHRSSI(4) < MINRSSI && CHRSSI(5) < MINRSSI &&
+               CHRSSI(7) < MINRSSI && CHRSSI(8) < MINRSSI) {
+                channel = 6; return true;
+            }
+        } else if(CHFREE(11)) {
+            if(CHRSSI(9) < MINRSSI && CHRSSI(10) < MINRSSI &&
+               CHRSSI(12) < MINRSSI && CHRSSI(13) < MINRSSI) {
+               channel = 11; return true;
+            }
+        }
+
+        // See if we fit inbetween
+        if(CHFREE(2) && CHFREE(3) && CHFREE(4) && CHFREE(5)) {
+            if(CHRSSI(1) < CHRSSI(6)) { channel = 3; return true; }
+            else                      { channel = 4; return true; }
+        }
+
+        if(CHFREE(7) && CHFREE(8) && CHFREE(9) && CHFREE(10)) {
+            if(CHRSSI(6) < CHRSSI(11)) { channel = 8; return true; }
+            else                       { channel = 9; return true; }
+        }
+
+        // find one with unused immediate neighbor channels
+        // (yes, 10, max we can use is 11, so we check up to 12)
+        for(i = 0; i < 10; i++) {
+            if(chfree[i] && chfree[i+1] && chfree[i+2]) {
+                channel = i+1+1;
+                return true;
+            }
+        }
+
+        quality = -1;
+
+        // find any free one
+        for(i = 0; i < 11; i++) {
+            if(chfree[i]) {
+                channel = i + 1;
+                return true;
+            }
+        }
+
+        // return channel with lowest RSSI
+        channel = minRSSIch;
+
+        return true;
+    }
+
+    return false;
+}
+
+bool WiFiManager::getBestAPChannel(int32_t& channel, int& quality)
+{
+    if(_lastscan && (_lastscan == _bestChCacheTime)) {
+        quality = _bestChCache >> 8;
+        channel = _bestChCache & 0xff;
+        return true;
+    }
+
+    if(_numNetworks > 0 && _lastscan) {
+         bool ret = _getbestapchannel(channel, quality);
+         if(ret) {
+            _bestChCacheTime = _lastscan;
+            _bestChCache = (quality << 8) | channel;
+         }
+         return ret;
+    }
+
+    return false;
+}
+
+
 // HELPERS
 
 /** IP to String? */
@@ -3163,18 +3493,6 @@ int WiFiManager::htmlEntitiesLen(String& str, bool whitespace)
     return size;
 }
 
-// sta disconnect
-bool WiFiManager::WiFi_Disconnect()
-{
-    return WiFi.disconnect();
-}
-
-// toggle STA mode
-bool WiFiManager::WiFi_enableSTA(bool enable)
-{
-    return WiFi.enableSTA(enable);
-}
-
 uint8_t WiFiManager::WiFi_softap_num_stations()
 {
     return WiFi.softAPgetStationNum();
@@ -3237,8 +3555,19 @@ void WiFiManager::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
 
     } else {
 
+        if(event == ARDUINO_EVENT_WIFI_STA_GOT_IP ||
+           event == ARDUINO_EVENT_WIFI_AP_START) {
+            _gotip = true;
+        }
+
         #ifdef _A10001986_DBG
         Serial.printf("WM: WiFi Event %d\n", event);
+        #endif
+
+        #ifdef WM_EVENTCB
+        if(_wifieventcallback) {
+            _wifieventcallback(event);
+        }
         #endif
 
     }
@@ -3374,68 +3703,3 @@ String WiFiManager::getModeString(uint8_t mode) {
     return FPSTR(S_NA);
 }
 #endif  // WM_DEBUG_LEVEL
-
-#ifndef _A10001986_NO_COUNTRY
-bool WiFiManager::WiFiSetCountry()
-{
-    if(_wificountry == "") return false; // skip not set
-
-    #ifdef WM_DEBUG_LEVEL
-    DEBUG_WM(DEBUG_VERBOSE,F("WiFiSetCountry to"),_wificountry);
-    #endif
-
-    /*
-     * @return
-     *    - ESP_OK: succeed
-     *    - ESP_ERR_WIFI_NOT_INIT: WiFi is not initialized by eps_wifi_init
-     *    - ESP_ERR_WIFI_IF: invalid interface
-     *    - ESP_ERR_WIFI_ARG: invalid argument
-     *    - others: refer to error codes in esp_err.h
-     */
-
-    // @todo move these definitions, and out of cpp `esp_wifi_set_country(&WM_COUNTRY_US)`
-    bool ret = true;
-    // ret = esp_wifi_set_bandwidth(WIFI_IF_AP,WIFI_BW_HT20); // WIFI_BW_HT40
-
-    esp_err_t err = ESP_OK;
-    // @todo check if wifi is init, no idea how, doesnt seem to be exposed atm
-    // ( check again it might be now! )
-    if(WiFi.getMode() == WIFI_MODE_NULL) {
-        DEBUG_WM(DEBUG_ERROR,"[ERROR] cannot set country, wifi not init");
-        // exception if wifi not init!
-        // Assumes that _wificountry is set to one of the supported country codes : "01"(world safe mode) "AT","AU","BE","BG","BR",
-        //               "CA","CH","CN","CY","CZ","DE","DK","EE","ES","FI","FR","GB","GR","HK","HR","HU",
-        //               "IE","IN","IS","IT","JP","KR","LI","LT","LU","LV","MT","MX","NL","NO","NZ","PL","PT",
-        //               "RO","SE","SI","SK","TW","US"
-        // If an invalid country code is passed, ESP_ERR_WIFI_ARG will be returned
-        // This also uses 802.11d mode, which matches the STA to the country code of the
-        // AP it connects to (meaning that the country code will be overridden if
-        // connecting to a "foreign" AP)
-    } else {
-        #ifndef WM_NOCOUNTRY
-        err = esp_wifi_set_country_code(_wificountry.c_str(), true);
-        #else
-        DEBUG_WM(DEBUG_ERROR,"[ERROR] esp wifi set country is not available");
-        err = true;
-        #endif
-    }
-
-    #ifdef WM_DEBUG_LEVEL
-    if(err) {
-        if(err == ESP_ERR_WIFI_NOT_INIT) DEBUG_WM(DEBUG_ERROR,"[ERROR] ESP_ERR_WIFI_NOT_INIT");
-        else if(err == ESP_ERR_INVALID_ARG) DEBUG_WM(DEBUG_ERROR,"[ERROR] ESP_ERR_WIFI_ARG (invalid country code)");
-        else if(err != ESP_OK)DEBUG_WM(DEBUG_ERROR,"[ERROR] unknown error",(String)err);
-    }
-    #endif
-
-    ret = err == ESP_OK;
-
-    #ifdef WM_DEBUG_LEVEL
-    if(ret) DEBUG_WM(DEBUG_VERBOSE,F("[OK] esp_wifi_set_country: "),_wificountry);
-    else DEBUG_WM(DEBUG_ERROR,F("[ERROR] esp_wifi_set_country failed"));
-    #endif
-
-    return ret;
-}
-#endif
-

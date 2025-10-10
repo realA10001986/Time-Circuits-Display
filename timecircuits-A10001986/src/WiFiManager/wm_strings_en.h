@@ -55,7 +55,7 @@ const char HTTP_FORM_END[]         PROGMEM = "<button type='submit'>Save</button
 
 const char HTTP_FORM_WIFI[]        PROGMEM = "<div class='sects'><div class='headl'>WiFi connection: Network selection</div><label for='s'>Network name (SSID)</label><input id='s' name='s' maxlength='32' autocorrect='off' autocapitalize='none' placeholder='{V}' oninput='h=ge(\"p\");h.disabled=false;if(!this.value.length&&this.placeholder.length){h.placeholder=h.getAttribute(\"data-ph\")||\"********\";}else{h.placeholder=\"\"}'><br/><label for='p'>Password</label><input id='p' name='p' maxlength='64' type='password' placeholder='{p}' data-ph='{p}'><input type='checkbox' onclick='f()'> Show password when typing";
 const char HTTP_FORM_WIFI_END[]    PROGMEM = "</div>";
-const char HTTP_WIFI_ITEM[]        PROGMEM = "<div><a href='#p' onclick='return c(this)' data-ssid='{V}'>{v}</a><div role='img' aria-label='{r}%' title='{r}%' class='q q-{q} {i}'></div></div>";
+const char HTTP_WIFI_ITEM[]        PROGMEM = "<div><a href='#p' onclick='return {t}(this)' data-ssid='{V}'>{v}</a>{c}<div role='img' aria-label='{r}dBm' title='{r}dBm' class='q q-{q} {i}'></div></div>";
 const char HTTP_FORM_SECTION_HEAD[] PROGMEM = "<div class='sects'><div class='headl'>WiFi connection: Static IP settings</div>";
 const char HTTP_FORM_SECTION_FOOT[] PROGMEM = "</div>";
 const char HTTP_FORM_WIFI_PH[]     PROGMEM = "placeholder='Leave this section empty to use DHCP'";
@@ -65,6 +65,8 @@ const char HTTP_MSG_NOSCAN[]       PROGMEM = "<div class='msg'>Device busy, WiFi
 const char HTTP_SCAN_LINK[]        PROGMEM = "<form action='/wifi?refresh=1' method='POST' onsubmit='if(confirm(\"This will reload the page, changes are not saved. Proceed?\")){d=ge(\"wrefr\");if(d){d.disabled=true;d.innerHTML=\"Please wait\"}return true;}return false;'><button id='wrefr' name='refresh' value='1'>WiFi Scan</button></form>";
 const char HTTP_ERASE_BUTTON[]     PROGMEM = "<button form='erform' type='submit'>Forget saved WiFi network</button>";
 const char HTTP_ERASE_FORM[]       PROGMEM = "<form id='erform' action='/erase' method='get' onsubmit='return confirm(\"Forget saved WiFi network, including static IP settings?\\n\\nDevice will restart in access point mode.\\nChanges made below will NOT be saved.\");'></form>";
+const char HTTP_SHOWALL[]          PROGMEM = "<button form='saform' type='submit'>Show all</button>";
+const char HTTP_SHOWALL_FORM[]     PROGMEM = "<form id='saform' action='/wifi?showall=1' method='POST'></form>";
 
 const char HTTP_SAVED[]            PROGMEM = "<div class='msg'>Credentials saved.<br/>";
 const char HTTP_SAVED_NORMAL[]     PROGMEM = "Trying to connect to network.<br />In case of error, device boots in AP mode.</div>";
@@ -122,22 +124,24 @@ const char HTTP_STYLE[]            PROGMEM = "<style>"
 // quality icons plus some specific JS
 const char HTTP_STYLE_QI[]         PROGMEM = "<style>"
     ".q{height:16px;margin:0;padding:0 5px;text-align:right;min-width:38px;float:right}"
-    ".q.q-0:after{background-position-x:0}.q.q-1:after{background-position-x:-16px}"
-    ".q.q-2:after{background-position-x:-32px}"
-    ".q.q-3:after{background-position-x:-48px}"
-    ".q.q-4:after{background-position-x:-64px}"
-    ".q.l:before{background-position-x:-80px;padding-right:5px}"
+    ".q.q-0:after{background-position-x:0}"
+    ".q.q-1:after{background-position-x:0}"
+    ".q.q-2:after{background-position-x:-21px}"
+    ".q.q-3:after{background-position-x:-42px}"
+    ".q.q-4:after{background-position-x:-63px}"
+    ".q.l:before{background-position-x:-84px}"
     ".ql .q{float:left}"
-    ".q:after,.q:before{content:'';width:16px;height:16px;display:inline-block;background-repeat:no-repeat;background-position: 16px 0;"
-    "background-image:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAAAQCAMAAADeZIrLAAAAJFBMVEX///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADHJj5lAAAAC3RSTlMAIjN3iJmqu8zd7vF8pzcAAABsSURBVHja7Y1BCsAwCASNSVo3/v+/BUEiXnIoXkoX5jAQMxTHzK9cVSnvDxwD8bFx8PhZ9q8FmghXBhqA1faxk92PsxvRc2CCCFdhQCbRkLoAQ3q/wWUBqG35ZxtVzW4Ed6LngPyBU2CobdIDQ5oPWI5nCUwAAAAASUVORK5CYII=');}"
+    ".q:after,.q:before{content:'';width:21px;height:16px;display:inline-block;background-repeat:no-repeat;background-position:21px 0;"
+    "background-image:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGIAAAAQCAMAAADakVr2AAAA81BMVEUAAADHycnHyckAAADHyckAAAAAAADHycnHyckAAAAAAADHyckAAAAAAAAAAAAAAADHycnHyckAAADHyckAAAAAAADHyckAAAAAAADHyckAAADHyckAAADHycnHyckAAADHyckAAADHyckAAADHyckAAAAAAAAAAAAAAAAAAADHyckAAADHycnHyckAAADHycnHyckAAADHyckAAAAAAADHycnHycnHyckAAADHycnHyckAAAAAAADHyckAAAAAAADHyckAAAAAAAAAAADHyckAAADHycnHyckAAAAAAADHycnHycnHycnHyckAAAAAAADHyclrQTMdAAAAT3RSTlMAKG7W0JlsZrukGaP7zciQRr+8OiSxn0ApHh0WDOvft6melZSRYyET9eKtqJuOXU1LLhrr0cfCi1g/IwkG99qsp4+HcWBFBdR8ODO0WVdVJL4uIQAAAbdJREFUOMullOlWwjAQRqctXSi0IItUQNmFulRZ3EBFRdx18v5P47TRUimLwP2RfLmnJ8lMzwl47IixyO7NbiQm7nCxmtSVodFtdXvDUR5mky6zCQfpVWU7ixNKbZhBlT7fq6vJdFI93qN89LRMXgWljIh2whm/jp17m7IM07xFGNs68ZenGmMRQfivfLMkRCPny5yJeGsBxxpmvZq2GFNpEsSLo2NRoPRILSjPkndcWsp9JaFYXL6nEBsUM7504lgCj2aPjtPdbbQk3YgOIvgtr7ROYa7MGcjp5VwpZIzxX0mLnypS+NpGk+fCNu1zVr2on9Ec6yyQgygimrWHhEnzYZHL6z9yAL+4f+UBeabNYoKX+hTvpqUwkTJiVPeSHqW4QBJYA3hBnvvnIt36U/woAKjnQkDqzsjJB2ReUqjHl8plE6AhZeZLooIt225h9nddqDOXagcCFGvoIjdnyeIy2UUOgN+W5/IzY2UIUEGUDiWqfS0poUfXfxc0kUZV60MA3VRobBj7a8lb9GgF1KA9gDD71+tKO3SEnsUShNhAjlIeLxPzFcd4BqbIbyDDFBMoh+1mkvMNs1qA66I7EMYAAAAASUVORK5CYII=');}"
     // icons @2x media query (32px rescaled)
     "@media (-webkit-min-device-pixel-ratio:2),(min-resolution:192dpi){.q:before,.q:after{"
-    "background-image:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALwAAAAgCAMAAACfM+KhAAAALVBMVEX///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAOrOgAAAADnRSTlMAESIzRGZ3iJmqu8zd7gKjCLQAAACmSURBVHgB7dDBCoMwEEXRmKlVY3L//3NLhyzqIqSUggy8uxnhCR5Mo8xLt+14aZ7wwgsvvPA/ofv9+44334UXXngvb6XsFhO/VoC2RsSv9J7x8BnYLW+AjT56ud/uePMdb7IP8Bsc/e7h8Cfk912ghsNXWPpDC4hvN+D1560A1QPORyh84VKLjjdvfPFm++i9EWq0348XXnjhhT+4dIbCW+WjZim9AKk4UZMnnCEuAAAAAElFTkSuQmCC');"
-    "background-size: 95px 16px;}}"
+    "background-image:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMQAAAAgCAMAAAB6rSfNAAABJlBMVEUAAAAAAAAAAAAAAADHyckAAADHyckAAADHycnHyckAAADHyckAAADHycnHyckAAAAAAAAAAAAAAADHyckAAADHyckAAAAAAAAAAADHycnHyckAAADHyckAAADHycnHycnHyckAAAAAAADHyckAAAAAAAAAAAAAAADHyckAAAAAAAAAAAAAAADHycnHyckAAADHyckAAADHyckAAADHyckAAADHyckAAADHyckAAAAAAADHyckAAADHycnHycnHycnHyckAAADHycnHycnHycnHyckAAADHycnHycnHycnHycnHycnHyckAAADHycnHycnHycnHyckAAADHyckAAAAAAAAAAADHyckAAADHyckAAAAAAAAAAADHycmXmZmQkpIAAADHycms9KC6AAAAYHRSTlMA3u8J/LxKI+rfBHFFJg359Oa1sHFXOTInHdvTy5eWd1BIE4J3Uywd1rGhTT/3ko+JWDYvF+rSyq2siW1nYUAK49m3tKNoX0Y7Lyry7sysppwhDwalkoJdxnx7beK+jWod6B+WAAADSklEQVRYw9WV21raQBCANyAECFTOQSByEEREUVREEEVEOSlqFbGe2tn3f4nGsJQsSQhNP/jof7PJzn8zu7MziOKpfZr3Re02mz3qW+fOa1Rw7qY5+P6cLTHFIlPKCv4dMzJALXB/gyl2716+Lco0F/puoHCXm4/o7/i+votVWHlwLcJkhVVQYVUIodk5useanKzN28z0QZNyBs3IxviUtnzrG7HYxrrveAWP2J+vORiffCQrDFKpgZCNjG+mMlslhfGQ26u4rF6/WR9sJHDhmp/J1mGIaTsnewPmxHaRBD5mqKkAHnIcV8asURI8m5dZgCGRtNJM9EiwiXR4xRL2c/XwwRa5/vmYbyDB7KibwbpGSbEVi0XgESGPJU5lV+7qHHRlJXA2NK7+xXwM8XwoqTB/PoPEu7bZHBp9RFFlpAKskt9rLBIeNYs1rhHelR6j/TI22jySDi42s8nRZsbvZValZ8t4UxnK/FWVriEzzUxGQCRF5wAi8m0rxpeT1TpZ0ScYBwyauR5QRNKUmQDw6pllgAJdS2JU4NmKuPCju2gM13YYK7ggVX0XM2YGGVDw4ZSbVa++WU4higpAmawCHbnSGEtPYsyo2dcYYA6DJkG8MlaqNABGvr9mJ4PpkrN2XK5Oi/ORwWQT+7kxMzM6XG8qcciymwl/lowwT8iYSRDtJPkwyXs3mUzckaz3nJK5FECGzASZYamkrPe8e0AibcCUJWFSSyJO+vYEG2QoGTJz6h1+QMaXAVPnJtDBCr45UOpd8Yhb4mrIDAK4g0pzswjgNGISeMtXW5YQP3pywWrvSutTfL8RjTby8drwBYRfiKAwHbk9b6nk3UubtcwcE1IzM/WmIZNgAQqT0uBuMeHmFU3FbwKC+82xOFM/CZedav0dpAlLtXXP4aJM/SQCeIJrpEEBJqguyNRPooW/COc5Lr+lbJnKplh/9vv3ItJnYVGmfjl1d7GNtJj2BcZtpMmmG4pO0lo8AMHFmfoPu/X5Z4bVPgNoCk5LEhHMlvQCTWUS/yOzJeHYcZon95bILANFT1ViPWJ6k/1tiUyeoS6CV5V+gEgE0SyhOY1NkNhZdnMqIZDgl92czjaIZJffnIpDcK9um5ffHPMbdfGaiuWnXuoAAAAASUVORK5CYII=');"
+    "background-size:98px 16px;}}"
     "</style>"
     "<script>function c(l){ge('s').value=l.getAttribute('data-ssid')||l.innerText||l.textContent;"
     "p=l.nextElementSibling.classList.contains('l');pp=ge('p');"
     "pp.disabled=!p;pp.placeholder='';if(p){pp.focus()}return false;}"
+    "function d(l){return false}"
     "</script>";
 
 const char A_paramsave[]          PROGMEM = "paramsave";
