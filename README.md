@@ -1177,12 +1177,16 @@ If you forget this password and are thereby locked out of your TCD, power-down, 
 
 ##### &#9654; WiFi channel
 
-Here you can select one out of 13 channels, or have the TCD choose a random channel for you. The default channel is 1. Preferred are channels 1, 6 and 11.
-
-If you are in the US, please select a channel between 1 and 11. All above 11 are not legal. A future update will limit this to 11 channels.
+Here you can select one out of 11 channels, or have the TCD choose a random channel for you. The default channel is 1. Preferred are channels 1, 6 and 11.
 
 WiFI channel selection is key for a trouble-free operation. Disturbed WiFi communication can lead to disrupted sequences, packet loss, hanging or freezing props, and other problems. A good article on WiFi channel selection is [here](https://community.ui.com/questions/Choosing-the-right-Wifi-Channel-on-2-4Ghz-Why-Conventional-Wisdom-is-Wrong/ea2ffae0-8028-45fb-8fbf-60569c6d026d).
 
+If a WiFi Scan was done (which can be triggered by clicking "WiFI Scan"), 
+
+- a list of networks is displayed at the top of the page; click "Show All" to list all networks including their channel;
+- a "proposed channel" is displayed near the "WiFi channel" drop-down, based on a rather simple heuristic. The banner is green when a channel is excellent, grey when it is impeded by overlapping channels, and when that banner is red operation in AP mode is not recommended due to channels all being used.
+
+The channel proposition is based on all WiFi networks found; it does not take non-WiFi equipment (baby monitors, cordless phones, bluetooth devices, microwave ovens, etc) into account.
 
 ##### &#9654; WiFi power save timer
 
