@@ -1177,7 +1177,7 @@ If you forget this password and are thereby locked out of your TCD, power-down, 
 
 ##### &#9654; WiFi channel
 
-Here you can select one out of 13 channels, or have the TCD choose a random channel for you. The default channel is 1.
+Here you can select one out of 13 channels, or have the TCD choose a random channel for you. The default channel is 1. Preferred are channels 1, 6 and 11.
 
 If you are in the US, please select a channel between 1 and 11. All above 11 are not legal. A future update will limit this to 11 channels.
 
