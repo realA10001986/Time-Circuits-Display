@@ -112,6 +112,8 @@ It is ok to leave the TCD in this mode, especially if it is mounted in a car or 
 
 >Please do not leave computers/hand helds permanently connected to the TCD's AP. These devices might think they are connected to the internet and therefore hammer the TCD with DNS and HTTP requests which might lead to packet loss and disruptions.
 
+>If you want your device to remain in AP-mode, please choose a suitable WiFi channel on the Config Portal's "WiFi Configuration" page. See [here](#-wifi-channel).
+
 In a typical home setup, however, you might want to connect the TCD to your local WiFi network. To do so, navigate to the Config Portal and click on "WiFi Configuration". The bare minimum is to select an WiFi network name (SSID) and a WiFi password.
 
 >Note that the TCD requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). If the device is inaccessible as a result of incorrect static IPs, hold ENTER when powering it up until the white LED lights up; static IP data will be deleted and the device will return to DHCP.
