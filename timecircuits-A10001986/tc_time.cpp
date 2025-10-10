@@ -844,7 +844,7 @@ bool bttfnHaveClients = false;
 #define BTTFN_VERSION              1
 #define BTTF_PACKET_SIZE          48
 #define BTTF_DEFAULT_LOCAL_PORT 1338
-#define BTTFN_MAX_CLIENTS          5
+#define BTTFN_MAX_CLIENTS          6
 static const uint8_t BTTFUDPHD[4] = { 'B', 'T', 'T', 'F'};
 static WiFiUDP       bttfUDP;
 static UDP*          tcdUDP;

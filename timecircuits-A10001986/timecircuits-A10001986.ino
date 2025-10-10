@@ -139,6 +139,12 @@
 
 /*  Changelog
  *
+ *  2025/10/08-10 (A10001986) [3.5.1]
+ *    - Increase max BTTFN clients from 5 to 6
+ *    - WM: Set "world safe" country info, limiting choices to 11 channels
+ *    - WM: Add "show all", add channel info (when all are shown) and proposed
+ *      AP WiFi channel on WiFi Configuration page.
+ *    - WM: Use events when connecting, instead of delays
  *  2025/10/07 (A10001986) [3.5]
  *    - Add emergency firmware update via SD (for dev purposes)
  *    - WM fixes (Upload, etc)

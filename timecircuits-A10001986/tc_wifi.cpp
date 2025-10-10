@@ -173,7 +173,7 @@ static const char *spdRateCustHTMLSrc[6] =
 #endif
 #endif  //TC_HAVESPEEDO
 
-static const char *apChannelCustHTMLSrc[16] = {
+static const char *apChannelCustHTMLSrc[14] = {
     "<div class='cmp0'><label for='apchnl'>WiFi channel</label><select class='sel0' value='",
     "apchnl",
     ">Random%s1'",
@@ -187,9 +187,7 @@ static const char *apChannelCustHTMLSrc[16] = {
     ">8%s9'",
     ">9%s10'",
     ">10%s11'",
-    ">11%s12'",
-    ">12%s13'",
-    ">13%s"
+    ">11%s"
 };
 
 static const char *wmBuildbeepaint(const char *dest);
@@ -201,6 +199,7 @@ static const char *wmBuildUpdateRate(const char *dest);
 #endif
 #endif
 static const char *wmBuildApChnl(const char *dest);
+static const char *wmBuildBestApChnl(const char *dest);
 static const char *wmBuildHaveSD(const char *dest);
 
 static const char *osde = "</option></select></div>";
@@ -209,6 +208,10 @@ static const char custHTMLSel[] = " selected";
 
 static const char *aco = "autocomplete='off'";
 static const char *tznp1 = "City/location name [a-z/0-9/-/ ]";
+
+// double-% since this goes through sprintf!
+static const char bestAP[]   = "<div class='c' style='background-color:#%s;color:#fff;font-size:80%%;border-radius:5px'>Proposed channel at current location: %d<br>%s(Non-WiFi devices not taken into account)</div>";
+static const char badWiFi[]  = "<br><i>Operating in AP mode not recommended</i>";
 
 static const char haveNoSD[] = "<div class='c' style='background-color:#dc3630;color:#fff;font-size:80%;border-radius:5px'><i>No SD card present</i></div>";
 
@@ -228,6 +231,7 @@ WiFiManagerParameter custom_wifiOffDelay("wifioff", "Power save timer<br><span s
 WiFiManagerParameter custom_sysID("sysID", "Network name (SSID) appendix<br><span style='font-size:80%'>Will be appended to \"TCD-AP\" [a-z/0-9/-]</span>", settings.systemID, 7, "pattern='[A-Za-z0-9\\-]+'");
 WiFiManagerParameter custom_appw("appw", "Password<br><span style='font-size:80%'>Password to protect TCD-AP. Empty or 8 characters [a-z/0-9/-]<br><b>Write this down, you might lock yourself out!</b></span>", settings.appw, 8, "minlength='8' pattern='[A-Za-z0-9\\-]+'");
 WiFiManagerParameter custom_apch(wmBuildApChnl);
+WiFiManagerParameter custom_bapch(wmBuildBestApChnl);
 WiFiManagerParameter custom_wifiAPOffDelay("wifiAPoff", "Power save timer<br><span style='font-size:80%'>(10-99[minutes]; 0=off)</span>", settings.wifiAPOffDelay, 2, "type='number' min='0' max='99' title='WiFi-AP will be shut down after chosen number of minutes after power-on. 0 means never.'");
 
 // Settings
@@ -359,7 +363,7 @@ static const int8_t wifiMenu[TC_MENUSIZE] = {
 };
 
 #define AA_TITLE "Time Circuits"
-#define AA_ICON "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA9QTFRFjpCRzMvH9tgx8iU9Q7YkHP8yywAAAC1JREFUeNpiYEQDDIwMKAAkwIwEiBTAMIMFCRApgGEGExIgUgDDDHQBNAAQYADhYgGBZLgAtAAAAABJRU5ErkJggg=="
+#define AA_ICON "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAD1BMVEWOkJHMy8fyJT322DFDtiSDPmFqAAAAKklEQVQI12MQhAIGAQYwYGQQUAIDbAyEGhcwwGQgqzEGA0wGXA2CAXcGAJ79DMHwFaKYAAAAAElFTkSuQmCC"
 #define AA_CONTAINER "TCDA"
 #define UNI_VERSION TC_VERSION 
 #define UNI_VERSION_EXTRA TC_VERSION_EXTRA
@@ -372,22 +376,22 @@ static const char* myCustMenu = "<img id='ebnew' style='display:block;margin:10p
 
 static const char* cliImages[] = {
     /* fc */
-    "AxQTFRFSUpKk491zszD/PGzYuH5fAAAAD5JREFUeNpiYEIDDEwMKACHACOEwwgTYGQGK2NiZoSpYAKJgAmYGUBJmDKooYwwg3Bby8xMuQA+v6ABgAADAGYRALv2zDkbAAAAAElFTkSuQmCC",
+    "AgMAAABinRfyAAAADFBMVEVJSkrOzMP88bOTj3X+RyUkAAAAL0lEQVQI12MIBQIGBwYGRihxgJmRwXkC20EGhxRJIFf6CZDgMYDJMjWgEwi9YKMA/v8ME3vY03UAAAAASUVORK5CYII=",
     /* sid */
-    "A9QTFRFjpCRzMvHQ7Yk9tgx8iU9dfM6hQAAADJJREFUeNpiYEQDDIwMKAAhwMKCJsDMTIQASAwkAJEjIABHYAEmJgSimgC659AAQIABAHNsAOmY7Q19AAAAAElFTkSuQmCC",
+    "BAMAAADt3eJSAAAAD1BMVEWOkJHMy8dDtiT22DHyJT118zqFAAAALUlEQVQI12MQhAIGAQYwYAQzXGAMY0wGswGQYYzBAJIQhhKTAhARxYBbCncGAAUkB7Vkqvl1AAAAAElFTkSuQmCC",
     /* dg */
-    "A9QTFRFAAAAjpCRzMvH////4wAAGgJHgAAAADhJREFUeNpiYEIDDEyMKACrAAMSgAgwAwELC4jEKQAWQlHBgC4AE0EygwFZAMNa0gXQ/YIGAAIMAM86AWWJwuU9AAAAAElFTkSuQmCC",
+    "BAMAAADt3eJSAAAAD1BMVEUAAACOkJHMy8f////jAAAaAkeAAAAANUlEQVQI12NQggIGRUEwEEJiMIABkMFsbOJsbIDCYDY2hjAMYAxjZhjDAMiAa8fDQNgFdwYAnxgL08XYZH4AAAAASUVORK5CYII=",
     /* vsr */
-    "BVQTFRFSUpKzMvHtr+92uXj9tM0AAAA8iU97nyh3QAAADFJREFUeNpiYEQDDIwMYMDMDKFxCTCBAYoAGxuaACsrmgCGFnQBFnqoQACgABoACDAAelsA4ckPlX4AAAAASUVORK5CYII=",
+    "BAMAAADt3eJSAAAAFVBMVEVJSkrMy8e2v73a5eP20zTyJT0AAAC7naKPAAAALklEQVQI12MQhAIGAQYGZgMGBkZkBpOSkgKEoRoEZaglKcCk0BlO5IiAASPcGQArMAeen41yugAAAABJRU5ErkJggg==",
     /* aux */
-    "AZQTFRFSUpKzMvH3mEsaAAAADdJREFUeNpiYEQDDIwMKAAmAJZDEoCqhguAORARHAJIpsAFUM3AtIUBxmfA5zBSBZDNQAMAAQYAPGgAaz1olJkAAAAASUVORK5CYII=",
+    "AQMAAAAlPW0iAAAABlBMVEVJSkrMy8feYSxoAAAAKklEQVQI12P4/5+hgZGh+SBD+0OGvkIQavjI0PgQJNLcCJZqBCIIG6gYAMbFElHyhQBTAAAAAElFTkSuQmCC",
     /* remote */
-    "BVQTFRFSUpKzMvHtr+9AAAA8iU92uXj9tM0iFgDpgAAAEFJREFUeNp8z0sKACAIRVF/uf8ll30QX9EdODgoETFETKWE9gMZVXCvoNkGOU0wA4gNDRtjgT3gOkHAZ+FzUBdgAJ/RAVPNkrSUAAAAAElFTkSuQmCC"
+    "BAMAAADt3eJSAAAAFVBMVEVJSkrMy8e2v70AAADa5ePyJT320zT0Sr0YAAAAQElEQVQI12MQhAIGAQYwYAQzHFAZTEoKUEYalMFsDAIghhIQKDMyiAaDGSARZSMlYxAjGMZASIEZCO1wS+HOAADWkAscxWroAQAAAABJRU5ErkJggg=="
 };
 const char *menu_tp[] = { "Flux Capacitor", "SID", "Dash Gauges", "VSR", "AUX", "Remote" };
 const char menu_myDiv[] = "<div style='margin-left:auto;margin-right:auto;text-align:center;'>";
 const char menu_isp[] = "Please <a href='/update'>install</a> sound pack</div><hr>";
-const char menu_item[] = "<a href='http://%s' target=_blank title='%s'><img style='zoom:2;padding:0 5px 0 5px;' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA%s' alt='%s'></a>";
+const char menu_item[] = "<a href='http://%s' target=_blank title='%s'><img style='zoom:2;padding:0 5px 0 5px;' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQ%s' alt='%s'></a>";
 
 static int  shouldSaveConfig = 0;
 static bool shouldSaveIPConfig = false;
@@ -511,6 +515,7 @@ void wifi_setup()
       &custom_sysID,
       &custom_appw,
       &custom_apch,
+      &custom_bapch,
       &custom_wifiAPOffDelay,
       &custom_wifihint,
 
@@ -684,8 +689,8 @@ void wifi_setup()
 
     temp = atoi(settings.apChnl);
     if(temp < 0) temp = 0;
-    if(temp > 13) temp = 13;
-    if(!temp) temp = random(1, 13);
+    if(temp > 11) temp = 11;
+    if(!temp) temp = random(1, 11);
     wm.setWiFiAPChannel(temp);
 
     temp = atoi(settings.wifiConTimeout);
@@ -699,7 +704,6 @@ void wifi_setup()
     wm.setConnectRetries(temp);
 
     wm.setCleanConnect(true);
-    //wm.setRemoveDuplicateAPs(false);
 
     wm.setMenu(wifiMenu, TC_MENUSIZE);
 
@@ -1233,7 +1237,13 @@ static void wifiConnect(bool deferConfigPortal)
             // WIFI_POWER_5dBm       = 5dBm
             // WIFI_POWER_2dBm       = 2dBm
             // WIFI_POWER_MINUS_1dBm = -1dBm
-            WiFi.setTxPower(WIFI_POWER_7dBm);
+
+            //#warning "WiFI Max Power"
+            //if(!haveLineOut) {
+                WiFi.setTxPower(WIFI_POWER_7dBm);
+            //} else {
+            //    WiFi.setTxPower(WIFI_POWER_13dBm);
+            //}
 
             #ifdef TC_DBG
             esp_wifi_get_max_tx_power(&power);
@@ -2062,9 +2072,28 @@ static const char *wmBuildApChnl(const char *dest)
     char *str = (char *)malloc(600);    // actual length 563
 
     str[0] = 0;
-    buildSelectMenu(str, apChannelCustHTMLSrc, 16, settings.apChnl);
+    buildSelectMenu(str, apChannelCustHTMLSrc, 14, settings.apChnl);
     
     return str;
+}
+
+static const char *wmBuildBestApChnl(const char *dest)
+{
+    if(dest) {
+      free((void *)dest);
+      return NULL;
+    }
+
+    int32_t mychan = 0;
+    int qual = 0;
+
+    if(wm.getBestAPChannel(mychan, qual)) {
+        char *str = (char *)malloc(STRLEN(bestAP) + 4 + 7 + STRLEN(badWiFi) + 1);
+        sprintf(str, bestAP, qual < 0 ? "dc3630" : (qual > 0 ? "609b71" : "777"), mychan, qual < 0 ? badWiFi : "");
+        return str;
+    }
+
+    return NULL;
 }
 
 static const char *wmBuildHaveSD(const char *dest)

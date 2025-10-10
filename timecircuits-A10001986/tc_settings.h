@@ -201,8 +201,8 @@ struct Settings {
 #ifdef TC_HAVEMQTT  
     char useMQTT[4]         = "0";
     char mqttServer[80]     = "";  // ip or domain [:port]  
-    char mqttUser[128]      = "";  // user[:pass] (UTF8)
-    char mqttTopic[512]     = "";  // topic (UTF8)
+    char mqttUser[64]       = "";  // user[:pass] (UTF8) [limited to 63 bytes through WM]
+    char mqttTopic[128]     = "";  // topic (UTF8)       [limited to 127 bytes through WM]
     char pubMQTT[4]         = "0"; // publish to broker (timetravel)
 #endif
 #ifdef EXTERNAL_TIMETRAVEL_OUT
