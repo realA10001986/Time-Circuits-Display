@@ -139,6 +139,10 @@
 
 /*  Changelog
  *
+ *  2025/10/11 (A10001986) [3.5.2]
+ *    - More WM changes: Simplify "Forget" using a checkbox; redo signal quality
+ *      assessment; remove over-engineered WM debug stuff.
+ *    - Slightly increase transmit power in AP mode on CB 1.4+.
  *  2025/10/08-10 (A10001986) [3.5.1]
  *    - Increase max BTTFN clients from 5 to 6
  *    - WM: Set "world safe" country info, limiting choices to 11 channels
