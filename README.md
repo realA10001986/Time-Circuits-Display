@@ -1133,7 +1133,7 @@ In order to connect your TCD to your WiFi network, all you need to do is either 
 
 ##### &#9654; Forget Saved WiFi Network
 
-Clicking this button (and selecting "yes" in the confirmation dialog) deletes the currently saved WiFi network (SSID and password as well as static IP data) and reboots the device; it will restart in "access point" (AP) mode. See [here](#connecting-to-a-wifi-network).
+Checking this box (and clicking SAVE) deletes the currently saved WiFi network (SSID and password and reboots the device; it will restart in "access point" (AP) mode. See [here](#connecting-to-a-wifi-network).
 
 ##### &#9654; Hostname
 
