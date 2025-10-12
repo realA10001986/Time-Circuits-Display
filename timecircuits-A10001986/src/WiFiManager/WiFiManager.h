@@ -17,8 +17,8 @@
 #ifndef WiFiManager_h
 #define WiFiManager_h
 
-//#define WM_DODEBUG
 //#define _A10001986_DBG
+//#define _A10001986_V_DBG
 
 // #define WM_AP_STATIC_IP
 // #define WM_APCALLBACK
@@ -26,14 +26,9 @@
 // #define WM_EVENTCB
 // #define WM_MDNS
 
-#define WM_G(string_literal)  (String(FPSTR(string_literal)).c_str())
-
 #include <WiFi.h>
 #include <esp_wifi.h>
 #include <Update.h>
-
-#define WIFI_getChipId() (uint32_t)ESP.getEfuseMac()
-#define WM_WIFIOPEN   WIFI_AUTH_OPEN
 
 #ifndef WEBSERVER_H
 #include <WebServer.h>
@@ -52,12 +47,10 @@
 
 // menu ids
 #define WM_MENU_WIFI        0
-#define WM_MENU_WIFINOSCAN  1
-#define WM_MENU_PARAM       2
-#define WM_MENU_ERASE       3
-#define WM_MENU_UPDATE      4
-#define WM_MENU_SEP         5
-#define WM_MENU_CUSTOM      6
+#define WM_MENU_PARAM       1
+#define WM_MENU_UPDATE      2
+#define WM_MENU_SEP         3
+#define WM_MENU_CUSTOM      4
 #define WM_MENU_END        -1
 #define WM_MENU_MAX         WM_MENU_CUSTOM
 
@@ -86,34 +79,17 @@
 
 #define WM_WIFI_SCAN_BUSY -133
 
+#define DNS_PORT           53
+
 #if defined(ESP_ARDUINO_VERSION) && defined(ESP_ARDUINO_VERSION_VAL)
     #if ESP_ARDUINO_VERSION < ESP_ARDUINO_VERSION_VAL(2,0,0)
         #define WM_NOCOUNTRY
     #endif
-
-    // This is broken, #define *defines* something, always.
-    // So #ifdef is true - always.
-    // However, I have been running this since 2022 with this broken
-    // check under ESP32/arduino 2.0.5 - 2.0.17 without issues, so leave
-    // it in. Does not seem to cause harm.
-    //#define WM_ARDUINOVERCHECK_204 ESP_ARDUINO_VERSION <= ESP_ARDUINO_VERSION_VAL(2, 0, 5)
-    //#ifdef WM_ARDUINOVERCHECK_204
-    // The way to do it would be:
     //#if ESP_ARDUINO_VERSION <= ESP_ARDUINO_VERSION_VAL(2,0,5)
         #define WM_DISCONWORKAROUND
     //#endif
 #else
     #define WM_NOCOUNTRY
-#endif
-
-// Set default debug level
-#ifndef WM_DEBUG_LEVEL
-#define WM_DEBUG_LEVEL DEBUG_NOTIFY
-#endif
-
-// override debug level OFF
-#ifndef WM_DODEBUG
-#undef WM_DEBUG_LEVEL
 #endif
 
 class WiFiManagerParameter {
@@ -164,7 +140,6 @@ class WiFiManager
     /////////////////////////////////////////////////////////////////////////////
 
   public:
-    WiFiManager(Print& consolePort);
     WiFiManager();
     ~WiFiManager();
     void WiFiManagerInit();
@@ -187,9 +162,6 @@ class WiFiManager
 
     // Run webserver processing. Param: Do handle webserver, or skip
     void          process(bool handleWeb = true);
-
-    // Convert RSSI to quality percentage
-    int           getRSSIasQuality(int RSSI);
 
     // disconnect wifi
     bool          disconnect();
@@ -247,9 +219,6 @@ class WiFiManager
     void          setPreOtaUpdateCallback(void(*func)());
 		void          setPostOtaUpdateCallback(void(*func)(bool));
 
-    // called upon erase: false pre-erase, true do erase
-    void          setEraseCallback(void(*func)(bool));
-
     // add stuff to the main menu; second one to give WM the length for buf sizing
   	void          setMenuOutCallback(void(*func)(String &page));
   	void          setMenuOutLenCallback(int(*func)());
@@ -272,8 +241,8 @@ class WiFiManager
     // sets number of retries for autoconnect, force retry after wait failure exit
     void          setConnectRetries(uint8_t numRetries); // default 1
 
-    // set min quality percentage to include in scan, defaults to 8% if not specified
-    void          setMinimumSignalQuality(int quality = 8);
+    // set min rssi to include in scan, defaults to -80 if not specified
+    void          setMinimumRSSI(int rssi = -80);
 
     // sets a custom ip /gateway /subnet configuration
     #ifdef WM_AP_STATIC_IP
@@ -330,15 +299,6 @@ class WiFiManager
     // get last connection result, includes autoconnect and wifisave
     uint8_t       getLastConxResult();
 
-    // get a status as string
-    #ifdef WM_DEBUG_LEVEL
-    String        getWLStatusString(uint8_t status);
-    String        getWLStatusString();
-    #endif
-
-    // get wifi mode as string
-    String        getModeString(uint8_t mode);
-
     // gets number of retries for autoconnect, force retry after wait failure exit
     uint8_t       getConnectRetries();
 
@@ -357,14 +317,6 @@ class WiFiManager
     String        getWiFiHostname();
 
     bool          getBestAPChannel(int32_t& channel, int& quality);
-
-    // toggle debug output
-    void          setDebugOutput(bool debug);
-    void          setDebugOutput(bool debug, String prefix); // log line prefix, default "*wm:"
-    // debug output the softap config
-    #ifdef WM_DODEBUG
-    void          debugSoftAPConfig();
-    #endif
 
     // Transitional function to read out the NVS-stored credentials
     void          getStoredCredentials(char *ssid, size_t slen, char *pass, size_t plen);
@@ -396,21 +348,21 @@ class WiFiManager
     int           _numNetworks            = 0;
     int16_t       _numNetworksAsync       = 0;
     unsigned long _lastscan               = 0; // ms for timing wifi scans
-    #ifdef WM_DEBUG_LEVEL
-    unsigned long _startscan              = 0; // ms for timing wifi scans
-    #endif
     unsigned long _bestChCacheTime        = 0;
     uint16_t      _bestChCache            = 0;
 
     // SSIDs and passwords
-    const uint8_t DNS_PORT                = 53;
-    char          _apName[34]             = "no-net";
+    char          _apName[34]             = "";
     char          _apPassword[66]         = "";
-    char          _ssid[34]               = ""; // currently used ssid
-    char          _pass[66]               = ""; // currently used psk
+    char          _ssid[34]               = "";    // currently used ssid
+    char          _pass[66]               = "";    // currently used psk
+
+    char          _hostname[34]           = "";    // hostname for dhcp, and/or MDNS
+
+    char          _title[64]              = "WiFiManager"; // app title
 
     // options & flags
-    unsigned long _connectTimeout         = 0; // ms stop trying to connect to ap if set
+    unsigned long _connectTimeout         = 0;     // ms stop trying to connect to ap if set
 
     bool          _cleanConnect           = false; // disconnect before connect in connectwifi, increases stability on connects
     #if 0
@@ -426,22 +378,20 @@ class WiFiManager
                                                    // https://github.com/tzapu/WiFiManager/issues/1067
 
     wifi_event_id_t wm_event_id           = 0;
-    static uint8_t  _lastconxresulttmp;            // for wifi event callback
+    static uint8_t  _eventlastconxresult;          // for wifi event callback
     static bool     _gotip;                        // for wifi event callback
 
-    int           _minimumQuality         = -1;    // filter wifiscan ap by this rssi
+    int           _minimumRSSI            = -1000; // filter wifiscan ap by this rssi
     bool          _staShowStaticFields    = false;
     bool          _staShowDns             = false;
     bool          _showBack               = false; // show back button
-    char          _hostname[34]           = "";    // hostname for dhcp, and/or MDNS
+
+    bool          _showUploadSnd          = false; // Show upload audio on Update page
+    bool          _showContMsg            = false;
+    char          _sndContName[8]         = "";    // File name of BIN file to upload
 
     const char*   _customHeadElement      = NULL;  // store custom head element html from user isnide <head>
     const char*   _customMenuHTML         = NULL;  // store custom head element html from user inside <>
-    char          _title[64]              = "WiFiManager"; // app title
-
-    bool          _showUploadSnd          = false;  // Show upload audio on Update page
-    bool          _showContMsg            = false;
-    char          _sndContName[8]         = "";     // File name of BIN file to upload
 
     // internal options
     unsigned int  _scancachetime          = 30000; // ms cache time for preload scans
@@ -452,8 +402,10 @@ class WiFiManager
     bool          _carMode                = false; // Custom
 
     bool          _hasBegun               = false; // flag wm loaded,unloaded
+
     void          _begin();
     void          _end();
+
 	  void          _delay(unsigned int mydel);
 
 	  bool          CheckParmID(const char *id);
@@ -513,9 +465,6 @@ class WiFiManager
   	void          handleParam();
     void          handleParamSave();
 
-  	// Erase page
-  	void          handleErase();
-
   	// OTA Update page
   	void          handleUpdate();
   	void          handleUpdating();
@@ -527,10 +476,8 @@ class WiFiManager
     void          processConfigPortal(bool handleWeb);
 
     // wifi platform abstractions
-    uint8_t       WiFi_softap_num_stations();
     void          WiFi_installEventHandler();
     String        WiFi_SSID() const;
-    size_t        WiFi_psk_len() const;
 
     int16_t       WiFi_scanNetworks(bool force, bool async);
 	  int16_t       WiFi_waitForScan();
@@ -546,9 +493,12 @@ class WiFiManager
     String        htmlEntities(String str, bool whitespace = false);
 	  int           htmlEntitiesLen(String& str, bool whitespace = false);
 
+	  long          wmmap(long x);
+
     // get default ap esp uses, esp_chipid
     void          getDefaultAPName(char *apname);
 
+    // internal version
     bool          _getbestapchannel(int32_t& channel, int& quality);
 
     // reboot esp32
@@ -566,7 +516,7 @@ class WiFiManager
     int           _max_wifi_params;
     WiFiManagerParameter** _wifiparams = NULL;
 
-    bool         _uplError             = false;
+    bool          _uplError            = false;
 
     // callbacks
     #ifdef WM_APCALLBACK
@@ -579,7 +529,6 @@ class WiFiManager
     void (*_saveparamscallback)(void);
     void (*_preotaupdatecallback)(void);
     void (*_postotaupdatecallback)(bool);
-	  void (*_erasecallback)(bool);
 	  void (*_menuoutcallback)(String &page);
 	  int  (*_menuoutlencallback)(void);
 	  void (*_delayreplacement)(unsigned int);
@@ -592,6 +541,15 @@ class WiFiManager
 	  void (_wifieventcallback)(WiFiEvent_t event);
 	  #endif
 
+    #ifdef _A10001986_DBG
+    // get a status as string
+    String        getWLStatusString(uint8_t status);
+    // get wifi mode as string
+    String        getModeString(uint8_t mode);
+    // debug output the softap config
+    void          debugSoftAPConfig();
+    #endif
+
     #if 0
     template <class T>
     auto optionalIPFromString(T *obj, const char *s) -> decltype(  obj->fromString(s)  ) {
@@ -601,44 +559,6 @@ class WiFiManager
         return false;
     }
     #endif
-
-    // debugging
-    typedef enum {
-        DEBUG_SILENT    = 0, // debug OFF but still compiled for runtime
-        DEBUG_ERROR     = 1, // error only
-        DEBUG_NOTIFY    = 2, // default stable,INFO
-        DEBUG_VERBOSE   = 3, // move verbose info
-        DEBUG_DEV       = 4, // development useful debugging info
-        DEBUG_MAX       = 5  // MAX extra dev auditing, var dumps etc (MAX+1 will print timing,mem and frag info)
-    } wm_debuglevel_t;
-
-    bool _debug  = true;
-    String _debugPrefix;	// = FPSTR(S_debugPrefix);
-
-    wm_debuglevel_t debugLvlShow = DEBUG_VERBOSE; // at which level start showing [n] level tags
-
-    #ifdef WM_DEBUG_LEVEL
-    uint8_t _debugLevel = (uint8_t)WM_DEBUG_LEVEL;
-    #else
-    uint8_t _debugLevel = 0; // default debug level
-    #endif
-
-    #ifdef WM_DEBUG_PORT
-    Print& _debugPort = WM_DEBUG_PORT;
-    #else
-    Print& _debugPort = Serial; // debug output stream ref
-    #endif
-
-    template <typename Generic>
-    void        DEBUG_WM(Generic text);
-
-    template <typename Generic>
-    void        DEBUG_WM(wm_debuglevel_t level,Generic text);
-    template <typename Generic, typename Genericb>
-    void        DEBUG_WM(Generic text,Genericb textb);
-    template <typename Generic, typename Genericb>
-    void        DEBUG_WM(wm_debuglevel_t level, Generic text,Genericb textb);
-
 };
 
 #endif

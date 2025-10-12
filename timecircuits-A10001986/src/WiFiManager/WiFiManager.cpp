@@ -17,7 +17,7 @@
 #include "WiFiManager.h"
 #include "wm_strings_en.h"
 
-uint8_t WiFiManager::_lastconxresulttmp = WL_IDLE_STATUS;
+uint8_t WiFiManager::_eventlastconxresult = WL_IDLE_STATUS;
 bool    WiFiManager::_gotip = false;
 
 #define STRLEN(x) (sizeof(x)-1)
@@ -252,11 +252,6 @@ void WiFiManager::allocWiFiParms(int numParms)
 
 // Constructors
 
-WiFiManager::WiFiManager(Print& consolePort):_debugPort(consolePort)
-{
-    WiFiManagerInit();
-}
-
 WiFiManager::WiFiManager()
 {
     WiFiManagerInit();
@@ -267,8 +262,6 @@ void WiFiManager::WiFiManagerInit()
     const int8_t defMenu[3] = { WM_MENU_WIFI, WM_MENU_SEP, WM_MENU_UPDATE };
 
     setMenu(defMenu, 3);
-
-    _debugPrefix = FPSTR(S_debugPrefix);
 
     _max_params = _max_wifi_params = WIFI_MANAGER_MAX_PARAMS;
 
@@ -330,8 +323,8 @@ void WiFiManager::_delay(unsigned int mydel)
 
 bool WiFiManager::autoConnect(const char *ssid, const char *pass, const char *apName, const char *apPassword)
 {
-    #ifdef WM_DEBUG_LEVEL
-    DEBUG_WM(F("AutoConnect"));
+    #ifdef _A10001986_DBG
+    Serial.println("AutoConnect");
     #endif
 
     // Store given ssid/pass
@@ -373,8 +366,8 @@ bool WiFiManager::autoConnect(const char *ssid, const char *pass, const char *ap
     // Set STA mode (not strictly required, WiFi.begin will do that as well)
     // This does not actually connect, it just sets (current mode|STA)
     if(!WiFi.enableSTA(true)) {
-        #ifdef WM_DEBUG_LEVEL
-        DEBUG_WM(DEBUG_ERROR,F("[FATAL] Unable to enable wifi!"));
+        #ifdef _A10001986_DBG
+        Serial.println("[FATAL] Unable to enable wifi!");
         #endif
         return false;
     }
@@ -393,8 +386,8 @@ bool WiFiManager::autoConnect(const char *ssid, const char *pass, const char *ap
 
     if(WiFi.status() == WL_CONNECTED) {
 
-        #ifdef WM_DEBUG_LEVEL
-        DEBUG_WM(F("AutoConnect: Already connected"));
+        #ifdef _A10001986_DBG
+        Serial.println("AutoConnect: Already connected");
         #endif
 
         connected = true;
@@ -407,11 +400,11 @@ bool WiFiManager::autoConnect(const char *ssid, const char *pass, const char *ap
 
     } else if(connected || (connectWifi(ssid, pass) == WL_CONNECTED)) {
 
-        #ifdef WM_DEBUG_LEVEL
-        DEBUG_WM(F("AutoConnect: SUCCESS"));
-        DEBUG_WM(F("STA IP Address:"),WiFi.localIP());
+        #ifdef _A10001986_DBG
+        Serial.println("AutoConnect: SUCCESS");
+        Serial.printf("STA IP Address: %s\n", toStringIp(WiFi.localIP()).c_str());
         if(*_hostname) {
-            DEBUG_WM(DEBUG_DEV,F("hostname: "), getWiFiHostname());
+            Serial.printf("hostname: %s\n", getWiFiHostname().c_str());
         }
         #endif
 
@@ -430,8 +423,8 @@ bool WiFiManager::autoConnect(const char *ssid, const char *pass, const char *ap
 
     // Not connected:
 
-    #ifdef WM_DEBUG_LEVEL
-    DEBUG_WM(F("AutoConnect: Not connected"));
+    #ifdef _A10001986_DBG
+    Serial.println("AutoConnect: Not connected");
     #endif
 
     // Disable STA if enabled
@@ -454,13 +447,13 @@ bool WiFiManager::startAP()
     int32_t channel = _apChannel;
     bool ret = true;
 
-    #ifdef WM_DEBUG_LEVEL
-    DEBUG_WM(F("StartAP with SSID: "), _apName);
+    #ifdef _A10001986_DBG
+    Serial.printf("StartAP with SSID: %s\n", _apName);
     #endif
 
-    #ifdef WM_DEBUG_LEVEL
+    #ifdef _A10001986_DBG
     if(channel > 0) {
-        DEBUG_WM(DEBUG_VERBOSE,F("Starting AP on channel:"), channel);
+        Serial.printf("Starting AP on channel: %d\n", channel);
     }
     #endif
 
@@ -493,8 +486,8 @@ bool WiFiManager::startAP()
 
         if(!WiFi.softAPConfig(_ap_static_ip, _ap_static_gw, _ap_static_sn)) {
 
-            #ifdef WM_DEBUG_LEVEL
-            DEBUG_WM(DEBUG_ERROR,F("[ERROR] softAPConfig failed!"));
+            #ifdef _A10001986_DBG
+            Serial.println("[ERROR] softAPConfig failed"));
             #endif
 
         }
@@ -527,9 +520,9 @@ bool WiFiManager::startAP()
     if(_debugLevel >= DEBUG_DEV) debugSoftAPConfig();
     #endif
 
-    #ifdef WM_DEBUG_LEVEL
-    if(!ret) DEBUG_WM(DEBUG_ERROR,F("[ERROR] There was a problem starting the AP"));
-    DEBUG_WM(F("AP IP address:"), WiFi.softAPIP());
+    #ifdef _A10001986_DBG
+    if(!ret) Serial.println("[ERROR] There was a problem starting the AP");
+    Serial.printf("AP IP address: %s\n", toStringIp(WiFi.softAPIP()).c_str());
     #endif
 
     // set ap hostname (seems ok to do this after softAP())
@@ -559,8 +552,8 @@ void WiFiManager::stopWebPortal()
     if(!configPortalActive && !webPortalActive)
         return;
 
-    #ifdef WM_DEBUG_LEVEL
-    DEBUG_WM(DEBUG_VERBOSE,F("Stopping Web Portal"));
+    #ifdef _A10001986_DBG
+    Serial.println("Stopping Web Portal");
     #endif
 
     webPortalActive = false;
@@ -571,8 +564,8 @@ void WiFiManager::stopWebPortal()
 
 void WiFiManager::setupHTTPServer()
 {
-    #ifdef WM_DEBUG_LEVEL
-    DEBUG_WM(F("Starting Web Portal"));
+    #ifdef _A10001986_DBG
+    Serial.println("Starting Web Portal");
     #endif
 
     server.reset(new WebServer(_httpPort));
@@ -585,16 +578,13 @@ void WiFiManager::setupHTTPServer()
 
     // Setup httpd callbacks
 
-    // G macro workaround for Uri() bug https://github.com/esp8266/Arduino/issues/7102
-    server->on(WM_G(R_root),       std::bind(&WiFiManager::handleRoot, this));
-    server->on(WM_G(R_wifi),       std::bind(&WiFiManager::handleWifi, this, true));
-    server->on(WM_G(R_wifinoscan), std::bind(&WiFiManager::handleWifi, this, false));
-    server->on(WM_G(R_wifisave),   std::bind(&WiFiManager::handleWifiSave, this));
-    server->on(WM_G(R_param),      std::bind(&WiFiManager::handleParam, this));
-    server->on(WM_G(R_paramsave),  std::bind(&WiFiManager::handleParamSave, this));
-    server->on(WM_G(R_update),     std::bind(&WiFiManager::handleUpdate, this));
-    server->on(WM_G(R_updatedone), HTTP_POST, std::bind(&WiFiManager::handleUpdateDone, this), std::bind(&WiFiManager::handleUpdating, this));
-    server->on(WM_G(R_erase),      std::bind(&WiFiManager::handleErase, this));
+    server->on(R_root,       std::bind(&WiFiManager::handleRoot, this));
+    server->on(R_wifi,       std::bind(&WiFiManager::handleWifi, this, true));
+    server->on(R_wifisave,   std::bind(&WiFiManager::handleWifiSave, this));
+    server->on(R_param,      std::bind(&WiFiManager::handleParam, this));
+    server->on(R_paramsave,  std::bind(&WiFiManager::handleParamSave, this));
+    server->on(R_update,     std::bind(&WiFiManager::handleUpdate, this));
+    server->on(R_updatedone, HTTP_POST, std::bind(&WiFiManager::handleUpdateDone, this), std::bind(&WiFiManager::handleUpdating, this));
 
     server->onNotFound(std::bind(&WiFiManager::handleNotFound, this));
 
@@ -602,8 +592,8 @@ void WiFiManager::setupHTTPServer()
 
     server->begin();
 
-    #ifdef WM_DEBUG_LEVEL
-    DEBUG_WM(DEBUG_VERBOSE,F("HTTP server started"));
+    #ifdef _A10001986_DBG
+    Serial.println("HTTP server started");
     #endif
 }
 
@@ -650,8 +640,8 @@ bool WiFiManager::startConfigPortal(char const *apName, char const *apPassword, 
     _begin();
 
     if(configPortalActive) {
-        #ifdef WM_DEBUG_LEVEL
-        DEBUG_WM(DEBUG_VERBOSE,F("Config Portal is already running"));
+        #ifdef _A10001986_V_DBG
+        Serial.println("Config Portal is already running");
         #endif
         return false;
     }
@@ -679,8 +669,8 @@ bool WiFiManager::startConfigPortal(char const *apName, char const *apPassword, 
         strncpy(_pass, pass, sizeof(_pass) - 1);
     }
 
-    #ifdef WM_DEBUG_LEVEL
-    DEBUG_WM(DEBUG_VERBOSE,F("Starting Config Portal"));
+    #ifdef _A10001986_V_DBG
+    Serial.println("Starting Config Portal");
     #endif
 
     if(!*_apName) getDefaultAPName(_apName);
@@ -701,8 +691,8 @@ bool WiFiManager::startConfigPortal(char const *apName, char const *apPassword, 
 
         WiFi.enableSTA(false);
 
-        #ifdef WM_DEBUG_LEVEL
-        DEBUG_WM(DEBUG_VERBOSE,F("Disabling STA"));
+        #ifdef _A10001986_V_DBG
+        Serial.println("Disabling STA");
         #endif
 
     }
@@ -724,8 +714,8 @@ bool WiFiManager::startConfigPortal(char const *apName, char const *apPassword, 
     WiFi_installEventHandler();
 
     // start access point
-    #ifdef WM_DEBUG_LEVEL
-    DEBUG_WM(DEBUG_VERBOSE,F("Enabling AP"));
+    #ifdef _A10001986_V_DBG
+    Serial.println("Starting AP");
     #endif
 
     startAP();
@@ -751,8 +741,8 @@ bool WiFiManager::startConfigPortal(char const *apName, char const *apPassword, 
     // init mDNS
     setupMDNS();
 
-    #ifdef WM_DEBUG_LEVEL
-    DEBUG_WM(DEBUG_VERBOSE,F("Config Portal Running"));
+    #ifdef _A10001986_V_DBG
+    Serial.println("Config Portal Running");
     #endif
 
     return true;
@@ -808,8 +798,8 @@ void WiFiManager::processConfigPortal(bool handleWeb)
  */
 bool WiFiManager::shutdownConfigPortal()
 {
-    #ifdef WM_DEBUG_LEVEL
-    DEBUG_WM(DEBUG_VERBOSE,F("shutdownConfigPortal"));
+    #ifdef _A10001986_V_DBG
+    Serial.println("shutdownConfigPortal");
     #endif
 
     if(webPortalActive)
@@ -840,7 +830,9 @@ bool WiFiManager::shutdownConfigPortal()
 
     configPortalActive = false;
 
-    DEBUG_WM(DEBUG_VERBOSE,F("configportal closed"));
+    #ifdef _A10001986_V_DBG
+    Serial.println("configportal closed");
+    #endif
 
     _end();
     return ret;
@@ -851,8 +843,8 @@ bool WiFiManager::shutdownConfigPortal()
 // clean up, flow is convoluted, and causes bugs
 uint8_t WiFiManager::connectWifi(const char *ssid, const char *pass)
 {
-    #ifdef WM_DEBUG_LEVEL
-    DEBUG_WM(DEBUG_VERBOSE,F("Connecting as wifi client..."));
+    #ifdef _A10001986_V_DBG
+    Serial.println("Connecting as wifi client...");
     #endif
 
     uint8_t retry = 1;
@@ -876,8 +868,8 @@ uint8_t WiFiManager::connectWifi(const char *ssid, const char *pass)
         if(_connectRetries > 1) {
             if(_aggresiveReconn) _delay(1000); // add idle time before recon
 
-            #ifdef WM_DEBUG_LEVEL
-            DEBUG_WM(F("Connect Wifi, ATTEMPT #"),(String)retry+" of "+(String)_connectRetries);
+            #ifdef _A10001986_DBG
+            Serial.printf("Connecting Wifi, attempt %d of %d\n", retry, _connectRetries);
             #endif
         }
 
@@ -887,8 +879,8 @@ uint8_t WiFiManager::connectWifi(const char *ssid, const char *pass)
 
         connRes = waitForConnectResult(haveStatic);
 
-        #ifdef WM_DEBUG_LEVEL
-        DEBUG_WM(DEBUG_VERBOSE,F("Connection result:"), getWLStatusString(connRes));
+        #ifdef _A10001986_V_DBG
+        Serial.printf("Connection result: %s\n", getWLStatusString(connRes).c_str());
         #endif
 
         retry++;
@@ -897,12 +889,16 @@ uint8_t WiFiManager::connectWifi(const char *ssid, const char *pass)
     if(connRes != WL_SCAN_COMPLETED) {
         _lastconxresult = connRes;
         if(_lastconxresult == WL_CONNECT_FAILED || _lastconxresult == WL_DISCONNECTED) {
-            if(_lastconxresulttmp != WL_IDLE_STATUS) {
-                _lastconxresult    = _lastconxresulttmp;
-                // _lastconxresulttmp = WL_IDLE_STATUS;
+            if(_eventlastconxresult != WL_IDLE_STATUS) {
+                _lastconxresult    = _eventlastconxresult;
+                // _eventlastconxresult = WL_IDLE_STATUS;
             }
         }
     }
+
+    #ifdef _A10001986_V_DBG
+    Serial.printf("ConnectWifi returns %d (%d)\n", connRes, _lastconxresult);
+    #endif
 
     return connRes;
 }
@@ -919,15 +915,15 @@ bool WiFiManager::wifiConnectNew(const char *ssid, const char *pass)
 {
     bool ret = false;
 
-    #ifdef WM_DEBUG_LEVEL
-    DEBUG_WM(F("Connecting to WiFI network:"),ssid);
-    DEBUG_WM(DEBUG_DEV,F("Using Password:"),pass);
+    #ifdef _A10001986_V_DBG
+    Serial.printf("Connecting to WiFI network: %s\n", ssid);
+    Serial.printf("Using Password: %s\n", pass);
     #endif
 
     ret = WiFi.begin(ssid, pass, 0, NULL, true);
 
-    #ifdef WM_DEBUG_LEVEL
-    if(!ret) DEBUG_WM(DEBUG_ERROR,F("[ERROR] wifi begin failed"));
+    #ifdef _A10001986_DBG
+    if(!ret) Serial.println("[ERROR] wifi begin failed");
     #endif
 
     return ret;
@@ -940,15 +936,15 @@ bool WiFiManager::wifiConnectNew(const char *ssid, const char *pass)
  */
 bool WiFiManager::setStaticConfig()
 {
-    #ifdef WM_DEBUG_LEVEL
-    DEBUG_WM(DEBUG_DEV,F("STA static IP:"), _sta_static_ip);
+    #ifdef _A10001986_DBG
+    Serial.printf("STA static IP: %s\n", toStringIp(_sta_static_ip).c_str());
     #endif
 
     if(_sta_static_ip) {
         bool ret;
 
-        #ifdef WM_DEBUG_LEVEL
-        DEBUG_WM(DEBUG_VERBOSE,F("Custom static IP/GW/Subnet/DNS"));
+        #ifdef _A10001986_V_DBG
+        Serial.println("Custom static IP/GW/Subnet/DNS");
         #endif
 
         if(_sta_static_dns) {
@@ -957,9 +953,9 @@ bool WiFiManager::setStaticConfig()
             ret = WiFi.config(_sta_static_ip, _sta_static_gw, _sta_static_sn);
         }
 
-        #ifdef WM_DEBUG_LEVEL
-        if(!ret) DEBUG_WM(DEBUG_ERROR,F("[ERROR] wifi config failed"));
-        else DEBUG_WM(F("STA IP set:"), WiFi.localIP());
+        #ifdef _A10001986_DBG
+        if(!ret) Serial.println("[ERROR] wifi config failed");
+        else Serial.printf("STA IP set: %s\n", toStringIp(WiFi.localIP()).c_str());
         #endif
 
         return ret;
@@ -989,8 +985,8 @@ uint8_t WiFiManager::waitForConnectResult(bool haveStatic, uint32_t timeout)
     haveStatic = false;
 
     if(!timeout) {
-        #ifdef WM_DEBUG_LEVEL
-        DEBUG_WM(F("connectTimeout not set, waitForConnectResult..."));
+        #ifdef _A10001986_DBG
+        Serial.println("connectTimeout not set, waitForConnectResult...");
         #endif
 
         status = WiFi.waitForConnectResult();
@@ -1003,14 +999,15 @@ uint8_t WiFiManager::waitForConnectResult(bool haveStatic, uint32_t timeout)
                     _delay(100);
                 }
             }
-            return status;
         }
+
+        return status;
     }
 
     timeoutmillis = millis() + timeout;
 
-    #ifdef WM_DEBUG_LEVEL
-    DEBUG_WM(DEBUG_VERBOSE,timeout,F("ms timeout, waiting for connect..."));
+    #ifdef _A10001986_V_DBG
+    Serial.printf("%s ms timeout, waiting for connect...\n", timeout);
     #endif
 
     status = WiFi.status();
@@ -1036,8 +1033,8 @@ uint8_t WiFiManager::waitForConnectResult(bool haveStatic, uint32_t timeout)
             return status;
         }
 
-        #ifdef WM_DEBUG_LEVEL
-        DEBUG_WM (DEBUG_VERBOSE,F("."));
+        #ifdef _A10001986_DBG
+        Serial.println(".");
         #endif
 
         _delay(100);
@@ -1098,6 +1095,10 @@ int WiFiManager::reportStatusLen()
     int bufSize = 0;
     String SSID = WiFi_SSID();
 
+    #ifdef _A10001986_V_DBG
+    Serial.printf("reportStatus: _lastconxresult %d\n", _lastconxresult);
+    #endif
+
     if(SSID != "") {
         if(WiFi.status() == WL_CONNECTED) {
             bufSize = STRLEN(HTTP_STATUS_ON) - (2*3);
@@ -1115,6 +1116,9 @@ int WiFiManager::reportStatusLen()
                 break;
             case WL_CONNECTION_LOST:
                 bufSize += (STRLEN(HTTP_STATUS_OFFFAIL) + STRLEN(HTTP_STATUS_APMODE));
+                break;
+            case WL_DISCONNECTED:
+                bufSize += (STRLEN(HTTP_STATUS_DISCONN) + STRLEN(HTTP_STATUS_APMODE));
                 break;
             default:
                 bufSize += _carMode ? STRLEN(HTTP_STATUS_CARMODE) : STRLEN(HTTP_STATUS_APMODE);
@@ -1147,19 +1151,24 @@ void WiFiManager::reportStatus(String &page, unsigned int estSize)
             str = FPSTR(HTTP_STATUS_OFF);
             str.replace(FPSTR(T_v), htmlEntities(SSID));
             switch(_lastconxresult) {
-            case WL_NO_SSID_AVAIL:          // connect failed, or ap not found
+            case WL_NO_SSID_AVAIL:    // connect failed, or ap not found
                 str.replace(FPSTR(T_c), "D");
                 str.replace(FPSTR(T_r), FPSTR(HTTP_STATUS_OFFNOAP));
                 str.replace(FPSTR(T_V), FPSTR(HTTP_STATUS_APMODE));
                 break;
-            case WL_CONNECT_FAILED:         // connect failed
+            case WL_CONNECT_FAILED:   // connect failed
                 str.replace(FPSTR(T_c), "D");
                 str.replace(FPSTR(T_r), FPSTR(HTTP_STATUS_OFFFAIL));
                 str.replace(FPSTR(T_V), FPSTR(HTTP_STATUS_APMODE));
                 break;
-            case WL_CONNECTION_LOST:        // connect failed, MOST likely 4WAY_HANDSHAKE_TIMEOUT/incorrect
+            case WL_CONNECTION_LOST:  // connect failed, MOST likely 4WAY_HANDSHAKE_TIMEOUT/incorrect
                 str.replace(FPSTR(T_c), "D"); // password, state is ambiguous however
                 str.replace(FPSTR(T_r), FPSTR(HTTP_STATUS_OFFFAIL));
+                str.replace(FPSTR(T_V), FPSTR(HTTP_STATUS_APMODE));
+                break;
+            case WL_DISCONNECTED:     // wrong or missing password
+                str.replace(FPSTR(T_c), "D");
+                str.replace(FPSTR(T_r), FPSTR(HTTP_STATUS_DISCONN));
                 str.replace(FPSTR(T_V), FPSTR(HTTP_STATUS_APMODE));
                 break;
             default:
@@ -1196,8 +1205,8 @@ unsigned int WiFiManager::getParamOutSize(WiFiManagerParameter** params,
         for(int i = 0; i < paramsCount; i++) {
 
             if(!params[i] || params[i]->_length > 99999) {
-                #ifdef WM_DEBUG_LEVEL
-                DEBUG_WM(DEBUG_ERROR,F("[ERROR getParamOutSize] WiFiManagerParameter is out of scope"));
+                #ifdef _A10001986_DBG
+                Serial.println("[ERROR getParamOutSize] WiFiManagerParameter is out of scope");
                 #endif
                 continue;
             }
@@ -1285,8 +1294,8 @@ void WiFiManager::getParamOut(WiFiManagerParameter** params,
 
             // Just see if any of our params has been destructed in the meantime
             if(!params[i] || params[i]->_length > 99999) {
-                #ifdef WM_DEBUG_LEVEL
-                DEBUG_WM(DEBUG_ERROR,F("[ERROR] WiFiManagerParameter is out of scope"));
+                #ifdef _A10001986_DBG
+                Serial.println("[ERROR] WiFiManagerParameter is out of scope");
                 #endif
                 continue;
             }
@@ -1322,6 +1331,8 @@ void WiFiManager::getParamOut(WiFiManagerParameter** params,
                 pitem.replace(FPSTR(T_v), params[i]->getValue());  // T_v value
                 if(params[i]->getCustomHTML()) {                   // T_c additional attributes
                     pitem.replace(FPSTR(T_c), params[i]->getCustomHTML());
+                } else {
+                    pitem.replace(FPSTR(T_c), "");
                 }
 
             } else if(params[i]->_customHTMLGenerator) {
@@ -1365,8 +1376,8 @@ void WiFiManager::doParamSave(WiFiManagerParameter** params, int paramsCount)
 
             // Just see if any of our params has been destructed in the meantime
             if(!params[i] || params[i]->_length > 99999) {
-                #ifdef WM_DEBUG_LEVEL
-                DEBUG_WM(DEBUG_ERROR,F("[ERROR] WiFiManagerParameter is out of scope"));
+                #ifdef _A10001986_DBG
+                Serial.println("[ERROR] WiFiManagerParameter is out of scope");
                 #endif
                 break;
             }
@@ -1525,8 +1536,8 @@ void WiFiManager::handleRoot()
     unsigned int headSize = 0;
     unsigned int repSize = 0;
 
-    #ifdef WM_DEBUG_LEVEL
-    DEBUG_WM(DEBUG_VERBOSE,F("<- HTTP Root"));
+    #ifdef _A10001986_DBG
+    Serial.println("<- HTTP Root");
     #endif
 
     String page;
@@ -1579,8 +1590,8 @@ int16_t WiFiManager::WiFi_waitForScan()
     // Wait until scanComplete returns != RUNNING
     while((res = WiFi.scanComplete()) == WIFI_SCAN_RUNNING) {
 
-        #ifdef WM_DEBUG_LEVEL
-        DEBUG_WM(DEBUG_ERROR,".");
+        #ifdef _A10001986_DBG
+        Serial.println(".");
         #endif
 
         _delay(250);
@@ -1613,8 +1624,8 @@ int16_t WiFiManager::WiFi_waitForScan()
 int16_t WiFiManager::WiFi_scanNetworks(bool force, bool async)
 {
     if(!_numNetworks && _autoforcerescan) {
-        #ifdef WM_DEBUG_LEVEL
-        DEBUG_WM(DEBUG_DEV,"NO APs found forcing new scan");
+        #ifdef _A10001986_DBG
+        Serial.println("No wetworks found, forcing new scan");
         #endif
         force = true;
     }
@@ -1629,14 +1640,11 @@ int16_t WiFiManager::WiFi_scanNetworks(bool force, bool async)
         int16_t res;
 
         _numNetworks = 0;
-        #ifdef WM_DEBUG_LEVEL
-        _startscan = millis();
-        #endif
 
         if(async && _asyncScan) {
 
-            #ifdef WM_DEBUG_LEVEL
-            DEBUG_WM(DEBUG_VERBOSE,F("WiFi Scan ASYNC started"));
+            #ifdef _A10001986_V_DBG
+            Serial.println("WiFi Scan ASYNC started");
             #endif
 
             // Reset marker for event callback
@@ -1647,16 +1655,16 @@ int16_t WiFiManager::WiFi_scanNetworks(bool force, bool async)
 
         }
 
-        #ifdef WM_DEBUG_LEVEL
-        DEBUG_WM(DEBUG_VERBOSE,F("WiFi Scan SYNC started"));
+        #ifdef _A10001986_V_DBG
+        Serial.println("WiFi Scan SYNC started");
         #endif
 
         res = WiFi.scanNetworks();
 
         if(res == WIFI_SCAN_FAILED) {
 
-            #ifdef WM_DEBUG_LEVEL
-            DEBUG_WM(DEBUG_ERROR,F("[ERROR] scan failed"));
+            #ifdef _A10001986_DBG
+            Serial.println("[ERROR] scan failed");
             #endif
 
         } else if(res >= 0) {
@@ -1666,8 +1674,8 @@ int16_t WiFiManager::WiFi_scanNetworks(bool force, bool async)
 
         }
 
-        #ifdef WM_DEBUG_LEVEL
-        DEBUG_WM(DEBUG_VERBOSE,F("WiFi Scan completed"), "in "+(String)(_lastscan - _startscan)+" ms");
+        #ifdef _A10001986_V_DBG
+        Serial.println("WiFi Scan completed");
         #endif
 
         return res;
@@ -1681,14 +1689,14 @@ void WiFiManager::sortNetworks(int n, int *indices, int& haveDupes, bool removeD
 {
     if(n == 0) {
 
-        #ifdef WM_DEBUG_LEVEL
-        DEBUG_WM(F("No networks found"));
+        #ifdef _A10001986_DBG
+        Serial.println("No networks found");
         #endif
 
     } else {
 
-        #ifdef WM_DEBUG_LEVEL
-        DEBUG_WM(n,F("networks found"));
+        #ifdef _A10001986_DBG
+        Serial.printf("%d networks found\n", n);
         #endif
 
         // sort networks
@@ -1748,9 +1756,9 @@ unsigned int WiFiManager::getScanItemsLen(int n, bool scanErr, int *indices, uns
             // <div><a href='#p' onclick='c(this)' data-ssid='{V}'>{v}</a>
             // <div role='img' aria-label='{r}%' title='{r}%' class='q q-{q} {i}'></div></div>
 
-            int rssiperc = getRSSIasQuality(WiFi.RSSI(indices[i]));
+            int rssi = WiFi.RSSI(indices[i]);
 
-            if(_minimumQuality == -1 || _minimumQuality < rssiperc) {
+            if(_minimumRSSI < rssi) {
 
                 String SSID = WiFi.SSID(indices[i]);
                 if(SSID == "") {
@@ -1764,7 +1772,7 @@ unsigned int WiFiManager::getScanItemsLen(int n, bool scanErr, int *indices, uns
                 mySize += STRLEN(HTTP_WIFI_ITEM) - (6*3);
                 mySize += htmlEntitiesLen(SSID);
                 mySize += htmlEntitiesLen(SSID, true);
-                mySize += (5+3+1+1);     // rssi, rssi perc, mapped percentage, enc class
+                mySize += (4+4+1+1);     // rssi, rssi, qual class, enc class
                 if(showall) mySize += 6; // chnlnum
 
                 if(mySize > maxItemSize) maxItemSize = mySize;
@@ -1772,7 +1780,7 @@ unsigned int WiFiManager::getScanItemsLen(int n, bool scanErr, int *indices, uns
             } else {
 
                 #ifdef _A10001986_DBG
-                Serial.printf("WM: skipping %s, qual %d\n", WiFi.SSID(indices[i]).c_str(), rssiperc);
+                Serial.printf("WM: skipping %s, rssi %d\n", WiFi.SSID(indices[i]).c_str(), rssi);
                 #endif
 
             }
@@ -1804,21 +1812,16 @@ String WiFiManager::getScanItemsOut(int n, bool scanErr, int *indices, unsigned 
         String item;
         if(maxItemSize) item.reserve(maxItemSize);
 
-        // <div><a href='#p' onclick='{t}}(this)' data-ssid='{V}'>{v}</a>
-        // <div role='img' aria-label='{r}%' title='{r}%' class='q q-{q} {i}'></div></div>
+        // <div><a href='#p' onclick='{t}(this)' data-ssid='{V}'>{v}</a>
+        // <div role='img' aria-label='{r}dbm' title='{r}dbm' class='q q-{q} {i}'></div></div>
 
         // display networks in page
         for(int i = 0; i < n; i++) {
             if(indices[i] == -1) continue;
 
-            #ifdef WM_DEBUG_LEVEL
-            DEBUG_WM(DEBUG_VERBOSE,F("AP: "),(String)WiFi.RSSI(indices[i]) + " " + (String)WiFi.SSID(indices[i]));
-            #endif
-
             int rssi = WiFi.RSSI(indices[i]);
-            int rssiperc = getRSSIasQuality(rssi);
 
-            if(_minimumQuality == -1 || _minimumQuality < rssiperc) {
+            if(_minimumRSSI <= rssi) {
 
                 uint8_t enc_type = WiFi.encryptionType(indices[i]);
                 String SSID = WiFi.SSID(indices[i]);
@@ -1845,12 +1848,8 @@ String WiFiManager::getScanItemsOut(int n, bool scanErr, int *indices, unsigned 
                     item.replace(FPSTR(T_c), "");
                 }
                 item.replace(FPSTR(T_r), (String)rssi);             // rssi percentage 0-100
-                item.replace(FPSTR(T_q), (String)int(round(map(rssiperc,0,100,1,4)))); //quality icon 1-4
-                item.replace(FPSTR(T_i), (enc_type != WM_WIFIOPEN) ? "l" : "");
-
-                #ifdef WM_DEBUG_LEVEL
-                DEBUG_WM(DEBUG_DEV,item);
-                #endif
+                item.replace(FPSTR(T_q), (String)(wmmap(rssi)));    //quality icon 1-4
+                item.replace(FPSTR(T_i), (enc_type != WIFI_AUTH_OPEN) ? "l" : "");
 
                 page += item;
                 delay(0);
@@ -1898,7 +1897,7 @@ unsigned int WiFiManager::getStaticLen()
     // "<input id='{i}' name='{n}' maxlength='{l}' value='{v}' {c}>\n"
 
     if(showSta || showDns) {
-        mySize += STRLEN(HTTP_FORM_SECTION_HEAD);
+        mySize += STRLEN(HTTP_FORM_SECT_HEAD);
     }
     if(showSta) {
         mySize += (3 * (STRLEN(HTTP_FORM_LABEL) + STRLEN(HTTP_FORM_PARAM) - (7*3)));
@@ -1912,7 +1911,7 @@ unsigned int WiFiManager::getStaticLen()
         mySize += (3*STRLEN(S_dns)) + STRLEN(S_staticdns) + 2 + 15;
     }
     if(showSta || showDns) {
-        mySize += STRLEN(HTTP_FORM_SECTION_FOOT);
+        mySize += STRLEN(HTTP_FORM_SECT_FOOT);
     }
 
     return mySize;
@@ -1929,7 +1928,7 @@ String WiFiManager::getStaticOut(unsigned int estPageSize)
     }
 
     if(showSta || showDns) {
-        page += FPSTR(HTTP_FORM_SECTION_HEAD);
+        page += FPSTR(HTTP_FORM_SECT_HEAD);
     }
     if(showSta) {
         page += getIpForm(S_ip, S_staticip, _sta_static_ip, HTTP_FORM_WIFI_PH);
@@ -1940,7 +1939,7 @@ String WiFiManager::getStaticOut(unsigned int estPageSize)
         page += getIpForm(S_dns, S_staticdns, _sta_static_dns);
     }
     if(showSta || showDns) {
-        page += FPSTR(HTTP_FORM_SECTION_FOOT);
+        page += FPSTR(HTTP_FORM_SECT_FOOT);
     }
 
     return page;
@@ -2020,7 +2019,7 @@ void WiFiManager::buildWifiPage(bool scan, String& page)
         bufSize += STRLEN(HTTP_MSG_NOSCAN);
     } else if(scan) {
         bufSize += getScanItemsLen(n, scanErr, indices, maxScanItemSize, showall);
-        if(!showall /*&& numDupes*/) {
+        if(!showall && n > 0 && !scanErr) {
             bufSize += STRLEN(HTTP_SHOWALL);
             haveShowAll = true;
         }
@@ -2036,9 +2035,6 @@ void WiFiManager::buildWifiPage(bool scan, String& page)
     bufSize += getParamOutSize(_wifiparams, _wifiparamsCount, maxItemSize);
     bufSize += STRLEN(HTTP_FORM_END);
     bufSize += STRLEN(HTTP_SCAN_LINK);
-    if(SSID_len) {
-        bufSize += STRLEN(HTTP_ERASE_FORM);
-    }
     if(haveShowAll) {
         bufSize += STRLEN(HTTP_SHOWALL_FORM);
     }
@@ -2074,7 +2070,7 @@ void WiFiManager::buildWifiPage(bool scan, String& page)
 
     pitem = FPSTR(HTTP_FORM_WIFI);
     pitem.replace(FPSTR(T_V), SSID);
-    if(WiFi_psk_len()) {
+    if(strlen(_pass)) {
         pitem.replace(FPSTR(T_p),FPSTR(S_passph));  // twice!
     } else {
         pitem.replace(FPSTR(T_p),"");
@@ -2088,9 +2084,6 @@ void WiFiManager::buildWifiPage(bool scan, String& page)
     getParamOut(_wifiparams, _wifiparamsCount, page, maxItemSize);
     page += FPSTR(HTTP_FORM_END);
     page += FPSTR(HTTP_SCAN_LINK);
-    if(SSID_len) {
-        page += FPSTR(HTTP_ERASE_FORM);
-    }
     if(haveShowAll) {
         page += FPSTR(HTTP_SHOWALL_FORM);
     }
@@ -2115,8 +2108,8 @@ void WiFiManager::handleWifi(bool scan)
 {
     String page;
 
-    #ifdef WM_DEBUG_LEVEL
-    DEBUG_WM(DEBUG_VERBOSE,F("<- HTTP Wifi"));
+    #ifdef _A10001986_V_DBG
+    Serial.println("<- HTTP Wifi");
     #endif
 
     buildWifiPage(scan, page);
@@ -2137,35 +2130,49 @@ void WiFiManager::handleWifi(bool scan)
  */
 void WiFiManager::handleWifiSave()
 {
-    bool newSSID = false;
+    bool haveNewSSID = false;
+    bool networkDeleted = false;
 
-    #ifdef WM_DEBUG_LEVEL
-    DEBUG_WM(DEBUG_VERBOSE,F("<- HTTP WiFi save "));
-    DEBUG_WM(DEBUG_DEV,F("Method:"),server->method() == HTTP_GET  ? (String)FPSTR(S_GET) : (String)FPSTR(S_POST));
+    #ifdef _A10001986_V_DBG
+    Serial.println("<- HTTP WiFi save ");
     #endif
 
     // grab new ssid/pass
     {
         String newSSID = server->arg(F("s"));
         String newPASS = server->arg(F("p"));
+        bool forgetNW = server->hasArg(F("fgn"));
+        bool pwchg = false;
 
         if(newSSID != "") {
             memset(_ssid, 0, sizeof(_ssid));
             memset(_pass, 0, sizeof(_pass));
             strncpy(_ssid, newSSID.c_str(), sizeof(_ssid) - 1);
             strncpy(_pass, newPASS.c_str(), sizeof(_pass) - 1);
-            newSSID = true;
+            haveNewSSID = true;
         } else if(newPASS != "") {
             memset(_pass, 0, sizeof(_pass));
-            strncpy(_pass, newPASS.c_str(), sizeof(_pass) - 1);
-            #ifdef _A10001986_DBG
-            Serial.println("password change detected");
-            #endif
+            // Don't save password if we have no SSID
+            if(*_ssid) {
+                strncpy(_pass, newPASS.c_str(), sizeof(_pass) - 1);
+                #ifdef _A10001986_DBG
+                Serial.println("password change detected");
+                #endif
+                pwchg = true;
+            }
+        }
+        if(!haveNewSSID && !pwchg) {
+            if(forgetNW) {
+                *_ssid = *_pass = 0;
+                networkDeleted = true;
+            }
         }
     }
 
     // At this point, _ssid and _pass are either the newly entered ones,
-    // or the previous ones (if the server-provided ones were empty)
+    // the previous ones (if the server-provided ones were empty), or
+    // 0-strings (if the user checked "Forget" while SSID and password
+    // fields were empty)
 
     // set static ips from server args
     // We skip this because we reboot as a result of "save", there
@@ -2176,27 +2183,15 @@ void WiFiManager::handleWifiSave()
         temp.reserve(16);
         if((temp = server->arg(FPSTR(S_ip))) != "") {
             optionalIPFromString(&_sta_static_ip, temp.c_str());
-            #ifdef WM_DEBUG_LEVEL
-            DEBUG_WM(DEBUG_DEV,F("static ip:"),temp);
-            #endif
         }
         if((temp = server->arg(FPSTR(S_sn))) != "") {
             optionalIPFromString(&_sta_static_sn, temp.c_str());
-            #ifdef WM_DEBUG_LEVEL
-            DEBUG_WM(DEBUG_DEV,F("static netmask:"),temp);
-            #endif
         }
         if((temp = server->arg(FPSTR(S_gw))) != "") {
             optionalIPFromString(&_sta_static_gw, temp.c_str());
-            #ifdef WM_DEBUG_LEVEL
-            DEBUG_WM(DEBUG_DEV,F("static gateway:"),temp);
-            #endif
         }
         if((temp = server->arg(FPSTR(S_dns))) != "") {
             optionalIPFromString(&_sta_static_dns, temp.c_str());
-            #ifdef WM_DEBUG_LEVEL
-            DEBUG_WM(DEBUG_DEV,F("static DNS:"),temp);
-            #endif
         }
     }
     #endif
@@ -2222,19 +2217,25 @@ void WiFiManager::handleWifiSave()
 
     String page;
 
-    if(!newSSID) {
-        page.reserve(getHTTPHeadLength(S_titlewifi) + addLen + STRLEN(HTTP_PARAMSAVED) + 16);
-        getHTTPHeadNew(page, S_titlewifi);
-        page += FPSTR(HTTP_PARAMSAVED);
-    } else {
-        unsigned long s = getHTTPHeadLength(S_titlewifi) + addLen + STRLEN(HTTP_SAVED) + 16;
-        if(_carMode) s += STRLEN(HTTP_SAVED_CARMODE);
-        else         s += STRLEN(HTTP_SAVED_NORMAL);
+   if(!haveNewSSID) {
+        unsigned long s = getHTTPHeadLength(S_titlewifi) + addLen + STRLEN(HTTP_PARAMSAVED) + STRLEN(HTTP_PARAMSAVED_END) + 16;
+        if(networkDeleted) s += STRLEN(HTTP_SAVED_ERASED);
         page.reserve(s);
         getHTTPHeadNew(page, S_titlewifi);
-        page += FPSTR(HTTP_SAVED);
+        page += FPSTR(HTTP_PARAMSAVED);
+        if(networkDeleted) page += FPSTR(HTTP_SAVED_ERASED);
+        page += FPSTR(HTTP_PARAMSAVED_END);
+    } else {
+        unsigned long s = getHTTPHeadLength(S_titlewifi) + addLen + STRLEN(HTTP_PARAMSAVED) + 16;
+        if(_carMode) s += STRLEN(HTTP_SAVED_CARMODE);
+        else         s += STRLEN(HTTP_SAVED_NORMAL);
+        s += STRLEN(HTTP_PARAMSAVED_END);
+        page.reserve(s);
+        getHTTPHeadNew(page, S_titlewifi);
+        page += FPSTR(HTTP_PARAMSAVED);
         if(_carMode) page += FPSTR(HTTP_SAVED_CARMODE);
         else         page += FPSTR(HTTP_SAVED_NORMAL);
+        page += FPSTR(HTTP_PARAMSAVED_END);
     }
 
     if(_showBack) page += FPSTR(HTTP_BACKBTN);
@@ -2288,8 +2289,8 @@ void WiFiManager::handleParam()
 {
     unsigned int maxItemSize = 0;
 
-    #ifdef WM_DEBUG_LEVEL
-    DEBUG_WM(DEBUG_VERBOSE,F("<- HTTP Param"));
+    #ifdef _A10001986_V_DBG
+    Serial.println("<- HTTP Param");
     #endif
 
     String page;
@@ -2327,9 +2328,8 @@ void WiFiManager::handleParamSave()
     unsigned int mySize = 0;
     unsigned int headSize = 0;
 
-    #ifdef WM_DEBUG_LEVEL
-    DEBUG_WM(DEBUG_VERBOSE,F("<- HTTP Param save "));
-    DEBUG_WM(DEBUG_DEV,F("Method:"),server->method() == HTTP_GET  ? (String)FPSTR(S_GET) : (String)FPSTR(S_POST));
+    #ifdef _A10001986_V_DBG
+    Serial.println("<- HTTP Param save");
     #endif
 
     if(_presaveparamscallback) {
@@ -2349,7 +2349,7 @@ void WiFiManager::handleParamSave()
     headSize += STRLEN(S_titleparam);
     mySize += headSize;
 
-    mySize += STRLEN(HTTP_PARAMSAVED);
+    mySize += STRLEN(HTTP_PARAMSAVED) + STRLEN(HTTP_PARAMSAVED_END);
     if(_showBack) mySize += STRLEN(HTTP_BACKBTN);
     mySize += STRLEN(HTTP_END);
 
@@ -2372,6 +2372,7 @@ void WiFiManager::handleParamSave()
     }
 
     page += FPSTR(HTTP_PARAMSAVED);
+    page += FPSTR(HTTP_PARAMSAVED_END);
     if(_showBack) page += FPSTR(HTTP_BACKBTN);
     page += FPSTR(HTTP_END);
 
@@ -2386,71 +2387,6 @@ void WiFiManager::handleParamSave()
     }
 }
 
-
-/*--------------------------------------------------------------------------*/
-/********************************** ERASE ***********************************/
-/*--------------------------------------------------------------------------*/
-
-
-/**
- * HTTPD CALLBACK erase page
- */
-
-void WiFiManager::handleErase()
-{
-    unsigned int mysize = 0;
-    unsigned int headSize = 0;
-
-    #ifdef WM_DEBUG_LEVEL
-    DEBUG_WM(DEBUG_NOTIFY,F("<- HTTP Erase"));
-    #endif
-
-    if(_erasecallback) {
-        _erasecallback(true);
-    }
-
-    unsigned int mySize = getHTTPHeadLength(S_titlewifi);
-
-    headSize = STRLEN(HTTP_ROOT_MAIN) - (2*3);
-    headSize += strlen(_title);
-    headSize += STRLEN(S_titlewifi);
-    mySize += headSize;
-
-    mysize += STRLEN(HTTP_ERASED);
-    mysize += STRLEN(HTTP_END);
-
-    #ifdef _A10001986_DBG
-    Serial.printf("handleErase: calced content size %d\n", mySize);
-    #endif
-
-    String page;
-    page.reserve(mysize + 16);
-
-    getHTTPHeadNew(page, S_titlewifi);
-
-    {
-        String str;
-        str.reserve(headSize);
-        str = FPSTR(HTTP_ROOT_MAIN);
-        str.replace(FPSTR(T_t), _title);
-        str.replace(FPSTR(T_v), FPSTR(S_titlewifi));
-        page += str;
-    }
-
-    page += FPSTR(HTTP_ERASED);
-    page += FPSTR(HTTP_END);
-
-    HTTPSend(page);
-
-    delay(1000);
-
-    if(_erasecallback) {
-        _erasecallback(false);
-    }
-
-    reboot();
-}
-
 /*--------------------------------------------------------------------------*/
 /********************************* UPDATE ***********************************/
 /*--------------------------------------------------------------------------*/
@@ -2462,8 +2398,8 @@ void WiFiManager::handleUpdate()
     unsigned int mySize = 0;
     unsigned int headSize = 0;
 
-    #ifdef WM_DEBUG_LEVEL
-    DEBUG_WM(DEBUG_VERBOSE,F("<- Handle update"));
+    #ifdef _A10001986_V_DBG
+    Serial.println("<- Handle update");
     #endif
 
     mySize = getHTTPHeadLength(S_titleupd);
@@ -2540,13 +2476,13 @@ void WiFiManager::handleUpdating()
             _preotaupdatecallback();
         }
 
-        #ifdef WM_DEBUG_LEVEL
-        DEBUG_WM(DEBUG_VERBOSE,"[OTA] Update file: ", upload.filename.c_str());
+        #ifdef _A10001986_V_DBG
+        Serial.printf("[OTA] Update file: %s\n", upload.filename.c_str());
         #endif
 
         if(!Update.begin(UPDATE_SIZE_UNKNOWN)) {
-            #ifdef WM_DEBUG_LEVEL
-            DEBUG_WM(DEBUG_ERROR,F("[ERROR] OTA Update ERROR"), Update.getError());
+            #ifdef _A10001986_DBG
+            Serial.printf("[ERROR] OTA Update ERROR %d\n", Update.getError());
             #endif
             _uplError = true;
         }
@@ -2556,8 +2492,8 @@ void WiFiManager::handleUpdating()
         if(!_uplError) {
 
             if(Update.write(upload.buf, upload.currentSize) != upload.currentSize) {
-                #ifdef WM_DEBUG_LEVEL
-                DEBUG_WM(DEBUG_ERROR,F("[ERROR] OTA Update WRITE ERROR"), Update.getError());
+                #ifdef _A10001986_DBG
+                Serial.printf("[ERROR] OTA Update WRITE ERROR %d\n", Update.getError());
                 #endif
                 _uplError = true;
             }
@@ -2568,8 +2504,8 @@ void WiFiManager::handleUpdating()
 
         if(!_uplError) {
 
-            #ifdef WM_DEBUG_LEVEL
-            DEBUG_WM(DEBUG_VERBOSE,F("\n\n[OTA] OTA FILE END bytes: "), upload.totalSize);
+            #ifdef _A10001986_V_DBG
+            Serial.printf("[OTA] OTA FILE END bytes: %d\n", upload.totalSize);
             #endif
 
             if(!Update.end(true)) {
@@ -2582,8 +2518,8 @@ void WiFiManager::handleUpdating()
 
         Update.abort();
 
-        #ifdef WM_DEBUG_LEVEL
-        DEBUG_WM(F("[OTA] Update was aborted"));
+        #ifdef _A10001986_DBG
+        Serial.println("[OTA] Update was aborted");
         #endif
 
         if(_postotaupdatecallback) {
@@ -2605,8 +2541,8 @@ void WiFiManager::handleUpdateDone()
     unsigned int headSize = 0;
     bool res;
 
-    #ifdef WM_DEBUG_LEVEL
-    DEBUG_WM(DEBUG_VERBOSE, F("<- Handle update done"));
+    #ifdef _A10001986_V_DBG
+    Serial.println("<- Handle update done");
     #endif
 
     mySize = getHTTPHeadLength(S_titleupd);
@@ -2645,15 +2581,15 @@ void WiFiManager::handleUpdateDone()
 
     if(res) {
         page += FPSTR(HTTP_UPDATE_SUCCESS);
-        #ifdef WM_DEBUG_LEVEL
-        DEBUG_WM(F("[OTA] update ok"));
+        #ifdef _A10001986_DBG
+        Serial.println("[OTA] update ok");
         #endif
     } else {
         page += FPSTR(HTTP_UPDATE_FAIL1);
         page += "Error: " + String(Update.errorString());
         page += FPSTR(HTTP_UPDATE_FAIL2);
-        #ifdef WM_DEBUG_LEVEL
-        DEBUG_WM(F("[OTA] update failed"));
+        #ifdef _A10001986_DBG
+        Serial.println("[OTA] update failed");
         #endif
     }
 
@@ -2711,13 +2647,13 @@ bool WiFiManager::stopConfigPortal()
 bool WiFiManager::disconnect()
 {
     if(WiFi.status() != WL_CONNECTED) {
-        #ifdef WM_DEBUG_LEVEL
-        DEBUG_WM(DEBUG_VERBOSE,F("Disconnecting: Not connected"));
+        #ifdef _A10001986_V_DBG
+        Serial.println("Disconnecting: Not connected");
         #endif
         return false;
     }
-    #ifdef WM_DEBUG_LEVEL
-    DEBUG_WM(F("Disconnecting"));
+    #ifdef _A10001986_DBG
+    Serial.println("Disconnecting");
     #endif
     return WiFi.disconnect();
 }
@@ -2819,11 +2755,11 @@ void WiFiManager::setSTAStaticIPConfig(IPAddress ip, IPAddress gw, IPAddress sn,
 /**
  * [setMinimumSignalQuality description]
  * @access public
- * @param {[type]} int quality [description]
+ * @param {[type]} int rssi [description]
  */
-void WiFiManager::setMinimumSignalQuality(int quality)
+void WiFiManager::setMinimumRSSI(int rssi)
 {
-    _minimumQuality = quality;
+    _minimumRSSI = rssi;
 }
 
 /**
@@ -2931,16 +2867,6 @@ void WiFiManager::setPreOtaUpdateCallback(void(*func)())
 void WiFiManager::setPostOtaUpdateCallback(void(*func)(bool))
 {
     _postotaupdatecallback = func;
-}
-
-/**
- * setEraseCallback, set an erase callback
- * @access public
- * @param {[type]} void (*func)(void)
- */
-void WiFiManager::setEraseCallback(void(*func)(bool))
-{
-    _erasecallback = func;
 }
 
 /* setMenuOutLenCallback, set a callback give size of stuff added
@@ -3122,23 +3048,6 @@ void WiFiManager::setCarMode(bool enable)
     _carMode = enable;
 }
 
-/**
- * [setDebugOutput description]
- * @access public
- * @param {[type]} bool debug [description]
- */
-void WiFiManager::setDebugOutput(bool debug)
-{
-    _debug = debug;
-
-}
-
-void WiFiManager::setDebugOutput(bool debug, String prefix)
-{
-    _debugPrefix = prefix;
-    setDebugOutput(debug);
-}
-
 // GETTERS
 
 /**
@@ -3189,7 +3098,7 @@ uint8_t WiFiManager::getLastConxResult()
  */
 void WiFiManager::getDefaultAPName(char *apName)
 {
-    sprintf(apName, "ESP32_%x", WIFI_getChipId());
+    sprintf(apName, "ESP32_%x", ESP.getEfuseMac());
     while(*apName) {
         *apName = toupper((unsigned char) *apName);
         apName++;
@@ -3215,16 +3124,6 @@ const char * WiFiManager::getHTTPSCRIPT()
 const char * WiFiManager::getHTTPSTYLE()
 {
     return HTTP_STYLE;
-}
-
-int WiFiManager::getRSSIasQuality(int RSSI)
-{
-    if(RSSI <= -100) {
-        return 0;
-    } else if(RSSI >= -50) {
-        return 100;
-    }
-    return 2 * (RSSI + 100);
 }
 
 bool WiFiManager::_getbestapchannel(int32_t& channel, int& quality)
@@ -3493,19 +3392,17 @@ int WiFiManager::htmlEntitiesLen(String& str, bool whitespace)
     return size;
 }
 
-uint8_t WiFiManager::WiFi_softap_num_stations()
+long WiFiManager::wmmap(long x)
 {
-    return WiFi.softAPgetStationNum();
+  if(x <= -83) return 1;
+  if(x <= -74) return 2;
+  if(x <= -65) return 3;
+  return 4;
 }
 
 String WiFiManager::WiFi_SSID() const
 {
     return String(_ssid);
-}
-
-size_t WiFiManager::WiFi_psk_len() const
-{
-    return strlen(_pass);
 }
 
 // Transitional function to read out the NVS-stored credentials
@@ -3544,8 +3441,10 @@ void WiFiManager::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
     if(event == ARDUINO_EVENT_WIFI_STA_DISCONNECTED) {
 
         // The core *should* reconnect automatically.
+        // Unless: Wrong or missing password. Yes, this
+        // is also reported through DISCONNECTED.
 
-        _lastconxresulttmp = WiFi.status();
+        _eventlastconxresult = WiFi.status();
 
         //WiFi.reconnect();   // No
 
@@ -3586,102 +3485,37 @@ void WiFiManager::WiFi_installEventHandler()
 //                                     DEBUG                                       //
 /////////////////////////////////////////////////////////////////////////////////////
 
-// @todo fix DEBUG_WM(0,0);
-template <typename Generic>
-void WiFiManager::DEBUG_WM(Generic text)
-{
-    DEBUG_WM(DEBUG_NOTIFY,text,"");
-}
-
-template <typename Generic>
-void WiFiManager::DEBUG_WM(wm_debuglevel_t level,Generic text)
-{
-    if(_debugLevel >= level) DEBUG_WM(level,text,"");
-}
-
-template <typename Generic, typename Genericb>
-void WiFiManager::DEBUG_WM(Generic text,Genericb textb)
-{
-    DEBUG_WM(DEBUG_NOTIFY,text,textb);
-}
-
-template <typename Generic, typename Genericb>
-void WiFiManager::DEBUG_WM(wm_debuglevel_t level,Generic text,Genericb textb)
-{
-    if(!_debug || _debugLevel < level) return;
-
-    if(_debugLevel > DEBUG_MAX) {
-
-        // total_free_bytes;      ///<  Total free bytes in the heap. Equivalent to multi_free_heap_size().
-        // total_allocated_bytes; ///<  Total bytes allocated to data in the heap.
-        // largest_free_block;    ///<  Size of largest free block in the heap. This is the largest malloc-able size.
-        // minimum_free_bytes;    ///<  Lifetime minimum free heap size. Equivalent to multi_minimum_free_heap_size().
-        // allocated_blocks;      ///<  Number of (variable size) blocks allocated in the heap.
-        // free_blocks;           ///<  Number of (variable size) free blocks in the heap.
-        // total_blocks;          ///<  Total number of (variable size) blocks in the heap.
-        multi_heap_info_t info;
-        heap_caps_get_info(&info, MALLOC_CAP_INTERNAL);
-        uint32_t free = info.total_free_bytes;
-        uint16_t max  = info.largest_free_block;
-        uint8_t frag = 100 - (max * 100) / free;
-        _debugPort.printf("[MEM] free: %5u | max: %5d | frag: %3d%% \n", free, max, frag);
-    }
-
-    _debugPort.print(_debugPrefix);
-    if(_debugLevel >= debugLvlShow) _debugPort.print("["+(String)level+"] ");
-    _debugPort.print(text);
-    if(textb) {
-        _debugPort.print(" ");
-        _debugPort.print(textb);
-    }
-    _debugPort.println();
-}
 
 /**
  * [debugSoftAPConfig description]
- * @access public
+ * @access private
  * @return {[type]} [description]
  */
-#ifdef WM_DODEBUG
+#ifdef _A10001986_DBG
 void WiFiManager::debugSoftAPConfig()
 {
-    #if !defined(WM_NOCOUNTRY)
-    wifi_country_t country;
-    #endif
+    char myssid[34];
     wifi_config_t conf_config;
 
     esp_wifi_get_config(WIFI_IF_AP, &conf_config); // == ESP_OK
     wifi_ap_config_t config = conf_config.ap;
 
-    #if !defined(WM_NOCOUNTRY)
-    esp_wifi_get_country(&country);
-    #endif
+    memset(myssid, 0, sizeof(myssid));
+    memcpy(myssid, config.ssid, 32);
 
-    #ifdef WM_DEBUG_LEVEL
-    DEBUG_WM(F("SoftAP Configuration"));
-    DEBUG_WM(FPSTR(D_HR));
-    DEBUG_WM(F("ssid:            "),(char *) config.ssid);
-    DEBUG_WM(F("password:        "),(char *) config.password);
-    DEBUG_WM(F("ssid_len:        "),config.ssid_len);
-    DEBUG_WM(F("channel:         "),config.channel);
-    DEBUG_WM(F("authmode:        "),config.authmode);
-    DEBUG_WM(F("ssid_hidden:     "),config.ssid_hidden);
-    DEBUG_WM(F("max_connection:  "),config.max_connection);
-    #endif
-    #if !defined(WM_NOCOUNTRY)
-    #ifdef WM_DEBUG_LEVEL
-    DEBUG_WM(F("country:         "),(String)country.cc);
-    #endif
-    DEBUG_WM(F("beacon_interval: "),(String)config.beacon_interval + "(ms)");
-    DEBUG_WM(FPSTR(D_HR));
-    #endif
+    Serial.println("SoftAP Configuration:");
+    Serial.printf("ssid:            %s\n", myssid);
+    Serial.printf("password:        %s\n", (char *) config.password);
+    Serial.printf("ssid_len:        %d\n", config.ssid_len);
+    Serial.printf("channel:         %d\n", config.channel);
+    Serial.printf("authmode:        %d\n", config.authmode);
+    Serial.printf("ssid_hidden:     %d\n", config.ssid_hidden);
+    Serial.printf("max_connection:  %d\n", config.max_connection);
 }
-#endif
 
-#ifdef WM_DEBUG_LEVEL
 /**
  * [getWLStatusString description]
- * @access public
+ * @access private
  * @param  {[type]} uint8_t status        [description]
  * @return {[type]}         [description]
  */
@@ -3691,15 +3525,8 @@ String WiFiManager::getWLStatusString(uint8_t status)
     return FPSTR(S_NA);
 }
 
-String WiFiManager::getWLStatusString()
-{
-    uint8_t status = WiFi.status();
-    if(status <= 7) return WIFI_STA_STATUS[status];
-    return FPSTR(S_NA);
-}
-
 String WiFiManager::getModeString(uint8_t mode) {
     if(mode <= 3) return WIFI_MODES[mode];
     return FPSTR(S_NA);
 }
-#endif  // WM_DEBUG_LEVEL
+#endif  // _A10001986_DBG
