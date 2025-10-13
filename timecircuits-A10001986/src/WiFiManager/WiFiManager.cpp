@@ -1051,12 +1051,15 @@ uint8_t WiFiManager::waitForConnectResult(bool haveStatic, uint32_t timeout)
  ****************************************************************************/
 
 // Calc size of header
-unsigned int WiFiManager::getHTTPHeadLength(const char *title, bool includeQI)
+unsigned int WiFiManager::getHTTPHeadLength(const char *title, bool includeMSG, bool includeQI)
 {
     int bufSize = STRLEN(HTTP_HEAD_START) - 3;  // -3 token
     bufSize += strlen(title);
     bufSize += STRLEN(HTTP_SCRIPT);
     bufSize += STRLEN(HTTP_STYLE);
+    if(includeMSG) {
+        bufSize += STRLEN(HTTP_STYLE_MSG);
+    }
     if(includeQI) {
         bufSize += STRLEN(HTTP_STYLE_QI);
     }
@@ -1068,7 +1071,7 @@ unsigned int WiFiManager::getHTTPHeadLength(const char *title, bool includeQI)
 }
 
 // Construct header
-void WiFiManager::getHTTPHeadNew(String& page, const char *title, bool includeQI)
+void WiFiManager::getHTTPHeadNew(String& page, const char *title, bool includeMSG, bool includeQI)
 {
     String temp;
     temp.reserve(STRLEN(HTTP_HEAD_START) + strlen(title));
@@ -1079,6 +1082,9 @@ void WiFiManager::getHTTPHeadNew(String& page, const char *title, bool includeQI
 
     page += FPSTR(HTTP_SCRIPT);
     page += FPSTR(HTTP_STYLE);
+    if(includeMSG) {
+        page += FPSTR(HTTP_STYLE_MSG);
+    }
     if(includeQI) {
         page += FPSTR(HTTP_STYLE_QI);
     }
@@ -1100,13 +1106,13 @@ int WiFiManager::reportStatusLen()
     #endif
 
     if(SSID != "") {
+        bufSize = STRLEN(HTTP_STATUS_HEAD) - 3 + 1; // class span
+        bufSize += htmlEntitiesLen(SSID);
         if(WiFi.status() == WL_CONNECTED) {
-            bufSize = STRLEN(HTTP_STATUS_ON) - (2*3);
+            bufSize += STRLEN(HTTP_STATUS_ON) - (2*3);
             bufSize += 15;        // max len of ip address
-            bufSize += htmlEntitiesLen(SSID);
         } else {
-            bufSize = STRLEN(HTTP_STATUS_OFF);
-            bufSize += htmlEntitiesLen(SSID);
+            bufSize = STRLEN(HTTP_STATUS_OFF) - (3*3);
             switch(_lastconxresult) {
             case WL_NO_SSID_AVAIL:          // connect failed, or ap not found
                 bufSize += (STRLEN(HTTP_STATUS_OFFNOAP) + STRLEN(HTTP_STATUS_APMODE));
@@ -1125,8 +1131,9 @@ int WiFiManager::reportStatusLen()
                 break;
             }
         }
+        bufSize += STRLEN(HTTP_STATUS_TAIL);
     } else {
-        bufSize = strlen(HTTP_STATUS_NONE);
+        bufSize = STRLEN(HTTP_STATUS_NONE);
     }
 
     #ifdef _A10001986_DBG
@@ -1143,41 +1150,44 @@ void WiFiManager::reportStatus(String &page, unsigned int estSize)
     if(estSize) str.reserve(estSize);
 
     if(SSID != "") {
+        str = FPSTR(HTTP_STATUS_HEAD);
         if(WiFi.status() == WL_CONNECTED) {
-            str = FPSTR(HTTP_STATUS_ON);
+            str += FPSTR(HTTP_STATUS_ON);
+            str.replace(FPSTR(T_c), "g");
             str.replace(FPSTR(T_i), WiFi.localIP().toString());
             str.replace(FPSTR(T_v), htmlEntities(SSID));
         } else {
-            str = FPSTR(HTTP_STATUS_OFF);
+            str += FPSTR(HTTP_STATUS_OFF);
             str.replace(FPSTR(T_v), htmlEntities(SSID));
             switch(_lastconxresult) {
             case WL_NO_SSID_AVAIL:    // connect failed, or ap not found
-                str.replace(FPSTR(T_c), "D");
+                str.replace(FPSTR(T_c), "r");
                 str.replace(FPSTR(T_r), FPSTR(HTTP_STATUS_OFFNOAP));
                 str.replace(FPSTR(T_V), FPSTR(HTTP_STATUS_APMODE));
                 break;
             case WL_CONNECT_FAILED:   // connect failed
-                str.replace(FPSTR(T_c), "D");
+                str.replace(FPSTR(T_c), "r");
                 str.replace(FPSTR(T_r), FPSTR(HTTP_STATUS_OFFFAIL));
                 str.replace(FPSTR(T_V), FPSTR(HTTP_STATUS_APMODE));
                 break;
             case WL_CONNECTION_LOST:  // connect failed, MOST likely 4WAY_HANDSHAKE_TIMEOUT/incorrect
-                str.replace(FPSTR(T_c), "D"); // password, state is ambiguous however
+                str.replace(FPSTR(T_c), "r"); // password, state is ambiguous however
                 str.replace(FPSTR(T_r), FPSTR(HTTP_STATUS_OFFFAIL));
                 str.replace(FPSTR(T_V), FPSTR(HTTP_STATUS_APMODE));
                 break;
             case WL_DISCONNECTED:     // wrong or missing password
-                str.replace(FPSTR(T_c), "D");
+                str.replace(FPSTR(T_c), "r");
                 str.replace(FPSTR(T_r), FPSTR(HTTP_STATUS_DISCONN));
                 str.replace(FPSTR(T_V), FPSTR(HTTP_STATUS_APMODE));
                 break;
             default:
-                str.replace(FPSTR(T_c), "");
+                str.replace(FPSTR(T_c), "n");
                 str.replace(FPSTR(T_r), "");
                 str.replace(FPSTR(T_V), _carMode ? FPSTR(HTTP_STATUS_CARMODE) : FPSTR(HTTP_STATUS_APMODE));
                 break;
             }
         }
+        str += FPSTR(HTTP_STATUS_TAIL);
     } else {
         str = FPSTR(HTTP_STATUS_NONE);
     }
@@ -1489,7 +1499,7 @@ void WiFiManager::getMenuOut(String& page)
 unsigned int WiFiManager::calcRootLen(unsigned int& headSize, unsigned int& repSize)
 {
     // Calc page size
-    unsigned int bufSize = getHTTPHeadLength(_title, false);
+    unsigned int bufSize = getHTTPHeadLength(_title);
 
     headSize = STRLEN(HTTP_ROOT_MAIN) - (2*3);
     headSize += strlen(_title);
@@ -2012,7 +2022,7 @@ void WiFiManager::buildWifiPage(bool scan, String& page)
         sortNetworks(n, indices, numDupes, !showall);
     }
 
-    bufSize = getHTTPHeadLength(S_titlewifi, scan);
+    bufSize = getHTTPHeadLength(S_titlewifi, false, scan);
     if(showrefresh) {
         // No message
     } else if(!scanallowed) {
@@ -2049,7 +2059,7 @@ void WiFiManager::buildWifiPage(bool scan, String& page)
 
     page.reserve(bufSize + 16);
 
-    getHTTPHeadNew(page, S_titlewifi, scan);
+    getHTTPHeadNew(page, S_titlewifi, false, scan);
     if(showrefresh) {
         // No message
     } else if(!scanallowed) {
@@ -2130,6 +2140,7 @@ void WiFiManager::handleWifi(bool scan)
  */
 void WiFiManager::handleWifiSave()
 {
+    unsigned long s;
     bool haveNewSSID = false;
     bool networkDeleted = false;
 
@@ -2218,20 +2229,20 @@ void WiFiManager::handleWifiSave()
     String page;
 
    if(!haveNewSSID) {
-        unsigned long s = getHTTPHeadLength(S_titlewifi) + addLen + STRLEN(HTTP_PARAMSAVED) + STRLEN(HTTP_PARAMSAVED_END) + 16;
+        s = getHTTPHeadLength(S_titlewifi, true) + addLen + STRLEN(HTTP_PARAMSAVED) + STRLEN(HTTP_PARAMSAVED_END) + 16;
         if(networkDeleted) s += STRLEN(HTTP_SAVED_ERASED);
         page.reserve(s);
-        getHTTPHeadNew(page, S_titlewifi);
+        getHTTPHeadNew(page, S_titlewifi, true);
         page += FPSTR(HTTP_PARAMSAVED);
         if(networkDeleted) page += FPSTR(HTTP_SAVED_ERASED);
         page += FPSTR(HTTP_PARAMSAVED_END);
     } else {
-        unsigned long s = getHTTPHeadLength(S_titlewifi) + addLen + STRLEN(HTTP_PARAMSAVED) + 16;
+        s = getHTTPHeadLength(S_titlewifi, true) + addLen + STRLEN(HTTP_PARAMSAVED) + 16;
         if(_carMode) s += STRLEN(HTTP_SAVED_CARMODE);
         else         s += STRLEN(HTTP_SAVED_NORMAL);
         s += STRLEN(HTTP_PARAMSAVED_END);
         page.reserve(s);
-        getHTTPHeadNew(page, S_titlewifi);
+        getHTTPHeadNew(page, S_titlewifi, true);
         page += FPSTR(HTTP_PARAMSAVED);
         if(_carMode) page += FPSTR(HTTP_SAVED_CARMODE);
         else         page += FPSTR(HTTP_SAVED_NORMAL);
@@ -2244,6 +2255,10 @@ void WiFiManager::handleWifiSave()
     if(_gpcallback) {
         _gpcallback(WM_LP_PREHTTPSEND);
     }
+
+    #ifdef _A10001986_DBG
+    Serial.printf("handleWiFiSave: calced content size %d\n", s);
+    #endif
 
     server->sendHeader(FPSTR(HTTP_HEAD_CORS), FPSTR(HTTP_HEAD_CORS_ALLOW_ALL));
     HTTPSend(page);
@@ -2342,7 +2357,7 @@ void WiFiManager::handleParamSave()
         _saveparamscallback();
     }
 
-    mySize = getHTTPHeadLength(S_titleparam);
+    mySize = getHTTPHeadLength(S_titleparam, true);
 
     headSize = STRLEN(HTTP_ROOT_MAIN) - (2*3);
     headSize += strlen(_title);
@@ -2360,7 +2375,7 @@ void WiFiManager::handleParamSave()
     Serial.printf("handleParamSave: calced content size %d\n", mySize);
     #endif
 
-    getHTTPHeadNew(page, S_titleparam);
+    getHTTPHeadNew(page, S_titleparam, true);
 
     {
         String str;
@@ -2545,7 +2560,7 @@ void WiFiManager::handleUpdateDone()
     Serial.println("<- Handle update done");
     #endif
 
-    mySize = getHTTPHeadLength(S_titleupd);
+    mySize = getHTTPHeadLength(S_titleupd, !Update.hasError());
 
     headSize = STRLEN(HTTP_ROOT_MAIN) - (2*3);
     headSize += strlen(_title);
@@ -2568,7 +2583,7 @@ void WiFiManager::handleUpdateDone()
     String page;
     page.reserve(mySize + 16);
 
-    getHTTPHeadNew(page, S_titleupd);
+    getHTTPHeadNew(page, S_titleupd, !Update.hasError());
 
     {
         String str;
@@ -3124,6 +3139,11 @@ const char * WiFiManager::getHTTPSCRIPT()
 const char * WiFiManager::getHTTPSTYLE()
 {
     return HTTP_STYLE;
+}
+
+const char * WiFiManager::getHTTPSTYLEOK()
+{
+    return HTTP_STYLE_MSG;
 }
 
 bool WiFiManager::_getbestapchannel(int32_t& channel, int& quality)

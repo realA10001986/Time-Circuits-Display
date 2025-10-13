@@ -306,6 +306,7 @@ class WiFiManager
     const char *  getHTTPSTART(int& titleStart);
     const char *  getHTTPSCRIPT();
     const char *  getHTTPSTYLE();
+    const char *  getHTTPSTYLEOK();
 
     // check if config portal is active (true)
     bool          getConfigPortalActive();
@@ -427,8 +428,8 @@ class WiFiManager
     uint8_t       waitForConnectResult(bool haveStatic, uint32_t timeout);
 
     // webserver handlers
-	  unsigned int  getHTTPHeadLength(const char *title, bool includeQI = false);
-	  void          getHTTPHeadNew(String& page, const char *title, bool includeQI = false);
+	  unsigned int  getHTTPHeadLength(const char *title, bool includeMSG = false, bool includeQI = false);
+	  void          getHTTPHeadNew(String& page, const char *title, bool includeMSG = false, bool includeQI = false);
 
 	  unsigned int  getParamOutSize(WiFiManagerParameter** params,
                         int paramsCount, unsigned int& maxItemSize);

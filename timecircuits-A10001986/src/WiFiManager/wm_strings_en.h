@@ -67,7 +67,7 @@ const char HTTP_SHOWALL_FORM[]     PROGMEM = "<form id='saform' action='/wifi?sh
 
 const char HTTP_PARAMSAVED[]       PROGMEM = "<div class='msg S'>Settings saved. Rebooting.<br/>";
 const char HTTP_SAVED_NORMAL[]     PROGMEM = "Trying to connect to network.<br />In case of error, device boots in AP mode.";
-const char HTTP_SAVED_CARMODE[]    PROGMEM = "Device is run in <strong>car mode<strong> and will <strong>not</strong><br/>connect to saved WiFi network after reboot.";
+const char HTTP_SAVED_CARMODE[]    PROGMEM = "<br/>Device is run in <strong>car mode</strong> and will <em>not</em><br/>connect to WiFi network after reboot.";
 const char HTTP_SAVED_ERASED[]     PROGMEM = "WiFi network credentials deleted.<br />Restarting in AP mode.<br/>";
 const char HTTP_PARAMSAVED_END[]   PROGMEM = "</div>";
 
@@ -77,18 +77,21 @@ const char HTTP_UPLOADSND2[]       PROGMEM = ".bin)<br>and/or .mp3 file(s)<br><f
 const char HTTP_UPDATE_FAIL1[]     PROGMEM = "<div class='msg D'><strong>Update failed.</strong><br/>";
 const char HTTP_UPDATE_FAIL2[]     PROGMEM = "</div>";
 const char HTTP_UPDATE_SUCCESS[]   PROGMEM = "<div class='msg S'><strong>Update successful.</strong><br/>Device rebooting.</div>";
-const char HTTP_UPLOAD_SDMSG[]     PROGMEM = "<div class='msg' style='text-align:left'>In order to upload the sound-pack,<br/>please insert an SD card.</div>";
+const char HTTP_UPLOAD_SDMSG[]     PROGMEM = "<div class='msg'>In order to upload the sound-pack,<br/>please insert an SD card.</div>";
 
 const char HTTP_BACKBTN[]          PROGMEM = "<hr><form action='/' method='get'><button>Back</button></form>";
 
-const char HTTP_STATUS_ON[]        PROGMEM = "<div class='msg S'><strong>Connected</strong> to {v}<br/><em><small>with IP {i}</small></em></div>";
-const char HTTP_STATUS_OFF[]       PROGMEM = "<div class='msg {c}'><strong>Not connected</strong> to {v}{r}<br/><em><small>Currently operating in {V}</small></em></div>";
+const char HTTP_STATUS_HEAD[]      PROGMEM = "<div class='sta'><span class='{c}'>&#x25CF;</span> ";
+const char HTTP_STATUS_TAIL[]      PROGMEM = "</div>";
+const char HTTP_STATUS_ON[]        PROGMEM = "{v}<br/>{i}";
+const char HTTP_STATUS_OFF[]       PROGMEM = "{v}<br/>{r}Operating in {V}";
+const char HTTP_STATUS_OFFNOAP[]   PROGMEM = "Network not found<br/>";                // WL_NO_SSID_AVAIL
+const char HTTP_STATUS_OFFFAIL[]   PROGMEM = "Failed to connect<br/>";                // WL_CONNECT_FAILED
+const char HTTP_STATUS_DISCONN[]   PROGMEM = "Disconnected. Wrong Password?<br/>";    // WL_DISCONNECTED
 const char HTTP_STATUS_APMODE[]    PROGMEM = "AP-mode";
 const char HTTP_STATUS_CARMODE[]   PROGMEM = "car mode";
-const char HTTP_STATUS_OFFNOAP[]   PROGMEM = "<br/>Network not found";    // WL_NO_SSID_AVAIL
-const char HTTP_STATUS_OFFFAIL[]   PROGMEM = "<br/>Could not connect";    // WL_CONNECT_FAILED
-const char HTTP_STATUS_DISCONN[]   PROGMEM = "<br/>Disconnected. Wrong Password?";    // WL_DISCONNECTED
-const char HTTP_STATUS_NONE[]      PROGMEM = "<div class='msg'>No WiFi connection configured</div>";
+const char HTTP_STATUS_NONE[]      PROGMEM = "<div class='sta'>No WiFi connection configured</div>";
+
 const char HTTP_BR[]               PROGMEM = "<br/>";
 const char HTTP_END[]              PROGMEM = "</div></body></html>";
 
@@ -106,30 +109,41 @@ const char HTTP_STYLE[]            PROGMEM = "<style>"
     // links
     "a{color:#000;font-weight:bold;text-decoration:none}"
     "a:hover{color:#225a98;text-decoration:underline}"
-    // msg callouts
-    ".msg{padding:20px;margin:20px 0;border:1px solid #ccc;border-radius:20px;border-left-width:15px;border-left-color:#777;background:linear-gradient(320deg,rgb(255,255,255) 0%,rgb(235,234,233) 100%)}"
-    ".msg.P{border-left-color:#225a98}"
-    ".msg.D{border-left-color:#dc3630}"
-    ".msg.S{border-left-color:#609b71}"
+    // status
+    ".sta{font-variant:small-caps;color:#888;text-align:center;line-height:1.1em}"
+    ".sta>span.n{color:#888}"
+    ".sta>span.g{color:#609b71}"
+    ".sta>span.r{color:#dc3630}"
+    // msg boxes (overruled on some pages)
+    ".msg{padding:20px;margin:20px 0;border-top:1px solid #000;border-bottom:1px solid #000;border-radius:0;text-align:center;}"
+    ".msg.P{}"
+    ".msg.D{border-color:#dc3630;border-width:3px}"
+    ".msg.S{}"
     // buttons
     "button{transition:0s opacity;transition-delay:3s;transition-duration:0s;cursor:pointer}"
     "button.D{background-color:#dc3630;border-color:#dc3630}"
     "button:active{opacity:50% !important;cursor:wait;transition-delay:0s}"
-    ":disabled {opacity:0.5;}"
+    ":disabled{opacity:0.5;}"
+    "</style>";
+
+const char HTTP_STYLE_MSG[]        PROGMEM = "<style>"
+    ".msg.S{padding:60px 20px 20px 20px;margin:20px 0;border:1px inset #000;border-bottom:1px solid #000;border-radius:0;text-align:center;box-shadow:2px 2px 5px 4px inset rgba(0,0,0,0.1);"
+    "background: no-repeat url('data:image/png;base64,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') 5px 5px"
+    "}"
     "</style>";
 
 // quality icons plus some specific JS
 const char HTTP_STYLE_QI[]         PROGMEM = "<style>"
     "button.s{width:initial;line-height:1.3em;margin:0}"
     ".q{height:16px;margin:0;padding:0 5px;text-align:right;min-width:38px;float:right}"
-    ".q.q-0:after{background-position-x:0}"
-    ".q.q-1:after{background-position-x:0}"
-    ".q.q-2:after{background-position-x:-21px}"
-    ".q.q-3:after{background-position-x:-42px}"
-    ".q.q-4:after{background-position-x:-63px}"
-    ".q.l:before{background-position-x:-84px}"
+    ".q.q-0::after{background-position-x:0}"
+    ".q.q-1::after{background-position-x:0}"
+    ".q.q-2::after{background-position-x:-21px}"
+    ".q.q-3::after{background-position-x:-42px}"
+    ".q.q-4::after{background-position-x:-63px}"
+    ".q.l::before{background-position-x:-84px}"
     ".ql .q{float:left}"
-    ".q:after,.q:before{content:'';width:21px;height:16px;display:inline-block;background-repeat:no-repeat;background-position:21px 0;"
+    ".q::after,.q::before{content:'';width:21px;height:16px;display:inline-block;background-repeat:no-repeat;background-position:21px 0;"
     "background-image:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGIAAAAQCAMAAADakVr2AAAA81BMVEUAAADHycnHyckAAADHyckAAAAAAADHycnHyckAAAAAAADHyckAAAAAAAAAAAAAAADHycnHyckAAADHyckAAAAAAADHyckAAAAAAADHyckAAADHyckAAADHycnHyckAAADHyckAAADHyckAAADHyckAAAAAAAAAAAAAAAAAAADHyckAAADHycnHyckAAADHycnHyckAAADHyckAAAAAAADHycnHycnHyckAAADHycnHyckAAAAAAADHyckAAAAAAADHyckAAAAAAAAAAADHyckAAADHycnHyckAAAAAAADHycnHycnHycnHyckAAAAAAADHyclrQTMdAAAAT3RSTlMAKG7W0JlsZrukGaP7zciQRr+8OiSxn0ApHh0WDOvft6melZSRYyET9eKtqJuOXU1LLhrr0cfCi1g/IwkG99qsp4+HcWBFBdR8ODO0WVdVJL4uIQAAAbdJREFUOMullOlWwjAQRqctXSi0IItUQNmFulRZ3EBFRdx18v5P47TRUimLwP2RfLmnJ8lMzwl47IixyO7NbiQm7nCxmtSVodFtdXvDUR5mky6zCQfpVWU7ixNKbZhBlT7fq6vJdFI93qN89LRMXgWljIh2whm/jp17m7IM07xFGNs68ZenGmMRQfivfLMkRCPny5yJeGsBxxpmvZq2GFNpEsSLo2NRoPRILSjPkndcWsp9JaFYXL6nEBsUM7504lgCj2aPjtPdbbQk3YgOIvgtr7ROYa7MGcjp5VwpZIzxX0mLnypS+NpGk+fCNu1zVr2on9Ec6yyQgygimrWHhEnzYZHL6z9yAL+4f+UBeabNYoKX+hTvpqUwkTJiVPeSHqW4QBJYA3hBnvvnIt36U/woAKjnQkDqzsjJB2ReUqjHl8plE6AhZeZLooIt225h9nddqDOXagcCFGvoIjdnyeIy2UUOgN+W5/IzY2UIUEGUDiWqfS0poUfXfxc0kUZV60MA3VRobBj7a8lb9GgF1KA9gDD71+tKO3SEnsUShNhAjlIeLxPzFcd4BqbIbyDDFBMoh+1mkvMNs1qA66I7EMYAAAAASUVORK5CYII=');}"
     // icons @2x media query (32px rescaled)
     "@media (-webkit-min-device-pixel-ratio:2),(min-resolution:192dpi){.q:before,.q:after{"
