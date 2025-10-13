@@ -139,6 +139,8 @@
 
 /*  Changelog
  *
+ *  2025/10/13 (A10001986) [3.5.3]
+ *    - Config Portal: Minor restyling (message boxes)
  *  2025/10/11 (A10001986) [3.5.2]
  *    - More WM changes: Simplify "Forget" using a checkbox; redo signal quality
  *      assessment; remove over-engineered WM debug stuff.
