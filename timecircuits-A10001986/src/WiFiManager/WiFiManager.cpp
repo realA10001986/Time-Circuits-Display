@@ -1112,7 +1112,7 @@ int WiFiManager::reportStatusLen()
             bufSize += STRLEN(HTTP_STATUS_ON) - (2*3);
             bufSize += 15;        // max len of ip address
         } else {
-            bufSize = STRLEN(HTTP_STATUS_OFF) - (3*3);
+            bufSize += STRLEN(HTTP_STATUS_OFF) - (3*3);
             switch(_lastconxresult) {
             case WL_NO_SSID_AVAIL:          // connect failed, or ap not found
                 bufSize += (STRLEN(HTTP_STATUS_OFFNOAP) + STRLEN(HTTP_STATUS_APMODE));
