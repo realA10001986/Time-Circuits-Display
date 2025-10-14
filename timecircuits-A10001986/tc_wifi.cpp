@@ -351,14 +351,15 @@ WiFiManagerParameter custom_sectstart_bt("</div><div class='sects'><div class='h
 
 WiFiManagerParameter custom_sectend_foot("</div><p></p>");
 
-#define TC_MENUSIZE 6
+#define TC_MENUSIZE 7
 static const int8_t wifiMenu[TC_MENUSIZE] = { 
     WM_MENU_WIFI,
     WM_MENU_PARAM,
     WM_MENU_SEP,
     WM_MENU_UPDATE,
     WM_MENU_SEP,
-    WM_MENU_CUSTOM
+    WM_MENU_CUSTOM,
+    WM_MENU_END
 };
 
 #define AA_TITLE "Time Circuits"
@@ -672,11 +673,6 @@ void wifi_setup()
     // Hack some stuff into WiFiManager main page
     wm.setCustomMenuHTML(myCustMenu);
 
-    // Static IP info is not saved by WiFiManager,
-    // have to do this "manually". Hence ipsettings.
-    wm.setShowStaticFields(true);
-    wm.setShowDnsFields(true);
-
     wm.setCarMode(carMode);
     wm.setWiFiAPMaxClients(6);
 
@@ -696,9 +692,7 @@ void wifi_setup()
     if(temp > 10) temp = 10;
     wm.setConnectRetries(temp);
 
-    wm.setCleanConnect(true);
-
-    wm.setMenu(wifiMenu, TC_MENUSIZE);
+    wm.setMenu(wifiMenu, TC_MENUSIZE, false);
 
     wm.allocParms((sizeof(parmArray) / sizeof(WiFiManagerParameter *)) - 1);
 
