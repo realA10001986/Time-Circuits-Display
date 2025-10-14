@@ -30,7 +30,7 @@ const char HTTP_SCRIPT[]           PROGMEM = "<script>"
     "function getn(x){return document.getElementsByTagName(x)}"
     "function ge(x){return document.getElementById(x)}"
     "function gecl(x){return document.getElementsByClassName(x)}"
-    "function f(){x=ge('p');x.type==='password'?x.type='text':x.type='password';}"
+    "function f(){x=ge('p');x.type==='password'?x.type='text':x.type='password'}"
     "</script>";
 
 const char HTTP_HEAD_END[]         PROGMEM = "</head><body><div class='wrap'>";
@@ -51,7 +51,7 @@ const char HTTP_FORM_PARAM_HEAD[]  PROGMEM = "<hr>";
 const char HTTP_FORM_PARAM[]       PROGMEM = "<input id='{i}' name='{n}' maxlength='{l}' value='{v}' {c}>";
 const char HTTP_FORM_END[]         PROGMEM = "<button type='submit'>Save</button></form>";
 
-const char HTTP_FORM_WIFI[]        PROGMEM = "<div class='sects'><div class='headl'>WiFi connection: Network selection</div><label for='s'>Network name (SSID)</label><input id='s' name='s' maxlength='32' autocorrect='off' autocapitalize='none' placeholder='{V}' oninput='f=ge(\"fg\");h=ge(\"p\");h.disabled=false;if(!this.value.length&&this.placeholder.length){if(f&&!h.value.length){f.style.display=\"\"}h.placeholder=h.getAttribute(\"data-ph\")||\"********\";}else{if(f){f.style.display=\"none\"}h.placeholder=\"\"}'><br/><label for='p'>Password</label><input id='p' name='p' maxlength='64' type='password' placeholder='{p}' data-ph='{p}' oninput='f=ge(\"fg\");if(f){s=ge(\"s\");if(!s.value.length&&s.placeholder.length){if(this.value.length){f.style.display=\"none\"}else{f.style.display=\"\"}}}'><label><input type='checkbox' onclick='f()' style='margin:0px 5px 10px 0px'>Show password when typing</label>";
+const char HTTP_FORM_WIFI[]        PROGMEM = "<div class='sects'><div class='headl'>WiFi connection: Network selection</div><label for='s'>Network name (SSID)</label><input id='s' name='s' maxlength='32' autocorrect='off' autocapitalize='none' placeholder='{V}' oninput='x=ge(\"fg\");y=ge(\"p\");y.disabled=false;if(!this.value.length&&this.placeholder.length){if(x&&!y.value.length){x.style.display=\"\"}y.placeholder=y.getAttribute(\"data-ph\")||\"********\";}else{if(x){x.style.display=\"none\"}y.placeholder=\"\"}'><br/><label for='p'>Password</label><input id='p' name='p' maxlength='64' type='password' placeholder='{p}' data-ph='{p}' oninput='x=ge(\"fg\");if(x){y=ge(\"s\");if(!y.value.length&&y.placeholder.length){if(this.value.length){x.style.display=\"none\"}else{x.style.display=\"\"}}}'><label><input type='checkbox' onclick='f()' style='margin:0px 5px 10px 0px'>Show password when typing</label>";
 const char HTTP_FORM_WIFI_END[]    PROGMEM = "</div>";
 const char HTTP_WIFI_ITEM[]        PROGMEM = "<div><a href='#p' onclick='return {t}(this)' data-ssid='{V}'>{v}</a>{c}<div role='img' aria-label='{r}dBm' title='{r}dBm' class='q q-{q} {i}'></div></div>";
 const char HTTP_FORM_SECT_HEAD[]   PROGMEM = "<div class='sects'><div class='headl'>WiFi connection: Static IP settings</div>";
@@ -78,8 +78,6 @@ const char HTTP_UPDATE_FAIL1[]     PROGMEM = "<div class='msg D'><strong>Update 
 const char HTTP_UPDATE_FAIL2[]     PROGMEM = "</div>";
 const char HTTP_UPDATE_SUCCESS[]   PROGMEM = "<div class='msg S'><strong>Update successful.</strong><br/>Device rebooting.</div>";
 const char HTTP_UPLOAD_SDMSG[]     PROGMEM = "<div class='msg'>In order to upload the sound-pack,<br/>please insert an SD card.</div>";
-
-const char HTTP_BACKBTN[]          PROGMEM = "<hr><form action='/' method='get'><button>Back</button></form>";
 
 const char HTTP_STATUS_HEAD[]      PROGMEM = "<div class='sta'><span class='{c}'>&#x25CF;</span> ";
 const char HTTP_STATUS_TAIL[]      PROGMEM = "</div>";
@@ -152,7 +150,7 @@ const char HTTP_STYLE_QI[]         PROGMEM = "<style>"
     "</style>"
     "<script>function c(l){ge('s').value=l.getAttribute('data-ssid')||l.innerText||l.textContent;"
     "p=l.nextElementSibling.classList.contains('l');pp=ge('p');"
-    "pp.disabled=!p;pp.placeholder='';f=ge('fg');if(f){f.style.display='none'}if(p){pp.focus()}return false;}"
+    "pp.disabled=!p;pp.placeholder='';x=ge('fg');if(x){x.style.display='none'}if(p){pp.focus()}return false;}"
     "function d(l){return false}"
     "</script>";
 
@@ -174,6 +172,9 @@ const char S_brand[]              PROGMEM = "WiFiManager";
 const char S_GET[]                PROGMEM = "GET";
 const char S_POST[]               PROGMEM = "POST";
 const char S_NA[]                 PROGMEM = "Unknown";
+
+const char S_hidden[]             PROGMEM = "[Hidden]";
+const char S_nonprintable[]       PROGMEM = "[Non-printable SSID]";
 
 const char S_notfound[]           PROGMEM = "404 File not found\n\n";
 

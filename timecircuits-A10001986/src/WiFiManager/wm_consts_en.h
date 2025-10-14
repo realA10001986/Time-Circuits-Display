@@ -67,9 +67,6 @@ const char * const WIFI_STA_STATUS[] PROGMEM =
     "WL_DISCONNECTED",    // 6
     "WL_STATION_WRONG_PASSWORD" // 7 KLUDGE
 };
-#endif
-
-#ifdef _A10001986_DBG
 const char* const WIFI_MODES[] PROGMEM = { "NULL", "STA", "AP", "STA+AP" };
 #endif
 

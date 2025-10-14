@@ -25,6 +25,8 @@
 // #define WM_PRECONNECTCB
 // #define WM_EVENTCB
 // #define WM_MDNS
+// #define WM_ADDLGETTERS
+// #define WM_ADDLSETTERS
 
 #include <WiFi.h>
 #include <esp_wifi.h>
@@ -242,7 +244,9 @@ class WiFiManager
     void          setConnectRetries(uint8_t numRetries); // default 1
 
     // set min rssi to include in scan, defaults to -80 if not specified
+    #ifdef WM_ADDLSETTERS
     void          setMinimumRSSI(int rssi = -80);
+    #endif
 
     // sets a custom ip /gateway /subnet configuration
     #ifdef WM_AP_STATIC_IP
@@ -265,15 +269,21 @@ class WiFiManager
     void          setWiFiAPMaxClients(int max); // default 4
 
     // clean connect, always disconnect before connecting
-    void          setCleanConnect(bool enable); // default false
+    #ifdef WM_ADDLSETTERS
+    void          setCleanConnect(bool enable); // default true
+    #endif
 
     // set port of webserver, 80
+    #ifdef WM_ADDLSETTERS
     void          setHttpPort(uint16_t port);
+    #endif
 
     // CONFIG PORTAL
 
     // set custom menu items and order
-    void          setMenu(const int8_t *menu, uint8_t size);
+    // docopy can be false if the menu array is a global const (that does not
+    // get destructed) that also has WM_MENU_END at the end.
+    void          setMenu(const int8_t *menu, uint8_t size, bool doCopy = true);
 
     // set the webapp title, default WiFiManager
     void          setTitle(const char *title);
@@ -291,16 +301,24 @@ class WiFiManager
     void          setCustomMenuHTML(const char* html);
 
     // if true, always show static net inputs, IP, subnet, gateway, else only show if set via setSTAStaticIPConfig
+    #ifdef WM_ADDLSETTERS
     void          setShowStaticFields(bool alwaysShow);
+    #endif
 
     // if true, always show static dns, esle only show if set via setSTAStaticIPConfig
+    #ifdef WM_ADDLSETTERS
     void          setShowDnsFields(bool alwaysShow);
+    #endif
 
     // get last connection result, includes autoconnect and wifisave
+    #ifdef WM_ADDLGETTERS
     uint8_t       getLastConxResult();
+    #endif
 
     // gets number of retries for autoconnect, force retry after wait failure exit
+    #ifdef WM_ADDLGETTERS
     uint8_t       getConnectRetries();
+    #endif
 
     // make some HTML templates available for app
     const char *  getHTTPSTART(int& titleStart);
@@ -309,7 +327,9 @@ class WiFiManager
     const char *  getHTTPSTYLEOK();
 
     // check if config portal is active (true)
+    #ifdef WM_ADDLGETTERS
     bool          getConfigPortalActive();
+    #endif
 
     // check if web portal is active (true)
     bool          getWebPortalActive();
@@ -365,7 +385,7 @@ class WiFiManager
     // options & flags
     unsigned long _connectTimeout         = 0;     // ms stop trying to connect to ap if set
 
-    bool          _cleanConnect           = false; // disconnect before connect in connectwifi, increases stability on connects
+    bool          _cleanConnect           = true;  // disconnect before connect in connectwifi, increases stability on connects
     #if 0
     bool          _disableSTA             = false; // disable sta when starting ap, always
     bool          _disableSTAConn         = true;  // disable sta when starting ap, if sta is not connected ( stability )
@@ -383,16 +403,15 @@ class WiFiManager
     static bool     _gotip;                        // for wifi event callback
 
     int           _minimumRSSI            = -1000; // filter wifiscan ap by this rssi
-    bool          _staShowStaticFields    = false;
-    bool          _staShowDns             = false;
-    bool          _showBack               = false; // show back button
+    bool          _staShowStaticFields    = true;
+    bool          _staShowDns             = true;
 
     bool          _showUploadSnd          = false; // Show upload audio on Update page
     bool          _showContMsg            = false;
     char          _sndContName[8]         = "";    // File name of BIN file to upload
 
-    const char*   _customHeadElement      = NULL;  // store custom head element html from user isnide <head>
-    const char*   _customMenuHTML         = NULL;  // store custom head element html from user inside <>
+    const char*   _customHeadElement      = NULL;  // store custom head element html from user inside <head>
+    const char*   _customMenuHTML         = NULL;  // store custom element html from user inside menu
 
     // internal options
     unsigned int  _scancachetime          = 30000; // ms cache time for preload scans
@@ -491,8 +510,9 @@ class WiFiManager
     bool          validApPassword();
 
     // helper for html
-    String        htmlEntities(String str, bool whitespace = false);
-	  int           htmlEntitiesLen(String& str, bool whitespace = false);
+    String        htmlEntities(String& str, bool forprint = false);
+	  int           htmlEntitiesLen(String& str, bool forprint = false);
+	  bool          checkSSID(String& ssid);
 
 	  long          wmmap(long x);
 
