@@ -2,13 +2,10 @@
  * WiFiManager.h
  *
  * Based on:
- *
  * WiFiManager, a library for the ESP32/Arduino platform
- *
- * @author Creator tzapu
- * @author tablatronix
- * @version 2.0.15+A10001986
- * @license MIT
+ * Creator tzapu (tablatronix)
+ * Version 2.0.15
+ * License MIT
  *
  * Adapted by Thomas Winischhofer (A10001986)
  */
@@ -82,6 +79,8 @@
 #define WM_WIFI_SCAN_BUSY -133
 
 #define DNS_PORT           53
+
+#define MAX_SCAN_OUTPUT_SIZE  6144  // Maximum buffer for scan list on WiFi Config page
 
 #if defined(ESP_ARDUINO_VERSION) && defined(ESP_ARDUINO_VERSION_VAL)
     #if ESP_ARDUINO_VERSION < ESP_ARDUINO_VERSION_VAL(2,0,0)
@@ -316,9 +315,7 @@ class WiFiManager
     #endif
 
     // gets number of retries for autoconnect, force retry after wait failure exit
-    #ifdef WM_ADDLGETTERS
     uint8_t       getConnectRetries();
-    #endif
 
     // make some HTML templates available for app
     const char *  getHTTPSTART(int& titleStart);
@@ -452,8 +449,8 @@ class WiFiManager
 
 	  unsigned int  getParamOutSize(WiFiManagerParameter** params,
                         int paramsCount, unsigned int& maxItemSize);
-  	void          getParamOut(WiFiManagerParameter** params,
-                        int paramsCount, String &page, unsigned int maxItemSize);
+  	void          getParamOut(String &page, WiFiManagerParameter** params,
+                        int paramsCount, unsigned int maxItemSize);
     void          doParamSave(WiFiManagerParameter** params, int paramsCount);
 
 	  int           reportStatusLen();
@@ -471,12 +468,12 @@ class WiFiManager
   	// WiFi page
   	int           getScanItemStart();
   	void          sortNetworks(int n, int *indices, int& haveDupes, bool removeDupes);
-  	unsigned int  getScanItemsLen(int n, bool scanErr, int *indices, unsigned int& maxItemSize, bool showall);
-    String        getScanItemsOut(int n, bool scanErr, int *indices, unsigned int maxItemSize, bool showall);
-	  String        getIpForm(const char *id, const char *title, IPAddress& value, const char *ph = NULL);
-    String        getStaticOut(unsigned int estPageSize = 0);
+  	unsigned int  getScanItemsLen(int n, bool scanErr, int *indices, unsigned int& maxItemSize, int& stopAt, bool showall);
+    void          getScanItemsOut(String& page, int n, bool scanErr, int *indices, unsigned int maxItemSize, bool showall);
+	  void          getIpForm(String& page, const char *id, const char *title, IPAddress& value, const char *ph = NULL);
+    void          getStaticOut(String& page);
 	  unsigned int  getStaticLen();
-    void          buildWifiPage(bool scan, String& page);
+    void          buildWifiPage(String& page, bool scan);
 	  void          handleWifi(bool scan);
     void          handleWifiSave();
 
@@ -506,7 +503,6 @@ class WiFiManager
     void          WiFiEvent(WiFiEvent_t event, arduino_event_info_t info);
 
     // helpers
-    String        toStringIp(IPAddress ip);
     bool          validApPassword();
 
     // helper for html
