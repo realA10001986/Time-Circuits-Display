@@ -284,7 +284,8 @@ WiFiManagerParameter custom_speedoBright("speBri", "Speed brightness (0-15)", se
 WiFiManagerParameter custom_spAO("spAO", "Switch speedo off when idle", settings.speedoAO, 1, "autocomplete='off' type='checkbox' style='margin-top:12px'", WFM_LABEL_AFTER);
 WiFiManagerParameter custom_sAF("sAF", "Real-life acceleration figures", settings.speedoAF, 1, "autocomplete='off' title='If unchecked, movie-like times are used' type='checkbox' style='margin-top:12px'", WFM_LABEL_AFTER);
 WiFiManagerParameter custom_speedoFact("speFac", "Factor for real-life figures (0.5-5.0)", settings.speedoFact, 3, "type='number' min='0.5' max='5.0' step='0.5' title='1.0 means real-world DMC-12 acceleration time.' autocomplete='off'");
-WiFiManagerParameter custom_sL0("sL0", "Display speed with leading 0", settings.speedoL0Spd, 1, "autocomplete='off' type='checkbox' style='margin-top:12px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_sL0("sL0", "Speedo display like in part 3", settings.speedoP3, 1, "autocomplete='off' type='checkbox' style='margin-top:12px'", WFM_LABEL_AFTER);
+WiFiManagerParameter custom_s3rd("s3rd", "Display post-point 0 like A-car", settings.speedo3rdD, 1, "autocomplete='off' type='checkbox' style='margin-top:12px' title='CircuitSetup speedo only. The digit is always 0.'", WFM_LABEL_AFTER);
 #ifdef TC_HAVEGPS
 WiFiManagerParameter custom_useGPSS("uGPSS", "Display GPS speed", settings.useGPSSpeed, 1, "autocomplete='off' title='Check to display actual GPS speed on speedo' type='checkbox' style='margin-top:12px'", WFM_LABEL_AFTER);
 WiFiManagerParameter custom_updrt(wmBuildUpdateRate);  // speed update rate
@@ -577,6 +578,7 @@ void wifi_setup()
       &custom_sAF,
       &custom_speedoFact,
       &custom_sL0,
+      &custom_s3rd,
     #ifdef TC_HAVEGPS
       &custom_useGPSS,
       &custom_updrt,
@@ -1018,7 +1020,8 @@ void wifi_loop()
             strcpyCB(settings.speedoAO, &custom_spAO);
             strcpyCB(settings.speedoAF, &custom_sAF);
             mystrcpy(settings.speedoFact, &custom_speedoFact);
-            strcpyCB(settings.speedoL0Spd, &custom_sL0);
+            strcpyCB(settings.speedoP3, &custom_sL0);
+            strcpyCB(settings.speedo3rdD, &custom_s3rd);
             #ifdef TC_HAVEGPS
             strcpyCB(settings.useGPSSpeed, &custom_useGPSS);
             getParam("spdrt", settings.spdUpdRate, 1, DEF_SPD_UPD_RATE);
@@ -1882,7 +1885,8 @@ void updateConfigPortalValues()
     setCBVal(&custom_spAO, settings.speedoAO);
     setCBVal(&custom_sAF, settings.speedoAF);
     custom_speedoFact.setValue(settings.speedoFact, 3);
-    setCBVal(&custom_sL0, settings.speedoL0Spd);
+    setCBVal(&custom_sL0, settings.speedoP3);
+    setCBVal(&custom_s3rd, settings.speedo3rdD);
     #ifdef TC_HAVEGPS
     setCBVal(&custom_useGPSS, settings.useGPSSpeed);
     // Update rate done on-the-fly

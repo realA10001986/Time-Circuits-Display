@@ -139,6 +139,14 @@
 
 /*  Changelog
  *
+ *  2025/10/15 (A10001986)
+ *    - Speedo: Extend option of displaying leading-0 into "speedo display like in
+ *      part 3", where the speedo displays 2 digits all the way, but without the dot.
+ *    - Speedo: Add option to enable post-point zero on CircuitSetup speedo; it only
+ *      ever displays 0. Ignored if "speedo display like in part 3" is enabled.
+ *    - Some more WM changes. Number of scanned networks listed is now restricted in 
+ *      order not to run out of memory.
+ *    - Internal: new json tags to make json file smaller
  *  2025/10/14 (A10001986) [3.5.4]
  *    - WM: Do not garble UTF8 SSID; skip SSIDs with non-printable characters
  *    - Fix regression in CP ("show password")
