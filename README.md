@@ -1338,7 +1338,7 @@ Since the DMC-12 wasn't the world's fastest car, its (real-life) acceleration mi
 
 This settings has no effect if the **_Real-life acceleration figures_** option is unchecked.
 
-#### &#9654; Speedo display like in part 3
+##### &#9654; Speedo display like in part 3
 
 If this is unchecked, speed is display like in parts 1 and 2: Single digit speeds below 10, and a dot. This is the default.
 
