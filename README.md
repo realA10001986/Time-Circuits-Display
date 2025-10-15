@@ -1338,9 +1338,19 @@ Since the DMC-12 wasn't the world's fastest car, its (real-life) acceleration mi
 
 This settings has no effect if the **_Real-life acceleration figures_** option is unchecked.
 
-##### &#9654; Display speed with leading 0
+#### &#9654; Speedo display like in part 3
 
-If this is checked, speed on the Speedo is displayed with a leading 0 for speeds from 0 to 9. Default is off, in accordance with part 1 of the series.
+If this is unchecked, speed is display like in parts 1 and 2: Single digit speeds below 10, and a dot. This is the default.
+
+In part 3 of the series, the speedo displays two digits (even for speeds below 10), but no dot. Check this option to use this style. 
+
+This option is mutually exclusive to "Display post-point 0 like A-car".
+
+##### &#9654; Display post-point 0 like A-car
+
+The CircuitSetup speedo features a third digit behind the gaffer tape. This digit is usually dark, in accordance to the speedo close-ups in all three parts of the series.
+
+The A-Car, shown very briefly in part 1 of the series when Doc sends Einstein a minute into the future, had a speedo which showed "0.0". Check this option to display a "0" after the dot using the hidden digit. Please note that only "0" is ever displayed, fractions are not supported.
 
 ##### &#9654; Display GPS speed
 
