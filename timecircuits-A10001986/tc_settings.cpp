@@ -509,7 +509,7 @@ static bool read_settings(File configFile)
         wd |= CopyTextParm(settings.systemID, json["sID"], json["systemID"], sizeof(settings.systemID));
         wd |= CopyTextParm(settings.appw, json["appw"], NULL, sizeof(settings.appw));
         wd |= CopyCheckValidNumParm(json["apch"], NULL, settings.apChnl, sizeof(settings.apChnl), 0, 11, DEF_AP_CHANNEL);
-        wd |= CopyCheckValidNumParm(json["wAOD"], NULL, settings.wifiAPOffDelay, sizeof(settings.wifiAPOffDelay), 0, 99, DEF_WIFI_APOFFDELAY);
+        wd |= CopyCheckValidNumParm(json["wAOD"], json["wifiAPOffDelay"], settings.wifiAPOffDelay, sizeof(settings.wifiAPOffDelay), 0, 99, DEF_WIFI_APOFFDELAY);
 
         // Settings
 
