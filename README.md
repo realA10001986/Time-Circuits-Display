@@ -1254,7 +1254,7 @@ The time zone for the yellow display in [World Clock mode](#world-clock-mode). D
 
 ##### &#9654; City/location name
 
-For each World Clock time zones, a city or location name can be configured. For example "SYDNEY" or "LORD HOWE". This name will be shown every few seconds alternately with time.
+For each World Clock time zone, a city or location name can be configured. For example "SYDNEY" or "LORD HOWE". This name will be shown every few seconds alternately with time.
 
 #### <ins>Music Player settings</ins>
 
