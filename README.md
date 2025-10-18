@@ -176,7 +176,7 @@ In general, it is safe to power-down the TCD when it is idle or after it has bee
 
 ### Calendar system
 
-The TCD firmware uses the [Julian Calendar](https://en.wikipedia.org/wiki/Julian_calendar) calendar from Jan 1, 1, until Sep 2, 1752, and for later dates the [Gregorian](https://en.wikipedia.org/wiki/Gregorian_calendar) one. Sep 2, 1752, was the last day the Julian calendar was used in the ["First" British Empire](https://en.wikipedia.org/wiki/British_Empire#%22First%22_British_Empire_(1707%E2%80%931783)) (Great Britain and its colonies, including eastern parts of North America, Canada). Other countries stopped using this calendar system way earlier; most of Europe, including Spain plus its colonies worldwide, had switched in 1582 already. DK/NO/NL (except Holland and Zeeland) switched in 1700, Japan in 1872, China in 1912, Russia in 1918.
+The TCD firmware uses the [Julian Calendar](https://en.wikipedia.org/wiki/Julian_calendar) from Jan 1, 1, until Sep 2, 1752, and for later dates the [Gregorian](https://en.wikipedia.org/wiki/Gregorian_calendar) one. Sep 2, 1752, was the last day the Julian calendar was used in the ["First" British Empire](https://en.wikipedia.org/wiki/British_Empire#%22First%22_British_Empire_(1707%E2%80%931783)) (Great Britain and its colonies, including eastern parts of North America, Canada). Other countries stopped using this calendar system way earlier; most of Europe, including Spain plus its colonies worldwide, had switched in 1582 already. DK/NO/NL (except Holland and Zeeland) switched in 1700, Japan in 1872, China in 1912, Russia in 1918.
 
 Since the time machine was built in the USA, using 1752 for the TCD seems appropriate.
 
@@ -527,7 +527,7 @@ To toggle night-mode on/off manually, hold "4".
 
 #### Scheduled night-mode
 
-In the Config Portal, a schedule for night-mode can be programmed. You can choose from currently four time schedule presets, or a daily schedule with selectable start and end hours.
+In the Config Portal, a schedule for night-mode can be programmed. You can choose from currently four time-schedule presets, or a daily schedule with selectable start and end hours.
 
 The presets are for (hopefully) typical home, office and shop setups, and they assume the TCD to be in use (ie night-mode off) at the following times:
 - Home: Mon-Thu 5pm-11pm, Fri 1pm-1am, Sat 9am-1am, Sun 9am-11pm
@@ -854,7 +854,7 @@ On earlier Control Boards (1.2 and below), the switch needs connect the pins lab
 
 ![pwr_trigger1_2](img/fakepwr12.jpg)
 
-Note that the switch actually needs to be a switch with a maintained contact; the pins need to remain connected for as long as the device is fake-switched-on.
+Note that the switch needs to be a switch with a maintained contact; the pins need to remain connected for as long as the device is fake-switched-on.
 
 In order to use the Fake Power Switch, check **_Use fake power switch_** in the Config Portal.
 
@@ -872,7 +872,7 @@ On Control Boards V1.3 and later, there is a dedicated header for the button lab
 |:--:|
 | TT_IN on TCB 1.3 |
 
-Unfortunately, there is no header and no break out for IO27 on TC control boards V1.2 and below. There is, however, a row of solder pads right next to the socket on the control board, where a pin header or cable can easily be soldered on:
+Unfortunately, there is no header and no breakout for IO27 on TC control boards V1.2 and below. There is, however, a row of solder pads right next to the socket on the control board, where a pin header or cable can easily be soldered on:
 
 | ![tcboard_io27](img/ttin12.jpg) |
 |:--:|
@@ -1093,9 +1093,9 @@ Note that if your configured WiFi network was not available when the TCD was try
 
 ## Flash Wear
 
-Flash memory has a somewhat limited life-time. It can be written to only between 10.000 and 100.000 times before becoming unreliable. The firmware writes to the internal flash memory when saving settings and other data. Every time you change settings through the keypad menu or the Config Portal, data is written to flash memory.
+Flash memory has a somewhat limited lifetime. It can be written to only between 10.000 and 100.000 times before becoming unreliable. The firmware writes to the internal flash memory when saving settings and other data. Every time you change settings through the keypad menu or the Config Portal, data is written to flash memory.
 
-In order to reduce the number of write operations and thereby prolong the life of your TCD, it is recommended to use a good-quality SD card and to check **_[Save secondary settings on SD](#-save-secondary-settings-on-sd)_** in the Config Portal; secondary settings (volume, alarm, reminder, carmode state, exhibition mode data and state, time travel data and state) are then stored on the SD card (which also suffers from wear but is easy to replace). See [here](#-save-secondary-settings-on-sd) for more information.
+In order to reduce the number of write operations and thereby prolong the life of your TCD, it is recommended to use a good-quality SD card and to check **_[Save secondary settings on SD](#-save-secondary-settings-on-sd)_** in the Config Portal; secondary settings (volume, alarm, reminder, car-mode state, exhibition mode data and state, time travel data and state) are then stored on the SD card (which also suffers from wear but is easy to replace). See [here](#-save-secondary-settings-on-sd) for more information.
 
 ## Appendix A: The Config Portal
 
@@ -1336,7 +1336,7 @@ If you are using your TCD together with a Futaba Remote Control prop, leave this
 
 Since the DMC-12 wasn't the world's fastest car, its (real-life) acceleration might soon cause boredom if played in real-time as part of the time travel sequence with a speedo. This factor speeds up the acceleration. 2.0 means twice as fast as the real car.
 
-This settings has no effect if the **_Real-life acceleration figures_** option is unchecked.
+This setting has no effect if the **_Real-life acceleration figures_** option is unchecked.
 
 ##### &#9654; Speedo display like in part 3
 
@@ -1348,7 +1348,7 @@ This option is mutually exclusive to "Display post-point 0 like A-car".
 
 ##### &#9654; Display post-point 0 like A-car
 
-The CircuitSetup speedo features a third digit behind the gaffer tape. This digit is usually dark, in accordance to the speedo close-ups in all three parts of the series.
+The CircuitSetup speedo features a third digit behind the gaffer tape. This digit is usually dark, in accordance with the speedo close-ups in all three parts of the series.
 
 The A-Car, shown very briefly in part 1 of the series when Doc sends Einstein a minute into the future, had a speedo which showed "0.0". Check this option to display a "0" after the dot using the hidden digit. Please note that only "0" is ever displayed, fractions are not supported.
 
@@ -1434,7 +1434,7 @@ For CircuitSetup original props, if they are connected by wire, this option shou
 
 For wirelessly connected props this option has no effect. Also see [here](#controlling-other-props).
 
-Note that time travels triggered by a rotary encoder or when GPS speed hits 88mph are always signalled without lead. The lead time is only applicable for time travels where the TCD controls the acceleration.
+Note that time travels triggered by a rotary encoder or when GPS speed hits 88mph are always signaled without lead. The lead time is only applicable for time travels where the TCD controls the acceleration.
 
 #### <ins>Other settings</ins>
 
@@ -1442,7 +1442,7 @@ Note that time travels triggered by a rotary encoder or when GPS speed hits 88mp
 
 If this is checked, secondary settings (brightness, time cycling interval, volume, alarm, reminder, car mode state, exhibition mode data and state, time travel state and data) are stored on the SD card (if one is present). This helps to minimize write operations to the internal flash memory and to prolong the lifetime of your TCD. See [Flash Wear](#flash-wear).
 
-Apart from Flash Wear, there is another reason for using an SD card for settings: Writing data to internal flash memory can cause delays of up to 1.5 seconds, which interrupt sound playback and have other undesired effects. The TCD needs to save data from time to time, so in order for a smooth experience without unexpected and unwanted delays, please use an SD card and check this option.
+Apart from Flash Wear, there is another reason for using an SD card for settings: Writing data to internal flash memory can cause delays of up to 1.5 seconds, which interrupt sound playback and have other undesired effects. The TCD needs to save data from time to time, so for a smooth experience without unexpected and unwanted delays, please use an SD card and check this option.
 
 It is safe to have this option checked even with no SD card present.
 
