@@ -1022,7 +1022,7 @@ Only ASCII messages are supported, the maximum length is 255 characters.
 
 ### Control the TCD via MQTT
 
-The TCD can - to a limited extent - be controlled through messages sent to topic **bttf/tcd/cmd**. Support commands are
+The TCD can - to a limited extent - be controlled through messages sent to topic **bttf/tcd/cmd**. Supported commands are
 - TIMETRAVEL: Start a time travel
 - RETURN: Return from time travel
 - BEEP_ON: Enables the [beep](#beep-on-the-second)
