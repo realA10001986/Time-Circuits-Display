@@ -1268,15 +1268,15 @@ Shuffle mode can be changed at any time through the keypad (222 / 555); however,
 
 ##### &#9654; Destination time off in night mode
 
-Selects whether the *destination time* display is dimmed or switched of in night mode.
+Selects whether the *destination time* display is dimmed or switched off in night mode.
 
 ##### &#9654; Present time off in night mode
 
-Selects whether the *present time* display is dimmed or switched of in night mode.
+Selects whether the *present time* display is dimmed or switched off in night mode.
 
 ##### &#9654; Last time dep. off in night mode
 
-Selects whether the *last time departed* display is dimmed or switched of in night mode.
+Selects whether the *last time departed* display is dimmed or switched off in night mode.
 
 ##### &#9654; Schedule
 
@@ -1374,7 +1374,7 @@ Brightness of speedo display when displaying temperature.
 
 ##### &#9654; Temperature off in night mode
 
-Selects whether the temperature display is dimmed or switched of in night mode.
+Selects whether the temperature display is dimmed or switched off in night mode.
 
 #### <ins>External switches/buttons</ins>
 
