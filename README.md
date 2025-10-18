@@ -110,7 +110,7 @@ As long as the device is unconfigured, it creates a WiFi network of its own name
 
 It is ok to leave the TCD in this mode, especially if it is mounted in a car or places with no WiFi networks available. 
 
->Please do not leave computers/hand helds permanently connected to the TCD's AP. These devices might think they are connected to the internet and therefore hammer the TCD with DNS and HTTP requests which might lead to packet loss and disruptions.
+>Please do not leave computers/handhelds permanently connected to the TCD's AP. These devices might think they are connected to the internet and therefore hammer the TCD with DNS and HTTP requests which might lead to packet loss and disruptions.
 
 >If you want your device to remain in AP-mode, please choose a suitable WiFi channel on the Config Portal's "WiFi Configuration" page. See [here](#-wifi-channel).
 
@@ -1186,7 +1186,7 @@ If a WiFi Scan was done (which can be triggered by clicking "WiFI Scan"),
 - a list of networks is displayed at the top of the page; click "Show All" to list all networks including their channel;
 - a "proposed channel" is displayed near the "WiFi channel" drop-down, based on a rather simple heuristic. The banner is green when a channel is excellent, grey when it is impeded by overlapping channels, and when that banner is red operation in AP mode is not recommended due to channels all being used.
 
-The channel proposition is based on all WiFi networks found; it does not take non-WiFi equipment (baby monitors, cordless phones, bluetooth devices, microwave ovens, etc) into account.
+The channel proposition is based on all WiFi networks found; it does not take non-WiFi equipment (baby monitors, cordless phones, Bluetooth devices, microwave ovens, etc) into account.
 
 ##### &#9654; WiFi power save timer
 
