@@ -75,7 +75,7 @@ Then there are two alternative ways to proceed. Note that both methods *require 
 1) Through the [Config Portal](#the-config-portal). Click on *Update*, select the "TCDA.bin" file in the bottom file selector and click on *Upload*.
 
 2) Via SD card:
-- Copy "TCDA.bin" to the root directory of of a FAT32 formatted SD card;
+- Copy "TCDA.bin" to the root directory of a FAT32 formatted SD card;
 - power down the TCD,
 - insert this SD card into the slot and 
 - power up the TCD; the sound-pack will be installed automatically.
