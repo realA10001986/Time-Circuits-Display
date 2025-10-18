@@ -1434,7 +1434,7 @@ For CircuitSetup original props, if they are connected by wire, this option shou
 
 For wirelessly connected props this option has no effect. Also see [here](#controlling-other-props).
 
-Note that time travels triggered by a rotary encoder or when GPS speed hits 88mph are always signalled without lead. The lead time is only appicable for time travels where the TCD controls the acceleration.
+Note that time travels triggered by a rotary encoder or when GPS speed hits 88mph are always signalled without lead. The lead time is only applicable for time travels where the TCD controls the acceleration.
 
 #### <ins>Other settings</ins>
 
