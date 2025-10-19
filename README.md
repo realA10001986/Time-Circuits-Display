@@ -106,7 +106,7 @@ Setting actual time:
 
 The TCD knows two ways of WiFi operation: Either it creates its own WiFi network, or it connects to a pre-existing WiFi network.
 
-As long as the device is unconfigured, it creates a WiFi network of its own named "TCD-AP". This is called **"Access point mode"**, or "AP-mode". In this mode, other WiFi devices can connect to the TCD, but the TCD can't access the internet (and therefore not synchronize time through NTP). Also, [HA/MQTT](#home-assistant--mqtt) is not possible.
+As long as the device is unconfigured, it creates a WiFi network of its own named "TCD-AP". This is called **"Access point mode"**, or "AP-mode". In this mode, other WiFi devices - such as other props or a computer - can connect to the TCD, but the TCD can't access the internet (and therefore not synchronize time through NTP). Also, [HA/MQTT](#home-assistant--mqtt) is not possible.
 
 ![APmode](img/apmode.png)
 
