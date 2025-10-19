@@ -824,15 +824,15 @@ If the TCD, perhaps along with other props such as Flux Capacitor or SID, is mou
 
 This is what *car mode* is for: If enabled, the TCD will always boot in AP mode, regardless of a configured WiFi network. This speeds up booting.
 
+![APmode](img/apmode-car.png)
+
 To enable *car mode*, type 991 followed by ENTER. The TCD will reboot in AP mode.
 
 To disable *car mode*, type 990 followed by ENTER. The TCD will reboot and attempt to connect to a previously configured WiFi network.
 
 *Car mode* is persistent, i.e. it remains active (even across reboots and power-downs) until disabled.
 
->Note that the TCD has no internet access while in car mode; this means that, unless a GPS receiver is present, it cannot update its clock automatically. If the time runs off over time, you need to re-adjust it using the [keypad menu](#how-to-set-the-real-time-clock-rtc).
-
-> Alternatively, you could use battery powered portable WiFi router as access point for the props. 
+>Note that the TCD has no internet access while in car mode; this means that, unless a GPS receiver is present, it cannot update its clock automatically. If the time runs off over time, you need to re-adjust it using the [keypad menu](#how-to-set-the-real-time-clock-rtc). 
 
 ## Peripherals and connection
 
@@ -992,7 +992,7 @@ Here is a demonstration of all the props connected through BTTFN:
 
 BTTFN requires the props to be connected to the same network, such as for example your home WiFi network:
 
-![STAmode](img/stamode.png)
+![STAmode](img/stamode-bttfn.png)
 
 On the TCD, no special configuration is required for using BTTFN. 
 
@@ -1000,7 +1000,7 @@ On the other prop, such as CircuitSetup's [Flux Capacitor](https://circuitsetup.
 
 The fact that the devices communicate directly with each other makes BTTFN the ideal solution for car setups. Also, while at home, all the devices might be connected to an existing WiFi network, in a car, the TCD can act as access point for the other BTTFN-capable props (ie they are connecting to the *TCD-AP* WiFi network), and those then can talk the TCD wirelessly. The TCD has *car mode* for aiding this, see [here](#car-mode) and the documentation of the respective prop.
 
-![APmode](img/apmode.png)
+![APmode](img/apmode-car.png)
 
 To see which BTTFN clients are currently known to the TCD, enter the keypad menu and select "BTTFN CLIENTS".
 
@@ -1010,7 +1010,7 @@ The TCD can also tell other props about a time travel through a wire. This is ma
 
 A wired connection only allows for synchronized time travel sequences, no other communication takes place. 
 
-![Wired connection](img/family-wired.png)
+![Wired connection](img/family-wiredn.png)
 
 CircuitSetup/A10001986 original props also support a wired connection, if for whatever reason BTTFN is not an option. For detailed wiring instructions, please see the documentation for the prop ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [Dash Gauges](https://github.com/realA10001986/Dash-Gauges/blob/main/hardware/README.md#connecting-a-tcd-to-the-dash-gauges-by-wire), [VSR](https://github.com/realA10001986/VSR#connecting-a-tcd-by-wire)); for DIY props, see [here](AddOns.md#other-props).
 
@@ -1053,7 +1053,7 @@ The TCD can - to a limited extent - be controlled through messages sent to topic
 
 If both the TCD and the other props are connected to the same broker, and the option **_Send event notifications_** is checked on the TCD's side, other compatible props will receive information on time travel and alarm and play their sequences in sync with the TCD. The topic is called  **bttf/tcd/pub**.
 
-![MQTT connection](img/family-wifi-mqtt.png)
+![MQTT connection](img/stamode-mqtt.png)
 
 The timing is identical to the wired protocol; TIMETRAVEL is sent to **bttf/tcd/pub** with a lead time of 5 seconds. REENTRY is sent when the re-entry sequence starts.
 
