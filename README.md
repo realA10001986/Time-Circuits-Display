@@ -106,7 +106,7 @@ Setting actual time:
 
 The TCD knows two ways of WiFi operation: Either it creates its own WiFi network, or it connects to a pre-existing WiFi network.
 
-As long as the device is unconfigured, it creates a WiFi network of its own named "TCD-AP". This is called **"Access point mode"**, or "AP-mode". In this mode, other WiFi devices can connect to the TCD, but the TCD can't access the internet (and therefore not synchronize time).
+As long as the device is unconfigured, it creates a WiFi network of its own named "TCD-AP". This is called **"Access point mode"**, or "AP-mode". In this mode, other WiFi devices can connect to the TCD, but the TCD can't access the internet (and therefore not synchronize time through NTP). Also, [HA/MQTT](#home-assistant--mqtt) is not possible.
 
 ![APmode](img/apmode.png)
 
@@ -116,11 +116,11 @@ It is ok to leave the TCD in this mode, especially if it is mounted in a car or 
 
 >If you want your device to remain in AP-mode, please choose a suitable WiFi channel on the Config Portal's "WiFi Configuration" page. See [here](#-wifi-channel).
 
-In a typical home setup, however, you might want to connect the TCD to your local WiFi network. 
+In a typical home setup, however, you might want to connect the TCD to your local WiFi network. This allows for for time sychronization (NTP) and [HA/MQTT](#home-assistant--mqtt):
 
-![APmode](img/stamode.png)
+![STAmode](img/stamode.png)
 
-To do so, navigate to the Config Portal and click on "WiFi Configuration". The bare minimum is to select an WiFi network name (SSID) and a WiFi password.
+To connect your TCD to your WiFI network, navigate to the Config Portal and click on "WiFi Configuration". The bare minimum is to select an WiFi network name (SSID) and a WiFi password.
 
 >Note that the TCD requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). If the device is inaccessible as a result of incorrect static IPs, hold ENTER when powering it up until the white LED lights up; static IP data will be deleted and the device will return to DHCP.
 
