@@ -1053,8 +1053,6 @@ The TCD can - to a limited extent - be controlled through messages sent to topic
 
 If both the TCD and the other props are connected to the same broker, and the option **_Send event notifications_** is checked on the TCD's side, other compatible props will receive information on time travel and alarm and play their sequences in sync with the TCD. The topic is called  **bttf/tcd/pub**.
 
-![MQTT connection](img/stamode-mqtt.png)
-
 The timing is identical to the wired protocol; TIMETRAVEL is sent to **bttf/tcd/pub** with a lead time of 5 seconds. REENTRY is sent when the re-entry sequence starts.
 
 When the [alarm](#how-to-set-up-the-alarm) sounds, the TCD sends "ALARM" to **bttf/tcd/pub**.
@@ -1067,7 +1065,11 @@ If you have other MQTT-aware devices listening to the TCD's public topic (bttf/t
 
 ### Setup
 
-In order to connect to a MQTT network, a "broker" (such as [mosquitto](https://mosquitto.org/), [EMQ X](https://www.emqx.io/), [Cassandana](https://github.com/mtsoleimani/cassandana), [RabbitMQ](https://www.rabbitmq.com/), [Ejjaberd](https://www.ejabberd.im/), [HiveMQ](https://www.hivemq.com/) to name a few) must be present in your network, and its address needs to be configured in the Config Portal. The broker can be specified either by domain or IP (IP preferred, spares us a DNS call). The default port is 1883. If a different port is to be used, append a ":" followed by the port number to the domain/IP, such as "192.168.1.5:1884". 
+In order to connect to a MQTT network, a "broker" (such as [mosquitto](https://mosquitto.org/), [EMQ X](https://www.emqx.io/), [Cassandana](https://github.com/mtsoleimani/cassandana), [RabbitMQ](https://www.rabbitmq.com/), [Ejjaberd](https://www.ejabberd.im/), [HiveMQ](https://www.hivemq.com/) to name a few) must be present in your network.
+
+![MQTT connection](img/stamode-mqtt.png)
+
+The broker's address needs to be configured in the Config Portal. The broker can be specified either by domain or IP (IP preferred, spares us a DNS call). The default port is 1883. If a different port is to be used, append a ":" followed by the port number to the domain/IP, such as "192.168.1.5:1884". 
 
 If your broker does not allow anonymous logins, a username and password can be specified.
 
@@ -1081,7 +1083,7 @@ Limitations: MQTT Protocol version 3.1.1; TLS/SSL not supported; ".local" domain
 
 ## Futaba Remote Control
 
-The upcoming kit for modifying a Futaba remote control allows, among many features, to control the TCD's speedo. The Remote can increase/decrease speed, trigger a time travel, and more. 
+CircuitSetup's [kit for modifying a Futaba remote control](https://circuitsetup.us/product/futaba-remote-stanley-display-wireless-control-kit/) allows, among many features, to control the TCD's speedo. The Remote can increase/decrease speed, trigger a time travel, and more. 
 
 In order to permit remote controlling, enter 993 followed by ENTER. No further configuration is required on the TCD's side.
 
