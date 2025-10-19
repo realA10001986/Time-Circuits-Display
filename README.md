@@ -978,9 +978,7 @@ For information on supported sensor models/types and configuration, see [here](A
 
 ## Controlling other props
 
-### Connecting props wirelessly
-
-#### BTTF-Network (BTTFN)
+### Connecting props wirelessly: BTTF-Network (BTTFN)
 
 The TCD can communicate with other compatible props wirelessly, via the built-in "**B**asic-**T**elematics-**T**ransmission-**F**ramework" over WiFi. It can send out information about a time travel and an alarm, and other props can query the TCD for time, speed and some other data.
 
