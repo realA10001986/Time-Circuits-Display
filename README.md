@@ -898,7 +898,7 @@ The firmware supports [CircuitSetups's speedometer display](https://circuitsetup
 
 Full disclosure: The video was shot before the CircuitSetup speedo became available. The speedo shown is a DIY prop and not the - much better looking - CircuitSetup speedo. The video is only meant to demonstrate how the TCD and the speedo inter-operate. (The TFC switch was made by me, see [here](https://tfc.out-a-ti.me), it uses the [Fake Power Switch](#fake-power-switch) feature of the TCD.)
 
-The CircuitSetup [Speedo Kit](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit/) needs to be wired as shown below:
+If your CircuitSetup [Speedo Kit](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit/) came with a cable with 7 wires, it needs to be wired as shown below:
 
 ![speedo_i2c](img/speedo_i2c.jpg)
 
@@ -990,7 +990,7 @@ Here is a demonstration of all the props connected through BTTFN:
 |:--:|
 | Click to watch the video |
 
-BTTFN requires the props to be connected to the same network, such as for example your home WiFi network:
+BTTFN requires the props to be connected to the same network, such as, for example, your home WiFi network:
 
 ![STAmode](img/stamode-bttfn.png)
 
@@ -998,7 +998,7 @@ On the TCD, no special configuration is required for using BTTFN.
 
 On the other prop, such as CircuitSetup's [Flux Capacitor](https://circuitsetup.us/product/flux-capacitor-light-sound-pcb/), [SID](https://circuitsetup.us/product/delorean-time-machine-status-indicator-display-sid/) or the [Dash Gauges](https://dg.out-a-ti.me), the [VSR](https://vsr.out-a-ti.me) or the [Futaba Remote Control kit](https://remote.out-a-ti.me), the TCD's IP address or hostname must be entered into the *IP address or hostname of TCD* field on the Setup page in their Config Portal - that's all.
 
-The fact that the devices communicate directly with each other makes BTTFN the ideal solution for car setups. Also, while at home, all the devices might be connected to an existing WiFi network, in a car, the TCD can act as access point for the other BTTFN-capable props (ie they are connecting to the *TCD-AP* WiFi network), and those then can talk the TCD wirelessly. The TCD has *car mode* for aiding this, see [here](#car-mode) and the documentation of the respective prop.
+The fact that the devices communicate directly with each other makes BTTFN the ideal solution for **car setups**. While at home, all the devices might be connected to an existing WiFi network, in a car, the TCD can act as access point for the other BTTFN-capable props (ie they are connecting to the *TCD-AP* WiFi network), and those then can talk the TCD wirelessly. The TCD has *car mode* for aiding this, see [here](#car-mode) and the documentation of the respective prop.
 
 ![APmode](img/apmode-car.png)
 
@@ -1008,9 +1008,9 @@ To see which BTTFN clients are currently known to the TCD, enter the keypad menu
 
 The TCD can also tell other props about a time travel through a wire. This is mainly meant for connecting third party props which are not BTTFN-compatible.
 
-A wired connection only allows for synchronized time travel sequences, no other communication takes place. 
-
 ![Wired connection](img/family-wiredn.png)
+
+A wired connection only allows for synchronized time travel sequences, no other communication takes place. 
 
 CircuitSetup/A10001986 original props also support a wired connection, if for whatever reason BTTFN is not an option. For detailed wiring instructions, please see the documentation for the prop ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [Dash Gauges](https://github.com/realA10001986/Dash-Gauges/blob/main/hardware/README.md#connecting-a-tcd-to-the-dash-gauges-by-wire), [VSR](https://github.com/realA10001986/VSR#connecting-a-tcd-by-wire)); for DIY props, see [here](AddOns.md#other-props).
 
@@ -1073,13 +1073,11 @@ The broker's address needs to be configured in the Config Portal. The broker can
 
 If your broker does not allow anonymous logins, a username and password can be specified.
 
-If you want your TCD to display messages as described above, you also need to specify the topic in the respective field.
+In order to display messages on the TCD as described above, you need to specify the topic in the respective field.
 
 If you want your TCD to publish messages to bttf/tcd/pub (ie if you want to notify other devices about a timetravel and/or alarm), check the **_Send event notifications_** option.
 
-Note that MQTT is disabled when the TCD is operated in AP-mode or car mode.
-
-Limitations: MQTT Protocol version 3.1.1; TLS/SSL not supported; ".local" domains (MDNS) not supported; maximum message length 255 characters; server/broker must respond to PING (ICMP) echo requests. For proper operation with low latency, it is recommended that the broker is on your local network. Note that using HA/MQTT will disable [WiFi power saving](#wifi-power-saving-features).
+Limitations: MQTT Protocol version 3.1.1; TLS/SSL not supported; ".local" domains (MDNS) not supported; maximum message length 255 characters; server/broker must respond to PING (ICMP) echo requests. For proper operation with low latency, it is recommended that the broker is on your local network. Note that using HA/MQTT will disable [WiFi power saving](#wifi-power-saving-features). MQTT is disabled when the TCD is operated in AP-mode or car mode.
 
 ## Futaba Remote Control
 
