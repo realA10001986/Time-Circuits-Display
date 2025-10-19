@@ -124,7 +124,7 @@ To connect your TCD to your WiFI network, navigate to the Config Portal and clic
 
 >Note that the TCD requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). If the device is inaccessible as a result of incorrect static IPs, hold ENTER when powering it up until the white LED lights up; static IP data will be deleted and the device will return to DHCP.
 
->In order to use BTTFN, all props must be connected to the same network; this can be your local (WiFi) network, or the TCD's own WiFi network in AP mode. In order to use MQTT, your TCD must be connected to the same network your broker is connected to.
+>In order to use BTTFN, all props must be connected to the same network; this can be your local (WiFi) network, or the TCD's own WiFi network in AP mode. BTTFN does not work over the internet.
 
 After saving the WiFi configuration settings, the TCD reboots and tries to connect to your selected WiFi network. If that fails, it will again start in access point mode.
 
