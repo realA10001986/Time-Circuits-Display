@@ -116,7 +116,7 @@ It is ok to leave the TCD in this mode, especially if it is mounted in a car or 
 
 >If you want your device to remain in AP-mode, please choose a suitable WiFi channel on the Config Portal's "WiFi Configuration" page. See [here](#-wifi-channel).
 
-In a typical home setup, however, you might want to connect the TCD to your local WiFi network. This allows for for time sychronization (NTP) and [HA/MQTT](#home-assistant--mqtt):
+In a typical home setup, however, you might want to connect the TCD to your local WiFi network. This allows for for time synchronization (NTP) and [HA/MQTT](#home-assistant--mqtt):
 
 ![STAmode](img/stamode.png)
 
