@@ -813,25 +813,6 @@ Note: Your dates/times will be overwritten in storage after a time travel when *
  - While the menu is active, press ENTER repeatedly until "END" is displayed.
  - Hold ENTER to leave the menu
 
-## Car Mode
-
-If the TCD, perhaps along with other props such as Flux Capacitor or SID, is mounted in a car, there are a few things to be considered:
-
-- There is no point in attempting to connect to a WiFi network, there most likely isn't one.
-- If the TCD acts as WiFi access point for Flux Capacitor and/or SID, it should boot quickly so that the other props can connect to it as soon as possible.
-
-This is what *car mode* is for: If enabled, the TCD will always boot in AP mode, regardless of a configured WiFi network. This speeds up booting.
-
-![APmode](img/apmode-car.png)
-
-To enable *car mode*, type 991 followed by ENTER. The TCD will reboot in AP mode.
-
-To disable *car mode*, type 990 followed by ENTER. The TCD will reboot and attempt to connect to a previously configured WiFi network.
-
-*Car mode* is persistent, i.e. it remains active (even across reboots and power-downs) until disabled.
-
->Note that the TCD has no internet access while in car mode; this means that, unless a GPS receiver is present, it cannot update its clock automatically. If the time runs off over time, you need to re-adjust it using the [keypad menu](#how-to-set-the-real-time-clock-rtc). 
-
 ## Peripherals and connection
 
 ![The BTTF Prop Family](img/family-head.png)
@@ -998,11 +979,24 @@ On the other prop, such as CircuitSetup's [Flux Capacitor](https://circuitsetup.
 
 To see which BTTFN clients are currently known to the TCD, either check at the Config Portal's main page, or enter the keypad menu and select "BTTFN CLIENTS", 
 
-#### BTTFN in a car setup
+#### Car Mode
 
-The fact that the devices communicate directly with each other makes BTTFN the ideal solution for **car setups**. While at home, all the devices might be connected to an existing WiFi network, in a car, the TCD can act as access point for the other BTTFN-capable props (ie they are connecting to the *TCD-AP* WiFi network), and those then can talk the TCD wirelessly. The TCD has *car mode* for aiding this, see [here](#car-mode) and the documentation of the respective prop.
+If the TCD, along with other BTTFN-compatible props, is mounted in a car, there are a few things to be considered:
+
+- There is no point in attempting to connect to a WiFi network, there most likely isn't one. Instead, the TCD can act as access point for the other props.
+- If the TCD acts as WiFi access point for the other props, it should boot quickly so that the other props can connect to it as soon as possible.
+
+This is what *car mode* is for: If enabled, the TCD will always - and quickly - boot in AP mode, regardless of a configured WiFi network. The other props just need to be configured to connect to WiFi network "TCD-AP".
 
 ![APmode](img/apmode-car.png)
+
+To enable *car mode*, type 991 followed by ENTER. The TCD will reboot in AP mode.
+
+To disable *car mode*, type 990 followed by ENTER. The TCD will reboot and attempt to connect to a previously configured WiFi network.
+
+*Car mode* is persistent, i.e. it remains active (even across reboots and power-downs) until disabled.
+
+>Note that the TCD has no internet access while in car mode; this means that, unless a GPS receiver is present, it cannot update its clock automatically. If the time runs off over time, you need to re-adjust it using the [keypad menu](#how-to-set-the-real-time-clock-rtc). 
 
 ### Connecting props by wire
 
