@@ -981,7 +981,7 @@ To see which BTTFN clients are currently known to the TCD, either check at the C
 
 #### Car Mode
 
-As discussed, in a car, or other places without a WiFi network, the TCD can act as WiFi access point for other props. The recommended network configuration for this use case is as follows:
+As [discussed](#connecting-to-a-wifi-network), in a car, or other places without a WiFi network, the TCD can act as WiFi access point for other props. The recommended network configuration for this use case is as follows:
 
 ![APmode](img/apmode-car.png)
 
