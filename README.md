@@ -106,7 +106,7 @@ Setting actual time:
 
 The TCD knows two ways of WiFi operation: Either it creates its own WiFi network, or it connects to a pre-existing WiFi network.
 
-As long as the device is unconfigured, it creates a WiFi network of its own named "TCD-AP". This is called **"Access point mode"**, or "AP-mode". In this mode, other WiFi devices - such as other props or a computer - can connect to the TCD, but the TCD can't access the internet (and therefore not synchronize time through NTP). Also, [HA/MQTT](#home-assistant--mqtt) is not possible.
+As long as the device is unconfigured, it creates a WiFi network of its own named "TCD-AP". This is called **"Access point mode"**, or **"AP-mode"**. In this mode, other WiFi devices - such as other props or a computer - can connect to the TCD, but the TCD can't access the internet (and therefore not synchronize time through NTP). Also, [HA/MQTT](#home-assistant--mqtt) is not possible.
 
 ![APmode](img/apmode.png)
 
@@ -985,15 +985,15 @@ As [discussed](#connecting-to-a-wifi-network), in a car, or other places without
 
 ![APmode](img/apmode-car.png)
 
-When set in Car Mode, the TCD _always boots into AP-mode_, regardless of a configured WiFi network. Not attempting to connect to a network speeds up the boot process and allows other BTTFN-capable props to quickly connect to "TCD-AP".
+When set in *Car Mode*, the TCD _always boots into AP-mode_, regardless of a configured WiFi network. Not attempting to connect to a network speeds up the boot process and allows other BTTFN-capable props to quickly connect to "TCD-AP".
 
-To enable *car mode*, type 991 followed by ENTER. The TCD will reboot in AP mode. If a WiFi network to connect to is configured at that point, it is ignored; no connection attempt is made.
+To enable *Car Mode*, type 991 followed by ENTER. The TCD will reboot in AP mode. If a WiFi network to connect to is configured at that point, it is ignored; no connection attempt is made.
 
-To disable *car mode*, type 990 followed by ENTER. The TCD will reboot and attempt to connect to a previously configured WiFi network.
+To disable *Car Mode*, type 990 followed by ENTER. The TCD will reboot and attempt to connect to a previously configured WiFi network.
 
-*Car mode* is persistent, i.e. it remains active (even across reboots and power-downs) until disabled.
+*Car Mode* is persistent, i.e. it remains active (even across reboots and power-downs) until disabled.
 
->Note that the TCD has no internet access while in car mode; this means that, unless a GPS receiver is present, it cannot update its clock automatically. If the time runs off over time, you either need to quit Car Mode once in a while and allow the TCD connect to a internet-connected WiFi network (the iPhone's Personal Hotspot works fine), or to re-adjust time using the [keypad menu](#how-to-set-the-real-time-clock-rtc). 
+>Note that the TCD has no internet access while in Car Mode; this means that, unless a GPS receiver is present, it cannot update its clock automatically. If the time runs off over time, you either need to quit Car Mode once in a while and allow the TCD connect to a internet-connected WiFi network (the iPhone's Personal Hotspot works fine), or to re-adjust time using the [keypad menu](#how-to-set-the-real-time-clock-rtc). 
 
 ### Connecting props by wire
 
