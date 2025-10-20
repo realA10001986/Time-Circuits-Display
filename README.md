@@ -122,7 +122,7 @@ In a typical home setup, however, you might want to connect the TCD to your loca
 
 To connect your TCD to your WiFI network, navigate to the Config Portal and click on "WiFi Configuration". The bare minimum is to select an WiFi network name (SSID) and a WiFi password.
 
->Note that the TCD requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). If the device is inaccessible as a result of incorrect static IPs, hold ENTER when powering it up until the white LED lights up; static IP data will be deleted and the device will return to DHCP.
+>The TCD requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). If the device is inaccessible as a result of incorrect static IPs, hold ENTER when powering it up until the white LED lights up; static IP data will be deleted and the device will return to DHCP.
 
 After saving the WiFi configuration settings, the TCD reboots and tries to connect to your selected WiFi network. If that fails, it will again start in access point mode.
 
