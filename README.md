@@ -981,22 +981,19 @@ To see which BTTFN clients are currently known to the TCD, either check at the C
 
 #### Car Mode
 
-If the TCD, along with other BTTFN-compatible props, is mounted in a car, there are a few things to be considered:
-
-- There is no point in attempting to connect to a WiFi network, there most likely isn't one. Instead, the TCD can act as access point for the other props.
-- If the TCD acts as WiFi access point for the other props, it should boot quickly so that the other props can connect to it as soon as possible.
-
-This is what *car mode* is for: If enabled, the TCD will always - and quickly - boot in AP mode, regardless of a configured WiFi network. The other props just need to be configured to connect to WiFi network "TCD-AP".
+As discussed, in a car, or other places without a WiFi network, the TCD can act as WiFi access point for other props. The recommended network configuration for this use case is as follows:
 
 ![APmode](img/apmode-car.png)
 
-To enable *car mode*, type 991 followed by ENTER. The TCD will reboot in AP mode.
+When set in Car Mode, the TCD _always boots into AP-mode_, regardless of a configured WiFi network. Not attempting to connect to a network speeds up the boot process and allows other BTTFN-capable props to quickly connect to "TCD-AP".
+
+To enable *car mode*, type 991 followed by ENTER. The TCD will reboot in AP mode. If a WiFi network to connect to is configured at that point, it is ignored; no connection attempt is made.
 
 To disable *car mode*, type 990 followed by ENTER. The TCD will reboot and attempt to connect to a previously configured WiFi network.
 
 *Car mode* is persistent, i.e. it remains active (even across reboots and power-downs) until disabled.
 
->Note that the TCD has no internet access while in car mode; this means that, unless a GPS receiver is present, it cannot update its clock automatically. If the time runs off over time, you need to re-adjust it using the [keypad menu](#how-to-set-the-real-time-clock-rtc). 
+>Note that the TCD has no internet access while in car mode; this means that, unless a GPS receiver is present, it cannot update its clock automatically. If the time runs off over time, you either need to quit Car Mode once in a while and allow the TCD connect to a internet-connected WiFi network (the iPhone's Personal Hotspot works fine), or to re-adjust time using the [keypad menu](#how-to-set-the-real-time-clock-rtc). 
 
 ### Connecting props by wire
 
