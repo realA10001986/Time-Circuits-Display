@@ -124,8 +124,6 @@ To connect your TCD to your WiFI network, navigate to the Config Portal and clic
 
 >Note that the TCD requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). If the device is inaccessible as a result of incorrect static IPs, hold ENTER when powering it up until the white LED lights up; static IP data will be deleted and the device will return to DHCP.
 
->In order to use BTTFN, all props must be connected to the same network; this can be your local (WiFi) network, or the TCD's own WiFi network in AP mode. BTTFN does not work over the internet.
-
 After saving the WiFi configuration settings, the TCD reboots and tries to connect to your selected WiFi network. If that fails, it will again start in access point mode.
 
 After completing these steps, your TCD is ready for use; you can also continue configuring it to your personal preferences through the Config Portal.
@@ -988,7 +986,7 @@ Here is a demonstration of all the props connected through BTTFN:
 |:--:|
 | Click to watch the video |
 
-BTTFN requires the props to be connected to the same network, such as, for example, your home WiFi network:
+BTTFN requires the props to be connected to the same network, such as, for example, your home WiFi network. 
 
 ![STAmode](img/stamode-bttfn.png)
 
@@ -1000,7 +998,9 @@ The fact that the devices communicate directly with each other makes BTTFN the i
 
 ![APmode](img/apmode-car.png)
 
-To see which BTTFN clients are currently known to the TCD, enter the keypad menu and select "BTTFN CLIENTS".
+>In order to use BTTFN, all props must be connected to the same IP sub net; BTTFN does not work over the internet.
+
+To see which BTTFN clients are currently known to the TCD, either check at the Config Portal's main page, or enter the keypad menu and select "BTTFN CLIENTS", 
 
 ### Connecting props by wire
 
