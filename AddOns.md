@@ -54,8 +54,8 @@ A rotary encoder is, simply put, a turnable knob. On the TCD, rotary encoders ca
 
 The firmware currently supports the 
 - [Adafruit 4991](https://www.adafruit.com/product/4991)/[5880](https://www.adafruit.com/product/5880),
-- [DFRobot Gravity 360](https://www.dfrobot.com/product-2575.html) and
-- [DuPPA I2CEncoder 2.1](https://www.duppa.net/shop/i2cencoder-v2-1/) (or [here](https://www.tindie.com/products/saimon/i2cencoder-v21-connect-rotary-encoder-on-i2c-bus/))
+- [DuPPA I2CEncoder 2.1](https://www.duppa.net/shop/i2cencoder-v2-1/) (or [here](https://www.elecrow.com/i2cencoder-v2-1.html)) and
+- [DFRobot Gravity 360](https://www.dfrobot.com/product-2575.html)
 
 i2c rotary encoders. For the Adafruit and the DuPPa, I recommend buying the PCBs without an actual encoder and soldering on a Bourns PEC11R-42xxy-S0024.
 
