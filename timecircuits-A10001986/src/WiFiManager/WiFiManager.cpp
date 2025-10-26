@@ -13,8 +13,16 @@
 #include "WiFiManager.h"
 #include "wm_strings_en.h"
 
-uint8_t WiFiManager::_eventlastconxresult = WL_IDLE_STATUS;
-bool    WiFiManager::_gotip = false;
+uint8_t   WiFiManager::_eventlastconxresult = WL_IDLE_STATUS;
+uint16_t  WiFiManager::_WiFiEventMask = 0;
+
+#define WM_EVB_APSTART      (1<<0)
+#define WM_EVB_APSTOP       (1<<1)
+#define WM_EVB_STASTART     (1<<2)
+#define WM_EVB_STASTOP      (1<<3)
+#define WM_EVB_GOTIP        (1<<4)
+#define WM_EVB_DISCONNECTED (1<<5)
+#define WM_EVB_SCAN_DONE    (1<<6)
 
 #define STRLEN(x) (sizeof(x)-1)
 
@@ -139,7 +147,7 @@ const char* WiFiManagerParameter::getCustomHTML() const
 
 bool WiFiManager::CheckParmID(const char *id)
 {
-    for(size_t i = 0; i < strlen(id); i++) {
+    for(int i = 0; i < strlen(id); i++) {
         if(!(isAlphaNumeric(id[i])) && !(id[i] == '_')) {
             return false;
         }
@@ -317,13 +325,15 @@ void WiFiManager::_delay(unsigned int mydel)
 // connect, it simply connects to the given ssid, and falls back to
 // AP-mode in case connecting fails.
 //
-// public; return: bool connected = true if STA connected, false it softAP started
+// public; return: bool = true if STA connected, false it softAP started
 
 bool WiFiManager::autoConnect(const char *ssid, const char *pass, const char *apName, const char *apPassword)
 {
     #ifdef _A10001986_DBG
     Serial.println("AutoConnect");
     #endif
+
+    _begin();
 
     // Store given ssid/pass
 
@@ -336,8 +346,13 @@ bool WiFiManager::autoConnect(const char *ssid, const char *pass, const char *ap
         strncpy(_pass, pass, sizeof(_pass) - 1);
     }
 
+    _wifiOffFlag = false;
+
     // We do never ever use NVS saved data, nor do we save data to NVS
     WiFi.persistent(false);
+
+    // Install WiFi event handler
+    WiFi_installEventHandler();
 
     // Set hostname (if given)
 
@@ -347,31 +362,28 @@ bool WiFiManager::autoConnect(const char *ssid, const char *pass, const char *ap
     // with WiFi.setHostname(...) and restart WiFi from scratch.
 
     if(*_hostname) {
-        if(WiFi.getMode() & WIFI_STA) {
+        if(WiFi.getMode() & (WIFI_STA|WIFI_AP)) {
+            _WiFiEventMask &= ~(WM_EVB_STASTOP|WM_EVB_APSTOP);
             WiFi.mode(WIFI_OFF);
-            unsigned int timeout = millis() + 1200;
-            while((WiFi.getMode() != WIFI_OFF) && (millis() < timeout)) {
-                _delay(50);
-            }
+            waitEvent(WM_EVB_STASTOP|WM_EVB_APSTOP, 1200);
+            //unsigned int timeout = millis() + 1200;
+            //while((WiFi.getMode() != WIFI_OFF) && (millis() < timeout)) {
+            //    _delay(50);
+            //}
         }
         WiFi.setHostname(_hostname);
     }
-
-    _begin();
 
     // Attempt to connect to given network, on fail fallback to AP config portal
 
     // Set STA mode (not strictly required, WiFi.begin will do that as well)
     // This does not actually connect, it just sets (current mode|STA)
-    if(!WiFi.enableSTA(true)) {
+    if(!wifiSTAOn()) {
         #ifdef _A10001986_DBG
         Serial.println("[FATAL] Unable to enable wifi!");
         #endif
         return false;
     }
-
-    // Install WiFi event handler
-    WiFi_installEventHandler();
 
     // Callback: After lowlevelinit
     #if WM_PRECONNECTCB
@@ -426,10 +438,7 @@ bool WiFiManager::autoConnect(const char *ssid, const char *pass, const char *ap
     #endif
 
     // Disable STA if enabled
-    if(WiFi.getMode() & WIFI_STA) {
-        WiFi.enableSTA(false);
-        delay(500);
-    }
+    wifiSTAOff();
 
     // Start softAP and config portal
 
@@ -462,14 +471,10 @@ bool WiFiManager::startAP()
     // AP_STOP, AP_START events, difficult to follow.
     // In order to wait orderly, we do it here first.
 
-    _gotip = false;
     if(!(WiFi.getMode() & WIFI_AP)) {
+        _WiFiEventMask &= ~WM_EVB_APSTART;
         if(WiFi.enableAP(true)) {
-            unsigned long timeoutmillis = millis() + 3000;
-            while(millis() < timeoutmillis) {
-                if(_gotip) break;
-                _delay(100);
-            }
+            waitEvent(WM_EVB_APSTART, 3000);
         } else {
             #ifdef _A10001986_DBG
             Serial.println("Error enabling AP mode");
@@ -498,7 +503,7 @@ bool WiFiManager::startAP()
     // config and restart the AP, and comparing the then current
     // AP config to the desired one.
 
-    _gotip = false;
+    _WiFiEventMask &= ~WM_EVB_APSTART;
 
     // start soft AP; default channel is 1 here and in esp library
     ret = WiFi.softAP(_apName,
@@ -509,11 +514,7 @@ bool WiFiManager::startAP()
 
     // Wait for AP_START event to make sure we can fully use the AP
     if(ret) {
-        unsigned long timeoutmillis = millis() + 1000;
-        while(millis() < timeoutmillis) {
-            if(_gotip) break;
-            _delay(100);
-        }
+        waitEvent(WM_EVB_APSTART, 1000);
     }
 
     #ifdef WM_DODEBUG
@@ -654,6 +655,8 @@ bool WiFiManager::startConfigPortal(char const *apName, char const *apPassword, 
         return false;
     }
 
+    _wifiOffFlag = false;
+
     // We never ever use NVS saved data, not do we write to NVS
     WiFi.persistent(false);
 
@@ -685,6 +688,9 @@ bool WiFiManager::startConfigPortal(char const *apName, char const *apPassword, 
 
     if(!validApPassword()) return false;
 
+    // Install WiFi event handler
+    WiFi_installEventHandler();
+
     // Shutdown sta if not connected, or else this will hang
     // channel scanning, and softap will not respond
     // -- Apparently obsolete, not required.
@@ -706,20 +712,16 @@ bool WiFiManager::startConfigPortal(char const *apName, char const *apPassword, 
     }
     #endif
 
-    // Disconnect if connected and disable STA if enabled
+    // Disconnect if connected
     if(WiFi.isConnected()) {
         WiFi.disconnect();
-        delay(50);
+        _delay(50);
     }
-    if(WiFi.getMode() & WIFI_STA) {
-        WiFi.enableSTA(false);
-        delay(500);
-    }
+
+    // Disable STA if enabled
+    wifiSTAOff();
 
     configPortalActive = true;
-
-    // Install WiFi event handler
-    WiFi_installEventHandler();
 
     // start access point
     #ifdef _A10001986_V_DBG
@@ -764,6 +766,11 @@ void WiFiManager::process(bool handleWeb)
 {
     if(webPortalActive || configPortalActive) {
         processConfigPortal(handleWeb);
+    } else if(_wifiOffFlag) {
+        if(_WiFiEventMask & WM_EVB_APSTOP) {
+            WiFi.mode(WIFI_OFF);
+            _wifiOffFlag = false;
+        }
     }
 }
 
@@ -825,14 +832,25 @@ bool WiFiManager::shutdownConfigPortal()
     // free wifi scan results
     WiFi.scanDelete();
 
+    #ifdef WM_MDNS
+    MDNS.end();
+    #endif
+
     if(!configPortalActive)
         return false;
 
     dnsServer->stop();
     dnsServer.reset();
 
-    // turn off AP, (true = set mode WIFI_OFF)
-    bool ret = WiFi.softAPdisconnect(true);
+    // Turn off AP (true = set mode WIFI_OFF)
+    // softAPdisconnect(true) causes run-time errors:
+    // E (611610) wifi_netif: esp_wifi_internal_reg_rxcb for if=1 failed with 12289
+    // E (611611) wifi_init_default: esp_wifi_register_if_rWxcb for if=0x3ffb582c failed with 259
+
+    _wifiOffFlag = true;
+    _WiFiEventMask &= ~WM_EVB_APSTOP;
+    bool ret = WiFi.softAPdisconnect(false);
+    // WiFi will be switched off in process() after AP_STOP event
 
     configPortalActive = false;
 
@@ -840,7 +858,6 @@ bool WiFiManager::shutdownConfigPortal()
     Serial.println("configportal closed");
     #endif
 
-    _end();
     return ret;
 }
 
@@ -851,7 +868,7 @@ bool WiFiManager::shutdownConfigPortal()
 uint8_t WiFiManager::connectWifi(const char *ssid, const char *pass)
 {
     #ifdef _A10001986_V_DBG
-    Serial.println("Connecting as wifi client...");
+    Serial.println("ConnectWifi");
     #endif
 
     uint8_t retry = 1;
@@ -873,14 +890,14 @@ uint8_t WiFiManager::connectWifi(const char *ssid, const char *pass)
     while(retry <= _connectRetries && (connRes != WL_CONNECTED)) {
 
         if(_connectRetries > 1) {
-            if(_aggresiveReconn) _delay(1000); // add idle time before recon
+            _delay(1000); // add idle time before new attempt. Need this.
 
             #ifdef _A10001986_DBG
             Serial.printf("Connecting Wifi, attempt %d of %d\n", retry, _connectRetries);
             #endif
         }
 
-        _gotip = false;
+        _WiFiEventMask &= ~WM_EVB_GOTIP;
 
         wifiConnectNew(ssid, pass);
 
@@ -894,11 +911,11 @@ uint8_t WiFiManager::connectWifi(const char *ssid, const char *pass)
     }
 
     if(connRes != WL_SCAN_COMPLETED) {
+        // See if the eventhandler knows more than we here
         _lastconxresult = connRes;
         if(_lastconxresult == WL_CONNECT_FAILED || _lastconxresult == WL_DISCONNECTED) {
             if(_eventlastconxresult != WL_IDLE_STATUS) {
-                _lastconxresult    = _eventlastconxresult;
-                // _eventlastconxresult = WL_IDLE_STATUS;
+                _lastconxresult = _eventlastconxresult;
             }
         }
     }
@@ -916,14 +933,12 @@ uint8_t WiFiManager::connectWifi(const char *ssid, const char *pass)
 
 bool WiFiManager::wifiConnectNew(const char *ssid, const char *pass)
 {
-    bool ret = false;
-
     #ifdef _A10001986_V_DBG
     Serial.printf("Connecting to WiFi network: %s\n", ssid);
     Serial.printf("Using Password: %s\n", pass);
     #endif
 
-    ret = WiFi.begin(ssid, pass, 0, NULL, true);
+    bool ret = WiFi.begin(ssid, pass, 0, NULL, true);
 
     #ifdef _A10001986_DBG
     if(!ret) Serial.println("[ERROR] wifi begin failed");
@@ -938,15 +953,11 @@ bool WiFiManager::wifiConnectNew(const char *ssid, const char *pass)
 
 bool WiFiManager::setStaticConfig()
 {
-    #ifdef _A10001986_DBG
-    Serial.printf("STA static IP: %s\n", _sta_static_ip.toString().c_str());
-    #endif
-
     if(_sta_static_ip) {
         bool ret;
 
-        #ifdef _A10001986_V_DBG
-        Serial.println("Custom static IP/GW/Subnet/DNS");
+        #ifdef _A10001986_DBG
+        Serial.printf("STA static IP: %s\n", _sta_static_ip.toString().c_str());
         #endif
 
         if(_sta_static_dns) {
@@ -957,10 +968,18 @@ bool WiFiManager::setStaticConfig()
 
         #ifdef _A10001986_DBG
         if(!ret) Serial.println("[ERROR] wifi config failed");
+        #ifdef _A10001986_V_DBG
         else Serial.printf("STA IP set: %s\n", WiFi.localIP().toString().c_str());
+        #endif
         #endif
 
         return ret;
+
+    } else {
+
+        #ifdef _A10001986_DBG
+        Serial.println("No static IP configured");
+        #endif
     }
 
     return false;
@@ -992,25 +1011,22 @@ uint8_t WiFiManager::waitForConnectResult(bool haveStatic, uint32_t timeout)
 
         status = WiFi.waitForConnectResult();
 
-        if(status == WL_CONNECTED) {
-            if(!haveStatic) {
-                timeoutmillis = millis() + 5000;
-                while(millis() < timeoutmillis) {
-                    if(_gotip) break;
-                    _delay(100);
-                }
-            }
-        }
+        // WL_CONNECTED means "connected to AP, IP address obtained"
+        // No point in waiting for the event
+        //if(status == WL_CONNECTED) {
+        //    if(!haveStatic) {
+        //        waitEvent(WM_EVB_GOTIP, 5000);
+        //    }
+        //}
 
         return status;
     }
-
-    timeoutmillis = millis() + timeout;
 
     #ifdef _A10001986_V_DBG
     Serial.printf("%s ms timeout, waiting for connect...\n", timeout);
     #endif
 
+    timeoutmillis = millis() + timeout;
     status = WiFi.status();
 
     while(millis() < timeoutmillis) {
@@ -1023,19 +1039,17 @@ uint8_t WiFiManager::waitForConnectResult(bool haveStatic, uint32_t timeout)
 
         } else if(status == WL_CONNECTED) {
 
-            if(!haveStatic) {
-                timeoutmillis = millis() + 5000;
-                while(millis() < timeoutmillis) {
-                    if(_gotip) break;
-                    _delay(100);
-                }
-            }
+            // WL_CONNECTED means "connected to AP, IP address obtained"
+            // No point in waiting for the event
+            //if(!haveStatic) {
+            //    waitEvent(WM_EVB_GOTIP, 5000);
+            //}
 
             return status;
         }
 
         #ifdef _A10001986_DBG
-        Serial.println(".");
+        Serial.printf("%d.\n", status);  // 0 while connecting
         #endif
 
         _delay(100);
@@ -1044,6 +1058,69 @@ uint8_t WiFiManager::waitForConnectResult(bool haveStatic, uint32_t timeout)
     return status;
 }
 
+bool WiFiManager::wifiSTAOn()
+{
+    if(WiFi.getMode() & WIFI_STA)
+        return true;
+
+    _WiFiEventMask &= ~WM_EVB_STASTART;
+
+    if(!WiFi.enableSTA(true))
+        return false;
+
+    waitEvent(WM_EVB_STASTART, 500);
+
+    return true;
+}
+
+bool WiFiManager::wifiSTAOff()
+{
+    if(!(WiFi.getMode() & WIFI_STA))
+        return true;
+
+    _WiFiEventMask &= ~WM_EVB_STASTOP;
+
+    if(!WiFi.enableSTA(false))
+        return false;
+
+    waitEvent(WM_EVB_STASTOP, 500);
+
+    return true;
+}
+
+bool WiFiManager::waitEvent(uint16_t mask, unsigned long timeout)
+{
+    unsigned long timeoutmillis = millis() + timeout;
+
+    while(millis() < timeoutmillis) {
+        if(_WiFiEventMask & mask) {
+            #ifdef _A10001986_DBG
+            Serial.printf("Event 0x%x occured (evmask 0x%x)\n", mask, _WiFiEventMask);
+            #endif
+            return true;
+        }
+        _delay(100);
+    }
+
+    #ifdef _A10001986_DBG
+    Serial.printf("Waiting for event 0x%x timed-out\n", mask);
+    #endif
+
+    return false;
+}
+
+void WiFiManager::disableWiFi()
+{
+    if(WiFi.getMode() == WIFI_OFF)
+        return;
+
+    if(WiFi.getMode() & WIFI_AP) {
+        shutdownConfigPortal();
+    } else if(WiFi.getMode() & WIFI_STA) {
+        stopWebPortal();
+        WiFi.mode(WIFI_OFF);
+    }
+}
 
 /****************************************************************************
  *
@@ -1601,18 +1678,18 @@ int16_t WiFiManager::WiFi_waitForScan()
         Serial.println(".");
         #endif
 
-        _delay(250);
+        _delay(100);
     }
 
     // Sometimes above returns an error (timeout?)
     // so we now wait for the scanComplete event
     now = millis();
     while(millis() - now < 5000) {
-        if(_numNetworksAsync != WM_WIFI_SCAN_BUSY) {
+        if(_WiFiEventMask & WM_EVB_SCAN_DONE) {
             asyncdone = true;
             break;
         }
-        _delay(500);
+        _delay(100);
     }
 
     // If first loop fails, use event-callback result (if not error)
@@ -1648,7 +1725,7 @@ int16_t WiFiManager::WiFi_scanNetworks(bool force, bool async)
 
         _numNetworks = 0;
 
-        if(async && _asyncScan) {
+        if(async) {
 
             #ifdef _A10001986_V_DBG
             Serial.println("WiFi Scan ASYNC started");
@@ -1656,6 +1733,7 @@ int16_t WiFiManager::WiFi_scanNetworks(bool force, bool async)
 
             // Reset marker for event callback
             _numNetworksAsync = WM_WIFI_SCAN_BUSY;
+            _WiFiEventMask &= ~WM_EVB_SCAN_DONE;
 
             // Start scan
             return WiFi.scanNetworks(true);
@@ -1772,11 +1850,7 @@ unsigned int WiFiManager::getScanItemsLen(int n, bool scanErr, int *indices, uns
 
                 String SSID = WiFi.SSID(indices[i]);
                 if(SSID == "") {
-                    if(showall) {
-                        SSID = S_hidden;
-                    } else {
-                        continue;
-                    }
+                    continue;
                 } else if(!checkSSID(SSID)) {
                     if(showall) {
                         SSID = S_nonprintable;
@@ -1852,12 +1926,7 @@ void WiFiManager::getScanItemsOut(String& page, int n, bool scanErr, int *indice
                 String func = "c";
 
                 if(SSID == "") {
-                    if(showall) {
-                        SSID = S_hidden;
-                        func = "d";
-                    } else {
-                        continue;
-                    }
+                    continue;
                 } else if(!checkSSID(SSID)) {
                     if(showall) {
                         SSID = S_nonprintable;
@@ -3401,19 +3470,36 @@ void WiFiManager::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
         // Unless: Wrong or missing password. Yes, this
         // is also reported through DISCONNECTED.
 
+        _WiFiEventMask |= WM_EVB_DISCONNECTED;
         _eventlastconxresult = WiFi.status();
 
         //WiFi.reconnect();   // No
 
-    } else if(event == ARDUINO_EVENT_WIFI_SCAN_DONE && _asyncScan) {
+    }
 
+    if(event == ARDUINO_EVENT_WIFI_SCAN_DONE) {
+
+        _WiFiEventMask |= WM_EVB_SCAN_DONE;
         WiFi_scanComplete(WiFi.scanComplete());
 
     } else {
 
-        if(event == ARDUINO_EVENT_WIFI_STA_GOT_IP ||
-           event == ARDUINO_EVENT_WIFI_AP_START) {
-            _gotip = true;
+        switch(event) {
+        case ARDUINO_EVENT_WIFI_STA_GOT_IP:
+            _WiFiEventMask |= WM_EVB_GOTIP;
+            break;
+        case ARDUINO_EVENT_WIFI_AP_START:
+            _WiFiEventMask |= WM_EVB_APSTART;
+            break;
+        case ARDUINO_EVENT_WIFI_AP_STOP:
+            _WiFiEventMask |= WM_EVB_APSTOP;
+            break;
+        case ARDUINO_EVENT_WIFI_STA_START:
+            _WiFiEventMask |= WM_EVB_STASTART;
+            break;
+        case ARDUINO_EVENT_WIFI_STA_STOP:
+            _WiFiEventMask |= WM_EVB_STASTOP;
+            break;
         }
 
         #ifdef _A10001986_DBG
