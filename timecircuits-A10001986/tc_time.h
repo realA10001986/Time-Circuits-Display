@@ -65,6 +65,16 @@
 #include "sensors.h"
 #endif
 
+#define BTTFN_TYPE_ANY     0    // Any, unknown or no device
+#define BTTFN_TYPE_FLUX    1    // Flux Capacitor
+#define BTTFN_TYPE_SID     2    // SID
+#define BTTFN_TYPE_PCG     3    // Dash gauge panel
+#define BTTFN_TYPE_VSR     4    // VSR
+#define BTTFN_TYPE_AUX     5    // Aux (user custom device)
+#define BTTFN_TYPE_REMOTE  6    // Futaba remote control
+#define BTTFN_TYPE__MIN    1
+#define BTTFN_TYPE__MAX    BTTFN_TYPE_REMOTE
+
 #define AUTONM_NUM_PRESETS 4
 
 #define BEEPM2_SECS 30

@@ -139,7 +139,22 @@
 
 /*  Changelog
  *
- *  2025/10/15 (A10001986)
+ *  2025/10/26 (A10001986) [3.6.1]
+ *    - BTTFN: Fix hostname length issues; code optimizations; minor fix for mc 
+ *      notifications. Recommend to update all props' firmwares for similar
+ *      fixes.
+ *  2025/10/24 (A10001986)
+ *    - Restart WiFi power save timers after last BTTFN client has been expired
+ *    - WM: Fix AP shutdown; handle mDNS
+ *  2025/10/21 (A10001986)
+ *    HAPPY BTTF DAY!
+ *    - Send "REFILL" (009) to DG only, and via BTTFN, not MQTT.
+ *  2025/10/17 (A10001986)
+ *    - Wipe flash FS if alien VER found; in case no VER is present, check
+ *      available space for audio files, and wipe if not enough.
+ *  2025/10/16 (A10001986)
+ *    - WM: More event-based waiting instead of delays
+ *  2025/10/15 (A10001986) [3.6]
  *    - Speedo: Extend option of displaying leading-0 into "speedo display like in
  *      part 3", where the speedo displays 2 digits all the way, but without the dot.
  *    - Speedo: Add option to enable post-point zero on CircuitSetup speedo; it only

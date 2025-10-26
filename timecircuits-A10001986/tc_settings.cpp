@@ -96,9 +96,11 @@
 #define AC_FMTV 2
 #define AC_OHSZ (14 + ((10+NUM_AUDIOFILES+1)*(32+4)))
 #ifdef TWSOUND
+#define SND_NON_ALIEN "CS"
 #define SND_REQ_VERSION "TW03"
 #define AC_TS 1231539
 #else
+#define SND_NON_ALIEN "TW"
 #define SND_REQ_VERSION "CS03"
 #define AC_TS 1236252
 #endif
@@ -168,9 +170,9 @@ static uint8_t  preSavedAI   = 99;
 static uint8_t  prevSavedVol = 254;
 static uint8_t* (*r)(uint8_t *, uint32_t, int);
 
-static bool read_settings(File configFile);
+static bool read_settings(File configFile, int cfgReadCount);
 
-static bool CopyTextParm(char *setting, const char *json, const char *json2, int setSize);
+static bool CopyTextParm(const char *json, const char *json2, char *setting, int setSize);
 static bool CopyCheckValidNumParm(const char *json, const char *json2, char *text, uint8_t psize, int lowerLim, int upperLim, int setDefault);
 static bool CopyCheckValidNumParmF(const char *json, const char *json2, char *text, uint8_t psize, float lowerLim, float upperLim, float setDefault);
 static bool checkValidNumParm(char *text, int lowerLim, int upperLim, int setDefault);
@@ -190,7 +192,7 @@ static void setupDisplayConfigOnSD();
 static void saveDisplayData();
 
 static void cfc(File& sfile, int& haveErr, int& haveWriteErr);
-static bool audio_files_present();
+static bool audio_files_present(int& alienVER);
 
 static bool CopyIPParm(const char *json, char *text, uint8_t psize);
 
@@ -220,6 +222,8 @@ void settings_setup()
     #endif
     bool writedefault = false;
     bool SDres = false;
+    int alienVER = -1;
+    int cfgReadCount = 0;
 
     // Pre-maturely use ENTER button (initialized again in keypad_setup())
     // Pin pulled-down on control board
@@ -272,12 +276,7 @@ void settings_setup()
         Serial.print("failed, formatting... ");
         #endif
 
-        destinationTime.showTextDirect("WAIT");
-
-        SPIFFS.format();
-        if(SPIFFS.begin()) haveFS = true;
-
-        destinationTime.showTextDirect("");
+        haveFS = formatFlashFS(true);
 
     }
 
@@ -285,14 +284,14 @@ void settings_setup()
       
         #ifdef TC_DBG
         Serial.println("ok, loading settings");
-        int tBytes = SPIFFS.totalBytes(); int uBytes = SPIFFS.usedBytes();
-        Serial-printf("FlashFS: %d total, %d used\n", tBytes, uBytes);
+        Serial.printf("FlashFS: %d total, %d used\n", SPIFFS.totalBytes(), SPIFFS.usedBytes());
         #endif
         
         if(SPIFFS.exists(cfgName)) {
             File configFile = SPIFFS.open(cfgName, "r");
             if(configFile) {
-                writedefault = read_settings(configFile);
+                writedefault = read_settings(configFile, cfgReadCount);
+                cfgReadCount++;
                 configFile.close();
             } else {
                 writedefault = true;
@@ -305,7 +304,7 @@ void settings_setup()
 
     } else {
 
-        Serial.println("*** Mounting flash FS failed. Using SD (if available)");
+        Serial.println("failed.\n*** Mounting flash FS failed. Using SD (if available)");
 
     }
     
@@ -362,7 +361,7 @@ void settings_setup()
             if(SD.exists(cfgName)) {
                 File configFile = SD.open(cfgName, "r");
                 if(configFile) {
-                    writedefault2 = read_settings(configFile);
+                    writedefault2 = read_settings(configFile, cfgReadCount);
                     configFile.close();
                 } else {
                     writedefault2 = true;
@@ -376,6 +375,22 @@ void settings_setup()
                 #endif
                 write_settings();
             }
+        }
+    }
+
+    // Check if (current) audio data is installed
+    haveAudioFiles = audio_files_present(alienVER);
+
+    // Re-format flash FS if either alien VER found, or no VER exists
+    // and remaining storage is not enough for our audio files.
+    // (Reason: LittleFS crashes when flash FS is full.)
+    if(!haveAudioFiles && haveFS && !FlashROMode) {
+        if((alienVER > 0) || (alienVER < 0 && (SPIFFS.totalBytes() - SPIFFS.usedBytes() < soa + 16384))) {
+            #ifdef TCD_DBG
+            Serial.printf("Reformatting. Alien VER: %d, space %d", alienVER, SPIFFS.totalBytes() - SPIFFS.usedBytes());
+            #endif
+            writedefault = true;
+            formatFlashFS(true);
         }
     }
 
@@ -406,9 +421,6 @@ void settings_setup()
     // Load RemoveAllowed setting
     loadRemoteAllowed();
 
-    // Check if (current) audio data is installed
-    haveAudioFiles = audio_files_present();
-    
     // Check if SD contains the default sound files
     if((r = e) && haveSD && (FlashROMode || haveFS)) {
         allowCPA = check_if_default_audio_present();
@@ -461,7 +473,7 @@ void unmount_fs()
     }
 }
 
-static bool read_settings(File configFile)
+static bool read_settings(File configFile, int cfgReadCount)
 {
     #ifdef TC_DBG
     const char *funcName = "read_settings";
@@ -490,24 +502,38 @@ static bool read_settings(File configFile)
 
         // WiFi Configuration
 
-        memset(settings.ssid, 0, sizeof(settings.ssid));
-        memset(settings.pass, 0, sizeof(settings.pass));
+        if(!cfgReadCount) {
+            memset(settings.ssid, 0, sizeof(settings.ssid));
+            memset(settings.pass, 0, sizeof(settings.pass));
+        }
+
         if(json["ssid"]) {
+            memset(settings.ssid, 0, sizeof(settings.ssid));
+            memset(settings.pass, 0, sizeof(settings.pass));
             strncpy(settings.ssid, json["ssid"], sizeof(settings.ssid) - 1);
             if(json["pass"]) {
                 strncpy(settings.pass, json["pass"], sizeof(settings.pass) - 1);
             }
-        } else settings.ssid[1] = 'X';  // marker for "no ssid tag in config file", ie read from NVS
-        
-        wd |= CopyTextParm(settings.hostName, json["hn"], json["hostName"], sizeof(settings.hostName));
+        } else {
+            if(!cfgReadCount) {
+                // Set a marker for "no ssid tag in config file", ie read from NVS.
+                settings.ssid[1] = 'X';
+            } else if(settings.ssid[0] || settings.ssid[1] != 'X') {
+                // FlashRO: If flash-config didn't set the marker, write new file 
+                // with ssid/pass from flash-config
+                wd = true;
+            }
+        }
+
+        wd |= CopyTextParm(json["hn"], json["hostName"], settings.hostName, sizeof(settings.hostName));
         
         wd |= CopyCheckValidNumParm(json["wCR"], json["wifiConRetries"], settings.wifiConRetries, sizeof(settings.wifiConRetries), 1, 10, DEF_WIFI_RETRY);
         wd |= CopyCheckValidNumParm(json["wCT"], json["wifiConTimeout"], settings.wifiConTimeout, sizeof(settings.wifiConTimeout), 7, 25, DEF_WIFI_TIMEOUT);
         wd |= CopyCheckValidNumParm(json["wPR"], json["wifiPRetry"], settings.wifiPRetry, sizeof(settings.wifiPRetry), 0, 1, DEF_WIFI_PRETRY);
         wd |= CopyCheckValidNumParm(json["wOD"], json["wifiOffDelay"], settings.wifiOffDelay, sizeof(settings.wifiOffDelay), 0, 99, DEF_WIFI_OFFDELAY);
 
-        wd |= CopyTextParm(settings.systemID, json["sID"], json["systemID"], sizeof(settings.systemID));
-        wd |= CopyTextParm(settings.appw, json["appw"], NULL, sizeof(settings.appw));
+        wd |= CopyTextParm(json["sID"], json["systemID"], settings.systemID, sizeof(settings.systemID));
+        wd |= CopyTextParm(json["appw"], NULL, settings.appw, sizeof(settings.appw));
         wd |= CopyCheckValidNumParm(json["apch"], NULL, settings.apChnl, sizeof(settings.apChnl), 0, 11, DEF_AP_CHANNEL);
         wd |= CopyCheckValidNumParm(json["wAOD"], json["wifiAPOffDelay"], settings.wifiAPOffDelay, sizeof(settings.wifiAPOffDelay), 0, 99, DEF_WIFI_APOFFDELAY);
 
@@ -524,13 +550,13 @@ static bool read_settings(File configFile)
         wd |= CopyCheckValidNumParm(json["alRTC"], json["alarmRTC"], settings.alarmRTC, sizeof(settings.alarmRTC), 0, 1, DEF_ALARM_RTC);
         wd |= CopyCheckValidNumParm(json["md24"], json["mode24"], settings.mode24, sizeof(settings.mode24), 0, 1, DEF_MODE24);
         
-        wd |= CopyTextParm(settings.timeZone, json["tZ"], json["timeZone"], sizeof(settings.timeZone));
-        wd |= CopyTextParm(settings.ntpServer, json["ntpS"], json["ntpServer"], sizeof(settings.ntpServer));
+        wd |= CopyTextParm(json["tZ"], json["timeZone"], settings.timeZone, sizeof(settings.timeZone));
+        wd |= CopyTextParm(json["ntpS"], json["ntpServer"], settings.ntpServer, sizeof(settings.ntpServer));
 
-        wd |= CopyTextParm(settings.timeZoneDest, json["tZDest"], json["timeZoneDest"], sizeof(settings.timeZoneDest));
-        wd |= CopyTextParm(settings.timeZoneDep, json["tZDep"], json["timeZoneDep"], sizeof(settings.timeZoneDep));
-        wd |= CopyTextParm(settings.timeZoneNDest, json["tZNDest"], json["timeZoneNDest"], sizeof(settings.timeZoneNDest));
-        wd |= CopyTextParm(settings.timeZoneNDep, json["tZNDep"], json["timeZoneNDep"], sizeof(settings.timeZoneNDep));
+        wd |= CopyTextParm(json["tZDest"], json["timeZoneDest"], settings.timeZoneDest, sizeof(settings.timeZoneDest));
+        wd |= CopyTextParm(json["tZDep"], json["timeZoneDep"], settings.timeZoneDep, sizeof(settings.timeZoneDep));
+        wd |= CopyTextParm(json["tZNDest"], json["timeZoneNDest"], settings.timeZoneNDest, sizeof(settings.timeZoneNDest));
+        wd |= CopyTextParm(json["tZNDep"], json["timeZoneNDep"], settings.timeZoneNDep, sizeof(settings.timeZoneNDep));
         
         wd |= CopyCheckValidNumParm(json["shuf"], json["shuffle"], settings.shuffle, sizeof(settings.shuffle), 0, 1, DEF_SHUFFLE);
 
@@ -584,9 +610,9 @@ static bool read_settings(File configFile)
         
         #ifdef TC_HAVEMQTT
         wd |= CopyCheckValidNumParm(json["uMQTT"], json["useMQTT"], settings.useMQTT, sizeof(settings.useMQTT), 0, 1, 0);
-        wd |= CopyTextParm(settings.mqttServer, json["mqttS"], json["mqttServer"], sizeof(settings.mqttServer));
-        wd |= CopyTextParm(settings.mqttUser, json["mqttU"], json["mqttUser"], sizeof(settings.mqttUser));
-        wd |= CopyTextParm(settings.mqttTopic, json["mqttT"], json["mqttTopic"], sizeof(settings.mqttTopic));
+        wd |= CopyTextParm(json["mqttS"], json["mqttServer"], settings.mqttServer, sizeof(settings.mqttServer));
+        wd |= CopyTextParm(json["mqttU"], json["mqttUser"], settings.mqttUser, sizeof(settings.mqttUser));
+        wd |= CopyTextParm(json["mqttT"], json["mqttTopic"], settings.mqttTopic, sizeof(settings.mqttTopic));
         #ifdef EXTERNAL_TIMETRAVEL_OUT
         wd |= CopyCheckValidNumParm(json["pMQTT"], json["pubMQTT"], settings.pubMQTT, sizeof(settings.pubMQTT), 0, 1, 0);
         #endif
@@ -746,19 +772,19 @@ bool checkConfigExists()
  *  Helpers for parm copying & checking
  */
 
-static bool CopyTextParm(char *setting, const char *json, const char *json2, int setSize)
+static bool CopyTextParm(const char *json, const char *json2, char *setting, int setSize)
 {
     if(json || json2) {
         memset(setting, 0, setSize);
         if(json) {
             strncpy(setting, json, setSize - 1);
-            return false;
+            return false; // new tag used, ok
         } else {
             strncpy(setting, json2, setSize - 1);
         }
     }
 
-    return true;
+    return true;  // old tag, or not found
 }
 
 static bool CopyCheckValidNumParm(const char *json, const char *json2, char *text, uint8_t psize, int lowerLim, int upperLim, int setDefault)
@@ -1740,11 +1766,16 @@ static void cfc(File& sfile, int& haveErr, int& haveWriteErr)
     }
 }
 
-static bool audio_files_present()
+static bool audio_files_present(int& alienVER)
 {
     File file;
     uint8_t buf[4];
     const char *fn = "/VER";
+
+    // alienVER is -1 if no VER found,
+    //              0 if our VER-type found,
+    //              1 if alien VER-type found
+    alienVER = -1;
 
     if(FlashROMode) {
         if(!(file = SD.open(fn, FILE_READ)))
@@ -1762,6 +1793,10 @@ static bool audio_files_present()
     file.read(buf, 4);
     file.close();
 
+    if(!FlashROMode) {
+        alienVER = (memcmp(buf, SND_REQ_VERSION, 2) && memcmp(buf, SND_NON_ALIEN, 2)) ? 1 : 0;
+    }
+
     return (!memcmp(buf, SND_REQ_VERSION, 4));
 }
 
@@ -1777,12 +1812,27 @@ void delete_ID_file()
  * Various helpers
  */
 
-void formatFlashFS()
+bool formatFlashFS(bool userSignal)
 {
-    #ifdef TC_DBG
-    Serial.println("Formatting flash FS");
-    #endif
+    bool ret = false;
+
+    if(userSignal) {
+        // Show the user some action
+        destinationTime.showTextDirect("WAIT");
+    } else {
+        #ifdef TCD_DBG
+        Serial.println("Formatting flash FS");
+        #endif
+    }
+
     SPIFFS.format();
+    if(SPIFFS.begin()) ret = true;
+
+    if(userSignal) {
+        destinationTime.showTextDirect("");
+    }
+
+    return ret;
 }
 
 /* Copy secondary settings from/to SD if user

@@ -25,11 +25,11 @@
 
 // These must not contain any characters other than
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
-#define TC_VERSION_REV   "V3.6"       // 13 chars max
+#define TC_VERSION_REV   "V3.6.1"     // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "OCT152025"  // 13 chars max
+#define TC_VERSION_EXTRA "OCT262025"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "10152025"   // 12 chars max
+#define TC_VERSION_EXTRA "10262025"   // 12 chars max
 #endif
 #define TC_VERSION TC_VERSION_REV
 
@@ -50,8 +50,6 @@
 #define TC_HAVESPEEDO
 #define SP_NUM_TYPES    12  // Number of speedo display types supported
 #define SP_MIN_TYPE     0
-#ifdef TC_HAVESPEEDO
-#endif
 
 // Uncomment for rotary encoder support
 // Currently Adafruit 4991/5880, DFRobot Gravity 360 and DuPPA I2CEncoder 2.1

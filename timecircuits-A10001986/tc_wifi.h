@@ -71,6 +71,7 @@ void wifi_setup();
 void wifi_loop();
 void wifiOn(unsigned long newDelay = 0, bool alsoInAPMode = false, bool deferConfigPortal = false);
 bool wifiOnWillBlock();
+void wifiRestartPSTimer();
 void wifiStartCP();
 
 void updateConfigPortalValues();

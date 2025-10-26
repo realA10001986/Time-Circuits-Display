@@ -2088,8 +2088,8 @@ static void displayClient(int numCli, int number)
         if(!*id) {
             badName = true;
         } else {
-            for(int j = 0; j < 12; j++) {
-                if(!id[j]) break;
+            for(int j = 0; j < 13; j++) {
+                if(!id[j] || id[j] == '.') break;
                 if(!bttfnValChar(id, j)) {
                     badName = true;
                     break;
@@ -2098,14 +2098,14 @@ static void displayClient(int numCli, int number)
         }
 
         if(badName) {
-            if(type >= 1 && type <= 6) {
+            if(type >= BTTFN_TYPE__MIN && type <= BTTFN_TYPE__MAX) {
                 strcpy(idbuf, tpArr[type-1]);
             } else {
                 strcpy(idbuf, "[UNKNOWN]");
             }
         } else {
-            strncpy(idbuf, id, 12);
-            idbuf[12] = 0;
+            strncpy(idbuf, id, 13);
+            idbuf[13] = 0;
         }
       
         dt_showTextDirect(idbuf);
@@ -2188,7 +2188,7 @@ void doCopyAudioFiles()
     if((!copy_audio_files(delIDfile)) && !FlashROMode) {
         // If copy fails because of a write error, re-format flash FS
         lt_showTextDirect("FORMATTING");
-        formatFlashFS();             // Format
+        formatFlashFS(false);        // Format
         rewriteSecondarySettings();  // Re-write secondary settings
         #ifdef TC_DBG 
         Serial.println("Re-writing general settings");

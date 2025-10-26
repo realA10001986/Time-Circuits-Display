@@ -284,7 +284,7 @@ void delete_ID_file();
 
 void waitForEnterRelease();
 
-void formatFlashFS();
+bool formatFlashFS(bool userSignal);
 
 void rewriteSecondarySettings();
 
