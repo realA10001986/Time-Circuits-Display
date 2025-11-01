@@ -14,9 +14,9 @@ If you are using a fresh ESP32 board, please see [timecircuits-A10001986.ino](ht
 
 The firmware comes with some a sound-pack which needs to be installed separately. The sound-pack is not updated as often as the firmware itself. If you have previously installed the latest version of the sound-pack, you normally don't have to re-install it when you update the firmware. Only if the TCD displays "PLEASE INSTALL SOUND PACK" during boot, an update of the sound-pack is needed.
 
->If your TCD previously ran a firmware from CircuitSetup (ie. pre-installed or downloaded from their github), installing of the sound-pack **from this repository** is required. You cannot use CircuitSetup's sound-pack with the firmware available here, or vice versa.
+>If your TCD previously ran a firmware from CircuitSetup (ie. pre-installed or downloaded from their github), installing of the sound-pack **from this repository** (TWxx) is required. You cannot use CircuitSetup's sound-pack with the firmware available here, or vice versa.
 
-The first step is to download "install/sound-pack-xxxxxxxx.zip" and extract it. It contains one file named "TCDA.bin".
+The first step is to download "install/sound-pack-TWxx.zip" and extract it. It contains one file named "TCDA.bin".
 
 Then there are two alternative ways to proceed. Note that both methods *require an SD card*.
 
