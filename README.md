@@ -1360,7 +1360,7 @@ In part 3 of the series, the speedo displays two digits (even for speeds below 1
 
 This option is mutually exclusive to "Display post-point 0 like A-car".
 
-##### &#9193; Display post-point 0 like A-car
+##### &#9193; Display '0' after dot like A-car
 
 The CircuitSetup speedo features a third digit behind the gaffer tape. This digit is usually dark, in accordance with the speedo close-ups in all three parts of the series.
 
