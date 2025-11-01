@@ -35,6 +35,7 @@ const char HTTP_ROOT_MAIN[]        PROGMEM = "<h1>{t}</h1><h3>{v}</h3>";
 const char * const HTTP_PORTAL_MENU[] PROGMEM = {
     "<form action='/wifi' method='get' onsubmit='d=ge(\"wbut\");if(d){d.disabled=true;d.innerHTML=\"Please wait\"}'><button id='wbut'>WiFi Configuration</button></form>\n",
     "<form action='/param' method='get'><button>Settings</button></form>\n",
+    "<form action='/param2' method='get'><button>" WM_PARAM2_CAPTION "</button></form>\n",
     "<form action='/update' method='get'><button>Update</button></form>\n",
     "<hr>", // sep
     ""      // custom, if _customMenuHTML is NULL
@@ -92,7 +93,7 @@ const char HTTP_STYLE[]            PROGMEM = "<style>"
     ".c,body{text-align:center;font-family:-apple-system,BlinkMacSystemFont,system-ui,'Segoe UI',Roboto,'Helvetica Neue',Verdana,Helvetica}"
     "div,input,select{padding:5px;font-size:1em;margin:5px 0;box-sizing:border-box}"
     "input,button,select,.msg{border-radius:.3rem;width: 100%}"
-    "input[type=checkbox]{display:inline-block;margin-top:10px;margin-right:5px;width:auto;}"
+    "input[type=checkbox],input[type=radio]{display:inline-block;margin-top:10px;margin-right:5px;width:auto;}"
     "button,input[type='button'],input[type='submit']{cursor:pointer;border:0;background-color:#225a98;color:#fff;line-height:2.4rem;font-size:1.2rem;width:100%}"
     "input[type='file']{border:1px solid #225a98}"
     ".h{display:none}"
@@ -150,10 +151,14 @@ const char HTTP_STYLE_QI[]         PROGMEM = "<style>"
     "</script>";
 
 const char A_paramsave[]          PROGMEM = "paramsave";
+const char A_param2save[]         PROGMEM = "param2save";
 const char A_wifisave[]           PROGMEM = "wifisave";
 
 const char S_titlewifi[]          PROGMEM = "WiFi Configuration";
 const char S_titleparam[]         PROGMEM = "Settings";
+#ifdef WM_PARAM2
+const char S_titleparam2[]        PROGMEM = WM_PARAM2_TITLE;
+#endif
 const char S_titleupd[]           PROGMEM = "Upload";
 
 const char S_passph[]             PROGMEM = "********";
@@ -178,6 +183,10 @@ const char R_wifi[]               PROGMEM = "/wifi";
 const char R_wifisave[]           PROGMEM = "/wifisave";
 const char R_param[]              PROGMEM = "/param";
 const char R_paramsave[]          PROGMEM = "/paramsave";
+#ifdef WM_PARAM2
+const char R_param2[]             PROGMEM = "/param2";
+const char R_param2save[]         PROGMEM = "/param2save";
+#endif
 const char R_update[]             PROGMEM = "/update";
 const char R_updatedone[]         PROGMEM = "/u";
 

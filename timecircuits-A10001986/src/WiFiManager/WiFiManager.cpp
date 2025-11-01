@@ -156,9 +156,9 @@ bool WiFiManager::CheckParmID(const char *id)
     return true;
 }
 
-// Settings page params
+// Params handling
 
-bool WiFiManager::addParameter(WiFiManagerParameter *p)
+bool WiFiManager::_addParameter(int idx, WiFiManagerParameter *p)
 {
     // check param id is valid, unless null
     if(p->getID()) {
@@ -166,92 +166,92 @@ bool WiFiManager::addParameter(WiFiManagerParameter *p)
     }
 
     // init params if never malloc
-    if(!_params) {
-        _params = (WiFiManagerParameter**)malloc(_max_params * sizeof(WiFiManagerParameter*));
+    if(!_params[idx]) {
+        _params[idx] = (WiFiManagerParameter**)malloc(_max_params[idx] * sizeof(WiFiManagerParameter*));
     }
 
     // resize the params array by increment of WIFI_MANAGER_MAX_PARAMS
-    if(_paramsCount == _max_params) {
+    if(_paramsCount[idx] == _max_params[idx]) {
 
-        _max_params += WIFI_MANAGER_MAX_PARAMS;
+        _max_params[idx] += WIFI_MANAGER_MAX_PARAMS;
 
-        WiFiManagerParameter** new_params = (WiFiManagerParameter**)realloc(_params, _max_params * sizeof(WiFiManagerParameter*));
+        WiFiManagerParameter** new_params = (WiFiManagerParameter**)realloc(_params[idx], _max_params[idx] * sizeof(WiFiManagerParameter*));
 
-        if(new_params != NULL) {
-            _params = new_params;
-        } else {
+        if(!new_params)
             return false;
-        }
+
+        _params[idx] = new_params;
     }
 
-    _params[_paramsCount] = p;
-    _paramsCount++;
+    _params[idx][_paramsCount[idx]] = p;
+    _paramsCount[idx]++;
 
     return true;
+}
+
+// Params page
+bool WiFiManager::addParameter(WiFiManagerParameter *p)
+{
+    return _addParameter(1, p);
 }
 
 WiFiManagerParameter** WiFiManager::getParameters()
 {
-    return _params;
+    return _params[1];
 }
 
 int WiFiManager::getParametersCount()
 {
-    return _paramsCount;
+    return _paramsCount[1];
 }
 
 void WiFiManager::allocParms(int numParms)
 {
-    _max_params = numParms;
+    _max_params[1] = numParms;
 }
 
-// Params
+// Params2 page
+#ifdef WM_PARAM2
+bool WiFiManager::addParameter2(WiFiManagerParameter *p)
+{
+    return _addParameter(2, p);
+}
 
+WiFiManagerParameter** WiFiManager::getParameters2()
+{
+    return _params[2];
+}
+
+int WiFiManager::getParameters2Count()
+{
+    return _paramsCount[2];
+}
+
+void WiFiManager::allocParms2(int numParms)
+{
+    _max_params[2] = numParms;
+}
+#endif
+
+// WiFi Page
 bool WiFiManager::addWiFiParameter(WiFiManagerParameter *p)
 {
-    // check param id is valid, unless null
-    if(p->getID()) {
-        if(!CheckParmID(p->getID())) return false;
-    }
-
-    // init params if never malloc
-    if(!_wifiparams) {
-        _wifiparams = (WiFiManagerParameter**)malloc(_max_wifi_params * sizeof(WiFiManagerParameter*));
-    }
-
-    // resize the params array by increment of WIFI_MANAGER_MAX_PARAMS
-    if(_wifiparamsCount == _max_wifi_params) {
-
-        _max_wifi_params += WIFI_MANAGER_MAX_PARAMS;
-
-        WiFiManagerParameter** new_params = (WiFiManagerParameter**)realloc(_wifiparams, _max_wifi_params * sizeof(WiFiManagerParameter*));
-
-        if(new_params) {
-            _wifiparams = new_params;
-        } else {
-            return false;
-        }
-    }
-
-    _wifiparams[_wifiparamsCount] = p;
-    _wifiparamsCount++;
-
-    return true;
+    return _addParameter(0, p);
 }
 
 WiFiManagerParameter** WiFiManager::getWiFiParameters()
 {
-    return _wifiparams;
+    return _params[0];
 }
 
 int WiFiManager::getWiFiParametersCount()
 {
-    return _wifiparamsCount;
+    return _paramsCount[0];
 }
 
 void WiFiManager::allocWiFiParms(int numParms)
 {
-    _max_wifi_params = numParms;
+    _max_params[0] = numParms;
 }
 
 // Constructors
@@ -263,11 +263,9 @@ WiFiManager::WiFiManager()
 
 void WiFiManager::WiFiManagerInit()
 {
-    const int8_t defMenu[3] = { WM_MENU_WIFI, WM_MENU_SEP, WM_MENU_UPDATE };
-
-    setMenu(defMenu, 3);
-
-    _max_params = _max_wifi_params = WIFI_MANAGER_MAX_PARAMS;
+    for(int i = 0; i < WM_PARAM_ARRS; i++) {
+        _max_params[i] = WIFI_MANAGER_MAX_PARAMS;
+    }
 
     memset(_ssid, 0, sizeof(_ssid));
     memset(_pass, 0, sizeof(_pass));
@@ -281,15 +279,13 @@ WiFiManager::~WiFiManager()
     _end();
 
     // free parameter arrays
-    if(_params) {
-        free(_params);
-        _params = NULL;
+    for(int i = 0; i < WM_PARAM_ARRS; i++) {
+        if(_params[i]) {
+            free(_params[i]);
+            _params[i] = NULL;
+        }
+        _paramsCount[i] = 0;
     }
-    if(_wifiparams) {
-        free(_wifiparams);
-        _wifiparams = NULL;
-    }
-    _paramsCount = _wifiparamsCount = 0;
 
     // remove event
     if(wm_event_id) {
@@ -590,6 +586,10 @@ void WiFiManager::setupHTTPServer()
     server->on(R_wifisave,   std::bind(&WiFiManager::handleWifiSave, this));
     server->on(R_param,      std::bind(&WiFiManager::handleParam, this));
     server->on(R_paramsave,  std::bind(&WiFiManager::handleParamSave, this));
+    #ifdef WM_PARAM2
+    server->on(R_param2,     std::bind(&WiFiManager::handleParam2, this));
+    server->on(R_param2save, std::bind(&WiFiManager::handleParam2Save, this));
+    #endif
     server->on(R_update,     std::bind(&WiFiManager::handleUpdate, this));
     server->on(R_updatedone, HTTP_POST, std::bind(&WiFiManager::handleUpdateDone, this), std::bind(&WiFiManager::handleUpdating, this));
 
@@ -1533,13 +1533,19 @@ int WiFiManager::getMenuOutLength()
         int menuId = 0;
         int8_t t;
         while((t = _menuIdArr[menuId++]) != WM_MENU_END) {
-            if(t == WM_MENU_PARAM && !_paramsCount) continue;
+            if(t == WM_MENU_PARAM && !_paramsCount[1]) continue;
+            #ifdef WM_PARAM2
+            if(t == WM_MENU_PARAM2 && !_paramsCount[2]) continue;
+            #endif
             if(t == WM_MENU_CUSTOM && _customMenuHTML) {
                 bufSize += strlen(_customMenuHTML);
                 continue;
             }
             bufSize += strlen(HTTP_PORTAL_MENU[t]);
         }
+    } else {
+        bufSize += strlen(HTTP_PORTAL_MENU[WM_MENU_WIFI]);
+        bufSize += strlen(HTTP_PORTAL_MENU[WM_MENU_UPDATE]);
     }
 
     if(_menuoutlencallback) {
@@ -1556,13 +1562,19 @@ void WiFiManager::getMenuOut(String& page)
         int menuId = 0;
         int8_t t;
         while((t = _menuIdArr[menuId++]) != WM_MENU_END) {
-            if(t == WM_MENU_PARAM && !_paramsCount) continue;
+            if(t == WM_MENU_PARAM && !_paramsCount[1]) continue;
+            #ifdef WM_PARAM2
+            if(t == WM_MENU_PARAM2 && !_paramsCount[2]) continue;
+            #endif
             if(t == WM_MENU_CUSTOM && _customMenuHTML) {
                 page += _customMenuHTML;
                 continue;
             }
             page += HTTP_PORTAL_MENU[t];
         }
+    } else {
+        page += HTTP_PORTAL_MENU[WM_MENU_WIFI];
+        page += HTTP_PORTAL_MENU[WM_MENU_UPDATE];
     }
 
     if(_menuoutcallback) {
@@ -2129,7 +2141,7 @@ void WiFiManager::buildWifiPage(String& page, bool scan)
     }
     bufSize += STRLEN(HTTP_FORM_WIFI_END);
     bufSize += getStaticLen();
-    bufSize += getParamOutSize(_wifiparams, _wifiparamsCount, maxItemSize);
+    bufSize += getParamOutSize(_params[0], _paramsCount[0], maxItemSize);
     bufSize += STRLEN(HTTP_FORM_END);
     bufSize += STRLEN(HTTP_SCAN_LINK);
     if(haveShowAll) {
@@ -2180,7 +2192,7 @@ void WiFiManager::buildWifiPage(String& page, bool scan)
     }
     page += FPSTR(HTTP_FORM_WIFI_END);
     getStaticOut(page);
-    getParamOut(page, _wifiparams, _wifiparamsCount, maxItemSize);
+    getParamOut(page, _params[0], _paramsCount[0], maxItemSize);
     page += FPSTR(HTTP_FORM_END);
     page += FPSTR(HTTP_SCAN_LINK);
     if(haveShowAll) {
@@ -2302,7 +2314,7 @@ void WiFiManager::handleWifiSave()
     }
 
     // Copy server parms to wifi params array
-    doParamSave(_wifiparams, _wifiparamsCount);
+    doParamSave(_params[0], _paramsCount[0]);
 
     // callback for saving
     if(_savewificallback) {
@@ -2356,17 +2368,17 @@ void WiFiManager::handleWifiSave()
 /*--------------------------------------------------------------------------*/
 
 // Calc size of params ("Settings") page
-int WiFiManager::calcParmPageSize(unsigned int& maxItemSize)
+int WiFiManager::calcParmPageSize(int aidx, unsigned int& maxItemSize, const char *title, const char *action)
 {
-    int mySize = getHTTPHeadLength(S_titleparam);
+    int mySize = getHTTPHeadLength(title);
 
     #ifdef _A10001986_DBG
     Serial.printf("calcParmSize: head %d\n", mySize);
     #endif
 
-    mySize += (STRLEN(HTTP_FORM_START) - 3 + STRLEN(A_paramsave));
+    mySize += (STRLEN(HTTP_FORM_START) - 3 + strlen(action));
 
-    mySize += getParamOutSize(_params, _paramsCount, maxItemSize);
+    mySize += getParamOutSize(_params[aidx], _paramsCount[aidx], maxItemSize);
 
     mySize += STRLEN(HTTP_FORM_END);
     mySize += STRLEN(HTTP_END);
@@ -2381,7 +2393,7 @@ int WiFiManager::calcParmPageSize(unsigned int& maxItemSize)
 /*
  * HTTPD CALLBACK Settings page handler
  */
-void WiFiManager::handleParam()
+void WiFiManager::_handleParam(int aidx, const char *title, const char *action)
 {
     unsigned int maxItemSize = 0;
 
@@ -2390,19 +2402,19 @@ void WiFiManager::handleParam()
     #endif
 
     String page;
-    page.reserve(calcParmPageSize(maxItemSize) + 16);
+    page.reserve(calcParmPageSize(aidx, maxItemSize, title, action) + 16);
 
-    getHTTPHeadNew(page, S_titleparam);
+    getHTTPHeadNew(page, title);
 
     {
         String pitem;
-        pitem.reserve(STRLEN(HTTP_FORM_START) - 3 + STRLEN(A_paramsave) + 2);
+        pitem.reserve(STRLEN(HTTP_FORM_START) - 3 + strlen(action) + 2);
         pitem = FPSTR(HTTP_FORM_START);
-        pitem.replace(FPSTR(T_v), FPSTR(A_paramsave));
+        pitem.replace(FPSTR(T_v), action);
         page += pitem;
     }
 
-    getParamOut(page, _params, _paramsCount, maxItemSize);
+    getParamOut(page, _params[aidx], _paramsCount[aidx], maxItemSize);
 
     page += FPSTR(HTTP_FORM_END);
     page += FPSTR(HTTP_END);
@@ -2418,33 +2430,47 @@ void WiFiManager::handleParam()
     }
 }
 
+void WiFiManager::handleParam()
+{
+    _handleParam(1, S_titleparam, A_paramsave);
+}
+
+#ifdef WM_PARAM2
+void WiFiManager::handleParam2()
+{
+    _handleParam(2, S_titleparam2, A_param2save);
+}
+#endif
+
 /*
  * HTTPD CALLBACK Settings->SAVE page handler
  */
-void WiFiManager::handleParamSave()
+void WiFiManager::_handleParamSave(int aidx, const char *title)
 {
     unsigned int mySize = 0;
     unsigned int headSize = 0;
 
     #ifdef _A10001986_V_DBG
-    Serial.println("<- HTTP Param save");
+    Serial.printf("<- HTTP Param save %d\n", aidx);
     #endif
 
+    #ifdef WM_PRESAVECB
     if(_presaveparamscallback) {
-        _presaveparamscallback();
+        _presaveparamscallback(aidx);
     }
+    #endif
 
-    doParamSave(_params, _paramsCount);
+    doParamSave(_params[aidx], _paramsCount[aidx]);
 
     if(_saveparamscallback) {
-        _saveparamscallback();
+        _saveparamscallback(aidx);
     }
 
-    mySize = getHTTPHeadLength(S_titleparam, true);
+    mySize = getHTTPHeadLength(title, true);
 
     headSize = STRLEN(HTTP_ROOT_MAIN) - (2*3);
     headSize += strlen(_title);
-    headSize += STRLEN(S_titleparam);
+    headSize += strlen(title);
     mySize += headSize;
 
     mySize += STRLEN(HTTP_PARAMSAVED) + STRLEN(HTTP_PARAMSAVED_END);
@@ -2454,17 +2480,17 @@ void WiFiManager::handleParamSave()
     page.reserve(mySize + 16);
 
     #ifdef _A10001986_DBG
-    Serial.printf("handleParamSave: calced content size %d\n", mySize);
+    Serial.printf("handleParamSave %d: calced content size %d\n", aidx, mySize);
     #endif
 
-    getHTTPHeadNew(page, S_titleparam, true);
+    getHTTPHeadNew(page, title, true);
 
     {
         String str;
         str.reserve(headSize + 8);
         str = FPSTR(HTTP_ROOT_MAIN);
         str.replace(FPSTR(T_t), _title);
-        str.replace(FPSTR(T_v), S_titleparam);
+        str.replace(FPSTR(T_v), title);
         page += str;
     }
 
@@ -2482,6 +2508,19 @@ void WiFiManager::handleParamSave()
         _gpcallback(WM_LP_POSTHTTPSEND);
     }
 }
+
+void WiFiManager::handleParamSave()
+{
+    _handleParamSave(1, S_titleparam);
+}
+
+#ifdef WM_PARAM2
+void WiFiManager::handleParam2Save()
+{
+    _handleParamSave(2, S_titleparam2);
+}
+#endif
+
 
 /*--------------------------------------------------------------------------*/
 /********************************* UPDATE ***********************************/
@@ -2863,17 +2902,19 @@ void WiFiManager::setPreSaveWiFiCallback(void(*func)())
 }
 
 // setSaveParamsCallback(): Set a save params callback on params page
-void WiFiManager::setSaveParamsCallback(void(*func)())
+void WiFiManager::setSaveParamsCallback(void(*func)(int))
 {
     _saveparamscallback = func;
 }
 
 // setPreSaveParamsCallback(): Set a pre save params callback on params
 // save prior to anything else
-void WiFiManager::setPreSaveParamsCallback(void(*func)())
+#ifdef WM_PRESAVECB
+void WiFiManager::setPreSaveParamsCallback(void(*func)(int))
 {
     _presaveparamscallback = func;
 }
+#endif
 
 // setxxxOtaUpdateCallback(): Set a callback to fire before OTA update
 // or after, respectively.
@@ -2971,7 +3012,8 @@ void WiFiManager::showUploadContainer(bool enable, const char *contName, bool sh
 //       WiFiManager.setMenu(menu, size);
 void WiFiManager::setMenu(const int8_t *menu, uint8_t size, bool doCopy)
 {
-    if(_menuIdArr) free((void *)_menuIdArr);
+    if(_menuIdArr && !_menuArrConst)
+        free((void *)_menuIdArr);
 
     _menuIdArr = NULL;
 
@@ -2979,9 +3021,11 @@ void WiFiManager::setMenu(const int8_t *menu, uint8_t size, bool doCopy)
 
     if(!doCopy) {
         _menuIdArr = (int8_t *)menu;
+        _menuArrConst = true;
         return;
     }
 
+    _menuArrConst = false;
     _menuIdArr = (int8_t *)malloc(size + 1);
     memset(_menuIdArr, WM_MENU_END, size + 1);
 
