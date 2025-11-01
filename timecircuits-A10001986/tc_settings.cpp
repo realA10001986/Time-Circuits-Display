@@ -92,17 +92,17 @@
 #define DECLARE_D_JSON(x,n) DynamicJsonDocument n(x);
 #endif 
 
-#define NUM_AUDIOFILES 20
+#define NUM_AUDIOFILES 22
 #define AC_FMTV 2
 #define AC_OHSZ (14 + ((10+NUM_AUDIOFILES+1)*(32+4)))
 #ifdef TWSOUND
 #define SND_NON_ALIEN "CS"
-#define SND_REQ_VERSION "TW03"
-#define AC_TS 1231539
+#define SND_REQ_VERSION "TW04"
+#define AC_TS 1209415
 #else
 #define SND_NON_ALIEN "TW"
-#define SND_REQ_VERSION "CS03"
-#define AC_TS 1236252
+#define SND_REQ_VERSION "CS04"
+#define AC_TS 1214128
 #endif
 
 static const char *CONFN  = "/TCDA.bin";
@@ -117,7 +117,7 @@ static char       *uploadRealFileNames[MAX_SIM_UPLOADS] = { NULL };
 static const char *cfgName    = "/config.json";     // Main config (flash)
 static const char *ipCfgName  = "/ipconfig.json";   // IP config (flash)
 static const char *briCfgName = "/tcdbricfg.json";  // Brightness (flash/SD)
-static const char *ainCfgName = "/tcdaicfg.json";   // Auto-interval (flash/SD)
+static const char *ainCfgName = "/tcdaicfg.json";   // Beep+Auto-interval (flash/SD)
 static const char *volCfgName = "/tcdvolcfg.json";  // Volume config (flash/SD)
 static const char *almCfgName = "/tcdalmcfg.json";  // Alarm config (flash/SD)
 static const char *remCfgName = "/tcdremcfg.json";  // Reminder config (flash/SD)
@@ -167,6 +167,7 @@ static uint8_t  preSavedDBri = 20;
 static uint8_t  preSavedPBri = 20;
 static uint8_t  preSavedLBri = 20;
 static uint8_t  preSavedAI   = 99;
+static uint8_t  preSavedBeep = 99;
 static uint8_t  prevSavedVol = 254;
 static uint8_t* (*r)(uint8_t *, uint32_t, int);
 
@@ -179,7 +180,7 @@ static bool checkValidNumParm(char *text, int lowerLim, int upperLim, int setDef
 static bool checkValidNumParmF(char *text, float lowerLim, float upperLim, float setDefault);
 
 static bool loadBrightness();
-static bool loadAutoInterval();
+static bool loadBeepAutoInterval();
 
 static void deleteReminder();
 static void loadCarMode();
@@ -413,12 +414,12 @@ void settings_setup()
     loadBrightness();
 
     // Load (copy) autoInterval ("time cycling interval")
-    loadAutoInterval();
+    loadBeepAutoInterval();
 
     // Load carMode setting
     loadCarMode();
 
-    // Load RemoveAllowed setting
+    // Load RemoteAllowed/RemoteKPAllowed settings
     loadRemoteAllowed();
 
     // Check if SD contains the default sound files
@@ -540,7 +541,8 @@ static bool read_settings(File configFile, int cfgReadCount)
         // Settings
 
         wd |= CopyCheckValidNumParm(json["pI"], json["playIntro"], settings.playIntro, sizeof(settings.playIntro), 0, 1, DEF_PLAY_INTRO);
-        wd |= CopyCheckValidNumParm(json["bep"], json["beep"], settings.beep, sizeof(settings.beep), 0, 3, DEF_BEEP);
+        // Beep now in separate file, so it missing is ok
+        CopyCheckValidNumParm(json["bep"], json["beep"], settings.beep, sizeof(settings.beep), 0, 3, DEF_BEEP);
         // Time cycling saved in separate file
         wd |= CopyCheckValidNumParm(json["skpTTA"], NULL, settings.skipTTAnim, sizeof(settings.skipTTAnim), 0, 1, DEF_SKIP_TTANIM);
         #ifndef IS_ACAR_DISPLAY
@@ -672,7 +674,6 @@ void write_settings()
     json["wAOD"] = (const char *)settings.wifiAPOffDelay;
 
     json["pI"] = (const char *)settings.playIntro;
-    json["bep"] = (const char *)settings.beep;
     json["skpTTA"] = (const char *)settings.skipTTAnim;
     #ifndef IS_ACAR_DISPLAY
     json["p3an"] = (const char *)settings.p3anim;
@@ -823,7 +824,7 @@ static bool checkValidNumParm(char *text, int lowerLim, int upperLim, int setDef
 {
     int i, len = strlen(text);
 
-    if(len == 0) {
+    if(!len) {
         sprintf(text, "%d", setDefault);
         return true;
     }
@@ -856,7 +857,7 @@ static bool checkValidNumParmF(char *text, float lowerLim, float upperLim, float
     int i, len = strlen(text);
     float f;
 
-    if(len == 0) {
+    if(!len) {
         sprintf(text, "%.1f", setDefault);
         return true;
     }
@@ -882,6 +883,12 @@ static bool checkValidNumParmF(char *text, float lowerLim, float upperLim, float
     sprintf(text, "%.1f", f);
 
     return false;
+}
+
+static inline void setBoolText(char *buf, const bool& myBool)
+{
+    buf[0] = myBool ? '1' : '0';
+    buf[1] = 0;
 }
 
 static bool openCfgFileRead(const char *fn, File& f)
@@ -977,13 +984,13 @@ void saveBrightness(bool useCache)
 }
 
 /*
- *  autoInterval
+ *  Beep & autoInterval
  *
  */
-static bool loadAutoInterval()
+static bool loadBeepAutoInterval()
 {
     #ifdef TC_DBG
-    const char *funcName = "loadAutoInterval";
+    const char *funcName = "loadBeepAutoInterval";
     #endif
     bool wd = true;
     File configFile;
@@ -1000,7 +1007,9 @@ static bool loadAutoInterval()
         DECLARE_S_JSON(512,json);
 
         if(!readJSONCfgFile(json, configFile)) {
-            wd = CopyCheckValidNumParm(json["ai"], NULL, settings.autoRotateTimes, sizeof(settings.autoRotateTimes), 0, 5, DEF_AUTOROTTIMES);
+            wd = false;
+            wd |= CopyCheckValidNumParm(json["ai"], NULL, settings.autoRotateTimes, sizeof(settings.autoRotateTimes), 0, 5, DEF_AUTOROTTIMES);
+            wd |= CopyCheckValidNumParm(json["beep"], NULL, settings.beep, sizeof(settings.beep), 0, 3, atoi(settings.beep));
         }
         configFile.close();
     }
@@ -1009,34 +1018,40 @@ static bool loadAutoInterval()
         #ifdef TC_DBG
         Serial.printf("%s: %s\n", funcName, badConfig);
         #endif
-        saveAutoInterval();
+        saveBeepAutoInterval();
     } else {
         autoInterval = (uint8_t)atoi(settings.autoRotateTimes);
+        beepMode = (uint8_t)atoi(settings.beep);
         preSavedAI = autoInterval;
+        preSavedBeep = beepMode;
     }
 
     return true;
 }
 
-void saveAutoInterval(bool useCache)
+void saveBeepAutoInterval(bool useCache)
 {
     DECLARE_S_JSON(512,json);
 
-    if(useCache && (preSavedAI == autoInterval))
+    if(useCache && 
+       (preSavedAI == autoInterval) && 
+       (preSavedBeep == beepMode))
         return;
 
     if(!haveFS && !configOnSD)
         return;
 
     sprintf(settings.autoRotateTimes, "%d", autoInterval);
+    sprintf(settings.beep, "%d", beepMode);
 
     json["ai"] = (const char *)settings.autoRotateTimes;
+    json["beep"] = (const char *)settings.beep;
     
     writeJSONCfgFile(json, ainCfgName, configOnSD);
 
     preSavedAI = autoInterval;
+    preSavedBeep = beepMode;
 }
-
 
 /*
  *  Load/save the Volume
@@ -1301,8 +1316,8 @@ void saveCarMode()
     if(!haveFS && !configOnSD)
         return;
 
-    buf[0] = carMode ? '1' : '0';
-    buf[1] = 0;
+    setBoolText(buf, carMode);
+
     json["CarMode"] = (const char *)buf;
 
     writeJSONCfgFile(json, cmCfgName, configOnSD);
@@ -1401,8 +1416,8 @@ void saveLineOut()
     if(!haveLineOut)
         return;
 
-    buf[0] = useLineOut ? '1' : '0';
-    buf[1] = 0;
+    setBoolText(buf, useLineOut);
+
     json["LineOut"] = (const char *)buf;
 
     writeJSONCfgFile(json, loCfgName, configOnSD);
@@ -1445,11 +1460,10 @@ void saveRemoteAllowed()
     if(!haveFS && !configOnSD)
         return;
 
-    buf[0] = remoteAllowed ? '1' : '0';
-    buf[1] = 0;
+    setBoolText(buf, remoteAllowed);
+    setBoolText(buf2, remoteKPAllowed);
+    
     json["Remote"] = (const char *)buf;
-    buf2[0] = remoteKPAllowed ? '1' : '0';
-    buf2[1] = 0;
     json["RemoteKP"] = (const char *)buf2;
 
     writeJSONCfgFile(json, raCfgName, configOnSD);
@@ -1843,7 +1857,7 @@ bool formatFlashFS(bool userSignal)
 static void writeAllSecSettings()
 {
     saveBrightness(false);
-    saveAutoInterval(false);
+    saveBeepAutoInterval(false);
     saveCurVolume(false);
     saveAlarm();
     saveReminder();
@@ -1852,6 +1866,12 @@ static void writeAllSecSettings()
     if(stalePresent) {
         saveStaleTime((void *)&stalePresentTime[0], stalePresent);
     }
+    #endif
+    #ifdef TC_HAVELINEOUT
+    saveLineOut();
+    #endif
+    #ifdef TC_HAVE_REMOTE
+    saveRemoteAllowed();
     #endif
     saveDisplayData();
 }
@@ -2191,6 +2211,9 @@ void removeACFile(int idx)
 {
     if(haveSD) {
         if(uploadRealFileNames[idx]) {
+            #ifdef TC_DBG
+            Serial.printf("removeACFile: Deleting %s\n", uploadRealFileNames[idx]);
+            #endif
             SD.remove(uploadRealFileNames[idx]);
         }
     }
@@ -2245,6 +2268,9 @@ void renameUploadFile(int idx)
         #endif
         
         SD.rename(uploadFileName, t);
+
+        // Real name is now changed
+        strcpy(uploadFileName, t);
         
         free(t);
     }

@@ -127,7 +127,7 @@
  * - Install the sound-pack: 
  *   Method 1:
  *   - Go to Config Portal, click "Update" and upload the sound-pack (TCDA.bin, extracted
- *     from install/sound-pack-xxxxxxxx.zip) through the bottom file selector.
+ *     from install/sound-pack-xxxx.zip) through the bottom file selector.
  *     A FAT32 (not ExFAT!) formatted SD card must be present in the slot during this 
  *     operation.
  *   Method 2:
@@ -139,6 +139,16 @@
 
 /*  Changelog
  *
+ *  2025/10/31 (A10001986) [3.7]
+ *    - New sound-pack: Includes sounds for remote on/off, and new night mode
+ *      on/off sounds. (TW04/CS04)
+ *    - Add "Remote fake power controls TCD fake power" feature. While Remote is
+ *      Master, TFC switch changes are tracked but ignored. When Remote releases
+ *      fake power control, TFC switch state becomes immediately effective. 
+ *      Configuration of this feature is done solely on the Remote.
+ *      Requires firmware >= 1.12 on Remote. 
+ *    - Save beep mode when changed on-the-fly so it's restored on power-up.
+ *    - Fix deleting a bad .bin file after upload
  *  2025/10/26 (A10001986) [3.6.1]
  *    - BTTFN: Fix hostname length issues; code optimizations; minor fix for mc 
  *      notifications. Recommend to update all props' firmwares for similar

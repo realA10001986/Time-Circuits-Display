@@ -262,7 +262,7 @@
 #define FIELD_HOUR    3
 #define FIELD_MINUTE  4
 
-uint8_t autoInterval = 1;
+uint8_t autoInterval = DEF_AUTOROTTIMES;
 const uint8_t autoTimeIntervals[6] = {0, 5, 10, 15, 30, 60};  // first must be 0 (=off)
 
 bool    alarmOnOff = false;
@@ -522,8 +522,7 @@ void enter_menu()
 
             if(autoInterval) {
                 autoInterval = 0;
-                saveAutoInterval();
-                updateConfigPortalValues();
+                saveBeepAutoInterval();
             }
 
             nonRTCdisplayChanged = true;
@@ -1695,8 +1694,7 @@ static void doSetAutoInterval()
         // Save it (if changed)
         if(autoInterval != newAutoInterval) {
             autoInterval = newAutoInterval;
-            saveAutoInterval();
-            updateConfigPortalValues();
+            saveBeepAutoInterval();
         }
 
         // End pause if current setting != off

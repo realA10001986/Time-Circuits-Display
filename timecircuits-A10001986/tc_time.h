@@ -144,7 +144,7 @@ extern int timeTravelP0;
 extern int timeTravelP1;
 extern int timeTravelP2;
 extern int specDisp;
-extern bool playingIntro;
+extern int autoIntAnimRunning;
 
 extern uint8_t  mqttDisp;
 #ifdef TC_HAVEMQTT

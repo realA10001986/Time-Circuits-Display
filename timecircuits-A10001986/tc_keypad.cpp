@@ -1661,6 +1661,9 @@ void prepareReboot()
 
 void setBeepMode(int mode)
 {
+    bool nb = (mode != beepMode);
+    unsigned long now = millis();
+    
     switch(mode) {
     case 0:
         muteBeep = true;
@@ -1674,7 +1677,7 @@ void setBeepMode(int mode)
         break;
     case 2:
         if(beepMode == 1) {
-            beepTimerNow = millis();
+            beepTimerNow = now;
             beepTimer = true;
         }
         beepMode = 2;
@@ -1682,12 +1685,16 @@ void setBeepMode(int mode)
         break;
     case 3:
         if(beepMode == 1) {
-            beepTimerNow = millis();
+            beepTimerNow = now;
             beepTimer = true;
         }
         beepMode = 3;
         beepTimeout = BEEPM3_SECS*1000;
         break;
+    }
+    if(nb) {
+        settings.beep[0] = beepMode + '0';
+        saveBeepAutoInterval();
     }
 }
          

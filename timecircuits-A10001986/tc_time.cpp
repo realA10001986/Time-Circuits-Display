@@ -165,7 +165,7 @@
 #define TEMP_UPD_INT_S (30*1000)
 
 unsigned long        powerupMillis = 0;
-bool                 playingIntro = false;
+static bool          bootStrap = true;
 
 // millis64
 static unsigned long lastMillis64 = 0;
@@ -186,7 +186,7 @@ static bool          x = false;
 static bool          y = false;
 
 // For beep-auto-modes
-uint8_t              beepMode = 0;
+uint8_t              beepMode = DEF_BEEP;
 bool                 beepTimer = false;
 unsigned long        beepTimeout = 30*1000;
 unsigned long        beepTimerNow = 0;
@@ -255,12 +255,11 @@ static unsigned long lastRemSpdUpd = 0, remSpdCatchUpDelay = 80;
 bool                 remoteAllowed = false;
 bool                 remoteKPAllowed = false;
 static int           remoteWasMaster = 0;
-static bool          haveRemoteOnSound = false;
-static bool          haveRemoteOffSound = false;
 static const char    *remoteOnSound = "/remoteon.mp3";
 static const char    *remoteOffSound = "/remoteoff.mp3";
 static bool          oldptnmrem = false;
 #endif
+static bool          bttfnRemPwrMaster = false;
 #ifdef TC_HAVE_RE
 static int16_t       fakeSpeed = 0;
 static int16_t       oldFSpd = 0;
@@ -345,7 +344,7 @@ static unsigned long pscsnow = 0;
 static bool postSecChangeBusy = false;
 static bool DSTcheckDone = false;
 static bool autoIntDone = false;
-static int  autoIntAnimRunning = 0;
+int         autoIntAnimRunning = 0;
 static bool autoReadjust = false;
 static unsigned long lastAuthTime = 0;
 uint64_t    lastAuthTime64 = 0;
@@ -484,7 +483,7 @@ lightSensor lightSens(6,
 #endif
 
 #ifdef HAVE_STALE_PRESENT
-bool          stalePresent = false;
+bool       stalePresent = false;
 dateStruct stalePresentTime[2] = {
     {1985, 10, 26,  1, 22},         // original for backup
     {1985, 10, 26,  1, 22}          // changed during use
@@ -610,9 +609,13 @@ static TCButton fakePowerOnKey = TCButton(FAKE_POWER_BUTTON_PIN,
     true,    // Button is active LOW
     true     // Enable internal pull-up resistor
 );
+bool        waitForFakePowerButton = false;
 static bool isFPBKeyChange = false;
 static bool isFPBKeyPressed = false;
-bool        waitForFakePowerButton = false;
+#ifdef TC_HAVE_REMOTE
+static bool shadowFPBKeyChange = false;
+static bool shadowFPBKeyPressed = false;
+#endif
 #endif
 
 // Date & time stuff
@@ -804,7 +807,7 @@ static const int16_t *tt_p0_delays = tt_p0_delays_movie;
 static long tt_p0_totDelays[88];
 #endif
 
-// BTTF UDP
+// BTTF-Network
 bool bttfnHaveClients = false;
 #define BTTFN_NOT_PREPARE  1
 #define BTTFN_NOT_TT       2
@@ -981,7 +984,7 @@ static uint8_t* bttfn_unrollPacket(uint8_t *d, uint32_t m, int b);
 static bool bttfn_handlePacket(uint8_t *buf, bool isMC);
 static void bttfn_notify(uint8_t targetType, uint8_t event, uint16_t payload = 0, uint16_t payload2 = 0);
 #ifdef TC_HAVE_REMOTE
-static void bttfnMakeRemoteSpeedMaster(bool doit);
+static void bttfnMakeRemoteSpeedMaster(bool doit, bool isPwrMaster);
 #endif
 #ifdef TC_BTTFN_MC
 static bool bttfn_checkmc();
@@ -1208,11 +1211,6 @@ void time_setup()
             }
         }
     }
-    #endif
-
-    #ifdef TC_HAVE_REMOTE
-    haveRemoteOnSound = check_file_SD(remoteOnSound);
-    haveRemoteOffSound = check_file_SD(remoteOffSound);
     #endif
 
     // Set up GPS receiver
@@ -1562,7 +1560,12 @@ void time_setup()
     // Load yearly/monthly reminder settings
     loadReminder();
 
-    // Handle early BTTFN requests
+    // Handle early BTTFN requests (first call)
+    // At this point everything that could be used/changed
+    // by BTTFN commands (especially the Remote) must be
+    // set up. Remote is kept from becoming speedmaster
+    // through bootStrap flag. It can already become
+    // powermaster, however.
     while(bttfn_loop()) {}
 
     // Auto-NightMode
@@ -1595,7 +1598,6 @@ void time_setup()
 
     // Set power-up setting for beep
     muteBeep = true;
-    beepMode = (uint8_t)atoi(settings.beep);
     if(beepMode >= 3) {
         beepMode = 3;
         beepTimeout = BEEPM3_SECS*1000;
@@ -1843,7 +1845,7 @@ void time_setup()
         const char *t2 = "             CIRCUITS";
         const char *t3 = "ON";
 
-        playingIntro = true;
+        timeTravelP0 = true;    // abuse this here to suppress WiFi scan
 
         play_file("/intro.mp3", PA_LINEOUT|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
 
@@ -1883,7 +1885,7 @@ void time_setup()
         waitAudioDoneIntro();
         stopAudio();
 
-        playingIntro = false;
+        timeTravelP0 = false;
     } else {
         while(bttfn_loop()) {}
     }
@@ -1892,7 +1894,7 @@ void time_setup()
     {
         bool bootNow = true;
         
-        if(waitForFakePowerButton) {
+        if(waitForFakePowerButton || bttfnRemPwrMaster) {
             fakePowerOnKey.scan();
             myIntroDelay(70);     // Bridge debounce/longpress time
             fakePowerOnKey.scan();
@@ -1925,6 +1927,8 @@ void time_setup()
     #endif
 
     if(deferredCP) deferredCPNow = millis();
+
+    bootStrap = false;
 }
 
 /*
@@ -1940,7 +1944,7 @@ void time_loop()
     #endif
 
     #ifdef FAKE_POWER_ON
-    if(waitForFakePowerButton) {
+    if(waitForFakePowerButton || bttfnRemPwrMaster) {
         fakePowerOnKey.scan();
 
         if(isFPBKeyChange) {
@@ -2332,10 +2336,12 @@ void time_loop()
                     Serial.printf("Write lastYear to FS %d\n", millis());
                     #endif
                 }
-                if(volChanged && !postSecChangeBusy && (millis() - volChangedNow > 10*1000)) {
-                    volChanged = false;
-                    saveCurVolume();
-                    postSecChangeBusy = true;
+                if(!postSecChangeBusy) {
+                    if(volChanged && (pscnow - volChangedNow > 10*1000)) {
+                        volChanged = false;
+                        saveCurVolume();
+                        postSecChangeBusy = true;
+                    }
                 }
                 // Slot was delayed, but is now taken
                 postSecChange = false;
@@ -2496,7 +2502,7 @@ void time_loop()
         #endif
         #endif
 
-        #ifdef TC_HAVESPEEDO  // speedoAlwaysOn can only be true of useSpeedo is true
+        #ifdef TC_HAVESPEEDO  // speedoAlwaysOn can only be true if useSpeedo is true
         if(speedoAlwaysOn && !didUpdSpeedo && !useGPSSpeed && !dispRotEnc && !bttfnRemoteSpeedMaster) {
             dispIdleZero();
         }
@@ -2964,7 +2970,7 @@ void time_loop()
 
             }
 
-            // Handle Time Cycling ("decorative mode")
+            // Handle Time Cycling
 
             // Do this on previous minute:59
             // We use the displayed minute, not the local time's minute
@@ -3454,7 +3460,7 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
             #endif
             // Now transmit p0-speed "0"
             #ifdef TC_BTTFN_MC
-            bttfn_notify_of_speed();    
+            bttfn_notify_of_speed();
             #else
             #ifdef TC_HAVE_REMOTE
             if(bttfnRemoteSpeedMaster) {
@@ -3698,11 +3704,7 @@ static void checkForSpeedTT(bool isFake, bool isRemote)
 
 void send_refill_msg()
 {
-    #ifdef EXTERNAL_TIMETRAVEL_OUT
-    if(bttfnHaveClients) {
-        bttfn_notify(BTTFN_TYPE_PCG, BTTFN_NOT_REFILL, 0, 0);
-    }
-    #endif
+    bttfn_notify(BTTFN_TYPE_PCG, BTTFN_NOT_REFILL, 0, 0);
 }
 
 void send_wakeup_msg()
@@ -3969,11 +3971,22 @@ void endPauseAuto(void)
 #ifdef FAKE_POWER_ON
 void fpbKeyPressed()
 {
+    #ifdef TC_HAVE_REMOTE
+    shadowFPBKeyPressed = true;
+    shadowFPBKeyChange = true;
+    if(bttfnRemPwrMaster) return;
+    #endif
     isFPBKeyPressed = true;
     isFPBKeyChange = true;
 }
+
 void fpbKeyLongPressStop()
 {
+    #ifdef TC_HAVE_REMOTE
+    shadowFPBKeyPressed = false;
+    shadowFPBKeyChange = true;
+    if(bttfnRemPwrMaster) return;
+    #endif
     isFPBKeyPressed = false;
     isFPBKeyChange = true;
 }
@@ -6047,7 +6060,7 @@ int bttfnNumClients()
     int i;
     
     for(i = 0; i < BTTFN_MAX_CLIENTS; i++) {
-        if(!bttfnClient[i].IP[0])
+        if(!bttfnClient[i].IP32)
             break;
     }
     return i;
@@ -6058,7 +6071,7 @@ bool bttfnGetClientInfo(int c, char **id, uint8_t **ip, uint8_t *type)
     if(c > BTTFN_MAX_CLIENTS - 1)
         return false;
         
-    if(!bttfnClient[c].IP[0])
+    if(!bttfnClient[c].IP32)
         return false;
         
     *id = bttfnClient[c].ID;
@@ -6142,15 +6155,15 @@ static void bttfn_expire_clients()
                 #endif
                 if(bttfnClient[i].Type == BTTFN_TYPE_REMOTE) {
                     #ifdef TC_DBG
-                    Serial.printf("Expiring remote id: %d %d\n", bttfnClient[i].RemID, registeredRemID);
+                    Serial.printf("Expiring remote id: %u %u\n", bttfnClient[i].RemID, registeredRemID);
                     #endif
                     if(bttfnClient[i].RemID == registeredRemID) {
                         registeredRemID = 0;
-                        bttfnMakeRemoteSpeedMaster(false);
+                        bttfnMakeRemoteSpeedMaster(false, false);
                     }
                 } else if(registeredRemKPID && (bttfnClient[i].RemID == registeredRemKPID)) {
                     #ifdef TC_DBG
-                    Serial.printf("Expiring remote KP id: %d %d\n", bttfnClient[i].RemID, registeredRemKPID);
+                    Serial.printf("Expiring remote KP id: %u %u\n", bttfnClient[i].RemID, registeredRemKPID);
                     #endif
                     registeredRemKPID = 0;
                     bttfnLastSeq_ky = 0;    // seq cnt starts at 1 after every registration
@@ -6173,7 +6186,6 @@ static void bttfn_expire_clients()
                 if(bttfnClient[k].IP32) {
                     memcpy(&bttfnClient[j], &bttfnClient[k], (BTTFN_MAX_CLIENTS - k) * sizeof(_bttfnClient));
                     for(int l = BTTFN_MAX_CLIENTS - (k - j); l < BTTFN_MAX_CLIENTS; l++) bttfnClient[l].IP32 = 0;
-                    //memset((void *)&bttfnClient[BTTFN_MAX_CLIENTS - (k - j)], 0, (k - j) * sizeof(_bttfnClient));
                     break;
                 }
             }
@@ -6204,9 +6216,27 @@ static bool checkToPlayRemoteSnd()
     return true;
 }
 
-static void bttfnMakeRemoteSpeedMaster(bool doit)
+static void bttfnMakeRemoteSpeedMaster(bool doit, bool isPwrMaster)
 {
-    if(bttfnRemoteSpeedMaster == doit) {
+    // Powermaster: Anytime.
+
+    if(bttfnRemPwrMaster != isPwrMaster) {
+        if(!isPwrMaster) {
+            isFPBKeyChange = shadowFPBKeyChange;
+            isFPBKeyPressed = shadowFPBKeyPressed;
+        }
+        bttfnRemPwrMaster = isPwrMaster;
+    }
+    if(bttfnRemPwrMaster) {
+        if(doit != FPBUnitIsOn) {
+            isFPBKeyChange = true;
+            isFPBKeyPressed = doit;
+        }
+    }
+
+    // Speedmaster: Only after finishing bootStrap.
+    
+    if((bttfnRemoteSpeedMaster == doit) || bootStrap) {
         return;
     }
 
@@ -6219,7 +6249,7 @@ static void bttfnMakeRemoteSpeedMaster(bool doit)
         Serial.println("Remote is now master");
         #endif
 
-        if(haveRemoteOnSound && checkToPlayRemoteSnd()) {
+        if(!bttfnRemPwrMaster && checkToPlayRemoteSnd()) {
             play_file(remoteOnSound, PA_LINEOUT|PA_CHECKNM|PA_ALLOWSD);
         }
 
@@ -6268,7 +6298,7 @@ static void bttfnMakeRemoteSpeedMaster(bool doit)
         Serial.println("Remote is no longer master");
         #endif
 
-        if(haveRemoteOffSound && checkToPlayRemoteSnd()) {
+        if(!bttfnRemPwrMaster && checkToPlayRemoteSnd()) {
             play_file(remoteOffSound, PA_LINEOUT|PA_CHECKNM|PA_ALLOWSD);
         }
         
@@ -6355,14 +6385,14 @@ static void bttfn_evalremotecommand(uint32_t seq, uint8_t cmd, uint8_t p1, uint8
     case BTTFN_REMCMD_COMBINED: // Update status and speed from remote
         // Skip outdated packets
         if(seq > bttfnLastSeq_co || seq == 1) {
-            bttfnMakeRemoteSpeedMaster(!!(p1 & 0x01));
+            bttfnMakeRemoteSpeedMaster(!!(p1 & 0x01), !!(p1 & 0x04));
             bttfnRemStop = !!(p1 & 0x02);
             if(p2 > 127) bttfnRemoteSpeed = 0;
             else bttfnRemoteSpeed = p2;  // p2 = speed (0-88)
             if(bttfnRemoteSpeed > 88) bttfnRemoteSpeed = 88;
         } else {
             #ifdef TC_DBG
-            Serial.printf("Command out of sequence seq:%d last:%d)\n", seq, bttfnLastSeq_co);
+            Serial.printf("Command out of sequence seq:%d last:%d\n", seq, bttfnLastSeq_co);
             #endif
         }
         bttfnLastSeq_co = seq;
@@ -6370,12 +6400,12 @@ static void bttfn_evalremotecommand(uint32_t seq, uint8_t cmd, uint8_t p1, uint8
 
     case BTTFN_REMCMD_BYE:
         // Remote wants to unregister. It should stop sending keep-alives afterwards.
-        bttfnMakeRemoteSpeedMaster(false);
+        bttfnMakeRemoteSpeedMaster(false, false);
         bttfnRemStop = false;
         bttfnRemoteSpeed = 0;
         registeredRemID = 0;
         #ifdef TC_DBG
-        Serial.printf("Remote unregistered)\n");
+        Serial.printf("Remote unregistered\n");
         #endif
         break;
 
@@ -6385,7 +6415,7 @@ static void bttfn_evalremotecommand(uint32_t seq, uint8_t cmd, uint8_t p1, uint8
             injectKeypadKey((char)p1, (int)p2);
         } else {
             #ifdef TC_DBG
-            Serial.printf("Command out of sequence seq:%d last:%d)\n", seq, bttfnLastSeq_ky);
+            Serial.printf("Command out of sequence seq:%d last:%d\n", seq, bttfnLastSeq_ky);
             #endif
         }
         bttfnLastSeq_ky = seq;
@@ -6645,7 +6675,7 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
             } else {
             #endif
                 #ifdef TC_HAVEGPS
-                if(useGPS && provGPS2BTTFN) {    
+                if(useGPS && provGPS2BTTFN) {
                     // Why "&& provGPS2BTTFN"?
                     // Because: If stationary user uses GPS for time only, speed will
                     // be 0 permanently, and rotary encoder never gets a chance.

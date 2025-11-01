@@ -25,11 +25,11 @@
 
 // These must not contain any characters other than
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
-#define TC_VERSION_REV   "V3.6.1"     // 13 chars max
+#define TC_VERSION_REV   "V3.7"       // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "OCT262025"  // 13 chars max
+#define TC_VERSION_EXTRA "OCT312025"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "10262025"   // 12 chars max
+#define TC_VERSION_EXTRA "10312025"   // 12 chars max
 #endif
 #define TC_VERSION TC_VERSION_REV
 
@@ -95,6 +95,7 @@
 // GPS speed will be shown on speedo display regardless of this switch.
 // DIY instructions to build a TFC Switch: https://tfc.out-a-ti.me
 // Uncomment to include support for a Fake Power Switch.
+// This is also required for using the Futaba Remote as power master.
 #define FAKE_POWER_ON
 
 // External time travel (input) ("ETT")

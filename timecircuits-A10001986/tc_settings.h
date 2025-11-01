@@ -239,7 +239,7 @@ bool checkConfigExists();
 
 void saveBrightness(bool useCache = true);
 
-void saveAutoInterval(bool useCache = true);
+void saveBeepAutoInterval(bool useCache = true);
 
 bool loadAlarm();
 void saveAlarm();
