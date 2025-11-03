@@ -314,7 +314,8 @@ void settings_setup()
 
     haveSD = false;
 
-    uint32_t sdfreq = (settings.sdFreq[0] == '0') ? 16000000 : 4000000;
+    //uint32_t sdfreq = (settings.sdFreq[0] == '0') ? 16000000 : 4000000;
+    uint32_t sdfreq = 16000000;
     #ifdef TC_DBG
     Serial.printf("%s: SD/SPI frequency %dMHz\n", funcName, sdfreq / 1000000);
     #endif
@@ -544,6 +545,7 @@ static bool read_settings(File configFile, int cfgReadCount)
         // Beep now in separate file, so it missing is ok
         CopyCheckValidNumParm(json["bep"], json["beep"], settings.beep, sizeof(settings.beep), 0, 3, DEF_BEEP);
         // Time cycling saved in separate file
+        wd |= CopyCheckValidNumParm(json["sARA"], NULL, settings.autoRotAnim, sizeof(settings.autoRotAnim), 0, 1, 1);
         wd |= CopyCheckValidNumParm(json["skpTTA"], NULL, settings.skipTTAnim, sizeof(settings.skipTTAnim), 0, 1, DEF_SKIP_TTANIM);
         #ifndef IS_ACAR_DISPLAY
         wd |= CopyCheckValidNumParm(json["p3an"], NULL, settings.p3anim, sizeof(settings.p3anim), 0, 1, DEF_P3ANIM);
@@ -618,6 +620,10 @@ static bool read_settings(File configFile, int cfgReadCount)
         #ifdef EXTERNAL_TIMETRAVEL_OUT
         wd |= CopyCheckValidNumParm(json["pMQTT"], json["pubMQTT"], settings.pubMQTT, sizeof(settings.pubMQTT), 0, 1, 0);
         #endif
+        #ifdef FAKE_POWER_ON
+        wd |= CopyCheckValidNumParm(json["mqP"], NULL, settings.mqttPwr, sizeof(settings.mqttPwr), 0, 1, 0);
+        wd |= CopyCheckValidNumParm(json["mqPO"], NULL, settings.mqttPwrOn, sizeof(settings.mqttPwrOn), 0, 1, 0);
+        #endif
         #endif
        
         #ifdef EXTERNAL_TIMETRAVEL_OUT
@@ -674,6 +680,7 @@ void write_settings()
     json["wAOD"] = (const char *)settings.wifiAPOffDelay;
 
     json["pI"] = (const char *)settings.playIntro;
+    json["sARA"] = (const char *)settings.autoRotAnim;
     json["skpTTA"] = (const char *)settings.skipTTAnim;
     #ifndef IS_ACAR_DISPLAY
     json["p3an"] = (const char *)settings.p3anim;
@@ -747,6 +754,10 @@ void write_settings()
     json["mqttT"] = (const char *)settings.mqttTopic;
     #ifdef EXTERNAL_TIMETRAVEL_OUT
     json["pMQTT"] = (const char *)settings.pubMQTT;
+    #endif
+    #ifdef FAKE_POWER_ON
+    json["mqP"] = (const char *)settings.mqttPwr;
+    json["mqPO"] = (const char *)settings.mqttPwrOn;
     #endif
     #endif
 

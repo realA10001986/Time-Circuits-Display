@@ -164,7 +164,8 @@ extern bool     timeDiffUp;
 extern bool timetravelPersistent;
 
 #ifdef FAKE_POWER_ON
-extern bool waitForFakePowerButton;
+extern bool MQTTPwrMaster; 
+extern bool MQTTWaitForOn;
 #endif
 
 extern uint8_t beepMode;
@@ -198,6 +199,11 @@ bool      checkIfAutoPaused();
 void      endPauseAuto(void);
 
 #ifdef FAKE_POWER_ON
+#ifdef TC_HAVEMQTT
+void      mqttFakePowerControl(bool);
+void      mqttFakePowerOn();
+void      mqttFakePowerOff();
+#endif
 void      fpbKeyPressed();
 void      fpbKeyLongPressStop();
 #endif

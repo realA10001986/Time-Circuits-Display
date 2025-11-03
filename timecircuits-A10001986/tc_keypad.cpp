@@ -938,6 +938,12 @@ void keypad_loop()
                     validEntry = true;
                     break;
                 #endif
+                #if defined(TC_HAVEMQTT) && defined(FAKE_POWER_ON)
+                case 996:
+                    mqttFakePowerControl(false);
+                    validEntry = true;
+                    break;
+                #endif
                 case 998:
                     if(timetravelPersistent) {
                         invalidEntry = true;

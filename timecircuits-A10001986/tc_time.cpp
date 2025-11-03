@@ -492,9 +492,9 @@ dateStruct stalePresentTime[2] = {
 
 // Time cycling
 
-static int8_t minNext  = 0;
-int8_t        autoTime = 0;  // Selects date/time from array below
-
+static bool    autoRotAnim = true;
+static uint8_t autoIntSec  = 59;
+int8_t         autoTime    = 0;
 // Pause auto-time-cycling if user played with time travel
 static bool          autoPaused = false;
 static unsigned long pauseNow = 0;
@@ -602,21 +602,26 @@ static unsigned long lastLoopLight = 0;
 unsigned long ctDown = 0;
 unsigned long ctDownNow = 0;
 
-// Fake "power" switch
+// Fake "power" feature (switch, MQTT, remote)
 bool FPBUnitIsOn = true;
 #ifdef FAKE_POWER_ON
 static TCButton fakePowerOnKey = TCButton(FAKE_POWER_BUTTON_PIN,
     true,    // Button is active LOW
     true     // Enable internal pull-up resistor
 );
-bool        waitForFakePowerButton = false;
+static bool waitForFakePowerButton = false;
+static bool restoreFakePwr = false;
+bool        MQTTPwrMaster = false;
+bool        MQTTWaitForOn = false;
 static bool isFPBKeyChange = false;
 static bool isFPBKeyPressed = false;
 #ifdef TC_HAVE_REMOTE
-static bool shadowFPBKeyChange = false;
 static bool shadowFPBKeyPressed = false;
 #endif
+#ifdef TC_HAVEMQTT
+static bool shadowMQTTFPBKeyPressed = false;
 #endif
+#endif // FAKE_POWER_ON
 
 // Date & time stuff
 static const uint8_t monthDays[] =
@@ -1049,8 +1054,8 @@ void time_setup()
     // Init fake power switch
     #ifdef FAKE_POWER_ON
     waitForFakePowerButton = (atoi(settings.fakePwrOn) > 0);
+    fakePowerOnKey.setTiming(50, 10, 50);
     if(waitForFakePowerButton) {
-        fakePowerOnKey.setTiming(50, 10, 50);
         fakePowerOnKey.attachLongPressStart(fpbKeyPressed);
         fakePowerOnKey.attachLongPressStop(fpbKeyLongPressStop);
     }
@@ -1361,11 +1366,13 @@ void time_setup()
 
     // Preset this for BTTFN status requests during boot
     #ifdef FAKE_POWER_ON
-    if(waitForFakePowerButton) {
+    if(MQTTPwrMaster) {
+        FPBUnitIsOn = shadowMQTTFPBKeyPressed = !MQTTWaitForOn;
+    } else if(waitForFakePowerButton) {
         FPBUnitIsOn = false;
     }
     #endif
-
+    
     // Start bttf network
     bttfn_setup();
 
@@ -1674,7 +1681,7 @@ void time_setup()
         #endif
             if(speedoAlwaysOn) {
                 #ifdef FAKE_POWER_ON
-                if(!waitForFakePowerButton) {
+                if(FPBUnitIsOn) {
                 #endif
                     speedo.setSpeed(0);
                     speedo.on();
@@ -1710,7 +1717,7 @@ void time_setup()
             fakeSpeed = oldFSpd = rotEnc.updateFakeSpeed(true);
             #ifdef TC_HAVESPEEDO
             #ifdef FAKE_POWER_ON
-            if(!waitForFakePowerButton) {
+            if(FPBUnitIsOn) {
             #endif
                 if(dispRotEnc) {
                     dispGPSSpeed(true);
@@ -1755,7 +1762,7 @@ void time_setup()
         tempOffNM = (atoi(settings.tempOffNM) > 0);
         if(dispTemp) {
             #ifdef FAKE_POWER_ON
-            if(!waitForFakePowerButton) {
+            if(FPBUnitIsOn) {
             #endif
                 updateTemperature(true);
                 dispTemperature(true);
@@ -1782,6 +1789,10 @@ void time_setup()
     #else
     useLight = false;
     #endif
+
+    // Animate time cycling?
+    if(!(autoRotAnim = (atoi(settings.autoRotAnim) > 0)))
+        autoIntSec = 0;
 
     // Set up tt trigger for external props (wired & mqtt; not BTTFN)
     // When useETTO is true, the 5 sec lead is needed (wire or MQTT)
@@ -1894,7 +1905,7 @@ void time_setup()
     {
         bool bootNow = true;
         
-        if(waitForFakePowerButton || bttfnRemPwrMaster) {
+        if(!FPBUnitIsOn || bttfnRemPwrMaster) {
             fakePowerOnKey.scan();
             myIntroDelay(70);     // Bridge debounce/longpress time
             fakePowerOnKey.scan();
@@ -1944,7 +1955,10 @@ void time_loop()
     #endif
 
     #ifdef FAKE_POWER_ON
-    if(waitForFakePowerButton || bttfnRemPwrMaster) {
+    if(waitForFakePowerButton || MQTTPwrMaster || bttfnRemPwrMaster || restoreFakePwr) {
+
+        restoreFakePwr = false;
+        
         fakePowerOnKey.scan();
 
         if(isFPBKeyChange) {
@@ -2539,6 +2553,8 @@ void time_loop()
       
         if(y == 0) {
 
+            int8_t minNext;
+
             //DateTime gdtu, gdtl;  // now global
             int currentActualWeekDay;
 
@@ -2972,15 +2988,20 @@ void time_loop()
 
             // Handle Time Cycling
 
-            // Do this on previous minute:59
+            // If we animate, do this on previous minute:59
             // We use the displayed minute, not the local time's minute
             // unless we're in Exhibition Mode
             #ifdef HAVE_STALE_PRESENT
             if(stalePresent)
-                minNext = (gdtl.minute() == 59) ? 0 : gdtl.minute() + 1;
+                minNext = gdtl.minute();
             else
             #endif
-                minNext = (presentTime.getMinute() == 59) ? 0 : presentTime.getMinute() + 1;
+                minNext = presentTime.getMinute();
+
+            if(autoRotAnim) {
+                minNext++;
+                if(minNext > 59) minNext = 0;
+            }
 
             // Check if autoPause has run out
             if(autoPaused && (millis() - pauseNow >= pauseDelay)) {
@@ -2988,7 +3009,7 @@ void time_loop()
             }
 
             // Only do this on second 59, check if it's time to do so
-            if((gdtl.second() == 59)                                    &&
+            if((gdtl.second() == autoIntSec)                            &&
                (!autoPaused)                                            &&
                autoTimeIntervals[autoInterval]                          &&
                (minNext % autoTimeIntervals[autoInterval] == 0)         &&
@@ -3014,9 +3035,10 @@ void time_loop()
                         departedTime.setFromStruct(&departedTimes[autoTime]);
                     }
 
-                    allOff();
-
-                    autoIntAnimRunning = 1;
+                    if(autoRotAnim) {
+                        allOff();
+                        autoIntAnimRunning = 1;
+                    }
                 
                 } 
 
@@ -3968,13 +3990,66 @@ void endPauseAuto(void)
 /*
  * Callbacks for fake power switch
  */
+#if defined(TC_HAVEMQTT) && defined(FAKE_POWER_ON)
+void mqttFakePowerControl(bool isPwrMaster)
+{
+    if(MQTTPwrMaster != isPwrMaster) {
+        #ifdef TC_HAVE_REMOTE
+        if(!bttfnRemPwrMaster) {
+        #endif
+            if(!isPwrMaster) {
+                if(waitForFakePowerButton) {
+                    isFPBKeyPressed = shadowFPBKeyPressed;
+                    isFPBKeyChange = true;
+                } else {
+                    restoreFakePwr = true;
+                    isFPBKeyPressed = isFPBKeyChange = true;
+                }
+            } else {
+                isFPBKeyPressed = shadowMQTTFPBKeyPressed;
+                isFPBKeyChange = true;
+            }
+        #ifdef TC_HAVE_REMOTE
+        }
+        #endif
+        MQTTPwrMaster = isPwrMaster;
+    }
+}
+
+void mqttFakePowerOn()
+{
+    shadowMQTTFPBKeyPressed = true;
+    #ifdef TC_HAVE_REMOTE
+    if(bttfnRemPwrMaster) return;
+    #endif
+    if(!MQTTPwrMaster) return;
+    isFPBKeyPressed = true;
+    isFPBKeyChange = true;
+}
+
+void mqttFakePowerOff()
+{
+    shadowMQTTFPBKeyPressed = false;
+    #ifdef TC_HAVE_REMOTE
+    if(bttfnRemPwrMaster) return;
+    #endif
+    if(!MQTTPwrMaster) return;
+    isFPBKeyPressed = false;
+    isFPBKeyChange = true;
+}
+#endif // TC_HAVEMQTT && FAKE_POWER_ON
+
 #ifdef FAKE_POWER_ON
 void fpbKeyPressed()
 {
-    #ifdef TC_HAVE_REMOTE
+    #if defined(TC_HAVE_REMOTE) || defined(TC_HAVEMQTT)
     shadowFPBKeyPressed = true;
-    shadowFPBKeyChange = true;
+    #endif
+    #ifdef TC_HAVE_REMOTE
     if(bttfnRemPwrMaster) return;
+    #endif
+    #ifdef TC_HAVEMQTT
+    if(MQTTPwrMaster) return;
     #endif
     isFPBKeyPressed = true;
     isFPBKeyChange = true;
@@ -3982,10 +4057,14 @@ void fpbKeyPressed()
 
 void fpbKeyLongPressStop()
 {
-    #ifdef TC_HAVE_REMOTE
+    #if defined(TC_HAVE_REMOTE) || defined(TC_HAVEMQTT)
     shadowFPBKeyPressed = false;
-    shadowFPBKeyChange = true;
+    #endif
+    #ifdef TC_HAVE_REMOTE
     if(bttfnRemPwrMaster) return;
+    #endif
+    #ifdef TC_HAVEMQTT
+    if(MQTTPwrMaster) return;
     #endif
     isFPBKeyPressed = false;
     isFPBKeyChange = true;
@@ -6222,8 +6301,21 @@ static void bttfnMakeRemoteSpeedMaster(bool doit, bool isPwrMaster)
 
     if(bttfnRemPwrMaster != isPwrMaster) {
         if(!isPwrMaster) {
-            isFPBKeyChange = shadowFPBKeyChange;
-            isFPBKeyPressed = shadowFPBKeyPressed;
+            #ifdef TC_HAVEMQTT
+            if(MQTTPwrMaster) {
+                isFPBKeyPressed = shadowMQTTFPBKeyPressed;
+            } else {
+            #endif
+                if(waitForFakePowerButton) {
+                    isFPBKeyPressed = shadowFPBKeyPressed;
+                } else {
+                    restoreFakePwr = true;
+                    isFPBKeyPressed = true;
+                }
+            #ifdef TC_HAVEMQTT
+            }
+            #endif
+            isFPBKeyChange = true;
         }
         bttfnRemPwrMaster = isPwrMaster;
     }
@@ -6385,7 +6477,7 @@ static void bttfn_evalremotecommand(uint32_t seq, uint8_t cmd, uint8_t p1, uint8
     case BTTFN_REMCMD_COMBINED: // Update status and speed from remote
         // Skip outdated packets
         if(seq > bttfnLastSeq_co || seq == 1) {
-            bttfnMakeRemoteSpeedMaster(!!(p1 & 0x01), !!(p1 & 0x04));
+            bttfnMakeRemoteSpeedMaster(!!(p1 & 0x01), !!(p1 & 0x08));
             bttfnRemStop = !!(p1 & 0x02);
             if(p2 > 127) bttfnRemoteSpeed = 0;
             else bttfnRemoteSpeed = p2;  // p2 = speed (0-88)

@@ -141,6 +141,7 @@ struct Settings {
     char playIntro[4]       = MS(DEF_PLAY_INTRO);
     char beep[4]            = MS(DEF_BEEP);
     char autoRotateTimes[4] = MS(DEF_AUTOROTTIMES);
+    char autoRotAnim[4]     = "1";
     char skipTTAnim[4]      = MS(DEF_SKIP_TTANIM);
 #ifndef IS_ACAR_DISPLAY    
     char p3anim[4]          = MS(DEF_P3ANIM);
@@ -205,15 +206,21 @@ struct Settings {
     char mqttServer[80]     = "";  // ip or domain [:port]  
     char mqttUser[64]       = "";  // user[:pass] (UTF8) [limited to 63 bytes through WM]
     char mqttTopic[128]     = "";  // topic (UTF8)       [limited to 127 bytes through WM]
+#ifdef EXTERNAL_TIMETRAVEL_OUT
     char pubMQTT[4]         = "0"; // publish to broker (timetravel)
 #endif
+#ifdef FAKE_POWER_ON
+    char mqttPwr[4]         = "0"; // Do not start with MQTT having control over fake-power
+    char mqttPwrOn[4]       = "0"; // Do not wait for POWER_ON at startup
+#endif
+#endif // TC_HAVEMQTT
 #ifdef EXTERNAL_TIMETRAVEL_OUT
     char useETTO[4]         = MS(DEF_USE_ETTO);
     char noETTOLead[4]      = MS(DEF_NO_ETTO_LEAD);
 #endif
     char CfgOnSD[4]         = MS(DEF_CFG_ON_SD);
     char timesPers[4]       = MS(DEF_TIMES_PERS);
-    char sdFreq[4]          = MS(DEF_SD_FREQ);
+    //char sdFreq[4]          = MS(DEF_SD_FREQ);
     char revAmPm[4]         = MS(DEF_REVAMPM);    
 };
 
