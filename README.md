@@ -439,6 +439,10 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left">994&#9166; / 995&#9166;</td>
     </tr>
   <tr>
+     <td align="left">Release HA from Fake-Power control</td>
+     <td align="left">996&#9166;</td>
+  </tr>
+  <tr>
      <td align="left">Restore user destination/last time dep. times</td>
      <td align="left">998&#9166;</td>
   </tr>
@@ -860,6 +864,8 @@ In order to use the Fake Power Switch, check **_Use fake power switch_** in the 
 
 ![TFC Switch](img/tfcswitch.jpg)
 
+Fake-Power can also be controlled through [HA/MQTT](#home-assistant--mqtt) and a modified [Futaba remote control](#futaba-remote-control).
+
 ## External Time Travel Trigger
 
 As mentioned above, a time travel can be triggered by holding "0" on the keypad. Since this doesn't really allow for an authentic movie-like experience, the firmware also supports an external trigger, such as a button switch or even another prop to trigger a time travel. Note that, unlike the [Fake Power Switch](#fake-power-switch), this trigger must be a momentary toggle.
@@ -1052,10 +1058,21 @@ The TCD can - to a limited extent - be controlled through messages sent to topic
 - MP_PREV: Jump to previous song
 - MP_SHUFFLE_ON: Enables shuffle mode in Music Player
 - MP_SHUFFLE_OFF: Disables shuffle mode in Music Player
+- POWER_CONTROL_ON: Take over Fake-Power control; POWER_xx commands now control Fake-Power.
+- POWER_CONTROL_OFF: Release Fake-Power control
+- POWER_ON, POWER_OFF: Switch Fake-Power on or off, respectively.
+
+#### Fake-Power control through HA
+
+HA can control Fake-Power after issuing POWER_CONTROL_ON. Subsequent POWER_ON or POWER_OFF commands switch on/off Fake-Power.
+
+POWER_CONTROL_OFF relinquishes Fake-Power control; afterwards, if a Fake-Power switch is connected, its state becomes effective. If no switch is connected, Fake-Power will be switched on.
+
+The power-up state of POWER_CONTROL and POWER can be configured in the [Config Portal](#-ha-controls-fake-power-at-startup).
 
 ### Notify other devices of a time travel or alarm
 
-If both the TCD and the other props are connected to the same broker, and the option **_Send event notifications_** is checked on the TCD's side, other compatible props will receive information on time travel and alarm and play their sequences in sync with the TCD. The topic is called  **bttf/tcd/pub**.
+If both the TCD and the other props are connected to the same broker, and the option **_Send time travel/alarm event notifications_** is checked on the TCD's side, other compatible props will receive information on time travel and alarm and play their sequences in sync with the TCD. The topic is called  **bttf/tcd/pub**.
 
 The timing is identical to the wired protocol; TIMETRAVEL is sent to **bttf/tcd/pub** with a lead time of 5 seconds. REENTRY is sent when the re-entry sequence starts.
 
@@ -1063,9 +1080,9 @@ When the [alarm](#how-to-set-up-the-alarm) sounds, the TCD sends "ALARM" to **bt
 
 #### MQTT vs BTTFN
 
-MQTT and BTTFN can co-exist. The TCD only sends out time travel and alarm notifications through _either_ MQTT _or_ BTTFN, never both; selection is done by checking or unchecking the option **_Send event notifications_** in the MQTT section of the Config Portal's Setup page.
+MQTT and BTTFN can co-exist. The TCD only sends out time travel and alarm notifications through _either_ MQTT _or_ BTTFN, never both; selection is done by checking or unchecking the option **_Send time travel/alarm event notifications_** in the MQTT section of the Config Portal's Setup page.
 
-If you have other MQTT-aware devices listening to the TCD's public topic (bttf/tcd/pub) in order to react to time travel or alarm messages, use MQTT (i.e. check **_Send event notifications_**). If only BTTFN-aware devices are to be used, uncheck this option to use BTTFN as it has less latency.
+If you have other MQTT-aware devices listening to the TCD's public topic (bttf/tcd/pub) in order to react to time travel or alarm messages, use MQTT (i.e. check **_Send time travel/alarm event notifications_**). If only BTTFN-aware devices are to be used, uncheck this option to use BTTFN as it has less latency.
 
 ### Setup
 
@@ -1079,13 +1096,13 @@ If your broker does not allow anonymous logins, a username and password can be s
 
 In order to display messages on the TCD as described above, you need to specify the topic in the respective field.
 
-If you want your TCD to publish messages to bttf/tcd/pub (ie if you want to notify other devices about a timetravel and/or alarm), check the **_Send event notifications_** option.
+If you want your TCD to publish messages to bttf/tcd/pub (ie if you want to notify other devices about a timetravel and/or alarm), check the **_Send time travel/alarm event notifications_** option.
 
 Limitations: MQTT Protocol version 3.1.1; TLS/SSL not supported; ".local" domains (MDNS) not supported; maximum message length 255 characters; server/broker must respond to PING (ICMP) echo requests. For proper operation with low latency, it is recommended that the broker is on your local network. Note that using HA/MQTT will disable [WiFi power saving](#wifi-power-saving-features). MQTT is disabled when the TCD is operated in AP-mode or car mode.
 
 ## Futaba Remote Control
 
-CircuitSetup's [kit for modifying a Futaba remote control](https://circuitsetup.us/product/futaba-remote-stanley-display-wireless-control-kit/) allows, among many features, to control the TCD's speedo. The Remote can increase/decrease speed, trigger a time travel, and more. 
+CircuitSetup's [kit for modifying a Futaba remote control](https://circuitsetup.us/product/futaba-remote-stanley-display-wireless-control-kit/) allows, among many features, to control the TCD's speedo. The Remote can increase/decrease speed, trigger a time travel, switch fake power, and more. 
 
 In order to permit remote controlling, enter 993 followed by ENTER. No further configuration is required on the TCD's side.
 
@@ -1224,7 +1241,13 @@ Selects the ["beep"](#beep-on-the-second) mode. "Auto: xx secs" enables the beep
 
 In this decorative mode the device cycles through a list of pre-programmed, movie-accurate *destination* and *last time departed* times. This mode is enabled by setting the "Time-cycling Interval" to anything but "off". The device will cycle through named list every 5th, 10th, 15th, 30th or 60th minute, and thereby change the displays. Set the interval to "off" to disable. See [here](#time-cycling)
 
-##### &#9193; Skip display disruption animation
+##### &#9193; Animate time-cycling
+
+If this option is checked, cycling times will be animated imitating entering a new destination time. 
+
+If this option is unchecked, times are simply switched without further ado.
+
+##### &#9193; Skip time travel display disruption
 
 If this is checked, the TCD will not show the display disruption animation during a time travel.
 
@@ -1428,11 +1451,25 @@ The username (and optionally the password) to be used when connecting to the bro
 
 An optional topic the TCD subscribes to in order to display messages on the *Destination Time* display.
 
-##### &#9193; Send event notifications
+##### &#9193; Send time-travel/alarm event notifications
 
 Check this if you want the TCD to send notifications on time travel and alarm via [MQTT](#home-assistant--mqtt).
 
 Note that if this option is checked, the TCD will not send out such notifications via [BTTF-Network](#connecting-props-wirelessly-bttf-network-bttfn).
+
+##### &#9193; HA controls Fake-Power at startup
+
+This option selects whether HA should be in control of Fake-Power at startup, or not. If this is checked, the TCD assumes HA has control of Fake-Power, overruling a ("TFC") Fake-Power switch. If this is unchecked, Fake-Power control remains with the switch (if connected), and HA can take over only after sending "POWER_CONTROL_ON".
+
+##### &#9193; Wait for POWER_ON at startup
+
+If HA is configured to have Fake-Power control at startup (as per the option *__HA controls Fake-Power at startup__*), this option decides the state of Fake-Power at startup:
+
+If this option is checked, the TCD waits for a POWER_ON command from HA/MQTT.
+
+If this option is unchecked, the TCD starts up without waiting.
+
+Note: If both this and the option *__HA controls Fake-Power at startup__*) are checked, the TCD will switch Fake-Power on if a connection to the broker can't be established within 45 seconds after booting. Keypad command 996 can be then used to switch off HA Fake-Power control.
 
 #### <ins>Settings for wired peripherals</ins>
 
@@ -1467,7 +1504,7 @@ If you want copy settings from one SD card to another, do as follows:
 
 This procedure ensures that all your settings are copied from the old to the new SD card.
 
-##### &#9193; Make time travels persistent
+##### &#9193; Make time travel persistent
 
 See [here](#persistent--non-persistent-time-travels). For this option to take effect, it is required that the _Save secondary settings on SD_ is checked as well, and an SD card is present. Time travel data is only ever stored on SD, never in internal flash memory.
 
