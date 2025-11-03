@@ -68,7 +68,7 @@ The firmware comes with a sound-pack which needs to be installed separately. The
 
 >If your TCD previously ran a firmware from CircuitSetup (ie. pre-installed or downloaded from their github), installing of the sound-pack **from this repository** is required. You cannot use CircuitSetup's sound-pack with the firmware available here, or vice versa.
 
-The first step is to download "install/sound-pack-xxxxxxxx.zip" and extract it. It contains one file named "TCDA.bin".
+The first step is to download "install/sound-pack-TWxx.zip" and extract it. It contains one file named "TCDA.bin".
 
 Then there are two alternative ways to proceed. Note that both methods *require an SD card*.
 
@@ -189,7 +189,7 @@ The TCD sometimes writes data to either the internal flash file system or the SD
 In general, it is safe to power-down the TCD when it is idle or after it has been fake-powered-down. Try to avoid powering down the TCD
 - when it is clearly busy (such as when copying or renaming audio files);
 - within 15 seconds after an audio volume change through a Rotary Encoder.
-- if [**_Make time travels persistent_**](#persistent--non-persistent-time-travels) is checked: in the first few seconds after a timetravel.
+- if [**_Make time travel persistent_**](#persistent--non-persistent-time-travels) is checked: in the first few seconds after a timetravel.
 
 ### Calendar system
 
@@ -207,7 +207,7 @@ Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed afte
 
 "Time cycling" is a kind of decorative mode in which the device cycles through a list of pre-programmed *destination* and *last time departed* times. These pre-programmed times match the dates/times of all time-travels that take place in the three movies.
 
-Time-cycling is enabled by setting up a **_Time-cycling Interval_** in the Config Portal or the [keypad menu](#how-to-select-the-time-cycling-interval). The device will then cycle through named list every 5th, 10th, 15th, 30th or 60th minute. 
+Time-cycling is enabled by setting up a **_Time-cycling Interval_** in the Config Portal or the [keypad menu](#how-to-select-the-time-cycling-interval). The device will then cycle through named list every 5th, 10th, 15th, 30th or 60th minute. The option **_Animate time-cycling**_ decides whether the times simply switch, or the cycling event looks like someone entered a new destination date.
 
 Time-cycling will, if enabled, change the *Destination* and *Last Time Departed* displays regardless of the times already displayed, for instance as a result from an earlier time travel. Triggering a time-travel will, however, pause time-cycling for 30 minutes.
 
@@ -439,7 +439,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left">994&#9166; / 995&#9166;</td>
     </tr>
   <tr>
-     <td align="left">Release HA from Fake-Power control</td>
+     <td align="left">Release HA from <a href="#fake-power-control-through-ha">Fake-Power control</a></td>
      <td align="left">996&#9166;</td>
   </tr>
   <tr>
@@ -1068,7 +1068,9 @@ HA can control Fake-Power after issuing POWER_CONTROL_ON. Subsequent POWER_ON or
 
 POWER_CONTROL_OFF relinquishes Fake-Power control; afterwards, if a Fake-Power switch is connected, its state becomes effective. If no switch is connected, Fake-Power will be switched on.
 
-The power-up state of POWER_CONTROL and POWER can be configured in the [Config Portal](#-ha-controls-fake-power-at-startup).
+The initial power-up state of POWER_CONTROL and POWER can be configured in the [Config Portal](#-ha-controls-fake-power-at-startup).
+
+Keypad command 996 works like POWER_CONTROL_OFF; it allows to separate HA from Fake-Power control. This is useful when, for instance, the broker isn't reachable.
 
 ### Notify other devices of a time travel or alarm
 
