@@ -502,7 +502,7 @@ To travel back to actual present time, hold "9" for 2 seconds.
 
 ### Persistent / Non-persistent time travels
 
-On the Config Portal's "Settings" page, there is an option item named **_Make time travels persistent_**. The default is off. 
+On the Config Portal's "Settings" page, there is an option item named **_Make time travel persistent_**. The default is off. 
 
 >Note that in order to enable this feature, an SD card is required and the option **_Save secondary settings on SD_** must be checked as well.
 
@@ -1166,7 +1166,7 @@ In order to connect your TCD to your WiFi network, all you need to do is either 
 
 ##### &#9193; Forget Saved WiFi Network
 
-Checking this box (and clicking SAVE) deletes the currently saved WiFi network (SSID and password and reboots the device; it will restart in "access point" (AP) mode. See [here](#connecting-to-a-wifi-network).
+Checking this box (and clicking SAVE) deletes the currently saved WiFi network (SSID and password) and reboots the device; it will restart in "access point" (AP) mode. See [here](#connecting-to-a-wifi-network).
 
 ##### &#9193; Hostname
 
@@ -1178,7 +1178,7 @@ _This setting applies to both AP-mode and when your TCD is connected to a WiFi n
 
 ##### &#9193; WiFi connection attempts
 
-Number of times the firmware tries to reconnect to a WiFi network, before falling back to AP-mode. See [here](#connecting-to-a-wifi-network)
+Number of times the firmware tries to connect to a WiFi network, before falling back to AP-mode. See [here](#connecting-to-a-wifi-network)
 
 ##### &#9193; WiFi connection timeout
 
@@ -1369,7 +1369,7 @@ If this option is checked, real-life figures are used. If unchecked, movie-like 
 
 If you are using your TCD together with a Futaba Remote Control prop, leave this unchecked.
 
-"Movie-like" was created by measuring the times between each mph on the Remote Control shown in the very first time travel scene in part 1. For steps not shown, interpolation (based on the real-life acceleration curve) was used. The duration of the entire scene was not taken into account as it would result in a 0-88 time of either 11 seconds (counting from releasing the brake) or 36 seconds (counting from pushing up the throttle stick on the remote), which both do not match the mph-increment-timings at all.
+"Movie-like" was created by measuring the times between each mph on the Remote Control shown in the very first time travel scene in part 1. For steps not shown, interpolation (based on the real-life acceleration curve) was used. The duration of the entire scene was not taken into account as it would result in a 0-88mph time of either 11 seconds (counting from releasing the brake) or 36 seconds (counting from pushing up the throttle stick on the remote), which both do not match the mph-increment-timings at all.
 
 ##### &#9193; Factor for Real-life figures
 
