@@ -68,7 +68,7 @@ The firmware comes with a sound-pack which needs to be installed separately. The
 
 >If your TCD previously ran a firmware from CircuitSetup (ie. pre-installed or downloaded from their github), installing of the sound-pack **from this repository** is required. You cannot use CircuitSetup's sound-pack with the firmware available here, or vice versa.
 
-The first step is to download "install/sound-pack-TWxx.zip" and extract it. It contains one file named "TCDA.bin".
+The first step is to download "install/sound-pack-twXX.zip" and extract it. It contains one file named "TCDA.bin".
 
 Then there are two alternative ways to proceed. Note that both methods *require an SD card*.
 
@@ -207,7 +207,7 @@ Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed afte
 
 "Time cycling" is a kind of decorative mode in which the device cycles through a list of pre-programmed *destination* and *last time departed* times. These pre-programmed times match the dates/times of all time-travels that take place in the three movies.
 
-Time-cycling is enabled by setting up a **_Time-cycling Interval_** in the Config Portal or the [keypad menu](#how-to-select-the-time-cycling-interval). The device will then cycle through named list every 5th, 10th, 15th, 30th or 60th minute. The option **_Animate time-cycling**_ decides whether the times simply switch, or the cycling event looks like someone entered a new destination date.
+Time-cycling is enabled by setting up a **_Time-cycling Interval_** in the Config Portal or the [keypad menu](#how-to-select-the-time-cycling-interval). The device will then cycle through named list every 5th, 10th, 15th, 30th or 60th minute. The option **_Animate time-cycling_** decides whether the times simply switch, or the cycling event looks like someone entered a new destination date.
 
 Time-cycling will, if enabled, change the *Destination* and *Last Time Departed* displays regardless of the times already displayed, for instance as a result from an earlier time travel. Triggering a time-travel will, however, pause time-cycling for 30 minutes.
 
@@ -248,7 +248,7 @@ To enable this mode, type 999 followed by ENTER. The default fixed time will be 
 
 Exhibition mode is persistent; the pre-programmed time will be stored and retrieved after a reboot/power-down.
 
-Not strictly part of Exhibition mode, but related: If you want your TCD to display specific times in the *Destination Time* and/or *Last Time Departed* displays, you can program those times through the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays). Those times will be displayed, but replaced as soon as a time travel takes place. To quickly restore the displays to your pre-programmed times, enter 998 followed by ENTER. Note that this only works if **_Make time travels persistent_** is unchecked in the Config Portal.
+Not strictly part of Exhibition mode, but related: If you want your TCD to display specific times in the *Destination Time* and/or *Last Time Departed* displays, you can program those times through the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays). Those times will be displayed, but replaced as soon as a time travel takes place. To quickly restore the displays to your pre-programmed times, enter 998 followed by ENTER. Note that this only works if **_Make time travel persistent_** is unchecked in the Config Portal.
 
 ### Audio Output
 
@@ -272,7 +272,7 @@ Entering 350 plus ENTER disables line-out output. This setting is persistent ove
 
 In this case, head to the Config Portal and
 - set the **_Time Cycling Interval_** to OFF
-- check or uncheck **_Make time travels persistent_** depending on whether you care about keeping the displayed times across reboots/power cycles.
+- check or uncheck **_Make time travel persistent_** depending on whether you care about keeping the displayed times across reboots/power cycles.
 
 >Note that *actual* time travel is not supported.
 
@@ -280,7 +280,7 @@ In this case, head to the Config Portal and
 
 In this case, head to the Config Portal and
 - set the **_Time Cycling Interval_** to the desired interval
-- uncheck **_Make time travels persistent_**
+- uncheck **_Make time travel persistent_**
 
 Time-travelling will interrupt the cycling of movie times for 30 minutes.
 
@@ -288,11 +288,11 @@ Time-travelling will interrupt the cycling of movie times for 30 minutes.
 
 In this case, head to the Config Portal and
 - set the **_Time Cycling Interval_** to OFF
-- uncheck **_Make time travels persistent_**
+- uncheck **_Make time travel persistent_**
 
 Then enter the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays) and set your favorite *Destination* and *Last time departed* times.
 
-Note that time-travelling will naturally lead to the displays showing other times. After a reboot, your times will be displayed again. To bring them back without rebooting, type 998 followed by ENTER.
+Note that time-travelling will naturally lead to the displays showing other times. To bring them back without rebooting, type 998 followed by ENTER.
 
 ### Keypad reference
 
