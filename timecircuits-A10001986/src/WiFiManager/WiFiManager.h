@@ -64,11 +64,15 @@
 #define WIFI_MANAGER_MAX_PARAMS 5
 #endif
 
+// Flags:
 // Label placement for parameters
 #define WFM_NO_LABEL      0
 #define WFM_LABEL_BEFORE  1
 #define WFM_LABEL_AFTER   2
 #define WFM_LABEL_DEFAULT WFM_LABEL_BEFORE
+#define WFM_LABEL_MASK    0x03
+// Parm is a checkbox
+#define WFM_IS_CHKBOX     8
 
 // HTML id:s of "static IP" parameters on "WiFi Configuration" page
 #define WMS_ip    "ip"
@@ -106,22 +110,22 @@ class WiFiManagerParameter {
     */
     WiFiManagerParameter(const char *custom);
     WiFiManagerParameter(const char *(*CustomHTMLGenerator)(const char *));
-    WiFiManagerParameter(const char *id, const char *label);
+    //WiFiManagerParameter(const char *id, const char *label);
     WiFiManagerParameter(const char *id, const char *label, const char *defaultValue, int length);
     WiFiManagerParameter(const char *id, const char *label, const char *defaultValue, int length, const char *custom);
-    WiFiManagerParameter(const char *id, const char *label, const char *defaultValue, int length, const char *custom, int labelPlacement);
+    WiFiManagerParameter(const char *id, const char *label, const char *defaultValue, int length, const char *custom, uint8_t flags);
     ~WiFiManagerParameter();
 
     const char *getID() const;
     const char *getValue() const;
     const char *getLabel() const;
     int         getValueLength() const;
-    int         getLabelPlacement() const;
+    uint8_t     getFlags() const;
     virtual const char *getCustomHTML() const;
     void        setValue(const char *defaultValue, int length);
 
   protected:
-    void init(const char *id, const char *label, const char *defaultValue, int length, const char *custom, int labelPlacement);
+    void init(const char *id, const char *label, const char *defaultValue, int length, const char *custom, uint8_t flags);
 
   private:
     WiFiManagerParameter& operator=(const WiFiManagerParameter&);
@@ -132,7 +136,7 @@ class WiFiManagerParameter {
         const char *(*_customHTMLGenerator)(const char *);
     };
     int         _length;
-    int         _labelPlacement;
+    uint8_t     _flags;
   protected:
     const char *_customHTML;
     friend class WiFiManager;
