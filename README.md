@@ -1082,9 +1082,9 @@ When the [alarm](#how-to-set-up-the-alarm) sounds, the TCD sends "ALARM" to **bt
 
 #### MQTT vs BTTFN
 
-MQTT and BTTFN can co-exist. The TCD only sends out time travel and alarm notifications through _either_ MQTT _or_ BTTFN, never both; selection is done by checking or unchecking the option **_Send time travel/alarm event notifications_** in the MQTT section of the Config Portal's Setup page.
+MQTT and BTTFN can co-exist. The TCD only sends out time travel and alarm notifications through _either_ MQTT _or_ BTTFN, never both; selection is done by checking or unchecking the option **_Send time travel/alarm event notifications_** in the MQTT section of the Config Portal's Settings page.
 
-If you have other MQTT-aware devices listening to the TCD's public topic (bttf/tcd/pub) in order to react to time travel or alarm messages, use MQTT (i.e. check **_Send time travel/alarm event notifications_**). If only BTTFN-aware devices are to be used, uncheck this option to use BTTFN as it has less latency.
+If you have other (third-party) MQTT-aware devices listening to the TCD's public topic (bttf/tcd/pub) in order to react to time travel or alarm messages, use MQTT (i.e. check **_Send time travel/alarm event notifications_**). If only BTTFN-aware devices are to be used, uncheck this option to use BTTFN as it has less latency.
 
 ### Setup
 
@@ -1379,7 +1379,7 @@ This setting has no effect if the **_Real-life acceleration figures_** option is
 
 ##### &#9193; Speedo display like in part 3
 
-If this is unchecked, speed is display like in parts 1 and 2: Single digit speeds below 10, and a dot. This is the default.
+If this is unchecked, speed is displayed like in parts 1 and 2: Single digit speeds below 10, and a dot. This is the default.
 
 In part 3 of the series, the speedo displays two digits (even for speeds below 10), but no dot. Check this option to use this style. 
 
