@@ -426,9 +426,13 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left"><a href="#the-music-player">Music Player</a>: Go to song xxx</td>
      <td align="left">888xxx&#9166;</td>
     </tr>
-  <tr>
+    <tr>
      <td align="left">Play "<a href="#additional-custom-sounds">keyX.mp3</a>" (X=1-9)</td>
      <td align="left">501&#9166; - 509&#9166;</td>
+    </tr>
+    <tr>
+     <td align="left">Set <a href="#connecting-props-by-wire">TT OUT</a>" LOW / HIGH</td>
+     <td align="left">900&#9166; / 901&#9166;</td>
     </tr>
    <tr>
      <td align="left">Disable / enable <a href="#car-mode">car mode</a><(*)/td>
@@ -1022,30 +1026,32 @@ To disable *Car Mode*, type 990 followed by ENTER. The TCD will reboot and attem
 
 ### Connecting props by wire
 
-The TCD has a [TT-OUT pin](#connecting-props-by-wire) (marked "TT OUT (IO14)" or "IO14") which can be used to
+The TCD has a TT-OUT pin (marked "TT OUT (IO14)" or "IO14") which can be used to
 - signal a time travel,
 - signal alarm,
 - or manually switching on/off connected props.
 
 #### Signal a Time Travel
 
-If the option **_signals Time Travel__** is checked in the Config Portal, the TCD sets this pin to HIGH either 5 seconds ahead of entering the "time tunnel", or - if the option **_Signal without 5s lead_** is unchecked - immediately on entering the "time tunnel". This allows third-party props to take part in time travel sequences. For more information, see [here](AddOns.md#other-props).
+If the option [TT-OUT (IO14) pin] **_signals Time Travel_** is checked in the Config Portal, the TCD sets this pin to HIGH either 5 seconds ahead of entering the "time tunnel", or - if the option **_Signal without 5s lead_** is unchecked - immediately on entering the "time tunnel". This allows third-party props to take part in time travel sequences. For more information, see [here](AddOns.md#other-props).
 
 CircuitSetup/A10001986 original props also support a wired connection, if for whatever reason BTTFN is not an option. For detailed wiring instructions, please see the documentation for the prop ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [Dash Gauges](https://github.com/realA10001986/Dash-Gauges/blob/main/hardware/README.md#connecting-a-tcd-to-the-dash-gauges-by-wire), [VSR](https://github.com/realA10001986/VSR#connecting-a-tcd-by-wire)); 
 
-In case CircuitSetup/A10001986 original props are connected by wire, the option **_Signal without 5s lead_** should _not_ be set since it skips the "acceleration phase"; however, if that option is set on the TCD (for instance, if third-party props are connected by wire as well), the respective option must be set through the prop's Config Portal, too. This option has no effect for wirelessly connected props.
+In case CircuitSetup/A10001986 original props are connected by wire, the option **_Signal without 5s lead_** should _not_ be set since it skips the "acceleration phase"; however, if that option is set on the TCD (for instance, if third-party props are connected by wire as well), the corresponding option must be set in the prop's Config Portal, too. This option has no effect for wirelessly connected props.
 
 #### Signal Alarm
 
-If the option "signals alarm" is checked in the Config Portal, the TCD sets this pin to HIGH upon an [alarm](#how-to-set-up-the-alarm); the duration for HIGH can be between 3 and 99 seconds.
+If the option [TT-OUT (IO14) pin] **_signals alarm_** is checked in the Config Portal, the TCD sets this pin to HIGH upon an [alarm](#how-to-set-up-the-alarm); the duration for HIGH can be between 3 and 99 seconds.
 
 #### Switching TT-OUT manually
 
-Commands 900 (off) and 901 (on) allow switching this pin manually. The power-up state of the TT OUT pin can be set to HIGH by checking the **_Power-up stahe HIGH_** option.
+If the option [TT-OUT (IO14) pin] **_is controlled by commands 990/991_** is checked in the Config Portal, commands 900 (off) and 901 (on) allow switching this pin manually. The power-up state of the TT OUT pin can be set to HIGH by checking the **_Power-up state HIGH_** option.
 
 #### Limitations
 
 Although the options can be set freely and are not mutually exclusive, be advised that CircuitSetup/A10001986 original props connected by wire always interpret the TT-OUT signal as a trigger for a time travel sequence. It can make sense to set more than one option if your connect, for instance, flux bands or lights.
+
+Hardware considerations: CS/A10001986 props can be connected directly. TT OUT cannot be used to supply power for third party props; please us a relay.
 
 ## Home Assistant / MQTT
 
@@ -1059,7 +1065,7 @@ Only ASCII messages are supported, the maximum length is 255 characters.
 
 ### Control the TCD via MQTT
 
-The TCD can - to a limited extent - be controlled through messages sent to topic **bttf/tcd/cmd**. Supported commands are
+The TCD can be controlled through messages sent to topic **bttf/tcd/cmd**. Supported commands are
 - TIMETRAVEL: Start a time travel
 - RETURN: Return from time travel
 - BEEP_ON: Enables the [beep](#beep-on-the-second)
@@ -1094,7 +1100,9 @@ To set the alarm to 9:00am (110900), issue **INJECT_110900**
 
 #### Fake-Power control through HA
 
-HA can control Fake-Power after issuing POWER_CONTROL_ON. Subsequent POWER_ON or POWER_OFF commands switch on/off Fake-Power.
+HA can control Fake-Power, overruling a Fake-Power switch.
+
+In order to let HA/MQTT control fake power, first publish POWER_CONTROL_ON to **bttf/tcd/cmd**. Subsequent POWER_ON or POWER_OFF commands switch Fake-Power on or off, respectively.
 
 POWER_CONTROL_OFF relinquishes Fake-Power control; afterwards, if a Fake-Power switch is connected, its state becomes effective. If no switch is connected, Fake-Power will be switched on.
 
@@ -1561,13 +1569,13 @@ This option selects whether HA should be in control of Fake-Power at startup, or
 
 ##### &#9193; Wait for POWER_ON at startup
 
-If HA is configured to have Fake-Power control at startup (as per the option *__HA controls Fake-Power at startup__*), this option decides the state of Fake-Power at startup:
+If HA is configured to have Fake-Power control at startup (as per the option *__HA controls Fake-Power at startup__*, this option decides the state of Fake-Power at startup:
 
 If this option is checked, the TCD waits for a POWER_ON command from HA/MQTT.
 
 If this option is unchecked, the TCD starts up without waiting.
 
-Note: If both this and the option *__HA controls Fake-Power at startup__*) are checked, the TCD will switch Fake-Power on if a connection to the broker can't be established within 45 seconds after booting. Keypad command 996 can be then used to switch off HA Fake-Power control.
+Note: If both this and the option *__HA controls Fake-Power at startup__* are checked, the TCD will switch Fake-Power on if a connection to the broker can't be established within 45 seconds after booting. Keypad command 996 can be then used to switch off HA Fake-Power control.
 
 ## Appendix B: Time zones
 
