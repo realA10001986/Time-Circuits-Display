@@ -431,11 +431,11 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left">501&#9166; - 509&#9166;</td>
     </tr>
     <tr>
-     <td align="left">Set <a href="#connecting-props-by-wire">TT OUT</a>" LOW / HIGH</td>
+     <td align="left">Set <a href="#connecting-props-by-wire">TT OUT</a> LOW / HIGH</td>
      <td align="left">900&#9166; / 901&#9166;</td>
     </tr>
    <tr>
-     <td align="left">Disable / enable <a href="#car-mode">car mode</a><(*)/td>
+     <td align="left">Disable / enable <a href="#car-mode">car mode</a>(*)</td>
      <td align="left">990&#9166; / 991&#9166;</td>
     </tr>
   <tr>
