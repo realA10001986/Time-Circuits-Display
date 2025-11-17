@@ -208,11 +208,14 @@ For Rotary Encoders, see [here](#hardware-configuration).
 
 ### Connecting props by wire
 
-The TCD can tell other props about a time travel. It does so by setting a pin (IO14, labeled "TT OUT" on Control Boards 1.3 and later) to high or low. "High" is between 2.7V and 3.3V.
+The TCD has a TT-OUT pin (marked "TT OUT (IO14)" or "IO14") which can be used to
+- signal a time travel,
+- signal alarm,
+- or manually switching on/off connected props.
 
-![Wired connection](DIY/img/family-wired.png)
+Signalling is done by setting this pin HIGH (2.7-3.3V). Please do not connect third-party props without a relay; the TT OUT pin is not suitable for power supply. For connecting CircuitSetup/A10001986 props, see the prop's documentation ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [Dash Gauges](https://github.com/realA10001986/Dash-Gauges/blob/main/hardware/README.md#connecting-a-tcd-to-the-dash-gauges-by-wire), [VSR](https://github.com/realA10001986/VSR#connecting-a-tcd-by-wire)).
 
-You need two wires for connecting the TCD: TT_OUT (IO14) and GND, which need to be connected to the respective pins of the prop.
+You need two wires for connecting the TCD: TT-OUT and GND, which need to be connected to the prop.
 
 | ![ttout](DIY/img/ttout.jpg) |
 |:--:|
@@ -222,9 +225,11 @@ You need two wires for connecting the TCD: TT_OUT (IO14) and GND, which need to 
 |:--:|
 | IO14 on board version 1.2 |
 
-Here's the timing diagram:
+#### Timing
 
-1) Option **_Signal Time Travel without 5s lead_** unchecked
+Here's the timing diagram for a time travel signal:
+
+1) Option **_Signal without 5s lead_** unchecked
 
 ```
 |<---------- speedo acceleration --------->|                         |<-speedo de-acceleration->|
@@ -240,9 +245,9 @@ Here's the timing diagram:
     TT-OUT/IO14: LOW->HIGH                                  TT-OUT/IO14: HIGH->LOW
  ```
 
-"ETTO lead", ie the lead time between TT_OUT/IO14 going high and the actual start of a time travel is defined as 5000ms (ETTO_LEAD_TIME). In this window of time, the prop can play its pre-time-travel (warm-up/acceleration/etc) sequence. The sequence inside the time "tunnel" follows after that lead time, and when IO14 goes LOW, the re-entry into the destination time takes place.
+"ETTO lead", ie the lead time between TT-OUT going HIGH and the actual start of a time travel is defined as 5000ms (ETTO_LEAD_TIME). In this window of time, the prop can play its pre-time-travel (warm-up/acceleration/etc) sequence. The sequence inside the time "tunnel" follows after that lead time, and when TT-OUT goes LOW, the re-entry into the destination time takes place.
 
-2) Option **_Signal Time Travel without 5s lead_** checked
+2) Option **_Signal without 5s lead_** checked
 
 ```
 |<---------- speedo acceleration --------->|                         |<-speedo de-acceleration->|
