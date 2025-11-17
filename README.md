@@ -300,7 +300,7 @@ In the following, "pressing" means briefly pressing a key, "holding" means keepi
 
 mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits); hh = hour (00-23, 2 digits); MM = minute (00-59, 2 digits)
 
-<table>
+<table id="commandref">
     <tr>
      <td align="center" colspan="2">Keypad reference: Destination time programming<br>(&#9166; = ENTER key)</td>
     </tr>
@@ -426,20 +426,24 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left"><a href="#the-music-player">Music Player</a>: Go to song xxx</td>
      <td align="left">888xxx&#9166;</td>
     </tr>
+  <tr>
+     <td align="left">Play "<a href="#additional-custom-sounds">keyX.mp3</a>" (X=1-9)</td>
+     <td align="left">501&#9166; - 509&#9166;</td>
+    </tr>
    <tr>
-     <td align="left">Disable / enable <a href="#car-mode">car mode</a></td>
+     <td align="left">Disable / enable <a href="#car-mode">car mode</a><(*)/td>
      <td align="left">990&#9166; / 991&#9166;</td>
     </tr>
   <tr>
-     <td align="left">Forbid / allow TCD to be <a href="#futaba-remote-control">remote controlled</a></td>
+     <td align="left">Forbid / allow TCD to be <a href="#futaba-remote-control">remote controlled</a>(*)</td>
      <td align="left">992&#9166; / 993&#9166;</td>
     </tr>
    <tr>
-     <td align="left">Forbid / allow TCD keypad to be <a href="#remote-controlling-the-tcds-keypad">remote controlled</a></td>
+     <td align="left">Forbid / allow TCD keypad to be <a href="#remote-controlling-the-tcds-keypad">remote controlled</a>(*)</td>
      <td align="left">994&#9166; / 995&#9166;</td>
     </tr>
   <tr>
-     <td align="left">Release HA from <a href="#fake-power-control-through-ha">Fake-Power control</a></td>
+     <td align="left">Release HA from <a href="#fake-power-control-through-ha">Fake-Power control</a>(*)</td>
      <td align="left">996&#9166;</td>
   </tr>
   <tr>
@@ -455,10 +459,12 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left">99mmddyyyyhhMM&#9166;</td>
     </tr>
     <tr>
-     <td align="left">Reboot the device</td>
+     <td align="left">Reboot the device(*)</td>
      <td align="left">64738&#9166;</td>
     </tr>
 </table>
+
+(*) Not supported through HA/MQTT [_INJECT_](#the-inject_x-command) command
 
 <table>
     <tr>
@@ -661,7 +667,7 @@ In order to be recognized, your mp3 files need to be organized in music folders 
 
 The names of the audio files must only consist of three-digit numbers, starting at 000.mp3, in consecutive order. No numbers should be left out. Each folder can hold 1000 files (000.mp3-999.mp3). *The maximum bitrate is 128kpbs.*
 
-Since renaming mp3 files manually is somewhat cumbersome, the firmware can do this for you - provided you can live with the files being sorted in alphabetical order: Just copy your files with their original filenames to the music folder; upon boot or upon selecting a folder containing such files, they will be renamed following the 3-digit name scheme (as mentioned: in alphabetic order). You can also add files to a music folder later, they will be renamed properly; when you do so, delete the file "TCD_DONE.TXT" from the music folder on the SD card so that the firmware knows that something has changed. The renaming process can take a while (10 minutes for 1000 files in bad cases). Mac users are advised to delete the ._ files from the SD before putting it back into the TCD as this speeds up the process.
+Since renaming mp3 files manually is somewhat cumbersome, the firmware can do this for you - provided you can live with the files being sorted in alphabetical order: Just copy your files with their original filenames to the music folder; upon boot or upon selecting a folder containing such files, they will be renamed following the 3-digit name scheme (as mentioned: in alphabetic order). You can also add files to a music folder later, they will be renamed properly; when you do so, delete the file "TCD_DONE.TXT" from the music folder on the SD card so that the firmware knows that something has changed. The renaming process can take a while (10 minutes for 1000 files in bad cases). Mac users are advised to delete the ._ files from the SD before putting it back into the TCD as this speeds up the process. _While the renaming is in progress, the TCD's display shows the number of files yet to be processed._
 
 To start and stop music playback, hold 5. Holding 2 jumps to the previous song, holding 8 to the next one.
 
@@ -1016,19 +1022,30 @@ To disable *Car Mode*, type 990 followed by ENTER. The TCD will reboot and attem
 
 ### Connecting props by wire
 
-The TCD can also tell other props about a time travel through a wire. This is mainly meant for connecting third party props which are not BTTFN-compatible.
+The TCD has a [TT-OUT pin](#connecting-props-by-wire) (marked "TT OUT (IO14)" or "IO14") which can be used to
+- signal a time travel,
+- signal alarm,
+- or manually switching on/off connected props.
 
-![Wired connection](img/family-wiredn.png)
+#### Signal a Time Travel
 
-A wired connection only allows for synchronized time travel sequences, no other communication takes place. 
+If the option **_signals Time Travel__** is checked in the Config Portal, the TCD sets this pin to HIGH either 5 seconds ahead of entering the "time tunnel", or - if the option **_Signal without 5s lead_** is unchecked - immediately on entering the "time tunnel". This allows third-party props to take part in time travel sequences. For more information, see [here](AddOns.md#other-props).
 
-CircuitSetup/A10001986 original props also support a wired connection, if for whatever reason BTTFN is not an option. For detailed wiring instructions, please see the documentation for the prop ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [Dash Gauges](https://github.com/realA10001986/Dash-Gauges/blob/main/hardware/README.md#connecting-a-tcd-to-the-dash-gauges-by-wire), [VSR](https://github.com/realA10001986/VSR#connecting-a-tcd-by-wire)); for DIY props, see [here](AddOns.md#other-props).
+CircuitSetup/A10001986 original props also support a wired connection, if for whatever reason BTTFN is not an option. For detailed wiring instructions, please see the documentation for the prop ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [Dash Gauges](https://github.com/realA10001986/Dash-Gauges/blob/main/hardware/README.md#connecting-a-tcd-to-the-dash-gauges-by-wire), [VSR](https://github.com/realA10001986/VSR#connecting-a-tcd-by-wire)); 
 
-In order to enable a wired connection, check **_Control props connected by wire_** in the Config Portal.
+In case CircuitSetup/A10001986 original props are connected by wire, the option **_Signal without 5s lead_** should _not_ be set since it skips the "acceleration phase"; however, if that option is set on the TCD (for instance, if third-party props are connected by wire as well), the respective option must be set through the prop's Config Portal, too. This option has no effect for wirelessly connected props.
 
-Normally, a time travel is signalled by wire 5s ahead of the temporal displacement, in order to give the prop time for some kind of "acceleration" sequence. The option **_Signal Time Travel without 5s lead_** disables this lead time, if your prop does not need or support this.
+#### Signal Alarm
 
-In case CircuitSetup/A10001986 original props are connected by wire, the option **_Signal Time Travel without 5s lead_** should not be set since it skips the "acceleration phase"; however, if that option is set on the TCD (for instance, if third-party props are connected by wire as well), the respective option on the prop must be set, too. This option has no effect for wirelessly connected props.
+If the option "signals alarm" is checked in the Config Portal, the TCD sets this pin to HIGH upon an [alarm](#how-to-set-up-the-alarm); the duration for HIGH can be between 3 and 99 seconds.
+
+#### Switching TT-OUT manually
+
+Commands 900 (off) and 901 (on) allow switching this pin manually. The power-up state of the TT OUT pin can be set to HIGH by checking the **_Power-up stahe HIGH_** option.
+
+#### Limitations
+
+Although the options can be set freely and are not mutually exclusive, be advised that CircuitSetup/A10001986 original props connected by wire always interpret the TT-OUT signal as a trigger for a time travel sequence. It can make sense to set more than one option if your connect, for instance, flux bands or lights.
 
 ## Home Assistant / MQTT
 
@@ -1058,9 +1075,22 @@ The TCD can - to a limited extent - be controlled through messages sent to topic
 - MP_PREV: Jump to previous song
 - MP_SHUFFLE_ON: Enables shuffle mode in Music Player
 - MP_SHUFFLE_OFF: Disables shuffle mode in Music Player
+- PLAYKEY_x: Play keyX.mp3 (from SD card), X being in the range from 1 to 9.
+- STOPKEY: Stop playback of keyX file. Does nothing if no keyX file is currently played back.
 - POWER_CONTROL_ON: Take over Fake-Power control; POWER_xx commands now control Fake-Power.
 - POWER_CONTROL_OFF: Release Fake-Power control
 - POWER_ON, POWER_OFF: Switch Fake-Power on or off, respectively.
+- INJECT_x: See immediately below.
+
+#### The INJECT_x command
+
+This command allows remote control of the TCD through HA/MQTT in the same way as through the TCD keypad by injecting commands into the TCD's command queue (hence the name). Commands are listed [here](#commandref); nearly all are supported. You need to specify the command exactly like when entering the code on the keypad. For example:
+
+To enable the "beep" (001), issue the following command: **INJECT_001**
+
+To play "key2.mp3" (502), issue **INJECT_502**
+
+To set the alarm to 9:00am (110900), issue **INJECT_110900**
 
 #### Fake-Power control through HA
 
@@ -1076,9 +1106,14 @@ Keypad command 996 works like POWER_CONTROL_OFF; it allows to separate HA from F
 
 If both the TCD and the other props are connected to the same broker, and the option **_Send time travel/alarm event notifications_** is checked on the TCD's side, other compatible props will receive information on time travel and alarm and play their sequences in sync with the TCD. The topic is called  **bttf/tcd/pub**.
 
-The timing is identical to the wired protocol; TIMETRAVEL is sent to **bttf/tcd/pub** with a lead time of 5 seconds. REENTRY is sent when the re-entry sequence starts.
+Timing for time travel is identical to the [wired protocol](AddOns.md#other-props), with some extensions:
+- "PREPARE" might be published ahead of the time travel to prepare; the timing is not specified. Used on CS/A10001986 props to disable the "Screen Saver".
+- "[TIMETRAVEL](#-enhanced-time-travel-notification)" is published (with/without a [lead time](#-enhanced-time-travel-notification) of 5 seconds)
+- "REENTRY" is published upon re-entry.
 
-When the [alarm](#how-to-set-up-the-alarm) sounds, the TCD sends "ALARM" to **bttf/tcd/pub**.
+"WAKEUP" is sent if something happens on the TCD, like destination time entry or speed changes.
+
+When the [alarm](#how-to-set-up-the-alarm) sounds, the TCD publishes "ALARM".
 
 #### MQTT vs BTTFN
 
@@ -1141,6 +1176,10 @@ This leads to the [WiFi configuration page](#wifi-configuration)
 ##### &#9193; Settings
 
 This leads to the [Settings page](#settings).
+
+##### &#9193; HA/MQTT Settings
+
+This leads to the [HomeAssistant/MQTT Settings page](#hamqtt-settings).
 
 ##### &#9193; Update
 
@@ -1435,59 +1474,27 @@ This option selects whether actual GPS speed is to be transmitted to BTTFN clien
 
 If your TCD/speedo are stationary, such as in a home setup, leave this unchecked.
 
-#### <ins>Home Assistant / MQTT settings</ins>
+#### <ins>Settings for wired peripherals: TT-OUT (IO14) pin</ins>
 
-##### &#9193; Use Home Assistant (MQTT 3.1.1)
+##### &#9193; is controlled by commands 990/991
 
-If checked, the TCD will connect to the broker (if configured) and send and receive messages via [MQTT](#home-assistant--mqtt).
+If this option is checked, the state of the TT-OUT pin can be controlled by commands 990 (off) and 991 (on).
 
-##### &#9193; Broker IP[:port] or domain[:port]
+_Power-up state HIGH:_ If this is checked, the pin will be set HIGH immediately upon power-up. Otherwise it will remain LOW.
 
-The broker server address. Can be a domain (eg. "myhome.me") or an IP address (eg "192.168.1.5"). The default port is 1883. If different port is to be used, it can be specified after the domain/IP and a colon ":", for example: "192.168.1.5:1884". Specifying the IP address is preferred over a domain since the DNS call adds to the network overhead. Note that ".local" (MDNS) domains are not supported.
+##### &#9193; signals time travel
 
-##### &#9193; User[:Password]
+This selects whether the TT_OUT pin is activated upon a time-travel in order to play synchronized time travel sequences on other props, if those props are connected by wire.
 
-The username (and optionally the password) to be used when connecting to the broker. Can be left empty if the broker accepts anonymous logins.
-
-##### &#9193; Topic to display
-
-An optional topic the TCD subscribes to in order to display messages on the *Destination Time* display.
-
-##### &#9193; Send time-travel/alarm event notifications
-
-Check this if you want the TCD to send notifications on time travel and alarm via [MQTT](#home-assistant--mqtt).
-
-Note that if this option is checked, the TCD will not send out such notifications via [BTTF-Network](#connecting-props-wirelessly-bttf-network-bttfn).
-
-##### &#9193; HA controls Fake-Power at startup
-
-This option selects whether HA should be in control of Fake-Power at startup, or not. If this is checked, the TCD assumes HA has control of Fake-Power, overruling a ("TFC") Fake-Power switch. If this is unchecked, Fake-Power control remains with the switch (if connected), and HA can take over only after sending "POWER_CONTROL_ON".
-
-##### &#9193; Wait for POWER_ON at startup
-
-If HA is configured to have Fake-Power control at startup (as per the option *__HA controls Fake-Power at startup__*), this option decides the state of Fake-Power at startup:
-
-If this option is checked, the TCD waits for a POWER_ON command from HA/MQTT.
-
-If this option is unchecked, the TCD starts up without waiting.
-
-Note: If both this and the option *__HA controls Fake-Power at startup__*) are checked, the TCD will switch Fake-Power on if a connection to the broker can't be established within 45 seconds after booting. Keypad command 996 can be then used to switch off HA Fake-Power control.
-
-#### <ins>Settings for wired peripherals</ins>
-
-##### &#9193; Control props connected by wire
-
-This selects whether the TT_OUT/IO14 pin is activated upon a time-travel in order to play synchronized time travel sequences on other props, if those props are connected by wire. See [here](#controlling-other-props).
-
-##### &#9193; Signal Time Travel without 5s lead
-
-If this option is unchecked (which is the default), a time travel is signaled for wired props with a 5 second lead, in order to give the prop time to play an acceleration sequence. If this option is checked, TT_OUT/IO14 is activated when the time travel actually starts.
+_Signal without 5s lead:_ If this option is unchecked (which is the default), a time travel is signaled for wired props with a 5 second lead, in order to give the prop time to play an acceleration sequence. If this option is checked, TT-OUT is activated when the time travel actually starts.
 
 For CircuitSetup original props, if they are connected by wire, this option should not be set. If it has to be set (because you are also driving third-party props, for instance), the corresponding option must be set in the prop's Config Portal.
 
-For wirelessly connected props this option has no effect. Also see [here](#controlling-other-props).
+Also see [here](#controlling-other-props).
 
-Note that time travels triggered by a rotary encoder or when GPS speed hits 88mph are always signaled without lead. The lead time is only applicable for time travels where the TCD controls the acceleration.
+##### &#9193; signals alarm
+
+If this option is checked, the TT OUT pin will go HIGH when an [alarm](#how-to-set-up-the-alarm) occurs. The duration can be configured to be between 3 and 99 seconds.
 
 #### <ins>Other settings</ins>
 
@@ -1515,6 +1522,52 @@ See [here](#persistent--non-persistent-time-travels). For this option to take ef
 ##### &#9193; Reverse AM/PM like in parts 2/3
 
 If this is checked, the TCD will reverse the AM and PM lights, as seen in parts 2 and 3 of the Series. This is under "hardware settings" as it requires attaching the labels in a different manner.
+
+### HA/MQTT Settings
+
+##### &#9193; Home Assistant support (MQTT 3.1.1)
+
+If checked, the TCD will connect to the broker (if configured) and send and receive messages via [MQTT](#home-assistant--mqtt).
+
+##### &#9193; Broker IP[:port] or domain[:port]
+
+The broker server address. Can be a domain (eg. "myhome.me") or an IP address (eg "192.168.1.5"). The default port is 1883. If different port is to be used, it can be specified after the domain/IP and a colon ":", for example: "192.168.1.5:1884". Specifying the IP address is preferred over a domain since the DNS call adds to the network overhead. Note that ".local" (MDNS) domains are not supported.
+
+##### &#9193; User[:Password]
+
+The username (and optionally the password) to be used when connecting to the broker. Can be left empty if the broker accepts anonymous logins.
+
+##### &#9193; Topic to display
+
+An optional topic the TCD subscribes to in order to display messages on the *Destination Time* display.
+
+##### &#9193; Send time-travel/alarm event notifications
+
+Check this if you want the TCD to send notifications on time travel and alarm via [MQTT](#home-assistant--mqtt).
+
+Note that if this option is checked, the TCD will _not_ send out such notifications through [BTTF-Network](#connecting-props-wirelessly-bttf-network-bttfn). Please see [here](#mqtt-vs-bttfn) for details.
+
+##### &#9193; Enhanced Time Travel notification
+
+If this option is checked, the TCD will send out 'enhanced' time travel messages over MQTT; the message format is TIMETRAVEL_xxxx_yyyy, where xxxx is the number of milliseconds until the time tunnel (temporal displacement) sequence starts, and yyyy the number of ms the time tunnel phase takes; the latter is an approximation, the time tunnel phase ends when the message "REENTRY" is published. xxxx and yyyy is always 4 digits for easy parsing; both can be 0.
+
+This option is set by default because it allows for lead-less time travels in case the TCD's GPS/Rotary Encoder/Futaba Remote-induced speed hits 88. 
+
+If this option is unchecked, the TCD publishes "TIMETRAVEL" and the time until the time tunnel starts is always 5000ms. As a result, there is a delay of 5 seconds when the TCD's GPS/Rotary Encoder/Futaba Remote-induced speed hits 88 until the temporal displayment.
+
+##### &#9193; HA controls Fake-Power at startup
+
+This option selects whether HA should be in control of Fake-Power at startup, or not. If this is checked, the TCD assumes HA has control of Fake-Power, overruling a ("TFC") Fake-Power switch. If this is unchecked, Fake-Power control remains with the switch (if connected), and HA can take over only after sending "POWER_CONTROL_ON".
+
+##### &#9193; Wait for POWER_ON at startup
+
+If HA is configured to have Fake-Power control at startup (as per the option *__HA controls Fake-Power at startup__*), this option decides the state of Fake-Power at startup:
+
+If this option is checked, the TCD waits for a POWER_ON command from HA/MQTT.
+
+If this option is unchecked, the TCD starts up without waiting.
+
+Note: If both this and the option *__HA controls Fake-Power at startup__*) are checked, the TCD will switch Fake-Power on if a connection to the broker can't be established within 45 seconds after booting. Keypad command 996 can be then used to switch off HA Fake-Power control.
 
 ## Appendix B: Time zones
 
