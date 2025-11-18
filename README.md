@@ -50,7 +50,7 @@ Features include
   - Support for [rotary encoders](#rotary-encoder) for manual selection of speed to be displayed on speedo, and/or audio volume
   - Support for [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for [Room Condition mode](#room-condition-mode-temperaturehumidity-sensor) [display temperature and humidity in *destination time* and *last time departed* displays] and for displaying temperature on speedo while idle
   - Support for [Futaba remote control prop](#futaba-remote-control): Remote control the speed on the speedo, like in the movie
-  - Support for triggering time travels on other props [connected by wire](#connecting-props-by-wire)
+  - Support for signalling other props [connected by wire](#connecting-props-by-wire)
   
 >The difference between what you get here and CircuitSetup's releases is that the code here might be ahead in development, uses some different sounds, and the pre-compiled binary has all the features enabled.
 
@@ -66,21 +66,23 @@ If you are using a fresh ESP32 board, please see [timecircuits-A10001986.ino](ht
 
 The firmware comes with a sound-pack which needs to be installed separately. The sound-pack is not updated as often as the firmware itself. If you have previously installed the latest version of the sound-pack, you normally don't have to re-install it when you update the firmware. Only if the TCD displays "PLEASE INSTALL SOUND PACK" during boot, a re-installation/update is needed.
 
+_Note that installing the sound-pack requires an [SD card](#sd-card)._
+
 >If your TCD previously ran a firmware from CircuitSetup (ie. pre-installed or downloaded from their github), installing of the sound-pack **from this repository** is required. You cannot use CircuitSetup's sound-pack with the firmware available here, or vice versa.
 
 The first step is to download "install/sound-pack-twXX.zip" and extract it. It contains one file named "TCDA.bin".
 
-Then there are two alternative ways to proceed. Note that both methods *require an SD card*.
+Next, head to the [Config Portal](#the-config-portal), click on *Update*, select the "TCDA.bin" file in the bottom file selector and click on *Upload*.
 
-1) Through the [Config Portal](#the-config-portal). Click on *Update*, select the "TCDA.bin" file in the bottom file selector and click on *Upload*.
+<details>
+<summary>More...</summary>
 
-2) Via SD card:
-- Copy "TCDA.bin" to the root directory of a FAT32 formatted SD card;
+Alternatively, you can install the sound-pack the following way:
+- Using a computer, copy "TCDA.bin" to the root directory of a FAT32 formatted SD card;
 - power down the TCD,
 - insert this SD card into the slot and 
 - power up the TCD; the sound-pack will be installed automatically.
-
-After installation, the SD card can be re-used for [other purposes](#sd-card).
+</details>
 
 ## Initial Configuration
 
@@ -166,7 +168,7 @@ It can be accessed as follows:
   >If connecting to http://timecircuits.local fails due to a name resolution error, you need to find out the TCD's IP address: Hold ENTER on the TCD's keypad for 2 seconds, then repeatedly  press ENTER until "NET-WORK" is shown, then hold ENTER for 2 seconds. The device will then show its current IP address. Then, on your handheld or computer, navigate to http://a.b.c.d (a.b.c.d being the IP address as shown on the display) in order to enter the Config Portal.
 </details>
 
-In the main menu, click on "SETTINGS" to configure your TCD. 
+In the main menu, click on "Settings" to configure your TCD. 
 
 | [<img src="img/cps-frag.png">](img/cp_setup.png) |
 |:--:| 
@@ -180,7 +182,10 @@ A full reference of the Config Portal is [here](#appendix-a-the-config-portal).
 
 *Destination time* and *Last time departed* are stale. These, by default, work like in the movie: Upon a time travel, *present time* becomes *last time departed*, and *destination time* becomes *present time*. Or in Doc's words: The red one tells you where you're going. The green one tells you where you are. The yellow one tells you where you were.
 
->If "REPLACE BATTERY" is shown upon boot, the onboard CR2032 battery is depleted and needs to be replaced. Note that, for technical reasons, "REPLACE BATTERY" will also show up the very first time you power-up the TCD *after* changing the battery. You can, of course, disregard that message in this case.
+<details>
+<summary>"REPLACE BATTERY" displayed on boot?</summary>
+If "REPLACE BATTERY" is shown upon boot, the onboard CR2032 battery is depleted and needs to be replaced. Note that, for technical reasons, "REPLACE BATTERY" will also show up the very first time you power-up the TCD *after* changing the battery. You can, of course, disregard that message in this case.
+</details>
 
 ### Powering down the TCD
 
@@ -213,7 +218,7 @@ Time-cycling will, if enabled, change the *Destination* and *Last Time Departed*
 
 ### World Clock mode
 
-In World Clock (WC) mode, the red and yellow displays show not some stale times, but current time in other time zones. These time zones need to be configured in Config Portal. At least one time zone (for either the red or yellow display) must be configured in order to use WC mode. Optionally, also names for cities/locations for these time zones can be entered in the Config Portal; if a name for a time zone is configured, this name and the time will be shown alternately. Note that names can only contain letters a-z, numbers 0-9, space and minus.
+In World Clock (WC) mode, the red and yellow displays show not some stale times, but current time in other time zones. These time zones can be configured in Config Portal. At least one time zone (for either the red or yellow display) must be configured in order to use WC mode. Optionally, also names for cities/locations for these time zones can be entered in the Config Portal; if a name for a time zone is configured, this name and the time will be shown alternately. Note that names can only contain letters a-z, numbers 0-9, space and minus.
 
 | [![Watch the video](https://img.youtube.com/vi/Uk1W7D6Ab9Y/0.jpg)](https://youtu.be/Uk1W7D6Ab9Y) |
 |:--:|
@@ -1100,7 +1105,7 @@ To set the alarm to 9:00am (110900), issue **INJECT_110900**
 
 #### Fake-Power control through HA
 
-HA can control Fake-Power, overruling a Fake-Power switch.
+HA can control [Fake-Power](#fake-power-switch), overruling a Fake-Power switch.
 
 In order to let HA/MQTT control fake power, first publish POWER_CONTROL_ON to **bttf/tcd/cmd**. Subsequent POWER_ON or POWER_OFF commands switch Fake-Power on or off, respectively.
 
