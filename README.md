@@ -50,7 +50,7 @@ Features include
   - Support for [rotary encoders](#rotary-encoder) for manual selection of speed to be displayed on speedo, and/or audio volume
   - Support for [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for [Room Condition mode](#room-condition-mode-temperaturehumidity-sensor) [display temperature and humidity in *destination time* and *last time departed* displays] and for displaying temperature on speedo while idle
   - Support for [Futaba remote control prop](#futaba-remote-control): Remote control the speed on the speedo, like in the movie
-  - Support for signalling other props [connected by wire](#connecting-props-by-wire)
+  - Support for signaling other props [connected by wire](#connecting-props-by-wire)
   
 >The difference between what you get here and CircuitSetup's releases is that the code here might be ahead in development, uses some different sounds, and the pre-compiled binary has all the features enabled.
 
