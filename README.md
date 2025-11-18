@@ -1121,16 +1121,22 @@ If both the TCD and the other props are connected to the same broker, and the op
 
 Timing for time travel is identical to the [wired protocol](AddOns.md#other-props), with some extensions:
 - "PREPARE" might be published ahead of the time travel to prepare; the timing is not specified. Used on CS/A10001986 props to disable the "Screen Saver".
-- "[TIMETRAVEL](#-enhanced-time-travel-notification)" is published (with/without a [lead time](#-enhanced-time-travel-notification) of 5 seconds)
+- "[TIMETRAVEL](#-enhanced-time-travel-notification)" is published [on or 5 seconds ahead](#-enhanced-time-travel-notification) of the "time tunnel" (temporal displacement).
 - "REENTRY" is published upon re-entry.
 
-"WAKEUP" is sent if something happens on the TCD, like destination time entry or speed changes.
+"WAKEUP" is published if something happens on the TCD, like destination time entry or speed changes.
 
 When the [alarm](#how-to-set-up-the-alarm) sounds, the TCD publishes "ALARM".
 
 #### MQTT vs BTTFN
 
-MQTT and BTTFN can co-exist. The TCD only sends out time travel and alarm notifications through _either_ MQTT _or_ BTTFN, never both; selection is done by checking or unchecking the option **_Send time travel/alarm event notifications_** in the MQTT section of the Config Portal's Settings page.
+MQTT and BTTFN can co-exist.
+
+Remote controlling through the TCD keypad, transmission of speed, synchronized fake-power and night mode switching requires a BTTFN connection. 
+
+As regards time travel and alarm:
+
+The TCD only sends out time travel and alarm notifications through _either_ MQTT _or_ BTTFN, never both; selection is done by checking or unchecking the option **_Send time travel/alarm event notifications_** in the MQTT section of the Config Portal's Settings page.
 
 If you have other (third-party) MQTT-aware devices listening to the TCD's public topic (bttf/tcd/pub) in order to react to time travel or alarm messages, use MQTT (i.e. check **_Send time travel/alarm event notifications_**). If only BTTFN-aware devices are to be used, uncheck this option to use BTTFN as it has less latency.
 
@@ -1146,7 +1152,7 @@ If your broker does not allow anonymous logins, a username and password can be s
 
 In order to display messages on the TCD as described above, you need to specify the topic in the respective field.
 
-If you want your TCD to publish messages to bttf/tcd/pub (ie if you want to notify other devices about a timetravel and/or alarm), check the **_Send time travel/alarm event notifications_** option.
+If you want your TCD to publish messages to bttf/tcd/pub (ie if you want to notify other HA/MQTT-capable devices about a timetravel and/or alarm), check the **_Send time travel/alarm event notifications_** option.
 
 Limitations: MQTT Protocol version 3.1.1; TLS/SSL not supported; ".local" domains (MDNS) not supported; maximum message length 255 characters; server/broker must respond to PING (ICMP) echo requests. For proper operation with low latency, it is recommended that the broker is on your local network. Note that using HA/MQTT will disable [WiFi power saving](#wifi-power-saving-features). MQTT is disabled when the TCD is operated in AP-mode or car mode.
 
