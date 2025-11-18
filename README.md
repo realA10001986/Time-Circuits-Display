@@ -1119,7 +1119,7 @@ Keypad command 996 works like POWER_CONTROL_OFF; it allows to separate HA from F
 
 If both the TCD and the other props are connected to the same broker, and the option **_Send time travel/alarm event notifications_** is checked on the TCD's side, other compatible props will receive information on time travel and alarm and play their sequences in sync with the TCD. The topic is called  **bttf/tcd/pub**.
 
-Timing for time travel is identical to the [wired protocol](AddOns.md#other-props), with some extensions:
+The timing for time travel is described [here](AddOns.md#synchronized-time-travel-through-hamqtt), in short:
 - "PREPARE" might be published ahead of the time travel to prepare; the timing is not specified. Used on CS/A10001986 props to disable the "Screen Saver".
 - "[TIMETRAVEL](#-enhanced-time-travel-notification)" is published [on or 5 seconds ahead](#-enhanced-time-travel-notification) of the temporal displacement sequence.
 - "REENTRY" is published upon re-entry.
@@ -1513,6 +1513,8 @@ Also see [here](#controlling-other-props).
 
 Note: If you have a GPS receiver, a rotary encoder or a Futaba remote control and use those as a source for speed, a time travel is triggered upon hitting 88mph. In this use case, however, the TCD cannot know if or when a speed of 88mph is actually be reached and therefore not inform other props 5 seconds ahead. If _Signal without 5s lead_ is unchecked, as a result, there will be a delay of 5 seconds from when the TCD's GPS/Rotary Encoder/Futaba Remote-induced speed hits 88mph until the temporal displayment sequence actually starts. As this certainly is undesirable, the option should be checked and your wired devices should be configured to immediately start a temporal displacment sequence when TT OUT becomes HIGH.
 
+For detailed timing information, see [here](https://tcd.out-a-ti.me/AddOns.md#timing).
+
 ##### &#9193; signals alarm
 
 If this option is checked, the TT OUT pin will go HIGH when an [alarm](#how-to-set-up-the-alarm) occurs. The duration can be configured to be between 3 and 99 seconds.
@@ -1574,7 +1576,9 @@ If this option is checked, the TCD will send out 'enhanced' time travel messages
 
 If this option is unchecked, the TCD publishes "TIMETRAVEL" and the time until the temporal displacement sequence starts is always 5000ms.
 
-Note: If you have a GPS receiver, a rotary encoder or a Futaba remote control and use those as a source for speed, a time travel is triggered upon hitting 88mph. In this use case, however, the TCD cannot know if or when a speed of 88mph is actually be reached and therefore not inform other props 5 seconds ahead. If this options is unchecked, as a result, there will be a delay of 5 seconds from when the TCD's GPS/Rotary Encoder/Futaba Remote-induced speed hits 88mph until the temporal displayment sequence actually starts. As this certainly is undesirable, the option should be checked and your HA/MQTT devices should be configured to understand the enhanced TIMETRAVEL commands. 
+Note: If you have a GPS receiver, a rotary encoder or a Futaba remote control and use either of those as a source for speed, a time travel is triggered upon hitting 88mph. In this use case, however, the TCD cannot know if or when a speed of 88mph is actually be reached and therefore not inform other props 5 seconds ahead. If this options is unchecked, as a result, there will be a delay of 5 seconds from when the TCD's GPS/Rotary Encoder/Futaba Remote-induced speed hits 88mph until the temporal displayment sequence actually starts. As this certainly is undesirable, the option should be checked and your HA/MQTT devices should be configured to understand the enhanced TIMETRAVEL commands. 
+
+For detailed timing information, see [here](AddOns.md#synchronized-time-travel-through-hamqtt).
 
 ##### &#9193; HA controls Fake-Power at startup
 
