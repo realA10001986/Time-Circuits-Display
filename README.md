@@ -1038,7 +1038,7 @@ The TCD has a TT-OUT pin (marked "TT OUT (IO14)" or "IO14") which can be used to
 
 #### Signal a Time Travel
 
-If the option [TT-OUT (IO14) pin] **_signals Time Travel_** is checked in the Config Portal, the TCD sets this pin to HIGH either 5 seconds ahead of entering the "time tunnel", or - if the option **_Signal without 5s lead_** is unchecked - immediately on entering the "time tunnel". This allows third-party props to take part in time travel sequences. For more information, see [here](AddOns.md#other-props).
+If the option [TT-OUT (IO14) pin] **_signals Time Travel_** is checked in the Config Portal, the TCD sets this pin to HIGH either 5 seconds ahead of the temporal displacement sequence, or - if the option **_Signal without 5s lead_** is unchecked - right at the start of the temporal displacement sequence. This allows third-party props to take part in time travel sequences. For more information, see [here](AddOns.md#other-props).
 
 CircuitSetup/A10001986 original props also support a wired connection, if for whatever reason BTTFN is not an option. For detailed wiring instructions, please see the documentation for the prop ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [Dash Gauges](https://github.com/realA10001986/Dash-Gauges/blob/main/hardware/README.md#connecting-a-tcd-to-the-dash-gauges-by-wire), [VSR](https://github.com/realA10001986/VSR#connecting-a-tcd-by-wire)); 
 
@@ -1121,7 +1121,7 @@ If both the TCD and the other props are connected to the same broker, and the op
 
 Timing for time travel is identical to the [wired protocol](AddOns.md#other-props), with some extensions:
 - "PREPARE" might be published ahead of the time travel to prepare; the timing is not specified. Used on CS/A10001986 props to disable the "Screen Saver".
-- "[TIMETRAVEL](#-enhanced-time-travel-notification)" is published [on or 5 seconds ahead](#-enhanced-time-travel-notification) of the "time tunnel" (temporal displacement).
+- "[TIMETRAVEL](#-enhanced-time-travel-notification)" is published [on or 5 seconds ahead](#-enhanced-time-travel-notification) of the temporal displacement sequence.
 - "REENTRY" is published upon re-entry.
 
 "WAKEUP" is published if something happens on the TCD, like destination time entry or speed changes.
@@ -1136,7 +1136,7 @@ Remote controlling through the TCD keypad, transmission of speed, synchronized f
 
 As regards time travel and alarm:
 
-The TCD only sends out time travel and alarm notifications through _either_ MQTT _or_ BTTFN, never both; selection is done by checking or unchecking the option **_Send time travel/alarm event notifications_** in the MQTT section of the Config Portal's Settings page.
+The TCD only sends out time travel and alarm notifications through _either_ MQTT _or_ BTTFN, never both; selection is done by checking or unchecking the option **_Send time travel/alarm event notifications_** on the HA/MQTT Settings page.
 
 If you have other (third-party) MQTT-aware devices listening to the TCD's public topic (bttf/tcd/pub) in order to react to time travel or alarm messages, use MQTT (i.e. check **_Send time travel/alarm event notifications_**). If only BTTFN-aware devices are to be used, uncheck this option to use BTTFN as it has less latency.
 
@@ -1505,11 +1505,13 @@ _Power-up state HIGH:_ If this is checked, the pin will be set HIGH immediately 
 
 This selects whether the TT_OUT pin is activated upon a time-travel in order to play synchronized time travel sequences on other props, if those props are connected by wire.
 
-_Signal without 5s lead:_ If this option is unchecked (which is the default), a time travel is signaled for wired props with a 5 second lead, in order to give the prop time to play an acceleration sequence. If this option is checked, TT-OUT is activated when the time travel actually starts.
+_Signal without 5s lead:_ If this option is unchecked (which is the default), TT-OUT is activated 5 seconds ahead of temporal displacement, in order to give the prop time to play an acceleration sequence. If this option is checked, TT-OUT is activated at the beginning of the temporal displacement sequence.
 
-For CircuitSetup original props, if they are connected by wire, this option should not be set. If it has to be set (because you are also driving third-party props, for instance), the corresponding option must be set in the prop's Config Portal.
+For CircuitSetup/A10001986 original props, if they are connected by wire, this option should _not_ be set. If it has to be set (because you are also driving third-party props, for instance), the corresponding option must be set in the prop's Config Portal as well.
 
 Also see [here](#controlling-other-props).
+
+Note: If you have a GPS receiver, a rotary encoder or a Futaba remote control and use those as a source for speed, a time travel is triggered upon hitting 88mph. In this use case, however, the TCD cannot know if or when a speed of 88mph is actually be reached and therefore not inform other props 5 seconds ahead. If _Signal without 5s lead_ is unchecked, as a result, there will be a delay of 5 seconds from when the TCD's GPS/Rotary Encoder/Futaba Remote-induced speed hits 88mph until the temporal displayment sequence actually starts. As this certainly is undesirable, the option should be checked and your wired devices should be configured to immediately start a temporal displacment sequence when TT OUT becomes HIGH.
 
 ##### &#9193; signals alarm
 
@@ -1564,15 +1566,15 @@ An optional topic the TCD subscribes to in order to display messages on the *Des
 
 Check this if you want the TCD to send notifications on time travel and alarm via [MQTT](#home-assistant--mqtt).
 
-Note that if this option is checked, the TCD will _not_ send out such notifications through [BTTF-Network](#connecting-props-wirelessly-bttf-network-bttfn). Please see [here](#mqtt-vs-bttfn) for details.
+Note: If this option is checked, the TCD will _not_ send out such notifications through [BTTF-Network](#connecting-props-wirelessly-bttf-network-bttfn). Please see [here](#mqtt-vs-bttfn) for details.
 
 ##### &#9193; Enhanced Time Travel notification
 
-If this option is checked, the TCD will send out 'enhanced' time travel messages over MQTT; the message format is TIMETRAVEL_xxxx_yyyy, where xxxx is the number of milliseconds until the time tunnel (temporal displacement) sequence starts, and yyyy the number of ms the time tunnel phase takes; the latter is an approximation, the time tunnel phase ends when the message "REENTRY" is published. xxxx and yyyy is always 4 digits for easy parsing; both can be 0.
+If this option is checked, the TCD will send out 'enhanced' time travel messages over MQTT; the message format is TIMETRAVEL_xxxx_yyyy, where xxxx is the number of milliseconds until the temporal displacement sequence starts, and yyyy the number of ms the temporal displacement phase takes; the latter is an approximation, the temporal displacement phase ends when the message "REENTRY" is published. xxxx and yyyy is always 4 digits for easy parsing; both can be 0.
 
-This option is set by default because it allows for lead-less time travels in case the TCD's GPS/Rotary Encoder/Futaba Remote-induced speed hits 88. 
+If this option is unchecked, the TCD publishes "TIMETRAVEL" and the time until the temporal displacement sequence starts is always 5000ms.
 
-If this option is unchecked, the TCD publishes "TIMETRAVEL" and the time until the time tunnel starts is always 5000ms. As a result, there is a delay of 5 seconds when the TCD's GPS/Rotary Encoder/Futaba Remote-induced speed hits 88 until the temporal displayment.
+Note: If you have a GPS receiver, a rotary encoder or a Futaba remote control and use those as a source for speed, a time travel is triggered upon hitting 88mph. In this use case, however, the TCD cannot know if or when a speed of 88mph is actually be reached and therefore not inform other props 5 seconds ahead. If this options is unchecked, as a result, there will be a delay of 5 seconds from when the TCD's GPS/Rotary Encoder/Futaba Remote-induced speed hits 88mph until the temporal displayment sequence actually starts. As this certainly is undesirable, the option should be checked and your HA/MQTT devices should be configured to understand the enhanced TIMETRAVEL commands. 
 
 ##### &#9193; HA controls Fake-Power at startup
 
