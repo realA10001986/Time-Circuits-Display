@@ -231,10 +231,12 @@ Here's the timing diagram for a time travel signal:
 
 1) Option **_Signal without 5s lead_** unchecked
 
+If a time travel sequence is started by button and the TCD is doing the acceleration on the speedo, the TCD can calculate when the temporal displacement starts and notify other props 5 seconds ahead:
+
 ```
 |<---------- speedo acceleration --------->|                         |<-speedo de-acceleration->|
 0....10....20....................xx....87..88------------------------88...87....................0
-                                           |<--Actual Time Travel -->|
+                                           |<-Temporal displacement->|
                                            |  (Display disruption)   |
                                       TT starts                      Reentry phase
                                            |                         |
@@ -242,17 +244,35 @@ Here's the timing diagram for a time travel signal:
              |                                                       |
              |                                                       |
              |                                                       |
-    TT-OUT/IO14: LOW->HIGH                                  TT-OUT/IO14: HIGH->LOW
+             TT-OUT: LOW->HIGH                                       TT-OUT: HIGH->LOW
  ```
 
-"ETTO lead", ie the lead time between TT-OUT going HIGH and the actual start of a time travel is defined as 5000ms (ETTO_LEAD_TIME). In this window of time, the prop can play its pre-time-travel (warm-up/acceleration/etc) sequence. The sequence inside the time "tunnel" follows after that lead time, and when TT-OUT goes LOW, the re-entry into the destination time takes place.
+"ETTO lead", ie the lead time between TT-OUT going HIGH and the actual start of a temporal displacement is defined as 5000ms (5 seconds). In this window of time, the prop can play its pre-time-travel (warm-up/acceleration/etc) sequence. The sequence inside the temporal displacment follows after that lead time, and when TT-OUT goes LOW, the re-entry into the destination time takes place.
+
+This lead time becomes a problem if you have a GPS receiver, a rotary encoder or a Futaba remote control and use either of those as a source for speed: A time travel is triggered upon hitting 88mph. In this use case, the TCD cannot know if or when a speed of 88mph is actually be reached and therefore not inform other props 5 seconds ahead. As a result, there will be a delay of 5 seconds from when the TCD's GPS/Rotary Encoder/Futaba Remote-induced speed hits 88mph until the temporal displayment sequence actually starts:
+
+```
+|<---------- speedo acceleration --------->|<- waiting, waiting...........|                         |<-speedo de-acceleration->|
+0....10....20....................xx....87..88******************************------------------------88...87....................0
+                                                                          |<-Temporal displacement->|
+                                                                          |  (Display disruption)   |
+                                                                     TT starts                      Reentry phase
+                                                                          |                         |
+                                            |<---------ETTO lead--------->|                         |
+                                            |                                                       |
+                                            |                                                       |
+                                            |                                                       |
+                                            TT-OUT: LOW->HIGH                                       TT-OUT: HIGH->LOW
+ ```
+
+**** marks the certainly unwanted 5 seconds "stall". 
 
 2) Option **_Signal without 5s lead_** checked
 
 ```
 |<---------- speedo acceleration --------->|                         |<-speedo de-acceleration->|
 0....10....20....................xx....87..88------------------------88...87....................0
-                                           |<--Actual Time Travel -->|
+                                           |<-Temporal displacement->|
                                            |  (Display disruption)   |
                                       TT starts                      Reentry phase
                                            |                         |
@@ -260,10 +280,96 @@ Here's the timing diagram for a time travel signal:
                                            |                         |
                                            |                         |
                                            |                         |
-                                  TT-OUT/IO14: LOW->HIGH    TT-OUT/IO14: HIGH->LOW
+                                           TT-OUT: LOW->HIGH         TT-OUT: HIGH->LOW
  ```
 
-In this case, there is no lead. The time travel starts immediately.
+In this case, there is no lead. TT-OUT goes high when the temporal displayment sequence starts.
+
+Conclusion: 
+
+If you are not planning on using GPS/Rotary Encoder/Futaba remote speed with your TCD, you can use the normal 5-second-lead technique if your prop is designed to play some kind of pre-time-travel sequence (acceleration, warm-up, etc). 
+
+Checking **_Signal without 5s lead_** is required if you are using a GPS receiver, rotary encoder or Futaba remote control as a source for speed, in order to avoid a "stall" when hitting 88mph. The downside is that other props do not get time to play any kind of "acceleration" sequence.
+
+If you connect original CircuitSetup/A10001986 props by wire, make sure you set the option _TCD signals Time Travel without 5s lead_ in the prop's config portal accordingly.
+
+### Synchronized time travel through HA/MQTT
+
+Time Travel timing:
+
+1) Option **_Enhanced Time Travel notification_** unchecked
+
+If a time travel sequence is started by button and the TCD is doing the acceleration on the speedo, the TCD can calculate when the temporal displacement starts and notify other props 5 seconds ahead using the simple TIMETRAVEL command:
+
+```
+|<---------- speedo acceleration --------->|                         |<-speedo de-acceleration->|
+0....10....20....................xx....87..88------------------------88...87....................0
+                                           |<-Temporal displacement->|
+                                           |  (Display disruption)   |
+                                      TT starts                      Reentry phase
+                                           |                         |
+             |<---------ETTO lead--------->|                         |
+             |                                                       |
+             |                                                       |
+             |                                                       |
+             MQTT: TIMETRAVEL                                        MQTT: REENTRY
+ ```
+
+If you have a GPS receiver, a rotary encoder or a Futaba remote control and use either of those as a source for speed, a time travel is triggered upon hitting 88mph. In this use case, however, the TCD cannot know if or when a speed of 88mph is actually be reached and therefore not inform other props 5 seconds ahead. As a result, there will be a delay of 5 seconds from when the TCD's GPS/Rotary Encoder/Futaba Remote-induced speed hits 88mph until the temporal displayment sequence actually starts:
+
+```
+|<---------- speedo acceleration --------->|<- waiting, waiting...........|                         |<-speedo de-acceleration->|
+0....10....20....................xx....87..88******************************------------------------88...87....................0
+                                                                          |<-Temporal displacement->|
+                                                                          |  (Display disruption)   |
+                                                                     TT starts                      Reentry phase
+                                                                          |                         |
+                                            |<---------ETTO lead--------->|                         |
+                                            |                                                       |
+                                            |                                                       |
+                                            |                                                       |
+                                            MQTT: TIMETRAVEL                                        MQTT: REENTRY
+ ```
+
+**** marks the certainly unwanted 5 seconds "stall".
+
+2) Option **_Enhanced Time Travel notification_** checked
+
+If a time travel sequence is started by button and the TCD doing the acceleration on the speedo, the situation is as above: The TCD can calculate when the temporal displacement starts and notify other props 5 seconds ahead - and actually tell those props when exactly the temporal displacement is expected to start:
+
+```
+|<---------- speedo acceleration --------->|                         |<-speedo de-acceleration->|
+0....10....20....................xx....87..88------------------------88...87....................0
+                                           |<-Temporal displacement->|
+                                           |  (Display disruption)   |
+                                      TT starts                      Reentry phase
+                                           |                         |
+             |<---------ETTO lead--------->|                         |
+             |                                                       |
+             |                                                       |
+             |                                                       |
+             MQTT: TIMETRAVEL_5000_yyyy                              MQTT: REENTRY
+ ```
+
+Now, again the GPS receiver/rotary encoder/Futaba remote control scenario:
+
+```
+|<---------- speedo acceleration --------->|                         |<-speedo de-acceleration->|
+0....10....20....................xx....87..88------------------------88...87....................0
+                                           |<-Temporal displacement->|
+                                           |  (Display disruption)   |
+                                      TT starts                      Reentry phase
+                                           |                         |
+                                           |                         |
+                                           |                         |
+                                           |                         |
+                                           |                         MQTT: REENTRY
+                                           MQTT: TIMETRAVEL_0000_yyyy
+ ```
+
+As you can see, there is no stall: The props receive proper info on when the temporal displacement starts - in this case immediately (0ms).
+
+Conclusion: If you are not planning on using GPS/Rotary Encoder/Futaba remote speed with your TCD, you can use the normal TIMETRAVEL command. In the other case, you need to teach your MQTT-aware device how to interpret the enhanced TIMETRAVEL_xxxx_yyyy command. Both xxxx and yyyy are always four digits. xxxx is the time until temporal displacement starts, yyyy is an approximation of the duration of the temporal displacement; however, don't use this value to time the reentry, instead wait for the REENTRY command to initiate your re-entry sequence.
 
 ---
 _Text & images: (C) Thomas Winischhofer ("A10001986"). See LICENSE._ Source: https://tcd.out-a-ti.me
