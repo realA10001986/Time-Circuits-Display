@@ -36,7 +36,7 @@ Features include
 - Network capabilities:
   - Advanced network-accessible [Config Portal](#the-config-portal) for setup (http://timecircuits.local, hostname configurable)
   - [Wireless communication](#connecting-props-wirelessly-bttf-network-bttfn) with compatible other props such as CircuitSetup's [Flux Capacitor](https://fc.out-a-ti.me) and [SID](https://sid.out-a-ti.me), as well as the [Dash Gauges](https://dg.out-a-ti.me), [VSR](https://vsr.out-a-ti.me) and modified [Futaba Remote Control](https://remote.out-a-ti.me)
-  - [Home Assistant](#home-assistant--mqtt) (MQTT 3.1.1) support
+  - [Home Assistant](#home-assistant--mqtt) (MQTT) support
 - [Night mode](#night-mode): Dim or switch off displays on schedule, manually or sensor-controlled.
 - [Music player](#the-music-player): Play mp3 files located on an SD card
 - Audio output through [line-out](#audio-output) for time travel sounds and music (requires Control Board 1.4.5 or later), allows connecting your TCD to your (car) stereo for high-quality stereo-sound.
@@ -1060,7 +1060,7 @@ Hardware considerations: CS/A10001986 props can be connected directly. TT OUT ca
 
 ## Home Assistant / MQTT
 
-The TCD supports the MQTT protocol version 3.1.1 for the following features:
+The TCD supports the MQTT protocol versions 3.1.1 and 5.0 for the following features:
 
 ### Display messages on TCD
 
@@ -1117,10 +1117,10 @@ Keypad command 996 works like POWER_CONTROL_OFF; it allows to separate HA from F
 
 ### Notify other devices of a time travel or alarm
 
-If both the TCD and the other props are connected to the same broker, and the option **_Send time travel/alarm event notifications_** is checked on the TCD's side, other compatible props will receive information on time travel and alarm and play their sequences in sync with the TCD. The topic is called  **bttf/tcd/pub**.
+If both the TCD and the other props are connected to the same broker, and the option **_Publish time travel and alarm events_** is checked on the TCD's side, other compatible props will receive information on time travel and alarm and play their sequences in sync with the TCD. The topic is called  **bttf/tcd/pub**.
 
 The timing for time travel is described [here](AddOns.md#synchronized-time-travel-through-hamqtt), in short:
-- "PREPARE" might be published ahead of the time travel to prepare; the timing is not specified. Used on CS/A10001986 props to disable the "Screen Saver".
+- "PREPARE" might be published ahead of the time travel to prepare; the timing is not specified. Used on CircuitSetu/A10001986 props to disable the "Screen Saver".
 - "[TIMETRAVEL](#-enhanced-time-travel-notification)" is published [on or 5 seconds ahead](#-enhanced-time-travel-notification) of the temporal displacement sequence.
 - "REENTRY" is published upon re-entry.
 
@@ -1136,9 +1136,9 @@ Remote controlling through the TCD keypad, transmission of speed, synchronized f
 
 As regards time travel and alarm:
 
-The TCD only sends out time travel and alarm notifications through _either_ MQTT _or_ BTTFN, never both; selection is done by checking or unchecking the option **_Send time travel/alarm event notifications_** on the HA/MQTT Settings page.
+The TCD only sends out time travel and alarm notifications through _either_ MQTT _or_ BTTFN, never both; selection is done by checking or unchecking the option **_Publish time travel and alarm events_** on the HA/MQTT Settings page.
 
-If you have other (third-party) MQTT-aware devices listening to the TCD's public topic (bttf/tcd/pub) in order to react to time travel or alarm messages, use MQTT (i.e. check **_Send time travel/alarm event notifications_**). If only BTTFN-aware devices are to be used, uncheck this option to use BTTFN as it has less latency.
+If you have other (third-party) MQTT-aware devices listening to the TCD's public topic (bttf/tcd/pub) in order to react to time travel or alarm messages, use MQTT (i.e. check **_Publish time travel and alarm events_**). If only BTTFN-aware devices are to be used, uncheck this option to use BTTFN as it has less latency.
 
 ### Setup
 
@@ -1148,13 +1148,15 @@ MQTT requires a "broker" (such as [mosquitto](https://mosquitto.org/), [EMQ X](h
 
 The broker's address needs to be configured in the Config Portal. The broker can be specified either by domain or IP (IP preferred, spares us a DNS call). The default port is 1883. If a different port is to be used, append a ":" followed by the port number to the domain/IP, such as "192.168.1.5:1884". 
 
+IF your broker supports protocol version 3.1.1, stick with 3.1.1. Version 5.0 has no advantages, but more overhead.
+
 If your broker does not allow anonymous logins, a username and password can be specified.
 
-In order to display messages on the TCD as described above, you need to specify the topic in the respective field.
+In order to display messages on the TCD as described above, you need to specify the **_topic to display_** in the respective field.
 
-If you want your TCD to publish messages to bttf/tcd/pub (ie if you want to notify other HA/MQTT-capable devices about a timetravel and/or alarm), check the **_Send time travel/alarm event notifications_** option.
+If you want your TCD to publish messages to bttf/tcd/pub (ie if you want to notify other HA/MQTT-capable devices about a timetravel and/or alarm), check the **_Publish time travel and alarm events_** option.
 
-Limitations: MQTT Protocol version 3.1.1; TLS/SSL not supported; ".local" domains (MDNS) not supported; maximum message length 255 characters; server/broker must respond to PING (ICMP) echo requests. For proper operation with low latency, it is recommended that the broker is on your local network. Note that using HA/MQTT will disable [WiFi power saving](#wifi-power-saving-features). MQTT is disabled when the TCD is operated in AP-mode or car mode.
+Limitations: TLS/SSL not supported; ".local" domains (MDNS) not supported; maximum message length 255 characters; server/broker must respond to PING (ICMP) echo requests. For proper operation with low latency, it is recommended that the broker is on your local network. Note that using HA/MQTT will disable [WiFi power saving](#wifi-power-saving-features). MQTT is disabled when the TCD is operated in AP-mode or car mode.
 
 ## Futaba Remote Control
 
@@ -1548,13 +1550,17 @@ If this is checked, the TCD will reverse the AM and PM lights, as seen in parts 
 
 ### HA/MQTT Settings
 
-##### &#9193; Home Assistant support (MQTT 3.1.1)
+##### &#9193; Home Assistant support (MQTT)
 
 If checked, the TCD will connect to the broker (if configured) and send and receive messages via [MQTT](#home-assistant--mqtt).
 
 ##### &#9193; Broker IP[:port] or domain[:port]
 
 The broker server address. Can be a domain (eg. "myhome.me") or an IP address (eg "192.168.1.5"). The default port is 1883. If different port is to be used, it can be specified after the domain/IP and a colon ":", for example: "192.168.1.5:1884". Specifying the IP address is preferred over a domain since the DNS call adds to the network overhead. Note that ".local" (MDNS) domains are not supported.
+
+##### &#9193; Protocol version
+
+The firmware supports MQTT 3.1.1 and 5.0. There is no difference in features, so there is no advantage in selecting 5.0. This was implemented only for brokers that do not support 3.1.1.
 
 ##### &#9193; User[:Password]
 
@@ -1564,7 +1570,7 @@ The username (and optionally the password) to be used when connecting to the bro
 
 An optional topic the TCD subscribes to in order to display messages on the *Destination Time* display.
 
-##### &#9193; Send time-travel/alarm event notifications
+##### &#9193; Publish time travel and alarm events
 
 Check this if you want the TCD to send notifications on time travel and alarm via [MQTT](#home-assistant--mqtt).
 
