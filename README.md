@@ -1062,7 +1062,7 @@ Hardware considerations: CS/A10001986 props can be connected directly. TT OUT ca
 
 The TCD supports the MQTT protocol versions 3.1.1 and 5.0 for the following features:
 
-### Display messages on TCD
+### Display messages
 
 The TCD can subscribe to a user-configured topic and display messages received for this topic on the *Destination Time* display. This can be used to display the status of other HA/MQTT devices, for instance alarm systems. If the SD card contains a file named "ha-alert.mp3", this file will be played upon reception of a message (there is no default sound).
 
