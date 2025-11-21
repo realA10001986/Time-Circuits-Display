@@ -77,9 +77,7 @@
 #include "tc_audio.h"
 #include "tc_time.h"
 #include "tc_wifi.h"
-#ifdef HAVE_STALE_PRESENT
 #include "clockdisplay.h"
-#endif
 
 // Size of main config JSON
 // Needs to be adapted when config grows
@@ -121,14 +119,10 @@ static const char *ainCfgName = "/tcdaicfg.json";   // Beep+Auto-interval (flash
 static const char *volCfgName = "/tcdvolcfg.json";  // Volume config (flash/SD)
 static const char *almCfgName = "/tcdalmcfg.json";  // Alarm config (flash/SD)
 static const char *remCfgName = "/tcdremcfg.json";  // Reminder config (flash/SD)
-#ifdef HAVE_STALE_PRESENT
 static const char *stCfgName  = "/stconfig";        // Exhib Mode (flash/SD)
-#endif
 static const char *musCfgName = "/tcdmcfg.json";    // Music config (SD)
 static const char *cmCfgName  = "/cmconfig.json";   // Carmode (flash/SD)
-#ifdef TC_HAVELINEOUT
 static const char *loCfgName  = "/loconfig.json";   // LineOut (flash/SD)
-#endif
 #ifdef TC_HAVE_REMOTE
 static const char *raCfgName  = "/raconfig.json";   // RemoteAllowed (flash/SD)
 #endif
@@ -421,7 +415,9 @@ void settings_setup()
     loadCarMode();
 
     // Load RemoteAllowed/RemoteKPAllowed settings
+    #ifdef TC_HAVE_REMOTE
     loadRemoteAllowed();
+    #endif
 
     // Check if SD contains the default sound files
     if((r = e) && haveSD && (FlashROMode || haveFS)) {
@@ -580,8 +576,7 @@ static bool read_settings(File configFile, int cfgReadCount)
         wd |= CopyCheckValidNumParmF(json["tmpOf"], json["tempOffs"], settings.tempOffs, sizeof(settings.tempOffs), -3.0, 3.0, DEF_TEMP_OFFS);
         #endif
 
-        #ifdef TC_HAVESPEEDO
-        wd |= CopyCheckValidNumParm(json["spT"], json["speedoType"], settings.speedoType, sizeof(settings.speedoType), SP_MIN_TYPE, 99, DEF_SPEEDO_TYPE);
+        wd |= CopyCheckValidNumParm(json["spT"], json["speedoType"], settings.speedoType, sizeof(settings.speedoType), 0, 99, DEF_SPEEDO_TYPE);
         wd |= CopyCheckValidNumParm(json["spB"], json["speedoBright"], settings.speedoBright, sizeof(settings.speedoBright), 0, 15, DEF_BRIGHT_SPEEDO);
         wd |= CopyCheckValidNumParm(json["spAO"], NULL, settings.speedoAO, sizeof(settings.speedoAO), 0, 1, DEF_SPEEDO_AO);
         wd |= CopyCheckValidNumParm(json["spAF"], json["speedoAF"], settings.speedoAF, sizeof(settings.speedoAF), 0, 1, DEF_SPEEDO_ACCELFIG);
@@ -597,16 +592,11 @@ static bool read_settings(File configFile, int cfgReadCount)
         wd |= CopyCheckValidNumParm(json["tmpB"], json["tempBright"], settings.tempBright, sizeof(settings.tempBright), 0, 15, DEF_TEMP_BRIGHT);
         wd |= CopyCheckValidNumParm(json["tmpONM"], json["tempOffNM"], settings.tempOffNM, sizeof(settings.tempOffNM), 0, 1, DEF_TEMP_OFF_NM);
         #endif
-        #endif // HAVESPEEDO
 
-        #ifdef FAKE_POWER_ON
         wd |= CopyCheckValidNumParm(json["fPwr"], json["fakePwrOn"], settings.fakePwrOn, sizeof(settings.fakePwrOn), 0, 1, DEF_FAKE_PWR);
-        #endif
 
-         #ifdef EXTERNAL_TIMETRAVEL_IN
         wd |= CopyCheckValidNumParm(json["ettDl"], json["ettDelay"], settings.ettDelay, sizeof(settings.ettDelay), 0, ETT_MAX_DEL, DEF_ETT_DELAY);
         //wd |= CopyCheckValidNumParm(json["ettLong"], NULL, settings.ettLong, sizeof(settings.ettLong), 0, 1, DEF_ETT_LONG);
-        #endif        
         
         #ifdef TC_HAVEGPS
         wd |= CopyCheckValidNumParm(json["qGPS"], json["quickGPS"], settings.quickGPS, sizeof(settings.quickGPS), 0, 1, DEF_QUICK_GPS);
@@ -615,22 +605,22 @@ static bool read_settings(File configFile, int cfgReadCount)
         #ifdef TC_HAVEMQTT
         wd |= CopyCheckValidNumParm(json["uMQTT"], json["useMQTT"], settings.useMQTT, sizeof(settings.useMQTT), 0, 1, 0);
         wd |= CopyTextParm(json["mqttS"], json["mqttServer"], settings.mqttServer, sizeof(settings.mqttServer));
+        wd |= CopyCheckValidNumParm(json["mqttV"], NULL, settings.mqttVers, sizeof(settings.mqttVers), 0, 1, 0);
         wd |= CopyTextParm(json["mqttU"], json["mqttUser"], settings.mqttUser, sizeof(settings.mqttUser));
         wd |= CopyTextParm(json["mqttT"], json["mqttTopic"], settings.mqttTopic, sizeof(settings.mqttTopic));
-        #ifdef EXTERNAL_TIMETRAVEL_OUT
         wd |= CopyCheckValidNumParm(json["pMQTT"], json["pubMQTT"], settings.pubMQTT, sizeof(settings.pubMQTT), 0, 1, 0);
-        #endif
-        #ifdef FAKE_POWER_ON
+        wd |= CopyCheckValidNumParm(json["vMQTT"], NULL, settings.MQTTvarLead, sizeof(settings.MQTTvarLead), 0, 1, DEF_MQTT_VTT);
         wd |= CopyCheckValidNumParm(json["mqP"], NULL, settings.mqttPwr, sizeof(settings.mqttPwr), 0, 1, 0);
         wd |= CopyCheckValidNumParm(json["mqPO"], NULL, settings.mqttPwrOn, sizeof(settings.mqttPwrOn), 0, 1, 0);
         #endif
-        #endif
-       
-        #ifdef EXTERNAL_TIMETRAVEL_OUT
+
+        wd |= CopyCheckValidNumParm(json["ETTOc"], NULL, settings.ETTOcmd, sizeof(settings.ETTOcmd), 0, 1, DEF_ETTO_CMD);
+        wd |= CopyCheckValidNumParm(json["ETTOPU"], NULL, settings.ETTOpus, sizeof(settings.ETTOpus), 0, 1, DEF_ETTO_PUS);
         wd |= CopyCheckValidNumParm(json["uETTO"], json["useETTO"], settings.useETTO, sizeof(settings.useETTO), 0, 1, DEF_USE_ETTO);
         wd |= CopyCheckValidNumParm(json["nETTOL"], json["noETTOLead"], settings.noETTOLead, sizeof(settings.noETTOLead), 0, 1, DEF_NO_ETTO_LEAD);
-        #endif
-
+        wd |= CopyCheckValidNumParm(json["ETTOa"], NULL, settings.ETTOalm, sizeof(settings.ETTOalm), 0, 1, DEF_ETTO_ALM);
+        wd |= CopyCheckValidNumParm(json["ETTOAD"], NULL, settings.ETTOAD, sizeof(settings.ETTOAD), 3, 99, DEF_ETTO_ALM_D);
+        
         wd |= CopyCheckValidNumParm(json["CoSD"], json["CfgOnSD"], settings.CfgOnSD, sizeof(settings.CfgOnSD), 0, 1, DEF_CFG_ON_SD);
         //wd |= CopyCheckValidNumParm(json["sdFreq"], NULL, settings.sdFreq, sizeof(settings.sdFreq), 0, 1, DEF_SD_FREQ);
         wd |= CopyCheckValidNumParm(json["ttps"], json["timeTrPers"], settings.timesPers, sizeof(settings.timesPers), 0, 1, DEF_TIMES_PERS);
@@ -714,8 +704,7 @@ void write_settings()
     json["tmpU"] = (const char *)settings.tempUnit;
     json["tmpOf"] = (const char *)settings.tempOffs;
     #endif
-    
-    #ifdef TC_HAVESPEEDO    
+
     json["spT"] = (const char *)settings.speedoType;
     json["spB"] = (const char *)settings.speedoBright;
     json["spAO"] = (const char *)settings.speedoAO;
@@ -731,17 +720,12 @@ void write_settings()
     json["dTmp"] = (const char *)settings.dispTemp;
     json["tmpB"] = (const char *)settings.tempBright;
     json["tmpONM"] = (const char *)settings.tempOffNM;
-    #endif
-    #endif // HAVESPEEDO    
+    #endif   
 
-    #ifdef FAKE_POWER_ON
     json["fPwr"] = (const char *)settings.fakePwrOn;
-    #endif
 
-    #ifdef EXTERNAL_TIMETRAVEL_IN
     json["ettDl"] = (const char *)settings.ettDelay;
     //json["ettLong"] = (const char *)settings.ettLong;
-    #endif
     
     #ifdef TC_HAVEGPS
     json["qGPS"] = (const char *)settings.quickGPS;
@@ -750,22 +734,22 @@ void write_settings()
     #ifdef TC_HAVEMQTT
     json["uMQTT"] = (const char *)settings.useMQTT;
     json["mqttS"] = (const char *)settings.mqttServer;
+    json["mqttV"] = (const char *)settings.mqttVers;
     json["mqttU"] = (const char *)settings.mqttUser;
     json["mqttT"] = (const char *)settings.mqttTopic;
-    #ifdef EXTERNAL_TIMETRAVEL_OUT
     json["pMQTT"] = (const char *)settings.pubMQTT;
-    #endif
-    #ifdef FAKE_POWER_ON
+    json["vMQTT"] = (const char *)settings.MQTTvarLead;
     json["mqP"] = (const char *)settings.mqttPwr;
     json["mqPO"] = (const char *)settings.mqttPwrOn;
     #endif
-    #endif
 
-    #ifdef EXTERNAL_TIMETRAVEL_OUT
+    json["ETTOc"] = (const char *)settings.ETTOcmd;
+    json["ETTOPU"] = (const char *)settings.ETTOpus;
     json["uETTO"] = (const char *)settings.useETTO;
     json["nETTOL"] = (const char *)settings.noETTOLead;
-    #endif
-    
+    json["ETTOa"] = (const char *)settings.ETTOalm;
+    json["ETTOAD"] = (const char *)settings.ETTOAD;
+            
     json["CoSD"] = (const char *)settings.CfgOnSD;
     //json["sdFreq"] = (const char *)settings.sdFreq;
     json["ttps"] = (const char *)settings.timesPers;
@@ -1338,7 +1322,6 @@ void saveCarMode()
  * Save/load stale present time
  */
 
-#ifdef HAVE_STALE_PRESENT
 void loadStaleTime(void *target, bool& currentOn)
 {
     bool haveConfigFile = false;
@@ -1387,13 +1370,11 @@ void saveStaleTime(void *source, bool currentOn)
         writeFileToFS(stCfgName, savBuf, sizeof(savBuf));
     }
 }
-#endif
 
 /*
  *  Load/save lineOut
  */
 
-#ifdef TC_HAVELINEOUT
 void loadLineOut()
 {
     bool haveConfigFile = false;
@@ -1433,7 +1414,6 @@ void saveLineOut()
 
     writeJSONCfgFile(json, loCfgName, configOnSD);
 }
-#endif
 
 /*
  *  Load/save remoteAllowed
@@ -1873,14 +1853,10 @@ static void writeAllSecSettings()
     saveAlarm();
     saveReminder();
     saveCarMode();
-    #ifdef HAVE_STALE_PRESENT
     if(stalePresent) {
         saveStaleTime((void *)&stalePresentTime[0], stalePresent);
     }
-    #endif
-    #ifdef TC_HAVELINEOUT
     saveLineOut();
-    #endif
     #ifdef TC_HAVE_REMOTE
     saveRemoteAllowed();
     #endif

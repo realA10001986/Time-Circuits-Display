@@ -60,8 +60,6 @@
 
 #include "tc_global.h"
 
-#ifdef TC_HAVESPEEDO
-
 #include <Arduino.h>
 #include <math.h>
 #include "speeddisplay.h"
@@ -353,11 +351,11 @@ speedDisplay::speedDisplay(uint8_t address)
 // Start the display
 bool speedDisplay::begin(int dispType)
 {
-    if(dispType < SP_MIN_TYPE || dispType >= SP_NUM_TYPES) {
+    if(dispType < 0 || dispType >= SP_NUM_TYPES) {
         #ifdef TC_DBG
         Serial.printf("Bad speedo display type: %d\n", dispType);
         #endif
-        dispType = SP_MIN_TYPE;
+        dispType = 0;
     }
 
     // Check for speedo on i2c bus
@@ -731,5 +729,3 @@ void speedDisplay::directCmd(uint8_t val)
     Wire.write(val);
     Wire.endTransmission();
 }
-
-#endif

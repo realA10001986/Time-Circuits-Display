@@ -690,11 +690,9 @@ quitMenu:
     myrtcnow(dtu);
     UTCtoLocal(dtu, dtl, 0);
     
-    #ifdef HAVE_STALE_PRESENT
     if(stalePresent)
         presentTime.setFromStruct(&stalePresentTime[1]);
     else
-    #endif
         updatePresentTime(dtu, dtl);
 
     if(isWcMode()) {

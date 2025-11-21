@@ -58,9 +58,7 @@
 #ifdef TC_HAVEGPS
 #include "gps.h"
 #endif
-#ifdef TC_HAVESPEEDO
 #include "speeddisplay.h"
-#endif
 #if defined(TC_HAVELIGHT) || defined(TC_HAVETEMP)
 #include "sensors.h"
 #endif
@@ -68,7 +66,7 @@
 #define BTTFN_TYPE_ANY     0    // Any, unknown or no device
 #define BTTFN_TYPE_FLUX    1    // Flux Capacitor
 #define BTTFN_TYPE_SID     2    // SID
-#define BTTFN_TYPE_PCG     3    // Dash gauge panel
+#define BTTFN_TYPE_PCG     3    // Dash gauges
 #define BTTFN_TYPE_VSR     4    // VSR
 #define BTTFN_TYPE_AUX     5    // Aux (user custom device)
 #define BTTFN_TYPE_REMOTE  6    // Futaba remote control
@@ -79,8 +77,6 @@
 
 #define BEEPM2_SECS 30
 #define BEEPM3_SECS 60
-
-extern unsigned long powerupMillis;
 
 extern uint16_t lastYear;
 
@@ -98,10 +94,8 @@ extern uint64_t lastAuthTime64;
 extern clockDisplay destinationTime;
 extern clockDisplay presentTime;
 extern clockDisplay departedTime;
-#ifdef TC_HAVESPEEDO
 extern bool useSpeedo;
 extern speedDisplay speedo;
-#endif
 extern bool useTemp;
 extern bool haveRcMode;
 #ifdef TC_HAVETEMP
@@ -126,15 +120,15 @@ extern bool          forceReEvalANM;
 extern unsigned long ctDown;
 extern unsigned long ctDownNow;
 
+extern bool          ETTOcommands;
+
 #define NUM_AUTOTIMES 11
 extern const dateStruct destinationTimes[NUM_AUTOTIMES];
 extern const dateStruct departedTimes[NUM_AUTOTIMES];
 extern int8_t     autoTime;
 
-#ifdef HAVE_STALE_PRESENT
 extern bool       stalePresent;
 extern dateStruct stalePresentTime[2];
-#endif
 
 // These block various events
 extern bool FPBUnitIsOn;
@@ -163,10 +157,8 @@ extern bool     timeDiffUp;
 
 extern bool timetravelPersistent;
 
-#ifdef FAKE_POWER_ON
 extern bool MQTTPwrMaster; 
 extern bool MQTTWaitForOn;
-#endif
 
 extern uint8_t beepMode;
 extern bool beepTimer;
@@ -181,6 +173,11 @@ void      timeTravel(bool doComplete, bool withSpeedo = false, bool forceNoLead 
 
 void      send_refill_msg();
 void      send_wakeup_msg();
+
+void      send_abort_msg();
+
+void      setTTOUTpin(uint8_t val);
+void      ettoPulseEnd();
 
 void      bttfnSendFluxCmd(uint32_t payload);
 void      bttfnSendSIDCmd(uint32_t payload);
@@ -198,7 +195,6 @@ void      pauseAuto();
 bool      checkIfAutoPaused();
 void      endPauseAuto(void);
 
-#ifdef FAKE_POWER_ON
 #ifdef TC_HAVEMQTT
 void      mqttFakePowerControl(bool);
 void      mqttFakePowerOn();
@@ -206,7 +202,6 @@ void      mqttFakePowerOff();
 #endif
 void      fpbKeyPressed();
 void      fpbKeyLongPressStop();
-#endif
 
 void      myCustomDelay_KP(unsigned long mydel);
 
@@ -239,7 +234,7 @@ void      allOff();
 bool      gpsHaveFix();
 #endif
 #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE)
-void      gps_loop(bool withRotEnc = true);
+void      gps_loop(bool withRotEnc);
 #endif
 
 void      mydelay(unsigned long mydel);
@@ -266,5 +261,11 @@ void      ntp_short_loop();
 int       bttfnNumClients();
 bool      bttfnGetClientInfo(int c, char **id, uint8_t **ip, uint8_t *type);
 bool      bttfn_loop();
+void      bttfn_tcd_busy(bool isBusy);
+
+#ifdef TC_HAVE_REMOTE
+void      removeRemote();
+void      removeKPRemote();
+#endif
 
 #endif

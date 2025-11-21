@@ -79,7 +79,7 @@
 // Must be sync'd to the sound file used (enter.mp3)
 #define BADDATE_DELAY 400
 #ifdef TWSOUND
-#define ENTER_DELAY   500       // For TW sound files
+#define ENTER_DELAY   500
 #else
 #define ENTER_DELAY   600
 #endif
@@ -148,7 +148,6 @@ static bool needDepTime = false;
 bool p3anim = false;
 #endif
 
-#ifdef EXTERNAL_TIMETRAVEL_IN
 bool                 isEttKeyPressed = false;
 bool                 isEttKeyHeld = false;
 bool                 isEttKeyImmediate = false;
@@ -156,7 +155,6 @@ static unsigned long ettNow = 0;
 static bool          ettDelayed = false;
 static unsigned long ettDelay = 0; // ms
 static bool          ettLong = DEF_ETT_LONG;
-#endif
 
 static unsigned long timeNow = 0;
 
@@ -174,22 +172,22 @@ static unsigned long lastKeyPressed = 0;
 #define DATELEN_ALSH   2   // 11            show alarm time/wd, etc.
 #define DATELEN_CMIN   DATELEN_ALSH     // min length of code entry
 #define DATELEN_CMAX   DATELEN_QALM     // max length of code entry
-#ifdef HAVE_STALE_PRESENT
 #define DATELEN_MAX    DATELEN_STPR
-#else
-#define DATELEN_MAX    DATELEN_ALL      // max length of possible entry
-#endif
 
 static char dateBuffer[DATELEN_MAX + 2];
+static char binBuf[DATELEN_MAX + 2];
 char        timeBuffer[8];
 
 static int dateIndex = 0;
 static int timeIndex = 0;
 
+static char injectBuffer[DATELEN_MAX + 2];
+static bool inputInjected = false;
+
 bool menuActive = false;
 
 static bool     doKey = false;
-static uint16_t preDTMFkeyplayed = 0;
+static uint32_t preDTMFkeyplayed = 0;
 
 static unsigned long enterDelay = 0;
 
@@ -201,12 +199,10 @@ static TCButton enterKey = TCButton(ENTER_BUTTON_PIN,
     false     // Disable internal pull-up resistor
 );
 
-#ifdef EXTERNAL_TIMETRAVEL_IN
 static TCButton ettKey = TCButton(EXTERNAL_TIMETRAVEL_IN_PIN,
     true,     // Button is active LOW
     true      // Enable internal pull-up resistor
 );
-#endif
 
 static void keypadEvent(char key, KeyState kstate);
 static void recordKey(char key);
@@ -215,17 +211,13 @@ static void recordSetTimeKey(char key, bool isYear);
 static void enterKeyPressed();
 static void enterKeyHeld();
 
-#ifdef EXTERNAL_TIMETRAVEL_IN
 static void ettKeyPressed();
 static void ettKeyHeld();
-#endif
 
 static void setupWCMode();
 static void buildRemString(char *buf);
 static void buildRemOffString(char *buf);
-#ifdef HAVE_STALE_PRESENT
 static void buildStalePTStatus(char *buf);
-#endif
 
 static void dt_showTextDirect(const char *text, uint16_t flags = CDT_CLEAR)
 {
@@ -251,7 +243,6 @@ void keypad_setup()
     enterKey.attachPress(enterKeyPressed);
     enterKey.attachLongPressStart(enterKeyHeld);
 
-#ifdef EXTERNAL_TIMETRAVEL_IN
     // Set up External time travel button
     ettKey.setTiming(ETT_DEBOUNCE, ETT_PRESS_TIME, ETT_HOLD_TIME);
     ettKey.attachPress(ettKeyPressed);
@@ -261,10 +252,9 @@ void keypad_setup()
     if(ettDelay > ETT_MAX_DEL) ettDelay = ETT_MAX_DEL;
 
     ettLong = (atoi(settings.ettLong) > 0);
-#endif
 
-    dateBuffer[0] = '\0';
-    timeBuffer[0] = '\0';
+    dateBuffer[0] = 0;
+    timeBuffer[0] = 0;
 }
 
 /*
@@ -371,9 +361,16 @@ static void keypadEvent(char key, KeyState kstate)
             } else playBad = true;
             break;
         }
+
         if(playBad) {
             play_file("/baddate.mp3", PA_INTSPKR|PA_CHECKNM|PA_ALLOWSD);
         }
+
+        // When holding a key, the input buffer is cleared
+        if(!doKey) {
+            discardKeypadInput();
+        }
+
         break;
         
     case TCKS_RELEASED:
@@ -395,7 +392,7 @@ void resetKeypadState()
 
 void discardKeypadInput()
 {
-    dateBuffer[0] = '\0';
+    dateBuffer[0] = 0;
     dateIndex = 0;
 }
 
@@ -411,7 +408,6 @@ static void enterKeyHeld()
     pwrNeedFullNow();
 }
 
-#ifdef EXTERNAL_TIMETRAVEL_IN
 static void ettKeyPressed()
 {
     isEttKeyPressed = true;
@@ -424,12 +420,11 @@ static void ettKeyHeld()
     isEttKeyHeld = true;
     pwrNeedFullNow();
 }
-#endif
 
 static void recordKey(char key)
 {
     dateBuffer[dateIndex++] = key;
-    dateBuffer[dateIndex] = '\0';
+    dateBuffer[dateIndex] = 0;
     // Don't wrap around, overwrite end of date instead
     if(dateIndex >= DATELEN_MAX) dateIndex = DATELEN_MAX - 1;  
     lastKeyPressed = millis();
@@ -438,7 +433,7 @@ static void recordKey(char key)
 static void recordSetTimeKey(char key, bool isYear)
 {
     timeBuffer[timeIndex++] = key;
-    timeBuffer[timeIndex] = '\0';
+    timeBuffer[timeIndex] = 0;
     timeIndex &= (isYear ? 0x03 : 0x1);
 }
 
@@ -448,18 +443,39 @@ void resetTimebufIndices()
     // Do NOT clear the timeBuffer, might be pre-set
 }
 
+#ifdef TC_HAVEMQTT
+bool injectInput(const char *s) 
+{
+    int i = 0;
+
+    // No new command until the prev one is done
+    if(inputInjected) return false;
+
+    // status flags (eg menuActive) checked in caller function
+    
+    for( ; *s; ++s) {
+        if(*s >= '0' && *s <= '9') injectBuffer[i++] = *s;
+        if(i >= DATELEN_MAX) break;
+    }
+    injectBuffer[i] = 0;
+    
+    if(!i) return false;
+
+    inputInjected = true;
+    return true;
+}
+#endif
+
 void enterkeyScan()
 {
     enterKey.scan();  // scan the enter button
 
-#ifdef EXTERNAL_TIMETRAVEL_IN
     ettKey.scan();    // scan the ext. time travel button
-#endif
 }
 
 static uint8_t read2digs(uint8_t idx)
 {
-   return ((dateBuffer[idx] - '0') * 10) + (dateBuffer[idx+1] - '0');
+    return (binBuf[idx] * 10) + binBuf[idx+1];
 }
 
 #ifdef TC_HAVE_REMOTE
@@ -474,11 +490,11 @@ void injectKeypadKey(char key, int kaction)
             isEnterKeyHeld = false;
             break;
         case BTTFN_KP_KS_HOLD:
-            //isEnterKeyPressed = false;    // No, we don't enter the keypad menu remotely.
-            //isEnterKeyHeld = true;
+            // We don't enter the keypad menu remotely.
             break;
         }
     } else if(key >= '0' && key <= '9') {
+        bool b = doKey;
         switch(kaction) {
         case BTTFN_KP_KS_PRESSED:
             keypadEvent(key, TCKS_PRESSED);
@@ -490,6 +506,7 @@ void injectKeypadKey(char key, int kaction)
             keypadEvent(key, TCKS_RELEASED);
             break;
         }
+        doKey = b;
     }
 }
 #endif
@@ -499,12 +516,17 @@ void injectKeypadKey(char key, int kaction)
  */
 void keypad_loop()
 {
+    char *keyBuffer = dateBuffer;
     char spTxt[16];
     #define EE1_KL2 12
     char spTxtS2[EE1_KL2] = { 181, 224, 179, 231, 199, 140, 197, 129, 197, 140, 194, 133 };
     const char *tmr = "TIMER   ";
 
-    enterkeyScan();
+    if(!inputInjected) {
+        enterkeyScan();
+    } else {
+        keyBuffer = injectBuffer;
+    }
 
     // Discard keypad input after 2 minutes of inactivity
     if(millis() - lastKeyPressed >= 2*60*1000) {
@@ -516,22 +538,20 @@ void keypad_loop()
 
         isEnterKeyHeld = false;
         isEnterKeyPressed = false;
-        #ifdef EXTERNAL_TIMETRAVEL_IN
+        inputInjected = false;
         isEttKeyPressed = isEttKeyImmediate = false;
         isEttKeyHeld = false;
-        #endif
 
         return;
 
     }
 
-#ifdef EXTERNAL_TIMETRAVEL_IN
     if(isEttKeyHeld) {
         resetPresentTime();
         isEttKeyPressed = isEttKeyHeld = isEttKeyImmediate = false;
     } else if(isEttKeyPressed) {
         if(!ettDelay || isEttKeyImmediate) {
-            // (MQTT with lead, otherwise without)
+            // (MQTT/BTTFN with lead, otherwise without)
             timeTravel(ettLong, true, isEttKeyImmediate ? false : true);
             ettDelayed = false;
         } else {
@@ -548,10 +568,9 @@ void keypad_loop()
             ettDelayed = false;
         }
     }
-#endif
 
     // If enter key is held, go into keypad menu
-    if(isEnterKeyHeld) {
+    if(!inputInjected && isEnterKeyHeld) {
 
         isEnterKeyHeld = false;
         isEnterKeyPressed = false;
@@ -559,34 +578,41 @@ void keypad_loop()
         cancelETTAnim();
 
         timeIndex = 0;
-        timeBuffer[0] = '\0';
+        timeBuffer[0] = 0;
 
         menuActive = true;
+        bttfn_tcd_busy(1);
 
         enter_menu();
 
         isEnterKeyHeld = false;
         isEnterKeyPressed = false;
 
-        #ifdef EXTERNAL_TIMETRAVEL_IN
         // No external tt while in menu mode,
         // so reset flag upon menu exit
         isEttKeyPressed = isEttKeyHeld = isEttKeyImmediate = false;
-        #endif
 
         menuActive = false;
+        bttfn_tcd_busy(0);
 
     }
 
-    // if enter key is merely pressed, copy dateBuffer to destination time (if valid)
-    if(isEnterKeyPressed) {
+    // if enter key is merely pressed, copy keyBuffer to destination time (if valid)
+    if(inputInjected || isEnterKeyPressed) {
 
-        int  strLen = strlen(dateBuffer);
+        int  strLen = strlen(keyBuffer);
         bool invalidEntry = false;
         bool validEntry = false;
         uint16_t enterInterruptsMusic = 0;
 
-        isEnterKeyPressed = false;
+        strcpy(binBuf, keyBuffer);
+        for(char *s = binBuf; *s ; ++s) {
+            *s -= '0';
+        }
+        
+        if(!inputInjected) {
+            isEnterKeyPressed = false;
+        }
         enterWasPressed = true;
 
         cancelETTAnim();
@@ -603,7 +629,7 @@ void keypad_loop()
 
             char atxt[16];
             uint16_t flags = 0;
-            uint8_t code = atoi(dateBuffer);
+            uint8_t code = atoi(keyBuffer);
             
             if(code == 11) {
 
@@ -677,13 +703,10 @@ void keypad_loop()
                     #else
                     sprintf(atxt, "PLAYING   %03d", mp_get_currently_playing());
                     #endif
-                    if(haveId3) {
-                        decodeID3(ctxt, btxt);
-                        if(*ctxt || *btxt) {
-                            if(!*ctxt) strcpy(ctxt, "UNKNOWN");
-                            if(!*btxt) strcpy(btxt, "UNKNOWN");
-                            specDisp = 20;
-                        }
+                    if(*id3artist || *id3track) {
+                        strcpy(ctxt, *id3artist ? id3artist : "UNKNOWN");
+                        strcpy(btxt, *id3track ? id3track : "UNKNOWN");
+                        specDisp = 20;
                     }
                 } else {
                     strcpy(atxt, "STOPPED");
@@ -705,7 +728,7 @@ void keypad_loop()
 
         } else if(strLen == DATELEN_CODE) {
 
-            uint16_t code = atoi(dateBuffer);
+            uint16_t code = atoi(keyBuffer);
             bool rcModeState;
             char atxt[16];
             uint16_t flags = 0;
@@ -730,6 +753,12 @@ void keypad_loop()
                 if(oldVol != curVolume) {
                     saveCurVolume();
                 }
+              
+            } else if(code >= 501 && code <= 509) {
+
+                play_key(code - 500, 0xffff);
+
+                // Play no sound, ie no xxvalidEntry
               
             } else {
             
@@ -804,7 +833,6 @@ void keypad_loop()
                         invalidEntry = true;
                     }
                     break;
-                #ifdef TC_HAVELINEOUT
                 case 350:
                 case 351:
                     if(haveLineOut) {
@@ -818,7 +846,6 @@ void keypad_loop()
                         invalidEntry = true;
                     }
                     break;
-                #endif
                 case 440:
                     #ifdef IS_ACAR_DISPLAY
                     sprintf(atxt, "%s OFF", tmr);
@@ -906,44 +933,68 @@ void keypad_loop()
                     enterDelay = ENTER_DELAY;
                     // Play no sound, ie no xxvalidEntry
                     break;
+                case 900:
+                case 901:
+                    if(ETTOcommands) {
+                        setTTOUTpin((code == 901) ? HIGH : LOW);
+                        enterDelay = ENTER_DELAY;
+                        // Play no sound, ie no xxvalidEntry
+                    } else invalidEntry = true;
+                    break;
                 case 990:
                 case 991:
-                    rcModeState = carMode;
-                    carMode = (code == 991);
-                    if(rcModeState != carMode) {
-                        saveCarMode();
-                        prepareReboot();
-                        delay(1000);
-                        esp_restart();
-                    }
-                    validEntry = true;
+                    if(!inputInjected) {
+                        rcModeState = carMode;
+                        carMode = (code == 991);
+                        if(rcModeState != carMode) {
+                            saveCarMode();
+                            prepareReboot();
+                            delay(1000);
+                            esp_restart();
+                        }
+                        validEntry = true;
+                    } else invalidEntry = true;
                     break;
                 #ifdef TC_HAVE_REMOTE
                 case 992:
                 case 993:
-                    rcModeState = remoteAllowed;
-                    remoteAllowed = (code == 993);
-                    if(rcModeState != remoteAllowed) {
-                        saveRemoteAllowed();
-                    }
-                    validEntry = true;
+                    if(!inputInjected) {
+                        rcModeState = remoteAllowed;
+                        remoteAllowed = (code == 993);
+                        if(rcModeState != remoteAllowed) {
+                            saveRemoteAllowed();
+                            if(!remoteAllowed) {
+                                removeRemote();
+                                bttfn_tcd_busy(0);
+                            }
+                        }
+                        validEntry = true;
+                    } else invalidEntry = true;
                     break;
                 case 994:
                 case 995:
-                    rcModeState = remoteKPAllowed;
-                    remoteKPAllowed = (code == 995);
-                    if(rcModeState != remoteKPAllowed) {
-                        saveRemoteAllowed();
-                    }
-                    validEntry = true;
+                    if(!inputInjected) {
+                        rcModeState = remoteKPAllowed;
+                        remoteKPAllowed = (code == 995);
+                        if(rcModeState != remoteKPAllowed) {
+                            saveRemoteAllowed();
+                            if(!remoteKPAllowed) {
+                                removeKPRemote();
+                                bttfn_tcd_busy(0);
+                            }
+                        }
+                        validEntry = true;
+                    } else invalidEntry = true;
                     break;
-                #endif
-                #if defined(TC_HAVEMQTT) && defined(FAKE_POWER_ON)
+                #endif  // TC_HAVE_REMOTE
+                #ifdef TC_HAVEMQTT
                 case 996:
-                    mqttFakePowerControl(false);
-                    validEntry = true;
+                    if(!inputInjected) {
+                        mqttFakePowerControl(false);
+                        validEntry = true;
+                    } else invalidEntry = true;
                     break;
-                #endif
+                #endif  // TC_HAVEMQTT
                 case 998:
                     if(timetravelPersistent) {
                         invalidEntry = true;
@@ -960,7 +1011,6 @@ void keypad_loop()
                         validEntry = true;
                     }
                     break;
-                #ifdef HAVE_STALE_PRESENT
                 case 999:
                     stalePresent = !stalePresent;
                     buildStalePTStatus(atxt);
@@ -970,7 +1020,6 @@ void keypad_loop()
                     saveStaleTime((void *)&stalePresentTime[0], stalePresent);
                     validEntry = true;
                     break;
-                #endif
                 default:
                     invalidEntry = true;
                 }
@@ -978,7 +1027,7 @@ void keypad_loop()
 
         } else if(strLen == DATELEN_INT) {
 
-            if(!(strncmp(dateBuffer, "64738", 5))) {
+            if(!strncmp(keyBuffer, "64738", 5) && !inputInjected) {
                 prepareReboot();
                 delay(1000);
                 esp_restart();
@@ -993,10 +1042,9 @@ void keypad_loop()
 
             if(code == 11) {
 
-                uint8_t aHour, aMin;
+                uint8_t aHour = read2digs(2);
+                uint8_t aMin = read2digs(4);
 
-                aHour = read2digs(2);
-                aMin  = read2digs(4);
                 if(aHour <= 23 && aMin <= 59) {
                     const char *alwd = getAlWD(alarmWeekday);
                     if( (alarmHour != aHour)  ||
@@ -1053,9 +1101,9 @@ void keypad_loop()
 
                 invalidEntry = !validEntry; 
             
-            } else if(haveMusic && !strncmp(dateBuffer, "888", 3)) {
+            } else if(haveMusic && !strncmp(keyBuffer, "888", 3)) {
 
-                uint16_t num = ((dateBuffer[3] - '0') * 100) + read2digs(4);
+                uint16_t num = (binBuf[3] * 100) + read2digs(4);
                 num = mp_gotonum(num, mpActive);
                 #ifdef IS_ACAR_DISPLAY
                 sprintf(atxt, "NEXT     %03d", num);
@@ -1102,32 +1150,30 @@ void keypad_loop()
             validEntry = true;
 
         } else if((strLen == DATELEN_TIME || strLen == DATELEN_ECMD) && 
-                        (dateBuffer[0] == '3' ||
-                         dateBuffer[0] == '5' ||
-                         dateBuffer[0] == '6' ||
-                         dateBuffer[0] == '7' ||
-                         dateBuffer[0] == '8' ||
-                         dateBuffer[0] == '9')) {
+                                                      binBuf[0] != 0 &&
+                                                      binBuf[0] != 1 &&
+                                                      binBuf[0] != 2 &&
+                                                      binBuf[0] != 4) {
                       
             uint32_t cmd;
             if(strLen == DATELEN_TIME)
-                cmd = ((dateBuffer[1] - '0') * 100) + read2digs(2);
+                cmd = (binBuf[1] * 100) + read2digs(2);
             else
                 cmd = (read2digs(1) * 10000) + (read2digs(3) * 100) + read2digs(5);
-            switch(dateBuffer[0]) {
-            case '3':
+            switch(binBuf[0]) {
+            case 3:
                 bttfnSendFluxCmd(cmd);
                 break;
-            case '5':
+            case 5:
                 bttfnSendAUXCmd(cmd);
                 break;
-            case '6':
+            case 6:
                 bttfnSendSIDCmd(cmd);
                 break;
-            case '7':
+            case 7:
                 bttfnSendRemCmd(cmd);
                 break;
-            case '8':
+            case 8:
                 bttfnSendVSRCmd(cmd);
                 break;
             default:
@@ -1173,7 +1219,6 @@ void keypad_loop()
             
             invalidEntry = !validEntry;
 
-        #ifdef HAVE_STALE_PRESENT
         } else if(strLen == DATELEN_STPR) {
 
             if(read2digs(0) == 99) {
@@ -1221,7 +1266,6 @@ void keypad_loop()
             } else {
                 invalidEntry = true;
             }
-        #endif
 
         } else if((strLen == DATELEN_TIME) || (strLen == DATELEN_DATE) || (strLen == DATELEN_ALL)) {
 
@@ -1240,7 +1284,7 @@ void keypad_loop()
             temp1 = read2digs(0);
             temp2 = read2digs(2);
             
-            // Convert dateBuffer to date
+            // Convert keyBuffer to date
             if(strLen == DATELEN_TIME) {
                 _setHour  = temp1;
                 _setMin   = temp2;
@@ -1380,9 +1424,9 @@ void keypad_loop()
 
         }
 
+        enterDelay = ENTER_DELAY;
         if(validEntry) {
             play_file("/enter.mp3", PA_INTSPKR|PA_CHECKNM|enterInterruptsMusic|PA_ALLOWSD);
-            enterDelay = ENTER_DELAY;
         } else if(invalidEntry) {
             play_file("/baddate.mp3", PA_INTSPKR|PA_CHECKNM|enterInterruptsMusic|PA_ALLOWSD);
             enterDelay = BADDATE_DELAY;
@@ -1393,8 +1437,12 @@ void keypad_loop()
         }
 
         // Prepare for next input
-        dateIndex = 0;
-        dateBuffer[0] = '\0';
+        if(!inputInjected) {
+            dateIndex = 0;
+            keyBuffer[0] = 0;
+        }
+        inputInjected = false;
+        
     }
 
     // Turn everything back on after entering date
@@ -1530,7 +1578,6 @@ void keypad_loop()
             enterWasPressed = false;          // reset flags
 
             needDepTime = false;
-
         }
 
     }
@@ -1576,9 +1623,7 @@ void cancelEnterAnim(bool reenableDT)
 
 void cancelETTAnim()
 {
-    #ifdef EXTERNAL_TIMETRAVEL_IN
     ettDelayed = false;
-    #endif
 }
 
 bool keypadIsIdle()
@@ -1631,7 +1676,6 @@ static void buildRemOffString(char *buf)
     #endif
 }
 
-#ifdef HAVE_STALE_PRESENT
 static void buildStalePTStatus(char *buf)
 {
     #ifdef IS_ACAR_DISPLAY
@@ -1640,17 +1684,15 @@ static void buildStalePTStatus(char *buf)
     sprintf(buf, "EXH MODE  %s", stalePresent ? " ON" : "OFF");
     #endif
 }
-#endif
 
 void prepareReboot()
 {
     mp_stop();
     stopAudio();
+    ettoPulseEnd();
     allOff();
     flushDelayedSave();
-    #ifdef TC_HAVESPEEDO
     if(useSpeedo) speedo.off();
-    #endif
     destinationTime.resetBrightness();
     dt_showTextDirect("REBOOTING");
     destinationTime.on();
@@ -1730,9 +1772,7 @@ static void setNightMode(bool nm)
     destinationTime.setNightMode(nm);
     presentTime.setNightMode(nm);
     departedTime.setNightMode(nm);
-    #ifdef TC_HAVESPEEDO
     if(useSpeedo) speedo.setNightMode(nm);
-    #endif
 }
 
 void nightModeOn()

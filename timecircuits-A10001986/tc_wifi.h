@@ -61,10 +61,11 @@ extern bool wifiHaveSTAConf;
 
 extern bool carMode;
 
+extern bool pubMQTT;
 #ifdef TC_HAVEMQTT
 extern bool useMQTT;
 extern const char *mqttAudioFile;
-extern bool pubMQTT;
+extern bool MQTTvarLead;
 #endif
 
 void wifi_setup();

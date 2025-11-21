@@ -138,9 +138,65 @@
  */
 
 /*  Changelog
- *
+ *  
+ *  2025/11/21 (A10001986)
+ *    - WM: Minor HTML tweaks; make page width dynamic for better display
+ *      on handheld devices
+ *  2025/11/19 (A10001986)
+ *    - Add support for MQTT v5.0 (tested with mosquitto only). Has no
+ *      advantages over 3.1.1 (but more overhead), only there to use brokers
+ *      that lack support for 3.1.1.
+ *    - Add connection state info on HA/MQTT Settings page
+ *  2025/11/17 (A10001986)
+ *    - Clear keypad input buffer when/after holding a key
+ *  2025/11/16 (A10001986)
+ *    - Delete Remote/KPRemote upon forbidding remote (KP) control 
+ *    - WM: Require HTTP_POST for params save pages. Also, check if request 
+ *      has parameter, do not overwrite current value with null (protects from 
+ *      overwriting settings by errorneous page reloads)
+ *  2025/11/15 (A10001986)
+ *    - Offer three purposes for TT-OUT (IO14): Time travel (as before), alarm,
+ *      and control through keypad command; selectable in Config Portal.
+ *  2025/11/13 (A10001986)
+ *    - Remove various compilation conditionals (FAKE_POWER_ON, TC_HAVELINEOUT,
+ *      EXTERNAL_TIMETRAVEL_IN, EXTERNAL_TIMETRAVEL_OUT, HAVE_STALE_PRESENT,
+ *      TC_HAVESPEEDO, TC_BTTFN_MC)
+ *  2025/11/11 (A10001986)
+ *    - Add "stalled P0" feature for speed notification (used by Remote)
+ *    - MQTT: Make "enhanced TT" default to on, it avoids the "5s lead problem".
+ *  2025/11/10 (A10001986)
+ *    - Add (inter-prop) MQTT-"TIMETRAVEL" command with lead time and time tunnel
+ *      duration attached, eg. "TIMETRAVEL_4950_6600". Only on bttf/tcd/pub.
+ *    - Various fixes to inter-prop MQTT communication
+ *    - Abort a network tt ahead of actions that result in a reboot
+ *  2025/11/09 (A10001986)
+ *    - Add BTTFN_NOT_BUSY notification and status flag to inform BTTFN clients 
+ *      that the TCD is busy (eg keypad menu) and not ready for time travel. This
+ *      is also used to transmit Remote(KP)Allowed stati.
+ *  2025/11/08 (A10001986)
+ *    - Move HA/MQTT settings to separate config portal page
+ *    - Allocate MQTT buffer only if MQTT is actually used
+ *    - Re-order time_loop(): Handle timers in loop iteration following second
+ *      change
+ *    - Minor code cleanups
+ *    - Put beep in flash now that there is space
+ *  2025/11/07 (A10001986)
+ *    - MP3/File-Renamer: Ignore non-mp3 files; display number of files-to-do while 
+ *      renaming
+ *    - Decode ID3 tags and free memory immediately on play-back start
+ *    - Remove hack to skip web handling in on mp3-playback start, remove stopping
+ *      sound in AP mode on CP access.
+ *  2025/11/06 (A10001986)
+ *    - Block newly injected MQTT command while previous one is still being
+ *      worked on.
+ *  2025/11/05 (A10001986)
+ *    - Add MQTT command "INJECT_"
+ *  2025/11/03 (A10001986)
+ *    - Add MQTT commands PLAYKEY_x and STOPKEY
+ *    - Add commands 501-509 to play keyX (X=1-9)
  *  2025/11/02 (A10001986) [3.8]
- *    - WM: Generate HTML for checkboxes on-the-fly.
+ *    - Add option to disable time-cycling animation
+ *    - WM: Generate HTML for checkboxes on-the-fly
  *  2025/11/01 (A10001986)
  *    - Add "POWER_CONTROL_xx" and "POWER_xx" MQTT commands to control Fake-Power 
  *      through HA. POWER_CONTROL_xx enables/disables power control through HA, 
@@ -1542,8 +1598,6 @@
 
 void setup()
 {
-    powerupMillis = millis();
-
     Serial.begin(115200);
     Serial.println();
 
@@ -1561,7 +1615,6 @@ void setup()
     keypad_setup();
     time_setup();
 }
-
 
 void loop()
 {
