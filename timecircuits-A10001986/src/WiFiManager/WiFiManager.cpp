@@ -273,6 +273,7 @@ void WiFiManager::WiFiManagerInit()
     memset(_pass, 0, sizeof(_pass));
     memset(_apName, 0, sizeof(_apName));
     memset(_apPassword, 0, sizeof(_apPassword));
+    _title = S_brand;
 }
 
 // destructor
@@ -585,12 +586,12 @@ void WiFiManager::setupHTTPServer()
 
     server->on(R_root,       std::bind(&WiFiManager::handleRoot, this));
     server->on(R_wifi,       std::bind(&WiFiManager::handleWifi, this, true));
-    server->on(R_wifisave,   std::bind(&WiFiManager::handleWifiSave, this));
+    server->on(R_wifisave,   HTTP_POST, std::bind(&WiFiManager::handleWifiSave, this));
     server->on(R_param,      std::bind(&WiFiManager::handleParam, this));
-    server->on(R_paramsave,  std::bind(&WiFiManager::handleParamSave, this));
+    server->on(R_paramsave,  HTTP_POST, std::bind(&WiFiManager::handleParamSave, this));
     #ifdef WM_PARAM2
     server->on(R_param2,     std::bind(&WiFiManager::handleParam2, this));
-    server->on(R_param2save, std::bind(&WiFiManager::handleParam2Save, this));
+    server->on(R_param2save, HTTP_POST, std::bind(&WiFiManager::handleParam2Save, this));
     #endif
     server->on(R_update,     std::bind(&WiFiManager::handleUpdate, this));
     server->on(R_updatedone, HTTP_POST, std::bind(&WiFiManager::handleUpdateDone, this), std::bind(&WiFiManager::handleUpdating, this));
@@ -688,7 +689,12 @@ bool WiFiManager::startConfigPortal(char const *apName, char const *apPassword, 
 
     if(!*_apName) getDefaultAPName(_apName);
 
-    if(!validApPassword()) return false;
+    if(*_apPassword) {
+        size_t t = strlen(_apPassword);
+        if(t < 8 || t > 63) {
+            return false;
+        }
+    }
 
     // Install WiFi event handler
     WiFi_installEventHandler();
@@ -1307,6 +1313,7 @@ unsigned int WiFiManager::getParamOutSize(WiFiManagerParameter** params,
 
                 switch(params[i]->getFlags() & WFM_LABEL_MASK) {
                 case WFM_LABEL_BEFORE:
+                    if(!(params[i]->getFlags() & WFM_NO_BR)) mysize += STRLEN(HTTP_BR);
                 case WFM_LABEL_AFTER:
                     mysize += STRLEN(HTTP_FORM_LABEL) + STRLEN(HTTP_FORM_PARAM);
                     mysize += STRLEN(HTTP_BR);
@@ -1404,8 +1411,9 @@ void WiFiManager::getParamOut(String &page, WiFiManagerParameter** params,
                 switch (params[i]->getFlags() & WFM_LABEL_MASK) {
                 case WFM_LABEL_BEFORE:
                     pitem = FPSTR(HTTP_FORM_LABEL);
-                    pitem += FPSTR(HTTP_BR);
+                    if(!(params[i]->getFlags() & WFM_NO_BR)) pitem += FPSTR(HTTP_BR);
                     pitem += FPSTR(HTTP_FORM_PARAM);
+                    pitem += FPSTR(HTTP_BR);
                     break;
                 case WFM_LABEL_AFTER:
                     pitem = FPSTR(HTTP_FORM_PARAM);
@@ -1484,17 +1492,23 @@ void WiFiManager::doParamSave(WiFiManagerParameter** params, int paramsCount)
                 Serial.printf("doSaveParms: skipped parm %d\n", i);
                 #endif
                 continue;
-            } else {
-                #ifdef _A10001986_DBG
-                Serial.printf("doSaveParms: doing parm %s\n", params[i]->getID());
-                #endif
             }
 
             // read parameter from server
             String value = server->arg(params[i]->getID());
 
-            // store it in params array; +1 for null termination
-            value.toCharArray(params[i]->_value, params[i]->_length + 1);
+            if(value == "" && (params[i]->getFlags() & WFM_IS_CHKBOX)) {
+                strcpy(params[i]->_value, "0");
+                #ifdef _A10001986_DBG
+                Serial.printf("doSaveParms: checkbox '%s' set to 0\n", params[i]->getID());
+                #endif
+            } else {
+                // store it in params array; +1 for null termination
+                value.toCharArray(params[i]->_value, params[i]->_length + 1);
+                #ifdef _A10001986_DBG
+                Serial.printf("doSaveParms: '%s' set to '%s'\n", params[i]->getID(), params[i]->_value);
+                #endif
+            }
 
             if(!(i % 30) && _gpcallback) {
                 _gpcallback(WM_LP_NONE);
@@ -1513,6 +1527,15 @@ void WiFiManager::HTTPSend(const String& content)
 
     #ifdef _A10001986_DBG
     Serial.printf("HTTPSend: Heap before %d\n", ESP.getFreeHeap());
+    #endif
+
+    #if 0
+    if(server->client()) {
+        #ifdef _A10001986_DBG
+        Serial.printf("TCP_NODELAY is %d\n", server->client().getNoDelay());
+        #endif
+        server->client().setNoDelay(true);
+    }
     #endif
 
     server->send(200, HTTP_HEAD_CT, content);
@@ -2001,7 +2024,9 @@ void WiFiManager::getIpForm(String& page, const char *id, const char *title, IPA
     item.reserve(s + 8);
 
     item = FPSTR(HTTP_FORM_LABEL);
+    item += FPSTR(HTTP_BR);
     item += FPSTR(HTTP_FORM_PARAM);
+    item += FPSTR(HTTP_BR);
     item.replace(FPSTR(T_i), id);
     item.replace(FPSTR(T_n), id);
     item.replace(FPSTR(T_t), title);
@@ -2026,14 +2051,14 @@ unsigned int WiFiManager::getStaticLen()
         mySize += STRLEN(HTTP_FORM_SECT_HEAD);
     }
     if(showSta) {
-        mySize += (3 * (STRLEN(HTTP_FORM_LABEL) + STRLEN(HTTP_FORM_PARAM) - (8*3)));
+        mySize += (3 * (STRLEN(HTTP_FORM_LABEL) + STRLEN(HTTP_FORM_PARAM) - (8*3) + (2*STRLEN(HTTP_BR))));
         mySize += (3*STRLEN(S_ip)) + STRLEN(S_staticip) + 2 + 15;
         mySize += STRLEN(HTTP_FORM_WIFI_PH);
         mySize += (3*STRLEN(S_sn)) + STRLEN(S_subnet) + 2 + 15;
         mySize += (3*STRLEN(S_gw)) + STRLEN(S_staticgw) + 2 + 15;
     }
     if(showDns) {
-        mySize += STRLEN(HTTP_FORM_LABEL) + STRLEN(HTTP_FORM_PARAM) - (8*3);
+        mySize += STRLEN(HTTP_FORM_LABEL) + STRLEN(HTTP_FORM_PARAM) - (8*3) + (2*STRLEN(HTTP_BR));
         mySize += (3*STRLEN(S_dns)) + STRLEN(S_staticdns) + 2 + 15;
     }
     if(showSta || showDns) {
@@ -3003,8 +3028,7 @@ void WiFiManager::setShowDnsFields(bool doShow)
 // setTitle(): Set page title
 void WiFiManager::setTitle(const char *title)
 {
-    memset(_title, 0, sizeof(_title));
-    strncpy(_title, title, sizeof(_title) - 1);
+    _title = title;
 }
 
 // showUploadContainer(): Toggle displaying the sound-pack upload fields
@@ -3056,11 +3080,9 @@ void WiFiManager::setCarMode(bool enable)
 // NETWORK-RELATED
 
 // setHostname(): Set the hostname (dhcp client id)
-bool WiFiManager::setHostname(const char * hostname)
+void WiFiManager::setHostname(const char * hostname)
 {
-    memset(_hostname, 0, sizeof(_hostname));
-    strncpy(_hostname, hostname, sizeof(_hostname) - 1);
-    return true;
+    _hostname = hostname;
 }
 
 // setWiFiAPChannel(): Set the softAP channel
@@ -3355,19 +3377,6 @@ void WiFiManager::getDefaultAPName(char *apName)
 void WiFiManager::reboot()
 {
     ESP.restart();
-}
-
-bool WiFiManager::validApPassword()
-{
-    // check that ap password has valid length
-    if(*_apPassword) {
-        size_t t = strlen(_apPassword);
-        if(t < 8 || t > 63) {
-            *_apPassword = 0;
-            return false;
-        }
-    }
-    return true;
 }
 
 // htmlEntities(): Encode for HTML, but do not garble UTF8 characters

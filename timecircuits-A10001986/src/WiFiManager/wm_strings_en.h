@@ -47,7 +47,7 @@ const char HTTP_FORM_PARAM_HEAD[]  PROGMEM = "<hr>";
 const char HTTP_FORM_PARAM[]       PROGMEM = "<input id='{i}' name='{n}' maxlength='{l}' value='{v}' {c} {f}>";
 const char HTTP_FORM_END[]         PROGMEM = "<button type='submit'>Save</button></form>";
 
-const char HTTP_FORM_WIFI[]        PROGMEM = "<div class='sects'><div class='headl'>WiFi connection: Network selection</div><label for='s'>Network name (SSID)</label><input id='s' name='s' maxlength='32' autocorrect='off' autocapitalize='none' placeholder='{V}' oninput='var x=ge(\"fg\");var y=ge(\"p\");y.disabled=false;if(!this.value.length&&this.placeholder.length){if(x&&!y.value.length){x.style.display=\"\"}y.placeholder=y.getAttribute(\"data-ph\")||\"********\";}else{if(x){x.style.display=\"none\"}y.placeholder=\"\"}'><br><label for='p'>Password</label><input id='p' name='p' maxlength='64' type='password' placeholder='{p}' data-ph='{p}' oninput='var x=ge(\"fg\");if(x){var y=ge(\"s\");if(!y.value.length&&y.placeholder.length){if(this.value.length){x.style.display=\"none\"}else{x.style.display=\"\"}}}'><label><input type='checkbox' onclick='f()' style='margin:0px 5px 10px 0px'>Show password when typing</label>";
+const char HTTP_FORM_WIFI[]        PROGMEM = "<div class='sects'><div class='headl'>WiFi connection: Network selection</div><label for='s'>Network name (SSID)</label><br><input id='s' name='s' maxlength='32' autocorrect='off' autocapitalize='none' placeholder='{V}' oninput='var x=ge(\"fg\");var y=ge(\"p\");y.disabled=false;if(!this.value.length&&this.placeholder.length){if(x&&!y.value.length){x.style.display=\"\"}y.placeholder=y.getAttribute(\"data-ph\")||\"********\";}else{if(x){x.style.display=\"none\"}y.placeholder=\"\"}'><br><label for='p'>Password</label><br><input id='p' name='p' maxlength='64' type='password' placeholder='{p}' data-ph='{p}' oninput='var x=ge(\"fg\");if(x){var y=ge(\"s\");if(!y.value.length&&y.placeholder.length){if(this.value.length){x.style.display=\"none\"}else{x.style.display=\"\"}}}'><br><label><input type='checkbox' onclick='f()' style='margin:0px 5px 10px 0px'>Show password when typing</label><br>";
 const char HTTP_FORM_WIFI_END[]    PROGMEM = "</div>";
 const char HTTP_WIFI_ITEM[]        PROGMEM = "<div><a href='#p' onclick='return {t}(this)' data-ssid='{V}'>{v}</a>{c}<div role='img' aria-label='{r}dBm' title='{r}dBm' class='q q-{q} {i}'></div></div>";
 const char HTTP_FORM_SECT_HEAD[]   PROGMEM = "<div class='sects'><div class='headl'>WiFi connection: Static IP settings</div>";
@@ -67,9 +67,9 @@ const char HTTP_SAVED_CARMODE[]    PROGMEM = "<br>Device is run in <strong>car m
 const char HTTP_SAVED_ERASED[]     PROGMEM = "WiFi network credentials deleted.<br>Restarting in AP mode.<br>";
 const char HTTP_PARAMSAVED_END[]   PROGMEM = "</div>";
 
-const char HTTP_UPDATE[]           PROGMEM = "Upload new firmware<br><form method='POST' action='u' enctype='multipart/form-data' onsubmit=\"var aa=ge('uploadbin');if(aa){aa.disabled=true;aa.innerHTML='Please wait'}aa=ge('uacb');if(aa){aa.disabled=true}\" onchange=\"(function(el){ge('uploadbin').style.display=el.value==''?'none':'initial';})(this)\"><input type='file' name='update' accept='.bin,application/octet-stream'><button id='uploadbin' type='submit' class='h D'>Update</button></form>";
-const char HTTP_UPLOADSND1[]       PROGMEM = "<br>Upload sound pack (";
-const char HTTP_UPLOADSND2[]       PROGMEM = ".bin)<br>and/or .mp3 file(s)<br><form method='POST' action='uac' enctype='multipart/form-data' onsubmit=\"var aa=ge('uacb');if(aa){aa.disabled=true;aa.innerHTML='Please wait'}aa=ge('uploadbin');if(aa){aa.disabled=true}\" onchange=\"(function(el){ge('uacb').style.display=el.value==''?'none':'initial';})(this)\"><input type='file' name='upac' multiple accept='.bin,application/octet-stream,.mp3,audio/mpeg'><button id='uacb' type='submit' class='h'>Upload</button></form>";
+const char HTTP_UPDATE[]           PROGMEM = "<form method='POST' action='u' enctype='multipart/form-data' onsubmit=\"var aa=ge('uploadbin');if(aa){aa.disabled=true;aa.innerHTML='Please wait'}aa=ge('uacb');if(aa){aa.disabled=true}\" onchange=\"(function(el){ge('uploadbin').style.display=el.value==''?'none':'initial';})(this)\"><div class='sects'>Upload new firmware<br><input type='file' name='update' accept='.bin,application/octet-stream'><br><button id='uploadbin' type='submit' class='h D'>Update</button></div></form>";
+const char HTTP_UPLOADSND1[]       PROGMEM = "<form method='POST' action='uac' enctype='multipart/form-data' onsubmit=\"var aa=ge('uacb');if(aa){aa.disabled=true;aa.innerHTML='Please wait'}aa=ge('uploadbin');if(aa){aa.disabled=true}\" onchange=\"(function(el){ge('uacb').style.display=el.value==''?'none':'initial';})(this)\"><div class='sects'>Upload sound pack (";
+const char HTTP_UPLOADSND2[]       PROGMEM = ".bin)<br>and/or .mp3 file(s)<br><input type='file' name='upac' multiple accept='.bin,application/octet-stream,.mp3,audio/mpeg'><br><button id='uacb' type='submit' class='h'>Upload</button></div></form>";
 const char HTTP_UPDATE_FAIL1[]     PROGMEM = "<div class='msg D'><strong>Update failed.</strong><br>";
 const char HTTP_UPDATE_FAIL2[]     PROGMEM = "</div>";
 const char HTTP_UPDATE_SUCCESS[]   PROGMEM = "<div id='lc' class='msg S'><strong>Update successful.</strong><br>Device rebooting.</div>";
@@ -77,7 +77,7 @@ const char HTTP_UPLOAD_SDMSG[]     PROGMEM = "<div class='msg'>In order to uploa
 
 const char HTTP_STATUS_HEAD[]      PROGMEM = "<div class='sta'><span class='{c}'>&#x25CF;</span> ";
 const char HTTP_STATUS_TAIL[]      PROGMEM = "</div>";
-const char HTTP_STATUS_ON[]        PROGMEM = "{v}<br{i}";
+const char HTTP_STATUS_ON[]        PROGMEM = "{v}<br>{i}";
 const char HTTP_STATUS_OFF[]       PROGMEM = "{v}<br>{r}Operating in {V}mode";
 const char HTTP_STATUS_OFFNOAP[]   PROGMEM = "Network not found<br>";             // WL_NO_SSID_AVAIL
 const char HTTP_STATUS_OFFFAIL[]   PROGMEM = "Failed to connect<br>";             // WL_CONNECT_FAILED
@@ -97,10 +97,12 @@ const char HTTP_STYLE[]            PROGMEM = "<style>"
     "input[type=checkbox],input[type=radio]{display:inline-block;margin-top:10px;margin-right:5px;width:auto;}"
     "button,input[type='button'],input[type='submit']{cursor:pointer;border:0;background-color:#225a98;color:#fff;line-height:2.4rem;font-size:1.2rem;width:100%}"
     "input[type='file']{border:1px solid #225a98}"
+    "label{display:inline-block;vertical-align:text-top;margin:0 10px 0 0;padding:0 10px 0 0;white-space:normal}"
     ".h{display:none}"
     ".wrap{text-align:left;display:inline-block;min-width:260px;max-width:500px}"
     ".headl{margin:0 0 7px 0;padding:0}"
-    ".sects{background-color:#eee;border-radius:7px;margin-bottom:20px;padding-bottom:7px;padding-top:7px}"
+    ".sects{background-color:#eee;border-radius:7px;margin-bottom:20px;padding:7px 10px 7px 10px;white-space:nowrap}"
+    "label.mp0{margin:0;padding:0}"
     // links
     "a{color:#000;font-weight:bold;text-decoration:none}"
     "a:hover{color:#225a98;text-decoration:underline}"
@@ -212,7 +214,7 @@ const char T_q[]                  PROGMEM = "{q}"; // @token q
 const char T_r[]                  PROGMEM = "{r}"; // @token r
 const char T_R[]                  PROGMEM = "{R}"; // @token R
 const char T_h[]                  PROGMEM = "{h}"; // @token h
-const char T_f[]                  PROGMEM = "{f}"; // @token h
+const char T_f[]                  PROGMEM = "{f}"; // @token f
 
 // http
 const char HTTP_HEAD_CL[]         PROGMEM = "Content-Length";

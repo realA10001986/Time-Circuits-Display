@@ -17,7 +17,7 @@
 //#define _A10001986_V_DBG
 
 #define WM_MDNS
-// #define WM_PARAM2
+#define WM_PARAM2
 // #define WM_AP_STATIC_IP
 // #define WM_APCALLBACK
 // #define WM_PRECONNECTCB
@@ -27,8 +27,8 @@
 // #define WM_ADDLSETTERS
 
 #ifdef WM_PARAM2
-#define WM_PARAM2_CAPTION ""
-#define WM_PARAM2_TITLE ""
+#define WM_PARAM2_CAPTION "HA/MQTT Settings"
+#define WM_PARAM2_TITLE "HA/MQTT Settings"
 #endif
 
 #endif
