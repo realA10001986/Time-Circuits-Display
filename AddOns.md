@@ -325,7 +325,7 @@ If you have a GPS receiver, a rotary encoder or a Futaba remote control and use 
                                                                      TT starts                      Reentry phase
                                                                           |                         |
                                             |<---------ETTO lead--------->|                         |
-                                            |                                                       |
+                                            |           (5000ms)                                    |
                                             |                                                       |
                                             |                                                       |
                                             MQTT: TIMETRAVEL                                        MQTT: REENTRY
@@ -345,7 +345,7 @@ If a time travel sequence is started by button and the TCD doing the acceleratio
                                       TT starts                      Reentry phase
                                            |                         |
              |<---------ETTO lead--------->|                         |
-             |                                                       |
+             |           (5000ms)                                    |
              |                                                       |
              |                                                       |
              MQTT: TIMETRAVEL_5000_yyyy                              MQTT: REENTRY
