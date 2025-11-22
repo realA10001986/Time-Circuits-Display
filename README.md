@@ -2,7 +2,7 @@
 
 This [repository](https://tcd.out-a-ti.me) holds the most current firmware for CircuitSetup's wonderful [Time Circuits Display](https://circuitsetup.us/product/complete-time-circuits-display-kit/) ("TCD") kit, a reproduction of an iconic part of the Delorean Time Machine.
 
-The kit is available [here](https://circuitsetup.us/product/complete-time-circuits-display-kit/). This TCD can be used stand-alone or in combination with several [peripherals](#peripherals-and-connection). If you went for the metal enclosure version, it is perfectly fit for mounting in an actual Delorean.
+The kit is available [here](https://circuitsetup.us/product/complete-time-circuits-display-kit/). This TCD can be used stand-alone or in combination with several [peripherals](#peripherals). If you went for the metal enclosure version, it is perfectly fit for mounting in an actual Delorean.
 
 ![My TCD](img/mytcd_n.jpg)
 ![My TCD](img/mytcd3_n.jpg)
@@ -758,7 +758,7 @@ In order for this menu item to show up, an SD card is required.
 - Hold ENTER to invoke main menu
 - Press ENTER repeatedly until "MUSIC FOLDER NUMBER" is shown
 - Hold ENTER, "FOLDER" and a number is displayed
-- Press ENTER repeatedly to cycle through the possible values. The message "NOT FOUND" appears if either the folder itself or 000.mp3 in that very folder is not present. "PROCESSING REQUIRED" means that the TCD will prepare the folder(eg rename files) after selection.
+- Press ENTER repeatedly to cycle through the possible values. The message "NOT FOUND" appears if either the folder itself or 000.mp3 in that very folder is not present. "PROCESSING REQUIRED" means that the TCD will prepare the folder (eg rename files) after selection.
 - Hold ENTER to select the value shown and exit the menu ("SAVING" is displayed briefly)
 
 If shuffle was enabled before, the new folder is also played in shuffled order.
@@ -845,7 +845,7 @@ Note: Your dates/times will be overwritten in storage after a time travel when *
  - While the menu is active, press ENTER repeatedly until "END" is displayed.
  - Hold ENTER to leave the menu
 
-## Peripherals and connection
+## Peripherals
 
 ![The BTTF Prop Family](img/family-head.png)
 
