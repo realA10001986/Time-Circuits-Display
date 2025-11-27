@@ -1060,7 +1060,7 @@ Hardware considerations: CS/A10001986 props can be connected directly. TT OUT ca
 
 ## Home Assistant / MQTT
 
-The TCD supports the MQTT protocol versions 3.1.1 and 5.0 for the following features:
+The TCD supports MQTT protocol versions 3.1.1 and 5.0 for the following features:
 
 ### Display messages
 
@@ -1146,9 +1146,9 @@ MQTT requires a "broker" (such as [mosquitto](https://mosquitto.org/), [EMQ X](h
 
 ![MQTT connection](img/stamode-mqtt.png)
 
-The broker's address needs to be configured in the Config Portal. The broker can be specified either by domain or IP (IP preferred, spares us a DNS call). The default port is 1883. If a different port is to be used, append a ":" followed by the port number to the domain/IP, such as "192.168.1.5:1884". 
+The broker's address needs to be configured in the Config Portal. It can be specified either by domain or IP (IP preferred, spares us a DNS call). The default port is 1883. If a different port is to be used, append a ":" followed by the port number to the domain/IP, such as "192.168.1.5:1884". 
 
-IF your broker supports protocol version 3.1.1, stick with 3.1.1. Version 5.0 has no advantages, but more overhead.
+If your broker supports protocol version 3.1.1, stick with 3.1.1. Version 5.0 has no advantages, but more overhead.
 
 If your broker does not allow anonymous logins, a username and password can be specified.
 
