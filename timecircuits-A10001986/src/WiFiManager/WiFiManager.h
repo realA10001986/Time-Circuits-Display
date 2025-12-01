@@ -73,7 +73,7 @@
 #define WFM_LABEL_MASK    0x03
 // Parm is a checkbox
 #define WFM_IS_CHKBOX     8
-#define WFM_NO_BR        16
+#define WFM_NO_BR        16   // Skip <br> between label and input (LABEL_BEFORE only)
 
 // HTML id:s of "static IP" parameters on "WiFi Configuration" page
 #define WMS_ip    "ip"
@@ -105,8 +105,8 @@
 
 class WiFiManagerParameter {
   public:
-    /**
-        Create custom parameters that can be added to the WiFiManager setup web page
+    /*
+        Create custom parameters that can be added to the WiFiManager setup web pages
         @id is used for HTTP queries and must not contain spaces nor other special characters
     */
     WiFiManagerParameter(const char *custom);
