@@ -1121,7 +1121,7 @@ Keypad command 996 works like POWER_CONTROL_OFF; it allows to separate HA from F
 If both the TCD and the other props are connected to the same broker, and the option **_Publish time travel and alarm events_** is checked on the TCD's side, other compatible props will receive information on time travel and alarm and play their sequences in sync with the TCD. The topic is called  **bttf/tcd/pub**.
 
 The timing for time travel is described [here](AddOns.md#synchronized-time-travel-through-hamqtt), in short:
-- "PREPARE" might be published ahead of the time travel to prepare; the timing is not specified. Used on CircuitSetu/A10001986 props to disable the "Screen Saver".
+- "PREPARE" might be published ahead of the time travel to prepare; the timing is not specified. Used on CircuitSetup/A10001986 props to disable the "Screen Saver".
 - "[TIMETRAVEL](#-enhanced-time-travel-notification)" is published [on or 5 seconds ahead](#-enhanced-time-travel-notification) of the temporal displacement sequence.
 - "REENTRY" is published upon re-entry.
 
