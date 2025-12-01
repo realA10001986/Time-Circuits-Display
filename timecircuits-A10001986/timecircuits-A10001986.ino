@@ -125,12 +125,11 @@
  *   Portal.
  *   
  * - Install the sound-pack: 
- *   Method 1:
  *   - Go to Config Portal, click "Update" and upload the sound-pack (TCDA.bin, extracted
  *     from install/sound-pack-xxxx.zip) through the bottom file selector.
  *     A FAT32 (not ExFAT!) formatted SD card must be present in the slot during this 
  *     operation.
- *   Method 2:
+ *   Alternatively:
  *   - Copy TCDA.bin to the top folder of a FAT32 (not ExFAT!) formatted SD card (max 
  *     32GB) and put this card into the slot while the TCD is powered down. 
  *   - Now power-up. The sound-pack will now be installed. When finished, the TCD will 
@@ -138,10 +137,43 @@
  */
 
 /*  Changelog
- *  
- *  2025/11/21 (A10001986)
- *    - WM: Minor HTML tweaks; make page width dynamic for better display
- *      on handheld devices
+ *   
+ *  2025/11/29 (A10001986) [3.10] [requires Remote 1.14 for proper operation]
+ *    - Play user-provided "ttcancel.mp3" if TT is cancelled through brake on
+ *      Remote
+ *    - Make TCD<->Remote communication more robust
+ *  2025/11/28 (A10001986)
+ *    - P0: Fix speed-jumps on Remote when hitting brake (Remote and TCD firmware)
+ *  2025/11/27 (A10001986)
+ *    - Speedo-less operation with Remote: Set TCD speed to 0 as long as brake 
+ *      is on. This prevents a time travel at 88 on the Remote with brake on.
+ *  2025/11/25 (A10001986)
+ *    - Modify speedo-less time travel sequence if bttf clients are present or
+ *      mqtt "publish" (regardless of enhanced TIMETRAVEL message) is enabled,
+ *      and the tt is triggered by '0', BTTFN or MQTT (NOT: button): 
+ *      Now the sequence takes 5 seconds (as opposed to 1.4 seconds in prior 
+ *      versions) to give the props enough time for a proper acceleration sequence, 
+ *      and in case there is a ttaccel sound, it is played. 
+ *      As before, if the time travel is triggered by external button, it starts
+ *      immediately and there is no acceleration-time whatsoever.
+ *  2025/11/24 (A10001986)
+ *    - If a Futaba Remote control is present, it requires proper acceleration/
+ *      deceleration and, in essence, acts like a speedo display; therefore, do
+ *      TCD-triggered TT sequence as if speedo is present even if there is none.
+ *      If the Remote is fake-off, only do that if it wants to display speed 
+ *      while off.
+ *  2025/11/23 (A10001986)
+ *    - Add "Wireless (BTTFN)" speedo type. Allows using a simple BTTFN-listener 
+ *      as speedo.
+ *    - Initialize everything speedo-related independent of speedo presence; if
+ *      Remote is connected (later), it will require proper accel/deceleration 
+ *      sequence. See also changes of 11/24.
+ *  2025/11/22 (A10001986)
+ *    - TCD-controlled TT while Remote is speedMaster: No TT while brake is on.
+ *      If brake is hit while accelerating, TT(P0) is cancelled.
+ *  2025/11/21 (A10001986) [3.9]
+ *    - WM: Minor HTML tweaks; make page width dynamic for better display on
+ *      handheld devices
  *  2025/11/19 (A10001986)
  *    - Add support for MQTT v5.0 (tested with mosquitto only). Has no
  *      advantages over 3.1.1 (but more overhead), only there to use brokers

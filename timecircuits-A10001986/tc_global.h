@@ -25,11 +25,11 @@
 
 // These must not contain any characters other than
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
-#define TC_VERSION_REV   "V3.9"       // 13 chars max
+#define TC_VERSION_REV   "V3.10"      // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "NOV212025"  // 13 chars max
+#define TC_VERSION_EXTRA "DEC012025"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "11212025"   // 12 chars max
+#define TC_VERSION_EXTRA "12012025"   // 12 chars max
 #endif
 #define TC_VERSION TC_VERSION_REV
 
@@ -116,7 +116,7 @@
 //#define HAVE_PCF2129
 
 // Speedo types
-#define SP_NUM_TYPES    12  // Number of speedo display types supported
+#define SP_NUM_TYPES 13  // Number of speedo display types supported
 
 /*************************************************************************
  ***                           Customization                           ***
@@ -124,6 +124,8 @@
 
 #define TWSOUND         // Use A10001986's sound files
 //#define TWPRIVATE     // A10001986's private customizations
+
+//#define EXPS
 
 /*************************************************************************
  ***                             Sanitation                            ***
@@ -188,6 +190,9 @@
 #define FAKE_POWER_BUTTON_PIN       13  // Fake "power" switch
 #define EXTERNAL_TIMETRAVEL_IN_PIN  27  // Externally triggered TT (input)
 #define EXTERNAL_TIMETRAVEL_OUT_PIN 14  // TT trigger output
+
+#define EXPS_PIN EXTERNAL_TIMETRAVEL_IN_PIN
+#define EXPT_PIN EXTERNAL_TIMETRAVEL_OUT_PIN
 
 /*************************************************************************
  ***             Display IDs (Do not change, used as index)            ***

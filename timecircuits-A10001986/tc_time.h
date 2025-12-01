@@ -78,6 +78,8 @@
 #define BEEPM2_SECS 30
 #define BEEPM3_SECS 60
 
+#define REM_BRAKE 1900
+
 extern uint16_t lastYear;
 
 extern bool couldDST[3];
@@ -95,6 +97,7 @@ extern clockDisplay destinationTime;
 extern clockDisplay presentTime;
 extern clockDisplay departedTime;
 extern bool useSpeedo;
+extern bool useSpeedoDisplay;
 extern speedDisplay speedo;
 extern bool useTemp;
 extern bool haveRcMode;
@@ -169,7 +172,8 @@ void      time_boot();
 void      time_setup();
 void      time_loop();
 
-void      timeTravel(bool doComplete, bool withSpeedo = false, bool forceNoLead = false);
+int       timeTravelProbe(bool doComplete, bool withSpeedo, bool forceNoLead = false);
+int       timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead = false);
 
 void      send_refill_msg();
 void      send_wakeup_msg();

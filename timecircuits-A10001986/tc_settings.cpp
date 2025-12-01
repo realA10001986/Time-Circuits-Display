@@ -584,7 +584,7 @@ static bool read_settings(File configFile, int cfgReadCount)
         wd |= CopyCheckValidNumParm(json["spP3"], json["speedoL0Spd"], settings.speedoP3, sizeof(settings.speedoP3), 0, 1, DEF_SPEEDO_P3);
         wd |= CopyCheckValidNumParm(json["spd3rd"], NULL, settings.speedo3rdD, sizeof(settings.speedo3rdD), 0, 1, DEF_SPEEDO_3RDD);
         #ifdef TC_HAVEGPS
-        wd |= CopyCheckValidNumParm(json["uGPSS"], json["useGPSSpeed"], settings.useGPSSpeed, sizeof(settings.useGPSSpeed), 0, 1, DEF_USE_GPS_SPEED);
+        wd |= CopyCheckValidNumParm(json["uGPSS"], json["useGPSSpeed"], settings.dispGPSSpeed, sizeof(settings.dispGPSSpeed), 0, 1, DEF_USE_GPS_SPEED);
         wd |= CopyCheckValidNumParm(json["spUR"], json["spdUpdRate"], settings.spdUpdRate, sizeof(settings.spdUpdRate), 0, 3, DEF_SPD_UPD_RATE);
         #endif
         #ifdef TC_HAVETEMP
@@ -713,7 +713,7 @@ void write_settings()
     json["spP3"] = (const char *)settings.speedoP3;
     json["spd3rd"] = (const char *)settings.speedo3rdD;
     #ifdef TC_HAVEGPS
-    json["uGPSS"] = (const char *)settings.useGPSSpeed;
+    json["uGPSS"] = (const char *)settings.dispGPSSpeed;
     json["spUR"] = (const char *)settings.spdUpdRate;
     #endif
     #ifdef TC_HAVETEMP

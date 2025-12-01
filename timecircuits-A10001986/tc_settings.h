@@ -187,7 +187,7 @@ struct Settings {
     char speedoP3[4]        = MS(DEF_SPEEDO_P3);
     char speedo3rdD[4]      = MS(DEF_SPEEDO_3RDD);
 #ifdef TC_HAVEGPS
-    char useGPSSpeed[4]     = MS(DEF_USE_GPS_SPEED);
+    char dispGPSSpeed[4]    = MS(DEF_USE_GPS_SPEED);
     char spdUpdRate[4]      = MS(DEF_SPD_UPD_RATE);
 #endif
 #ifdef TC_HAVETEMP

@@ -215,7 +215,7 @@ static unsigned long ETTOAlmNow = 0;
 static bool          ERROSigAlarm = false;
 
 bool                 useGPS      = false;  // leave this false, will be true after init
-bool                 useGPSSpeed = false;
+bool                 dispGPSSpeed = false;
 static bool          provGPS2BTTFN = false;
 
 static bool          useRotEnc = false;
@@ -223,6 +223,8 @@ static bool          dispRotEnc = false;
 static bool          useRotEncVol = false;
 
 bool                 useSpeedo = false;
+bool                 useSpeedoDisplay = false;
+static bool          bttfnSpeedoFallback = false;
 static uint8_t       speedoStatus = SPST_NIL;
 static unsigned long timetravelP0Now = 0;
 static unsigned long timetravelP0Delay = 0;
@@ -234,6 +236,9 @@ static bool          didTriggerP1 = false;
 static float         ttP0TimeFactor = 1.0;
 static bool          havePreTTSound = false;
 static const char    *preTTSound = "/ttaccel.mp3";
+static bool          haveAbortTTSound = false;
+static const char    *abortTTSound = "/ttcancel.mp3";
+
 #ifdef TC_HAVEGPS
 static unsigned long dispGPSnow = 0;
 #endif
@@ -247,11 +252,13 @@ static bool          tempOldNM = false;
 static bool          GPSabove88 = false;
 #endif
 static bool          bttfnRemoteSpeedMaster = false;
+static bool          bttfnHaveRemote = false;
 #ifdef TC_HAVE_REMOTE
 static bool          bttfnOldRemoteSpeedMaster = false;
 static bool          bttfnRemStop     = false;  // Status of "Stop" switch/light
 static uint8_t       bttfnRemoteSpeed = 0;      // What is displayed on remote
 static uint8_t       bttfnRemCurSpd   = 0;      // What is displayed on speedo
+static bool          bttfnRemOffSpd   = false;  // Remote wants speed also while fake-off (used for TT)
 static uint8_t       bttfnOldRemCurSpd = 255;
 static uint8_t       bttfnRemCurSpdOld = 255;
 static unsigned long lastRemSpdUpd = 0, remSpdCatchUpDelay = 80;
@@ -303,7 +310,7 @@ static bool          triggerP1 = false;
 static bool          triggerP1NoLead = false;
 static unsigned long triggerP1Now = 0;
 static long          triggerP1LeadTime = 0;
-static bool          useETTO = false;
+static bool          ETTWithFixedLead = false;
 static bool          useETTOWired = false;
 static bool          useETTOWiredNoLead = false;
 static const long    ettoLeadTime = ETTO_LEAD_TIME - ETTO_LAT;
@@ -890,7 +897,7 @@ static bool          bttfnBUseRotEnc;
 static bool          bttfnBDispRotEnc;
 #endif
 #ifdef TC_HAVEGPS
-static bool          bttfnBUseGPSSpeed;
+static bool          bttfnBDispGPSSpeed;
 static bool          bttfnBPovGPS2BTTFN;
 #endif
 #ifdef TC_HAVETEMP
@@ -927,7 +934,7 @@ bool        gpsHaveFix();
 static bool gpsHaveTime();
 #endif
 #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE)
-static void dispGPSSpeed(bool force = false);
+static void displayGPSorRESpeed(bool force = false);
 #endif
 #ifdef TC_HAVE_REMOTE
 static void updAndDispRemoteSpeed();
@@ -991,8 +998,10 @@ static void bttfn_notify_of_speed();
 void time_boot()
 {
     // Reset TT-out as early as possible
+    #ifndef EXPS
     pinMode(EXTERNAL_TIMETRAVEL_OUT_PIN, OUTPUT);
     digitalWrite(EXTERNAL_TIMETRAVEL_OUT_PIN, LOW);
+    #endif
    
     // Start the displays early to clear them
     startDisplays();
@@ -1185,35 +1194,53 @@ void time_setup()
         timeDifference = 0;
     }
 
-    // See if speedo display is to be used
+    // See if speedo (display) is to be used
     {
         int temp = atoi(settings.speedoType);
-        if(temp >= SP_NUM_TYPES) temp = 99;
-        useSpeedo = (temp != 99);
-        if(useSpeedo) {
-            if(!speedo.begin(temp)) {
-                useSpeedo = false;
+        
+        if(temp >= SP_NUM_TYPES) {
+            // if 99(="None") or bad: Fall back to BTTFN-speedo
+            temp = SP_BTTFN;
+            bttfnSpeedoFallback = true;
+        }
+        
+        if(!(useSpeedo = speedo.begin(temp))) {
+            #ifdef TC_DBG
+            Serial.printf("%sSpeedo type %d not found\n", temp, funcName);
+            #endif
+            // if not found: Fall back to BTTFN-speedo
+            if(!(useSpeedo = speedo.begin(SP_BTTFN))) {
                 #ifdef TC_DBG
-                Serial.printf("%sSpeedo not found\n", funcName);
+                Serial.printf("%sBTTFN-speedo init failed\n", funcName);
                 #endif
+            } else {
+                bttfnSpeedoFallback = true;
             }
         }
+
+        useSpeedoDisplay = useSpeedo && (speedo.haveSpeedoDisplay() || !bttfnSpeedoFallback);
+
+        // useSpeedo is true if tt sequences should potentially be done with P0 and P2
+        //              false if tt sequences will never be done with P0 or P2
+        // useSpeedoDisplay is true if a speed-displaying device is present
+        //                     false if none, or if BTTFN only as fallback
     }
 
     // Set up GPS receiver
     #ifdef TC_HAVEGPS
     useGPS = true;    // Use if detected
     
-    if(useSpeedo) {
-        // 'useGPSSpeed' strictly means "display GPS speed on speedo"
-        // It is false if no GPS receiver found, or no speedo found, or option unchecked
-        useGPSSpeed = (atoi(settings.useGPSSpeed) > 0);
-
-        havePreTTSound = check_file_SD(preTTSound);
+    if(useSpeedoDisplay) {
+        // 'dispGPSSpeed' means "display GPS speed on speedo"
+        // False if no GPS receiver found, or no speedo found, or option "Display GPS speed" unchecked
+        dispGPSSpeed = (atoi(settings.dispGPSSpeed) > 0);
     }
 
+    havePreTTSound = check_file_SD(preTTSound);
+    haveAbortTTSound = check_file_SD(abortTTSound);
+
     provGPS2BTTFN = (atoi(settings.quickGPS) > 0);
-    quickGPSupdates = useGPSSpeed ? 1 : (provGPS2BTTFN ? 0 : -1);
+    quickGPSupdates = dispGPSSpeed ? 1 : (provGPS2BTTFN ? 0 : -1);
     speedoUpdateRate = atoi(settings.spdUpdRate) & 3;
 
     // Check for GPS receiver
@@ -1240,7 +1267,7 @@ void time_setup()
 
     } else {
       
-        useGPS = useGPSSpeed = false;
+        useGPS = dispGPSSpeed = false;
 
         provGPS2BTTFN = false;
         
@@ -1592,20 +1619,23 @@ void time_setup()
     }
     
     if(useSpeedo) {
-        speedo.setBrightness(atoi(settings.speedoBright), true);
-        
-        // Negate this flag, option is "Switch off", not "Keep on"
-        speedoAlwaysOn = !(atoi(settings.speedoAO) > 0);
-
-        // P1/P2 vs P3 speedo style
-        if(atoi(settings.speedoP3) > 0) {
-            speedo.dispL0Spd = true;
-            speedo.thirdDig = false;
-            speedo.setDot(false);
-        } else {
-            speedo.dispL0Spd = false;
-            speedo.thirdDig &= (atoi(settings.speedo3rdD) > 0);
-            speedo.setDot(true);
+      
+        if(useSpeedoDisplay) {
+            speedo.setBrightness(atoi(settings.speedoBright), true);
+            
+            // Negate this flag, option is "Switch off", not "Keep on"
+            speedoAlwaysOn = !(atoi(settings.speedoAO) > 0);
+    
+            // P1/P2 vs P3 speedo style
+            if(atoi(settings.speedoP3) > 0) {
+                speedo.dispL0Spd = true;
+                speedo.thirdDig = false;
+                speedo.setDot(false);
+            } else {
+                speedo.dispL0Spd = false;
+                speedo.thirdDig &= (atoi(settings.speedo3rdD) > 0);
+                speedo.setDot(true);
+            }
         }
 
         // No TT sounds to play -> no user-provided sound.
@@ -1634,26 +1664,28 @@ void time_setup()
             }
         }
 
-        speedo.off();
-
-        #ifdef TC_HAVEGPS
-        if(useGPSSpeed) {
-            // display (actual) speed, regardless of fake power
-            dispGPSSpeed(true);
-            speedo.on(); 
-        } else {
-        #endif
-            if(speedoAlwaysOn) {
-                if(FPBUnitIsOn) {
-                    speedo.setSpeed(0);
-                    speedo.on();
-                    speedo.show();
-                    speedoStatus = SPST_ZERO;
+        if(useSpeedoDisplay) {
+            speedo.off();
+    
+            #ifdef TC_HAVEGPS
+            if(dispGPSSpeed) {
+                // display (actual) speed, regardless of fake power
+                displayGPSorRESpeed(true);
+                speedo.on(); 
+            } else {
+            #endif
+                if(speedoAlwaysOn) {
+                    if(FPBUnitIsOn) {
+                        speedo.setSpeed(0);
+                        speedo.on();
+                        speedo.show();
+                        speedoStatus = SPST_ZERO;
+                    }
                 }
+            #ifdef TC_HAVEGPS
             }
-        #ifdef TC_HAVEGPS
+            #endif
         }
-        #endif
         
     }
 
@@ -1663,16 +1695,16 @@ void time_setup()
     // if a speedo is present, GPS speed is not to be displayed on it; or
     // if no GPS receiver is present.
     #ifdef TC_HAVE_RE
-    if(!useGPSSpeed) {
+    if(!dispGPSSpeed) {
         if(rotEnc.begin(true)) {
             useRotEnc = true;
-            dispRotEnc = useSpeedo;
+            dispRotEnc = useSpeedoDisplay;
             re_init();
             re_lockTemp();
             fakeSpeed = oldFSpd = rotEnc.updateFakeSpeed(true);
             if(FPBUnitIsOn) {
                 if(dispRotEnc) {
-                    dispGPSSpeed(true);
+                    displayGPSorRESpeed(true);
                     speedo.on();
                 }
             }
@@ -1693,7 +1725,7 @@ void time_setup()
     // Set up temperature sensor
     #ifdef TC_HAVETEMP
     useTemp = true;   // Use if detected
-    if(!useSpeedo || useGPSSpeed) {
+    if(!useSpeedoDisplay || dispGPSSpeed || !speedo.supportsTemperature()) {
         dispTemp = false;
     } else {
         dispTemp = (atoi(settings.dispTemp) > 0);
@@ -1736,7 +1768,7 @@ void time_setup()
     // Evaluate TT-OUT settings and setup flags accordingly
     if(atoi(settings.useETTO) > 0) {
         useETTOWiredNoLead = (atoi(settings.noETTOLead) > 0);
-        useETTO = useETTOWired = !useETTOWiredNoLead;
+        ETTWithFixedLead = useETTOWired = !useETTOWiredNoLead;
     }
     if(atoi(settings.ETTOalm) > 0) {
         ETTOalarm = true;
@@ -1753,13 +1785,12 @@ void time_setup()
     // we need to lead. Otherwise, we do.
     #ifdef TC_HAVEMQTT
     if(pubMQTT) {
-        if(MQTTvarLead) pubMQTTVL = true;  // No lead needed
-        else            useETTO = true;    // Lead needed
+        if(MQTTvarLead) pubMQTTVL = true;           // No lead needed
+        else            ETTWithFixedLead = true;    // Lead needed
     }
     #endif
-    // From this point on:
-    // When useETTO is true, the 5 sec lead is needed (for wired and/or MQTT)
-    // When useETTO is false, no lead is ever needed.
+    // When ETTWithFixedLead is true, the 5 sec lead is needed (for wired and/or MQTT)
+    // When ETTWithFixedLead is false, no lead is ever needed.
     
     // Show "REPLACE BATTERY" message if RTC battery is low or depleted
     // Note: This also shows up the first time you power-up the clock
@@ -1926,7 +1957,7 @@ void time_loop()
                     }
                     #endif
 
-                    if(useSpeedo && !useGPSSpeed && !bttfnRemoteSpeedMaster) {
+                    if(useSpeedoDisplay && !dispGPSSpeed && !bttfnRemoteSpeedMaster) {
                         if(speedoAlwaysOn 
                         #ifdef TC_HAVE_RE
                                           || dispRotEnc
@@ -1958,6 +1989,13 @@ void time_loop()
                     triggerETTO = false;
                     ettoPulseEnd();
                     send_abort_msg();
+                    #ifdef TC_HAVE_REMOTE
+                    if(timeTravelP0 && bttfnRemoteSpeedMaster) {
+                        // Need to fake if P0 was running
+                        // (See comment when cancelling P0)
+                        bttfnRemoteSpeed = timeTravelP0Speed;
+                    }
+                    #endif
                     timeTravelP0 = 0;
                     timeTravelP1 = 0;
                     timeTravelRE = false;
@@ -1970,14 +2008,13 @@ void time_loop()
                     cancelEnterAnim(false);
                     cancelETTAnim();
                     mp_stop();
+                    stopAudio();
+                    flushDelayedSave();
                     play_file("/shutdown.mp3", PA_INTSPKR|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD);
                     mydelay(130);
                     allOff();
                     leds_off();
-                    if(useSpeedo && !useGPSSpeed && !bttfnRemoteSpeedMaster) speedo.off();
-                    waitAudioDone();
-                    stopAudio();
-                    flushDelayedSave();
+                    if(useSpeedoDisplay && !dispGPSSpeed && !bttfnRemoteSpeedMaster) speedo.off();
                 }
             }
             isFPBKeyChange = false;
@@ -2004,7 +2041,7 @@ void time_loop()
     if(startup && (millis() - startupNow >= STARTUP_DELAY)) {
         animate(true);
         startup = false;
-        if(useSpeedo && !useGPSSpeed && !bttfnRemoteSpeedMaster) {
+        if(useSpeedoDisplay && !dispGPSSpeed && !bttfnRemoteSpeedMaster) {
             #ifdef TC_HAVE_RE
             if(dispRotEnc) {
                 speedo.on();
@@ -2081,7 +2118,6 @@ void time_loop()
 
         speedo.setSpeed(timeTravelP0Speed);
         speedo.show();
-        //speedoStatus = SPST_TT;
 
         // Overwrite fakeSpeed/bttfnRemCurSpd for BTTFN clients who keep polling
         // until P1-ETTO_LEAD
@@ -2096,32 +2132,64 @@ void time_loop()
         // Update for BTTFN clients
         bttfnRemCurSpd = timeTravelP0Speed;
         #endif
+
+        // P0 is cancelled if brake is hit on the Remote
+        // but not if P1 has already started
+        #ifdef TC_HAVE_REMOTE
+        if(bttfnRemoteSpeedMaster && timeTravelP0 && bttfnRemStop) {
+            if(timeTravelP1 <= 0) {
+                if(!triggerETTO) {
+                    // Send abort (only if TT was already signalled)
+                    send_abort_msg();
+                    ettoPulseEnd();
+                }
+                timeTravelP0 = 0;
+                // Fake for following updAndDispRemoteSpeed()-call.
+                // (Remote does not send updates while in P0 [which
+                // would be pointless as it would only mirror our P0
+                // speed], so bttfnRemoteSpeed is outdated now)
+                // (This is also needed when fake-switched off)
+                bttfnRemoteSpeed = timeTravelP0Speed;
+                triggerP1 = false;
+                triggerETTO = false;
+                timeTravelP0stalled = 0;
+                if(playTTsounds) {
+                    if(haveAbortTTSound) {
+                        play_file(abortTTSound, PA_LINEOUT|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
+                    } else {
+                        stopAudio();
+                    }
+                }
+                // useRotEnc=false while Remote=SpeedMaster, no reset required
+            }
+        }
+        #endif
     }
 
     // Time travel animation, phase 2: Speed counts down
     if(timeTravelP2 && (millis() - timetravelP0Now >= timetravelP0Delay)) {
         bool    countToGPSSpeed = false;
         uint8_t targetSpeed = 0;
-        #ifdef TC_HAVEGPS
-        {
-            int16_t tgpsSpd = myGPS.getSpeed();
-            countToGPSSpeed = (useGPSSpeed && (tgpsSpd >= 0));
-            targetSpeed = countToGPSSpeed ? tgpsSpd : 0;
-        }
-        #endif
         #ifdef TC_HAVE_REMOTE
         if(bttfnRemoteSpeedMaster) {
             countToGPSSpeed = true;
             targetSpeed = bttfnRemStop ? 0 : bttfnRemoteSpeed;
-        }
+        } else
         #endif
+        {
+            #ifdef TC_HAVEGPS
+            int16_t tgpsSpd = myGPS.getSpeed();
+            countToGPSSpeed = (dispGPSSpeed && (tgpsSpd >= 0));
+            targetSpeed = countToGPSSpeed ? tgpsSpd : 0;
+            #endif
+        }
         if((timeTravelP0Speed <= targetSpeed) || (targetSpeed >= 88)) {
             timeTravelP2 = 0;
             #ifdef NOT_MY_RESPONSIBILITY
             if(countToGPSSpeed && targetSpeed >= 88) {
                 // Avoid an immediately repeated time travel
                 // if speed increased in the meantime
-                // (For when button-trigger a TT while speed < 88)
+                // (For button-triggered TT while speed < 88)
                 GPSabove88 = true;
             }
             #endif
@@ -2143,7 +2211,7 @@ void time_loop()
                 GPSabove88 = false;
             }
             #endif
-            if(!useGPSSpeed && !dispRotEnc && !bttfnRemoteSpeedMaster) {
+            if(!dispGPSSpeed && !dispRotEnc && !bttfnRemoteSpeedMaster) {
                 if(speedoAlwaysOn) {
                     dispIdleZero(true);
                 } else {
@@ -2151,7 +2219,7 @@ void time_loop()
                 }
             }
             #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE)
-            dispGPSSpeed(true);
+            displayGPSorRESpeed(true);
             #endif
             #ifdef TC_HAVETEMP
             updateTemperature(true);
@@ -2165,7 +2233,6 @@ void time_loop()
             timeTravelP0Speed--;
             speedo.setSpeed(timeTravelP0Speed);
             speedo.show();
-            //speedoStatus = SPST_TT;
             #ifdef TC_HAVE_REMOTE
             // Overwrite for BTTFN clients, and in case Remote kicked in during TT
             // in which case the saved displayed speed would be outdated at the end of P2
@@ -2227,7 +2294,7 @@ void time_loop()
             destinationTime.setBrightness(255); // restore
             presentTime.setBrightness(255);
             departedTime.setBrightness(255);
-            timeTravel(false);
+            timeTravel(false, true);
         }
     }
 
@@ -2462,12 +2529,12 @@ void time_loop()
         if(bttfnRemoteSpeedMaster != bttfnOldRemoteSpeedMaster) {
             if((bttfnOldRemoteSpeedMaster = bttfnRemoteSpeedMaster)) {
                 // Remote became speed master:
-                // useRotEnc, dispRotEnc, useGPSSpeed, dispTemp already "false" at this point
+                // useRotEnc, dispRotEnc, dispGPSSpeed, dispTemp already "false" at this point
                 // Speedo will be set up in updAndDispRemoteSpeed().
                 // Anything else here?
             } else {
                 // Remote is no longer speed master
-                // useRotEnc, dispRotEnc, useGPSSpeed, dispTemp already re-set at this point
+                // useRotEnc, dispRotEnc, dispGPSSpeed, dispTemp already re-set at this point
                 // rotEnc was reset; speed or temp was displayed
                 // Anything else here?
             }
@@ -2495,12 +2562,12 @@ void time_loop()
         if(FPBUnitIsOn && useRotEnc && !startup && !timeTravelP0 && !timeTravelP1 && !timeTravelP2) {
             fakeSpeed = rotEnc.updateFakeSpeed();
             if(fakeSpeed != oldFSpd) {
-                if(FPBUnitIsOn && (fakeSpeed >= 0) && !timeTravelP0 && !timeTravelP1 && !timeTravelRE) {
+                if((fakeSpeed >= 0) && !timeTravelRE) {
                     startBeepTimer();
                 }
                 oldFSpd = fakeSpeed;
             }
-            dispGPSSpeed();
+            displayGPSorRESpeed();
             if(fakeSpeed >= 88) {
                 checkForSpeedTT(dispRotEnc, false);
             } else if(!fakeSpeed) {   // Is reset in P2, but if during TT Remote
@@ -2528,11 +2595,9 @@ void time_loop()
                 // this causes a call of audio_loop() which is good
                 myGPS.loop(true);
 
-                #if defined(TC_HAVE_RE)
+                // Auto-TT on GPS-88mph only if RotEnc/Remote are not source of displayed speed
                 if(!dispRotEnc && !bttfnRemoteSpeedMaster) {
-                #endif
-                    dispGPSSpeed(true);
-                    // Auto-TT on GPS-88mph only if RotEnc is not source of displayed speed
+                    displayGPSorRESpeed(true);
                     #ifdef NOT_MY_RESPONSIBILITY
                     if(myGPS.getSpeed() >= 88) {
                         checkForSpeedTT(false, false);
@@ -2540,15 +2605,13 @@ void time_loop()
                         GPSabove88 = false;
                     }
                     #endif
-                #if defined(TC_HAVE_RE)
                 }
-                #endif
-            }
-            #if defined(TC_HAVE_REMOTE)
-              else if(remoteWasMaster) {
-                dispGPSSpeed(true);
-            }
+            #ifdef TC_HAVE_REMOTE
+            } else if(remoteWasMaster) {
+                displayGPSorRESpeed(true);
             #endif
+            }
+            
         }
         #endif
         
@@ -2582,8 +2645,8 @@ void time_loop()
         didUpdSpeedo = dispTemperature();
         #endif
 
-        // speedoAlwaysOn can only be true if useSpeedo is true
-        if(speedoAlwaysOn && !didUpdSpeedo && !useGPSSpeed && !dispRotEnc && !bttfnRemoteSpeedMaster) {
+        // speedoAlwaysOn can only be true if useSpeedoDisplay is true
+        if(speedoAlwaysOn && !didUpdSpeedo && !dispGPSSpeed && !dispRotEnc && !bttfnRemoteSpeedMaster) {
             dispIdleZero();
         }
         
@@ -3155,9 +3218,9 @@ void time_loop()
  *
  *  A time travel consists of various phases:
  *  - Speedo acceleration (if applicable; if GPS is in use, starts at actual speed)
- *  - actual tt (display disruption)
+ *  - actual tt (temporal displacement = display disruption)
  *  - re-entry
- *  - Speed de-acceleration (if applicable; if GPS is in use, counts down to actual speed)
+ *  - Speed deceleration (if applicable; if GPS is in use, counts down to actual speed)
  *  - ETTO lead time period (trigger external props, if applicable)
  *
  *  |<--------- P0: speedo acceleration ------>|                         |<P2:speedo de-accleration>|
@@ -3169,7 +3232,7 @@ void time_loop()
  *                                        TT starts                      Reentry phase
  *                                             |                         |
  *               |<---------ETTO lead--------->|                         |
- *               |                             |                         |
+ *               |    (depending on config)    |                         |
  *          ETTO: Pulse                  TT_P1_POINT88                   |
  *               or                    (ms from P1 start)                |
  *           LOW->HIGH                                            ETTO: HIGH->LOW
@@ -3179,15 +3242,63 @@ void time_loop()
  *  -) copy present time into departed time (where it freezes)
  *  -) copy destination time to present time (where it continues to run as a clock)
  *
- *  This is also called from tc_keypad.cpp
  */
 
-void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
+int timeTravelProbe(bool doComplete, bool withSpeedo, bool forceNoLead)
+{
+    if(!useSpeedo) {
+        withSpeedo = false;
+    } else {
+        // If no speedo display and no remote -> withSpeedo = off
+        if(!useSpeedoDisplay 
+                             #ifdef TC_HAVE_REMOTE
+                             && (!bttfnHaveRemote || (!bttfnRemoteSpeedMaster && !bttfnRemOffSpd))
+                             #endif
+                                                                                                  ) {
+            withSpeedo = false;
+        }
+    }
+
+    // Don't start if Remote is Master and brake is on
+    #ifdef TC_HAVE_REMOTE
+    if(doComplete && withSpeedo && bttfnRemoteSpeedMaster) {
+        if(bttfnRemStop) {
+            return 1;
+        }
+    }
+    #endif
+
+    return 0;
+}
+
+int timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
 {
     int   tyr = 0;
     int   tyroffs = 0;
     long  currTotDur = 0;
     unsigned long ttUnivNow = millis();
+
+    if(!useSpeedo) {
+        withSpeedo = false;
+    } else {
+        // If no speedo display and no remote -> withSpeedo = off
+        if(!useSpeedoDisplay 
+                             #ifdef TC_HAVE_REMOTE
+                             && (!bttfnHaveRemote || (!bttfnRemoteSpeedMaster && !bttfnRemOffSpd))
+                             #endif
+                                                                                                  ) {
+            withSpeedo = false;
+        }
+    }
+
+    // Don't start if Remote is Master and brake is on
+    #ifdef TC_HAVE_REMOTE
+    if(doComplete && withSpeedo && bttfnRemoteSpeedMaster) {
+        if(bttfnRemStop) {
+            return 1;
+        }
+    }
+    #endif
 
     pwrNeedFullNow();
 
@@ -3218,7 +3329,7 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
      * Complete sequence with speedo: Initiate P0 (speed count-up)
      *
      */
-    if(doComplete && useSpeedo && withSpeedo) {
+    if(doComplete && withSpeedo) {
 
         bool doPreTTSound = havePreTTSound;
         bool doLeadLessP1 = doPreTTSound;
@@ -3237,9 +3348,9 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
         bttfnTTLeadTime = ettoLeadTime;
         
         #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE) || defined(TC_HAVE_REMOTE)
-        if(useGPSSpeed || dispRotEnc || bttfnRemoteSpeedMaster) {
+        if(dispGPSSpeed || dispRotEnc || bttfnRemoteSpeedMaster) {
             #if defined(TC_HAVEGPS) && defined(TC_HAVE_RE)
-            int16_t tempSpeed = useGPSSpeed ? myGPS.getSpeed() : fakeSpeed;
+            int16_t tempSpeed = dispGPSSpeed ? myGPS.getSpeed() : fakeSpeed;
             #elif defined(TC_HAVEGPS)
             int16_t tempSpeed = myGPS.getSpeed();
             #elif defined(TC_HAVE_RE)
@@ -3258,13 +3369,13 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
                 if(timeTravelP0Speed < 88) {
                     currTotDur = tt_p0_totDelays[timeTravelP0Speed];
 
-                    // If the strict 5s lead is not required (as is the 
-                    // case if useETTO is false), we can also cut short 
-                    // P1 by skipping the fade-in part of the sound, if
-                    // the remaining part of the acceleration until 88 
-                    // is too short.
+                    // If the strict 5s lead is not required (as is the case
+                    // if ETTWithFixedLead is false), we can also cut short 
+                    // P1 by skipping the fade-in part of the sound, if the
+                    // the remaining part of the acceleration until 88 is too
+                    // short.
 
-                    if(!useETTO) {
+                    if(!ETTWithFixedLead) {
                         if(currTotDur > pointOfP1) {
                             // If we're past normal P1 start point,
                             // cut P1 short by skipping lead
@@ -3288,11 +3399,11 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
                     }
                     
                     // If the strict 5s lead is not required (as is the
-                    // case if useETTO is false), we can shorten that 
+                    // case if ETTWithFixedLead is false), we can shorten that 
                     // lead. We calculate it based on current speed and
                     // the remaining time until reaching 88.
                     
-                    if(!useETTO && (bttfnHaveClients || pubMQTTVL)) {
+                    if(!ETTWithFixedLead && (bttfnHaveClients || pubMQTTVL)) {
                         if(currTotDur >= ettoLeadPoint) {
                             // Calc time until 88 for bttfn clients
                             if(ettoLeadPoint < myPointOfP1) {
@@ -3323,7 +3434,7 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
             // or pointOfP1: Need add'l delay before speed counter kicks in.
             // This add'l delay is put into timetravelP0Delay.
 
-            if(useETTO || bttfnHaveClients || pubMQTTVL) {
+            if(ETTWithFixedLead || bttfnHaveClients || pubMQTTVL) {
 
                 triggerETTO = true;
                 
@@ -3410,12 +3521,12 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
                 play_file(preTTSound, PA_LINEOUT|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
             }
 
-            return;
+            return 0;
         }
         
         // If (GPS or RotEnc or Remote) speed >= 88, trigger P1 immediately
 
-        if(!useETTO) {
+        if(!ETTWithFixedLead) {
             // If we have GPS, rotEnc or Remote speed and its >= 88, don't
             // waste time on the lead (unless 5s-lead-depending props need it)
             forceNoLead = true;
@@ -3428,12 +3539,12 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
      */
     if(doComplete) {
 
-        #if defined(TC_HAVE_REMOTE)
-        // Clear it here, will be set after timetravel()
+        #ifdef TC_HAVE_REMOTE
+        // Clear it here, will be set after timetravel() in caller
         remoteInducedTT = false;
         #endif
 
-        if(useETTO || bttfnHaveClients || pubMQTTVL) {
+        if(ETTWithFixedLead || bttfnHaveClients || pubMQTTVL) {
 
             long  ettoLeadT = ettoLeadTime;
             long  P1_88 = TT_P1_POINT88;
@@ -3441,21 +3552,31 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
             triggerP1 = true;
             triggerP1NoLead = false;
             triggerETTO = true;
+
+            bttfnTTLeadTime = ettoLeadTime;           //
             
-            if(forceNoLead && !useETTO) {
+            if(forceNoLead && !ETTWithFixedLead) {
                 P1_88 = 0;
                 triggerP1NoLead = true;
+                bttfnTTLeadTime = ettoLeadT = P1_88;  //
             }
 
-            bttfnTTLeadTime = ettoLeadTime;
-
-            if(!useETTO) {
-                bttfnTTLeadTime = ettoLeadT = P1_88;
-            }
+            //bttfnTTLeadTime = ettoLeadTime;
+            
+            //if(!ETTWithFixedLead) {
+            //    bttfnTTLeadTime = ettoLeadT = P1_88;
+            //}
 
             if(ettoLeadT >= P1_88) {
                 triggerETTOLeadTime = 0;
                 triggerP1LeadTime = ettoLeadT - P1_88;
+                
+                if((triggerP1LeadTime > 3000) && havePreTTSound) {
+                    play_file(preTTSound, PA_LINEOUT|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
+                    triggerP1LeadTime = ettoLeadT;
+                    triggerP1NoLead = true;
+                }
+                
             } else {
                 triggerP1LeadTime = 0;
                 triggerETTOLeadTime = P1_88 - ettoLeadT;
@@ -3472,14 +3593,14 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
             // Will be set to something valid in triggerLongTT().
             timeTravelP1 = -1;
 
-            return;
+            return 0;
         }
 
         triggerP1 = false;
         triggerETTO = false;
         triggerLongTT(forceNoLead);
 
-        return;
+        return 0;
     }
 
     /*
@@ -3554,15 +3675,18 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
     }
     ettoPulseEnd();
 
-    // If speedo was used: Initiate P2: Count speed down
+    // If P0 was played (or faked when we hit 88 by GPS or user input):
+    // Initiate P2 - count speed down
+    // (We know P0 was played or faked if timeTravelP0Speed = 88)
+    // Additionally, do this only if 
     
-    #if defined(TC_HAVE_REMOTE)
+    #ifdef TC_HAVE_REMOTE
     // If TT triggered by remote now gone, we do P2
     if(!bttfnRemoteSpeedMaster && remoteInducedTT) {
-        if(useSpeedo) timeTravelP0Speed = 88;
+        if(withSpeedo) timeTravelP0Speed = 88;
     }
     #endif
-    if(useSpeedo && (timeTravelP0Speed == 88)) {
+    if(withSpeedo && (timeTravelP0Speed == 88)) {
         timeTravelP2 = 1;
         timetravelP0Now = ttUnivNow;
         timetravelP0Delay = 2000;
@@ -3572,12 +3696,18 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
     remoteInducedTT = false;
     #endif
 
-    // If there is no P2, we reset the RotEnc here.
+    // If there is no P2 (because there is no speedo), 
+    // we reset the RotEnc here (it could have been
+    // moved during P1 while we didn't poll).
     // This is otherwise done at the end of P2.
     #ifdef TC_HAVE_RE
-    if(!timeTravelP2 && useRotEnc && !rotEnc.IsOff()) {
-        re_init();
-        re_lockTemp();
+    if(!timeTravelP2 && useRotEnc) {
+        if(rotEnc.IsOff()) {
+            re_init(false);
+        } else {
+            re_init();
+            re_lockTemp();
+        }
         GPSabove88 = false;
     }
     #endif
@@ -3589,6 +3719,8 @@ void timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
         updAndDispRemoteSpeed();
     }
     #endif
+
+    return 0;
 }
 
 static void triggerLongTT(bool noLead)
@@ -3610,8 +3742,8 @@ static void checkForSpeedTT(bool isFake, bool isRemote)
            !startup && !timeTravelP0 && !timeTravelP1 && !timeTravelRE && !timeTravelP2) {
             timeTravel(true, false, true);
             GPSabove88 = true;
-            // If this is fake (ie using rotEnc+speedo), we 
-            // need to set this to trigger P2 at end of TT
+            // If speed source is fake (ie using rotEnc or Remote),
+            // we need to set this to trigger P2 at end of TT
             if(isFake) timeTravelP0Speed = 88;
             #ifdef TC_HAVE_REMOTE
             remoteInducedTT = isRemote;
@@ -3623,7 +3755,9 @@ static void checkForSpeedTT(bool isFake, bool isRemote)
 
 void setTTOUTpin(uint8_t val)
 {
+    #ifndef EXPS
     digitalWrite(EXTERNAL_TIMETRAVEL_OUT_PIN, val);
+    #endif
     #ifdef TC_DBG
     digitalWrite(WHITE_LED_PIN, val);
     #endif
@@ -3686,6 +3820,9 @@ void send_abort_msg()
     if(pubMQTT || bttfnHaveClients) {
         if(timeTravelP0 || (timeTravelP1 > 0) || timeTravelRE || timeTravelP2) {
             sendNetWorkMsg("ABORT_TT\0", 9, BTTFN_NOT_ABORT_TT);
+            #ifdef TC_DBG
+            Serial.println("Sending ABORT");
+            #endif
         }
     }
 }
@@ -3827,13 +3964,6 @@ void resetPresentTime()
 
 static void copyPresentToDeparted(bool isReturn)
 {
-    /*
-    departedTime.setYear(stalePresent ? stalePresentTime[1].year : presentTime.getYear());
-    departedTime.setMonth(stalePresent ? stalePresentTime[1].month : presentTime.getMonth());
-    departedTime.setDay(stalePresent ? stalePresentTime[1].day : presentTime.getDay());
-    departedTime.setHour(stalePresent ? stalePresentTime[1].hour : presentTime.getHour());
-    departedTime.setMinute(stalePresent ? stalePresentTime[1].minute : presentTime.getMinute());
-    */
     if(stalePresent) {
         departedTime.setFromStruct(&stalePresentTime[1]);
         if(isReturn) {
@@ -3841,24 +3971,10 @@ static void copyPresentToDeparted(bool isReturn)
         } else {
             destinationTime.getToStruct(&stalePresentTime[1]);
         }
-        /*
-        stalePresentTime[1].year = isReturn ? stalePresentTime[0].year : destinationTime.getYear();
-        stalePresentTime[1].month = isReturn ? stalePresentTime[0].month : destinationTime.getMonth();
-        stalePresentTime[1].day = isReturn ? stalePresentTime[0].day : destinationTime.getDay();
-        stalePresentTime[1].hour = isReturn ? stalePresentTime[0].hour : destinationTime.getHour();
-        stalePresentTime[1].minute = isReturn ? stalePresentTime[0].minute : destinationTime.getMinute();
-        */
     } else {
         dateStruct s;
         presentTime.getToStruct(&s);
         departedTime.setFromStruct(&s);
-        /*
-        departedTime.setYear(presentTime.getYear());
-        departedTime.setMonth(presentTime.getMonth());
-        departedTime.setDay(presentTime.getDay());
-        departedTime.setHour(presentTime.getHour());
-        departedTime.setMinute(presentTime.getMinute());
-        */
     }
 }
 
@@ -4276,12 +4392,12 @@ static void updateTemperature(bool force)
 #endif
 
 #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE)
-static void dispGPSSpeed(bool force)
+static void displayGPSorRESpeed(bool force)
 {
     bool spdreNM = false; 
     bool spdreChgNM = false;
     
-    if(!useSpeedo || (!useGPSSpeed && !dispRotEnc))
+    if(!useSpeedoDisplay || (!dispGPSSpeed && !dispRotEnc))
         return;
 
     if(timeTravelP0 || timeTravelP1 || timeTravelRE || timeTravelP2)
@@ -4294,7 +4410,7 @@ static void dispGPSSpeed(bool force)
 
     unsigned long now = millis();
 
-    if(useGPSSpeed) {
+    if(dispGPSSpeed) {
         #ifdef TC_HAVEGPS
         int16_t gpsSpeed = myGPS.getSpeed();
         #ifdef TC_HAVE_REMOTE
@@ -4451,11 +4567,12 @@ static void updAndDispRemoteSpeed()
     // To avoid speed-jumps after a tt (such as in the case of the remote's brake being
     // hit while the TCD performs a tt), we do not adapt the "car"-speed to the remote 
     // speed during a tt. We can do that in P2 though, since P2 runs down to the then 
-    // current remote speed (and, btw, isn't being run when the remote triggered the TT)
+    // current remote speed (and, btw, isn't being run when the remote triggered the TT
+    // by hitting 88)
 
     if(!timeTravelP0 && !timeTravelP1 && !timeTravelRE /*&& !timeTravelP2*/) {
       
-        if(useSpeedo) {
+        if(useSpeedoDisplay) {
 
             if(bttfnRemStop) {
                 // Brake on: Keep at zero, or go down to zero, regardless of bttfnRemoteSpeed
@@ -4490,15 +4607,15 @@ static void updAndDispRemoteSpeed()
 
         } else {
 
-            // If no speedo is present, we just copy the remote speed. No point
-            // in smooth updates no one can see.
-            bttfnRemCurSpd = bttfnRemoteSpeed;
+            // If no speed-displaying device is present, we just copy the 
+            // remote speed. No point in smooth updates no one can see.
+            bttfnRemCurSpd = bttfnRemStop ? 0 : bttfnRemoteSpeed;
 
         }
         
     }
 
-    if(useSpeedo) {
+    if(useSpeedoDisplay) {
         // We do not interfere with P2 here, since P2, by definition, counts the speed
         // down to the then current remote speed; do not overwrite the displayed speed here!
         if(!timeTravelP0 && !timeTravelP1 && !timeTravelRE && !timeTravelP2) {
@@ -4901,13 +5018,13 @@ void gps_loop(bool withRotEnc)
     if(useGPS && (millis64() >= lastLoopGPS)) {
         lastLoopGPS += (uint64_t)GPSupdateFreq;
         myGPS.loop(false);
-        if(useGPSSpeed) dispGPSSpeed(true);
+        if(dispGPSSpeed) displayGPSorRESpeed(true);
     }
     #endif
     #ifdef TC_HAVE_RE
     if(withRotEnc && useRotEnc && !timeTravelP2) {
         fakeSpeed = oldFSpd = rotEnc.updateFakeSpeed(); // Set oldFSpd as well to avoid unwanted beep-restarts
-        if(dispRotEnc) dispGPSSpeed();
+        if(dispRotEnc) displayGPSorRESpeed();
     }
     #endif
     #ifdef TC_HAVE_REMOTE
@@ -6232,6 +6349,8 @@ static bool checkToPlayRemoteSnd()
 
 static void bttfnMakeRemoteSpeedMaster(bool doit, bool isPwrMaster)
 {
+    bool pwrChg = false;
+    
     // Powermaster: Anytime.
 
     if(bttfnRemPwrMaster != isPwrMaster) {
@@ -6258,6 +6377,7 @@ static void bttfnMakeRemoteSpeedMaster(bool doit, bool isPwrMaster)
         if(doit != FPBUnitIsOn) {
             isFPBKeyChange = true;
             isFPBKeyPressed = doit;
+            pwrChg = true;
         }
     }
 
@@ -6276,7 +6396,7 @@ static void bttfnMakeRemoteSpeedMaster(bool doit, bool isPwrMaster)
         Serial.println("Remote is now master");
         #endif
 
-        if(!bttfnRemPwrMaster && checkToPlayRemoteSnd()) {
+        if((!bttfnRemPwrMaster || !pwrChg) && checkToPlayRemoteSnd()) {
             play_file(remoteOnSound, PA_LINEOUT|PA_CHECKNM|PA_ALLOWSD);
         }
 
@@ -6288,8 +6408,8 @@ static void bttfnMakeRemoteSpeedMaster(bool doit, bool isPwrMaster)
         dispRotEnc = false;
         #endif
         #ifdef TC_HAVEGPS
-        bttfnBUseGPSSpeed = useGPSSpeed;
-        useGPSSpeed = false;
+        bttfnBDispGPSSpeed = dispGPSSpeed;
+        dispGPSSpeed = false;
         bttfnBPovGPS2BTTFN = provGPS2BTTFN;   // Need that to provide remote speed to BTTFN clients
         provGPS2BTTFN = false;
         #endif
@@ -6299,7 +6419,7 @@ static void bttfnMakeRemoteSpeedMaster(bool doit, bool isPwrMaster)
         #endif
          
         // Store currently displayed speed
-        if(useSpeedo) {
+        if(useSpeedoDisplay) {
             bttfnRemCurSpd = (speedo.getOnOff() && (speedo.getSpeed() >= 0)) ? speedo.getSpeed() : 0;
         } else {
             bttfnRemCurSpd = bttfnRemoteSpeed;
@@ -6322,7 +6442,7 @@ static void bttfnMakeRemoteSpeedMaster(bool doit, bool isPwrMaster)
         Serial.println("Remote is no longer master");
         #endif
 
-        if(!bttfnRemPwrMaster && checkToPlayRemoteSnd()) {
+        if((!bttfnRemPwrMaster || !pwrChg) && checkToPlayRemoteSnd()) {
             play_file(remoteOffSound, PA_LINEOUT|PA_CHECKNM|PA_ALLOWSD);
         }
         
@@ -6331,7 +6451,7 @@ static void bttfnMakeRemoteSpeedMaster(bool doit, bool isPwrMaster)
         dispRotEnc = bttfnBDispRotEnc;
         #endif
         #ifdef TC_HAVEGPS
-        useGPSSpeed = bttfnBUseGPSSpeed;
+        dispGPSSpeed = bttfnBDispGPSSpeed;
         provGPS2BTTFN = bttfnBPovGPS2BTTFN;
         #endif
         #ifdef TC_HAVETEMP
@@ -6359,10 +6479,10 @@ static void bttfnMakeRemoteSpeedMaster(bool doit, bool isPwrMaster)
         }
         #endif
         
-        if(useSpeedo) {
+        if(useSpeedoDisplay) {
             if(!FPBUnitIsOn) {
-                if(!useGPSSpeed) speedo.off();
-            } else if(!useGPSSpeed && !dispRotEnc) {
+                if(!dispGPSSpeed) speedo.off();
+            } else if(!dispGPSSpeed && !dispRotEnc) {
                 if(speedoAlwaysOn) {
                     dispIdleZero(true);
                 } else {
@@ -6371,19 +6491,19 @@ static void bttfnMakeRemoteSpeedMaster(bool doit, bool isPwrMaster)
             }
         }
         #ifdef TC_HAVEGPS
-        if(useGPSSpeed) {
+        if(dispGPSSpeed) {
             remoteWasMaster = 88;
             lastRemSpdUpd = 0;
             remSpdCatchUpDelay = 0;
         }
         #endif
         #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE)
-        dispGPSSpeed(true);
+        displayGPSorRESpeed(true);
         #endif
         
         #ifdef TC_HAVETEMP
         updateTemperature(true);
-        if(useSpeedo) {
+        if(useSpeedoDisplay) {
             dispTemperature(true);
         }
         #endif
@@ -6397,6 +6517,7 @@ void removeRemote()
     bttfnRemoteSpeed = 0;
     registeredRemID = 0;
     bttfnLastSeq_co = 0;
+    bttfnHaveRemote = false;
 }
 
 void removeKPRemote()
@@ -6418,9 +6539,13 @@ static void bttfn_evalremotecommand(uint32_t seq, uint8_t cmd, uint8_t p1, uint8
         if(seq > bttfnLastSeq_co || seq == 1) {
             bttfnMakeRemoteSpeedMaster(!!(p1 & 0x01), !!(p1 & 0x08));
             bttfnRemStop = !!(p1 & 0x02);
+            bttfnRemOffSpd = !!(p1 & 0x10);
             if(p2 > 127) bttfnRemoteSpeed = 0;
             else bttfnRemoteSpeed = p2;  // p2 = speed (0-88)
             if(bttfnRemoteSpeed > 88) bttfnRemoteSpeed = 88;
+            #ifdef TC_DBG
+            Serial.printf("Remote combined: %d %d\n", bttfnRemoteSpeed, bttfnRemStop);
+            #endif
         } else {
             #ifdef TC_DBG
             Serial.printf("Command out of sequence seq:%d last:%d\n", seq, bttfnLastSeq_co);
@@ -6628,6 +6753,7 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
             } else if(registeredRemID != receivedRemID) {
                 return false;
             }
+            bttfnHaveRemote = true;
         } else if(remoteKPAllowed) {
             if(!registeredRemKPID) {
                 registeredRemKPID = receivedRemID;
@@ -6768,7 +6894,7 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
         }
         if(buf[5] & 0x40) {    // Request TCD Capabilities
             a = 0x01 | 0x04 | 0x08;  // Support MC notifications | Can send dest/pres/dep times | Remote KP support
-            if(useSpeedo) a |= 0x02; // TCD has speedo connected
+            // all other bits for future use
             buf[31] = a;
         }
         // 0x80 taken (TT)
@@ -6833,6 +6959,7 @@ static void bttfn_notify_of_speed()
         oldBTTFNSSrc = ssrc;
         bttfn_notify(BTTFN_TYPE_ANY, BTTFN_NOT_SPD, (uint16_t)spd, ssrc, parm3);
         bttfnLastSpeedNot = now;
+        //Serial.printf("notify speed: %d %d %d\n", spd, ssrc, parm3);
     }
 }
 

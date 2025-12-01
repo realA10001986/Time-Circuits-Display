@@ -149,14 +149,15 @@ static const char *dispTypeNames[SP_NUM_TYPES] = {
     "Adafruit 1911 (4x14;left)",
     "Grove 0.54\" 2x14",
     "Grove 0.54\" 4x14",
-    "Grove 0.54\" 4x14 (left)"
+    "Grove 0.54\" 4x14 (left)",
 #ifndef TWPRIVATE
-    ,"Ada 1911 (left tube)"
-    ,"Ada 878 (left tube)"
+    "Ada 1911 (left tube)",
+    "Ada 878 (left tube)",
 #else
-    ,"A10001986 wallclock"
-    ,"A10001986 speedo replica"
+    "A10001986 wallclock",
+    "A10001986 speedo replica",
 #endif
+    "Wireless (BTTFN)"
 };
 
 #ifdef TC_HAVEGPS
@@ -170,15 +171,6 @@ static const char *spdRateCustHTMLSrc[6] =
     ">5Hz%s"
 };
 #endif
-
-static const char *ttoutCustHTMLSrc[6] = {
-    "",
-    "TT-OUT (IO14) pin</legend>",
-    "tto",
-    "is controlled by commands 990/991",
-    "signals time travel",
-    "signals alarm"
-};
 
 static const char *apChannelCustHTMLSrc[14] = {
     "<div class='cmp0'><label class='mp0' for='apchnl'>WiFi channel</label><select class='sel0' value='",
@@ -330,7 +322,7 @@ WiFiManagerParameter custom_speedoFact("speFac", "Factor for real-life figures (
 WiFiManagerParameter custom_sL0("sL0", "Speedo display like in part 3", settings.speedoP3, 1, "", WFM_LABEL_AFTER|WFM_IS_CHKBOX);
 WiFiManagerParameter custom_s3rd("s3rd", "Display '0' after dot like A-car", settings.speedo3rdD, 1, "title='CircuitSetup speedo only.'", WFM_LABEL_AFTER|WFM_IS_CHKBOX);
 #ifdef TC_HAVEGPS
-WiFiManagerParameter custom_useGPSS("uGPSS", "Display GPS speed", settings.useGPSSpeed, 1, "title='Check to display actual GPS speed on speedo'", WFM_LABEL_AFTER|WFM_IS_CHKBOX);
+WiFiManagerParameter custom_useGPSS("uGPSS", "Display GPS speed", settings.dispGPSSpeed, 1, "title='Check to display actual GPS speed on speedo'", WFM_LABEL_AFTER|WFM_IS_CHKBOX);
 WiFiManagerParameter custom_updrt(wmBuildUpdateRate);  // speed update rate
 #endif // TC_HAVEGPS
 #ifdef TC_HAVETEMP
@@ -358,7 +350,7 @@ WiFiManagerParameter custom_TTOAlmDur("taldu", "seconds signal duration (3-99)",
 WiFiManagerParameter custom_haveSD(wmBuildHaveSD);
 WiFiManagerParameter custom_CfgOnSD("CfgSD", "Save secondary settings on SD<br><span style='font-size:80%'>Check this to avoid flash wear</span>", settings.CfgOnSD, 1, "class='mt5'", WFM_LABEL_AFTER|WFM_IS_CHKBOX);
 #ifdef PERSISTENT_SD_ONLY
-WiFiManagerParameter custom_ttrp("ttrp", "Make time travel persistent<br><span style='font-size:80%'>Requires SD card</span>", settings.timesPers, 1, "class='mt5'", WFM_LABEL_AFTER|WFM_IS_CHKBOX);
+WiFiManagerParameter custom_ttrp("ttrp", "Make time travel persistent<br><span style='font-size:80%'>Requires SD card</span>", settings.timesPers, 1, "class='mt5' style='margin-left:20px'", WFM_LABEL_AFTER|WFM_IS_CHKBOX);
 #endif
 //WiFiManagerParameter custom_sdFrq("sdFrq", "4MHz SD clock speed<br><span style='font-size:80%'>Checking this might help in case of SD card problems</span>", settings.sdFreq, 1, "", WFM_LABEL_AFTER|WFM_IS_CHKBOX);
 
@@ -1125,7 +1117,7 @@ void wifi_loop()
             strcpyCB(settings.speedoP3, &custom_sL0);
             strcpyCB(settings.speedo3rdD, &custom_s3rd);
             #ifdef TC_HAVEGPS
-            strcpyCB(settings.useGPSSpeed, &custom_useGPSS);
+            strcpyCB(settings.dispGPSSpeed, &custom_useGPSS);
             getParam("spdrt", settings.spdUpdRate, 1, DEF_SPD_UPD_RATE);
             #endif
             #ifdef TC_HAVETEMP
@@ -1615,7 +1607,7 @@ static void preUpdateCallback()
     flushDelayedSave();
 
     allOff();
-    if(useSpeedo) speedo.off();
+    if(useSpeedoDisplay) speedo.off();
     
     destinationTime.resetBrightness();
     destinationTime.showTextDirect("UPDATING");
@@ -1993,7 +1985,7 @@ void updateConfigPortalValues()
     setCBVal(&custom_sL0, settings.speedoP3);
     setCBVal(&custom_s3rd, settings.speedo3rdD);
     #ifdef TC_HAVEGPS
-    setCBVal(&custom_useGPSS, settings.useGPSSpeed);
+    setCBVal(&custom_useGPSS, settings.dispGPSSpeed);
     // Update rate done on-the-fly
     #endif
     #ifdef TC_HAVETEMP
@@ -2115,10 +2107,18 @@ static const char *wmBuildSpeedoType(const char *dest)
     }
     
     int tt = atoi(settings.speedoType);
-    char *str = (char *)malloc(770);    // actual length 754
+
+    unsigned long l = 2 + STRLEN(spTyCustHTML1) + strlen(settings.speedoType) + STRLEN(spTyCustHTML2);
+    l += STRLEN(spTyOptP1) + 2 + STRLEN(custHTMLSel) + 4 + STRLEN(spTyOptP3);
+    for(int i = 0; i < SP_NUM_TYPES; i++) {
+        l += 2 + STRLEN(spTyOptP1) + 2 + strlen(dispTypeNames[i]) + STRLEN(spTyOptP3);
+    }
+    l += STRLEN(spTyCustHTMLE);
+    
+    char *str = (char *)malloc(l + 16);
 
     sprintf(str, "%s%s%s%s%d'%s>%s%s", spTyCustHTML1, settings.speedoType, spTyCustHTML2, spTyOptP1, 99, (tt == 99) ? custHTMLSel : "", "None", spTyOptP3);
-    for (int i = 0; i < SP_NUM_TYPES; i++) {
+    for(int i = 0; i < SP_NUM_TYPES; i++) {
         sprintf(str + strlen(str), "%s%d'%s>%s%s", spTyOptP1, i, (tt == i) ? custHTMLSel : "", dispTypeNames[i], spTyOptP3);
     }
     strcat(str, spTyCustHTMLE);

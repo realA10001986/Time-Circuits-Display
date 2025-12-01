@@ -566,7 +566,7 @@ bool PubSubClient::loop()
 bool PubSubClient::publish(const char* topic, const uint8_t* payload, unsigned int plength, bool retained)
 {
     if(connected()) {
-        if (this->bufferSize < mqtt_max_header_size + 2+strnlen(topic, this->bufferSize) + plength) {
+        if(this->bufferSize < mqtt_max_header_size + 2+strnlen(topic, this->bufferSize) + plength) {
             // Too long
             return false;
         }

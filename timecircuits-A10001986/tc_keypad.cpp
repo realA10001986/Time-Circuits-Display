@@ -199,10 +199,12 @@ static TCButton enterKey = TCButton(ENTER_BUTTON_PIN,
     false     // Disable internal pull-up resistor
 );
 
+#ifndef EXPS
 static TCButton ettKey = TCButton(EXTERNAL_TIMETRAVEL_IN_PIN,
     true,     // Button is active LOW
     true      // Enable internal pull-up resistor
 );
+#endif
 
 static void keypadEvent(char key, KeyState kstate);
 static void recordKey(char key);
@@ -224,6 +226,16 @@ static void dt_showTextDirect(const char *text, uint16_t flags = CDT_CLEAR)
     destinationTime.showTextDirect(text, flags);
 }
 
+static void handleTTrefusal(int reason)
+{
+    switch(reason) {
+    case 1:
+        bttfnSendRemCmd(REM_BRAKE);
+        break;
+    }
+}
+
+
 /*
  * keypad_setup()
  */
@@ -244,9 +256,11 @@ void keypad_setup()
     enterKey.attachLongPressStart(enterKeyHeld);
 
     // Set up External time travel button
+    #ifndef EXPS
     ettKey.setTiming(ETT_DEBOUNCE, ETT_PRESS_TIME, ETT_HOLD_TIME);
     ettKey.attachPress(ettKeyPressed);
     ettKey.attachLongPressStart(ettKeyHeld);
+    #endif
 
     ettDelay = atoi(settings.ettDelay);
     if(ettDelay > ETT_MAX_DEL) ettDelay = ETT_MAX_DEL;
@@ -293,8 +307,10 @@ static void keypadEvent(char key, KeyState kstate)
         switch(key) {
         case '0':    // "0" held down -> time travel
             doKey = false;
-            // Complete timeTravel, with speedo, (with Lead)
-            timeTravel(true, true);
+            // Complete timeTravel, with speedo, with lead
+            if((i = timeTravel(true, true, false))) {
+                handleTTrefusal(i);
+            }
             break;
         case '9':    // "9" held down -> return from time travel
             doKey = false;
@@ -470,7 +486,9 @@ void enterkeyScan()
 {
     enterKey.scan();  // scan the enter button
 
+    #ifndef EXPS
     ettKey.scan();    // scan the ext. time travel button
+    #endif
 }
 
 static uint8_t read2digs(uint8_t idx)
@@ -541,6 +559,7 @@ void keypad_loop()
         inputInjected = false;
         isEttKeyPressed = isEttKeyImmediate = false;
         isEttKeyHeld = false;
+        cancelETTAnim();
 
         return;
 
@@ -550,10 +569,15 @@ void keypad_loop()
         resetPresentTime();
         isEttKeyPressed = isEttKeyHeld = isEttKeyImmediate = false;
     } else if(isEttKeyPressed) {
+        int res = 0;
         if(!ettDelay || isEttKeyImmediate) {
-            // (MQTT/BTTFN with lead, otherwise without)
-            timeTravel(ettLong, true, isEttKeyImmediate ? false : true);
+            // 3rd parameter: MQTT/BTTFN-induced with lead; external button without lead
+            if((res = timeTravel(ettLong, true, isEttKeyImmediate ? false : true))) {
+                handleTTrefusal(res);
+            }
             ettDelayed = false;
+        } else if((res = timeTravelProbe(ettLong, true, true))) {
+            handleTTrefusal(res);
         } else {
             ettNow = millis();
             ettDelayed = true;
@@ -564,7 +588,10 @@ void keypad_loop()
     }
     if(ettDelayed) {
         if(millis() - ettNow >= ettDelay) {
-            timeTravel(ettLong, true, true);
+            int res = 0;
+            if((res = timeTravel(ettLong, true, true))) {
+                handleTTrefusal(res);
+            }
             ettDelayed = false;
         }
     }
@@ -597,7 +624,7 @@ void keypad_loop()
 
     }
 
-    // if enter key is merely pressed, copy keyBuffer to destination time (if valid)
+    // if enter key is merely pressed, handle input
     if(inputInjected || isEnterKeyPressed) {
 
         int  strLen = strlen(keyBuffer);
@@ -1446,7 +1473,7 @@ void keypad_loop()
     }
 
     // Turn everything back on after entering date
-    // (might happen in next iteration of loop)
+    // (happens in later iteration of loop)
 
     if(enterWasPressed && (millis() - timeNow > enterDelay)) {
 
@@ -1692,7 +1719,7 @@ void prepareReboot()
     ettoPulseEnd();
     allOff();
     flushDelayedSave();
-    if(useSpeedo) speedo.off();
+    if(useSpeedoDisplay) speedo.off();
     destinationTime.resetBrightness();
     dt_showTextDirect("REBOOTING");
     destinationTime.on();
@@ -1772,7 +1799,7 @@ static void setNightMode(bool nm)
     destinationTime.setNightMode(nm);
     presentTime.setNightMode(nm);
     departedTime.setNightMode(nm);
-    if(useSpeedo) speedo.setNightMode(nm);
+    if(useSpeedoDisplay) speedo.setNightMode(nm);
 }
 
 void nightModeOn()
