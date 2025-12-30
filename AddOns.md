@@ -38,7 +38,7 @@ For DIY speedos, there are two special options in the Speedo Display Type drop-d
 
 ## GPS receiver
 
-The CircuitSetup original [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-pcb/?v=fa868488740a) has a built-in GPS receiver, but the firmware also supports alternatives such as the 
+The CircuitSetup original [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-pcb) has a built-in GPS receiver, but the firmware also supports alternatives such as the 
 - Adafruit Mini GPS PA1010D (product id [4415](https://www.adafruit.com/product/4415)) or the
 - Pimoroni P1010D GPS Breakout ([PIM525](https://shop.pimoroni.com/products/pa1010d-gps-breakout?variant=32257258881107))
   
@@ -47,6 +47,8 @@ or any other MT(K)3333-based GPS receiver, connected through i2c (address 0x10).
 The GPS receiver can be used as a source of authoritative time (like NTP) and speed of movement.
 
 For wiring information, see [here](#i2c-peripheral-wiring).
+
+Note that the Adafruit and Pimoroni breakout boards do not have a proper GPS antenna and require excellent reception conditions; thick windows might already block reception. The CircuitSetup speedo has an external antenna and works far better in cars and indoors (close to windows).
 
 ## Rotary Encoder
 
