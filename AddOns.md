@@ -238,7 +238,7 @@ Here's the timing diagram for a time travel signal:
 If a time travel sequence is started by button and the TCD is doing the acceleration on the speedo, the TCD can calculate when the temporal displacement starts and notify other props 5 seconds ahead:
 
 ```
-|<---------- speedo acceleration --------->|                         |<-speedo de-acceleration->|
+|<---------- speedo acceleration --------->|                         |<--speedo deceleration--->|
 0....10....20....................xx....87..88------------------------88...87....................0
                                            |<-Temporal displacement->|
                                            |  (Display disruption)   |
@@ -256,7 +256,7 @@ If a time travel sequence is started by button and the TCD is doing the accelera
 This lead time becomes a problem if you have a GPS receiver, a rotary encoder or a Futaba remote control and use either of those as a source for speed: A time travel is triggered upon hitting 88mph. In this use case, the TCD cannot know if or when a speed of 88mph is actually be reached and therefore not inform other props 5 seconds ahead. As a result, there will be a delay of 5 seconds from when the TCD's GPS/Rotary Encoder/Futaba Remote-induced speed hits 88mph until the temporal displayment sequence actually starts:
 
 ```
-|<---------- speedo acceleration --------->|<- waiting, waiting...........|                         |<-speedo de-acceleration->|
+|<---------- speedo acceleration --------->|<- waiting, waiting...........|                         |<--speedo deceleration-->|
 0....10....20....................xx....87..88******************************------------------------88...87....................0
                                                                           |<-Temporal displacement->|
                                                                           |  (Display disruption)   |
@@ -274,7 +274,7 @@ This lead time becomes a problem if you have a GPS receiver, a rotary encoder or
 2) Option **_Signal without 5s lead_** checked
 
 ```
-|<---------- speedo acceleration --------->|                         |<-speedo de-acceleration->|
+|<---------- speedo acceleration --------->|                         |<--speedo deceleration--->|
 0....10....20....................xx....87..88------------------------88...87....................0
                                            |<-Temporal displacement->|
                                            |  (Display disruption)   |
@@ -306,7 +306,7 @@ Time Travel timing:
 If a time travel sequence is started by button and the TCD is doing the acceleration on the speedo, the TCD can calculate when the temporal displacement starts and notify other props 5 seconds ahead using the simple TIMETRAVEL command:
 
 ```
-|<---------- speedo acceleration --------->|                         |<-speedo de-acceleration->|
+|<---------- speedo acceleration --------->|                         |<--speedo deceleration--->|
 0....10....20....................xx....87..88------------------------88...87....................0
                                            |<-Temporal displacement->|
                                            |  (Display disruption)   |
@@ -322,7 +322,7 @@ If a time travel sequence is started by button and the TCD is doing the accelera
 If you have a GPS receiver, a rotary encoder or a Futaba remote control and use either of those as a source for speed, a time travel is triggered upon hitting 88mph. In this use case, however, the TCD cannot know if or when a speed of 88mph is actually be reached and therefore not inform other props 5 seconds ahead. As a result, there will be a delay of 5 seconds from when the TCD's GPS/Rotary Encoder/Futaba Remote-induced speed hits 88mph until the temporal displayment sequence actually starts:
 
 ```
-|<---------- speedo acceleration --------->|<- waiting, waiting...........|                         |<-speedo de-acceleration->|
+|<---------- speedo acceleration --------->|<- waiting, waiting...........|                         |<--speedo deceleration-->|
 0....10....20....................xx....87..88******************************------------------------88...87....................0
                                                                           |<-Temporal displacement->|
                                                                           |  (Display disruption)   |
@@ -342,7 +342,7 @@ If you have a GPS receiver, a rotary encoder or a Futaba remote control and use 
 If a time travel sequence is started by button and the TCD doing the acceleration on the speedo, the situation is as above: The TCD can calculate when the temporal displacement starts and notify other props 5 seconds ahead - and actually tell those props when exactly the temporal displacement is expected to start:
 
 ```
-|<---------- speedo acceleration --------->|                         |<-speedo de-acceleration->|
+|<---------- speedo acceleration --------->|                         |<--speedo deceleration--->|
 0....10....20....................xx....87..88------------------------88...87....................0
                                            |<-Temporal displacement->|
                                            |  (Display disruption)   |
@@ -358,7 +358,7 @@ If a time travel sequence is started by button and the TCD doing the acceleratio
 Now, again the GPS receiver/rotary encoder/Futaba remote control scenario:
 
 ```
-|<---------- speedo acceleration --------->|                         |<-speedo de-acceleration->|
+|<---------- speedo acceleration --------->|                         |<--speedo deceleration--->|
 0....10....20....................xx....87..88------------------------88...87....................0
                                            |<-Temporal displacement->|
                                            |  (Display disruption)   |
