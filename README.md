@@ -1624,7 +1624,7 @@ A full list is [here](https://tz.out-a-ti.me).
 
 <details>
   <summary>Sound stutters and/or displays stalls sometimes</summary>
-The reason for this is in 99.9% of cases a problem with i2c cabling connecting your Speedo, sensors, rotary encoders and/or GPS receivers. Use shielded cables (best: S/FTP), twisted pair, with SDA-GND, SCL-GND, 5V-GND and GND-GND pairs. Connect the shield to GND. Keep your cables away from electrical appliances and other cables. Keep your cables as short as possible. Check your connections at terminals; if using stranded wires, check that you didn't cut off strands when removing insulation, and put some solder on the strands.
+The reason for this is in 99.9% of cases a problem with i2c cabling connecting your Speedo, sensors, rotary encoders and/or GPS receivers. Use shielded cables (best: S/FTP), twisted pair, with SDA-GND, SCL-GND, 5V-GND and GND-GND pairs. Connect the shield to GND on the TCD's end (not the other!). Keep your cables away from electrical appliances and other cables. Keep your cables as short as possible. Check your connections at terminals; if using stranded wires, check that you didn't cut off strands when removing insulation, and put some solder on the strands.
 </details>
 
 List will be extended when problems are reported.
