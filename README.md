@@ -916,6 +916,8 @@ If your CircuitSetup [Speedo Kit](https://circuitsetup.us/product/delorean-time-
 
 ![speedo_i2c](img/speedo_i2c.jpg)
 
+The SDA and SCL wires should be paired with a wire connected to GND. If the cable is shielded, connected the shield to GND as well.
+
 If you want to make your own speedo, see [here](AddOns.md#speedometer).
 
 #### Software setup
