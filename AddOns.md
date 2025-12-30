@@ -166,9 +166,13 @@ On most peripherals the pins are named as follows, and need to be connected to t
     </tr>
 </table>
 
-For longer cables, ie >50cm (>20in), I recommend using a twisted pair cable, and to connect it as follows:
+For longer cables, ie >50cm (>20in), I recommend using a shielded twisted pair (S/FTP) cable, and to connect it as follows:
 
 ![i2clongcable](DIY/img/i2clongcable.png)
+
+In case of a shielded cable, connected the shield to GND as well.
+
+If you experience sound stutter or stalled displays, the reason is in nearly all cases a problem with i2c cabling. SDA and SCL should be separated as far as possible to avoid cross-talk. Also, don't put the i2c cable too close to other cables.
 
 >Important: The TCD control board delivers and drives the i2c bus on 5V. Most sensors/GPS receivers operate on 3.3V. Therefore, you cannot connect the chips directly to the TCD control board without a level-shifter. This goes for the power supply as well as the i2c bus signals (SDA, SCL). I only use readily available sensor breakout boards that include level-shifters.
 
