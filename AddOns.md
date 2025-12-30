@@ -170,7 +170,7 @@ For longer cables, ie >50cm (>20in), I recommend using a shielded twisted pair (
 
 ![i2clongcable](DIY/img/i2clongcable.png)
 
-In case of a shielded cable, connected the shield to GND as well.
+In case of a shielded cable, connected the shield to GND on the TCD's end.
 
 If you experience sound stutter or stalled displays, the reason is in nearly all cases a problem with i2c cabling. SDA and SCL should be separated as far as possible to avoid cross-talk. Also, don't put the i2c cable too close to other cables.
 
