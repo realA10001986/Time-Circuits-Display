@@ -1969,7 +1969,6 @@ static bool preWiFiScanCallback()
     // Do not allow a WiFi scan under some circumstances (as
     // it may disrupt sequences and/or leave BTTFN clients
     // out in the dark for too long)
-    // timeTravelP0 is also set while the intro is running
 
     if((csf & (CSF_NS|CSF_ST|CSF_P0|CSF_P1|CSF_RE|CSF_P2)) || autoIntAnimRunning)
         return false;
@@ -2338,7 +2337,7 @@ static const char *wmBuildBestApChnl(const char *dest)
 }
 
 static const char *wmBuildBanner(const char *msg) 
-{   // "%%s%%s%%s%%s</div>";
+{   // "%s%s%s%s</div>";
     char *str = (char *)malloc(STRLEN(bannerStart) + 7 + STRLEN(bannerMid) + strlen(msg) + 6 + 8);
     sprintf(str, bannerGen, bannerStart, col_r, bannerMid, msg);        
 

@@ -1035,7 +1035,6 @@ static void      convTime(int diff, int& y, int& m, int& d, int& h, int& mm);
 static bool NTPHaveTime();
 static bool NTPHaveCurrentTime();
 static bool NTPGetUTC(int& year, int& month, int& day, int& hour, int& minute, int& second);
-static void ntp_setup();
 
 // Basic Telematics Transmission Framework
 static void bttfn_notify(uint8_t targetType, uint8_t event, uint16_t payload = 0, uint16_t payload2 = 0, uint16_t payload3 = 0);
@@ -4980,6 +4979,11 @@ static bool getNTPTime(bool weHaveAuthTime, DateTime& dt, bool adjustRTC)
 {
     uint16_t rtcYear;
     int16_t  rtcYOffs = 0;
+
+    // Bail if no NTP server configured
+    if(!settings.ntpServer[0]) {
+        return false;
+    }
 
     pwrNeedFullNow();
 

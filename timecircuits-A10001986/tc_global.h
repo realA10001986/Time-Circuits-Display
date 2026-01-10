@@ -26,9 +26,9 @@
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
 #define TC_VERSION_REV   "V3.11"      // 13 chars max
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "JAN092026"  // 13 chars max
+#define TC_VERSION_EXTRA "JAN102026"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "01092025"   // 12 chars max
+#define TC_VERSION_EXTRA "01102025"   // 12 chars max
 #endif
 #define TC_VERSION TC_VERSION_REV
 

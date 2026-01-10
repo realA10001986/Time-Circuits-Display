@@ -2512,11 +2512,6 @@ static void menuDelay(unsigned long mydel)
 /*
  *  Call a few loops, meant to be used inside delays.
  *  This allows other stuff to proceed while we wait.
- *  menuMode is true when this is called from the keypad menu
- *  menuMode is false when called while loops are running.
- *  (bttf_loop(), given it can take a while when the Remote 
- *  changes Master status, should only be called from main 
- *  loop, unless we are in the keypad menu.)
  */
 static void menuLoops()
 {

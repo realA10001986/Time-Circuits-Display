@@ -139,6 +139,8 @@
 /*  Changelog
  *          
  *  2026/01/xx (A10001986) [3.11]
+ *    - Fix unnecessary WiFI reconnect when no NTP server configured
+ *  2026/01/xx (A10001986) [3.11]
  *    - New sound pack (TW05/CS05)
  *    - Keypad menu: Add navigation using keypad keys 2 (up), 5 (select), 8 (down), 
  *      9 (cancel). Old "ENTER" method still supported.

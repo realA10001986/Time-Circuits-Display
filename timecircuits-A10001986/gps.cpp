@@ -526,7 +526,7 @@ bool tcGPS::readAndParse(bool doDelay)
     int    buff_max = 0;
     int    buff_idx = 0;
     bool   haveParsedSome = false;
-    unsigned long myNow = millis();;
+    unsigned long myNow = millis();
 
     i2clen = Wire.requestFrom(_address, _lenArr[_lenIdx++]);
     _lenIdx &= _lenLimit;
