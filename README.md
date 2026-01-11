@@ -691,15 +691,21 @@ While the music player is playing music, most sound effects are disabled/muted, 
 
 ## The keypad menu
  
-The keypad menu is an additional way to configure your TCD; it only involves the three displays and the keypad. It is controlled by "pressing" or "holding" the ENTER key on the keypad.
+The keypad menu is an additional way to configure your TCD; it only involves the three displays and the keypad. 
 
-A "press" is shorter than 2 seconds, a "hold" is 2 seconds or longer.
-
-The menu is invoked by holding the ENTER button.
+The menu is invoked by holding the ENTER button for 2 seconds.
 
 *Note that if the keypad menu is active at a time when the alarm, the reminder, the count-down timer or sound-on-the-hour are due, those events will be missed and no sounds are played.*
 
-Data entry, such as for dates and times, is done through the keypad's number keys and works as follows: Whenever a data entry is requested, the field for that data is lit (while the rest of the display is dark) and a pre-set value is shown. If you want to keep that pre-set, press ENTER to proceed to next field. Otherwise press a digit on the keypad; the pre-set is then overwritten by the value entered. 2 digits can be entered (4 for years), upon which the new value is stored and the next field is activated. You can also enter less than 2 digits (4 for years) and press ENTER when done with the field. Note that a month needs to be entered numerically (1-12), and hours need to be entered in 24-hour notation (0-23), regardless of 12-hour or 24-hour mode as per the Config Portal setting.
+Menu navigation uses the ENTER key, as well as
+- "2" for "up",
+- "8" for "down",
+- "5" for select, and
+- "9" for cancel/quit.
+
+Using the ENTER key involves *pressing* or *holding*: A "press" is shorter than 2 seconds, a "hold" is 2 seconds or longer.
+
+Data entry, such as for dates and times, is done through the keypad's number keys and works as follows: Whenever a data entry is requested, the field for that data is lit (while the rest of the display is dark) and a pre-set value is shown. If you want to keep that pre-set, press ENTER to proceed to next field. Otherwise press a digit on the keypad; the pre-set is then overwritten by the value entered. 2 digits can be entered (4 for years), upon which the new value is stored and the next field is activated. You can also enter less than 2 digits (4 for years) and press ENTER when done with the field. Note that a month needs to be entered numerically (01-12), and hours need to be entered in 24-hour notation (00-23), regardless of 12-hour or 24-hour mode as per the Config Portal setting.
 
 After invoking the keypad menu, the first step is to choose a menu item. The available items are  
 - set the alarm ("ALA-RM"),
@@ -715,17 +721,19 @@ After invoking the keypad menu, the first step is to choose a menu item. The ava
 - see a list of [BTTFN-Clients](#connecting-props-wirelessly-bttf-network-bttfn) currently connected ("BTTFN CLIENTS"),
 - quit the menu ("END").
  
-Pressing ENTER cycles through the list, holding ENTER selects an item.
+Pressing ENTER or "2"/"8" cycles through the list, holding ENTER or pressing "5" selects an item. "9" quits the menu.
  
 #### How to set up the alarm:
 
 - Hold ENTER to invoke main menu
-- (Currently, the alarm is the first menu item; otherwise press ENTER repeatedly until "ALA-RM" is shown)
+- (Currently, the alarm is the first menu item; otherwise press ENTER repeatedly [or press 2/8] until "ALA-RM" is shown)
 - Hold ENTER
-- Press ENTER to toggle the alarm on and off, hold ENTER to proceed
-- Then enter the hour and minutes. This works as described above.
-- Choose the weekday(s) by repeatedly pressing ENTER
-- Hold ENTER to finalize your weekday selection. "SAVING" is displayed briefly.
+- Press ENTER [or 2/8] to toggle the alarm on and off, hold ENTER [or press 5] to proceed
+- Then enter the hour and minutes. This works as described above under "Data entry".
+- Choose the weekday(s) by repeatedly pressing ENTER [or 2/8]
+- Hold ENTER [or press 5] to finalize your weekday selection. "SAVING" is displayed briefly.
+
+Pressing "9" at any point cancels and quits the menu.
 
 When the alarm is set and enabled, the dot in the present time's minute field will light up. 
 
@@ -741,12 +749,14 @@ Note that the alarm is recurring, ie it rings at the programmed time, unless dis
 
 By default, the device uses the built-in hardware volume knob to determine the desired volume. You can change this to a pre-selected level as follows:
 - Hold ENTER to invoke main menu
-- Press ENTER repeatedly until "VOL-UME" is shown
-- Hold ENTER
-- Press ENTER to toggle between "USE VOLUME KNOB" and "SELECT LEVEL"
-- Hold ENTER to proceed
-- If you chose "SELECT LEVEL", you can now select the desired level by pressing ENTER repeatedly. There are 20 levels available. The volume knob is now ignored.
-- Hold ENTER to save and quit the menu
+- Press ENTER [or 2/8] repeatedly until "VOL-UME" is shown
+- Hold ENTER [or press 5]
+- Press ENTER [or 2/8] to toggle between "USE VOLUME KNOB" and "SELECT LEVEL"
+- Hold ENTER [or press 5] to proceed
+- If you chose "SELECT LEVEL", you can now select the desired level by pressing ENTER repeatedly [or 2/8]. There are 20 levels available. The volume knob is now ignored.
+- Hold ENTER [or press 5] to save and quit the menu
+
+Pressing "9" at any point cancels and quits the menu.
 
 You can also quickly set the volume by typing a code on the keypad followed by ENTER. 300-319 select a level, 399 enables the volume knob.
 
@@ -757,10 +767,12 @@ If you are using a Rotary Encoder for volume, you need to disable the volume kno
 In order for this menu item to show up, an SD card is required.
 
 - Hold ENTER to invoke main menu
-- Press ENTER repeatedly until "MUSIC FOLDER NUMBER" is shown
-- Hold ENTER, "FOLDER" and a number is displayed
-- Press ENTER repeatedly to cycle through the possible values. The message "NOT FOUND" appears if either the folder itself or 000.mp3 in that very folder is not present. "PROCESSING REQUIRED" means that the TCD will prepare the folder (eg rename files) after selection.
-- Hold ENTER to select the value shown and exit the menu ("SAVING" is displayed briefly)
+- Press ENTER [or 2/8] repeatedly until "MUSIC FOLDER NUMBER" is shown
+- Hold ENTER [or press 5], "FOLDER" and a number is displayed
+- Press ENTER [or 2/8] repeatedly to cycle through the possible values. The message "NOT FOUND" appears if either the folder itself or 000.mp3 in that very folder is not present. "PROCESSING REQUIRED" means that the TCD will prepare the folder (eg rename files) after selection; this requires a reboot.
+- Hold ENTER [or press 5] to select the value shown and exit the menu ("SAVING" is displayed briefly)
+
+Pressing "9" at any point cancels and quits the menu.
 
 If shuffle was enabled before, the new folder is also played in shuffled order.
 
@@ -769,27 +781,31 @@ Note that the Music Folder Number is saved in a config file on the SD card.
 #### How to select the Time-cycling Interval:
 
 - Hold ENTER to invoke main menu
-- Press ENTER repeatedly until "TIME-CYCLING" is shown
-- Hold ENTER, "INTERVAL" is displayed
-- Press ENTER repeatedly to cycle through the possible Time-cycling intervals. "0" disables automatic time cycling ("OFF").
-- Hold ENTER to select the value shown and exit the menu ("SAVING" is displayed briefly)
+- Press ENTER [or 2/8] repeatedly until "TIME-CYCLING" is shown
+- Hold ENTER [or press 5], "INTERVAL" is displayed
+- Press ENTER [or 2/8] repeatedly to cycle through the possible Time-cycling intervals. "0" disables automatic time cycling ("OFF").
+- Hold ENTER [or press 5] to select the value shown and exit the menu ("SAVING" is displayed briefly)
+
+Pressing "9" at any point cancels and quits the menu.
  
 #### How to adjust the display brightness:
 
 - Hold ENTER to invoke main menu
-- Press ENTER repeatedly until "BRIGHTNESS" is shown
-- Hold ENTER, the displays show all elements, the top-most display says "LVL"
-- Press ENTER repeatedly to cycle through the possible levels (1-15)
-- Hold ENTER to use current value and proceed to next display
+- Press ENTER [or 2/8] repeatedly until "BRIGHTNESS" is shown
+- Hold ENTER [or press 5], the displays show all elements, the top-most display says "LVL"
+- Press ENTER [or 2/8] repeatedly to cycle through the possible levels (1-15)
+- Hold ENTER [or press 5] to use current value and proceed to next display
 - After the third display, "SAVING" is displayed briefly and the menu is left automatically.
+
+Pressing "9" at any point cancels and quits the menu.
  
 #### How to find out the IP address and WiFi status:
 
 - Hold ENTER to invoke main menu
-- Press ENTER repeatedly until "NET-WORK" is shown
-- Hold ENTER, the displays show the IP address
-- Repeatedly press ENTER to cycle between IP address, WiFi status, MAC address (in station mode) and Home Assistant connection status.
-- Hold ENTER to leave the menu
+- Press ENTER [or 2/8] repeatedly until "NET-WORK" is shown
+- Hold ENTER [or press 5], the displays show the IP address
+- Repeatedly press ENTER [or 2/8] to cycle between IP address, WiFi status, MAC address (in station mode) and Home Assistant connection status.
+- Hold ENTER [or press 5 or 9] to leave the menu
 
 #### How to set the Real Time Clock (RTC):
 
@@ -798,8 +814,8 @@ If you can't use network time (NTP) as a source of time, you need to manually ad
 Always set your actual local present time here; if you want to display some other time, use the Time Travel function. 
 
 - Hold ENTER to invoke main menu
-- Press ENTER repeatedly until "SET CLOCK" is displayed and the *Present Time* display shows a date and time 
-- Hold ENTER until the *Present Time* display goes off except for the first field to enter data into
+- Press ENTER [or 2/8] repeatedly until "SET CLOCK" is displayed and the *Present Time* display shows a date and time 
+- Hold ENTER [or press 5], the *Present Time* display goes off except for the first field to enter data into
 - The field to enter data into is shown (exclusively), pre-set with its current value
 - Data entry works as described [above](#the-keypad-menu); remember that months need to be entered numerically (01-12), and hours in 24-hour notation (0-23).
 - After entering data into all fields, the data is saved and the menu is left automatically.
@@ -809,8 +825,8 @@ The time you entered will be re-set/overruled/re-adjusted when the TCD has acces
 #### How to program dates/times for the *Destination* and *Last Time Departed* displays:
 
 - Hold ENTER to invoke main menu
-- Press ENTER repeatedly until the desired display is the only one lit and shows a date and time
-- Hold ENTER until the display goes off except for the first field to enter data into
+- Press ENTER [or 2/8] repeatedly until the desired display is the only one lit and shows a date and time
+- Hold ENTER [or press 5], the display goes off except for the first field to enter data into
 - The field to enter data into is shown (exclusively), pre-set with its current value
 - Data entry works as described [above](#the-keypad-menu); remember that months need to be entered numerically (01-12), and hours in 24-hour notation (0-23).
 - After entering data into all fields, the data is saved and the menu is left automatically.
@@ -824,27 +840,29 @@ Note: Your dates/times will be overwritten in storage after a time travel when *
 #### How to view sensor info
 
 - Hold ENTER to invoke main menu
-- Press ENTER repeatedly until "SENSORS" is shown. If that menu item is missing, a light or temperature sensor was not detected during boot.
-- Hold ENTER
+- Press ENTER [or 2/8] repeatedly until "SENSORS" is shown. If that menu item is missing, a light or temperature sensor was not detected during boot.
+- Hold ENTER [or press 5]
 - Now the currently measured lux level or temperature is displayed.
-- Press ENTER to toggle between light sensor and temperature sensor info (if both are connected)
-- Hold ENTER to exit the menu
+- Press ENTER [or 2/8] to toggle between light sensor and temperature sensor info (if both are connected)
+- Hold ENTER [or press 5 or 9] to exit the menu
 
 >Note: Sometimes a lux value of -1 might be displayed, indicating a sensor overload. This can have the following reasons: The TCD firmware sets up the sensors for indoor usage and, as a result, sensors will overload in broad daylight. Secondly, some sensors have issues with halogen lamps (reportedly TSL2561), and most sensors also "overload" if too much IR light is directed at them, for instance from surveillance cameras.
 
 #### How to see a list of BTTF-Network clients
 
 - Hold ENTER to invoke main menu
-- Press ENTER repeatedly until "BTTFN CLIENTS" is shown.
-- Hold ENTER
+- Press ENTER [or 2/8] repeatedly until "BTTFN CLIENTS" is shown.
+- Hold ENTER [or press 5]
 - Now one of the connected clients is displayed, or "NO CLIENTS" if currently no clients are connected.
-- Press ENTER to scroll through the list of connected clients.
-- Hold ENTER to exit the menu
+- Press ENTER [or 2/8] to scroll through the list of connected clients.
+- Hold ENTER [or press 5 or 9] to exit the menu
 
 #### How to leave the menu:
+
+ Press "9", or
  
- - While the menu is active, press ENTER repeatedly until "END" is displayed.
- - Hold ENTER to leave the menu
+ - press ENTER repeatedly until "END" is displayed.
+ - Hold ENTER [or 5] to leave the menu
 
 ## Peripherals
 
@@ -1093,6 +1111,9 @@ The TCD can be controlled through messages sent to topic **bttf/tcd/cmd**. Suppo
 - MP_SHUFFLE_OFF: Disables shuffle mode in Music Player
 - PLAYKEY_x: Play keyX.mp3 (from SD card), X being in the range from 1 to 9.
 - STOPKEY: Stop playback of keyX file. Does nothing if no keyX file is currently played back.
+- PLAY_DOOR_OPEN, PLAY_DOOR_CLOSE: Play door sound
+- PLAY_DOOR_OPEN_L, PLAY_DOOR_CLOSE_L: Play door sound on left stereo channel
+- PLAY_DOOR_OPEN_R, PLAY_DOOR_CLOSE_R: Play door sound on right stereo channel
 - POWER_CONTROL_ON: Take over Fake-Power control; POWER_xx commands now control Fake-Power.
 - POWER_CONTROL_OFF: Release Fake-Power control
 - POWER_ON, POWER_OFF: Switch Fake-Power on or off, respectively.
