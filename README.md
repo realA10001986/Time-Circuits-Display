@@ -727,13 +727,13 @@ Pressing ENTER or "2"/"8" cycles through the list, holding ENTER or pressing "5"
 
 - Hold ENTER to invoke main menu
 - (Currently, the alarm is the first menu item; otherwise press ENTER repeatedly [or press 2/8] until "ALA-RM" is shown)
-- Hold ENTER
+- Hold ENTER [or press 5]
 - Press ENTER [or 2/8] to toggle the alarm on and off, hold ENTER [or press 5] to proceed
 - Then enter the hour and minutes. This works as described above under "Data entry".
 - Choose the weekday(s) by repeatedly pressing ENTER [or 2/8]
 - Hold ENTER [or press 5] to finalize your weekday selection. "SAVING" is displayed briefly.
 
-Pressing "9" at any point cancels and quits the menu.
+Pressing "9" at any point - except when entering hour and minutes - cancels and quits the menu.
 
 When the alarm is set and enabled, the dot in the present time's minute field will light up. 
 
