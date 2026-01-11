@@ -138,9 +138,7 @@
 
 /*  Changelog
  *          
- *  2026/01/xx (A10001986) [3.11]
- *    - Fix unnecessary WiFI reconnect when no NTP server configured
- *  2026/01/xx (A10001986) [3.11]
+ *  2026/01/11 (A10001986) [3.11]
  *    - New sound pack (TW05/CS05)
  *    - Keypad menu: Add navigation using keypad keys 2 (up), 5 (select), 8 (down), 
  *      9 (cancel). Old "ENTER" method still supported.
@@ -155,6 +153,7 @@
  *      Gauges >= 1.30, VSR >= 1.25, Remote >= 1.16)
  *    - Eliminate DNS lookups in loop() (which were a possible reason for sound-
  *      stutter sometimes)
+ *    - NTP/GPS time sync logic enhancements
  *    - Various code optimizations (audio, GPS, network, etc)
  *  2025/11/29 (A10001986) [3.10]
  *    - Play user-provided "ttcancel.mp3" if TT is cancelled through brake on
@@ -1684,4 +1683,8 @@ void loop()
     bttfn_loop();
     audio_loop();
 }
+#endif
+
+#ifdef TC_DBG
+#warning "Debug output is enabled. Binary not suitable for release."
 #endif

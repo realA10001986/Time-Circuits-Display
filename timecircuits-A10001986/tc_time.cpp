@@ -178,6 +178,7 @@ uint16_t             lastYear = 0;
 static uint16_t      lastHour = 23;
 static uint8_t       resyncInt = 5;
 bool                 syncTrigger = false;
+unsigned long        syncTriggerNow = 0;
 bool                 doAPretry = true;
 
 // deferredCP = true: Start CP later; 
@@ -436,6 +437,7 @@ static uint32_t      NTPmsSinceSecond = 0;
 static bool          NTPPacketDue = false;
 static bool          NTPWiFiUp = false;
 static uint8_t       NTPfailCount = 0;
+static bool          NTPLookupFail = false;
 static const uint8_t NTPUDPHD[4] = { 'T', 'C', 'D', '1' };
 static uint32_t      NTPUDPID    = 0;
  
@@ -987,8 +989,8 @@ static void mySetupNWCheck();
 
 static void startDisplays();
 
-static bool getNTPOrGPSTime(bool weHaveAuthTime, DateTime& dt, bool updateRTC = true);
-static bool getNTPTime(bool weHaveAuthTime, DateTime& dt, bool updateRTC = true);
+static bool getNTPOrGPSTime(bool weHaveAuthTime, DateTime& dt, bool updateRTC = true, bool wifiAllowed = true);
+static bool getNTPTime(bool weHaveAuthTime, DateTime& dt, bool updateRTC = true, bool wifiAllowed = true);
 #ifdef TC_HAVEGPS
 static bool getGPStime(DateTime& dt, bool updateRTC = true);
 static bool setGPStime();
@@ -1032,7 +1034,6 @@ static void      calcJulianData();
 static void      convTime(int diff, int& y, int& m, int& d, int& h, int& mm);
 
 /// Native NTP
-static bool NTPHaveTime();
 static bool NTPHaveCurrentTime();
 static bool NTPGetUTC(int& year, int& month, int& day, int& hour, int& minute, int& second);
 
@@ -1339,7 +1340,7 @@ void time_setup()
             ntp_loop();
             delay(100);
             timeout--;
-        } while (!NTPHaveTime() && timeout);
+        } while (!NTPHaveCurrentTime() && timeout);
     }
 
     // Parse TZ to check validity and to get difference to UTC
@@ -1352,7 +1353,7 @@ void time_setup()
     }
     
     // Set RTC with NTP time
-    if(getNTPTime(true, dtu, true)) {
+    if(getNTPTime(true, dtu, true, true)) {
 
         // So we have authoritative time now
         haveAuthTime = true;
@@ -2789,8 +2790,20 @@ void time_loop()
 
             if(!haveAuthTime) {
                 authTimeExpired = true;
+                if((couldHaveAuthTime & 2) && !NTPLookupFail) {
+                    blockWiFiSTAPS = true;
+                }
             } else if(millis() - lastAuthTime >= 7*24*60*60*1000) {
                 authTimeExpired = true;
+            }
+
+            // Expire syncTrigger to allow PS any time later
+            // if syncing keeps failing. (7 mins to be well
+            // below minimum PS timeout)
+            if(syncTrigger) {
+                if((millis() - syncTriggerNow) > 7*60*1000) {
+                    syncTrigger = false;
+                }
             }
 
             #ifdef TC_HAVEGPS
@@ -2804,25 +2817,27 @@ void time_loop()
 
             // Re-adjust time periodically through NTP/GPS
             //
-            // This is normally done hourly between hour:01 and hour:02. However:
-            // - Exception to time rule: If there is no authTime yet, try syncing 
-            //   every resyncInt+1/2 minutes or whenever GPS has time; or if
-            //   syncTrigger is set (keypad "7"). (itstime)
-            // - Try NTP via WiFi (doWiFi) when/if user configured a network AND
-            //   -- WiFi is connected (duh!), or
-            //   -- WiFi was connected and is now in power-save, but no authTime yet;
-            //      this triggers a re-connect (resulting in a frozen display).
-            //      This annoyance is kept to a minimum by setting the WiFi off-timer
-            //      to a period longer than the period between two attempts; this in
-            //      essence defeats WiFi power-save, but accurate time is more important.
-            //   -- or if
+            // This is normally done hourly between hour:01 and hour:02.
+            // Exception to time rule: If there is no authTime yet, try syncing every
+            // resyncInt+1/2 minutes (unless lookup of the NTP server failed) or
+            // whenever GPS has time; or if syncTrigger is set (keypad "7").
+            // (itsTime)
+            //
+            // Try NTP via WiFi (doWiFi) if user configured a network and a server AND
+            //   -- if WiFi is connected (duh!), OR
+            //   -- if
             //          --- WiFi was connected and now off OR currently in AP-mode AND
-            //          --- authTime has expired (after 7 days) AND
+            //          --- User checked "Periodic reconnection attempts" in CP AND
+            //          --- authTime has expired (after 7 days) or we never had authtime AND
             //          --- it is night (0-6am)
-            //      This also triggers a re-connect (frozen display); in this case only
-            //      once every 15/90 minutes (see wifiOn) during night time until a time
-            //      sync succeeds or the number of attempts exceeds a certain amount.
+            //      This triggers a re-connect (frozen display) but only once every
+            //      15/90 minutes (see wifiOn) during night time until a time sync
+            //      succeeds or the number of attempts exceeds a certain amount.
             // - In any case, do not interrupt any running sequences.
+            //
+            // Note: If ntp is possible (have server & network), and DNS lookup didn't 
+            //       fail, WiFi power-saving is blocked until once auth time is received.
+            //       (blockWiFiSTAPS)
 
             bool itsTime = false;
             bool doWiFi = false;
@@ -2833,10 +2848,12 @@ void time_loop()
                 itsTime = ( (gdtu.minute() == 1) ||
                             (gdtu.minute() == 2) ||
                             (!haveAuthTime && 
-                             ( ((gdtu.minute() % resyncInt) == 1) || 
-                               ((gdtu.minute() % resyncInt) == 2) ||
-                               GPShasTime 
-                             )
+                              ( GPShasTime ||
+                                ( !NTPLookupFail &&
+                                  ( ((gdtu.minute() % resyncInt) == 1) || 
+                                    ((gdtu.minute() % resyncInt) == 2) )
+                                )
+                              )
                             )                    ||
                             (syncTrigger &&
                              gdtu.second() == 35
@@ -2844,16 +2861,19 @@ void time_loop()
                           );
             
                 if(itsTime && !GPShasTime) {
-                    doWiFi = wifiHaveSTAConf &&                        // if WiFi network is configured AND
-                             ( (!wifiIsOff && !wifiInAPMode)     ||    //   if WiFi-STA is on,                           OR
+                    doWiFi = !!(couldHaveAuthTime & 2) &&              // if NTP is possible AND
+                             ( 
+                               (!wifiIsOff && !wifiInAPMode)     ||    //   if WiFi-STA is on,                           OR
+                               /* // This is now covered by blockWiFiSTAPS
                                ( wifiIsOff      &&                     //   if WiFi-STA is off (after being connected), 
                                  !haveAuthTime  &&                     //      but no authtime, 
                                  keypadIsIdle() &&                     //      and keypad is idle (no press for >2mins)
-                                 checkMP3Done())                 ||    //      and no mp3 is being played                OR
+                                 checkAudioFree())               ||    //      and no audio(ex.beep) is being played     OR
+                               */
                                ( (wifiIsOff ||                         //   if WiFi-STA is off (after being connected),
                                   (wifiInAPMode && doAPretry)) &&      //                      or in AP-mode
-                                 authTimeExpired               &&      //      and authtime expired
-                                 checkMP3Done()                &&      //      and no mp3 being played
+                                 authTimeExpired               &&      //      and authtime expired (or we never had any)
+                                 checkAudioFree()              &&      //      and no audio(ex.beep) being played
                                  keypadIsIdle()                &&      //      and keypad is idle (no press for >2mins)
                                  (lastHour <= 6)                       //      during night-time
                                )
@@ -2881,7 +2901,7 @@ void time_loop()
                     // WiFi; no current NTP time stamp will be available. Repeated calls
                     // will eventually succeed.
 
-                    if(getNTPOrGPSTime(haveAuthTime, gdtu, false)) {
+                    if(getNTPOrGPSTime(haveAuthTime, gdtu, false, doWiFi)) {
 
                         autoReadjust = true;
                         resyncInt = 5;
@@ -2891,6 +2911,7 @@ void time_loop()
                         lastAuthTime = millis();
                         lastAuthTime64 = millis64();
                         authTimeExpired = false;
+                        blockWiFiSTAPS = false;
 
                         // We have just adjusted, don't do it again below
                         lastYear = gdtu.year();
@@ -4409,7 +4430,7 @@ uint64_t millis64()
     unsigned long millisNow64 = millis();
     
     if(millisNow64 < lastMillis64) {
-        millisEpoch += 0x100000000;
+        millisEpoch += 0x100000000ULL;
     }
     lastMillis64 = millisNow64;
 
@@ -4945,73 +4966,66 @@ static void startDisplays()
  * and update given DateTime
  * 
  */
-static bool getNTPOrGPSTime(bool weHaveAuthTime, DateTime& dt, bool updateRTC)
+static bool getNTPOrGPSTime(bool weHaveAuthTime, DateTime& dt, bool updateRTC, bool wifiAllowed)
 {
-    // If GPS has a time and WiFi is off, try GPS first.
-    // This avoids a frozen display when WiFi reconnects.
+    // The order below must match the determinations
+    // in time_loop(). We might be called at times
+    // when Wifi reconnects are undesirable, but
+    // time_loop() found out that GPS has valid time.
+    // So we must try GPS first.
     #ifdef TC_HAVEGPS
-    if(gpsHaveTime() && wifiIsOff) {
-        if(getGPStime(dt, updateRTC)) return true;
-    }
+    if(getGPStime(dt, updateRTC)) return true;
     #endif
 
     // Now try NTP
-    if(getNTPTime(weHaveAuthTime, dt, updateRTC)) return true;
-
-    // Again go for GPS, might have older timestamp
-    #ifdef TC_HAVEGPS
-    return getGPStime(dt, updateRTC);
-    #else
-    return false;
-    #endif
+    return getNTPTime(weHaveAuthTime, dt, updateRTC, wifiAllowed);
 }
 
 /*
  * Get UTC time from NTP
  * 
- * Saves time to RTC; sets yearOffs (but does not save it to NVM)
+ * Saves time to RTC; sets yearOffs (but does not save it)
  * 
- * Does no re-tries in case NTPGetLocalTime() fails; this is
- * called repeatedly within a certain time window, so we can 
- * retry with a later call.
+ * If WiFi is off, this will reconnect but fail. However,
+ * we are called repeatedly within a certain time window,
+ * so subsequent calls will succeed (if NTP works).
  */
-static bool getNTPTime(bool weHaveAuthTime, DateTime& dt, bool adjustRTC)
+static bool getNTPTime(bool weHaveAuthTime, DateTime& dt, bool adjustRTC, bool wifiAllowed)
 {
     uint16_t rtcYear;
     int16_t  rtcYOffs = 0;
 
-    // Bail if no NTP server configured
-    if(!settings.ntpServer[0]) {
-        return false;
-    }
+    if(!NTPHaveCurrentTime()) {
 
-    pwrNeedFullNow();
+        // Bail if we should not reenable WiFi or ntp_setup() 
+        // determined that NTP is not possible for good (no 
+        // server or no WiFI network configured; a lookup-error 
+        // does not count here)
+        if(!wifiAllowed || (!(couldHaveAuthTime & 2))) {
+            return false;
+        }
 
-    // Reconnect for only 3 mins, but only if the user configured
-    // a WiFi network to connect to; do not start CP.
-    // If we don't have authTime yet, connect for longer to avoid
-    // reconnects (aka frozen displays).
-    // If WiFi is reconnected here, we won't have a valid time stamp
-    // immediately. This will therefore fail the first time called.
-    wifiOn(weHaveAuthTime ? 3*60*1000 : 21*60*1000, false, true);
+        pwrNeedFullNow();
 
-    if(!useNTP) {
-        #ifdef TC_DBG
-        Serial.println("getNTPTime: NTP not available");
-        #endif
-        return false;
-    }
+        // Call wifiOn() to possibly reconnect.
+        // Reconnect for only 3 mins, but only if the user configured
+        // a WiFi network to connect to; do not start CP.
+        // If we don't have authTime yet, connect for longer to avoid
+        // reconnects (aka frozen displays).
+        // If WiFi is reconnected here, we won't have a valid time stamp
+        // immediately, therefore we bail.
+        wifiOn(weHaveAuthTime ? 3*60*1000 : 21*60*1000, false, true);
 
-    if(WiFi.status() == WL_CONNECTED) {
-
+    } else {
+    
         int nyear, nmonth, nday, nhour, nmin, nsecond;
-
+    
         if(NTPGetUTC(nyear, nmonth, nday, nhour, nmin, nsecond)) {
             
             // Get RTC-fit year plus offs for given real year
             rtcYear = nyear;
             correctYr4RTC(rtcYear, rtcYOffs);
-
+    
             rtc.prepareAdjust(nsecond,
                               nmin,
                               nhour,
@@ -5019,11 +5033,11 @@ static bool getNTPTime(bool weHaveAuthTime, DateTime& dt, bool adjustRTC)
                               nday,
                               nmonth,
                               rtcYear - 2000);
-
+    
             if(adjustRTC) rtc.finishAdjust();
-
+    
             presentTime.setYearOffset(rtcYOffs);
-
+    
             dt.hwRTCYear = rtcYear;
             dt.set(nyear, nmonth, nday, 
                    nhour, nmin,   nsecond);
@@ -5034,25 +5048,16 @@ static bool getNTPTime(bool weHaveAuthTime, DateTime& dt, bool adjustRTC)
             #endif
     
             return true;
-
-        } else {
-
-            #ifdef TC_DBG
-            Serial.println("getNTPTime: No current NTP timestamp available");
-            #endif
-
-            return false;
+    
         }
 
-    } else {
-
-        #ifdef TC_DBG
-        Serial.println("getNTPTime: WiFi not connected, NTP time sync skipped");
-        #endif
-        
-        return false;
-
     }
+
+    #ifdef TC_DBG
+    Serial.println("getNTPTime: No current NTP timestamp available");
+    #endif
+
+    return false;
 }
 
 /*
@@ -6259,11 +6264,6 @@ static void NTPCheckPacket()
     NTPmsSinceSecond = (uint32_t)(((uint64_t)fractSec * 1000ULL) >> 32);
 }
 
-static bool NTPHaveTime()
-{
-    return NTPsecsSinceTCepoch ? true : false;
-}
-
 // Get seconds since 1/1/TCEPOCH including round-trip correction
 static uint32_t NTPGetCurrSecsSinceTCepoch()
 {
@@ -6272,11 +6272,7 @@ static uint32_t NTPGetCurrSecsSinceTCepoch()
 
 static bool NTPHaveCurrentTime()
 {
-    // Have no time if no time stamp received, or stamp is older than 10 mins
-    if((!NTPsecsSinceTCepoch) || ((millis() - NTPTSAge) > 10*60*1000)) 
-        return false;
-
-    return true;
+    return NTPsecsSinceTCepoch ? true : false;
 }
 
 // Get UTC time from NTP response
@@ -6284,7 +6280,7 @@ static bool NTPGetUTC(int& year, int& month, int& day, int& hour, int& minute, i
 {
     uint32_t temp, c;
 
-    // Fail if no time received, or stamp is older than 10 mins
+    // Fail if no time received (or stamp is timed out)
     if(!NTPHaveCurrentTime()) return false;
     
     uint32_t secsSinceTCepoch = NTPGetCurrSecsSinceTCepoch();
@@ -6292,7 +6288,7 @@ static bool NTPGetUTC(int& year, int& month, int& day, int& hour, int& minute, i
     second = secsSinceTCepoch % 60;
 
     // Calculate minutes since 1/1/TCEpoch
-    uint32_t total32 = (secsSinceTCepoch / 60);
+    uint32_t total32 = secsSinceTCepoch / 60;
 
     // Calculate current date
     year = c = TCEPOCH;
@@ -6323,8 +6319,8 @@ static bool NTPGetUTC(int& year, int& month, int& day, int& hour, int& minute, i
     return true;
 }
 
-// This is called on every WiFI-activation (AP-mode & connect)
-void ntp_setup(bool doUseNTP, IPAddress& ntpServer, bool couldHaveNTP)
+// This is called on every WiFi-activation (AP-mode & connect)
+void ntp_setup(bool doUseNTP, IPAddress& ntpServer, bool couldHaveNTP, bool ntpLUF)
 {
     if(doUseNTP) {
         if(!myUDP) {
@@ -6347,10 +6343,19 @@ void ntp_setup(bool doUseNTP, IPAddress& ntpServer, bool couldHaveNTP)
     } else {
         couldHaveAuthTime &= ~2;
     }
+
+    NTPLookupFail = ntpLUF;
 }
 
 void ntp_loop()
 {
+    // Expire time stamp
+    if(NTPsecsSinceTCepoch) {
+        if((millis() - NTPTSAge) > 15*60*1000) {
+            NTPsecsSinceTCepoch = 0;
+        }
+    }
+    
     if(!useNTP)
         return;
 
@@ -6362,7 +6367,7 @@ void ntp_loop()
         if(!NTPWiFiUp && (WiFi.status() == WL_CONNECTED)) {
             NTPUpdateNow = 0;
         }
-        if((!NTPUpdateNow) || (millis() - NTPUpdateNow > 60000)) {
+        if(!NTPUpdateNow || (millis() - NTPUpdateNow > 60000)) {
             NTPTriggerUpdate();
         }
     }
@@ -6377,6 +6382,13 @@ void ntp_short_loop()
     }
 }
 
+int ntp_status()
+{
+    if(!useNTP) return 1;           // off, not configured, look-up fail, ...
+    if(NTPfailCount > 0) return 2;  // unresponsive
+
+    return 0;
+}
 
 /**************************************************************
  ***                                                        ***
@@ -6388,7 +6400,7 @@ void ntp_short_loop()
 static bool checkToPlayRemoteSnd()
 {
     if(csf & (CSF_NM|CSF_P0|CSF_P1|CSF_RE|CSF_MA)) return false;
-    if(!checkMP3Done()) return false;
+    if(!checkAudioFree()) return false;
     return true;
 }
 

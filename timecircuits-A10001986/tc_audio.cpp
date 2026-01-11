@@ -581,7 +581,7 @@ void play_door_snd(int doorNum, int state, uint32_t doorFlags)
     // only interrupt if reasonable part of the first door's sound
     // is already played back.
     unsigned long now = millis();
-    if(!startup && ((!(csf & (CSF_P0|CSF_P1|CSF_RE))) || !playTTsounds || checkMP3Done())) {
+    if(!startup && ((!(csf & (CSF_P0|CSF_P1|CSF_RE))) || !playTTsounds || checkAudioFree())) {
         if((lastDoorNum == doorNum) || !lastDoorNum || (now - lastDoorSoundNow > 750)) {
             play_file((state < 0) ? "/doorclose.mp3" : "/dooropen.mp3", doorFlags|PA_LINEOUT|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD);
             lastDoorSoundNow = now;
@@ -724,13 +724,15 @@ int getSWVolFromHWVol()
     return i;
 }
 
+// Audio is really done (beep included)
 bool checkAudioDone()
 {
     if(mp3->isRunning() || wav->isRunning()) return false;
     return true;
 }
 
-bool checkMP3Done()
+// Audio is free for use; beep is low prio and ignored
+bool checkAudioFree()
 {
     if(mp3->isRunning() || (wav->isRunning() && !beepRunning)) return false;
     return true;

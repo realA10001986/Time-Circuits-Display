@@ -277,6 +277,8 @@ static const char badWiFi[]  = "<br><i>Operating in AP mode not recommended</i>"
 
 static const char bannerGen[] = "%s%s%s%s</div>";
 static const char ntpLUFS[] = "<i>Failed to resolve address</i>";
+static const char ntpOFF[] = "<i>NTP is inactive</i>";
+static const char ntpUNR[] = "<i>NTP server is unresponsive</i>";
 static const char haveNoSD[] = "<i>No SD card present</i>";
 
 #ifdef TC_HAVEMQTT
@@ -508,6 +510,7 @@ bool          wifiIsOff = false;
 unsigned long wifiOnNow = 0;
 unsigned long wifiOffDelay     = 0;   // default: never
 unsigned long origWiFiOffDelay = 0;
+bool          blockWiFiSTAPS = false;
 
 static File acFile;
 static bool haveACFile = false;
@@ -1289,7 +1292,7 @@ void wifi_loop()
         }
     } else {
         // Disable WiFi in STA mode after a configurable delay (if > 0)
-        if(origWiFiOffDelay > 0 && !bttfnHaveClients) {
+        if(origWiFiOffDelay > 0 && !bttfnHaveClients && !blockWiFiSTAPS) {
             if(!wifiIsOff && (millis() - wifiOnNow >= wifiOffDelay)) {
                 wifiOff(false);
                 wifiIsOff = true;
@@ -1403,7 +1406,7 @@ static void wifiConnect(bool deferConfigPortal)
         wifiAPModeNow = millis();
         wifiIsOff = false;    // Sic!
 
-        if(wifiHaveSTAConf) {    
+        if(wifiHaveSTAConf) {   
             consecutiveAPmodeFB++;  // increase counter of consecutive AP-mode fall-backs
         }
 
@@ -1469,12 +1472,15 @@ void wifiOn(unsigned long newDelay, bool alsoInAPMode, bool deferCP)
             if(!wifiAPIsOff) {
 
                 // If ON but no user-config'd WiFi network -> bail
-                // Note: In carMode, wifiHaveSTAConf = false
+                // Note: In carMode, wifiHaveSTAConf is false
                 if(!wifiHaveSTAConf) {
                     // Best we can do is to restart the timer
                     wifiAPModeNow = Now;
                     return;
                 }
+
+                // Make sure we don't cause stutter (beep might be running)
+                stopAudio();
 
                 // If ON and User has config's a NW, disable WiFi at this point
                 // (in hope of successful connection below)
@@ -1527,6 +1533,9 @@ void wifiOn(unsigned long newDelay, bool alsoInAPMode, bool deferCP)
 
             if(!wifiAPIsOff) {
 
+                // Make sure we don't cause stutter (beep might be running)
+                stopAudio();
+
                 // If ON, disable WiFi at this point
                 // (in hope of successful connection below)
                 wifiOff(true);
@@ -1557,6 +1566,9 @@ void wifiOn(unsigned long newDelay, bool alsoInAPMode, bool deferCP)
         }
 
     }
+
+    // Make sure we don't cause stutter; beep might still be running
+    stopAudio();
 
     // (Re)connect
     wifiConnect(deferCP);
@@ -1611,7 +1623,8 @@ bool wifiOnWillBlock()
             }
         }
     } else {            // We are in STA mode
-        if(!wifiIsOff) return false;
+        if(!wifiIsOff && (WiFi.status() == WL_CONNECTED)) 
+            return false;
     }
 
     return true;
@@ -1661,9 +1674,10 @@ static void wifi_ntp_setup(bool doUseNTP)
         }
     }
 
-    couldHaveNTP = (!ntpLUF && wifiHaveSTAConf && settings.ntpServer[0]);
+    // Do not include ntpLUF here, will be checked on each connect()
+    couldHaveNTP = (wifiHaveSTAConf && settings.ntpServer[0]);
         
-    ntp_setup(doUseNTP, remote_addr, couldHaveNTP);
+    ntp_setup(doUseNTP, remote_addr, couldHaveNTP, ntpLUF);
 }
 
 // This is called when the WiFi config is to be saved. We set
@@ -2336,10 +2350,10 @@ static const char *wmBuildBestApChnl(const char *dest)
     return NULL;
 }
 
-static const char *wmBuildBanner(const char *msg) 
+static const char *wmBuildBanner(const char *msg, const char *col) 
 {   // "%s%s%s%s</div>";
     char *str = (char *)malloc(STRLEN(bannerStart) + 7 + STRLEN(bannerMid) + strlen(msg) + 6 + 8);
-    sprintf(str, bannerGen, bannerStart, col_r, bannerMid, msg);        
+    sprintf(str, bannerGen, bannerStart, col, bannerMid, msg);        
 
     return str;
 }
@@ -2350,11 +2364,20 @@ static const char *wmBuildNTPLUF(const char *dest)
         free((void *)dest);
         return NULL;
     }
+
+    int r = ntp_status();
     
-    if(!ntpLUF)
+    if(!ntpLUF && !r)
         return NULL;
+
+    const char *msg;
+    const char *col = col_r;
+    
+    if(ntpLUF)        msg = ntpLUFS;
+    else if(r == 1) { msg = ntpOFF; col = col_gr; }
+    else              msg = ntpUNR;
         
-    return wmBuildBanner(ntpLUFS);
+    return wmBuildBanner(msg, col);
 }
 
 static const char *wmBuildHaveSD(const char *dest)
@@ -2367,7 +2390,7 @@ static const char *wmBuildHaveSD(const char *dest)
     if(haveSD)
         return NULL;
 
-    return wmBuildBanner(haveNoSD);
+    return wmBuildBanner(haveNoSD, col_r);
 }
 
 #ifdef TC_HAVEMQTT

@@ -83,7 +83,7 @@ void      play_door_snd(int doorNum, int state, uint32_t doorFlags);
 bool  check_file_SD(const char *audio_file);
 int   getSWVolFromHWVol();
 bool  checkAudioDone();
-bool  checkMP3Done();
+bool  checkAudioFree();
 bool  checkMP3Running();
 void  stopAudio();
 void  stop_key();

@@ -355,6 +355,7 @@ static void keypadEvent(char key, KeyState kstate)
             // Enable WiFi / even if in AP mode / with CP
             wifiOn(0, true, false);
             syncTrigger = true;
+            syncTriggerNow = millis();
             // Restart mp if it was active before
             if(mpWasActive) mp_play();   
             break;

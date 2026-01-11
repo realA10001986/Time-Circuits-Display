@@ -59,6 +59,8 @@ extern bool wifiInAPMode;
 
 extern bool wifiHaveSTAConf;
 
+extern bool blockWiFiSTAPS;
+
 extern bool carMode;
 
 extern bool pubMQTT;

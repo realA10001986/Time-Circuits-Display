@@ -89,6 +89,7 @@ extern bool WcHaveTZ2;
 extern uint8_t destShowAlt, depShowAlt;
 
 extern bool syncTrigger;
+extern unsigned long syncTriggerNow;
 extern bool doAPretry;
 extern bool deferredCP;
 
@@ -281,9 +282,10 @@ int       timeIsDST(int index, int year, int month, int day, int hour, int mins,
 void      UTCtoLocal(DateTime &dtu, DateTime& dtl, int index);
 void      LocalToUTC(int& ny, int& nm, int& nd, int& nh, int& nmm, int index);
 
-void      ntp_setup(bool doUseNTP, IPAddress& ntpServer, bool couldHaveNTP);
+void      ntp_setup(bool doUseNTP, IPAddress& ntpServer, bool couldHaveNTP, bool ntpLUF);
 void      ntp_loop();
 void      ntp_short_loop();
+int       ntp_status();
 
 int       bttfnNumClients();
 bool      bttfnGetClientInfo(int c, char **id, uint8_t **ip, uint8_t *type);
