@@ -52,13 +52,11 @@ Features include
   - Support for [Futaba remote control prop](#futaba-remote-control): Remote control the speed on the speedo, like in the movie
   - Support for signaling other props [connected by wire](#connecting-props-by-wire)
   
->This [repository](https://tcd.out-a-ti.me) is the upstream source for CircuitSetup's releases. The difference is that the code [here](https://tcd.out-a-ti.me) might be ahead in development, uses some different sounds, and the pre-compiled binary has all the features enabled.
+>This [repository](https://tcd.out-a-ti.me) is the upstream source for CircuitSetup's releases. The differences are that both code and documentation [here](https://tcd.out-a-ti.me) might be ahead in development, and in the sound-packs.
 
 ## Firmware Installation
 
-If a previous version of the TCD firmware is installed on your device, you can update easily using the pre-compiled binary. Enter the [Config Portal](#the-config-portal), click on "Update" and select the pre-compiled binary file provided in this repository ([install/timecircuits-A10001986.ino.nodemcu-32s.bin](https://github.com/realA10001986/Time-Circuits-Display/blob/main/install/timecircuits-A10001986.ino.nodemcu-32s.bin)). 
-
->If the previously installed firmware was from CircuitSetup (ie. pre-installed or downloaded from their github), you need to install the sound-pack from this repository afterwards.
+If a previous version of the TCD firmware is installed on your device, you can update easily using the pre-compiled binary. Enter the [Config Portal](#the-config-portal), click on "Update" and select the pre-compiled binary file ("xxx.bin") provided in the Release package.
 
 If you are using a fresh ESP32 board, please see [timecircuits-A10001986.ino](https://github.com/realA10001986/Time-Circuits-Display/blob/main/timecircuits-A10001986/timecircuits-A10001986.ino) for detailed build and upload information, or, if you don't want to deal with source code, compilers and all that nerd stuff, go [here](https://install.out-a-ti.me) and follow the instructions.
 
@@ -68,9 +66,9 @@ The firmware comes with a sound-pack which needs to be installed separately. The
 
 _Note that installing the sound-pack requires an [SD card](#sd-card)._
 
->If your TCD previously ran a firmware from CircuitSetup (ie. pre-installed or downloaded from their github), installing of the sound-pack **from this repository** is required. You cannot use CircuitSetup's sound-pack with the firmware available here, or vice versa.
+>A10001986 and CircuitSetup use different sound-packs. If you switch from one version to the other, the matching sound-pack must be re-installed. [A10001986-releases](https://github.com/realA10001986/Time-Circuits-Display/releases) use "sound-pack-twXX", while [CircuitSetup's](https://github.com/CircuitSetup/Time-Circuits-Display/releases) are named "sound-pack-csXX".
 
-The first step is to download "install/sound-pack-twXX.zip" and extract it. It contains one file named "TCDA.bin".
+The first step is to extract the zipped sound-pack (which is included in every Release package). It contains one file named "TCDA.bin".
 
 Next, head to the [Config Portal](#the-config-portal), click on *Update*, select the "TCDA.bin" file in the bottom file selector and click on *Upload*.
 
