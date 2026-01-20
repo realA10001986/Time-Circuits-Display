@@ -1443,7 +1443,7 @@ Brightness of speedo display when displaying speed.
 
 ##### &#9193; Switch speedo off when idle
 
-If this is checked, the Speedo is switched off when idle, ie when no time travel takes place, no GPS speed  and no temperature are available. If checked, the speedo shows "0." in those situations. Having this checked will wear the LEDs of your speedo in the long run.
+If this is checked, the Speedo is switched off when idle, i.e. when no time travel takes place, no speed from GPS or a rotary encoder and no temperature are available. If checked, the speedo shows "0." in those situations. Having this checked will wear the LEDs of your speedo in the long run.
 
 ##### &#9193; Real-life acceleration figures
 
@@ -1457,7 +1457,7 @@ If you are using your TCD together with a Futaba Remote Control prop, leave this
 
 ##### &#9193; Factor for Real-life figures
 
-Since the DMC-12 wasn't the world's fastest car, its (real-life) acceleration might soon cause boredom if played in real-time as part of the time travel sequence with a speedo. This factor speeds up the acceleration. 2.0 means twice as fast as the real car.
+Since the DMC-12 wasn't the world's fastest car, its (real-life) acceleration might soon cause boredom if played in real-time as part of the time travel sequence with a Speedo. This factor speeds up the acceleration. For instance, a factor of 2.0 means "twice as fast as the real car".
 
 This setting has no effect if the **_Real-life acceleration figures_** option is unchecked.
 
@@ -1467,7 +1467,7 @@ If this is unchecked, speed is displayed like in parts 1 and 2: Single digit spe
 
 In part 3 of the series, the speedo displays two digits (even for speeds below 10), but no dot. Check this option to use this style. 
 
-This option is mutually exclusive to "Display post-point 0 like A-car".
+This option is mutually exclusive to **_Display '0' after dot like A-car_**.
 
 ##### &#9193; Display '0' after dot like A-car
 
@@ -1479,7 +1479,7 @@ The A-Car, shown very briefly in part 1 of the series when Doc sends Einstein a 
 
 If a GPS receiver is connected, this selects whether to display GPS speed on the speedo. This only makes sense if the Time Circuits are mounted in a car. See [here](#gps-receiver).
 
-If your TCD/speedo are stationary, such as in a home setup, leave this unchecked (unless you want your speedo to permanently display "0"). Also, if you want to use a [rotary encoder](#rotary-encoder) for speed, this must to be unchecked.
+If your TCD/speedo are stationary, such as in a home setup, leave this option unchecked. Also, it _must_ remain unchecked if you want to use a [rotary encoder](#rotary-encoder) for speed.
 
 ##### &#9193; Update rate
 
@@ -1489,7 +1489,7 @@ It appears that the GPS receiver calculates speed on every satellite position up
 
 ##### &#9193; Display temperature
 
-Selects whether temperature as received from a suitable sensor is displayed on the speedo, when it is idle (ie no time travel is in progress).
+Selects whether temperature as received from a suitable sensor is displayed on the speedo, when it is idle (ie no time travel is in progress, and no speed from GPS or rotary encoder is to be displayed).
 
 ##### &#9193; Temperature brightness
 
@@ -1511,13 +1511,13 @@ Selects a delay (in milliseconds) from when pressing the external time travel bu
 
 #### <ins>Settings for BTTFN communication</ins>
 
-##### &#9193; Provide GPS speed for wireless props
+##### &#9193; Provide GPS speed to wireless props
 
 Many [BTTF-Network](#connecting-props-wirelessly-bttf-network-bttfn) clients can query the TCD for speed. "Speed" can come from various sources: GPS, [rotary encoder](#rotary-encoder), Remote Control.
 
 This option selects whether actual GPS speed is to be transmitted to BTTFN clients. If this option is checked, speed from GPS (if available) takes precedence over speed from a rotary encoder.
 
-If your TCD/speedo are stationary, such as in a home setup, leave this unchecked.
+If your TCD/speedo are stationary, such as in a home setup, leave this option unchecked.
 
 #### <ins>Settings for wired peripherals: TT-OUT (IO14) pin</ins>
 
