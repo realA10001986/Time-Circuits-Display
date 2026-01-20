@@ -5,4 +5,3 @@ This folder holds all files necessary for immediate installation on your Time Ci
 
 For installation instructions, see [here](../README.md#firmware-installation).
 
-The bonus sound files need to be copied to an SD card, and this SD card put into the TCD's slot.
