@@ -52,7 +52,7 @@ Features include
   - Support for [Futaba remote control prop](#futaba-remote-control): Remote control the speed on the speedo, like in the movie
   - Support for signaling other props [connected by wire](#connecting-props-by-wire)
   
->The difference between what you get here and CircuitSetup's releases is that the code here might be ahead in development, uses some different sounds, and the pre-compiled binary has all the features enabled.
+>This [repository](https://tcd.out-a-ti.me) is the upstream source for CircuitSetup's releases. The difference is that the code [here](https://tcd.out-a-ti.me) might be ahead in development, uses some different sounds, and the pre-compiled binary has all the features enabled.
 
 ## Firmware Installation
 
