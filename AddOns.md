@@ -235,6 +235,8 @@ In order to connect props that can sense HIGH/LOW levels (and don't use the TT O
 
 Flux bands, lights and the like need to be connected through a relay. For using standard "Arduino Relay Modules", connect GND to GND, 5V to 5V and "S" (or "IN") to TT OUT. 
 
+![RelayModule](img/relaymodule.png)
+
 #### Timing
 
 Here's the timing diagram for a time travel signal:
