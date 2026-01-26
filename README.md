@@ -50,7 +50,7 @@ Features include
   - Support for [rotary encoders](#rotary-encoder) for manual selection of speed to be displayed on speedo, and/or audio volume
   - Support for [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for [Room Condition mode](#room-condition-mode-temperaturehumidity-sensor) [display temperature and humidity in *destination time* and *last time departed* displays] and for displaying temperature on speedo while idle
   - Support for [Futaba remote control prop](#futaba-remote-control): Remote control the speed on the speedo, like in the movie
-  - Support for signaling other props [connected by wire](#connecting-props-by-wire)
+  - Support for signaling other props [connected by wire](#connecting-props-by-wire) (for example flux lights, third party props)
   
 >This [repository](https://tcd.out-a-ti.me) is the upstream source for CircuitSetup's releases. The differences are that both code and documentation [here](https://tcd.out-a-ti.me) might be ahead in development, and in the sound-packs.
 
@@ -1077,7 +1077,7 @@ If the option [TT-OUT (IO14) pin] **_is controlled by commands 990/991_** is che
 
 Although the options can be set freely and are not mutually exclusive, be advised that CircuitSetup/A10001986 original props connected by wire always interpret the TT-OUT signal as a trigger for a time travel sequence. It can make sense to set more than one option if your connect, for instance, flux bands or lights.
 
-Hardware considerations: CS/A10001986 props can be connected directly. TT OUT cannot be used to supply power for third party props; please us a relay.
+Hardware considerations: CS/A10001986 props can be connected directly. TT OUT cannot be used to supply power for third party props; please us a relay. In case of a standard "Aruino relay module", connect "C" to GND, 5V to 5V, and TT OUT to "S"(or "IN").
 
 ## Home Assistant / MQTT
 
