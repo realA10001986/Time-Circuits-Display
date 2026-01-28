@@ -1079,6 +1079,8 @@ Although the options can be set freely and are not mutually exclusive, be advise
 
 Hardware considerations: CS/A10001986 props can be connected directly. TT OUT cannot be used to supply power for third party props; please us a relay. In case of a standard "Aruino relay module", connect "C" to GND, 5V to 5V, and TT OUT to "S"(or "IN").
 
+See also [here](AddOns.md#other-props), chapter "Other props".
+
 ## Home Assistant / MQTT
 
 The TCD supports MQTT protocol versions 3.1.1 and 5.0 for the following features:
