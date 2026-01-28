@@ -213,8 +213,6 @@ For Rotary Encoders, see [here](#hardware-configuration).
 
 ## Other props
 
-### Connecting props by wire
-
 The TCD has a TT-OUT pin (marked "TT OUT (IO14)" or "IO14") which can be used to
 - signal a time travel,
 - signal alarm,
@@ -238,7 +236,7 @@ Flux bands, lights and the likes need to be connected through a relay. When usin
 
 ![RelayModule](img/relaymodule.png)
 
-#### Timing
+### Timing
 
 Here's the timing diagram for a time travel signal:
 
@@ -306,7 +304,7 @@ Checking **_Signal without 5s lead_** is required if you are using a GPS receive
 
 If you connect original CircuitSetup/A10001986 props by wire, make sure you set the option _TCD signals Time Travel without 5s lead_ in the prop's config portal accordingly.
 
-### Synchronized time travel through HA/MQTT
+## Synchronized time travel through HA/MQTT
 
 Time Travel timing:
 
