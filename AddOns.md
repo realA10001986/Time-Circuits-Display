@@ -1,54 +1,12 @@
 
 # DIY additions for the Time Circuits Display
 
-- [Speedometer](#speedometer)
-- [GPS receiver](#gps-receiver)
 - [Rotary Encoder](#rotary-encoder)
 - [Temperature/humidity sensor](#temperaturehumidity-sensor)
 - [Light sensor](#light-sensor)
+- [Speedometer](#speedometer)
+- [GPS receiver](#gps-receiver)
 - [Other props](#other-props)
-
-## Speedometer
-
-Despite CircuitSetup offering a really good and [screen-accurate speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit/), you might want to make your own.
-
-| [![Watch the video](https://img.youtube.com/vi/opAZugb_W1Q/0.jpg)](https://youtu.be/opAZugb_W1Q) |
-|:--:|
-| Click to watch the video |
-
-The speedo shown in this video is based on a fairly well-designed stand-alone replica I purchased on ebay. I removed the electronics inside and wired the LED segments to an Adafruit i2c backpack (from the Adafruit 878 product) and connected it to the TCD.
-
-What you need is a box, the LED segment displays and a HT16K33-based PCB that allows accessing the LED displays via i2c (address 0x70). There are various readily available LED segment displays with suitable i2c break-outs from Adafruit and Seeed (Grove) that can be used as a basis: 
-
-- Adafruit [878](https://www.adafruit.com/product/878)/[5599](https://www.adafruit.com/product/5599),
-- Adafruit [1270](https://www.adafruit.com/product/1270),
-- Adafruit [1911](https://www.adafruit.com/product/1911),
-- Grove 0.54" 14-segment [2-digit](https://www.seeedstudio.com/Grove-0-54-Red-Dual-Alphanumeric-Display-p-4031.html)
-- Grove [4-digit](https://www.seeedstudio.com/Grove-0-54-Red-Quad-Alphanumeric-Display-p-4032.html).
-
-The product numbers vary with color, the numbers here are the red ones.
-
-For wiring information, please see [here](#i2c-peripheral-wiring).
-
-#### Software setup
-
-The type of display needs to be configured in the Config Portal's _Speedo display type_ drop-down widget. 
-
-For DIY speedos, there are two special options in the Speedo Display Type drop-down: *Ada 1911 (left tube)* and *Ada 878 (left tube)*. These two can be used if you connect only one 2-digit-tube to the respective Adafruit i2c backpack, as I did in case of my speedo replica as well as my [Wall Clock](https://github.com/realA10001986/Time-Circuits-Display/blob/main/WALLCLOCK.md).
-
-## GPS receiver
-
-The CircuitSetup original [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-pcb) has a built-in GPS receiver, but the firmware also supports alternatives such as the 
-- Adafruit Mini GPS PA1010D (product id [4415](https://www.adafruit.com/product/4415)) or the
-- Pimoroni P1010D GPS Breakout ([PIM525](https://shop.pimoroni.com/products/pa1010d-gps-breakout?variant=32257258881107))
-  
-or any other MT(K)3333-based GPS receiver, connected through i2c (address 0x10). Note that the supply and bus voltage must be 5V.
-
-The GPS receiver can be used as a source of authoritative time (like NTP) and speed of movement.
-
-For wiring information, see [here](#i2c-peripheral-wiring).
-
-Note that the Adafruit and Pimoroni breakout boards do not have a proper GPS antenna and require excellent reception conditions; thick windows might already block reception. The CircuitSetup speedo has an external antenna and works far better in cars and indoors (close to windows).
 
 ## Rotary Encoder
 
@@ -133,6 +91,48 @@ Almost all these sensor types are readily available on breakout boards from Adaf
 For wiring information, see [here](#i2c-peripheral-wiring).
 
 >Note: You cannot connect the sensor chip directly to the TCD control board; most sensors need at least a voltage converter/level-shifter.  It is recommended to use Adafruit or Seeed breakouts, which all allow connecting named sensors to the 5V the TCD board operates on.
+
+## Speedometer
+
+Despite CircuitSetup offering a really good and [screen-accurate speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit/), you might want to make your own.
+
+| [![Watch the video](https://img.youtube.com/vi/opAZugb_W1Q/0.jpg)](https://youtu.be/opAZugb_W1Q) |
+|:--:|
+| Click to watch the video |
+
+The speedo shown in this video is based on a fairly well-designed stand-alone replica I purchased on ebay. I removed the electronics inside and wired the LED segments to an Adafruit i2c backpack (from the Adafruit 878 product) and connected it to the TCD.
+
+What you need is a box, the LED segment displays and a HT16K33-based PCB that allows accessing the LED displays via i2c (address 0x70). There are various readily available LED segment displays with suitable i2c break-outs from Adafruit and Seeed (Grove) that can be used as a basis: 
+
+- Adafruit [878](https://www.adafruit.com/product/878)/[5599](https://www.adafruit.com/product/5599),
+- Adafruit [1270](https://www.adafruit.com/product/1270),
+- Adafruit [1911](https://www.adafruit.com/product/1911),
+- Grove 0.54" 14-segment [2-digit](https://www.seeedstudio.com/Grove-0-54-Red-Dual-Alphanumeric-Display-p-4031.html)
+- Grove [4-digit](https://www.seeedstudio.com/Grove-0-54-Red-Quad-Alphanumeric-Display-p-4032.html).
+
+The product numbers vary with color, the numbers here are the red ones.
+
+For wiring information, please see [here](#i2c-peripheral-wiring).
+
+#### Software setup
+
+The type of display needs to be configured in the Config Portal's _Speedo display type_ drop-down widget. 
+
+For DIY speedos, there are two special options in the Speedo Display Type drop-down: *Ada 1911 (left tube)* and *Ada 878 (left tube)*. These two can be used if you connect only one 2-digit-tube to the respective Adafruit i2c backpack, as I did in case of my speedo replica as well as my [Wall Clock](https://github.com/realA10001986/Time-Circuits-Display/blob/main/WALLCLOCK.md).
+
+## GPS receiver
+
+The CircuitSetup original [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-pcb) has a built-in GPS receiver, but the firmware also supports alternatives such as the 
+- Adafruit Mini GPS PA1010D (product id [4415](https://www.adafruit.com/product/4415)) or the
+- Pimoroni P1010D GPS Breakout ([PIM525](https://shop.pimoroni.com/products/pa1010d-gps-breakout?variant=32257258881107))
+  
+or any other MT(K)3333-based GPS receiver, connected through i2c (address 0x10). Note that the supply and bus voltage must be 5V.
+
+The GPS receiver can be used as a source of authoritative time (like NTP) and speed of movement.
+
+For wiring information, see [here](#i2c-peripheral-wiring).
+
+Note that the Adafruit and Pimoroni breakout boards do not have a proper GPS antenna and require excellent reception conditions; thick windows might already block reception. The CircuitSetup speedo has an external antenna and works far better in cars and indoors (close to windows).
 
 ## I2C peripheral wiring
 
