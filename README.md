@@ -872,7 +872,7 @@ Note: Your dates/times will be overwritten in storage after a time travel when *
 - [Rotary encoder](#rotary-encoder)
 - [Temperature Sensor](#room-condition-mode-temperaturehumidity-sensor)
 - [Light Sensor](#sensor-controlled-night-mode)
-- [Other Props](#controlling-other-props) (Flux Capacitor, SID, Dash Gauges, VSR, ...)
+- [Other Props](#controlling-other-props) (Flux Capacitor, SID, Dash Gauges, VSR, Flux lights, ...)
 
 ## Fake power Switch 
 
