@@ -233,7 +233,7 @@ In order to connect props that can sense HIGH/LOW levels (and don't use the TT O
 |:--:|
 | IO14 on board version 1.2 |
 
-Flux bands, lights and the like need to be connected through a relay. For using standard "Arduino Relay Modules", connect GND to GND, 5V to 5V and "S" (or "IN") to TT OUT. 
+Flux bands, lights and the likes need to be connected through a relay. When using a standard "Arduino Relay Module", connect GND to GND, 5V to 5V and "S" (or "IN") to TT OUT. 
 
 ![RelayModule](img/relaymodule.png)
 
