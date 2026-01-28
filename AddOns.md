@@ -7,6 +7,7 @@
 - [Speedometer](#speedometer)
 - [GPS receiver](#gps-receiver)
 - [Other props](#other-props)
+- Timing for [MQTT-capable props](#synchronized-time-travel-through-hamqtt)
 
 ## Rotary Encoder
 
