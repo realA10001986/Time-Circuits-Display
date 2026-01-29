@@ -36,11 +36,11 @@ For DuPPA: RGB-encoders not supported.
 
 Here is how they look configured for speed (the purple spots are solder joints):
 
-![RotEncSpd](DIY/img/RotEncSpd.jpg)
+![RotEncSpd](img/RotEncSpd.jpg)
 
 Here is the configuration for volume:
 
-![RotEncVol](DIY/img/RotEncVol.jpg)
+![RotEncVol](img/RotEncVol.jpg)
 
 For wiring information, see [here](#i2c-peripheral-wiring). 
 
@@ -48,7 +48,7 @@ For wiring information, see [here](#i2c-peripheral-wiring).
 
 The firmware supports connecting a temperature/humidity sensor for "room condition mode" and for displaying ambient temperature on a speedo display while idle.
 
-| ![RC mode](DIY/img/rcmode.jpg) |
+| ![RC mode](img/rcmode.jpg) |
 |:--:|
 | *RC mode* |
 
@@ -141,9 +141,9 @@ All i2c peripherals described above are to be wired as follows:
 
 On the TCD control board, there are three breakouts named "I2C", at least one of which has a header soldered on; it does not matter which one you use to connect your sensors/speedo/GPS/rotary encoders. On Control Boards version 4, there are screw terminals for the other two i2c connectors; for older boards, I recommend to solder on [XH](https://www.amazon.com/s?k=jst+xh) 4-pin headers to the other two i2c breakouts as well (like in the second picture). When you order a CircuitSetup Speedo, they will include such headers if you request them. Do not solder wires directly to the board!
 
-![i2c](DIY/img/i2c1.jpg)
+![i2c](img/i2c1.jpg)
 
-![i2c](DIY/img/i2c2.jpg)
+![i2c](img/i2c2.jpg)
 
 On most peripherals the pins are named as follows, and need to be connected to the corresponding pins on the control board:
 
@@ -171,7 +171,7 @@ On most peripherals the pins are named as follows, and need to be connected to t
 
 For longer cables, ie >50cm (>20in), I recommend using a shielded twisted pair (S/FTP) cable, and to connect it as follows:
 
-![i2clongcable](DIY/img/i2clongcable.png)
+![i2clongcable](img/i2clongcable.png)
 
 In case of a shielded cable, connected the shield to GND on the TCD's end.
 
@@ -187,9 +187,9 @@ Note that you can only use one per device type (temperature/humidity sensor, lig
 
 To avoid running out of i2c connectors, and to reduce the cable chaos, I designed a small PCB that acts as a i2c and power splitter:
 
-<img src="DIY/img/splitter_1.jpg" width="415"><img src="DIY/img/splitter_2.jpg" width="341">
+<img src="img/splitter_1.jpg" width="415"><img src="img/splitter_2.jpg" width="341">
 
-<img src="DIY/img/Splitterv1.png" width="600">
+<img src="img/Splitterv1.png" width="600">
 
 - 12V in: 12V input for the TCD and the TFC switch, using a 5.5/2.1mm standard DC power plug.
 - Input from TCD: Connect those to the TCD control board as indicated above
@@ -205,7 +205,7 @@ i2c devices have "addresses". Most sensors either only support one i2c address, 
 
 Notable exceptions are the TMP117 and HTU31D sensors: Their address needs to changed in order to be recognized by the firmware. On the Adafruit breakouts, this is done by connecting two solder pads on the back side of the PCB:
 
-<img src="DIY/img/addrjmp.png">
+<img src="img/addrjmp.png">
 
 This image shows the HTU31D PCB's back side. Connect (shorten) those two pads in order to change the address. It looks similar on the TMP117.
 
@@ -224,11 +224,11 @@ For connecting CircuitSetup/A10001986 props, see the prop's documentation ([Flux
 
 In order to connect props that can sense HIGH/LOW levels (and don't use the TT OUT pin for power supply), you need two wires for connecting the TCD: TT-OUT and GND, which need to be connected to the prop:
 
-| ![ttout](DIY/img/ttout.jpg) |
+| ![ttout](img/ttout.jpg) |
 |:--:|
 | TT_OUT/IO14 on board version 1.3 |
 
-| ![ttout](DIY/img/ttout12.jpg) |
+| ![ttout](img/ttout12.jpg) |
 |:--:|
 | IO14 on board version 1.2 |
 
