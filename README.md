@@ -926,7 +926,7 @@ The firmware supports [CircuitSetups's speedometer display](https://circuitsetup
 |:--:|
 | Click to watch the video |
 
-Full disclosure: The video was shot before the CircuitSetup speedo became available. The speedo shown is a DIY prop and not the - much better looking - CircuitSetup speedo. The video is only meant to demonstrate how the TCD and the speedo inter-operate. (The TFC switch was made by me, see [here](https://tfc.out-a-ti.me), it uses the [Fake Power Switch](#fake-power-switch) feature of the TCD.)
+_The video was shot before the CircuitSetup speedo became available. The speedo shown is a DIY prop and not the - much better looking - CircuitSetup speedo. The video is only meant to demonstrate how the TCD and the speedo inter-operate. (The TFC switch was made by me, see [here](https://tfc.out-a-ti.me), it uses the [Fake Power Switch](#fake-power-switch) feature of the TCD.)_
 
 If your CircuitSetup [Speedo Kit](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit/) came with a cable with 7 wires, it needs to be wired as shown below:
 
@@ -969,7 +969,7 @@ One nice feature of GPS is that the receiver can deliver current speed of moveme
 
 In order to use the GPS receiver for speed, check **_Display GPS speed_** in the Config Portal.
 
-If other props using GPS speed are connected via [BTTF-Network](#connecting-props-wirelessly-bttf-network-bttfn), check the option **_Provide GPS speed for wireless props_** in the Config Portal.
+If other props using GPS speed are connected via [BTTF-Network](#connecting-props-wirelessly-bttf-network-bttfn), check the option **_Provide GPS speed to wireless props_** in the Config Portal.
 
 ## Rotary Encoder
 
@@ -989,7 +989,7 @@ The rotary encoder, if configured for speed, allows manually selecting a speed t
 
 Remarks:
 - The encoder is only evaluated if no GPS receiver is connected, or if the **_Display GPS speed_** is unchecked. GPS speed has priority over the encoder.
-- The encoder is also evaluated if no speedo is connected; it can be operated "blindly" to trigger time travels and its movement is sent to BTTFN clients like GPS speed (if no GPS receiver is connected, or the option **_Provide GPS speed for wireless props_** is unchecked)
+- The encoder is also evaluated if no speedo is connected; it can be operated "blindly" to trigger time travels and its movement is sent to BTTFN clients like GPS speed (if no GPS receiver is connected, or the option **_Provide GPS speed to wireless props_** is unchecked)
 - The speedo displays "0" as long as the encoder is not moved; if the encoder is turned counter-clockwise a couple of notches, the speedo will be switched off.
 
 ### Rotary Encoder for Audio Volume
