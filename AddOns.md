@@ -197,7 +197,7 @@ To avoid running out of i2c connectors, and to reduce the cable chaos, I designe
 - four i2c screw connctors for sensors, rotary encoders, Speedo, etc
 - TFC drive switch connector
 
-Production files are in the [DIY/splitter](DIY/Splitter/) folder.
+Production files are in the [DIY/splitter](https://github.com/realA10001986/Time-Circuits-Display/tree/main/DIY/Splitter) folder.
 
 #### i2c addresses
 
