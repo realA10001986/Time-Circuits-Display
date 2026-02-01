@@ -27,7 +27,7 @@ Up to two rotary encoders can be connected, one for speed, one for volume.
 In order to use an encoder for speed or volume, it needs to be configured as follows:
 
   <table>
-  <tr><td></td><td>Ada4991</td><td>DFRobot</td><td>DuPPA</td></tr>
+  <tr><td></td><td>Ada4991/5880</td><td>DFRobot</td><td>DuPPA</td></tr>
   <tr><td>Speed</td><td>Default</td><td>SW1=0,SW2=0</td><td>A0 closed</td></tr>
   <tr><td>Volume</td><td>A0 closed</td><td>SW1=0,SW2=1</td><td>A0,A1 closed</td></tr>
   </table>
