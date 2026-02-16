@@ -54,19 +54,13 @@ Features include
   
 >This [repository](https://tcd.out-a-ti.me) is the upstream source for CircuitSetup's releases. The differences are that both code and documentation [here](https://tcd.out-a-ti.me) might be ahead in development, and in the sound-packs.
 
-## TL;DR
-
-Plug it in, use it like in the movies.
-
 ## Firmware Installation / Firmware Update
 
 If a previous version of the TCD firmware is installed on your device, you can update easily using the pre-compiled binary. Enter the [Config Portal](#the-config-portal), click on "Update" and select the pre-compiled binary file ("xxx.bin") provided in the Release package.
 
 <details>
 <summary>If you are using a fresh ESP32 board...</summary>
-
-If you are using a fresh ESP32 board, please see [timecircuits-A10001986.ino](https://github.com/realA10001986/Time-Circuits-Display/blob/main/timecircuits-A10001986/timecircuits-A10001986.ino) for detailed build and upload information, or, if you don't want to deal with source code, compilers and all that nerd stuff, go [here](https://install.out-a-ti.me) and follow the instructions.
-
+If you are using a fresh ESP32 board, please see <a href="https://github.com/realA10001986/Time-Circuits-Display/blob/main/timecircuits-A10001986/timecircuits-A10001986.ino">timecircuits-A10001986.ino</a> for detailed build and upload information, or, if you don't want to deal with source code, compilers and all that nerd stuff, go <a href="https://install.out-a-ti.me">here</a> and follow the instructions.
 </details>
 
 ### Sound-pack installation
