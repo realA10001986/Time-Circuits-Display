@@ -35,6 +35,7 @@ Features include
   - [Exhibition mode](#exhibition-mode): Show a fixed time in *Present Time* display instead of a running clock. Helpful for filming or museums.
 - Network capabilities:
   - Advanced network-accessible [Config Portal](#the-config-portal) for setup (http://timecircuits.local, hostname configurable)
+  - Easy [firmware updates](#firmware-installation--firmware-update) over-the-air
   - [Wireless communication](#connecting-props-wirelessly-bttf-network-bttfn) with compatible other props such as CircuitSetup's [Flux Capacitor](https://fc.out-a-ti.me) and [SID](https://sid.out-a-ti.me), as well as the [Dash Gauges](https://dg.out-a-ti.me), [VSR](https://vsr.out-a-ti.me) and modified [Futaba Remote Control](https://remote.out-a-ti.me)
   - [Home Assistant](#home-assistant--mqtt) (MQTT) support
 - [Night mode](#night-mode): Dim or switch off displays on schedule, manually or sensor-controlled.
@@ -53,6 +54,8 @@ Features include
   - Support for signaling other props [connected by wire](#connecting-props-by-wire) (for example flux lights, third party props)
   
 >This [repository](https://tcd.out-a-ti.me) is the upstream source for CircuitSetup's releases. The differences are that both code and documentation [here](https://tcd.out-a-ti.me) might be ahead in development, and in the sound-packs.
+
+For information on updating the firmware on your TCD, see [here](#firmware-installation--firmware-update).
 
 ## Initial Configuration
 
