@@ -226,7 +226,7 @@ In World Clock (WC) mode, the red and yellow displays show not some stale times,
 |:--:|
 | *World Clock mode* |
 
-WC mode is toggled by typing "112" followed by ENTER. If an SD card is present, WC mode is persistent across reboots.
+WC mode is toggled by typing 112 followed by ENTER. If an SD card is present, WC mode is persistent across reboots.
 
 For logical reasons, WC mode will be automatically disabled in some situations:
 
@@ -241,7 +241,7 @@ For logical reasons, WC mode will be automatically disabled in some situations:
 |:--:|
 | *WC/RC hybrid mode* |
 
-To toggle WC/RC hybrid mode, type "113" followed by ENTER.
+To toggle WC/RC hybrid mode, type 113 followed by ENTER.
 
 ### Exhibition mode
 
@@ -687,7 +687,7 @@ Since renaming mp3 files manually is somewhat cumbersome, the firmware can do th
 
 To start and stop music playback, hold 5. Holding 2 jumps to the previous song, holding 8 to the next one.
 
-By default, the songs are played in order, starting at 000.mp3, followed by 001.mp3 and so on. By entering 555 and pressing ENTER, you can switch to shuffle mode, in which the songs are played in random order. Enter 222 followed by ENTER to switch back to consecutive mode.
+By default, the songs are played in order, starting at 000.mp3, followed by 001.mp3 and so on. By entering 555 and pressing ENTER, you can switch to shuffle mode, in which the songs are played in random order. Enter 222 followed by ENTER to switch back to consecutive mode. The Shuffle mode state is saved and persistent across reboots.
 
 Entering 888 followed by ENTER re-starts the player at song 000, and 888xxx (xxx = three-digit number) jumps to song #xxx.
 
@@ -1021,11 +1021,11 @@ The rotary encoder for volume replaces the volume knob on back of the TCD's keyp
 
 ## Room Condition Mode, Temperature/humidity sensor
 
-The firmware supports connecting a temperature/humidity sensor for "room condition mode"; in this mode, *destination* and *last departed* times are replaced by temperature and humidity (if applicable), respectively. To toggle between normal and room condition mode, enter "111" and press ENTER. If an SD card is present, room condition mode is persistent across reboots.
+The firmware supports connecting a temperature/humidity sensor for "room condition mode"; in this mode, *destination* and *last departed* times are replaced by temperature and humidity (if applicable), respectively. To toggle between normal and room condition mode, enter 111 and press ENTER. If an SD card is present, room condition mode is persistent across reboots.
 
 ![rcmode](img/rcmode.jpg)
 
-Room condition mode can be used together with [World Clock mode](#world-clock-mode); if both are enabled, only one alternative time and only temperature is shown. To toggle RC and WC mode simultaneously, type "113" and press ENTER.
+Room condition mode can be used together with [World Clock mode](#world-clock-mode); if both are enabled, only one alternative time and only temperature is shown. To toggle RC and WC mode simultaneously, type 113 and press ENTER.
 
 Temperature on speedometer display: Unless you do time travelling on a regular basis, the [speedo](#speedometer) is idle most of the time in a typical home setup. To give it more of a purpose, the firmware can display ambient temperature on the speedo while idle.
 
@@ -1409,14 +1409,6 @@ The time zone for the yellow display in [World Clock mode](#world-clock-mode). D
 ##### &#9193; City/location name
 
 For each World Clock time zone, a city or location name can be configured. For example "SYDNEY" or "LORD HOWE". This name will be shown every few seconds alternately with time.
-
-#### <ins>Music Player settings</ins>
-
-##### &#9193; Shuffle at startup
-
-When checked, songs are shuffled when the device is booted. When unchecked, songs will be played in order.
-
-Shuffle mode can be changed at any time through the keypad (222 / 555); however, such a change is not saved.
 
 #### <ins>Night-mode</ins>
 
