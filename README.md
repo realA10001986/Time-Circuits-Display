@@ -64,7 +64,9 @@ If a previous version of the TCD firmware is installed on your device, you can u
 
 <details>
 <summary>If you are using a fresh ESP32 board...</summary>
+
 If you are using a fresh ESP32 board, please see [timecircuits-A10001986.ino](https://github.com/realA10001986/Time-Circuits-Display/blob/main/timecircuits-A10001986/timecircuits-A10001986.ino) for detailed build and upload information, or, if you don't want to deal with source code, compilers and all that nerd stuff, go [here](https://install.out-a-ti.me) and follow the instructions.
+
 </details>
 
 ### Sound-pack installation
