@@ -959,15 +959,15 @@ The CircuitSetup original [speedo](https://circuitsetup.us/product/delorean-time
 GPS receivers receive signals from satellites, but in order to do so, they need to be "tuned in" (aka get a "fix"). This "tuning" process can take a long time; after first power up, it can take 30 minutes or more for a receiver to be able to determine its position. In order to speed up this process, modern GPS receivers have special "assisting" features. One key element is knowledge of current time, as this helps identifying satellite signals quicker. So, in other words, initially, you need to tell the receiver what it is supposed to tell you. However, as soon as the receiver has received satellite signals for 15-20 minutes, it saves the data it collected to its battery-backed memory and will find a fix within seconds after power-up in the future.
 
 For using GPS effectively as a long-term source of accurate time, it is therefore essential, that 
-- the Time Circuit's RTC (real time clock) is initially [set to correct local time](#how-to-set-the-real-time-clock-rtc), 
 - the correct time zone is defined in the Config Portal,
-- and has been receiving data for 15-20 mins at least once a month.
+- the Time Circuit's RTC (real time clock) is initially [set to correct local time](#how-to-set-the-real-time-clock-rtc), 
+- and the GPS receiver has been receiving data for 15-20 mins at least once a month.
 
 If/as long as the GPS receiver has a fix and receives data from satellites, the dot in the present time's year field is lit.
 
-In order to use the GPS receiver as a source of time, the option **_Use GPS time_** must be checked in the Config Portal.
+In order to use the GPS receiver as a source of time, the option [**_Use GPS time_**](#-use-gps-time) must be checked in the Config Portal (which it is by default).
 
-#### Geolocation mode
+### Geolocation mode
 
 If the TCD is connected to the CircuitSetup Speedo or a third-party GPS receiver, it can display your current location.
 
@@ -978,11 +978,11 @@ If the TCD is connected to the CircuitSetup Speedo or a third-party GPS receiver
 Three different notations are supported:
 - DD: Decimal degrees;
 - DMS: Degrees, minutes, seconds;
-- DMD: Degrees, decimal minutes.
+- DMD: Degrees, decimal minutes. This is the most precise one of the three.
 
-To enable this mode, enter 114 (DD), 115 (DMS) or 116 (DMD) followed by ENTER. Geolocation mode is mutually exclusive to World Clock and Room Condition mode, and disabled when a Time Travel is initiated. If an SD card is present, Geolocation mode is persistent across reboots.
+To toggle geolocation mode, enter 114 (DD), 115 (DMS) or 116 (DMD) followed by ENTER. Geolocation mode is mutually exclusive to World Clock and Room Condition mode, and disabled when a Time Travel is initiated. If an SD card is present, Geolocation mode is persistent across reboots.
 
-#### GPS for speed
+### GPS for speed
 
 One nice feature of GPS is that the receiver can deliver current speed of movement. If the Time Circuits are, for instance, mounted in a car or on a boat, and a [speedo](#speedometer) is connected, this display will be just that: A real speedometer.
 
