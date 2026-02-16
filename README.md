@@ -1574,6 +1574,8 @@ See [here](#persistent--non-persistent-time-travels). For this option to take ef
 
 If this is checked, the TCD will reverse the AM and PM lights, as seen in parts 2 and 3 of the Series. This is under "hardware settings" as it requires attaching the labels in a different manner.
 
+---
+
 ### HA/MQTT Settings
 
 ##### &#9193; Home Assistant support (MQTT)
