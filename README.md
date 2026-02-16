@@ -243,6 +243,21 @@ For logical reasons, WC mode will be automatically disabled in some situations:
 
 To toggle WC/RC hybrid mode, type "113" followed by ENTER.
 
+### Geolocation mode
+
+If the TCD is connected to the CircuitSetup Speedo or a third-party GPS receiver, it can display your current location.
+
+| ![geolocation](img/geomode.jpg) |
+|:--:|
+| *Geolocation mode* |
+
+Three different notations are supported:
+- DD: Decimal degrees;
+- DMS: Degrees, minutes, seconds;
+- DMD: Degrees, decimal minutes.
+
+To enable this mode, enter 114, 115 or 116 followed by ENTER.
+
 ### Exhibition mode
 
 In this mode, the TCD shows a fixed, pre-programmed time in the *Present Time* display. Also after a time travel, the *Present Time* display will stay fixed at the time you travelled to. This is useful for exhibitions or for filming.
@@ -346,12 +361,16 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left">111&#9166;</td>
     </tr>
     <tr>
-     <td align="left">Toggle <a href="#">World Clock mode</a></td>
+     <td align="left">Toggle <a href="#world-clock-mode">World Clock mode</a></td>
      <td align="left">112&#9166;</td>
     </tr>
     <tr>
-     <td align="left">Toggle both <a href="#">World Clock</a> and <a href="#room-condition-mode-temperaturehumidity-sensor">Room Condition</a> (WC/RC hybrid)</td>
+     <td align="left">Toggle both <a href="#world-clock-mode">World Clock</a> and <a href="#room-condition-mode-temperaturehumidity-sensor">Room Condition</a> (WC/RC hybrid)</td>
      <td align="left">113&#9166;</td>
+    </tr>
+    <tr>
+     <td align="left">Toggle <a href="#geolocation-mode">geolocation mode</a> (DD/DMS/DMD)</td>
+     <td align="left">114&#9166;/115&#9166;/116&#9166;/</td>
     </tr>
     <tr>
      <td align="left">Display weekday of currently displayed <i>present time</i> date</td>
@@ -437,33 +456,37 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left">Set <a href="#connecting-props-by-wire">TT OUT</a> LOW / HIGH</td>
      <td align="left">900&#9166; / 901&#9166;</td>
     </tr>
-   <tr>
+    <tr>
      <td align="left">Disable / enable <a href="#car-mode">car mode</a>(*)</td>
      <td align="left">990&#9166; / 991&#9166;</td>
     </tr>
-  <tr>
+    <tr>
      <td align="left">Forbid / allow TCD to be <a href="#futaba-remote-control">remote controlled</a>(*)</td>
      <td align="left">992&#9166; / 993&#9166;</td>
     </tr>
-   <tr>
+    <tr>
      <td align="left">Forbid / allow TCD keypad to be <a href="#remote-controlling-the-tcds-keypad">remote controlled</a>(*)</td>
      <td align="left">994&#9166; / 995&#9166;</td>
     </tr>
-  <tr>
+    <tr>
      <td align="left">Release HA from <a href="#fake-power-control-through-ha">Fake-Power control</a>(*)</td>
      <td align="left">996&#9166;</td>
-  </tr>
-  <tr>
+    </tr>
+    <tr>
      <td align="left">Restore user destination/last time dep. times</td>
      <td align="left">998&#9166;</td>
-  </tr>
-  <tr>
+    </tr>
+    <tr>
      <td align="left">Enable / disable <a href="#exhibition-mode">Exhibition mode</a></td>
      <td align="left">999&#9166;</td>
     </tr>
- <tr>
+    <tr>
      <td align="left">Program time for <a href="#exhibition-mode">Exhibition mode</a></td>
      <td align="left">99mmddyyyyhhMM&#9166;</td>
+    </tr>
+    <tr>
+     <td align="left">Toggle firmware update message at power-up</td>
+     <td align="left">53281&#9166;</td>
     </tr>
     <tr>
      <td align="left">Reboot the device(*)</td>
