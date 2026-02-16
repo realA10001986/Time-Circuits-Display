@@ -216,7 +216,7 @@ Time-cycling will, if enabled, change the *Destination* and *Last Time Departed*
 
 ### World Clock mode
 
-In World Clock (WC) mode, the red and yellow displays show not some stale times, but current time in other time zones. These time zones can be configured in Config Portal. At least one time zone (for either the red or yellow display) must be configured in order to use WC mode. Optionally, also names for cities/locations for these time zones can be entered in the Config Portal; if a name for a time zone is configured, this name and the time will be shown alternately. Note that names can only contain letters a-z, numbers 0-9, space and minus.
+In World Clock (WC) mode, the red and yellow displays show not some stale times, but current time in other time zones. These time zones can be configured in Config Portal. At least one time zone (for either the red or yellow display) must be configured in order to use WC mode. Optionally, also names for cities/locations for these time zones can be entered in the Config Portal; if a name for a time zone is configured, this name and the time will be shown alternately. If the name is short enough, it will be shown together with time. Note that names can only contain letters a-z, numbers 0-9, space and minus. 
 
 | [![Watch the video](https://img.youtube.com/vi/Uk1W7D6Ab9Y/0.jpg)](https://youtu.be/Uk1W7D6Ab9Y) |
 |:--:|
@@ -226,7 +226,7 @@ In World Clock (WC) mode, the red and yellow displays show not some stale times,
 |:--:|
 | *World Clock mode* |
 
-WC mode is toggled by typing "112" followed by ENTER. 
+WC mode is toggled by typing "112" followed by ENTER. If an SD card is present, WC mode is persistent across reboots.
 
 For logical reasons, WC mode will be automatically disabled in some situations:
 
@@ -242,21 +242,6 @@ For logical reasons, WC mode will be automatically disabled in some situations:
 | *WC/RC hybrid mode* |
 
 To toggle WC/RC hybrid mode, type "113" followed by ENTER.
-
-### Geolocation mode
-
-If the TCD is connected to the CircuitSetup Speedo or a third-party GPS receiver, it can display your current location.
-
-| ![geolocation](img/geomode.jpg) |
-|:--:|
-| *Geolocation mode* |
-
-Three different notations are supported:
-- DD: Decimal degrees;
-- DMS: Degrees, minutes, seconds;
-- DMD: Degrees, decimal minutes.
-
-To enable this mode, enter 114, 115 or 116 followed by ENTER.
 
 ### Exhibition mode
 
@@ -967,7 +952,7 @@ In order to use the Speedometer display, select the correct model/display type i
 
 ## GPS receiver
 
-A GPS receiver can be used as a source of authoritative time (like NTP) and speed of movement.
+A GPS receiver can be used as a source of authoritative time (like NTP), speed of movement and geolocation mode.
 
 The CircuitSetup original [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit) has a built-in GPS receiver. If you want to use a third party GPS receiver, see [here](AddOns.md#gps-receiver). 
 
@@ -980,7 +965,22 @@ For using GPS effectively as a long-term source of accurate time, it is therefor
 
 If/as long as the GPS receiver has a fix and receives data from satellites, the dot in the present time's year field is lit.
 
-In order to use the GPS receiver as a source of time, no special configuration is required. If it is detected during boot, it will be used.
+In order to use the GPS receiver as a source of time, the option **_Use GPS time_** must be checked in the Config Portal.
+
+#### Geolocation mode
+
+If the TCD is connected to the CircuitSetup Speedo or a third-party GPS receiver, it can display your current location.
+
+| ![geolocation](img/geomode.jpg) |
+|:--:|
+| *Geolocation mode* |
+
+Three different notations are supported:
+- DD: Decimal degrees;
+- DMS: Degrees, minutes, seconds;
+- DMD: Degrees, decimal minutes.
+
+To enable this mode, enter 114 (DD), 115 (DMS) or 116 (DMD) followed by ENTER. Geolocation mode is mutually exclusive to World Clock and Room Condition mode, and disabled when a Time Travel is initiated. If an SD card is present, Geolocation mode is persistent across reboots.
 
 #### GPS for speed
 
@@ -1021,7 +1021,7 @@ The rotary encoder for volume replaces the volume knob on back of the TCD's keyp
 
 ## Room Condition Mode, Temperature/humidity sensor
 
-The firmware supports connecting a temperature/humidity sensor for "room condition mode"; in this mode, *destination* and *last departed* times are replaced by temperature and humidity (if applicable), respectively. To toggle between normal and room condition mode, enter "111" and press ENTER. 
+The firmware supports connecting a temperature/humidity sensor for "room condition mode"; in this mode, *destination* and *last departed* times are replaced by temperature and humidity (if applicable), respectively. To toggle between normal and room condition mode, enter "111" and press ENTER. If an SD card is present, room condition mode is persistent across reboots.
 
 ![rcmode](img/rcmode.jpg)
 
@@ -1389,6 +1389,12 @@ The time zone of the place where the device is operated in POSIX format. Needs t
 ##### &#9193; NTP Server
 
 Name of your preferred NTP (network time protocol) server for time synchronization. Leave this empty to disable NTP.
+
+##### &#9193; Use GPS time
+
+If this option is checked (which it is by default), the TCD uses GPS as a source for authorative time, in the same way like NTP.
+
+The issue with GPS time and the reason for this option is so-called "GPS week rollovers". Traditional GPS (L1A) encodes time information in shape of "number of weeks" since 1980, and uses a 10 bit counter. This counter overflows every about 1024 weeks, which is about 19 years. The receivers' firmware is usually pretty dumb and only works for one of those periods. The TCD firmware knows measures to overcome a rollover, but I cannot test this in any way. In case the TCD syncs to wrong time (as a result of the receiver unable to cope with a roll-over), you can disable usage of GPS time information using this option. The next rollover is due in 2038, but trouble might come earlier, if the receiver firmware uses week-offsets to shift its working period. Accoding to the datasheets of the MTK3333 receivers, they might stop reporting correct time already in 2034. More modern GPS signals (L1C, L2C, L5) overcome this issue by using 13 bits for weeks, but given those signals are not yet official standard as of this writing (2026), receivers supporting them are scarce and unreasonably expensive.
 
 #### <ins>World Clock mode</ins>
 
