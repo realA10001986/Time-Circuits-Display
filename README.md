@@ -164,9 +164,9 @@ If "REPLACE BATTERY" is shown upon boot, the onboard CR2032 battery is depleted 
 
 The TCD sometimes writes data to either the internal flash file system or the SD card. These write operations should not be interrupted by a power loss.
 
-In general, it is safe to power-down the TCD when it is idle or after it has been fake-powered-down. Try to avoid powering down the TCD
+In general, it is safe to power-down the TCD when it has been idle for 15 seconds, or after it has been fake-powered-down. Try to avoid powering down the TCD
 - when it is clearly busy (such as when copying or renaming audio files);
-- within 15 seconds after an audio volume change through a Rotary Encoder.
+- within 15 seconds after an audio volume change through a Rotary Encoder changing the display mode (World Clock, Room condition, geolocation),
 - if [**_Make time travel persistent_**](#persistent--non-persistent-time-travels) is checked: in the first few seconds after a timetravel.
 
 ### Calendar system
@@ -1206,7 +1206,7 @@ Note that if your configured WiFi network was not available when the TCD was try
 
 ## Firmware Installation / Firmware Update
 
-If a previous version of the TCD firmware is installed on your device, you can update easily using the pre-compiled binary. Enter the [Config Portal](#the-config-portal), click on "Update" and select the pre-compiled binary file ("**timecircuits-A10001986.ino.nodemcu-32s.bi**n" for A10001986 releases, "**Time_Circuits_Display_vX.YY.bin**" for CircuitSetup releases) provided in the [Release package](releases).
+If a previous version of the TCD firmware is installed on your device, you can update easily using the pre-compiled binary. Enter the [Config Portal](#the-config-portal), click on "Update" and select the pre-compiled binary file ("**timecircuits-A10001986.ino.nodemcu-32s.bi**n" for A10001986 releases, "**Time_Circuits_Display_vX.YY.bin**" for CircuitSetup releases) provided in the [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases).
 
 <details>
 <summary>If you are using a fresh ESP32...</summary>
@@ -1221,9 +1221,9 @@ _Note that installing the sound-pack requires an [SD card](#sd-card)._
 
 >A10001986 and CircuitSetup use different sound-packs. If you switch from one version to the other, the matching sound-pack must be re-installed. [A10001986-releases](https://github.com/realA10001986/Time-Circuits-Display/releases) use "sound-pack-twXX", while [CircuitSetup's](https://github.com/CircuitSetup/Time-Circuits-Display/releases) are named "sound-pack-csXX". The Config Portal will tell you which version is required to be installed.
 
-The first step is to extract the zipped sound-pack (which is included in every Release package). It contains one file named "TCDA.bin".
+The first step is to extract the zipped sound-pack (which is included in every [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases)). It contains one file named "TCDA.bin".
 
-Next, head to the [Config Portal](#the-config-portal), click on *Update*, select the "TCDA.bin" file in the bottom file selector and click on *Upload*.
+Next, head to the [Config Portal](#the-config-portal), click on *Update*, select the "TCDA.bin" file in the _bottom_ file selector and click on *Upload*.
 
 <details>
 <summary>Alternative way</summary>
@@ -1261,9 +1261,9 @@ This leads to the [HomeAssistant/MQTT Settings page](#hamqtt-settings).
 
 This leads to the firmware update and audio upload page. 
 
-In order to upload a new firmware binary (such as the ones published in the Release packages or here in the install/ folder), select that image file in the top file selector and click "Update".
+In order to upload a new firmware binary (such as the ones published in the [Release packages](https://github.com/realA10001986/Time-Circuits-Display/releases) or here in the install/ folder), select that image file in the top file selector and click "Update".
 
-You can also install the TCD's sound-pack on this page; download the current sound-pack, extract it and select the resulting TCDA.bin file in the bottom file selector. Finally, click "Upload". Note that an SD card is required for this operation.
+You can also install the TCD's sound-pack on this page; download the current sound-pack (which is included in every [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases)), extract it and select the resulting TCDA.bin file in the bottom file selector. Finally, click "Upload". Note that an SD card is required for this operation.
 
 Finally, this page is also for uploading [custom or replacement sound files](#installing-custom--replacement-audio-files) to the SD card. Select one or more mp3 file in the bottom file selector and click upload. (Maximum 16 files at a time.)
 
@@ -1275,7 +1275,7 @@ Through this page you can either connect your TCD to your local WiFi network, or
 
 #### <ins>Connecting to an existing WiFi network</ins>
 
-In order to connect your TCD to your WiFi network, all you need to do is either to click on one of the networks listed at the top or to enter a __WiFi network name (SSID)__, and optionally a __password__ (WPAx). If there is no list of networks displayed, simply click on "WiFi Scan".
+In order to connect your TCD to your WiFi network, all you need to do is either to click on one of the networks listed at the top or to enter a __WiFi network name (SSID)__, and optionally a __password__ (WPAx). If there is no list of networks displayed, click on "WiFi Scan".
 
 >By default, the TCD requests an IP address via DHCP. However, you can also configure a static IP for the TCD by entering the IP, netmask, gateway and DNS server. All four fields must be filled for a valid static IP configuration. If you want to stick to DHCP, leave those four fields empty.
 
@@ -1400,7 +1400,7 @@ Name of your preferred NTP (network time protocol) server for time synchronizati
 
 If this option is checked (which it is by default), the TCD uses GPS as a source for authorative time, in the same way like NTP.
 
-The issue with GPS time and the reason for this option is so-called "GPS week rollovers". Traditional GPS (L1/L1A aka "Legacy C/A") encodes time information in shape of "number of weeks" since 1980, and uses a 10 bit counter. As a result, this counter overflows every 1024 weeks, which is every about 19 years. The receivers' firmware is usually pretty dumb and only works for one of those periods (and it appears manufacturers prohibit longer periods of operation on purpose by refusing manual date/time feeds beyond the next rollover). The TCD firmware knows some measures to overcome a rollover if it were handled smartly, but I have no idea what the receivers actually are going to do (report time 19 years in the past? Report any time in the past, perhaps depending on the firmware's week-offet? Stop working at all?), and I cannot test this in any way. In case the TCD syncs to wrong time as a result of the receiver unable to properly cope with a roll-over, you can disable usage of GPS time information using this option. The next rollover is due in 2038, but trouble might come earlier, if the receiver firmware uses week-offsets to shift its working period across a rollover. According to the datasheets of some MTK3333 receivers, these might stop reporting correct time already in 2034. More modern GPS signals (L1C, L2C, L5) overcome this issue by using 13 bits for weeks, but given those signals are either not yet broadcast by many satellites and/or considered pre-operational as of this writing (2026), and rollout plans reach into the early 2030s, receivers supporting them are scarce and unreasonably expensive.
+The issue with GPS time and the reason for this option is so-called "GPS week rollovers". Traditional GPS (L1/L1A aka "Legacy C/A") encodes time information in shape of "number of weeks" since 1980, and uses a 10 bit counter. As a result, this counter overflows every 1024 weeks, which is every about 19 years. The receivers' firmware is usually pretty dumb and only works for one of those periods (and it appears manufacturers prohibit longer periods of operation on purpose by refusing manual date/time feeds beyond the next rollover). The TCD firmware knows some measures to overcome a rollover if it were handled smartly, but I have no idea what the receivers actually are going to do (report time 19 years in the past? Report any time in the past, perhaps depending on the firmware's week-offet? Stop working at all?), and I cannot test this in any way. In case the TCD syncs to wrong time as a result of the receiver unable to properly cope with a roll-over, you can disable usage of GPS time information using this option. The next rollover is due in 2038, but trouble might come earlier, if the receiver firmware uses a week-offset to shift its working period across a rollover. According to the datasheets of some MTK3333 receivers, these might stop reporting correct time already in 2034. More modern GPS signals (L1C, L2C, L5) overcome this issue by using 13 bits for weeks, but given those signals are either not yet broadcast by many satellites and/or considered pre-operational as of this writing (2026), and rollout plans reach into the early 2030s, receivers supporting them are scarce and unreasonably expensive.
 
 #### <ins>World Clock mode</ins>
 
@@ -1414,7 +1414,7 @@ The time zone for the yellow display in [World Clock mode](#world-clock-mode). D
 
 ##### &#9193; City/location name
 
-For each World Clock time zone, a city or location name can be configured. For example "SYDNEY" or "LORD HOWE". This name will be shown every few seconds alternately with time.
+For each World Clock time zone, a city or location name can be configured. For example "SYDNEY" or "LORD HOWE". This name will be shown every few seconds alternately with time. If the name is 9 characters or less (8 on the A-Car display), it will be displayed together with time.
 
 #### <ins>Night-mode</ins>
 
