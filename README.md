@@ -1204,18 +1204,24 @@ After WiFi has been switched off due to timer expiration, it can be re-enabled b
 
 Note that if your configured WiFi network was not available when the TCD was trying to connect, it will end up in AP-mode. Holding "7" in that case will trigger another attempt to connect to your WiFi network.
 
+## Flash Wear
+
+Flash memory has a somewhat limited lifetime. It can be written to only between 10.000 and 100.000 times before becoming unreliable. The firmware writes to the internal flash memory when saving settings and other data. Every time you change settings through the keypad menu or the Config Portal, data is written to flash memory.
+
+In order to reduce the number of write operations and thereby prolong the life of your TCD, it is recommended to use a good-quality SD card and to check **_[Save secondary settings on SD](#-save-secondary-settings-on-sd)_** in the Config Portal; secondary settings (volume, alarm, reminder, car-mode state, exhibition mode data and state, time travel data and state) are then stored on the SD card (which also suffers from wear but is easy to replace). See [here](#-save-secondary-settings-on-sd) for more information.
+
 ## Firmware Installation / Firmware Update
 
-If a previous version of the TCD firmware is installed on your device, you can update easily using the pre-compiled binary. Enter the [Config Portal](#the-config-portal), click on "Update" and select the pre-compiled binary file ("**timecircuits-A10001986.ino.nodemcu-32s.bi**n" for A10001986 releases, "**Time_Circuits_Display_vX.YY.bin**" for CircuitSetup releases) provided in the [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases).
+If a previous version of the TCD firmware is installed on your device, you can update easily using the pre-compiled binary. Enter the [Config Portal](#the-config-portal), click on "Update" and select the pre-compiled binary file ("**timecircuits-A10001986.ino.nodemcu-32s.bin**" for A10001986 releases, "**Time_Circuits_Display_vX.YY.bin**" for CircuitSetup releases) provided in the [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases).
 
 <details>
-<summary>If you are using a fresh ESP32...</summary>
-If you are using a fresh ESP32, please see <a href="https://github.com/realA10001986/Time-Circuits-Display/blob/main/timecircuits-A10001986/timecircuits-A10001986.ino">timecircuits-A10001986.ino</a> for detailed build and upload information, or, if you don't want to deal with source code, compilers and all that nerd stuff, go <a href="https://install.out-a-ti.me">here</a> and follow the instructions.
+<summary>Installing on a fresh ESP32...</summary>
+If you are using a fresh ESP32, please go <a href="https://install.out-a-ti.me">here</a> and follow the instructions, or - if you are a nerd and want to deal with source code, compilers'n'stuff - see <a href="https://github.com/realA10001986/Time-Circuits-Display/blob/main/timecircuits-A10001986/timecircuits-A10001986.ino">timecircuits-A10001986.ino</a> for detailed build and upload information.
 </details>
 
 ### Sound-pack installation
 
-The firmware comes with a sound-pack which needs to be installed separately. The sound-pack is not updated as often as the firmware itself. If you have previously installed the latest version of the sound-pack, you normally don't have to re-install it when you update the firmware. There will be a message in the Config Portal and the TCD will display "PLEASE INSTALL SOUND PACK" during boot when a new sound-pack needs to be installed.
+The firmware comes with a sound-pack which needs to be installed separately. The sound-pack is not updated as often as the firmware itself. There will be a message in the Config Portal and the TCD will display "PLEASE INSTALL SOUND PACK" during boot when/if the sound-pack needs to be updated.
 
 _Note that installing the sound-pack requires an [SD card](#sd-card)._
 
@@ -1223,11 +1229,10 @@ _Note that installing the sound-pack requires an [SD card](#sd-card)._
 
 The first step is to extract the zipped sound-pack (which is included in every [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases)). It contains one file named "TCDA.bin".
 
-Next, head to the [Config Portal](#the-config-portal), click on *Update*, select the "TCDA.bin" file in the _bottom_ file selector and click on *Upload*.
+Next, head to the [Config Portal](#the-config-portal), click on "Update", select the "TCDA.bin" file in the _bottom_ file selector and click on *Upload*.
 
 <details>
 <summary>Alternative way</summary>
-
 Alternatively, you can install the sound-pack the following way:
 - Using a computer, copy "TCDA.bin" to the root directory of a FAT32 formatted SD card;
 - power down the TCD,
@@ -1235,11 +1240,7 @@ Alternatively, you can install the sound-pack the following way:
 - power up the TCD; the sound-pack will be installed automatically.
 </details>
 
-## Flash Wear
-
-Flash memory has a somewhat limited lifetime. It can be written to only between 10.000 and 100.000 times before becoming unreliable. The firmware writes to the internal flash memory when saving settings and other data. Every time you change settings through the keypad menu or the Config Portal, data is written to flash memory.
-
-In order to reduce the number of write operations and thereby prolong the life of your TCD, it is recommended to use a good-quality SD card and to check **_[Save secondary settings on SD](#-save-secondary-settings-on-sd)_** in the Config Portal; secondary settings (volume, alarm, reminder, car-mode state, exhibition mode data and state, time travel data and state) are then stored on the SD card (which also suffers from wear but is easy to replace). See [here](#-save-secondary-settings-on-sd) for more information.
+---
 
 ## Appendix A: The Config Portal
 
@@ -1259,13 +1260,15 @@ This leads to the [HomeAssistant/MQTT Settings page](#hamqtt-settings).
 
 ##### &#9193; Update
 
-This leads to the firmware update and audio upload page. 
+This leads to the firmware update and audio upload page.
 
-In order to upload a new firmware binary (such as the ones published in the [Release packages](https://github.com/realA10001986/Time-Circuits-Display/releases) or here in the install/ folder), select that image file in the top file selector and click "Update".
+In order to upload a new firmware, such as published in the [Release packages](https://github.com/realA10001986/Time-Circuits-Display/releases), select the "**timecircuits-A10001986.ino.nodemcu-32s.bin**" or "**Time_Circuits_Display_vX.YY.bin**" file as contained in the Release package in the _top_ file selector and click *Update*.
 
-You can also install the TCD's sound-pack on this page; download the current sound-pack (which is included in every [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases)), extract it and select the resulting TCDA.bin file in the bottom file selector. Finally, click "Upload". Note that an SD card is required for this operation.
+You can also install the TCD's sound-pack on this page; download the sound-pack (which is included in every [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases)), extract it and select the resulting TCDA.bin file in the _bottom_ file selector. Finally, click *Upload*. Note that an SD card is required for this operation.
 
-Finally, this page is also for uploading [custom or replacement sound files](#installing-custom--replacement-audio-files) to the SD card. Select one or more mp3 file in the bottom file selector and click upload. (Maximum 16 files at a time.)
+See also [here](#firmware-installation--firmware-update).
+
+Finally, this page is also for uploading [custom or replacement sound files](#installing-custom--replacement-audio-files) to the SD card. Select one or more mp3 file in the _bottom_ file selector and click *Upload*. (Maximum 16 files at a time.)
 
 ---
 
