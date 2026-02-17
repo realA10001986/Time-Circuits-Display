@@ -1206,7 +1206,7 @@ Note that if your configured WiFi network was not available when the TCD was try
 
 ## Firmware Installation / Firmware Update
 
-If a previous version of the TCD firmware is installed on your device, you can update easily using the pre-compiled binary. Enter the [Config Portal](#the-config-portal), click on "Update" and select the pre-compiled binary file ("xxx.bin") provided in the Release package.
+If a previous version of the TCD firmware is installed on your device, you can update easily using the pre-compiled binary. Enter the [Config Portal](#the-config-portal), click on "Update" and select the pre-compiled binary file ("**timecircuits-A10001986.ino.nodemcu-32s.bi**n" for A10001986 releases, "**Time_Circuits_Display_vX.YY.bin**" for CircuitSetup releases) provided in the [Release package](releases).
 
 <details>
 <summary>If you are using a fresh ESP32...</summary>
