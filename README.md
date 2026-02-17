@@ -330,7 +330,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
     </tr>
     <tr>
      <td align="left">Toggle <a href="#geolocation-mode">geolocation mode</a> (DD/DMS/DMD)</td>
-     <td align="left">114&#9166;/115&#9166;/116&#9166;/</td>
+     <td align="left">114&#9166;/115&#9166;/116&#9166;</td>
     </tr>
     <tr>
      <td align="left">Display weekday of currently displayed <i>present time</i> date</td>
