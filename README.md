@@ -166,7 +166,7 @@ The TCD sometimes writes data to either the internal flash file system or the SD
 
 In general, it is safe to power-down the TCD when it has been idle for 15 seconds, or after it has been fake-powered-down. Try to avoid powering down the TCD
 - when it is clearly busy (such as when copying or renaming audio files);
-- within 15 seconds after an audio volume change through a Rotary Encoder changing the display mode (World Clock, Room condition, geolocation),
+- within 15 seconds after an audio volume change through a Rotary Encoder or changing the display mode (World Clock, Room condition, geolocation),
 - if [**_Make time travel persistent_**](#persistent--non-persistent-time-travels) is checked: in the first few seconds after a timetravel.
 
 ### Calendar system
