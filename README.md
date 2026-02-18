@@ -959,15 +959,17 @@ To toggle geolocation mode, enter 114 (DD), 115 (DMS) or 116 (DMD) followed by E
 
 ### GPS for speed
 
-One nice feature of GPS is that the receiver can deliver current speed of movement. If the Time Circuits are, for instance, mounted in a car or on a boat, and a [speedo](#speedometer) is connected, this display will be just that: A real speedometer.
+One nice feature of GPS is that the receiver can deliver current speed of movement. If the Time Circuits are, for instance, mounted in a car, and a [speedo](#speedometer) is connected, you'll have a real speedometer:
 
 | [![Watch the video](https://img.youtube.com/vi/wbeXZJaDLa8/0.jpg)](https://youtu.be/wbeXZJaDLa8) |
 |:--:|
 | Click to watch the video |
 
-In order to use the GPS receiver for speed, check **_Display GPS speed_** in the Config Portal.
+To have GPS speed displayed on your speedo, check **_Display GPS speed_** in the Config Portal. 
 
-If other props using GPS speed are connected via [BTTF-Network](#connecting-props-wirelessly-bttf-network-bttfn), check the option **_Provide GPS speed to wireless props_** in the Config Portal.
+To let other props connected via [BTTF-Network](#connecting-props-wirelessly-bttf-network-bttfn) know about current GPS speed, check the option **_Provide GPS speed to wireless props_**.
+
+Note that setting these options give GPS speed priority over speed from a rotary encoder, and as regards the speedo display, over other purposes (such as displaying temperature). Checking them really does not make sense when your props are permanently stationary.
 
 ## Rotary Encoder
 
@@ -986,7 +988,7 @@ The rotary encoder, if configured for speed, allows manually selecting a speed t
 | Click to watch the video |
 
 Remarks:
-- The encoder is only evaluated if no GPS receiver is connected, or if the **_Display GPS speed_** is unchecked. GPS speed has priority over the encoder.
+- The encoder is only evaluated if no GPS receiver is connected, or if the **_Display GPS speed_** is unchecked (as this option gives GPS speed priority over the encoder).
 - The encoder is also evaluated if no speedo is connected; it can be operated "blindly" to trigger time travels and its movement is sent to BTTFN clients like GPS speed (if no GPS receiver is connected, or the option **_Provide GPS speed to wireless props_** is unchecked)
 - The speedo displays "0" as long as the encoder is not moved; if the encoder is turned counter-clockwise a couple of notches, the speedo will be switched off.
 
