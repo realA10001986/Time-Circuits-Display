@@ -485,7 +485,7 @@ void clockDisplay::setMinute(int minNum)
 
 void clockDisplay::setYearOffset(int16_t yearOffs)
 {
-    if(_did = DISP_PRES) {
+    if(_did == DISP_PRES) {
         _yearoffset = yearOffs;
         #ifdef TC_DBG_TIME
         Serial.printf("ClockDisplay: _yearoffset set to %d\n", yearOffs);

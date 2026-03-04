@@ -1883,7 +1883,7 @@ static bool saveClockData(bool force)
 
 bool saveClockDataDL(bool force, uint8_t did, uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute)
 {
-    dateStruct *myDate = (did = DISP_DEST) ? &clockData.dDate : &clockData.lDate;
+    dateStruct *myDate = (did == DISP_DEST) ? &clockData.dDate : &clockData.lDate;
     myDate->year = year;
     myDate->month = month;
     myDate->day = day;
