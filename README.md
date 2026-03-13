@@ -32,6 +32,7 @@ Features include
 - Movie-related:
   - Movie-accurate [Beep](#beep-on-the-second) sound every second (4 modes)
   - Movie-accurate [time travel](#time-travel) function
+  - Configuration options to emulate nearly all variations of the TCD shown in the trilogy
   - ["Return from Time Travel"](#time-travel): Return to real present time easily
   - ["Decorative mode"](#time-cycling): Movie-accurate time travel times displayed in *destination time* and *last time departed* displays, and cycled in configurable interval
   - [Exhibition mode](#exhibition-mode): Show a fixed time in *Present Time* display instead of a running clock. Helpful for filming or museums.
