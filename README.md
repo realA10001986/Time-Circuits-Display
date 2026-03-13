@@ -39,22 +39,21 @@ Features include
 - Network capabilities:
   - Advanced network-accessible [Config Portal](#the-config-portal) for setup (http://timecircuits.local, hostname configurable)
   - Easy [firmware updates](#firmware-installation--firmware-update) over-the-air
-  - [Wireless communication](#connecting-props-wirelessly-bttf-network-bttfn) with compatible other props such as CircuitSetup's [Flux Capacitor](https://fc.out-a-ti.me) and [SID](https://sid.out-a-ti.me), as well as the [Dash Gauges](https://dg.out-a-ti.me), [VSR](https://vsr.out-a-ti.me) and modified [Futaba Remote Control](https://remote.out-a-ti.me)
+  - [Wireless communication](#connecting-props-wirelessly-bttf-network-bttfn) with compatible props such as CircuitSetup's [Flux Capacitor](https://fc.out-a-ti.me) and [SID](https://sid.out-a-ti.me), as well as the [Dash Gauges](https://dg.out-a-ti.me), [VSR](https://vsr.out-a-ti.me) and modified [Futaba Remote Control](https://remote.out-a-ti.me)
   - [Home Assistant](#home-assistant--mqtt) (MQTT) support
 - [Night mode](#night-mode): Dim or switch off displays on schedule, manually or sensor-controlled.
 - [Music player](#the-music-player): Play mp3 files located on an SD card
 - Audio output through [line-out](#audio-output) for time travel sounds and music (requires Control Board 1.4.5 or later), allows connecting your TCD to your (car) stereo for high-quality stereo-sound.
 - Support for [SD cards](#sd-card) up to 32GB
 - [Keypad-controlled menu](#the-keypad-menu) for adjusting various settings and viewing status through the three displays
-- Peripherals:
-  - Support for [fake "power switch"](#fake-power-switch) (eg. a [TFC drive switch](https://tfc.out-a-ti.me))
-  - Support for time travel [triggered by external source](#external-time-travel-trigger), with optional delay
-  - Support for [speedometer](#speedometer) (eg. CircuitSetup's [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit))
-  - Support for [GPS receiver](#gps-receiver), used as time source and for actual [speed](#gps-for-speed) to be displayed on speedo
-  - Support for [rotary encoders](#rotary-encoder) for manual selection of speed to be displayed on speedo, and/or audio volume
-  - Support for [temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for [Room Condition mode](#room-condition-mode-temperaturehumidity-sensor) [display temperature and humidity in *destination time* and *last time departed* displays] and for displaying temperature on speedo while idle
-  - Support for [Futaba remote control prop](#futaba-remote-control): Remote control the speed on the speedo, like in the movie
-  - Support for signaling other props [connected by wire](#connecting-props-by-wire) (for example flux lights, third party props)
+- Support for numerious peripherals:
+  - [Fake "power switch"](#fake-power-switch) (eg. a [TFC drive switch](https://tfc.out-a-ti.me))
+  - [Speedometer](#speedometer) (eg. CircuitSetup's [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit))
+  - [GPS receiver](#gps-receiver), used as time source and for actual [speed](#gps-for-speed) to be displayed on speedo
+  - [Rotary encoders](#rotary-encoder) for manual selection of speed to be displayed on speedo, and/or audio volume
+  - External Time Travel [trigger](#external-time-travel-trigger), with optional delay
+  - [Temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for [Room Condition mode](#room-condition-mode-temperaturehumidity-sensor) [display temperature and humidity in *destination time* and *last time departed* displays] and for displaying temperature on speedo while idle
+  - Multi-purpose output for signaling other props [connected by wire](#connecting-props-by-wire) (for example flux lights, third party props)
   
 >This [repository](https://tcd.out-a-ti.me) is the upstream source for CircuitSetup's releases. The differences are that both code and documentation [here](https://tcd.out-a-ti.me) might be ahead in development, and in the sound-packs.
 
