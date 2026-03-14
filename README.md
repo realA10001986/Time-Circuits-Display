@@ -2,7 +2,7 @@
 
 This [repository](https://tcd.out-a-ti.me) holds the most current firmware for CircuitSetup's wonderful [Time Circuits Display](https://circuitsetup.us/product/complete-time-circuits-display-kit/) ("TCD") kit, a reproduction of an iconic part of the Delorean Time Machine.
 
-The kit is available [here](https://circuitsetup.us/product/complete-time-circuits-display-kit/). The metal version is very popular among Delorean owners who convert their vehicle into a Time Machine. A testament to its build quality and accuracy is further the fact that it is used in the movies-based, official musicals on tour (2025-2026), and that a sample is part of the experience in the "OUTATIME" Escape Room in Orlando, Florida. Namedropping aside, this TCD makes an excellent centerpiece of every movie props collection. It can be used stand-alone or in combination with several [peripherals](#peripherals), both in car and home setups.
+The kit is available [here](https://circuitsetup.us/product/complete-time-circuits-display-kit/). The metal version is very popular among Delorean owners who convert their vehicle into a Time Machine. A testament to its build quality and accuracy is further the fact that it is used in the **movies-based, official musicals on tour** (2025-2026), and that a sample is part of the experience in the **"OUTATIME" Escape Room in Orlando, Florida**. Namedropping aside, this TCD makes an excellent centerpiece of every movie props collection. It can be used stand-alone or in combination with several [peripherals](#peripherals), both in car and home setups.
 
 And don't be fooled by the looks, it got brains, too!
 
