@@ -2,7 +2,7 @@
 
 This [repository](https://tcd.out-a-ti.me) holds the most current firmware for CircuitSetup's wonderful [Time Circuits Display](https://circuitsetup.us/product/complete-time-circuits-display-kit/) ("TCD") kit, a reproduction of an iconic part of the Delorean Time Machine.
 
-The kit is available [here](https://circuitsetup.us/product/complete-time-circuits-display-kit/). The metal version is very popular among Delorean owners who convert their vehicle into a Time Machine. A testament to its build quality and accuracy is further the fact that it is used in the movies-based, official musicals on tour (2025-2026), and that a sample is part of the experience in the "OUTATIME" Escape Room in Orlando, Florida. Namedropping aside, this TCD makes an excellent centerpiece of every movie props collection. It can be used stand-alone or in combination with several [peripherals](#peripherals).
+The kit is available [here](https://circuitsetup.us/product/complete-time-circuits-display-kit/). The metal version is very popular among Delorean owners who convert their vehicle into a Time Machine. A testament to its build quality and accuracy is further the fact that it is used in the movies-based, official musicals on tour (2025-2026), and that a sample is part of the experience in the "OUTATIME" Escape Room in Orlando, Florida. Namedropping aside, this TCD makes an excellent centerpiece of every movie props collection. It can be used stand-alone or in combination with several [peripherals](#peripherals), both in car and home setups.
 
 And don't be fooled by the looks, it got brains, too!
 
@@ -39,8 +39,8 @@ Features include
 - Network capabilities:
   - Advanced network-accessible [Config Portal](#the-config-portal) for setup (http://timecircuits.local, hostname configurable)
   - Easy [firmware updates](#firmware-installation--firmware-update) over-the-air
-  - [Wireless communication](#connecting-props-wirelessly-bttf-network-bttfn) with compatible props such as CircuitSetup's [Flux Capacitor](https://fc.out-a-ti.me) and [SID](https://sid.out-a-ti.me), as well as the [Dash Gauges](https://dg.out-a-ti.me), [VSR](https://vsr.out-a-ti.me) and modified [Futaba Remote Control](https://remote.out-a-ti.me)
-  - [Home Assistant](#home-assistant--mqtt) (MQTT) support
+  - [Wireless communication](#connecting-props-wirelessly-bttf-network-bttfn) with compatible props such as CircuitSetup's [Flux Capacitor](https://fc.out-a-ti.me) and [SID](https://sid.out-a-ti.me), as well as the [Dash Gauges](https://dg.out-a-ti.me), [VSR](https://vsr.out-a-ti.me) and modified [Futaba Remote Control](https://remote.out-a-ti.me), for synchronized Time Travel sequences, replaying movie scenes, mututal remote control, and more.
+  - [Home Assistant](#home-assistant--mqtt) (MQTT) support for displaying messages, remote controlling and more.
 - [Night mode](#night-mode): Dim or switch off displays on schedule, manually or sensor-controlled.
 - [Music player](#the-music-player): Play mp3 files located on an SD card
 - Audio output through [line-out](#audio-output) for time travel sounds and music (requires Control Board 1.4.5 or later), allows connecting your TCD to your (car) stereo for high-quality stereo-sound.
@@ -48,8 +48,8 @@ Features include
 - [Keypad-controlled menu](#the-keypad-menu) for adjusting various settings and viewing status through the three displays
 - Support for numerious [peripherals](#peripherals):
   - [Fake "power switch"](#fake-power-switch) (eg. a [TFC drive switch](https://tfc.out-a-ti.me))
-  - [Speedometer](#speedometer) (eg. CircuitSetup's [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit))
-  - [GPS receiver](#gps-receiver), used as time source and for actual [speed](#gps-for-speed) to be displayed on speedo
+  - [Speedometer](#speedometer) (eg. CircuitSetup's [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit) with built-in GPS receiver)
+  - [GPS receiver](#gps-receiver) for time synchronization and actual [speed](#gps-for-speed) to be displayed on speedo
   - [Rotary encoders](#rotary-encoder) for manual selection of speed to be displayed on speedo, and/or audio volume
   - External Time Travel [trigger](#external-time-travel-trigger), with optional delay
   - [Temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for [Room Condition mode](#room-condition-mode-temperaturehumidity-sensor) [display temperature and humidity in *destination time* and *last time departed* displays] and for displaying temperature on speedo while idle
