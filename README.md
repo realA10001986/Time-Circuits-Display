@@ -863,7 +863,7 @@ Note: Your dates/times will be overwritten in storage after a time travel when *
 
 You probably noticed that the device takes longer to boot than would be required to re-create the movie experience where Doc turns the knob and the Time Circuits immediately turn on. As a remedy, the firmware supports a fake "power switch": 
 
-If the **_Use fake power switch_** option is checked in the Config Portal, the device will power-up, initialize everything, but stay quiet and dark. Only when the fake "power switch" is activated, the device will visually "power up". Likewise, you can also fake "power off" the device using this switch. Fake "off" disables the displays, all audio (except the alarm) and the keypad. Just like in the movie.
+If the **_Use fake power switch_** option is checked in the Config Portal, the device will power-up, initialize everything, but stay quiet and dark. Only when the fake "power switch" is activated, the device will visually "power up". Likewise, you can also fake "power off" the device using this switch. Fake "off" disables the displays, all audio (except alarm, reminder and timer) and the keypad. Just like in the movie.
 
 On Control Boards V1.3 and later, there is a dedicated header labeled "Fake PWR" to connect the switch to. The pins to be connected by the switch are labeled "GND" and "PWR Trigger":
 
@@ -881,7 +881,7 @@ In order to use the Fake Power Switch, check **_Use fake power switch_** in the 
 
 ![TFC Switch](img/tfcswitch.jpg)
 
-Fake-Power can also be controlled through [HA/MQTT](#home-assistant--mqtt) and a modified [Futaba remote control](#futaba-remote-control).
+Fake-Power can also be controlled through [HomeAssistant/MQTT](#home-assistant--mqtt) and a modified [Futaba remote control](#futaba-remote-control).
 
 ## External Time Travel Trigger
 
