@@ -1079,7 +1079,7 @@ If the option [TT-OUT (IO14) pin] **_is controlled by commands 990/991_** is che
 
 Although the options can be set freely and are not mutually exclusive, be advised that CircuitSetup/A10001986 original props connected by wire always interpret the TT-OUT signal as a trigger for a time travel sequence. It can make sense to set more than one option if your connect, for instance, flux bands or lights.
 
-Hardware considerations: CS/A10001986 props can be connected directly. TT OUT cannot be used to supply power for third party props; please us a relay. In case of a standard "Aruino relay module", connect "C" to GND, 5V to 5V, and TT OUT to "S"(or "IN").
+Hardware considerations: CS/A10001986 props can be connected directly. TT OUT cannot be used to supply power for third party props; please us a relay. In case of a standard "Arduino relay module", connect "C" to GND, 5V to 5V, and TT OUT to "S"(or "IN").
 
 See also [here](AddOns.md#other-props), chapter "Other props".
 
@@ -1156,7 +1156,7 @@ The timing for time travel is described [here](AddOns.md#synchronized-time-trave
 
 When the [alarm](#how-to-set-up-the-alarm) sounds, the TCD publishes "ALARM".
 
-#### MQTT vs BTTFN
+### MQTT vs BTTFN
 
 MQTT and BTTFN can co-exist.
 
