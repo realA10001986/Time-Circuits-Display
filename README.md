@@ -326,7 +326,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
    </tr>
    <tr>
      <td align="left">Reset display mode (disable 111-117)</a></td>
-     <td align="left">111&#9166;</td>
+     <td align="left">110&#9166;</td>
     </tr>
     <tr>
      <td align="left">Toggle <a href="#room-condition-mode-temperaturehumidity-sensor">Room Condition mode</a></td>
@@ -433,7 +433,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left">501&#9166; - 509&#9166;</td>
     </tr>
     <tr>
-     <td align="left">Send "<a href="#send-messages">HA/MQTT</a> messages</td>
+     <td align="left">Send pre-configured <a href="#send-messages">HA/MQTT</a> messages</td>
      <td align="left">600&#9166; - 609&#9166;</td>
     </tr>
     <tr>
