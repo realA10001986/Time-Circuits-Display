@@ -614,7 +614,7 @@ If Snooze is enabled in the Config Portal,
 
 If Auto-Snooze is enabled, and the user does not react to the alarm with the ENTER button, the alarm will be silenced after two minutes, and automatically repeat after the configured "Snooze Time".
 
-While on snooze, the alarm can be cancelled by keypad command 12.
+While on snooze, the _Present time_'s minute's dot blinks and the alarm can be cancelled by keypad command 12.
 
 A [subsistution](#sound-substitution) alarm sound file will be played once. If it is considerably shorter than two minutes, it can be "looped". However, it is stopped after two minutes.
 
