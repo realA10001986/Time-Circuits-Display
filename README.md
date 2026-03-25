@@ -218,7 +218,13 @@ For logical reasons, WC mode will be automatically disabled in some situations:
 |:--:|
 | *WC/RC hybrid mode* |
 
-To toggle WC/RC hybrid mode, type 113 followed by ENTER.
+To toggle WC/RC hybrid mode, type 113 followed by ENTER. To disable WC and/or RC mode, type 110 and ENTER.
+
+### Minimal mode
+
+In "Minimal" mode, the present time display shows the weekday instead of the year, the other displays are switched off. In order to enable this mode, enter "117" followed by ENTER. To disable, type "110" and ENTER.
+
+Minimal mode is disabled automatically under the same conditions as World Clock mode.
 
 ### Exhibition mode
 
@@ -846,7 +852,9 @@ The time you entered will be re-set/overruled/re-adjusted when the TCD has acces
 
 Your entered date/time(s) are stored, and shown until replaced by the results of time travels; you can then quickly bring your times back to the displays by typing 998 followed by ENTER.
 
-When entering dates/times into the *destination time* or *last time departed* displays, the Time-cycling Interval is automatically set to 0. 
+When entering dates/times into the *destination time* or *last time departed* displays, Time-cycling Interval is paused for 30 minutes. 
+
+Alternatively, you can program and store a "destination time" outside of the keypad menu by typing 91mmddyyyyhhMM, and a "last time departed" by 92mmddyyyyhhMM. 
 
 Note: Your dates/times will be overwritten in storage after a time travel when **_Make time travels persistent_** is checked. Please see [here](#persistent--non-persistent-time-travels) for details.
 
@@ -1123,6 +1131,10 @@ The TCD can subscribe to a user-configured topic and display messages received f
 
 Only ASCII messages are supported, the maximum length is 255 characters.
 
+### Send messages
+
+The TCD can send configurable messages to configurable topics through keypad commands "600" up to "609". Both topics and messages are programmed in the Config Portal.
+
 ### Control the TCD via MQTT
 
 The TCD can be controlled through messages sent to topic **bttf/tcd/cmd**. Supported commands are
@@ -1316,9 +1328,11 @@ Through this page you can either connect your TCD to your local WiFi network, or
 
 #### <ins>Connecting to an existing WiFi network</ins>
 
-In order to connect your TCD to your WiFi network, all you need to do is either to click on one of the networks listed at the top or to enter a __WiFi network name (SSID)__, and optionally a __password__ (WPAx). If there is no list of networks displayed, click on "WiFi Scan".
+In order to connect your TCD to your WiFi network, all you need to do is either to click on one of the networks listed at the top or to enter a __WiFi network name (SSID)__, and optionally a __password__ (WPAx). If there is no list of networks displayed, click on "Scan for Networks".
 
 >By default, the TCD requests an IP address via DHCP. However, you can also configure a static IP for the TCD by entering the IP, netmask, gateway and DNS server. All four fields must be filled for a valid static IP configuration. If you want to stick to DHCP, leave those four fields empty.
+
+If there are several APs with identical SSID in your area, you can select a specific AP to use by its BSSID (AP's MAC address). You can either manually find out your AP's BSSID and enter it, or have it filled out automatically: Click "Scan for networks", then "Show all". If you click on an AP, its BSSID will be copied into BSSID field in the form below. To see which AP is which, hover over the name to see its BSSID as a tooltip.
 
 ##### &#9193; Forget Saved WiFi Network
 
@@ -1723,6 +1737,10 @@ If this option is checked, the TCD waits for a POWER_ON command from HA/MQTT.
 If this option is unchecked, the TCD starts up without waiting.
 
 Note: If both this and the option *__HA controls Fake-Power at startup__* are checked, the TCD will switch Fake-Power on if a connection to the broker can't be established within 45 seconds after booting. Keypad command 996 can be then used to switch off HA Fake-Power control.
+
+##### &#9193; Message/Topic for 60x
+
+Those text fields contain both topics as well as messages to be sent through keypad commands 600 to 609.
 
 ## Appendix B: Time zones
 
