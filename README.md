@@ -694,7 +694,7 @@ Those files are not provided here. You can use any mp3, with a bitrate of 128kpb
 
 Replacements and custom sounds can either be copied to the SD card using a computer, or uploaded through the Config Portal.
 
-Uploading through the Config Portal works exactly like [installing the sound-pack](#sound-pack-installation); on the main menu, click "UPDATE". Afterwards choose one or more mp3 files to upload using the bottom file selector, and click "UPLOAD". The firmware will store the uploaded mp3 files on the SD card.
+Uploading through the Config Portal works exactly like [installing the sound-pack](#sound-pack-installation); on the main menu, click "Update & Upload". Afterwards choose one or more mp3 files to upload using the bottom file selector, and click "Upload". The firmware will store the uploaded mp3 files on the SD card.
 
 In order to delete a file from the SD card, upload a file whose name is prefixed with "delete-". For example: To delete "ttaccel.mp3" from the SD card, upload a file named "delete-ttaccel.mp3"; the file's contents does not matter, so it's easiest to use a newly created empty file. The firmware detects the "delete-" part and, instead of storing the uploaded file, it throws it away and deletes "ttaccel.mp3" from the SD card.
 
@@ -1272,7 +1272,7 @@ In order to reduce the number of write operations and thereby prolong the life o
 
 ## Firmware Installation / Firmware Update
 
-If a previous version of the TCD firmware is installed on your device, you can update easily using the pre-compiled binary. Enter the [Config Portal](#the-config-portal), click on "Update", select the pre-compiled binary file ("**timecircuits-A10001986.XXXX.bin**" for A10001986 releases, "**Time_Circuits_Display_vX.YY.bin**" for CircuitSetup releases) provided in the [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases), and click on *Update*. (Do not install "A-Car" and/or "GTE" labeled versions on standard versions of the TCD, those are for modified/different hardware! Unless you know for a fact that you have "A-Car" displays or a "GTE" keypad, you need the "standard" firmware file.)
+If a previous version of the TCD firmware is installed on your device, you can update easily using the pre-compiled binary. Enter the [Config Portal](#the-config-portal), click on "Update & Upload", select the pre-compiled binary file ("**timecircuits-A10001986.XXXX.bin**" for A10001986 releases, "**Time_Circuits_Display_vX.YY.bin**" for CircuitSetup releases) provided in the [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases), and click on *Update*. (Do not install "A-Car" and/or "GTE" labeled versions on standard versions of the TCD, those are for modified/different hardware! Unless you know for a fact that you have "A-Car" displays or a "GTE" keypad, you need the "standard" firmware file.)
 
 <details>
 <summary>Installing on a fresh ESP32...</summary>
@@ -1289,7 +1289,7 @@ _Note that installing the sound-pack requires an [SD card](#sd-card)._
 
 The first step is to extract the zipped sound-pack (which is included in every [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases)). It contains one file named "TCDA.bin".
 
-Next, head to the [Config Portal](#the-config-portal), click on "Update", select the "TCDA.bin" file in the _bottom_ file selector and click on *Upload*.
+Next, head to the [Config Portal](#the-config-portal), click on "Update & Upload", select the "TCDA.bin" file in the _bottom_ file selector and click on *Upload*.
 
 <details>
 <summary>Alternative way</summary>
