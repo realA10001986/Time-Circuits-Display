@@ -222,7 +222,7 @@ To toggle WC/RC hybrid mode, type 113 followed by ENTER. To disable WC and/or RC
 
 ### Minimal mode
 
-In "Minimal" mode, the present time display shows the weekday instead of the year, the other displays are switched off. In order to enable this mode, enter "117" followed by ENTER. To disable, type "110" and ENTER.
+In "Minimal" mode, the *Present Time* display shows the weekday instead of the year, the other displays are switched off. In order to enable this mode, enter "117" followed by ENTER. To disable, type "110" and ENTER.
 
 Minimal mode is disabled automatically under the same conditions as World Clock mode.
 
@@ -325,6 +325,10 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left">003&#9166;</td>
     </tr>
    <tr>
+     <td align="left">Reset display mode (disable 111-117)</a></td>
+     <td align="left">111&#9166;</td>
+    </tr>
+  <tr>
      <td align="left">Toggle <a href="#room-condition-mode-temperaturehumidity-sensor">Room Condition mode</a></td>
      <td align="left">111&#9166;</td>
     </tr>
@@ -339,6 +343,9 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
     <tr>
      <td align="left">Toggle <a href="#geolocation-mode">geolocation mode</a> (DD/DMS/DMD)</td>
      <td align="left">114&#9166;/115&#9166;/116&#9166;</td>
+    </tr>
+    <td align="left">Toggle <a href="#minimal-mode">Minimal</a> mode</td>
+     <td align="left">113&#9166;</td>
     </tr>
     <tr>
      <td align="left">Display weekday of currently displayed <i>present time</i> date</td>
@@ -423,6 +430,10 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
     <tr>
      <td align="left">Play "<a href="#additional-custom-sounds">keyX.mp3</a>" (X=1-9)</td>
      <td align="left">501&#9166; - 509&#9166;</td>
+    </tr>
+    <tr>
+     <td align="left">Send "<a href="#send-messages">HA/MQTT</a> messages</td>
+     <td align="left">600&#9166; - 609&#9166;</td>
     </tr>
     <tr>
      <td align="left">Set <a href="#connecting-props-by-wire">TT OUT</a> LOW / HIGH</td>
