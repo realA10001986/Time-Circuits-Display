@@ -1284,7 +1284,7 @@ This leads to the [Settings page](#settings).
 
 ##### &#9193; Peripherals
 
-This leads to the [Peripherals settings page](#settings-for-periphrals).
+This leads to the [Peripherals settings page](#settings-for-peripherals).
 
 ##### &#9193; HA/MQTT Settings
 
