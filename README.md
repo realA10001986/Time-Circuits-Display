@@ -594,6 +594,10 @@ If Auto-Snooze is enabled, and the user does not react to the alarm with the ENT
 
 A subsistution alarm sound file will be played once. If it is considerably shorter than two minutes, it can be "looped". However, it is stopped after two minutes.
 
+### Other means
+
+The alarm can also be signalled through the [TT-OUT pin](-signals-alarm) to third party props, as well as wirelessly through [BTTFN](#connecting-props-wirelessly-bttf-network-bttfn) and [Home Assistant](#home-assistant--mqtt).
+
 ## Count-down timer
 
 The firmware features a simple count-down timer. This timer can count down from max 99 minutes and plays a sound upon expiration.
