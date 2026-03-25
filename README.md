@@ -311,24 +311,24 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
    <tr>
      <td align="left">Disable <a href="#beep-on-the-second">beep</a> sound</td>
      <td align="left">000&#9166;</td>
-    </tr>
-    <tr>
+   </tr>
+   <tr>
      <td align="left">Enable <a href="#beep-on-the-second">beep</a> sound</td>
      <td align="left">001&#9166;</td>
-    </tr>
+   </tr>
    <tr>
      <td align="left">Enable <a href="#beep-on-the-second">beep</a> sound (30 seconds)</td>
      <td align="left">002&#9166;</td>
-    </tr>
+   </tr>
    <tr>
      <td align="left">Enable <a href="#beep-on-the-second">beep</a> sound (60 seconds)</td>
      <td align="left">003&#9166;</td>
-    </tr>
+   </tr>
    <tr>
      <td align="left">Reset display mode (disable 111-117)</a></td>
      <td align="left">111&#9166;</td>
     </tr>
-  <tr>
+    <tr>
      <td align="left">Toggle <a href="#room-condition-mode-temperaturehumidity-sensor">Room Condition mode</a></td>
      <td align="left">111&#9166;</td>
     </tr>
@@ -344,22 +344,23 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left">Toggle <a href="#geolocation-mode">geolocation mode</a> (DD/DMS/DMD)</td>
      <td align="left">114&#9166;/115&#9166;/116&#9166;</td>
     </tr>
-    <td align="left">Toggle <a href="#minimal-mode">Minimal</a> mode</td>
+    <tr>
+     <td align="left">Toggle <a href="#minimal-mode">Minimal</a> mode</td>
      <td align="left">113&#9166;</td>
     </tr>
     <tr>
      <td align="left">Display weekday of currently displayed <i>present time</i> date</td>
      <td align="left">33&#9166;</td>
     </tr>
-   <tr>
+    <tr>
      <td align="left">Select audio volume level</td>
      <td align="left">300 - 319&#9166;</td>
     </tr>
-  <tr>
+    <tr>
      <td align="left">Disable/enable <a href="#audio-output">line-out audio</a> for music and time travel sounds</td>
      <td align="left">350&#9166; / 351&#9166;</td>
     </tr>
-   <tr>
+    <tr>
      <td align="left">Enable built-in volume knob</td>
      <td align="left">399&#9166;</td>
     </tr>
@@ -383,7 +384,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left"><a href="#count-down-timer">Timer</a>: Set timer to MM minutes</td>
      <td align="left">44MM&#9166;</td>
     </tr>
-   <tr>
+    <tr>
      <td align="left"><a href="#count-down-timer">Timer</a>: Delete timer</td>
      <td align="left">440</td>
     </tr>
