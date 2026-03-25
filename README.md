@@ -608,7 +608,7 @@ Legacy means a simple one-time alarm sound at the programmed time. The default a
 
 In extended mode, the alarm plays for two minutes, and can be stopped by pressing or holding ENTER while the alarm sound plays.
 
-If Snooze is enabled in the Config Portal, (briefly) pressing ENTER enables Snooze: The alarm will repeat after the configured "Snooze Time".
+If Snooze is enabled in the Config Portal, (briefly) pressing ENTER enables Snooze: The alarm will repeat after the configured "Snooze Time". To stop the alarm, hold ENTER for 2 seconds.
 
 If Auto-Snooze is enabled, and the user does not react to the alarm with the ENTER button, the alarm will be silenced after two minutes, and automatically repeat after the configured "Snooze Time".
 
