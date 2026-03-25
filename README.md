@@ -108,6 +108,7 @@ To connect your TCD to your WiFI network, navigate to the Config Portal and clic
 <summary>More...</summary>
   
 >If there are several APs with identical SSID in your area, you can select a specific AP to use by its BSSID (AP's MAC address). You can either manually find out your AP's BSSID and enter it, or have it filled out automatically: Click "Scan for networks", then "Show all". If you click on an AP, its BSSID will be copied into BSSID field in the form below. To see which AP is which, hover over the name to see its BSSID as a tooltip.
+
 >The TCD requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). If the device is inaccessible as a result of incorrect static IPs, hold ENTER when powering it up until the white LED lights up; static IP data will be deleted and the device will return to DHCP.
 </details>
 
