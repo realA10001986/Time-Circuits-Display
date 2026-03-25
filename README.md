@@ -203,7 +203,7 @@ In World Clock (WC) mode, the red and yellow displays show not some stale times,
 |:--:|
 | *World Clock mode* |
 
-WC mode is toggled by typing 112 followed by ENTER. If an SD card is present, WC mode is persistent across reboots.
+WC mode is toggled by typing 112 followed by ENTER. If an SD card is present, WC mode is persistent across reboots. To return to the default display mode, type 110 and ENTER.
 
 For logical reasons, WC mode will be automatically disabled in some situations:
 
@@ -218,11 +218,11 @@ For logical reasons, WC mode will be automatically disabled in some situations:
 |:--:|
 | *WC/RC hybrid mode* |
 
-To toggle WC/RC hybrid mode, type 113 followed by ENTER. To disable WC and/or RC mode, type 110 and ENTER.
+To toggle WC/RC hybrid mode, type 113 followed by ENTER. To return to the default display mode, type 110 and ENTER.
 
 ### Minimal mode
 
-In "Minimal" mode, the *Present Time* display shows the weekday instead of the year, the other displays are switched off. In order to enable this mode, enter "117" followed by ENTER. To disable, type "110" and ENTER.
+In "Minimal" mode, the *Present Time* display shows the weekday instead of the year, the other displays are switched off. In order to enable this mode, enter 117 followed by ENTER. If an SD card is present, Minimal mode is persistent across reboots. To return to the default display mode, type 110 and ENTER.
 
 Minimal mode is disabled automatically under the same conditions as World Clock mode.
 
@@ -594,9 +594,9 @@ For information on supported sensor models/types and configuration, see [here](A
 
 ## Alarm
 
-The alarm function can be programmed through the [keypad menu](#how-to-set-up-the-alarm), or quickly by "11hhMM" (h=hour, 0-23; m=minute). Weekday selection must be done throught the [keypad menu](#how-to-set-up-the-alarm).
+The alarm function can be programmed through the [keypad menu](#how-to-set-up-the-alarm), or quickly through keypad command 11hhMM (h=hour, 0-23; m=minute). Weekday selection must be done through the [keypad menu](#how-to-set-up-the-alarm).
 
-Holding "1" enables and disables the alarm; the state is shown by the dot in the present time's minute field. "11" followed by ENTER shows the currently programmed alarm days/time.
+Holding "1" enables and disables the alarm; the state is shown by the dot in the present time's minute field. Keypad command 11 shows the currently programmed alarm days/time.
 
 As regards the alarm event itself, the alarm function knows two modes of operation: Legacy and Extended.
 
@@ -610,7 +610,7 @@ If Snooze is enabled in the Config Portal, (briefly) pressing ENTER enables Snoo
 
 If Auto-Snooze is enabled, and the user does not react to the alarm with the ENTER button, the alarm will be silenced after two minutes, and automatically repeat after the configured "Snooze Time".
 
-While on snooze, the alarm can be cancelled by "12" followed by ENTER.
+While on snooze, the alarm can be cancelled by keypad command 12.
 
 A [subsistution](#sound-substitution) alarm sound file will be played once. If it is considerably shorter than two minutes, it can be "looped". However, it is stopped after two minutes.
 
@@ -1396,7 +1396,7 @@ Here you can select one out of 11 channels, or have the TCD choose a random chan
 
 WiFI channel selection is key for a trouble-free operation. Disturbed WiFi communication can lead to disrupted sequences, packet loss, hanging or freezing props, and other problems. A good article on WiFi channel selection is [here](https://community.ui.com/questions/Choosing-the-right-Wifi-Channel-on-2-4Ghz-Why-Conventional-Wisdom-is-Wrong/ea2ffae0-8028-45fb-8fbf-60569c6d026d).
 
-If a WiFi Scan was done (which can be triggered by clicking "WiFI Scan"), 
+If a WiFi Scan was done (which can be triggered by clicking "Scan for networks"), 
 
 - a list of networks is displayed at the top of the page; click "Show All" to list all networks including their channel;
 - a "proposed channel" is displayed near the "WiFi channel" drop-down, based on a rather simple heuristic. The banner is green when a channel is excellent, grey when it is impeded by overlapping channels, and when that banner is red operation in AP mode is not recommended due to channels all being used.
@@ -1505,7 +1505,7 @@ If this is checked, and the user does not react to an alarm by either pressing o
 
 ##### &#9193; Loop user-provided Alarm sound
 
-The alarm plays for 2 minutes. If the alarm sound is substituted by a user-provided mp3 file, this option allows looping it, which is useful if it is considerable shorter than two minutes. Note that you can only snooze or disable the alarm using the ENTER button while the alarm sounds. Afterwards the alarm can only be stopped by "12" if snooze is enabled.
+The alarm plays for 2 minutes. If the alarm sound is [substituted](#sound-substitution) by a user-provided mp3 file, this option allows looping it, which is useful if it is considerable shorter than two minutes. Note that you can only snooze or disable the alarm using the ENTER button while the alarm sounds. Afterwards the alarm can only be stopped through keypad command 12 if snooze is enabled.
 
 #### <ins>Night-mode</ins>
 
