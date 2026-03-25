@@ -602,7 +602,7 @@ As regards the alarm event itself, the alarm function knows two modes of operati
 
 Legacy means a simple one-time alarm sound at the programmed time. The default alarm plays for 5 seconds; if [substituted](#sound-substitution), the provided file is played once until its end.
 
-### Extended Alarm 
+#### Extended Alarm 
 
 In extended mode, the alarm plays for two minutes, and can be stopped by pressing or holding ENTER while the alarm sound plays.
 
