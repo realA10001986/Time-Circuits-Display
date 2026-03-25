@@ -582,21 +582,23 @@ Holding "1" enables and disables the alarm; the state is shown by the dot in the
 
 As regards the alarm event itself, the alarm function knows two modes of operation: Legacy and Extended.
 
-Legacy means a simple one-time alarm sound at the programmed time. The default alarm plays for 5 seconds; if substituted, the provided file is played once until its end.
+Legacy means a simple one-time alarm sound at the programmed time. The default alarm plays for 5 seconds; if [substituted](#sound-substitution), the provided file is played once until its end.
 
 ### Extended Alarm 
 
-In extended mode, the alarm plays for two minutes, and can be stopped by pressing or holding ENTER (while the alarm sounds). 
+In extended mode, the alarm plays for two minutes, and can be stopped by pressing or holding ENTER while the alarm sound plays.
 
 If Snooze is enabled in the Config Portal, (briefly) pressing ENTER enables Snooze: The alarm will repeat after the configured "Snooze Time".
 
 If Auto-Snooze is enabled, and the user does not react to the alarm with the ENTER button, the alarm will be silenced after two minutes, and automatically repeat after the configured "Snooze Time".
 
-A subsistution alarm sound file will be played once. If it is considerably shorter than two minutes, it can be "looped". However, it is stopped after two minutes.
+While on snooze, the alarm can be cancelled by "12" followed by ENTER.
+
+A [subsistution](#sound-substitution) alarm sound file will be played once. If it is considerably shorter than two minutes, it can be "looped". However, it is stopped after two minutes.
 
 ### Other means
 
-The alarm can also be signalled through the [TT-OUT pin](-signals-alarm) to third party props, as well as wirelessly through [BTTFN](#connecting-props-wirelessly-bttf-network-bttfn) and [Home Assistant](#home-assistant--mqtt).
+The alarm can also be signalled through the [TT-OUT pin](-signals-alarm) to third party props, as well as wirelessly through [BTTFN](#connecting-props-wirelessly-bttf-network-bttfn) and [Home Assistant](#home-assistant--mqtt). Note that only the original alarm is transmitted, not repeated alarms resulting from Snooze.
 
 ## Count-down timer
 
