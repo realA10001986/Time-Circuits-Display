@@ -107,6 +107,7 @@ To connect your TCD to your WiFI network, navigate to the Config Portal and clic
 <details>
 <summary>More...</summary>
   
+>If there are several APs with identical SSID in your area, you can select a specific AP to use by its BSSID (AP's MAC address). You can either manually find out your AP's BSSID and enter it, or have it filled out automatically: Click "Scan for networks", then "Show all". If you click on an AP, its BSSID will be copied into BSSID field in the form below. To see which AP is which, hover over the name to see its BSSID as a tooltip.
 >The TCD requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). If the device is inaccessible as a result of incorrect static IPs, hold ENTER when powering it up until the white LED lights up; static IP data will be deleted and the device will return to DHCP.
 </details>
 
@@ -1270,7 +1271,7 @@ In order to reduce the number of write operations and thereby prolong the life o
 
 ## Firmware Installation / Firmware Update
 
-If a previous version of the TCD firmware is installed on your device, you can update easily using the pre-compiled binary. Enter the [Config Portal](#the-config-portal), click on "Update", select the pre-compiled binary file ("**timecircuits-A10001986.ino.nodemcu-32s.bin**" for A10001986 releases, "**Time_Circuits_Display_vX.YY.bin**" for CircuitSetup releases) provided in the [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases), and click on *Update*.
+If a previous version of the TCD firmware is installed on your device, you can update easily using the pre-compiled binary. Enter the [Config Portal](#the-config-portal), click on "Update", select the pre-compiled binary file ("**timecircuits-A10001986.XXXX.bin**" for A10001986 releases, "**Time_Circuits_Display_vX.YY.bin**" for CircuitSetup releases) provided in the [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases), and click on *Update*. (Do not install "A-Car" and/or "GTE" labeled versions on standard versions of the TCD, those are for modified/different hardware! Unless you know for a fact that you have "A-Car" displays or a "GTE" keypad, you need the "standard" firmware file.)
 
 <details>
 <summary>Installing on a fresh ESP32...</summary>
@@ -1283,7 +1284,7 @@ The firmware comes with a sound-pack which needs to be installed separately. The
 
 _Note that installing the sound-pack requires an [SD card](#sd-card)._
 
->A10001986 and CircuitSetup use different sound-packs. If you switch from one version to the other, the matching sound-pack must be re-installed. [A10001986-releases](https://github.com/realA10001986/Time-Circuits-Display/releases) use "sound-pack-twXX", while [CircuitSetup's](https://github.com/CircuitSetup/Time-Circuits-Display/releases) are named "sound-pack-csXX". The Config Portal will tell you which version is required to be installed.
+>A10001986 and CircuitSetup use different sound-packs. If you switch from one version to the other, the matching sound-pack must be re-installed. [A10001986-releases](https://github.com/realA10001986/Time-Circuits-Display/releases) use "sound-pack-**tw**XX", while [CircuitSetup's](https://github.com/CircuitSetup/Time-Circuits-Display/releases) are named "sound-pack-**cs**XX". The Config Portal will tell you which version is required to be installed.
 
 The first step is to extract the zipped sound-pack (which is included in every [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases)). It contains one file named "TCDA.bin".
 
@@ -1324,7 +1325,7 @@ This leads to the [HomeAssistant/MQTT Settings page](#hamqtt-settings).
 
 This leads to the firmware update and audio upload page.
 
-In order to upload a new firmware, such as published in the [Release packages](https://github.com/realA10001986/Time-Circuits-Display/releases), select the "**timecircuits-A10001986.ino.nodemcu-32s.bin**" or "**Time_Circuits_Display_vX.YY.bin**" file as contained in the Release package in the _top_ file selector and click *Update*.
+In order to upload a new firmware, such as published in the [Release packages](https://github.com/realA10001986/Time-Circuits-Display/releases), select the "**timecircuits-A10001986.XXXX.bin**" or "**Time_Circuits_Display_vX.YY.bin**" file as contained in the Release package in the _top_ file selector and click *Update*. (Do not install "A-Car" and/or "GTE" labeled versions on standard versions of the TCD, those are for modified/different hardware! Unless you know for a fact that you have "A-Car" displays or a "GTE" keypad, you need the "standard" firmware file.)
 
 You can also install the TCD's sound-pack on this page; download the sound-pack (which is included in every [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases)), extract it and select the resulting TCDA.bin file in the _bottom_ file selector. Finally, click *Upload*. Note that an SD card is required for this operation.
 
