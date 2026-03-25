@@ -25,7 +25,7 @@ Features include
   - Support for time zones and automatic DST (Daylight Saving adjustment)
   - Time synchronization through Internet ([NTP](https://en.wikipedia.org/wiki/Network_Time_Protocol)) or [GPS](#gps-receiver)
   - [World Clock mode](#world-clock-mode): Show current time in different time zones in *destination time* and/or *last time departed* displays
-  - [Alarm function](#how-to-set-up-the-alarm): Daily alarms, with weekday selection
+  - [Alarm function](#alarm): Daily alarms, with weekday selection as well as snooze and auto-snooze functions
   - [Count-down timer](#count-down-timer): Count down from up to 99 minutes
   - [Yearly/monthly reminder](#yearlymonthly-reminder): Get a yearly or monthly acoustic reminder
   - [Sound on the hour](#additional-custom-sounds)
@@ -351,12 +351,16 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left">399&#9166;</td>
     </tr>
     <tr>
-     <td align="left">Show current <a href="#how-to-set-up-the-alarm">alarm</a> time/weekday</td>
+     <td align="left">Show current <a href="#alarm">alarm</a> time/weekday</td>
      <td align="left">11&#9166;</td>
     </tr>
     <tr>
-     <td align="left">Set <a href="#how-to-set-up-the-alarm">alarm</a> to hh:MM</td>
+     <td align="left">Set <a href="#alarm">alarm</a> to hh:MM</td>
      <td align="left">11hhMM&#9166;</td>
+    </tr>
+    <tr>
+     <td align="left">Stop <a href="#alarm">alarm</a>, cancel Snooze</td>
+     <td align="left">12&#9166;</td>
     </tr>
     <tr>
      <td align="left"><a href="#count-down-timer">Timer</a>: Show remaining time</td>
@@ -463,7 +467,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="center" colspan="3">Keypad reference: Holding keys for 2 seconds</td>
     </tr>
     <tr>
-     <td align="center">1<br>Toggle <a href="#how-to-set-up-the-alarm">Alarm</a> on/off</td>
+     <td align="center">1<br>Toggle <a href="#alarm">Alarm</a> on/off</td>
      <td align="center">2<br><a href="#the-music-player">Music Player</a>: Previous song</td>
      <td align="center">3<br><a href="#additional-custom-sounds">Play "key3.mp3"</a></td>
     </tr>
@@ -569,6 +573,26 @@ Switching on/off night-mode manually deactivates any schedule and the light sens
 In order to use a light sensor, check the option _Use light sensor_ in the Config Portal. You can observe the measured lux level through the [keypad menu](#how-to-view-sensor-info) to find out about the right lux threshold for your environment.
 
 For information on supported sensor models/types and configuration, see [here](AddOns.md#light-sensor).
+
+## Alarm
+
+The alarm function can be programmed through the [keypad menu](#how-to-set-up-the-alarm), or quickly by "11hhMM" (h=hour, 0-23; m=minute). Weekday selection must be done throught the [keypad menu](#how-to-set-up-the-alarm).
+
+Holding "1" enables and disables the alarm; the state is shown by the dot in the present time's minute field. "11" followed by ENTER shows the currently programmed alarm days/time.
+
+As regards the alarm event itself, the alarm function knows two modes of operation: Legacy and Extended.
+
+Legacy means a simple one-time alarm sound at the programmed time. The default alarm plays for 5 seconds; if substituted, the provided file is played once until its end.
+
+### Extended Alarm 
+
+In extended mode, the alarm plays for two minutes, and can be stopped by pressing or holding ENTER (while the alarm sounds). 
+
+If Snooze is enabled in the Config Portal, (briefly) pressing ENTER enables Snooze: The alarm will repeat after the configured "Snooze Time".
+
+If Auto-Snooze is enabled, and the user does not react to the alarm with the ENTER button, the alarm will be silenced after two minutes, and automatically repeat after the configured "Snooze Time".
+
+A subsistution alarm sound file will be played once. If it is considerably shorter than two minutes, it can be "looped". However, it is stopped after two minutes.
 
 ## Count-down timer
 
@@ -1069,7 +1093,7 @@ In case CircuitSetup/A10001986 original props are connected by wire, the option 
 
 #### Signal Alarm
 
-If the option [TT-OUT (IO14) pin] **_signals alarm_** is checked in the Config Portal, the TCD sets this pin to HIGH upon an [alarm](#how-to-set-up-the-alarm); the duration for HIGH can be between 3 and 99 seconds.
+If the option [TT-OUT (IO14) pin] **_signals alarm_** is checked in the Config Portal, the TCD sets this pin to HIGH upon an [alarm](#alarm); the duration for HIGH can be between 3 and 99 seconds.
 
 #### Switching TT-OUT manually
 
@@ -1154,7 +1178,7 @@ The timing for time travel is described [here](AddOns.md#synchronized-time-trave
 
 "WAKEUP" is published if something happens on the TCD, like destination time entry or speed changes.
 
-When the [alarm](#how-to-set-up-the-alarm) sounds, the TCD publishes "ALARM".
+When the [alarm](#alarm) sounds, the TCD publishes "ALARM".
 
 ### MQTT vs BTTFN
 
@@ -1258,11 +1282,15 @@ This leads to the [WiFi configuration page](#wifi-configuration)
 
 This leads to the [Settings page](#settings).
 
+##### &#9193; Peripherals
+
+This leads to the [Peripherals settings page](#settings-for-periphrals).
+
 ##### &#9193; HA/MQTT Settings
 
 This leads to the [HomeAssistant/MQTT Settings page](#hamqtt-settings).
 
-##### &#9193; Update
+##### &#9193; Update & Upload
 
 This leads to the firmware update and audio upload page.
 
@@ -1423,6 +1451,30 @@ The time zone for the yellow display in [World Clock mode](#world-clock-mode). D
 
 For each World Clock time zone, a city or location name can be configured. For example "SYDNEY" or "LORD HOWE". This name will be shown every few seconds alternately with time. If the name is 9 characters or less (8 on the A-Car display), it will be displayed together with time.
 
+#### <ins>Alarm settings</ins>
+
+##### &#9193; Alarm mode
+
+This allow choosing between standard/legacy or extended alarm function. 
+
+"Legacy" is a simple, one-time alarm signal. All alarm-related settings below are for "Extended" only.
+
+##### &#9193; Snooze
+
+This enables the Snooze funcion. If enabled, (briefly) pressing ENTER while the alarm sounds activates a repeated alarm after a selectable time period ("Snooze Time"). 
+
+##### &#9193; Snooze Time
+
+This selects the time period after which an alarm is repeated when Snooze is active.
+
+##### &#9193; Auto Snooze
+
+If this is checked, and the user does not react to an alarm by either pressing or holding ENTER within 2 minutes, the alarm is silenced and repeated after the selected "Snooze Time".
+
+##### &#9193; Loop user-provided Alarm sound
+
+The alarm plays for 2 minutes. If the alarm sound is substituted by a user-provided mp3 file, this option allows looping it, which is useful if it is considerable shorter than two minutes. Note that you can only snooze or disable the alarm using the ENTER button while the alarm sounds. Afterwards the alarm can only be stopped by "12" if snooze is enabled.
+
 #### <ins>Night-mode</ins>
 
 ##### &#9193; Destination time off in night mode
@@ -1457,15 +1509,40 @@ Select whether to use a light sensor's data to enable night-mode. See [here](#ni
 
 If the light sensor reports a number of lux below or equal to this value, night-mode is activated. See [here](#night-mode).
 
-#### <ins>Temperature/humidity sensor settings</ins>
+#### <ins>Other settings</ins>
 
-##### &#9193; Display in °Celsius
+##### &#9193; Save secondary settings on SD
 
-Selects between Fahrenheit and Celsius for temperature display. See [here](#room-condition-mode-temperaturehumidity-sensor)
+If this is checked, secondary settings (brightness, time cycling interval, volume, alarm, reminder, car mode state, exhibition mode data and state, time travel state and data) are stored on the SD card (if one is present). This helps to minimize write operations to the internal flash memory and to prolong the lifetime of your TCD. See [Flash Wear](#flash-wear).
 
-##### &#9193; Temperature offset
+Apart from Flash Wear, there is another reason for using an SD card for settings: Writing data to internal flash memory can cause delays of up to 1.5 seconds, which interrupt sound playback and have other undesired effects. The TCD needs to save data from time to time, so for a smooth experience without unexpected and unwanted delays, please use an SD card and check this option.
 
-This offset, which can range from -3.0 to 3.0, is added to the sensor measurement, in order to compensate sensor inaccuracy or suboptimal sensor placement.
+It is safe to have this option checked even with no SD card present.
+
+If you want copy settings from one SD card to another, do as follows:
+- With the old SD card still in the slot, enter the Config Portal, turn off _Save secondary settings on SD_, and click "SAVE".
+- After the TCD has rebooted, power it down, and swap the SD card for your new one.
+- Power-up the TCD, enter the Config Portal, re-enable _Save secondary settings on SD_, and click "SAVE".
+
+This procedure ensures that all your settings are copied from the old to the new SD card.
+
+##### &#9193; Make time travel persistent
+
+See [here](#persistent--non-persistent-time-travels). For this option to take effect, it is required that the _Save secondary settings on SD_ is checked as well, and an SD card is present. Time travel data is only ever stored on SD, never in internal flash memory.
+
+#### <ins>Hardware settings</ins>
+
+##### &#9193; Reverse AM/PM like in parts 2/3
+
+If this is checked, the TCD will reverse the AM and PM lights, as seen in parts 2 and 3 of the Series. This is under "hardware settings" as it requires attaching the labels in a different manner.
+
+---
+
+### Settings for Peripherals
+
+##### &#9193; Use fake power switch
+
+Check this if you want to use a fake power switch. See [here](#fake-power-switch).
 
 #### <ins>Speedometer settings</ins>
 
@@ -1535,25 +1612,21 @@ Brightness of speedo display when displaying temperature.
 
 Selects whether the temperature display is dimmed or switched off in night mode.
 
+#### <ins>Temperature/humidity sensor settings</ins>
+
+##### &#9193; Display in °Celsius
+
+Selects between Fahrenheit and Celsius for temperature display. See [here](#room-condition-mode-temperaturehumidity-sensor)
+
+##### &#9193; Temperature offset
+
+This offset, which can range from -3.0 to 3.0, is added to the sensor measurement, in order to compensate sensor inaccuracy or suboptimal sensor placement.
+
 #### <ins>External switches/buttons</ins>
-
-##### &#9193; Use fake power switch
-
-Check this if you want to use a fake power switch. See [here](#fake-power-switch).
 
 ##### &#9193; External time travel button: Delay
 
 Selects a delay (in milliseconds) from when pressing the external time travel button until the time travel sequence starts. See [here](#external-time-travel-trigger).
-
-#### <ins>Settings for BTTFN communication</ins>
-
-##### &#9193; Provide GPS speed to wireless props
-
-Many [BTTF-Network](#connecting-props-wirelessly-bttf-network-bttfn) clients can query the TCD for speed. "Speed" can come from various sources: GPS, [rotary encoder](#rotary-encoder), Remote Control.
-
-This option selects whether actual GPS speed is to be transmitted to BTTFN clients. If this option is checked, speed from GPS (if available) takes precedence over speed from a rotary encoder.
-
-If your TCD/speedo are stationary, such as in a home setup, leave this option unchecked.
 
 #### <ins>Settings for wired peripherals: TT-OUT (IO14) pin</ins>
 
@@ -1579,34 +1652,17 @@ For detailed timing information, see [here](https://tcd.out-a-ti.me/AddOns.md#ti
 
 ##### &#9193; signals alarm
 
-If this option is checked, the TT OUT pin will go HIGH when an [alarm](#how-to-set-up-the-alarm) occurs. The duration can be configured to be between 3 and 99 seconds.
+If this option is checked, the TT OUT pin will go HIGH when an [alarm](#alarm) occurs. The duration can be configured to be between 3 and 99 seconds.
 
-#### <ins>Other settings</ins>
+#### <ins>Settings for BTTFN communication</ins>
 
-##### &#9193; Save secondary settings on SD
+##### &#9193; Provide GPS speed to wireless props
 
-If this is checked, secondary settings (brightness, time cycling interval, volume, alarm, reminder, car mode state, exhibition mode data and state, time travel state and data) are stored on the SD card (if one is present). This helps to minimize write operations to the internal flash memory and to prolong the lifetime of your TCD. See [Flash Wear](#flash-wear).
+Many [BTTF-Network](#connecting-props-wirelessly-bttf-network-bttfn) clients can query the TCD for speed. "Speed" can come from various sources: GPS, [rotary encoder](#rotary-encoder), Remote Control.
 
-Apart from Flash Wear, there is another reason for using an SD card for settings: Writing data to internal flash memory can cause delays of up to 1.5 seconds, which interrupt sound playback and have other undesired effects. The TCD needs to save data from time to time, so for a smooth experience without unexpected and unwanted delays, please use an SD card and check this option.
+This option selects whether actual GPS speed is to be transmitted to BTTFN clients. If this option is checked, speed from GPS (if available) takes precedence over speed from a rotary encoder.
 
-It is safe to have this option checked even with no SD card present.
-
-If you want copy settings from one SD card to another, do as follows:
-- With the old SD card still in the slot, enter the Config Portal, turn off _Save secondary settings on SD_, and click "SAVE".
-- After the TCD has rebooted, power it down, and swap the SD card for your new one.
-- Power-up the TCD, enter the Config Portal, re-enable _Save secondary settings on SD_, and click "SAVE".
-
-This procedure ensures that all your settings are copied from the old to the new SD card.
-
-##### &#9193; Make time travel persistent
-
-See [here](#persistent--non-persistent-time-travels). For this option to take effect, it is required that the _Save secondary settings on SD_ is checked as well, and an SD card is present. Time travel data is only ever stored on SD, never in internal flash memory.
-
-#### <ins>Hardware settings</ins>
-
-##### &#9193; Reverse AM/PM like in parts 2/3
-
-If this is checked, the TCD will reverse the AM and PM lights, as seen in parts 2 and 3 of the Series. This is under "hardware settings" as it requires attaching the labels in a different manner.
+If your TCD/speedo are stationary, such as in a home setup, leave this option unchecked.
 
 ---
 
