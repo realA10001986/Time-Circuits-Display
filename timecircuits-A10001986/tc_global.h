@@ -20,7 +20,7 @@
 //#define IS_ACAR_DISPLAY
 
 // Uncomment if using a GTE keypad control board
-#define GTE_KEYPAD
+//#define GTE_KEYPAD
 
 /*************************************************************************
  ***                          Version Strings                          ***
