@@ -39,7 +39,7 @@ Features include
 - Network capabilities:
   - Advanced network-accessible [Config Portal](#the-config-portal) for setup (http://timecircuits.local, hostname configurable)
   - Easy [firmware updates](#firmware-installation--firmware-update) over-the-air
-  - [Wireless communication](#connecting-props-wirelessly-bttf-network-bttfn) with compatible props such as CircuitSetup's [Flux Capacitor](https://fc.out-a-ti.me) and [SID](https://sid.out-a-ti.me), as well as the [Dash Gauges](https://dg.out-a-ti.me), [VSR](https://vsr.out-a-ti.me) and modified [Futaba Remote Control](https://circuitsetup.us/product/futaba-remote-stanley-display-wireless-control-kit/), for synchronized Time Travel sequences, replaying movie scenes, mututal remote control, and more.
+  - [Wireless communication](#connecting-props-wirelessly-bttf-network-bttfn) with compatible props such as CircuitSetup's [Flux Capacitor](https://circuitsetup.us/product/flux-capacitor-light-sound-kit/) and [SID](https://circuitsetup.us/product/delorean-time-machine-status-indicator-display-sid/), as well as the [Dash Gauges](https://circuitsetup.us/product/delorean-time-machine-dash-gauge-control-board/), [VSR](https://vsr.out-a-ti.me) and modified [Futaba Remote Control](https://circuitsetup.us/product/futaba-remote-stanley-display-wireless-control-kit/), for synchronized Time Travel sequences, replaying movie scenes, mututal remote control, and more.
   - [Home Assistant](#home-assistant--mqtt) (MQTT) support for displaying messages, remote controlling and more.
 - [Night mode](#night-mode): Dim or switch off displays on schedule, manually or sensor-controlled.
 - [Music player](#the-music-player): Play mp3 files located on an SD card
