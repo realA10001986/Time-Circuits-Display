@@ -39,7 +39,7 @@ Features include
 - Network capabilities:
   - Advanced network-accessible [Config Portal](#the-config-portal) for setup (http://timecircuits.local, hostname configurable)
   - Easy [firmware updates](#firmware-installation--firmware-update) over-the-air
-  - [Wireless communication](#connecting-props-wirelessly-bttf-network-bttfn) with compatible props such as CircuitSetup's [Flux Capacitor](https://fc.out-a-ti.me) and [SID](https://sid.out-a-ti.me), as well as the [Dash Gauges](https://dg.out-a-ti.me), [VSR](https://vsr.out-a-ti.me) and modified [Futaba Remote Control](https://remote.out-a-ti.me), for synchronized Time Travel sequences, replaying movie scenes, mututal remote control, and more.
+  - [Wireless communication](#connecting-props-wirelessly-bttf-network-bttfn) with compatible props such as CircuitSetup's [Flux Capacitor](https://fc.out-a-ti.me) and [SID](https://sid.out-a-ti.me), as well as the [Dash Gauges](https://dg.out-a-ti.me), [VSR](https://vsr.out-a-ti.me) and modified [Futaba Remote Control](https://circuitsetup.us/product/futaba-remote-stanley-display-wireless-control-kit/), for synchronized Time Travel sequences, replaying movie scenes, mututal remote control, and more.
   - [Home Assistant](#home-assistant--mqtt) (MQTT) support for displaying messages, remote controlling and more.
 - [Night mode](#night-mode): Dim or switch off displays on schedule, manually or sensor-controlled.
 - [Music player](#the-music-player): Play mp3 files located on an SD card
@@ -1086,7 +1086,7 @@ BTTFN requires the props to be connected to the same network, such as, for examp
 
 On the TCD, no special configuration is required for using BTTFN. 
 
-On the other prop, such as CircuitSetup's [Flux Capacitor](https://circuitsetup.us/product/flux-capacitor-light-sound-pcb/), [SID](https://circuitsetup.us/product/delorean-time-machine-status-indicator-display-sid/), the [Dash Gauges](https://dg.out-a-ti.me), the [VSR](https://vsr.out-a-ti.me) or the [Futaba Remote Control kit](https://remote.out-a-ti.me), the TCD's IP address or hostname must be entered into the *IP address or hostname of TCD* field on the Setup page in their Config Portal - that's all.
+On the other prop, such as CircuitSetup's [Flux Capacitor](https://circuitsetup.us/product/flux-capacitor-light-sound-pcb/), [SID](https://circuitsetup.us/product/delorean-time-machine-status-indicator-display-sid/), the [Dash Gauges](https://dg.out-a-ti.me), the [VSR](https://vsr.out-a-ti.me) or the [Futaba Remote Control kit](https://circuitsetup.us/product/futaba-remote-stanley-display-wireless-control-kit/?v=7d0db380a5b9), the TCD's IP address or hostname must be entered into the *IP address or hostname of TCD* field on the Setup page in their Config Portal - that's all.
 
 To see which BTTFN clients are currently known to the TCD, either check at the Config Portal's main page, or enter the keypad menu and select "BTTFN CLIENTS", 
 
