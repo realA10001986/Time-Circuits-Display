@@ -49,16 +49,19 @@ For parts under BSD:
 
 Copyright (c) 2022-2026 Thomas Winischhofer
 
-Software License Agreement (BSD License)
+Modified Software License Agreement (BSD License)
 Redistribution and use in source and binary forms, with or without 
 modification, are permitted provided that the following conditions 
 are met:
 - Redistributions of source code must retain the above copyright 
-  notice, this list of conditions and the following disclaimer. 
+  notice, this list of conditions and the following disclaimer.
+  Links inside the Software pointing to the original source must 
+  not be changed or removed.
 - Redistributions in binary form must reproduce the above copyright 
   notice, this list of conditions and the following disclaimer in 
   the documentation and/or other materials provided with the 
-  distribution. 
+  distribution. Links inside the Software pointing to the original 
+  source must not be changed or removed.
 - Neither the name of the copyright owners nor the names of its 
   contributors may be used to endorse or promote products derived 
   from this software without specific prior written permission. 
