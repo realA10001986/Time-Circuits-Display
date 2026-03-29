@@ -1782,12 +1782,12 @@ A full list is [here](https://tz.out-a-ti.me).
 ## Appendix C: Troubleshooting
 
 <details>
-  <summary>Sound stutters and/or displays stalls sometimes</summary>
+  <summary>Sound stutters and/or displays stall sometimes</summary>
 The reason for this is in 99.9% of cases a problem with i2c cabling connecting your Speedo, sensors, rotary encoders and/or GPS receivers. Use shielded cables (best: S/FTP), twisted pair, with SDA-GND, SCL-GND, 5V-GND and GND-GND pairs. Connect the shield to GND on the TCD's end (not the other!). Keep your cables away from electrical appliances and other cables. Keep your cables as short as possible. Check your connections at terminals; if using stranded wires, check that you didn't cut off strands when removing insulation, and put some solder on the strands.
 </details>
 
 List will be extended when problems are reported.
 
 ---
-_Text & images: (C) Thomas Winischhofer ("A10001986"). See LICENSE._ Source: https://tcd.out-a-ti.me  
+_Text & images: (C) Thomas Winischhofer ("A10001986"). See LICENSE._ Source: https://tcd.out-a%2dti.me  
 _Other props: [Flux Capacitor](https://fc.out-a-ti.me) ... [SID](https://sid.out-a-ti.me) ... [Dash Gauges](https://dg.out-a-ti.me) ... [VSR](https://vsr.out-a-ti.me) ... [Remote Control](https://remote.out-a-ti.me) ... [TFC](https://tfc.out-a-ti.me)_
