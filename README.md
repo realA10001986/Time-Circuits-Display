@@ -467,6 +467,14 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left">999&#9166;</td>
     </tr>
     <tr>
+     <td align="left">Program and save time for <a href="#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays"><i>Destination Time</i> display</a></td>
+     <td align="left">91mmddyyyyhhMM&#9166;</td>
+    </tr>
+    <tr>
+     <td align="left">Program and save time for <a href="#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays"><i>Last Time Departed</i> display</a></td>
+     <td align="left">92mmddyyyyhhMM&#9166;</td>
+    </tr>
+    <tr>
      <td align="left">Program time for <a href="#exhibition-mode">Exhibition mode</a></td>
      <td align="left">99mmddyyyyhhMM&#9166;</td>
     </tr>
