@@ -1445,7 +1445,11 @@ If this is checked, the TCD will not show the display disruption animation durin
 
 ##### &#9193; Date entry animation like in part 3
 
-If this is checked, the TCD will show a different animation upon entering a Destination time, as shown in part 3 of the Series.
+If this is checked, the TCD will show a different animation upon entering a Destination time, as shown in part 3 of the Series. _This option is not available in the A-Car version._
+
+##### &#9193; Swap red and yellow displays like B-Car
+
+The B-Car had the red and yellow displayes flipped; the red one was mounted at the bottom, the yellow one on top. If you assemble your TCD in that very way, check this option to swap the ways of operation for the red and yellow displays. so that the yellow display will act as the _Destination Time_ display, the red one as _Last Time Departed_. _This option is only available in the A-Car version._
 
 ##### &#9193; Play time travel sounds
 
