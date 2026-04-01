@@ -1499,7 +1499,7 @@ For each World Clock time zone, a city or location name can be configured. For e
 
 ##### &#9193; Alarm mode
 
-This allows choosing between standard/legacy or extended alarm function. 
+This allows choosing between standard/legacy or extended [alarm function](#alarm). 
 
 "Legacy" is a simple, one-time alarm signal. All alarm-related settings below are for "Extended" only.
 
