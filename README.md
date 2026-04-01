@@ -1447,10 +1447,6 @@ If this is checked, the TCD will not show the display disruption animation durin
 
 If this is checked, the TCD will show a different animation upon entering a Destination time, as shown in part 3 of the Series. _This option is not available in the A-Car version._
 
-##### &#9193; Swap red and yellow displays like B-Car
-
-The B-Car had the red and yellow displayes flipped; the red one was mounted at the bottom, the yellow one on top. If you assemble your TCD in that very way, check this option to swap the ways of operation for the red and yellow displays. so that the yellow display will act as the _Destination Time_ display, the red one as _Last Time Departed_. _This option is only available in the A-Car version._
-
 ##### &#9193; Play time travel sounds
 
 If other props are connected, they might bring their own time travel sound effects. In this case, you can uncheck this to disable the Time Circuit's own time travel sounds. Note that this only covers sounds played during time travel, not other sound effects.
@@ -1575,6 +1571,10 @@ This procedure ensures that all your settings are copied from the old to the new
 See [here](#persistent--non-persistent-time-travels). For this option to take effect, it is required that the _Save secondary settings on SD_ is checked as well, and an SD card is present. Time travel data is only ever stored on SD, never in internal flash memory.
 
 #### <ins>Hardware settings</ins>
+
+##### &#9193; Swap red and yellow displays like B-Car
+
+The B-Car had the red and yellow displayes flipped; the red one was mounted at the bottom, the yellow one on top. If you assemble your TCD in that very way, check this option to swap the ways of operation for the red and yellow displays. so that the yellow display will act as the _Destination Time_ display, the red one as _Last Time Departed_. _This option is only available in the A-Car version._
 
 ##### &#9193; Reverse AM/PM like in parts 2/3
 
