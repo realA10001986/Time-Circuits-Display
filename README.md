@@ -179,11 +179,11 @@ The TCD firmware uses the [Julian Calendar](https://en.wikipedia.org/wiki/Julian
 
 Since the time machine was built in the USA, using 1752 for the TCD seems appropriate.
 
-So, what does this mean? First off, in the Julian calendar every 4th year is a leap year; in the Gregorian calendar there are some exceptions to this rule. This means, as a result, that the two calendars were drifting apart over time, and dates didn't match. As of 2023, the Julian calendar is 13 days ahead.
+So, what does this mean? First off, in the Julian calendar every 4th year is a leap year; in the Gregorian calendar there are some exceptions to this rule. As a result, the two calendars were drifting apart over time, and dates didn't match. As of 2023, the Julian calendar is 13 days ahead.
 
 Secondly, and as a result of this drift, when countries switched from one to the other calendar system, days were skipped. In case of the switch in 1752, Sep 3 until Sep 13 were skipped, so after Sep 2 came Sep 14. For using the TCD this means that dates entered within that skipped period are corrected to Sep 14.
 
-Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed after 1BC. Nevertheless, it is possible to travel to year 0. In good old Hollywood tradition, I won't let facts and science stand in the way of an authentic movie experience.
+Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed after 1BC. Nevertheless, it is possible to travel to year 0. In good old Hollywood tradition, I won't let facts stand in the way of an authentic movie experience.
 
 ### Time-cycling
 
