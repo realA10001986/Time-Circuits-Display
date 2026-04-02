@@ -1754,11 +1754,11 @@ This option selects whether HA should be in control of Fake-Power at startup, or
 
 ##### &#9193; Wait for POWER_ON at startup
 
-If HA is configured to have Fake-Power control at startup (as per the option *__HA controls Fake-Power at startup__*, this option decides the state of Fake-Power at startup:
+If HA is configured to have Fake-Power control at startup (as per the option *__HA controls Fake-Power at startup__*), this option decides the state of Fake-Power at startup:
 
 If this option is checked, the TCD waits for a POWER_ON command from HA/MQTT.
 
-If this option is unchecked, the TCD starts up without waiting.
+If this option is unchecked, the TCD starts without waiting.
 
 Note: If both this and the option *__HA controls Fake-Power at startup__* are checked, the TCD will switch Fake-Power on if a connection to the broker can't be established within 45 seconds after booting. Keypad command 996 can be then used to switch off HA Fake-Power control.
 
