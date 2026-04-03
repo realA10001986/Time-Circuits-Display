@@ -145,7 +145,7 @@ It can be accessed as follows:
   >If connecting to http://timecircuits.local fails due to a name resolution error, you need to find out the TCD's IP address: Hold ENTER on the TCD's keypad for 2 seconds, then repeatedly  press ENTER until "NET-WORK" is shown, then hold ENTER for 2 seconds. The device will then show its current IP address. Then, on your handheld or computer, navigate to http://a.b.c.d (a.b.c.d being the IP address as shown on the display) in order to enter the Config Portal.
 </details>
 
-In the main menu, click on "Settings" to configure your TCD. 
+In the main menu, click on "Settings" or "Peripherals" to configure your TCD. 
 
 | [<img src="img/cps-frag.png">](img/cp_setup.png) |
 |:--:| 
