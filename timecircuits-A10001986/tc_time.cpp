@@ -4913,7 +4913,7 @@ static bool displayGPSorRESpeed(bool force)
     bool spdreNM = false; 
     bool spdreChgNM = false;
     
-    if((!(sgf & SGF_USpeedoDisp)) || (!(sgf & SGF_DispGPSSpd|SGF_DispRotEnc)))
+    if((!(sgf & SGF_USpeedoDisp)) || (!(sgf & (SGF_DispGPSSpd|SGF_DispRotEnc))))
         return ret;
 
     if(csf & (CSF_P0|CSF_P1|CSF_RE|CSF_P2))
