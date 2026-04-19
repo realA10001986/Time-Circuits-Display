@@ -141,7 +141,7 @@
 
 /*  Changelog
  *          
- *  2026/0x/xx (A10001986) [3.22]
+ *  2026/04/19 (A10001986) [3.22]
  *    **********************************************************************************
  *    ** If updating from below 3.20, please install 3.20 or 3.20.1 first to have     **
  *    ** your settings converted. If 3.20(.1) is skipped, many of your settings       **
