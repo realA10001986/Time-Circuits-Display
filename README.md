@@ -548,7 +548,7 @@ If time travels are non-persistent
 
 If you want your device to display exactly the same after a power loss, choose persistent (and disable [Time-cycling](#time-cycling)). 
 
-If you want to display your favorite *destination time* and *last time departed* upon power-up, and not have time travels overwrite them in storage, choose "non-persistent", and program your times through the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays) (and disable [Time-cycling](#time-cycling)). Later time travels will, of course, change what is displayed, but not overwrite your saved times. To bring back your saved times to the displays, type 998 followed by ENTER.
+If you want to display your favorite *destination time* and *last time departed* upon power-up, program your times through the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays) (and disable [Time-cycling](#time-cycling)). Later time travels will, of course, change what is displayed, but not overwrite your saved times. To bring back your saved times to the displays, type 998 followed by ENTER.
 
 >Note that [Time-cycling](#time-cycling), if enabled, will force the device to cycle through the list of pre-programmed times, regardless of your time travel persistence setting. Time-Cycling does, however, not overwrite saved times, only displayed times.
 
@@ -585,6 +585,7 @@ The presets are for typical home, office and shop setups, and they assume the TC
 - Office (1): Mon-Fri 9am-5pm
 - Office (2): Mon-Thu 7am-5pm, Fri 7am-2pm
 - Shop: Mon-Wed 8am-8pm, Thu-Fri 8am-9pm, Sat 8am-5pm
+- Night Owl (aka "Mancave"): Sun-Thu 8pm-1am, Fri/Sat 8pm-4am
 
 The *daily* schedule works by entering start and end in the text fields below. The TCD will go into night-mode at the defined start hour (xx:00), and return to normal operation at the end hour (yy:00). 
 
@@ -740,15 +741,13 @@ The menu is invoked by holding the ENTER button for 2 seconds.
 
 *Note that if the keypad menu is active at a time when the alarm, the reminder, the count-down timer or sound-on-the-hour are due, those events will be missed and no sounds are played.*
 
-Menu navigation uses the ENTER key, as well as
-- "2" for "up",
-- "8" for "down",
-- "5" for select, and
+Menu navigation uses
+- "2" for "up" or "+",
+- "8" for "down" or "-",
+- "5" or ENTER for select, and
 - "9" for cancel/quit.
 
-Using the ENTER key involves *pressing* or *holding*: A "press" is shorter than 2 seconds, a "hold" is 2 seconds or longer.
-
-Data entry, such as for dates and times, is done through the keypad's number keys and works as follows: Whenever a data entry is requested, the field for that data is lit (while the rest of the display is dark) and a pre-set value is shown. If you want to keep that pre-set, press ENTER to proceed to next field. Otherwise press a digit on the keypad; the pre-set is then overwritten by the value entered. 2 digits can be entered (4 for years), upon which the new value is stored and the next field is activated. You can also enter less than 2 digits (4 for years) and press ENTER when done with the field. Note that a month needs to be entered numerically (01-12), and hours need to be entered in 24-hour notation (00-23), regardless of 12-hour or 24-hour mode as per the Config Portal setting.
+Data entry, such as for dates and times, is done through the keypad's number keys and works as follows: Whenever a data entry is requested, the field for that data is lit (while the rest of the display is dark) and a pre-set value is shown. If you want to keep that pre-set, press ENTER to proceed to next field. Otherwise press a digit on the keypad; the pre-set is then overwritten by the value entered. 2 digits can be entered (4 for years). After entering a value, press ENTER to proceed. Note that a month needs to be entered numerically (01-12), and hours need to be entered in 24-hour notation (00-23), regardless of 12-hour or 24-hour mode as per the Config Portal setting.
 
 After invoking the keypad menu, the first step is to choose a menu item. The available items are  
 - set the alarm ("ALA-RM"),
@@ -769,12 +768,15 @@ Pressing ENTER or "2"/"8" cycles through the list, holding ENTER or pressing "5"
 #### How to set up the alarm:
 
 - Hold ENTER to invoke main menu
-- (Currently, the alarm is the first menu item; otherwise press ENTER repeatedly [or press 2/8] until "ALA-RM" is shown)
-- Hold ENTER [or press 5]
-- Press ENTER [or 2/8] to toggle the alarm on and off, hold ENTER [or press 5] to proceed
+- (Currently, the alarm is the first menu item; otherwise press 2/8 until "ALARM" is shown
+- Press 5 or ENTER
+- Press 2/8 to toggle the alarm on and off, press 5 or ENTER to proceed
 - Then enter the hour and minutes. This works as described above under "Data entry".
-- Choose the weekday(s) by repeatedly pressing ENTER [or 2/8]
-- Hold ENTER [or press 5] to finalize your weekday selection. "SAVING" is displayed briefly.
+- Choose the weekday(s) by pressing 2/8 to cycle through options
+- Press 5 or ENTER to select
+- If you chose "USER DAYS", press keys 1 through 7 to toggle each day.
+- Press ENTER to proceed
+- "SAVING" is displayed briefly.
 
 Pressing "9" at any point - except when entering hour and minutes - cancels and quits the menu.
 
@@ -792,12 +794,12 @@ Note that the alarm is recurring, ie it rings at the programmed time, unless dis
 
 By default, the device uses the built-in hardware volume knob to determine the desired volume. You can change this to a pre-selected level as follows:
 - Hold ENTER to invoke main menu
-- Press ENTER [or 2/8] repeatedly until "VOL-UME" is shown
-- Hold ENTER [or press 5]
-- Press ENTER [or 2/8] to toggle between "USE VOLUME KNOB" and "SELECT LEVEL"
-- Hold ENTER [or press 5] to proceed
-- If you chose "SELECT LEVEL", you can now select the desired level by pressing ENTER repeatedly [or 2/8]. There are 20 levels available. The volume knob is now ignored.
-- Hold ENTER [or press 5] to save and quit the menu
+- Press 2/8 repeatedly until "VOLUME" is shown
+- Press 5 or ENTER
+- Press 2/8 to toggle between "USE VOLUME KNOB" and "SELECT LEVEL"
+- Press 5 or ENTER
+- If you chose "SELECT LEVEL", you can now select the desired level by pressing 2/8. There are 20 levels available. The volume knob is now ignored.
+- Press 5 or ENTER to save and quit the menu
 
 Pressing "9" at any point cancels and quits the menu.
 
@@ -810,10 +812,10 @@ If you are using a Rotary Encoder for volume, you need to disable the volume kno
 In order for this menu item to show up, an SD card is required.
 
 - Hold ENTER to invoke main menu
-- Press ENTER [or 2/8] repeatedly until "MUSIC FOLDER NUMBER" is shown
-- Hold ENTER [or press 5], "FOLDER" and a number is displayed
-- Press ENTER [or 2/8] repeatedly to cycle through the possible values. The message "NOT FOUND" appears if either the folder itself or 000.mp3 in that very folder is not present. "PROCESSING REQUIRED" means that the TCD will prepare the folder (eg rename files) after selection; this requires a reboot.
-- Hold ENTER [or press 5] to select the value shown and exit the menu ("SAVING" is displayed briefly)
+- Press 2/8 repeatedly until "MUSIC FOLDER NUMBER" is shown
+- Press 5 or ENTER, "FOLDER" and a number is displayed
+- Press 2/8 repeatedly to cycle through the possible values. The message "NOT FOUND" appears if either the folder itself or 000.mp3 in that very folder is not present. "PROCESSING REQUIRED" means that the TCD will prepare the folder (eg rename files) after selection; this requires a reboot.
+- Press 5 or ENTER to select the value shown and exit the menu ("SAVING" is displayed briefly)
 
 Pressing "9" at any point cancels and quits the menu.
 
@@ -824,20 +826,20 @@ Note that the Music Folder Number is saved in a config file on the SD card.
 #### How to select the Time-cycling Interval:
 
 - Hold ENTER to invoke main menu
-- Press ENTER [or 2/8] repeatedly until "TIME-CYCLING" is shown
-- Hold ENTER [or press 5], "INTERVAL" is displayed
-- Press ENTER [or 2/8] repeatedly to cycle through the possible Time-cycling intervals. "0" disables automatic time cycling ("OFF").
-- Hold ENTER [or press 5] to select the value shown and exit the menu ("SAVING" is displayed briefly)
+- Press 2/8 repeatedly until "TIME-CYCLING" is shown
+- Press 5 or ENTER, "INTERVAL" is displayed
+- Press 2/8 repeatedly to cycle through the possible Time-cycling intervals. "0" disables automatic time cycling ("OFF").
+- Press 5 or ENTER to select the value shown and exit the menu ("SAVING" is displayed briefly)
 
 Pressing "9" at any point cancels and quits the menu.
  
 #### How to adjust the display brightness:
 
 - Hold ENTER to invoke main menu
-- Press ENTER [or 2/8] repeatedly until "BRIGHTNESS" is shown
-- Hold ENTER [or press 5], the displays show all elements, the top-most display says "LVL"
-- Press ENTER [or 2/8] repeatedly to cycle through the possible levels (1-15)
-- Hold ENTER [or press 5] to use current value and proceed to next display
+- Press 2/8 repeatedly until "BRIGHTNESS" is shown
+- Press 5 or ENTER, the displays show all elements, the top-most display says "LVL"
+- Press 2/8 repeatedly to cycle through the possible levels (1-15)
+- Press 5 or ENTER to use current value and proceed to next display
 - After the third display, "SAVING" is displayed briefly and the menu is left automatically.
 
 Pressing "9" at any point cancels and quits the menu.
@@ -845,10 +847,10 @@ Pressing "9" at any point cancels and quits the menu.
 #### How to find out the IP address and WiFi status:
 
 - Hold ENTER to invoke main menu
-- Press ENTER [or 2/8] repeatedly until "NET-WORK" is shown
-- Hold ENTER [or press 5], the displays show the IP address
-- Repeatedly press ENTER [or 2/8] to cycle between IP address, WiFi status, MAC address (in station mode) and Home Assistant connection status.
-- Hold ENTER [or press 5 or 9] to leave the menu
+- Press 2/8 repeatedly until "NETWORK" is shown
+- Press 5 or ENTER, the displays show the IP address
+- Repeatedly press 2/8 to cycle between IP address, WiFi status, MAC address (in station mode) and Home Assistant connection status.
+- Press 5 or ENTER or 9 to leave the menu
 
 #### How to set the Real Time Clock (RTC):
 
@@ -857,8 +859,8 @@ If you can't use network time (NTP) as a source of time, you need to manually ad
 Always set your actual local present time here; if you want to display some other time, use the Time Travel function. 
 
 - Hold ENTER to invoke main menu
-- Press ENTER [or 2/8] repeatedly until "SET CLOCK" is displayed and the *Present Time* display shows a date and time 
-- Hold ENTER [or press 5], the *Present Time* display goes off except for the first field to enter data into
+- Press 2/8 repeatedly until "SET CLOCK" is displayed and the *Present Time* display shows a date and time 
+- Press 5 or ENTER, the *Present Time* display goes off except for the first field to enter data into
 - The field to enter data into is shown (exclusively), pre-set with its current value
 - Data entry works as described [above](#the-keypad-menu); remember that months need to be entered numerically (01-12), and hours in 24-hour notation (0-23).
 - After entering data into all fields, the data is saved and the menu is left automatically.
@@ -868,8 +870,8 @@ The time you entered will be re-set/overruled/re-adjusted when the TCD has acces
 #### How to program dates/times for the *Destination* and *Last Time Departed* displays:
 
 - Hold ENTER to invoke main menu
-- Press ENTER [or 2/8] repeatedly until the desired display is the only one lit and shows a date and time
-- Hold ENTER [or press 5], the display goes off except for the first field to enter data into
+- Press 2/8 repeatedly until it says "PROGRAME DATE" the desired display shows a date and time
+- Press 5 or ENTER, the display goes off except for the first field to enter data into
 - The field to enter data into is shown (exclusively), pre-set with its current value
 - Data entry works as described [above](#the-keypad-menu); remember that months need to be entered numerically (01-12), and hours in 24-hour notation (0-23).
 - After entering data into all fields, the data is saved and the menu is left automatically.
@@ -880,34 +882,29 @@ When entering dates/times into the *destination time* or *last time departed* di
 
 Alternatively, you can program and store a "destination time" outside of the keypad menu by typing 91mmddyyyyhhMM, and a "last time departed" by 92mmddyyyyhhMM. 
 
-Note: Your dates/times will be overwritten in storage after a time travel when **_Make time travels persistent_** is checked. Please see [here](#persistent--non-persistent-time-travels) for details.
-
 #### How to view sensor info
 
 - Hold ENTER to invoke main menu
-- Press ENTER [or 2/8] repeatedly until "SENSORS" is shown. If that menu item is missing, a light or temperature sensor was not detected during boot.
-- Hold ENTER [or press 5]
+- Press 2/8 repeatedly until "SENSORS" is shown. If that menu item is missing, a light or temperature sensor was not detected during boot.
+- Press 5 or ENTER
 - Now the currently measured lux level or temperature is displayed.
-- Press ENTER [or 2/8] to toggle between light sensor and temperature sensor info (if both are connected)
-- Hold ENTER [or press 5 or 9] to exit the menu
+- Press 2/8 to toggle between light sensor and temperature sensor info (if both are connected)
+- Press 5 or ENTER or 9 to exit the menu
 
 >Note: Sometimes a lux value of -1 might be displayed, indicating a sensor overload. This can have the following reasons: The TCD firmware sets up the sensors for indoor usage and, as a result, sensors will overload in broad daylight. Secondly, some sensors have issues with halogen lamps (reportedly TSL2561), and most sensors also "overload" if too much IR light is directed at them, for instance from surveillance cameras.
 
 #### How to see a list of BTTF-Network clients
 
 - Hold ENTER to invoke main menu
-- Press ENTER [or 2/8] repeatedly until "BTTFN CLIENTS" is shown.
-- Hold ENTER [or press 5]
+- Press 2/8 repeatedly until "BTTFN CLIENTS" is shown.
+- Press 5 or ENTER
 - Now one of the connected clients is displayed, or "NO CLIENTS" if currently no clients are connected.
-- Press ENTER [or 2/8] to scroll through the list of connected clients.
-- Hold ENTER [or press 5 or 9] to exit the menu
+- Press 2/8 to cycle through the list of connected clients.
+- Press 5 or ENTER or 9 to exit the menu
 
 #### How to leave the menu:
 
- Press "9", or
- 
- - press ENTER repeatedly until "END" is displayed.
- - Hold ENTER [or 5] to leave the menu
+Press "9" in the main menu.
 
 ## Peripherals
 
@@ -1151,7 +1148,13 @@ The TCD supports MQTT protocol versions 3.1.1 and 5.0 for the following features
 
 ### Display messages
 
-The TCD can subscribe to a user-configured topic and display messages received for this topic on the *Destination Time* display. This can be used to display the status of other HA/MQTT devices, for instance alarm systems. If the SD card contains a file named "ha-alert.mp3", this file will be played upon reception of a message (there is no default sound).
+The TCD can subscribe to three user-configured topics and display messages received for these topics on all three displays. This can be used to display the status of other HA/MQTT devices, for instance alarm systems. 
+
+If the SD card contains a file named 
+- "ha-alert.mp3" (for _Destination Time_ display),
+- "ha-alart-p.mp3" (for _Present Time_  display) and/or
+- "ha-alert-l.mp3" (for _Last Time Departed_  display),
+this file will be played upon reception of a message for the respective display. There are no default sounds.
 
 Only ASCII messages are supported, the maximum length is 255 characters.
 
@@ -1489,7 +1492,15 @@ The time zone for the yellow display in [World Clock mode](#world-clock-mode). D
 
 ##### &#9193; City/location name
 
-For each World Clock time zone, a city or location name can be configured. For example "SYDNEY" or "LORD HOWE". This name will be shown every few seconds alternately with time. If the name is 9 characters or less (8 on the A-Car display), it will be displayed together with time.
+For each World Clock time zone, a city or location name can be configured. For example "SYDNEY" or "LORD HOWE". See immediately below for how it is used.
+
+##### &#9193; Show names permanently
+
+If _City/Location names_ are short enough to fit next to time:
+- If this option is checked, the location name will be shown permanently instead of the date
+- If this option is unchecked, the location name will be shown every few seconds, for a few seconds, instead of the date.
+
+If _City/Location names_ are too long to fix next to time, this option is ignored and the location name will be shown every few seconds, for a few seconds, instead of date and time.
 
 #### <ins>Alarm settings</ins>
 
@@ -1728,9 +1739,17 @@ The firmware supports MQTT 3.1.1 and 5.0. There is no difference in features, so
 
 The username (and optionally the password) to be used when connecting to the broker. Can be left empty if the broker accepts anonymous logins.
 
-##### &#9193; Topic to display
+##### &#9193; Topic to show on Destination Time display
 
 An optional topic the TCD subscribes to in order to display messages on the *Destination Time* display.
+
+##### &#9193; Topic to show on Present Time display
+
+An optional topic the TCD subscribes to in order to display messages on the *Present Time* display.
+
+##### &#9193; Topic to show on Last Time Departed display
+
+An optional topic the TCD subscribes to in order to display messages on the *Last Time Departed* display.
 
 ##### &#9193; Publish time travel and alarm events
 
