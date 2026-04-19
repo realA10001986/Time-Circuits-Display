@@ -6,12 +6,12 @@
  * https://github.com/realA10001986/Time-Circuits-Display
  * https://tcd.out-a-ti.me
  *
- * Clockdisplay Class: Handles the TC LED segment displays
+ * tcdDisplay Class: Handles the TC LED segment displays
  *
- * Based on code by John Monaco, Marmoset Electronics
+ * Based on concept by John Monaco, Marmoset Electronics
  * https://www.marmosetelectronics.com/time-circuits-clock
  * -------------------------------------------------------------------
- * License: MIT NON-AI
+ * License: Modified MIT NON-AI
  * 
  * Permission is hereby granted, free of charge, to any person 
  * obtaining a copy of this software and associated documentation 
@@ -21,8 +21,11 @@
  * Software, and to permit persons to whom the Software is furnished to 
  * do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be 
+ * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
+ * 
+ * Links inside the Software pointing to the original source must not
+ * be changed or removed.
  * 
  * In addition, the following restrictions apply:
  * 
@@ -52,8 +55,8 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef _CLOCKDISPLAY_H
-#define _CLOCKDISPLAY_H
+#ifndef _TCDDISPLAY_H
+#define _TCDDISPLAY_H
 
 #include "rtc.h"
 
@@ -65,11 +68,11 @@ struct dateStruct {
     uint8_t minute;
 };
 
-#define CD_BUF_SIZE   8  // Buffer size in words (16bit)
+#define CD_BUF_SIZE 8   // Buffer size in words (16bit)
 
 // Flags for textDirect() etc (flags)
-#define CDT_CLEAR 0x0001
-#define CDT_CORR6 0x0002
+#define CDT_CORR6 0x0001    // (MUST be 1)
+#define CDT_CLEAR 0x0002
 #define CDT_COLON 0x0004
 #define CDT_BLINK 0x0008
 #define CDT_YRDOT 0x0010
@@ -81,11 +84,11 @@ struct dateStruct {
 #define _AM 0x0080
 #define _PM 0x8000
 
-class clockDisplay {
+class tcdDisplay {
 
     public:
 
-        clockDisplay(uint8_t did, uint8_t address);
+        tcdDisplay(unsigned int did, uint8_t address);
         #ifdef IS_ACAR_DISPLAY
         void setAddress(uint8_t address) { _address = address; }
         #endif
@@ -95,9 +98,6 @@ class clockDisplay {
         void onBlink(uint8_t blink);
         void off();
 
-        #if 0
-        void lampTest();
-        #endif
         void showPattern(bool randomize = false);
 
         void clearBuf();
@@ -127,7 +127,7 @@ class clockDisplay {
         #endif
 
         void showAlt();
-        void setAltText(const char *text);
+        bool setAltText(const char *text);
 
         void setDateTime(DateTime& dt, int wd = 0);
         void setFromStruct(const dateStruct *s);
@@ -172,7 +172,7 @@ class clockDisplay {
         void showSettingValDirect(const char* setting, int8_t val = -1, uint16_t flags = 0);
 
         #ifdef TC_HAVETEMP
-        void showTempDirect(float temp, bool tempUnit, bool animate = false);
+        void showTempDirect(float temp, bool animate = false);
         void showHumDirect(int hum, bool animate = false);
         #endif
 
@@ -182,23 +182,25 @@ class clockDisplay {
 
         void clearDisplay();
 
-        bool    load();
-        void    savePending();
-        bool    saveFlush();
-        bool    save(bool force = false);
+        bool load(int slot = 0);
+        void copyToUserTimes();
+        void savePending();
+        bool saveFlush();
+        bool save(bool force = false);
 
         bool     saveClockStateData(uint16_t curYear);
         uint16_t loadClockStateData(int16_t& yoffs);
 
     private:
 
-        uint8_t  getLED7NumChar(uint8_t value);
         uint8_t  getLED7AlphaChar(uint8_t value);
         #ifndef IS_ACAR_DISPLAY
         uint16_t getLEDAlphaChar(uint8_t value);
         #endif
 
-        uint16_t makeNum(uint8_t num, uint16_t dflags = 0);
+        uint16_t makeNum(unsigned int num, uint16_t dflags = 0);
+
+        int textToSegments(uint16_t *segBuf, const char *text, uint16_t flags);
 
         bool handleNM();
         
@@ -221,11 +223,12 @@ class clockDisplay {
 
         uint16_t _displayBuffer[CD_BUF_SIZE];
         uint16_t _displayBufferAlt[CD_BUF_SIZE];
-        uint8_t  _did = 0;
+        
+        unsigned int _did = 0;
         uint8_t  _address = 0;
 
         uint16_t _year = 2021;          // keep track of these
-        int16_t  _yearoffset = 0;       // Offset for faking years < 2000, > 2098
+        int16_t  _yearoffset = 0;       // Offset for faking years > 2098
 
         uint8_t _month = 1;
         uint8_t _day = 1;
@@ -244,7 +247,7 @@ class clockDisplay {
         bool    _nightmode = false;     // true = dest/dept times off
         bool    _NmOff = false;         // true = off during night mode, false = dimmed
         int     _oldnm = -1;
-        bool    _corr6 = false;
+        int     _corr6 = 0;
         bool    _WCtimeFits = false;
 
         int     _savePending = 0;
