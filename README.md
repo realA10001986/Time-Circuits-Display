@@ -765,18 +765,17 @@ After invoking the keypad menu, the first step is to choose a menu item. The ava
  
 Pressing ENTER or "2"/"8" cycles through the list, holding ENTER or pressing "5" selects an item. "9" quits the menu.
  
-#### How to set up the alarm:
+#### How to set up the [alarm](#alarm):
 
 - Hold ENTER to invoke main menu
-- (Currently, the alarm is the first menu item; otherwise press 2/8 until "ALARM" is shown
+- (Currently, the alarm is the first menu item; otherwise press 2/8 until "ALARM" is shown)
 - Press 5 or ENTER
 - Press 2/8 to toggle the alarm on and off, press 5 or ENTER to proceed
 - Then enter the hour and minutes. This works as described above under "Data entry".
 - Choose the weekday(s) by pressing 2/8 to cycle through options
 - Press 5 or ENTER to select
 - If you chose "USER DAYS", press keys 1 through 7 to toggle each day.
-- Press ENTER to proceed
-- "SAVING" is displayed briefly.
+- Press ENTER to proceed to save and quit the menu. "SAVING" is displayed briefly.
 
 Pressing "9" at any point - except when entering hour and minutes - cancels and quits the menu.
 
@@ -799,7 +798,7 @@ By default, the device uses the built-in hardware volume knob to determine the d
 - Press 2/8 to toggle between "USE VOLUME KNOB" and "SELECT LEVEL"
 - Press 5 or ENTER
 - If you chose "SELECT LEVEL", you can now select the desired level by pressing 2/8. There are 20 levels available. The volume knob is now ignored.
-- Press 5 or ENTER to save and quit the menu
+- Press 5 or ENTER to save and quit the menu. "SAVING" is displayed briefly.
 
 Pressing "9" at any point cancels and quits the menu.
 
@@ -815,7 +814,7 @@ In order for this menu item to show up, an SD card is required.
 - Press 2/8 repeatedly until "MUSIC FOLDER NUMBER" is shown
 - Press 5 or ENTER, "FOLDER" and a number is displayed
 - Press 2/8 repeatedly to cycle through the possible values. The message "NOT FOUND" appears if either the folder itself or 000.mp3 in that very folder is not present. "PROCESSING REQUIRED" means that the TCD will prepare the folder (eg rename files) after selection; this requires a reboot.
-- Press 5 or ENTER to select the value shown and exit the menu ("SAVING" is displayed briefly)
+- Press 5 or ENTER to select the value shown and exit the menu. "SAVING" is displayed briefly.
 
 Pressing "9" at any point cancels and quits the menu.
 
@@ -829,7 +828,7 @@ Note that the Music Folder Number is saved in a config file on the SD card.
 - Press 2/8 repeatedly until "TIME-CYCLING" is shown
 - Press 5 or ENTER, "INTERVAL" is displayed
 - Press 2/8 repeatedly to cycle through the possible Time-cycling intervals. "0" disables automatic time cycling ("OFF").
-- Press 5 or ENTER to select the value shown and exit the menu ("SAVING" is displayed briefly)
+- Press 5 or ENTER to select the value shown and exit the menu. "SAVING" is displayed briefly.
 
 Pressing "9" at any point cancels and quits the menu.
  
@@ -860,8 +859,8 @@ Always set your actual local present time here; if you want to display some othe
 
 - Hold ENTER to invoke main menu
 - Press 2/8 repeatedly until "SET CLOCK" is displayed and the *Present Time* display shows a date and time 
-- Press 5 or ENTER, the *Present Time* display goes off except for the first field to enter data into
-- The field to enter data into is shown (exclusively), pre-set with its current value
+- Press 5 or ENTER
+- The *Present Time* display goes off and only the field to enter data into is shown, pre-set with its current value
 - Data entry works as described [above](#the-keypad-menu); remember that months need to be entered numerically (01-12), and hours in 24-hour notation (0-23).
 - After entering data into all fields, the data is saved and the menu is left automatically.
 
@@ -870,9 +869,9 @@ The time you entered will be re-set/overruled/re-adjusted when the TCD has acces
 #### How to program dates/times for the *Destination* and *Last Time Departed* displays:
 
 - Hold ENTER to invoke main menu
-- Press 2/8 repeatedly until it says "PROGRAME DATE" the desired display shows a date and time
-- Press 5 or ENTER, the display goes off except for the first field to enter data into
-- The field to enter data into is shown (exclusively), pre-set with its current value
+- Press 2/8 repeatedly until the display says "PROGRAME DATE" and the desired display shows a date and time
+- Press 5 or ENTER
+- The display goes off and only the field to enter data into is shown, pre-set with its current value
 - Data entry works as described [above](#the-keypad-menu); remember that months need to be entered numerically (01-12), and hours in 24-hour notation (0-23).
 - After entering data into all fields, the data is saved and the menu is left automatically.
 
