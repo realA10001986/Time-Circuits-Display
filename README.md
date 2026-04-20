@@ -263,13 +263,6 @@ In this case, head to the Config Portal and
 
 >Note that *actual* time travel is not supported.
 
-#### 	&#9193; I want my TCD to show/cycle movie times
-
-In this case, head to the Config Portal and
-- set the **_Time Cycling Interval_** to the desired interval
-
-Time-travelling will interrupt the cycling of movie times for 30 minutes.
-
 #### 	&#9193; I want my TCD to always show my favorite *Destination* and *last time departed* times
 
 In this case, head to the Config Portal and
@@ -278,6 +271,13 @@ In this case, head to the Config Portal and
 Then enter the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays) and set your favorite *Destination* and *Last time departed* times.
 
 Note that time-travelling will naturally lead to the displays showing other times. To bring them back without rebooting, type 998 followed by ENTER.
+
+#### 	&#9193; I want my TCD to show/cycle movie times
+
+In this case, head to the Config Portal and
+- set the **_Time Cycling Interval_** to the desired interval
+
+Time-travelling will interrupt the cycling of movie times for 30 minutes.
 
 ### Keypad reference
 
