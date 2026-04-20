@@ -605,9 +605,11 @@ For information on supported sensor models/types and configuration, see [here](A
 
 ## Alarm
 
-The alarm function can be programmed through the [keypad menu](#how-to-set-up-the-alarm), or quickly through keypad command 11hhMM (h=hour, 0-23; m=minute). Weekday selection must be done through the [keypad menu](#how-to-set-up-the-alarm).
+The alarm function works like any common alarm clock: An alarm sounds at a pre-programmed time.
 
-Holding "1" enables and disables the alarm; the state is shown by the dot in the present time's minute field. Keypad command 11 shows the currently programmed alarm days/time.
+The alarm can be programmed through the [keypad menu](#how-to-set-up-the-alarm), or quickly through keypad command 11hhMM (h=hour, 0-23; m=minute). Weekday selection must be done through the [keypad menu](#how-to-set-up-the-alarm).
+
+Holding "1" enables and disables the alarm; the state is shown by the dot in the present time's minute field. Keypad command 11 shows the currently programmed alarm time and the weekdays.
 
 As regards the alarm event itself, the alarm function knows two modes of operation: Legacy and Extended.
 
@@ -615,15 +617,17 @@ Legacy means a simple one-time alarm sound at the programmed time. The default a
 
 #### Extended Alarm 
 
-In extended mode, the alarm plays for two minutes, and can be stopped by pressing or holding ENTER while the alarm sound plays.
+In extended mode, the alarm sounds for two minutes, and can be stopped by pressing or holding ENTER while the alarm sound plays.
 
 If Snooze is enabled in the Config Portal, 
 - (briefly) pressing ENTER while the alarm sounds starts Snooze: The alarm will be silenced and repeat after the configured "Snooze Time".
 - hold ENTER for 2 seconds while the alarm sounds to stop the alarm.
 
-If Auto-Snooze is enabled, and the user does not react to the alarm with the ENTER button, the alarm will be silenced after two minutes, and automatically repeat after the configured "Snooze Time".
+If Auto-Snooze is enabled, and the user does not react to the alarm with the ENTER button, the alarm will be silenced after two minutes and automatically repeat after the configured "Snooze Time".
 
 While on snooze, the _Present time_'s minute's dot blinks and the alarm can be cancelled by keypad command 12.
+
+Alarms can also be stopped or put into snooze through [Home Assistant](#home-assistant--mqtt) (ALARM_STOP, ALARM_SNOOZE).
 
 A [substitution](#sound-substitution) alarm sound file will be played once. If it is considerably shorter than two minutes, it can be "looped". However, it is stopped after two minutes.
 
@@ -1171,6 +1175,8 @@ The TCD can be controlled through messages sent to topic **bttf/tcd/cmd**. Suppo
 - BEEP_30, BEEP_60: Set the beep modes as described [here](#beep-on-the-second)
 - ALARM_ON: Enable the alarm
 - ALARM_OFF: Disable the alarm
+- ALARM_STOP: Stop on-going alarm and cancel a snoozed alarm
+- ALARM_SNOOZE: Put an on-going alarm into snooze
 - NIGHTMODE_ON: Enable manual [night mode](#night-mode)
 - NIGHTMODE_OFF: Disable manual [night mode](#night-mode)
 - MP_PLAY: Starts the Music Player
