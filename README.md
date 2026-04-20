@@ -195,7 +195,7 @@ Time-cycling will, if enabled, change the *Destination* and *Last Time Departed*
 
 ### World Clock mode
 
-In World Clock (WC) mode, the red and yellow displays show not some stale times, but current time in other time zones. These time zones can be configured in Config Portal. At least one time zone (for either the red or yellow display) must be configured in order to use WC mode. Optionally, also names for cities/locations for these time zones can be entered in the Config Portal; if a name for a time zone is configured, this name and the time will be shown alternately. If the name is short enough, it will be shown together with time. Note that names can only contain letters a-z, numbers 0-9, space and minus. 
+In World Clock (WC) mode, the red and yellow displays show not some stale times, but current time in other time zones. These time zones can be configured in Config Portal. At least one time zone (for either the red or yellow display) must be configured in order to use WC mode. Optionally, also names for cities/locations for these time zones can be entered in the Config Portal and shown [instead of the date or alternately](#world-clock-mode-1). Note that names can only contain letters a-z, numbers 0-9, space and minus. 
 
 | [![Watch the video](https://img.youtube.com/vi/Uk1W7D6Ab9Y/0.jpg)](https://youtu.be/Uk1W7D6Ab9Y) |
 |:--:|
