@@ -1502,7 +1502,7 @@ If _City/Location names_ are short enough to fit next to time:
 - If this option is checked, the location name will be shown permanently instead of the date
 - If this option is unchecked, the location name will be shown every few seconds, for a few seconds, instead of the date.
 
-If _City/Location names_ are too long to fix next to time, this option is ignored and the location name will be shown every few seconds, for a few seconds, instead of date and time.
+If _City/Location names_ are too long to fit next to time, this option is ignored and the location name will be shown every few seconds, for a few seconds, instead of date and time.
 
 #### <ins>Alarm settings</ins>
 
