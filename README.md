@@ -236,7 +236,7 @@ To enable this mode, type 999 followed by ENTER. The default fixed time will be 
 
 Exhibition mode is persistent; the pre-programmed time will be stored and retrieved after a reboot/power-down.
 
-Not strictly part of Exhibition mode, but related: If you want your TCD to display specific times in the *Destination Time* and/or *Last Time Departed* displays, you can program those times through the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays). Those times will be displayed, but replaced as soon as a time travel takes place. To quickly restore the displays to your pre-programmed times, enter 998 followed by ENTER. Note that this only works if **_Make time travel persistent_** is unchecked in the Config Portal.
+Not strictly part of Exhibition mode, but related: If you want your TCD to display specific times in the *Destination Time* and/or *Last Time Departed* displays, you can program those times through the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays). Those times will be displayed, but replaced as soon as a time travel takes place. To quickly restore the displays to your pre-programmed times, enter 998 followed by ENTER.
 
 ### Audio Output
 
@@ -260,7 +260,6 @@ Entering 350 plus ENTER disables line-out output. This setting is persistent ove
 
 In this case, head to the Config Portal and
 - set the **_Time Cycling Interval_** to OFF
-- check or uncheck **_Make time travel persistent_** depending on whether you care about keeping the displayed times across reboots/power cycles.
 
 >Note that *actual* time travel is not supported.
 
@@ -268,7 +267,6 @@ In this case, head to the Config Portal and
 
 In this case, head to the Config Portal and
 - set the **_Time Cycling Interval_** to the desired interval
-- uncheck **_Make time travel persistent_**
 
 Time-travelling will interrupt the cycling of movie times for 30 minutes.
 
@@ -276,7 +274,6 @@ Time-travelling will interrupt the cycling of movie times for 30 minutes.
 
 In this case, head to the Config Portal and
 - set the **_Time Cycling Interval_** to OFF
-- uncheck **_Make time travel persistent_**
 
 Then enter the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays) and set your favorite *Destination* and *Last time departed* times.
 
@@ -532,23 +529,23 @@ To travel back to actual present time, hold "9" for 2 seconds.
 
 ### Persistent / Non-persistent time travels
 
+_Note: This feature was changed in version 3.22._
+
 On the Config Portal's "Settings" page, there is an option item named **_Make time travel persistent_**. The default is off. 
 
 >Note that in order to enable this feature, an SD card is required and the option **_Save secondary settings on SD_** must be checked as well.
 
 If time travels are persistent
-- a user-programmed *destination time* is always saved, and retrieved after a reboot. It can be programmed through the keypad menu, or ahead of a time travel by typing mmddyyyyhhMM/mmddyyyy/hhMM plus ENTER. In both cases, the time is saved and retrieved upon power-up/reboot.
-- *last time departed* is saved when programmed through the keypad menu or when changed during a time travel, and retrieved upon power-up/reboot.
+- any *destination time* entered (by typing mmddyyyyhhMM/mmddyyyy/hhMM) is immediately saved and retrieved upon power-up/reboot.
+- *last time departed* is saved when changed during a time travel and retrieved upon power-up/reboot.
 - *present time*, be it actual present time or "fake" after time travelling, will continue to run while the device is not powered, as long as its battery lasts, and displayed on power-up/reboot.
 
 If time travels are non-persistent
-- a user-programmed *destination time* is only saved when programmed through the keypad menu, but not if entered ahead of a time travel (ie outside of the keypad menu, by typing mmddyyyyhhMM/mmddyyyy/hhMM plus ENTER).
-- a *last time departed* is only saved when programmed through the keypad menu, but not if the result of a time travel.
+- *destination time* is not saved,
+- a *last time departed* is not saved,
 - *present time* is always reset to actual present time upon power-up/reboot.
 
 If you want your device to display exactly the same after a power loss, choose persistent (and disable [Time-cycling](#time-cycling)). 
-
-If you want to display your favorite *destination time* and *last time departed* upon power-up, program your times through the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays) (and disable [Time-cycling](#time-cycling)). Later time travels will, of course, change what is displayed, but not overwrite your saved times. To bring back your saved times to the displays, type 998 followed by ENTER.
 
 >Note that [Time-cycling](#time-cycling), if enabled, will force the device to cycle through the list of pre-programmed times, regardless of your time travel persistence setting. Time-Cycling does, however, not overwrite saved times, only displayed times.
 
