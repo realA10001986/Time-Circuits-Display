@@ -751,18 +751,17 @@ Menu navigation uses
 Data entry, such as for dates and times, is done through the keypad's number keys and works as follows: Whenever a data entry is requested, the field for that data is lit (while the rest of the display is dark) and a pre-set value is shown. If you want to keep that pre-set, press ENTER to proceed to next field. Otherwise press a digit on the keypad; the pre-set is then overwritten by the value entered. 2 digits can be entered (4 for years). After entering a value, press ENTER to proceed. Note that a month needs to be entered numerically (01-12), and hours need to be entered in 24-hour notation (00-23), regardless of 12-hour or 24-hour mode as per the Config Portal setting.
 
 After invoking the keypad menu, the first step is to choose a menu item. The available items are  
-- set the alarm ("ALA-RM"),
-- set the audio volume (VOL-UME),
+- set the alarm ("ALARM"),
+- set the audio volume (VOLUME),
 - set the Music Player folder number ("MUSIC FOLDER NUMBER")
-- select the Time-cycling Interval ("TIME-CYCLING"),
+- select the Time-cycling Interval ("TIME CYCLING"),
 - select the brightness for the three displays ("BRIGHTNESS"),
-- show network information ("NET-WORK"),
+- show network information ("NETWORK"),
 - set the internal Real Time Clock (RTC) ("SET CLOCK"),
-- enter dates/times for the *Destination* and *Last Time Departed* displays,
+- enter dates/times for the *Destination* and *Last Time Departed* displays ("PROGRAM DATE"),
 - show light/temperature/humidity sensor info (if such a sensor is connected) ("SENSORS"),
 - show when time was last sync'd with NTP or GPS ("TIME SYNC"),
-- see a list of [BTTFN-Clients](#connecting-props-wirelessly-bttf-network-bttfn) currently connected ("BTTFN CLIENTS"),
-- quit the menu ("END").
+- see a list of [BTTFN-Clients](#connecting-props-wirelessly-bttf-network-bttfn) currently connected ("BTTFN CLIENTS").
  
 Pressing ENTER or "2"/"8" cycles through the list, holding ENTER or pressing "5" selects an item. "9" quits the menu.
  
