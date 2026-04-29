@@ -491,7 +491,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
 
 <table>
     <tr>
-     <td align="center" colspan="3">Keypad reference: Holding keys for 2 seconds</td>
+     <td align="center" colspan="3">Holding keys for 2 seconds</td>
     </tr>
     <tr>
      <td align="center">1<br>Toggle <a href="#alarm">Alarm</a> on/off</td>
