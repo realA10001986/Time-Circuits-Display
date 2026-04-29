@@ -159,7 +159,7 @@ A full reference of the Config Portal is [here](#appendix-a-the-config-portal).
 
 *Destination time* and *Last time departed* are stale. These, by default, work like in the movie: Upon a time travel, *present time* becomes *last time departed*, and *destination time* becomes *present time*. Or in Doc's words: The red one tells you where you're going. The green one tells you where you are. The yellow one tells you where you were.
 
-The keypad is for progamming destination times like in the movies and for controlling the TCD through commands. "Keypad commands" are multi-digit codes to be typed on the digit keys followed by ENTER. ENTER is the button right above the "Clear" badge.
+The keypad is for programming destination times like in the movies and for controlling the TCD through commands. "Keypad commands" are multi-digit codes to be typed on the digit keys followed by ENTER. ENTER is the button right above the "Clear" badge.
 
 <details>
 <summary>"REPLACE BATTERY" displayed on boot?</summary>
