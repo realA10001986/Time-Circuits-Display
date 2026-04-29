@@ -289,7 +289,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
 
 <table id="commandref">
     <tr>
-     <td align="center" colspan="2">Keypad reference: Destination time programming<br>(&#9166; = ENTER key)</td>
+     <td align="center" colspan="2">Destination time programming<br>(&#9166; = ENTER key)</td>
     </tr>
     <tr>
      <td align="center">mmddyyyyhhMM&#9166;</td>
@@ -307,7 +307,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
 
 <table>
     <tr>
-     <td align="center" colspan="2">Keypad reference: Special key sequences<br>(&#9166; = ENTER key)</td>
+     <td align="center" colspan="2">Keypad commands<br>(&#9166; = ENTER key)</td>
     </tr>
    <tr>
      <td align="left">Disable <a href="#beep-on-the-second">beep</a> sound</td>
