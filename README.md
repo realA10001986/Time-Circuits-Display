@@ -205,7 +205,7 @@ In World Clock (WC) mode, the red and yellow displays show not some stale times,
 |:--:|
 | *World Clock mode* |
 
-WC mode is toggled by typing 112 followed by ENTER. If an SD card is present, WC mode is persistent across reboots. To return to the default display mode, type 110 and ENTER.
+WC mode is toggled through keypad command 112. If an SD card is present, WC mode is persistent across reboots. To return to the default display mode, enter keypad command 110.
 
 For logical reasons, WC mode will be automatically disabled in some situations:
 
@@ -220,11 +220,11 @@ For logical reasons, WC mode will be automatically disabled in some situations:
 |:--:|
 | *WC/RC hybrid mode* |
 
-To toggle WC/RC hybrid mode, type 113 followed by ENTER. To return to the default display mode, type 110 and ENTER.
+To toggle WC/RC hybrid mode, enter keypad command 113. To return to the default display mode, enter keypad command 110.
 
 ### Minimal mode
 
-In "Minimal" mode, the *Present Time* display shows the weekday instead of the year, the other displays are switched off. To enable this mode, enter 117 followed by ENTER. If an SD card is present, Minimal mode is persistent across reboots. To return to the default display mode, type 110 and ENTER.
+In "Minimal" mode, the *Present Time* display shows the weekday instead of the year, the other displays are switched off. To enable this mode, enter keypad command 117. If an SD card is present, Minimal mode is persistent across reboots. To return to the default display mode, enter keypad command 110.
 
 Minimal mode is disabled automatically under the same conditions as World Clock mode.
 
@@ -232,11 +232,11 @@ Minimal mode is disabled automatically under the same conditions as World Clock 
 
 In this mode, the TCD shows a fixed, pre-programmed time in the *Present Time* display. Also after a time travel, the *Present Time* display will stay fixed at the time you travelled to. This is useful for exhibitions or for filming.
 
-To enable this mode, type 999 followed by ENTER. The default fixed time will be displayed. To change this time, type 99mmddyyyyhhMM followed by ENTER. 999 plus ENTER takes you back to normal mode.
+To enable this mode, enter keypad command 999. The default fixed time will be displayed. To change this time, type 99mmddyyyyhhMM followed by ENTER. Keypad command 999 takes you back to normal mode.
 
 Exhibition mode is persistent; the pre-programmed time will be stored and retrieved after a reboot/power-down.
 
-Not strictly part of Exhibition mode, but related: If you want your TCD to display specific times in the *Destination Time* and/or *Last Time Departed* displays, you can program those times through the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays). Those times will be displayed, but replaced as soon as a time travel takes place. To quickly restore the displays to your pre-programmed times, enter 998 followed by ENTER.
+Not strictly part of Exhibition mode, but related: If you want your TCD to display specific times in the *Destination Time* and/or *Last Time Departed* displays, you can program those times through the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays). Those times will be displayed, but replaced as soon as a time travel takes place. To quickly restore the displays to your pre-programmed times, enter keypad command 998.
 
 ### Audio Output
 
@@ -246,13 +246,13 @@ Control boards 1.4.5 and later have two ways of audio output:
 
 By default, all audio is played over the speaker. 
 
-Entering 351 followed by ENTER enables playback over line-out for
+Keypad command 351 enables playback over line-out for
 - music and
 - time travel sounds.
 
 All other sounds, which are supposed to be emitted by the TCD itself, are always played over the built-in speaker. Note that the TCD's volume control (knob, software-selected level, rotary encoder) only has impact on the built-in speaker.
 
-Entering 350 plus ENTER disables line-out output. This setting is persistent over reboots.
+Keypad command 350 disables line-out output. This setting is persistent over reboots.
 
 ### Common usage scenarios
 
@@ -270,7 +270,7 @@ In this case, head to the Config Portal and
 
 Then enter the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays) and set your favorite *Destination* and *Last time departed* times.
 
-Note that time-travelling will naturally lead to the displays showing other times. To bring them back without rebooting, type 998 followed by ENTER.
+Note that time-travelling will naturally lead to the displays showing other times. To bring them back without rebooting, enter keypad command 998.
 
 #### 	&#9193; I want my TCD to show/cycle movie times
 
@@ -517,7 +517,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
 
 #### Remote controlling the TCD's keypad
 
-The TCD's keypad can be remote controlled through either [Flux Capacitor](https://circuitsetup.us/product/flux-capacitor-light-sound-kit/) and [SID](https://circuitsetup.us/product/delorean-time-machine-status-indicator-display-sid/), using their respective IR remote control. In order to permit keypad remote controlling, enter 995 followed by ENTER. To prohibit remote controlling, enter 994 followed by ENTER. No further configuration is required on the TCD's side. Please see the [Flux Capacitor](https://fc.out-a-ti.me) and/or [SID](https://sid.out-a-ti.me) documentation for details. 
+The TCD's keypad can be remote controlled through either [Flux Capacitor](https://circuitsetup.us/product/flux-capacitor-light-sound-kit/) and [SID](https://circuitsetup.us/product/delorean-time-machine-status-indicator-display-sid/), using their respective IR remote control. In order to permit keypad remote controlling, enter keypad command 995. To prohibit remote controlling, enter keypad command 994. No further configuration is required on the TCD's side. Please see the [Flux Capacitor](https://fc.out-a-ti.me) and/or [SID](https://sid.out-a-ti.me) documentation for details. 
 
 ## Time travel
 
@@ -559,7 +559,7 @@ The beep can be permanently disabled, permanently enabled, or enabled for 30 or 
 - after switching on the TCD (real power-up or fake power-up),
 - after changing "speed" using a [Rotary Encoder](#rotary-encoder).
 
-The different modes are selected by typing 000 (disabled), 001 (enabled), 002 (enabled for 30 secs) or 003 (enabled for 60 secs), followed by ENTER.
+The different modes are selected through keypad commands 000 (disabled), 001 (enabled), 002 (enabled for 30 secs) or 003 (enabled for 60 secs).
 
 For technical reasons, the beep is suppressed whenever other sounds are played-back.
 
@@ -652,7 +652,7 @@ You can also leave out the hhMM part; in that case the time remains unchanged fr
 
 Note that all fields consist of two digits, and hours are entered in 24-hour notation.
 
-Type 77 followed by ENTER to display the programmed reminder, 770 to delete it, and 777 to display the days/hours/minutes until the next reminder.
+Keypad command 77 displays the programmed reminder, 770 deletes it, and 777 displays the days/hours/minutes until the next reminder.
 
 At the time the reminder is due, the TCD plays a sound. If a file named "reminder.mp3" is on your SD card, this will be played instead of the default sound.
 
@@ -726,9 +726,9 @@ Since renaming mp3 files manually is somewhat cumbersome, the firmware can do th
 
 To start and stop music playback, hold 5. Holding 2 jumps to the previous song, holding 8 to the next one.
 
-By default, the songs are played in order, starting at 000.mp3, followed by 001.mp3 and so on. By entering 555 and pressing ENTER, you can switch to shuffle mode, in which the songs are played in random order. Enter 222 followed by ENTER to switch back to consecutive mode. The Shuffle mode state is saved and persistent across reboots.
+By default, the songs are played in order, starting at 000.mp3, followed by 001.mp3 and so on. By entering keypad command 555 you can switch to shuffle mode, in which the songs are played in random order. Keypad command 222 switches back to consecutive mode. The Shuffle mode state is saved and persistent across reboots.
 
-Entering 888 followed by ENTER re-starts the player at song 000, and 888xxx (xxx = three-digit number) jumps to song #xxx.
+Keypad command 888 re-starts the player at song 000, and 888xxx (xxx = three-digit number) jumps to song #xxx.
 
 See [here](#keypad-reference) for a list of controls of the music player.
 
@@ -783,7 +783,7 @@ When the alarm is set and enabled, the dot in the present time's minute field wi
 
 Under normal operation (ie outside of the menu), holding "1" toggles the alarm on/off.
 
-The alarm time can also quickly be set by typing 11hhMM (eg. 110645 for 6:45am, or 112300 for 11:00pm) and pressing ENTER, just like when setting a time travel destination time. (The weekday selection has still to be done via the keypad menu.) Typing 11 followed by ENTER shows the currently set time and weekday selection briefly.
+The alarm time can also quickly be set by typing 11hhMM (eg. 110645 for 6:45am, or 112300 for 11:00pm) and pressing ENTER, just like when setting a time travel destination time. (The weekday selection has still to be done via the keypad menu.) Keypad command 11 shows the currently set time and weekday selection briefly.
 
 Note that the alarm is recurring, ie it rings at the programmed time, unless disabled. Also note, as mentioned, that the alarm is by default relative to your actual *present time*, not the time displayed (eg after a time travel). It can, however, be configured to be based on the time displayed, in the Config Portal.
 
@@ -802,7 +802,7 @@ By default, the device uses the built-in hardware volume knob to determine the d
 
 Pressing "9" at any point cancels and quits the menu.
 
-You can also quickly set the volume by typing a code on the keypad followed by ENTER. 300-319 select a level, 399 enables the volume knob.
+You can also quickly set the volume through keypad commands 300-319 (select a level) and 399 (enables the volume knob).
 
 If you are using a Rotary Encoder for volume, you need to disable the volume knob by pre-selecting a level (00-19). While the built-in volume knob is active, the Rotary Encoder will do nothing.
 
@@ -875,7 +875,7 @@ The time you entered will be re-set/overruled/re-adjusted when the TCD has acces
 - Data entry works as described [above](#the-keypad-menu); remember that months need to be entered numerically (01-12), and hours in 24-hour notation (0-23).
 - After entering data into all fields, the data is saved and the menu is left automatically.
 
-Your entered date/time(s) are stored, and shown until replaced by the results of time travels; you can then quickly bring your times back to the displays by typing 998 followed by ENTER.
+Your entered date/time(s) are stored, and shown until replaced by the results of time travels; you can then quickly bring your times back to the displays by entering keypad command 998.
 
 When entering dates/times into the *destination time* or *last time departed* displays, Time-cycling Interval is paused for 30 minutes. 
 
@@ -1015,7 +1015,7 @@ Three different notations are supported:
 - DMS: Degrees, minutes, seconds;
 - DMD: Degrees, decimal minutes. This is the most precise one of the three.
 
-To toggle geolocation mode, enter 114 (DD), 115 (DMS) or 116 (DMD) followed by ENTER. Geolocation mode is mutually exclusive to World Clock and Room Condition mode, and disabled when a Time Travel is initiated. If an SD card is present, Geolocation mode is persistent across reboots.
+To toggle geolocation mode, enter keypad commands 114 (DD), 115 (DMS) or 116 (DMD). Geolocation mode is mutually exclusive to World Clock and Room Condition mode, and disabled when a Time Travel is initiated. If an SD card is present, Geolocation mode is persistent across reboots.
 
 ### GPS for speed
 
@@ -1054,7 +1054,7 @@ Remarks:
 
 ### Rotary Encoder for Audio Volume
 
-The rotary encoder for volume replaces the volume knob on back of the TCD's keypad. The advantages of the rotary encoder are that it is more precise, especially at lower volume levels, and it can be relocated. To use the rotary encoder for volume, the TCD's own volume knob must be disabled; this is done by pre-selecting an audio level in the keypad menu or by typing 3xx (xx being 00-19) followed by ENTER.
+The rotary encoder for volume replaces the volume knob on back of the TCD's keypad. The advantages of the rotary encoder are that it is more precise, especially at lower volume levels, and it can be relocated. To use the rotary encoder for volume, the TCD's own volume knob must be disabled; this is done by pre-selecting an audio level in the keypad menu or by entering keypad commands 3xx (xx being 00-19).
 
 ## Room Condition Mode, Temperature/humidity sensor
 
@@ -1102,9 +1102,9 @@ As [discussed](#connecting-to-a-wifi-network), in a car or other places without 
 
 When set in *Car Mode*, the TCD _always boots into AP-mode_, regardless of a configured WiFi network. Not attempting to connect to a network speeds up the boot process and allows other BTTFN-capable props to quickly connect to "TCD-AP".
 
-To enable *Car Mode*, type 991 followed by ENTER. The TCD will reboot in AP mode. If a WiFi network to connect to is configured at that point, it is ignored; no connection attempt is made.
+To enable *Car Mode*, enter keypad command 991. The TCD will reboot in AP mode. If a WiFi network to connect to is configured at that point, it is ignored; no connection attempt is made.
 
-To disable *Car Mode*, type 990 followed by ENTER. The TCD will reboot and attempt to connect to a previously configured WiFi network.
+To disable *Car Mode*, enter keypad command 990. The TCD will reboot and attempt to connect to a previously configured WiFi network.
 
 *Car Mode* is persistent, i.e. it remains active (even across reboots and power-downs) until disabled.
 
@@ -1260,9 +1260,9 @@ Limitations: TLS/SSL not supported; ".local" domains (MDNS) not supported; maxim
 
 CircuitSetup's [kit for modifying a Futaba remote control](https://circuitsetup.us/product/futaba-remote-stanley-display-wireless-control-kit/) allows, among many features, to control the TCD's speedo. The Remote can increase/decrease speed, trigger a time travel, switch fake power, and more. 
 
-In order to permit remote controlling, enter 993 followed by ENTER. No further configuration is required on the TCD's side.
+In order to permit remote controlling, enter keypad command 993. No further configuration is required on the TCD's side.
 
-To prohibit remote controlling, enter 992 followed by ENTER. 
+To prohibit remote controlling, enter keypad command 992. 
 
 For more information, see [here](https://remote.out-a-ti.me).
 
@@ -1431,7 +1431,7 @@ Selects whether the animated intro should be played upon power-up.
 
 ##### &#9193; Beep mode
 
-Selects the ["beep"](#beep-on-the-second) mode. "Auto: xx secs" enables the beep for xx seconds after entering a destination time, after triggering a time travel, and upon (real or fake) power-on. Can be changed at any time by typing 000 (off), 001 (on), 002 (Auto 30secs) or 003 (Auto 60secs) followed by ENTER.
+Selects the ["beep"](#beep-on-the-second) mode. "Auto: xx secs" enables the beep for xx seconds after entering a destination time, after triggering a time travel, and upon (real or fake) power-on. Can be changed at any time through keypad commands 000 (off), 001 (on), 002 (Auto 30secs) or 003 (Auto 60secs).
 
 ##### &#9193; Time-cycling interval
 
