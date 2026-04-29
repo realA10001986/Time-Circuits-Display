@@ -77,13 +77,13 @@ Click on "Settings" on the Config Portal's main page, and specify your [time zon
 
 Setting actual time:
 - If the TCD is going to be connected to a WiFi network with internet access as described in the following section, it will receive time information through NTP (network time protocol). No user interaction is required.
-- If you are going to keep your TCD in access point mode (in which case it cannot access the internet), please set your local time through the [keypad menu](#how-to-set-the-real-time-clock-rtc).
+- Otherwise please set your local time through the [keypad menu](#how-to-set-the-real-time-clock-rtc).
 
 #### Connecting to a WiFi network
 
-The TCD knows two ways of WiFi operation: Either it creates its own WiFi network, or it connects to a pre-existing WiFi network.
+The TCD knows two ways of WiFi operation: Either it creates its own WiFi network or it connects to a pre-existing WiFi network.
 
-As long as the device is unconfigured, it creates a WiFi network of its own named "TCD-AP". This is called **"Access point mode"**, or **"AP-mode"**. In this mode, other WiFi devices - such as other props or a computer - can connect to the TCD, but the TCD can't access the internet (and therefore not synchronize time through NTP). Also, [HA/MQTT](#home-assistant--mqtt) is not possible.
+As long as the device is unconfigured, it creates a WiFi network of its own named "TCD-AP". This is called **"Access point mode"** or **"AP-mode"**. In this mode, other WiFi devices - such as other props or a computer - can connect to the TCD, but the TCD can't access the internet (and therefore not synchronize time through NTP). Also, [HA/MQTT](#home-assistant--mqtt) is not possible.
 
 ![APmode](img/apmode.png)
 
@@ -107,7 +107,7 @@ To connect your TCD to your WiFI network, navigate to the Config Portal and clic
 <details>
 <summary>More...</summary>
   
->If there are several APs with identical SSID in your area, you can select a specific AP to use by its BSSID (AP's MAC address). You can either manually find out your AP's BSSID and enter it, or have it filled out automatically: Click "Scan for networks", then "Show all". If you click on an AP, its BSSID will be copied into BSSID field in the form below. To see which AP is which, hover over the name to see its BSSID as a tooltip.
+>If there are several APs with identical SSID in your area, you can select a specific AP to use by its BSSID (AP's MAC address). You can either manually find out your AP's BSSID and enter it or have it filled out automatically: Click "Scan for networks", then "Show all". If you click on an AP, its BSSID will be copied into BSSID field in the form below. To see which AP is which, hover over the name to see its BSSID as a tooltip.
 
 >The TCD requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). If the device is inaccessible as a result of incorrect static IPs, hold ENTER when powering it up until the white LED lights up; static IP data will be deleted and the device will return to DHCP.
 </details>
@@ -168,7 +168,7 @@ If "REPLACE BATTERY" is shown upon boot, the onboard CR2032 battery is depleted 
 
 The TCD sometimes writes data to either the internal flash file system or the SD card. These write operations should not be interrupted by a power loss.
 
-In general, it is safe to power-down the TCD when it has been idle for 15 seconds, or after it has been fake-powered-down. Try to avoid powering down the TCD
+In general, it is safe to power-down the TCD when it has been idle for 15 seconds or after it has been fake-powered-down. Try to avoid powering down the TCD
 - when it is clearly busy (such as when copying or renaming audio files);
 - within 15 seconds after an audio volume change through a Rotary Encoder or changing the display mode (World Clock, Room condition, geolocation),
 - if [**_Make time travel persistent_**](#persistent--non-persistent-time-travels) is checked: in the first few seconds after a timetravel.
@@ -189,7 +189,7 @@ Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed afte
 
 "Time cycling" is a kind of decorative mode in which the device cycles through a list of pre-programmed *destination* and *last time departed* times. These pre-programmed times match the dates/times of all time-travels that take place in the three movies.
 
-Time-cycling is enabled by setting up a **_Time-cycling Interval_** in the Config Portal or the [keypad menu](#how-to-select-the-time-cycling-interval). The device will then cycle through named list every 5th, 10th, 15th, 30th or 60th minute. The option **_Animate time-cycling_** decides whether the times simply switch, or the cycling event looks like someone entered a new destination date.
+Time-cycling is enabled by setting up a **_Time-cycling Interval_** in the Config Portal or the [keypad menu](#how-to-select-the-time-cycling-interval). The device will then cycle through named list every 5th, 10th, 15th, 30th or 60th minute. The option **_Animate time-cycling_** decides whether the times simply switch or the cycling event looks like someone entered a new destination date.
 
 Time-cycling will, if enabled, change the *Destination* and *Last Time Departed* displays regardless of the times already displayed, for instance as a result from an earlier time travel. Triggering a time-travel will, however, pause time-cycling for 30 minutes.
 
@@ -241,7 +241,7 @@ Not strictly part of Exhibition mode, but related: If you want your TCD to displ
 ### Audio Output
 
 Control boards 1.4.5 and later have two ways of audio output:
-- built-in speaker, or
+- built-in speaker or
 - line-out (at line-level, for connecting the TCD to a stereo's line-in)
 
 By default, all audio is played over the speaker. 
@@ -575,7 +575,7 @@ To toggle night-mode on/off manually, hold "4".
 
 #### Scheduled night-mode
 
-In the Config Portal, a schedule for night-mode can be programmed. You can choose from four time-schedule presets, or a daily schedule with selectable start and end hours.
+In the Config Portal, a schedule for night-mode can be programmed. You can choose from four time-schedule presets or a daily schedule with selectable start and end hours.
 
 The presets are for typical home, office and shop setups, and they assume the TCD to be in use (ie night-mode off) at the following times:
 - Home: Mon-Thu 5pm-11pm, Fri 1pm-1am, Sat 9am-1am, Sun 9am-11pm
@@ -604,7 +604,7 @@ For information on supported sensor models/types and configuration, see [here](A
 
 The alarm function works like any common alarm clock: An alarm sounds at a pre-programmed time.
 
-The alarm can be programmed through the [keypad menu](#how-to-set-up-the-alarm), or quickly through keypad command 11hhMM (h=hour, 0-23; m=minute). Weekday selection must be done through the [keypad menu](#how-to-set-up-the-alarm).
+The alarm can be programmed through the [keypad menu](#how-to-set-up-the-alarm) or quickly through keypad command 11hhMM (h=hour, 0-23; m=minute). Weekday selection must be done through the [keypad menu](#how-to-set-up-the-alarm).
 
 Holding "1" enables and disables the alarm; the state is shown by the dot in the present time's minute field. Keypad command 11 shows the currently programmed alarm time and the weekdays.
 
@@ -677,7 +677,7 @@ Your replacements need to be put in the root (top-most) directory of the SD card
 - "reminder.mp3": Played when the reminder is due.
 - "timer.mp3": Played when the count-down timer expires.
 - "ping.mp3": Played when re-connecting/re-enabling WiFi by holding '7' on the keypad.
-- "remoteon.mp3" / "remoteoff.mp3": Those are played back if a [Futaba remote control](#futaba-remote-control) takes over speed-control, or relinquishes it, respectively. Those sounds are played through [line-out](#audio-output), if enabled.
+- "remoteon.mp3" / "remoteoff.mp3": Those are played back if a [Futaba remote control](#futaba-remote-control) takes over speed-control or relinquishes it, respectively. Those sounds are played through [line-out](#audio-output), if enabled.
 
 The following sounds are time-sync'd to display action. If you decide to substitute these with your own, be prepared to lose synchronicity:
 - "enter.mp3": Played when a date was entered and ENTER was pressed.
@@ -704,7 +704,7 @@ Those files are not provided here. You can use any mp3, with a bitrate of 128kpb
 
 ### Installing Custom & Replacement Audio Files
 
-Replacements and custom sounds can either be copied to the SD card using a computer, or uploaded through the Config Portal.
+Replacements and custom sounds can either be uploaded through the Config Portal or copied to the SD card using a computer.
 
 Uploading through the Config Portal works exactly like [installing the sound-pack](#sound-pack-installation); on the main menu, click "Update & Upload". Afterwards choose one or more mp3 files to upload using the bottom file selector, and click "Upload". The firmware will store the uploaded mp3 files on the SD card.
 
@@ -1048,13 +1048,13 @@ The rotary encoder, if configured for speed, allows manually selecting a speed t
 | Click to watch the video |
 
 Remarks:
-- The encoder is only evaluated if no GPS receiver is connected, or if the **_Display GPS speed_** is unchecked (as this option gives GPS speed priority over the encoder).
-- The encoder is also evaluated if no speedo is connected; it can be operated "blindly" to trigger time travels and its movement is sent to BTTFN clients like GPS speed (if no GPS receiver is connected, or the option **_Provide GPS speed to wireless props_** is unchecked)
+- The encoder is only evaluated if no GPS receiver is connected or if the **_Display GPS speed_** is unchecked (as this option gives GPS speed priority over the encoder).
+- The encoder is also evaluated if no speedo is connected; it can be operated "blindly" to trigger time travels and its movement is sent to BTTFN clients like GPS speed (if no GPS receiver is connected or the option **_Provide GPS speed to wireless props_** is unchecked)
 - The speedo displays "0" as long as the encoder is not moved; if the encoder is turned counter-clockwise a couple of notches, the speedo will be switched off.
 
 ### Rotary Encoder for Audio Volume
 
-The rotary encoder for volume replaces the volume knob on back of the TCD's keypad. The advantages of the rotary encoder are that it is more precise, especially at lower volume levels, and it can be relocated. To use the rotary encoder for volume, the TCD's own volume knob must be disabled; this is done by pre-selecting an audio level in the keypad menu, or by typing 3xx (xx being 00-19) followed by ENTER.
+The rotary encoder for volume replaces the volume knob on back of the TCD's keypad. The advantages of the rotary encoder are that it is more precise, especially at lower volume levels, and it can be relocated. To use the rotary encoder for volume, the TCD's own volume knob must be disabled; this is done by pre-selecting an audio level in the keypad menu or by typing 3xx (xx being 00-19) followed by ENTER.
 
 ## Room Condition Mode, Temperature/humidity sensor
 
@@ -1092,11 +1092,11 @@ On the TCD, no special configuration is required for using BTTFN.
 
 On the other prop, such as CircuitSetup's [Flux Capacitor](https://circuitsetup.us/product/flux-capacitor-light-sound-pcb/), [SID](https://circuitsetup.us/product/delorean-time-machine-status-indicator-display-sid/), the [Dash Gauges](https://circuitsetup.us/product/delorean-time-machine-dash-gauge-control-board/), the [VSR](https://vsr.out-a-ti.me) or the [Futaba Remote Control kit](https://circuitsetup.us/product/futaba-remote-stanley-display-wireless-control-kit/?v=7d0db380a5b9), the TCD's IP address or hostname must be entered into the *IP address or hostname of TCD* field on the Setup page in their Config Portal - that's all.
 
-To see which BTTFN clients are currently known to the TCD, either check at the Config Portal's main page, or enter the keypad menu and select "BTTFN CLIENTS", 
+To see which BTTFN clients are currently known to the TCD, either check at the Config Portal's main page or enter the keypad menu and select "BTTFN CLIENTS", 
 
 #### Car Mode
 
-As [discussed](#connecting-to-a-wifi-network), in a car, or other places without a WiFi network, the TCD can act as WiFi access point for other props. The recommended network configuration for this use case is as follows:
+As [discussed](#connecting-to-a-wifi-network), in a car or other places without a WiFi network, the TCD can act as WiFi access point for other props. The recommended network configuration for this use case is as follows:
 
 ![APmode](img/apmode-car.png)
 
@@ -1108,7 +1108,7 @@ To disable *Car Mode*, type 990 followed by ENTER. The TCD will reboot and attem
 
 *Car Mode* is persistent, i.e. it remains active (even across reboots and power-downs) until disabled.
 
->Note that the TCD has no internet access while in Car Mode; this means that, unless a GPS receiver is present, it cannot update its clock automatically. If the time runs off over time, you either need to quit Car Mode once in a while and allow the TCD connect to a internet-connected WiFi network (the iPhone's Personal Hotspot works fine), or to re-adjust time using the [keypad menu](#how-to-set-the-real-time-clock-rtc). 
+>Note that the TCD has no internet access while in Car Mode; this means that, unless a GPS receiver is present, it cannot update its clock automatically. If the time runs off over time, you either need to quit Car Mode once in a while and allow the TCD connect to a internet-connected WiFi network (the iPhone's Personal Hotspot works fine) or to re-adjust time using the [keypad menu](#how-to-set-the-real-time-clock-rtc). 
 
 ### Connecting props by wire
 
@@ -1119,7 +1119,7 @@ The TCD has a TT-OUT pin (marked "TT OUT (IO14)" or "IO14") which can be used to
 
 #### Signal a Time Travel
 
-If the option [TT-OUT (IO14) pin] **_signals Time Travel_** is checked in the Config Portal, the TCD sets this pin to HIGH either 5 seconds ahead of the temporal displacement sequence, or - if the option **_Signal without 5s lead_** is unchecked - right at the start of the temporal displacement sequence. This allows third-party props to take part in time travel sequences. For more information, see [here](AddOns.md#other-props).
+If the option [TT-OUT (IO14) pin] **_signals Time Travel_** is checked in the Config Portal, the TCD sets this pin to HIGH either 5 seconds ahead of the temporal displacement sequence or - if the option **_Signal without 5s lead_** is unchecked - right at the start of the temporal displacement sequence. This allows third-party props to take part in time travel sequences. For more information, see [here](AddOns.md#other-props).
 
 CircuitSetup/A10001986 original props also support a wired connection, if for whatever reason BTTFN is not an option. For detailed wiring instructions, please see the documentation for the prop ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [Dash Gauges](https://github.com/realA10001986/Dash-Gauges/blob/main/Hardware.md#connecting-a-tcd-to-the-dash-gauges-by-wire), [VSR](https://github.com/realA10001986/VSR#connecting-a-tcd-by-wire)); 
 
@@ -1270,7 +1270,7 @@ For more information, see [here](https://remote.out-a-ti.me).
 
 The Config Portal offers two options for WiFi power saving, one for station mode (ie when the device is connected to a WiFi network), one for AP-mode (ie when the device acts as an access point). Both options do the same: They configure a timer after whose expiration WiFi is switched off; the device is no longer transmitting or receiving data over WiFi. 
 
-The timers can be set to 0 (which disables them; WiFi is never switched off; this is the default), or 10-99 minutes. 
+The timers can be set to 0 (which disables them; WiFi is never switched off; this is the default) or 10-99 minutes. 
 
 The reason for having two different timers for AP-mode and for station mode is that if the device is used in a car, it might act as an access point (such as in [car mode](#car-mode)), while at home it is most probably connected to a WiFi network as a client. Since in a car, unless other props are installed that communicate wirelessly, WiFi will most likely not be used on a regular basis, the timer for AP mode can be short (eg 10 minutes), while the timer for station mode can be disabled.
 
@@ -1290,7 +1290,7 @@ If a previous version of the TCD firmware is installed on your device, you can u
 
 <details>
 <summary>Installing on a fresh ESP32...</summary>
-If you are using a fresh ESP32, please go <a href="https://install.out-a-ti.me">here</a> and follow the instructions, or - if you are a nerd and want to deal with source code, compilers'n'stuff - see <a href="https://github.com/realA10001986/Time-Circuits-Display/blob/main/timecircuits-A10001986/timecircuits-A10001986.ino">timecircuits-A10001986.ino</a> for detailed build and upload information.
+If you are using a fresh ESP32, please go <a href="https://install.out-a-ti.me">here</a> and follow the instructions or - if you are a nerd and want to deal with source code, compilers'n'stuff - see <a href="https://github.com/realA10001986/Time-Circuits-Display/blob/main/timecircuits-A10001986/timecircuits-A10001986.ino">timecircuits-A10001986.ino</a> for detailed build and upload information.
 </details>
 
 ### Sound-pack installation
@@ -1352,7 +1352,7 @@ Finally, this page is also for uploading [custom or replacement sound files](#in
 
 ### WiFi Configuration
 
-Through this page you can either connect your TCD to your local WiFi network, or configure AP mode. 
+Through this page you can either connect your TCD to your local WiFi network or configure AP mode. 
 
 #### <ins>Connecting to an existing WiFi network</ins>
 
@@ -1404,7 +1404,7 @@ If you forget this password and are thereby locked out of your TCD, power-down, 
 
 ##### &#9193; WiFi channel
 
-Here you can select one out of 11 channels, or have the TCD choose a random channel for you. The default channel is 1. Preferred are channels 1, 6 and 11.
+Here you can select one out of 11 channels or have the TCD choose a random channel for you. The default channel is 1. Preferred are channels 1, 6 and 11.
 
 WiFI channel selection is key for a trouble-free operation. Disturbed WiFi communication can lead to disrupted sequences, packet loss, hanging or freezing props, and other problems. A good article on WiFi channel selection is [here](https://community.ui.com/questions/Choosing-the-right-Wifi-Channel-on-2-4Ghz-Why-Conventional-Wisdom-is-Wrong/ea2ffae0-8028-45fb-8fbf-60569c6d026d).
 
@@ -1457,7 +1457,7 @@ If other props are connected, they might bring their own time travel sound effec
 
 ##### &#9193; Alarm base is real present time
 
-Selects whether the alarm and sound-on-the-hour are based on real, actual present time, or "present" time as displayed (eg after a time travel).
+Selects whether the alarm and sound-on-the-hour are based on real, actual present time or "present" time as displayed (eg after a time travel).
 
 Note that the night mode schedules and the Reminder are always based on actual present time.
 
@@ -1770,7 +1770,7 @@ For detailed timing information, see [here](AddOns.md#synchronized-time-travel-t
 
 ##### &#9193; HA controls Fake-Power at startup
 
-This option selects whether HA should be in control of Fake-Power at startup, or not. If this is checked, the TCD assumes HA has control of Fake-Power, overruling a ("TFC") Fake-Power switch. If this is unchecked, Fake-Power control remains with the switch (if connected), and HA can take over only after sending "POWER_CONTROL_ON".
+This option selects whether HA should be in control of Fake-Power at startup or not. If this is checked, the TCD assumes HA has control of Fake-Power, overruling a ("TFC") Fake-Power switch. If this is unchecked, Fake-Power control remains with the switch (if connected), and HA can take over only after sending "POWER_CONTROL_ON".
 
 ##### &#9193; Wait for POWER_ON at startup
 
