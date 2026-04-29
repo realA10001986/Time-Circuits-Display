@@ -37,7 +37,7 @@ Features include
   - ["Decorative mode"](#time-cycling): Movie-accurate time travel times displayed in *destination time* and *last time departed* displays, and cycled in configurable interval
   - [Exhibition mode](#exhibition-mode): Show a fixed time in *Present Time* display instead of a running clock. Helpful for filming or museums.
 - Network capabilities:
-  - Advanced network-accessible [Config Portal](#the-config-portal) for setup (http://timecircuits.local, hostname configurable)
+  - Advanced network-accessible [Config Portal](#the-config-portal) for setup (http://timecircuits.local)
   - Easy [firmware updates](#firmware-installation--firmware-update) over-the-air
   - [Wireless communication](#connecting-props-wirelessly-bttf-network-bttfn) with compatible props such as CircuitSetup's [Flux Capacitor](https://circuitsetup.us/product/flux-capacitor-light-sound-kit/) and [SID](https://circuitsetup.us/product/delorean-time-machine-status-indicator-display-sid/), as well as the [Dash Gauges](https://circuitsetup.us/product/delorean-time-machine-dash-gauge-control-board/), [VSR](https://vsr.out-a-ti.me) and modified [Futaba Remote Control](https://circuitsetup.us/product/futaba-remote-stanley-display-wireless-control-kit/), for synchronized Time Travel sequences, replaying movie scenes, mutual remote control, and more.
   - [Home Assistant](#home-assistant--mqtt) (MQTT) support for sending and displaying messages, remote controlling and more.
