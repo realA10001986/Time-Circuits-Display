@@ -1527,7 +1527,7 @@ If this is checked, and the user does not react to an alarm by either pressing o
 
 ##### &#9193; Loop user-provided Alarm sound
 
-The alarm plays for 2 minutes. If the alarm sound is [substituted](#sound-substitution) by a user-provided mp3 file, this option allows looping it, which is useful if it is considerable shorter than two minutes. Note that you can only snooze or disable the alarm using the ENTER button while the alarm sounds. Afterwards the alarm can only be stopped through keypad command 12 if snooze is enabled.
+The alarm plays for 2 minutes. If the alarm sound is [substituted](#sound-substitution) by a user-provided mp3 file, this option allows looping it, which is useful if it is considerably shorter than two minutes. Note that you can only snooze or disable the alarm using the ENTER button while the alarm sounds. Afterwards the alarm can only be stopped through keypad command 12 if snooze is enabled.
 
 #### <ins>Night-mode</ins>
 
