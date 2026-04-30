@@ -951,13 +951,13 @@ On Control Boards V1.3 and later, there is a dedicated header for the button lab
 
 | ![ttin](img/ttin.jpg) |
 |:--:|
-| TT_IN on TCB 1.3 |
+| TT_IN/GND on TCB 1.3 |
 
 Unfortunately, there is no header for "TT_IN" on TC control boards V1.2 and below. There is, however, a row of solder pads right next to the socket on the control board, where a pin header or cable can easily be soldered on:
 
 | ![tcboard_io27](img/ttin12.jpg) |
 |:--:|
-| TT_IN on TCB 1.2 |
+| TT_IN/GND on TCB 1.2 |
 
 To trigger a time-travel sequence on the Time Circuits, "TT IN" and GND must be connected for at least 200ms and then opened; the time travel is triggered upon release of the button. If the button is pressed for 3000ms (3 seconds), a ["Return from Time Travel"](#time-travel) is triggered.
 
