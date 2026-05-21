@@ -29,6 +29,7 @@ Features include
   - [Count-down timer](#count-down-timer): Count down from up to 99 minutes
   - [Yearly/monthly reminder](#yearlymonthly-reminder): Get a yearly or monthly acoustic reminder
   - [Sound on the hour](#additional-custom-sounds)
+  - Time can be spoken out loud by "Marty McFly"
 - Movie-related:
   - Movie-accurate [Beep](#beep-on-the-second) sound every second (4 modes)
   - Movie-accurate [time travel](#time-travel) function
@@ -310,22 +311,6 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="center" colspan="2">Keypad commands<br>(&#9166; = ENTER key)</td>
     </tr>
    <tr>
-     <td align="left">Disable <a href="#beep-on-the-second">beep</a> sound</td>
-     <td align="left">000&#9166;</td>
-   </tr>
-   <tr>
-     <td align="left">Enable <a href="#beep-on-the-second">beep</a> sound</td>
-     <td align="left">001&#9166;</td>
-   </tr>
-   <tr>
-     <td align="left">Enable <a href="#beep-on-the-second">beep</a> sound (30 seconds)</td>
-     <td align="left">002&#9166;</td>
-   </tr>
-   <tr>
-     <td align="left">Enable <a href="#beep-on-the-second">beep</a> sound (60 seconds)</td>
-     <td align="left">003&#9166;</td>
-   </tr>
-   <tr>
      <td align="left">Reset display mode (disable 111-117)</a></td>
      <td align="left">110&#9166;</td>
     </tr>
@@ -338,7 +323,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left">112&#9166;</td>
     </tr>
     <tr>
-     <td align="left">Toggle both <a href="#world-clock-mode">World Clock</a> and <a href="#room-condition-mode-temperaturehumidity-sensor">Room Condition</a> (WC/RC hybrid)</td>
+     <td align="left">Toggle <a href="#world-clock-mode">World Clock</a> and <a href="#room-condition-mode-temperaturehumidity-sensor">Room Condition</a> (WC/RC) hybrid mode</td>
      <td align="left">113&#9166;</td>
     </tr>
     <tr>
@@ -351,9 +336,29 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
     </tr>
     <tr>
      <td align="left">Display weekday of currently displayed <i>present time</i> date</td>
-     <td align="left">33&#9166;</td>
+     <td align="left">39&#9166;</td>
     </tr>
+  <tr>
+     <td align="left">Disable <a href="#beep-on-the-second">beep</a> sound</td>
+     <td align="left">20&#9166;</td>
+   </tr>
+   <tr>
+     <td align="left">Enable <a href="#beep-on-the-second">beep</a> sound</td>
+     <td align="left">21&#9166;</td>
+   </tr>
+   <tr>
+     <td align="left">Enable <a href="#beep-on-the-second">beep</a> sound (30 seconds)</td>
+     <td align="left">22&#9166;</td>
+   </tr>
+   <tr>
+     <td align="left">Enable <a href="#beep-on-the-second">beep</a> sound (60 seconds)</td>
+     <td align="left">23&#9166;</td>
+   </tr>
     <tr>
+     <td align="left">Select relative beep volume level</td>
+     <td align="left">30 - 33&#9166;</td>
+    </tr>
+  <tr>
      <td align="left">Select audio volume level</td>
      <td align="left">300 - 319&#9166;</td>
     </tr>
@@ -561,9 +566,15 @@ The beep can be permanently disabled, permanently enabled, or enabled for 30 or 
 - after switching on the TCD (real power-up or fake power-up),
 - after changing "speed" using a [Rotary Encoder](#rotary-encoder).
 
-The different modes are selected through keypad commands 000 (disabled), 001 (enabled), 002 (enabled for 30 secs) or 003 (enabled for 60 secs).
+The different modes are selected through keypad commands 20 (disabled), 21 (enabled), 22 (enabled for 30 secs) or 23 (enabled for 60 secs).
+
+The beep volume level can be selected relative to general volume, in four steps (keypad commands 30-33). _Relative to general volume_ means that the beep volume is a percentage of general volume, and as a result, the lower your general volume, the less of a difference will be between the relative beep levels.
 
 For technical reasons, the beep is suppressed whenever other sounds are played-back.
+
+## Marty's time announcement
+
+As of version 3.23, the TCD, or rather "Marty McFly", will tell you the time out loud on pressing ENTER (without a command).
 
 ## Night mode
 
