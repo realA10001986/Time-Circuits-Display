@@ -248,6 +248,12 @@ class WiFiManager
   	void          setPreWiFiScanCallback(bool(*func)())
   	                              { _prewifiscancallback = func; };
 
+    // Callback for changing client carmode
+    #ifdef WM_CCM
+    void          setCCarModeCallback(void(*func)(bool))
+  	                              { _setCCarMode = func; };
+    #endif
+
   	// Set connection parameters
 
     // sets timeout for which to attempt connecting, useful if you get a lot of failed connects
@@ -316,6 +322,11 @@ class WiFiManager
     // Custom
     void          setCarMode(bool enable)
                                   { _carMode = enable; };
+
+    #ifdef WM_CCM
+    void          setCCarMode(bool enable)
+                                  { _cCarMode = enable; };
+    #endif
 
     // add custom html at inside <head> for all pages
     void          setCustomHeadElement(const char* html)
@@ -453,6 +464,9 @@ class WiFiManager
     bool          _autoforcerescan        = false; // automatically force rescan if scan networks is 0, ignoring cache
 
     bool          _carMode                = false; // Custom
+    #ifdef WM_CCM
+    bool          _cCarMode               = false;
+    #endif
 
     volatile bool _beginSemaphore         = false;
 
@@ -595,6 +609,9 @@ class WiFiManager
 	  #endif
 	  #ifdef WM_EVENTCB
 	  void (_wifieventcallback)(WiFiEvent_t event)                        = NULL;
+	  #endif
+	  #ifdef WM_CCM
+	  void (*_setCCarMode)(bool)                                          = NULL;
 	  #endif
 
     #ifdef _A10001986_DBG

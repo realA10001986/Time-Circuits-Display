@@ -1,5 +1,5 @@
 /**
- * WiFiManager.h
+ * wm_local.h - TCD
  *
  * Based on:
  * WiFiManager, a library for the ESP32/Arduino platform
