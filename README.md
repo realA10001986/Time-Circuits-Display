@@ -29,7 +29,7 @@ Features include
   - [Count-down timer](#count-down-timer): Count down from up to 99 minutes
   - [Yearly/monthly reminder](#yearlymonthly-reminder): Get a yearly or monthly acoustic reminder
   - [Sound on the hour](#additional-custom-sounds)
-  - Time can be spoken out loud by "Marty McFly"
+  - Time can be [spoken out loud](#martys-time-announcement) by "Marty McFly"
 - Movie-related:
   - Movie-accurate [Beep](#beep-on-the-second) sound every second (4 modes)
   - Movie-accurate [time travel](#time-travel) function
