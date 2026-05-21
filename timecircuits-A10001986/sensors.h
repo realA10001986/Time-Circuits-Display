@@ -102,9 +102,10 @@ class tempSensor : tcSensor {
         tempSensor(int numTypes, const uint8_t *addrArr);
         bool begin(void (*myDelay)(unsigned long), bool InCelsius);
 
-        float readTemp();
-        float readLastTemp() { return _lastTemp; };
-        bool lastTempNan() { return _lastTempNan; };
+        float   readTemp();
+        float   readLastTemp()     { return _lastTemp;     };
+        bool    lastTempNan()      { return _lastTempNan;  };
+        int16_t readLastTempT100() { return _lastTempT100; };
 
         void setOffset(float myOffs) { _userOffset = myOffs; }
 
@@ -122,8 +123,9 @@ class tempSensor : tcSensor {
         bool    _haveHum = false;
         unsigned long _delayNeeded = 0;
 
-        float  _lastTemp = NAN;
-        bool   _lastTempNan = true;
+        float   _lastTemp = NAN;
+        bool    _lastTempNan = true;
+        int16_t _lastTempT100 = -32768;
 
         float  _userOffset = 0.0;
 

@@ -6,8 +6,10 @@
  * https://github.com/realA10001986/Time-Circuits-Display
  * https://tcd.out-a-ti.me
  *
- * Sound handling
+ * Keypad Menu
  *
+ * Based on ideas by John Monaco, Marmoset Electronics
+ * https://www.marmosetelectronics.com/time-circuits-clock
  * -------------------------------------------------------------------
  * License: Modified MIT NON-AI
  * 
@@ -53,92 +55,11 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef _TC_AUDIO_H
-#define _TC_AUDIO_H
+#ifndef _TC_KPMENU_H
+#define _TC_KPMENU_H
 
-// By default, use the volume knob
-#define DEFAULT_VOLUME 255
+void        enter_menu();
 
-#define PA_CHECKNM 0x000001
-#define PA_INTRMUS 0x000002
-#define PA_ALLOWSD 0x000004
-#define PA_DYNVOL  0x000008
-#define PA_DOID3TS 0x000010
-#define PA_DOOR    0x000020
-#define PA_LINEOUT 0x000040
-#define PA_INTSPKR 0x000000
-#define PA_ISWAV   0x000080
-// upper 8 bits all taken for key ID
-#define PA_KEYMASK 0x01ff00
-#define PA_DOORL   0x000100
-#define PA_DOORR   0x000200
-#define PA_LOOP    0x020000
-#define PA_TCSEGS  0x040000
-#define PA_SIGNAL  0x100000
-#define PA_ALARM   0x200000
-#define PA_REM     0x400000
-#define PA_TMR     0x800000
-#define PA_SIGMASK (PA_SIGNAL|PA_ALARM|PA_REM|PA_TMR)
-
-void  audio_setup();
-void  audio_loop();
-
-//void     append_file(const char *audio_file, uint32_t flags, float volumeFactor = 1.0f);
-
-void     play_file(const char *audio_file, uint32_t flags, float volumeFactor = 1.0f);
-uint32_t play_keypad_sound(char key);
-void     play_hour_sound(int hour);
-void     play_beep();
-void     play_key(int k, uint32_t preDTMFkp);
-void     play_door_snd(int doorNum, int state, uint32_t doorFlags);
-
-bool     say_time(int pbt, int whichone, int gh, int gm);
-
-void     setBeepLevel(unsigned int levelIdx);
-
-bool         check_file_SD(const char *audio_file);
-unsigned int check_file_len_SD(const char *audio_file, bool& file_exists, uint8_t *tbuf = NULL, uint32_t tsz = 0);
-
-int      getSWVolFromHWVol();
-
-bool     checkAudioDone();
-bool     checkAudioFree();
-bool     checkMP3Running();
-uint32_t isSignalPlaying();
-bool     isUISignalPlaying();
-
-void  stopAudio();
-void  stop_key();
-void  stopAlarm(bool force);
-
-void  mp_init(bool isSetup = false);
-void  mp_play(bool forcePlay = true);
-bool  mp_stop();
-void  mp_next(bool forcePlay = false);
-void  mp_prev(bool forcePlay = false);
-int   mp_gotonum(int num, bool force = false);
-void  mp_makeShuffle(bool enable);
-int   mp_checkForFolder(int num);
-int   mp_get_currently_playing();
-
-extern int  volumePin;
-
-extern bool audioInitDone;
-extern bool muteBeep;
-
-extern bool haveMusic;
-extern bool mpActive;
-extern bool mpShuffle;
-
-extern char id3artist[];
-extern char id3track[]; 
-
-extern bool haveLineOut;
-extern bool useLineOut;
-
-extern bool haveTCC;
-
-extern int  curVolume;
-extern unsigned int beepLvlIdx;
+const char  *getAlWD(unsigned int wd, bool menuMode = false);
 
 #endif

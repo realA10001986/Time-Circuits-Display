@@ -66,7 +66,7 @@ bool updateAvailable();
 
 int  wifi_getStatus();
 bool wifi_getIP(uint8_t& a, uint8_t& b, uint8_t& c, uint8_t& d);
-void wifi_getMAC(char *buf);
+void wifi_getMAC(char *buf, bool sta, bool s = true);
 
 bool checkIPConfig();
 

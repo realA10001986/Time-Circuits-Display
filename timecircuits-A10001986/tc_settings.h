@@ -56,23 +56,30 @@
 #ifndef _TC_SETTINGS_H
 #define _TC_SETTINGS_H
 
+#include <FS.h>
 #include "tcddisplay.h"
 
-void settings_setup();
+#define MS(s) XMS(s)
+#define XMS(s) #s
 
 void unmount_fs();
-
-void clearWiFiCredentials();
-
-void write_settings();
-bool checkConfigExists();
 
 bool evalBool(char *s);
 bool evalBoolSetClear(char *s, uint32_t& ff, uint32_t fl);
 
+void clearWiFiCredentials();
+
+void write_settings();
+
+void settings_setup();
+
 void saveBrightness();
 
 void saveBeepAutoInterval();
+
+void loadCurVolume();
+void storeCurVolume();
+void saveCurVolume();
 
 void loadAlarm();
 void saveAlarm();
@@ -81,10 +88,6 @@ void loadReminder();
 void saveReminder();
 
 void saveCarMode();
-
-void loadCurVolume();
-void storeCurVolume();
-void saveCurVolume();
 
 void loadStaleTime(void *target, bool& currentOn);
 void saveStaleTime(void *source, bool currentOn);
@@ -121,14 +124,13 @@ bool loadIpSettings();
 void writeIpSettings();
 void deleteIpSettings();
 
-bool check_if_default_audio_present();
-bool copy_audio_files(bool& delIDfile);
-
-bool check_allow_CPA();
-void delete_ID_file();
-
 void reInstallFlashFS();
 void moveSettings();
+
+bool check_allow_CPA();
+bool check_if_default_audio_present();
+bool copy_audio_files(bool& delIDfile);
+void delete_ID_file();
 
 #define MAX_SIM_UPLOADS 16
 #define UPL_OPENERR 1
@@ -138,8 +140,8 @@ void moveSettings();
 #define UPL_MEMERR  5
 #define UPL_UNKNOWN 6
 #define UPL_DPLBIN  7
-#include <FS.h>
 bool   openUploadFile(String& fn, File& file, int idx, bool haveAC, int& opType, int& errNo);
+extern uint32_t (*t)(uint8_t *, uint32_t, uint32_t);
 size_t writeACFile(File& file, uint8_t *buf, size_t len);
 void   closeACFile(File& file);
 void   removeACFile(int idx);
@@ -147,22 +149,6 @@ void   renameUploadFile(int idx);
 char   *getUploadFileName(int idx);
 int    getUploadFileNameLen(int idx);
 void   freeUploadFileNames();
-
-extern bool       haveFS;
-extern bool       haveSD;
-extern bool       FlashROMode;
-extern bool       configOnSD;
-extern const char rspv[];
-
-extern bool       haveAudioFiles;
-
-extern unsigned int musFolderNum;
-
-extern int        sspeedopin;
-extern int        stachopin;
-
-#define MS(s) XMS(s)
-#define XMS(s) #s
 
 // Default settings
 #define DEF_HOSTNAME        "timecircuits"
@@ -187,10 +173,10 @@ extern int        stachopin;
 #define DEF_USE_GPS_TIME    1     // Use GPS time (if available)
 #define DEF_WCSHOWNAME      1     // WC Mode: 1: Show name permanently (if short enough), 0: alternate name <> date
 #define DEF_ALARM_TYPE      0     // 0: Simple/legacy, 1: Advanced
-#define DEF_SNOOZE          1
-#define DEF_SNOOZE_TIME     9
-#define DEF_ASNOOZE         1
-#define DEF_LOOP_USER_SND   0
+#define DEF_SNOOZE          1     // 1:Snooze, 0:No Snooze
+#define DEF_SNOOZE_TIME     9     // Snooze time (minutes)
+#define DEF_ASNOOZE         1     // 1:Do Auto-Snooze, 0:Don't
+#define DEF_LOOP_USER_SND   0     // Loop user sound: 1:yes, 0:no
 #define DEF_BRIGHT_DEST     10    // 1-15
 #define DEF_BRIGHT_PRES     10
 #define DEF_BRIGHT_DEPA     10
@@ -368,8 +354,20 @@ struct IPSettings {
     char dns[20]      = "";
 };
 
-extern struct Settings    settings;
-extern struct IPSettings  ipsettings;
+extern struct     Settings    settings;
+extern struct     IPSettings  ipsettings;
 
+extern bool       haveFS;
+extern bool       haveSD;
+extern bool       FlashROMode;
+extern bool       configOnSD;
+extern const char rspv[];
+
+extern bool       haveAudioFiles;
+
+extern unsigned int musFolderNum;
+
+extern int        sspeedopin;
+extern int        stachopin;
 
 #endif

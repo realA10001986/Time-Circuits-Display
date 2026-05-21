@@ -717,8 +717,10 @@ float tempSensor::readTemp()
         if(!_tempInCelsius) temp = temp * 9.0f / 5.0f + 32.0f;
         temp += _userOffset;
         _lastTempNan = false;
+        _lastTempT100 = (int16_t)(temp * 100.0f);
     } else {
         _lastTempNan = true;
+        _lastTempT100 = -32768;
     }
 
     // We use only 2 digits, so truncate

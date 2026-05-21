@@ -71,7 +71,7 @@
 
 #include "src/ESP8266Audio/AudioOutputI2S.h"
 
-#include "tc_time.h"
+#include "tc_main.h"
 #include "tc_settings.h"
 #include "tc_audio.h"
 #include "tc_keypad.h"
@@ -152,6 +152,9 @@ static const float volTable[20] = {
     0.35f, 0.40f, 0.50f, 0.60f,
     0.70f, 0.80f, 0.90f, 1.00f
 };
+static const float beepLevels[4] = {
+    0.1f, 0.2f, 0.3f, 0.4f
+};
 int           volumePin = VOLUME_PIN;
 // Resolution for pot, 9-12 allowed
 #define POT_RESOLUTION 9
@@ -179,8 +182,25 @@ bool          haveLineOut = false;
 bool          useLineOut  = false;
 static bool   playLineOut = false;
 
+unsigned int  beepLvlIdx  = 2;
+float         beepLevel   = 0.3f;
+
 static char     keySnd[] = "/key3.mp3";   // not const
 static uint32_t haveKeySnd = 0;
+
+#define TCC_VER   1
+bool              haveTCC = false;
+static bool       sayTimeOnTheHour = false;
+static const char tcc_fn[] = "/TCC.bin";
+static const uint32_t tcc_magic = (TCC_VER << 24) | 0x434354;
+static int16_t    segList[5];
+
+/*
+static char     append_audio_file[32];
+static float    append_vol;
+static uint32_t append_flags;
+static int      appendFile = 0;
+*/
 
 static const char *tcdrdone = "/TCD_DONE.TXT";
 bool          headLineShown = false;
@@ -223,6 +243,8 @@ static void   decodeID3(char *artist, char *track, char *id3, int id3size);
  */
 void audio_setup()
 {
+    unsigned int sps = 0;
+    uint32_t tbuf[3];
     #ifdef TC_DBG_AUDIO
     audioLogger = &Serial;
     #endif
@@ -261,6 +283,8 @@ void audio_setup()
 
     loadCurVolume();
 
+    setBeepLevel(beepLvlIdx);
+
     loadMusFoldNum();
     loadShuffle();
 
@@ -286,12 +310,27 @@ void audio_setup()
         if(check_file_SD(shsnd)) haveSpHrSnd |= (1 << i);
     }
 
+    if((sps = check_file_len_SD(tcc_fn, haveTCC, (uint8_t *)&tbuf[0], 12))) {
+        haveTCC = ((tbuf[0] == tcc_magic) && (tbuf[1] == sps ^ tcc_magic));
+    }
+    
     audioInitDone = true;
 
     #ifdef TC_DBG_AUDIO
     Serial.printf("haveKeySnd 0x%x, haveSPHrSnd 0x%x\n", haveKeySnd, haveSpHrSnd);
     #endif    
 }
+
+/*
+static int checkAppend()
+{
+    if(appendFile) {
+        play_file(append_audio_file, append_flags, append_vol);
+        return 1;
+    }
+    return 0;
+}
+*/
 
 /*
  * audio_loop()
@@ -303,13 +342,14 @@ void audio_loop()
         if(!wav->loop()) {
             wav->stop();
             beepRunning = false;
+            //checkAppend();
         }
     } else if(mp3->isRunning()) {
         if(!mp3->loop()) {
             mp3->stop();
             key_playing = 0;
             clear_sig_playing(alarmCanRunOut);
-            if(mpActive) {
+            if(mpActive) {    //if(!checkAppend() && mpActive) {
                 mp_next(true);
             }
         } else if(dynVol) {
@@ -319,7 +359,7 @@ void audio_loop()
                 sampleCnt = 0;
             }
         }
-    } else if(mpActive) {
+    } else if(mpActive) {    //if(!checkAppend() && mpActive) {
         pwrNeedFullNow();
         mp_next(true);
     }
@@ -342,10 +382,28 @@ static int skipID3(char *buf)
     return 0;
 }
 
+/*
+void append_file(const char *audio_file, uint32_t flags, float volumeFactor)
+{
+    if(strlen(audio_file) >= sizeof(append_audio_file) - 1) {
+        #ifdef TC_DBG_AUDIO
+        Serial.printf("Internal error: Sound file name too long (%d vs max %d)\n", strlen(audio_file), sizeof(append_audio_file));
+        #endif
+        return;
+    }
+    strcpy(append_audio_file, audio_file);
+    append_flags = flags;
+    append_vol = volumeFactor;
+    appendFile = 1;
+}
+*/
+
 void play_file(const char *audio_file, uint32_t flags, float volumeFactor)
 {
     char buf[10];
     int32_t pos = 0;
+
+    //appendFile = 0;   // Clear appended, append must be called AFTER play_file
 
     // Only signals can interrupt signals
     if(sig_playing & PA_SIGNAL) {
@@ -406,7 +464,15 @@ void play_file(const char *audio_file, uint32_t flags, float volumeFactor)
 
     buf[0] = 0;
 
-    if(haveSD && ((flags & PA_ALLOWSD) || FlashROMode) && mySD0->open(audio_file)) {
+    if(flags & PA_TCSEGS) {
+        if(haveTCC && (mySD0->c = t) && mySD0->open_c(tcc_fn, (const int16_t *)audio_file)) {
+            if(flags & PA_ISWAV) {
+                wav->begin(mySD0, out);
+            } else {
+                mp3->begin(mySD0, out);
+            }
+        }
+    } else if(haveSD && ((flags & PA_ALLOWSD) || FlashROMode) && mySD0->open(audio_file)) {
         mySD0->setPlayLoop(false);
         if(flags & PA_ISWAV) {
             wav->begin(mySD0, out);
@@ -490,6 +556,7 @@ uint32_t play_keypad_sound(char key)
     curVolFact = 0.6f;
     rawVolIdx = 0;
     anaReadCount = 0;
+    //appendFile = 0;
 
     out->SetGain(getVolume(), 0);
 
@@ -518,6 +585,8 @@ void play_hour_sound(int hour)
         play_file(shsnd, PA_INTSPKR|PA_ALLOWSD);
     } else if(haveSpHrSnd & HHS_HAVEHRSOUND) {
         play_file(hsnd, PA_INTSPKR|PA_ALLOWSD);
+    } else if(haveTCC && sayTimeOnTheHour) {
+        say_time(0, 1, hour, 0);
     }
 }
 
@@ -529,6 +598,7 @@ void play_beep()
        mp3->isRunning()                       ||
        (csf & (CSF_NM|CSF_OFF|CSF_AL|CSF_AE)) ||
        mpActive                               ||
+       //appendFile                             ||
        (wavRunning && !beepRunning)) {
         return;
     }
@@ -542,7 +612,7 @@ void play_beep()
     setLineOut(false);
     playLineOut = false;
 
-    curVolFact = 0.3f;
+    curVolFact = beepLevel; //0.3f;
     curChkNM   = false;
     // Reset vol smoothing
     // (user might have turned the pot while no sound was played)
@@ -596,6 +666,24 @@ void play_door_snd(int doorNum, int state, uint32_t doorFlags)
             lastDoorNum = doorNum;
         }
     }
+}
+
+bool say_time(int pbt, int whichone, int gh, int gm)
+{
+    int h, m;
+    
+    if(haveTCC) {
+        
+        stopAudio();
+
+        // pbt: 0 normal, 1 fancy; wo: -1 = displayed, 0 = current, 1 = given
+        get_time_segs(pbt, whichone, segList, gh, gm);
+
+        play_file((const char *)segList, PA_TCSEGS|PA_LINEOUT|PA_CHECKNM, 1.0);
+        return true;
+    }
+    
+    return false;
 }
 
 // Returns value for volume based on the position of the pot
@@ -693,6 +781,13 @@ static float getVolume()
     return vol_val;
 }
 
+void setBeepLevel(unsigned int levelIdx)
+{
+    if(levelIdx > 3) levelIdx = 3;
+    beepLvlIdx = levelIdx;
+    beepLevel = beepLevels[levelIdx];
+}
+
 static void setLineOut(bool doLineOut)
 {
     if(haveLineOut) {
@@ -719,13 +814,16 @@ bool check_file_SD(const char *audio_file)
     return (haveSD && SD.exists(audio_file));
 }
 
-unsigned int check_file_len_SD(const char *audio_file, bool& file_exists)
+unsigned int check_file_len_SD(const char *audio_file, bool& file_exists, uint8_t *tbuf, uint32_t tsz)
 {
     unsigned int s = 0;
     if(haveSD) {
         File file;
         if(file = SD.open(audio_file, FILE_READ)) {
             s = file.size();
+            if(tbuf && tsz) {
+                if(file.read(tbuf, tsz) != tsz) s = 0;
+            }
             file.close();
         }
     }
@@ -785,6 +883,7 @@ void stopAudio()
     key_playing = 0;    
     clear_sig_playing();
     *id3artist = *id3track = 0;
+    //appendFile = 0;   // Clear appended, stop means stop.
 }
 
 void stop_key()
@@ -805,11 +904,11 @@ void stopAlarm(bool force)
         }
     }
 
-    // Cancel timeout in time_loop().
+    // Cancel timeout in main_loop().
     // Do not do that in clear_sig_playing; if the alarm
     // is interrupted by another sound, stopAudio() calls
     // clear_sig_playing(), which clears CSF_AL and thereby
-    // releases the keypad. The timeout-loop in time_loop() 
+    // releases the keypad. The timeout-loop in main_loop() 
     // (controlled by alarmPlaying) can continue to run and
     // eventually initiate auto-snooze. (Note that this does
     // not work for non-looped alarm sounds.)
@@ -830,6 +929,13 @@ static void clear_sig_playing(int ranOut)
     }
     sig_playing = 0;
 }
+
+/*
+bool append_pending()
+{
+    return appendFile;
+}
+*/
 
 /*
  * ID3 handling

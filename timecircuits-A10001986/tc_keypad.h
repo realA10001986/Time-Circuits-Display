@@ -99,8 +99,10 @@ void s5(bool b);
 
 void doCopyAudioFiles();
 void start_file_copy();
-void file_copy_progress();
+void file_copy_progress(uint32_t ts, uint32_t tw);
 void file_copy_done(int err);
+
+void doUploadSpinner(int doStart);
 
 void prepareReboot();
 
@@ -109,12 +111,13 @@ extern bool p3anim;
 extern int  keypadMode;
 
 extern uint32_t eef;
-#define EEF_EnterPressed    0x0001
-#define EEF_EnterHeld       0x0002
-#define EEF_EttPressed      0x0010
-#define EEF_EttHeld         0x0020
-#define EEF_EttImmediate    0x0040  // Ignore configured ett delay (also, do lead on speedo-less time travel)
-#define EEF_InputInjected   0x0100
+#define EEF_EnterPressed        0x0001
+#define EEF_EnterHeld           0x0002
+#define EEF_EttPressed          0x0010
+#define EEF_EttHeld             0x0020
+#define EEF_EttImmediate        0x0040  // Ignore configured ett delay (also, do lead on speedo-less time travel)
+#define EEF_InputInjected       0x0100
+#define EEF_InjectionPostponed  0x0200
 
 extern char timeBuffer[];
 extern unsigned int timeBufferSize;

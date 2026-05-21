@@ -842,7 +842,7 @@ bool tcdDisplay::save(bool force)
 // Returns bit pattern for provided character for display on 7 segment display
 uint8_t tcdDisplay::getLED7AlphaChar(uint8_t value)
 {
-    if(value < 32 || value >= 127 + 4)
+    if(value < 32 || value >= 127 + 10)
         return 0;
     
     // For text, use common "6" pattern if requested

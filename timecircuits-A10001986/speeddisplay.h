@@ -78,7 +78,7 @@
 // i2c compatible as it has no slave address, and therefore cannot be part
 // of a i2c chain.
 //
-// The display's i2c slave address is 0x70 (defined in tc_time.h).
+// The display's i2c slave address is 0x70 (defined in tc_main.h).
 
 #define SP_NUM_TYPES 13  // Number of speedo display types supported (excl "none")
 

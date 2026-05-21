@@ -28,11 +28,11 @@
 
 // These must not contain any characters other than
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
-#define TC_VERSION_REV   "V3.22"      // 7 chars max. Do NOT change format.
+#define TC_VERSION_REV   "V3.23"      // 7 chars max. Do NOT change format.
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "APR192026"  // 13 chars max
+#define TC_VERSION_EXTRA "MAY212026"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "04192026"   // 12 chars max
+#define TC_VERSION_EXTRA "05212026"   // 12 chars max
 #endif
 
 /*************************************************************************
@@ -128,7 +128,7 @@
 //#define SERVOSPEEDO
 
 #ifndef CS_EDITION
-//#define TWPRIVATE       // A10001986's private customizations
+#define TWPRIVATE       // A10001986's private customizations
 #ifdef TWPRIVATE
 #undef SERVOSPEEDO
 #define SERVOSPEEDO
@@ -147,7 +147,7 @@
 //#define TC_DBG_BOOT           // Boot strap & settings
 //#define TC_DBG_WIFI           // WiFi-related
 //#define TC_DBG_MQTT           // MQTT-related
-//#define TC_DBG_AUDIO          // Audio-related
+#define TC_DBG_AUDIO          // Audio-related
 //#define TC_DBG_TIME           // Time handling
 //#define TC_DBG_NET            // Prop network
 //#define TC_DBG_TT             // Time travel
