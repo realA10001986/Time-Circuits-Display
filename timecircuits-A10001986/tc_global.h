@@ -128,7 +128,7 @@
 //#define SERVOSPEEDO
 
 #ifndef CS_EDITION
-#define TWPRIVATE       // A10001986's private customizations
+//#define TWPRIVATE       // A10001986's private customizations
 #ifdef TWPRIVATE
 #undef SERVOSPEEDO
 #define SERVOSPEEDO
