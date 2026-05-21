@@ -62,7 +62,7 @@ For information on updating the firmware on your TCD, see [here](#firmware-insta
 
 ## Initial Configuration
 
->The following instructions only need to be followed once, on fresh TCDs. They do not need to be repeated after a firmware update.
+>The following instructions only need to be followed once, on factory-fresh TCDs. They do not need to be repeated after a firmware update.
 
 The first step is to establish access to the TCD's configuration web site ("Config Portal") in order to configure your TCD:
 
@@ -79,6 +79,10 @@ Click on "Settings" on the Config Portal's main page, and specify your [time zon
 Setting actual time:
 - If the TCD is going to be connected to a WiFi network with internet access as described in the following section, it will receive time information through NTP (network time protocol). No user interaction is required.
 - Otherwise please set your local time through the [keypad menu](#how-to-set-the-real-time-clock-rtc).
+
+#### Sound-pack re-installation (Firmware 3.23 an onwards)
+
+If your factory-fresh TCD came with firmware version 3.23 or later, but no SD card, you need to re-install the sound-pack at this point. The reason for this is that the sound-pack does not entirely fit into the device's flash memory and parts of it need to be installed on your SD card. Please see [here](#sound-pack-installation) for instructions.
 
 #### Connecting to a WiFi network
 
@@ -1310,7 +1314,7 @@ If you are using a fresh ESP32, please go <a href="https://install.out-a-ti.me">
 
 The firmware comes with a sound-pack which needs to be installed separately. The sound-pack is not updated as often as the firmware itself. There will be a message in the Config Portal and the TCD will display "PLEASE INSTALL SOUND PACK" during boot when/if the sound-pack needs to be updated.
 
-_Note that installing the sound-pack requires an [SD card](#sd-card)._
+_Installing the sound-pack requires an [SD card](#sd-card)._
 
 >A10001986 and CircuitSetup use different sound-packs. If you switch from one version to the other, the matching sound-pack must be re-installed. [A10001986-releases](https://github.com/realA10001986/Time-Circuits-Display/releases) use "sound-pack-**tw**XX", while [CircuitSetup's](https://github.com/CircuitSetup/Time-Circuits-Display/releases) are named "sound-pack-**cs**XX". The Config Portal will tell you which version is required to be installed.
 
