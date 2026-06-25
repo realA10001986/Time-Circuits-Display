@@ -136,21 +136,23 @@ bool audioInitDone = false;
 bool        muteBeep    = true;
 static bool beepRunning = false;
 
-bool            haveMusic = false;
 bool            mpActive = false;
-static uint16_t maxMusic = 0;
 static uint16_t *playList = NULL;
 static int      mpCurrIdx = 0;
-bool            mpShuffle = false;
-static uint16_t currPlaying = 0;
 #define         MAXID3LEN 2048
 
-static const float volTable[20] = {
+Aud_State  aud_state  = { .state = 0, .curVolume = DEFAULT_VOLUME, .curTrack = 0, .maxMusic = 0, .mpShuffle = 0 };
+#ifdef TC_HAVEMQTT
+Aud_State  mpOldState = { .state = -1 };
+#endif
+
+static const float volTable[VOL_LEVELS] = {
     0.00f, 0.02f, 0.04f, 0.06f,
-    0.08f, 0.10f, 0.13f, 0.16f,
-    0.19f, 0.22f, 0.26f, 0.30f,
-    0.35f, 0.40f, 0.50f, 0.60f,
-    0.70f, 0.80f, 0.90f, 1.00f
+    0.08f, 0.10f, 0.12f, 0.14f,
+    0.16f, 0.19f, 0.22f, 0.26f, 
+    0.30f, 0.35f, 0.40f, 0.50f, 
+    0.60f, 0.70f, 0.80f, 0.90f, 
+    1.00f
 };
 static const float beepLevels[4] = {
     0.1f, 0.2f, 0.3f, 0.4f
@@ -158,7 +160,6 @@ static const float beepLevels[4] = {
 int           volumePin = VOLUME_PIN;
 // Resolution for pot, 9-12 allowed
 #define POT_RESOLUTION 9
-int           curVolume = DEFAULT_VOLUME;
 #define VOL_SMOOTH_SIZE 4
 static int    rawVol[VOL_SMOOTH_SIZE];
 static int    rawVolIdx = 0;
@@ -187,6 +188,8 @@ float         beepLevel   = 0.3f;
 
 static char     keySnd[] = "/key3.mp3";   // not const
 static uint32_t haveKeySnd = 0;
+
+int8_t          mfstatus[10] = { 0 };
 
 #define TCC_VER   1
 bool              haveTCC = false;
@@ -232,7 +235,7 @@ static void   mp_nextprev(bool forcePlay, bool next);
 static bool   mp_play_int(bool force);
 static void   mp_buildFileName(char *fnbuf, int num);
 static bool   mp_renameFilesInDir(bool isSetup);
-static void   mpren_quickSort(char **a, int s, int e);
+static void   mpren_insertionSort(char **a, int n);
 
 static void   decodeID3(char *artist, char *track, char *id3, int id3size);
 
@@ -243,8 +246,6 @@ static void   decodeID3(char *artist, char *track, char *id3, int id3size);
  */
 void audio_setup()
 {
-    unsigned int sps = 0;
-    uint32_t tbuf[3];
     #ifdef TC_DBG_AUDIO
     audioLogger = &Serial;
     #endif
@@ -302,6 +303,10 @@ void audio_setup()
         if(check_file_SD(keySnd)) haveKeySnd |= bm;
     }
 
+    for(int i = 0; i < 10; i++) {
+        mfstatus[i] = mp_checkForFolder(i);
+    }
+
     if(check_file_SD(hsnd)) haveSpHrSnd |= HHS_HAVEHRSOUND;
 
     for(int i = 0; i <= 23; i++) {
@@ -310,15 +315,11 @@ void audio_setup()
         if(check_file_SD(shsnd)) haveSpHrSnd |= (1 << i);
     }
 
-    if((sps = check_file_len_SD(tcc_fn, haveTCC, (uint8_t *)&tbuf[0], 12))) {
-        haveTCC = ((tbuf[0] == tcc_magic) && (tbuf[1] == sps ^ tcc_magic));
-    }
-    
     audioInitDone = true;
 
     #ifdef TC_DBG_AUDIO
     Serial.printf("haveKeySnd 0x%x, haveSPHrSnd 0x%x\n", haveKeySnd, haveSpHrSnd);
-    #endif    
+    #endif
 }
 
 /*
@@ -363,9 +364,30 @@ void audio_loop()
         pwrNeedFullNow();
         mp_next(true);
     }
+
+    #ifdef TC_HAVEMQTT
+    mp_sendStatus();
+    #endif
 }
 
-static int skipID3(char *buf)
+void audio_loop_quick()
+{
+    if(wav->isRunning()) {
+        if(!wav->loop()) {
+            wav->stop();
+            beepRunning = false;
+            //checkAppend();
+        }
+    } else if(mp3->isRunning()) {
+        if(!mp3->loop()) {
+            mp3->stop();
+            key_playing = 0;
+            clear_sig_playing(alarmCanRunOut);
+        }
+    }
+}
+
+static int32_t skipID3(char *buf)
 {
     if(buf[0] == 'I' && buf[1] == 'D' && buf[2] == '3' && 
        buf[3] >= 0x02 && buf[3] <= 0x04 && buf[4] == 0 &&
@@ -402,6 +424,9 @@ void play_file(const char *audio_file, uint32_t flags, float volumeFactor)
 {
     char buf[10];
     int32_t pos = 0;
+    #ifdef TC_HAVEMQTT
+    bool mpWasActive = false;
+    #endif
 
     //appendFile = 0;   // Clear appended, append must be called AFTER play_file
 
@@ -409,11 +434,16 @@ void play_file(const char *audio_file, uint32_t flags, float volumeFactor)
     if(sig_playing & PA_SIGNAL) {
         if(!(flags & PA_SIGNAL)) return;
     }
-    
-    if(flags & PA_INTRMUS) {
-        mpActive = false;
-    } else {
-        if(mpActive) return;
+
+    if(!(flags & PA_MUSIC)) {
+        if(flags & PA_INTRMUS) {
+            #ifdef TC_HAVEMQTT
+            mpWasActive = mpActive;
+            #endif
+            mpActive = false;
+        } else {
+            if(mpActive) return;
+        }
     }
 
     pwrNeedFullNow();
@@ -502,13 +532,7 @@ void play_file(const char *audio_file, uint32_t flags, float volumeFactor)
         #ifdef TC_DBG_AUDIO
         Serial.println("Playing from SD");
         #endif
-    }
-    #ifdef USE_SPIFFS
-      else if(haveFS && SPIFFS.exists(audio_file) && myFS0->open(audio_file))
-    #else    
-      else if(haveFS && myFS0->open(audio_file))
-    #endif
-    {
+    } else if(haveFS && myFS0->open(audio_file)) {
         if(flags & PA_ISWAV) {
             myFS0->setPlayLoop(false);
             wav->begin(myFS0, out);
@@ -530,6 +554,10 @@ void play_file(const char *audio_file, uint32_t flags, float volumeFactor)
         Serial.println("Audio file not found");
         #endif
     }
+
+    #ifdef TC_HAVEMQTT
+    if(mpWasActive) mp_sendStatus();
+    #endif
 }
 
 /*
@@ -561,12 +589,7 @@ uint32_t play_keypad_sound(char key)
     out->SetGain(getVolume(), 0);
 
     if(FlashROMode && mySD0->open(dtmfBuf)) src = mySD0;
-    #ifdef USE_SPIFFS
-    else if(haveFS && SPIFFS.exists(dtmfBuf) && myFS0->open(dtmfBuf))
-    #else    
-    else if(haveFS && myFS0->open(dtmfBuf))
-    #endif
-        src = myFS0;
+    else if(haveFS && myFS0->open(dtmfBuf)) src = myFS0;
 
     if(src) {
         wav->beginQuick(src, out, 1, 32000, 44, (uint32_t)klens[key-'0']);
@@ -673,7 +696,9 @@ bool say_time(int pbt, int whichone, int gh, int gm)
     int h, m;
     
     if(haveTCC) {
-        
+
+        // We are not called when mp is active, but better safe than sorry.
+        mp_stop();
         stopAudio();
 
         // pbt: 0 normal, 1 fancy; wo: -1 = displayed, 0 = current, 1 = given
@@ -756,10 +781,10 @@ static float getVolume()
     float vol_val = 1.0f;
 
     if(!playLineOut) {
-        if(curVolume == 255) {
+        if(aud_state.curVolume == 255) {
             vol_val = getRawVolume();
         } else {
-            vol_val = volTable[curVolume];
+            vol_val = volTable[aud_state.curVolume];
         }
 
         // If user muted, return 0
@@ -830,6 +855,17 @@ unsigned int check_file_len_SD(const char *audio_file, bool& file_exists, uint8_
     file_exists = (s > 0);
     return s;
 }
+
+void checkForTCC()
+{
+    unsigned int sps = 0;
+    uint32_t tbuf[3];
+    
+    if((sps = check_file_len_SD(tcc_fn, haveTCC, (uint8_t *)&tbuf[0], 12))) {
+        haveTCC = ((tbuf[0] == tcc_magic) && (tbuf[1] == sps ^ tcc_magic));
+    }
+}
+
 
 int getSWVolFromHWVol()
 {
@@ -1099,18 +1135,18 @@ static void decodeID3(char *artist, char *track, char *id3, int Id3Size)
  * The Music Player
  */
  
-void mp_init(bool isSetup) 
+void mp_init(bool isSetup)
 {
     char fnbuf[20];
     
-    haveMusic = false;
+    csf |= CSF_NOMUSIC;
 
     if(playList) {
         free(playList);
         playList = NULL;
     }
 
-    mpCurrIdx = 0;
+    mpCurrIdx = aud_state.curTrack = aud_state.maxMusic = 0;
     
     if(haveSD) {
         #ifdef TC_DBG_MP
@@ -1121,18 +1157,18 @@ void mp_init(bool isSetup)
 
         mp_buildFileName(fnbuf, 0);
         if(SD.exists(fnbuf)) {
-            haveMusic = true;
+            csf &= ~CSF_NOMUSIC;
             
-            maxMusic = mp_findMaxNum();
+            aud_state.maxMusic = mp_findMaxNum();
             #ifdef TC_DBG_MP
-            Serial.printf("MusicPlayer: last file num %d\n", maxMusic);
+            Serial.printf("MusicPlayer: last file num %d\n", aud_state.maxMusic);
             #endif
 
-            playList = (uint16_t *)malloc((maxMusic + 1) * 2);
+            playList = (uint16_t *)malloc((aud_state.maxMusic + 1) * 2);
 
             if(!playList) {
 
-                haveMusic = false;
+                csf |= CSF_NOMUSIC;
                 #ifdef TC_DBG_MP
                 Serial.println("MusicPlayer: Failed to allocate PlayList");
                 #endif
@@ -1140,9 +1176,11 @@ void mp_init(bool isSetup)
             } else {
 
                 // Init play list
-                mp_makeShuffle(mpShuffle);
+                mp_makeShuffle(!!aud_state.mpShuffle);
                 
             }
+
+            aud_state.curTrack = playList[0];
 
         } else {
             #ifdef TC_DBG_MP
@@ -1150,6 +1188,10 @@ void mp_init(bool isSetup)
             #endif
         }
     }
+
+    #ifdef TC_HAVEMQTT
+    mp_sendStatus();
+    #endif
 }
 
 static bool mp_checkForFile(int num)
@@ -1188,50 +1230,57 @@ static int mp_findMaxNum()
 
 void mp_makeShuffle(bool enable)
 {
-    int numMsx = maxMusic + 1;
+    int numMsx = aud_state.maxMusic + 1;
 
-    mpShuffle = enable;
+    aud_state.mpShuffle = enable ? 1 : 0;
     saveShuffle();
 
-    if(!haveMusic) return;
+    if(!(csf & CSF_NOMUSIC)) {
     
-    for(int i = 0; i < numMsx; i++) {
-        playList[i] = i;
-    }
-    
-    if(enable && numMsx > 2) {
         for(int i = 0; i < numMsx; i++) {
-            int ti = esp_random() % numMsx;
-            uint16_t t = playList[ti];
-            playList[ti] = playList[i];
-            playList[i] = t;
+            playList[i] = i;
         }
-        #ifdef TC_DBG_MP
-        for(int i = 0; i <= maxMusic; i++) {
-            Serial.printf("%d ", playList[i]);
-            if((i+1) % 16 == 0 || i == maxMusic) Serial.printf("\n");
+        
+        if(enable && numMsx > 2) {
+            for(int i = 0; i < numMsx; i++) {
+                int ti = esp_random() % numMsx;
+                uint16_t t = playList[ti];
+                playList[ti] = playList[i];
+                playList[i] = t;
+            }
+            /*
+            #ifdef TC_DBG_MP
+            for(int i = 0; i <= aud_state.maxMusic; i++) {
+                Serial.printf("%d ", playList[i]);
+                if((i+1) % 16 == 0 || i == aud_state.maxMusic) Serial.printf("\n");
+            }
+            #endif
+            */
         }
-        #endif
+
     }
+
+    #ifdef TC_HAVEMQTT
+    mp_sendStatus();
+    #endif
 }
 
 void mp_play(bool forcePlay)
 {
     int oldIdx = mpCurrIdx;
 
-    if(!haveMusic || isSignalPlaying()) return;
+    if((csf & CSF_NOMUSIC) || isSignalPlaying()) return;
     
     do {
         if(mp_play_int(forcePlay)) {
-            mpActive = forcePlay;
             break;
         }
         mpCurrIdx++;
-        if(mpCurrIdx > maxMusic) mpCurrIdx = 0;
+        if(mpCurrIdx > aud_state.maxMusic) mpCurrIdx = 0;
     } while(oldIdx != mpCurrIdx);
 }
 
-bool mp_stop()
+bool mp_stop(bool forceStatus)
 {
     bool ret = mpActive;
     
@@ -1239,6 +1288,13 @@ bool mp_stop()
         mp3->stop();
         mpActive = false;
         *id3artist = *id3track = 0;
+        #ifdef TC_HAVEMQTT
+        mp_sendStatus();
+        #endif
+    #ifdef TC_HAVEMQTT
+    } else if(forceStatus) {
+        mp_sendStatus();
+    #endif
     }
     
     return ret;
@@ -1258,18 +1314,17 @@ static void mp_nextprev(bool forcePlay, bool next)
 {
     int oldIdx = mpCurrIdx;
 
-    if(!haveMusic || isSignalPlaying()) return;
+    if((csf & CSF_NOMUSIC) || isSignalPlaying()) return;
     
     do {
         if(next) {
             mpCurrIdx++;
-            if(mpCurrIdx > maxMusic) mpCurrIdx = 0;
+            if(mpCurrIdx > aud_state.maxMusic) mpCurrIdx = 0;
         } else {
             mpCurrIdx--;
-            if(mpCurrIdx < 0) mpCurrIdx = maxMusic;
+            if(mpCurrIdx < 0) mpCurrIdx = aud_state.maxMusic;
         }
         if(mp_play_int(forcePlay)) {
-            mpActive = forcePlay;
             break;
         }
     } while(oldIdx != mpCurrIdx);
@@ -1277,13 +1332,13 @@ static void mp_nextprev(bool forcePlay, bool next)
 
 int mp_gotonum(int num, bool forcePlay)
 {
-    if(!haveMusic) return 0;
+    if(csf & CSF_NOMUSIC) return 0;
 
     if(num < 0) num = 0;
-    else if(num > maxMusic) num = maxMusic;
+    else if(num > aud_state.maxMusic) num = aud_state.maxMusic;
 
-    if(mpShuffle) {
-        for(int i = 0; i <= maxMusic; i++) {
+    if(aud_state.mpShuffle) {
+        for(int i = 0; i <= aud_state.maxMusic; i++) {
             if(playList[i] == num) {
                 mpCurrIdx = i;
                 break;
@@ -1303,8 +1358,12 @@ static bool mp_play_int(bool force)
 
     mp_buildFileName(fnbuf, playList[mpCurrIdx]);
     if(SD.exists(fnbuf)) {
-        if(force) play_file(fnbuf, PA_LINEOUT|PA_DOID3TS|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
-        currPlaying = playList[mpCurrIdx];
+        if(force) play_file(fnbuf, PA_MUSIC|PA_LINEOUT|PA_DOID3TS|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
+        mpActive = force;
+        aud_state.curTrack = playList[mpCurrIdx];
+        #ifdef TC_HAVEMQTT
+        mp_sendStatus();
+        #endif
         return true;
     }
     return false;
@@ -1312,11 +1371,36 @@ static bool mp_play_int(bool force)
 
 int mp_get_currently_playing()
 {
-    if(!haveMusic || !mpActive)
+    if((csf & CSF_NOMUSIC) || !mpActive)
         return -1;
 
-    return currPlaying;
+    return aud_state.curTrack;
 }
+
+#ifdef TC_HAVEMQTT
+void mp_sendStatus(int force)
+{
+    if(pubMP && mqttConnected()) {
+        aud_state.state = (csf & (CSF_OFF|CSF_MA|CSF_ST|CSF_P0|CSF_P1|CSF_RE|CSF_AL|CSF_AE|CSF_REBOOT|CSF_NOMUSIC)) ? 0 : (mpActive ? 1 : 2);         
+        if(memcmp((void *)&mpOldState, (void *)&aud_state, sizeof(aud_state)) || force) {
+            static const char statec[] = "OPI";
+            char msg[128];
+            sprintf(msg, 
+                "{\"S\":\"%c\",\"C\":\"%d\",\"V\":\"%d\",\"F\":\"0\",\"L\":\"%d\",\"SH\":\"%d\"}", 
+                    statec[aud_state.state], 
+                    aud_state.curTrack, 
+                    (aud_state.curVolume == 255) ? -1 : (aud_state.curVolume * 100 / (VOL_LEVELS - 1)), 
+                    aud_state.maxMusic, 
+                    aud_state.mpShuffle);
+            if(mqttPublish("bttf/tcd/mpstatus", msg, strlen(msg) + 1)) {
+                memcpy((void *)&mpOldState, (void *)&aud_state, sizeof(aud_state));
+            } else {
+                mpOldState.state = -1;
+            }
+        }
+    }
+}
+#endif
 
 static void mp_buildFileName(char *fnbuf, int num)
 {
@@ -1327,7 +1411,6 @@ static void mp_buildFileName(char *fnbuf, int num)
 int mp_checkForFolder(int num)
 {
     char fnbuf[32];
-    int ret;
 
     // returns 
     // 1 if folder is ready (contains 000.mp3 and DONE)
@@ -1335,6 +1418,10 @@ int mp_checkForFolder(int num)
     // -1 if folder exists but needs processing (no DONE)
     // -2 if musicX contains no audio files (DONE but no 000.mp3)
     // -3 if musicX is not a folder
+    // -4 if no SD
+
+    if(!haveSD)
+        return -4;
 
     if(num < 0 || num > 9)
         return 0;
@@ -1344,6 +1431,7 @@ int mp_checkForFolder(int num)
     if(!SD.exists(fnbuf))
         return 0;
 
+    // Check if folder is folder
     File origin = SD.open(fnbuf);
     if(!origin) return 0;
     if(!origin.isDirectory()) {
@@ -1354,9 +1442,9 @@ int mp_checkForFolder(int num)
     origin.close();
 
     // Check if DONE exists
-    sprintf(fnbuf, "/music%1d%s", num, tcdrdone);
+    strcat(fnbuf, tcdrdone);
     if(SD.exists(fnbuf)) {
-        sprintf(fnbuf, "/music%1d/000.mp3", num);
+        strcpy(fnbuf + 8, "000.mp3");
         if(SD.exists(fnbuf)) {
             // If 000.mp3 and DONE exists, return 1
             return 1;
@@ -1471,10 +1559,8 @@ static bool mp_renameFilesInDir(bool isSetup)
 {
     char fnbuf[20];
     char fnbuf3[32];
-    char fnbuf2[256];
     char **a, **d;
     char *c;
-    int num = musFolderNum;
     int count = 0;
     int fileNum = 0;
     int strLength;
@@ -1499,7 +1585,7 @@ static bool mp_renameFilesInDir(bool isSetup)
     renNow1 = renNow2 = millis();
 
     // Build "DONE"-file name
-    sprintf(fnbuf, "/music%1d", num);
+    sprintf(fnbuf, "/music%1d", musFolderNum);
     strcpy(fnbuf3, fnbuf);
     strcat(fnbuf3, tcdrdone);
 
@@ -1660,11 +1746,13 @@ static bool mp_renameFilesInDir(bool isSetup)
     // Sort file names, and rename
 
     if(fileNum) {
+
+        char fnbuf2[256];
         
         // Sort file names
-        mpren_quickSort(a, 0, fileNum - 1);
+        mpren_insertionSort(a, fileNum);
     
-        sprintf(fnbuf2, "/music%1d/", num);
+        sprintf(fnbuf2, "/music%1d/", musFolderNum);
         strcpy(fnbuf, fnbuf2);
 
         // If 000.mp3 exists, find current count
@@ -1717,6 +1805,7 @@ static bool mp_renameFilesInDir(bool isSetup)
         #ifdef TC_DBG_MP
         Serial.printf("%sWrote %s\n", funcName, fnbuf3);
         #endif
+        mfstatus[musFolderNum] = mp_checkForFolder(musFolderNum);
     }
 
     // Clear displays
@@ -1730,7 +1819,7 @@ static bool mp_renameFilesInDir(bool isSetup)
 }
 
 /*
- * QuickSort for file names
+ * Insertion Sort for file names
  */
 
 static unsigned char mpren_toUpper(char a)
@@ -1741,7 +1830,7 @@ static unsigned char mpren_toUpper(char a)
     return (unsigned char)a;
 }
 
-static bool mpren_strLT(const char *a, const char *b)
+static bool mpren_strGT(const char *a, const char *b)
 {
     int aa = strlen(a);
     int bb = strlen(b);
@@ -1750,43 +1839,23 @@ static bool mpren_strLT(const char *a, const char *b)
     for(int i = 0; i < cc; i++) {
         unsigned char aaa = mpren_toUpper(*a);
         unsigned char bbb = mpren_toUpper(*b);
-        if(aaa < bbb) return true;
-        if(aaa > bbb) return false;
+        if(aaa < bbb) return false;
+        if(aaa > bbb) return true;
         a++; b++;
     }
 
     return false;
 }
 
-static int mpren_partition(char **a, int s, int e)
+static void mpren_insertionSort(char **a, int n)
 {
-    char *t;
-    char *p = a[e];
-    int   i = s - 1;
- 
-    for(int j = s; j <= e - 1; j++) {
-        if(mpren_strLT(a[j], p)) {
-            i++;
-            t = a[i];
-            a[i] = a[j];
-            a[j] = t;
+    for(int i = 1; i < n; i++) {
+        char *k = a[i];
+        int j = i - 1;
+        while(j >= 0 && mpren_strGT(a[j], k)) {
+            a[j+1] = a[j];
+            j--;
         }
-    }
-
-    i++;
-
-    t = a[i];
-    a[i] = a[e];
-    a[e] = t;
-    
-    return i;
-}
-
-static void mpren_quickSort(char **a, int s, int e)
-{
-    if(s < e) {
-        int p = mpren_partition(a, s, e);
-        mpren_quickSort(a, s, p - 1);
-        mpren_quickSort(a, p + 1, e);
+        a[j + 1] = k;
     }
 }

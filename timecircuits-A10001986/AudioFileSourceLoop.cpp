@@ -144,11 +144,7 @@ AudioFileSourceFSLoop::AudioFileSourceFSLoop(const char *filename)
 
 bool AudioFileSourceFSLoop::open(const char *filename)
 {
-    #ifdef USE_SPIFFS   // ------------------------------
-    f = SPIFFS.open(filename, FILE_READ);
-    #else   // ------------------------------------------
     f = LittleFS.open(filename, FILE_READ);
-    #endif // -------------------------------------------
     ftype = 1;
     return f;
 }

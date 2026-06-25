@@ -331,9 +331,10 @@ struct Settings {
     char mqttTopicP[64]    = "";  // topic (UTF8)       [limited to 63 bytes through WM]
     char mqttTopicL[64]    = "";  // topic (UTF8)       [limited to 63 bytes through WM]
     char pubMQTT[2]        = "0";              // publish to broker (timetravel, alarm)
-    char MQTTvarLead[2]    = MS(DEF_MQTT_VTT); // publish TIMETRAVEL with lead and P1 duration appended (default to on)
+    char MQTTvarLead[2]    = MS(DEF_MQTT_VTT); // publish TIMETRAVEL with lead and P1 duration appended
     char mqttPwr[2]        = "0"; // Do not start with MQTT having control over fake-power
     char mqttPwrOn[2]      = "0"; // Do not wait for POWER_ON at startup
+    char pubMP[2]          = "0"; // 1:Publish music player status to bttf/tcd/mpstatus, 0: Don't
     char *mqmt[10];
     char *mqmm[10];
 #endif // TC_HAVEMQTT

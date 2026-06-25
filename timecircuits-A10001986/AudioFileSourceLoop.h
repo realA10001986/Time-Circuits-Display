@@ -14,11 +14,7 @@
 
 #include "src/ESP8266Audio/AudioFileSource.h"
 #include <SD.h>
-#ifdef USE_SPIFFS
-#include <SPIFFS.h>
-#else
 #include <LittleFS.h>
-#endif
 
 class AudioFileSourceLoop : public AudioFileSource
 {

@@ -384,7 +384,7 @@ static uint8_t* (*r)(uint8_t *, uint32_t, int);
 int         specDisp = 0;
 
 // Cumulative status flags
-uint32_t    csf = CSF_BOOTSTRAP;
+uint32_t    csf = CSF_BOOTSTRAP|CSF_NOMUSIC;
 
 DateTime    gdtu, gdtl;
 static struct {
@@ -1145,7 +1145,7 @@ void main_setup()
     // RTC setup
     if(!rtc.begin()) {
 
-        const char *rtcNotFound = "RTC NOT FOUND";
+        static const char *rtcNotFound = "RTC NOT FOUND";
         uint8_t r = HIGH;
         
         destinationTime.showTextDirect(rtcNotFound);
@@ -1976,9 +1976,9 @@ void main_setup()
     }
 
     if(playIntro) {
-        const char *t1 = "             TIME";
-        const char *t2 = "             CIRCUITS";
-        const char *t3 = "ON";
+        static const char *t1 = "             TIME";
+        static const char *t2 = "             CIRCUITS";
+        static const char *t3 = "ON";
 
         // suppress WiFi scan (don't use Px, those will prevent GPS speedo updates)
         csf |= CSF_NS;      
@@ -2171,7 +2171,7 @@ void main_loop()
                     cancelETTAnim();
                     resetKeypadState();
                     discardKeypadInput();
-                    mp_stop();
+                    mp_stop(true);
                     if((!(csf & (CSF_AL|CSF_AE))) && !isSignalPlaying()) {
                         stopAudio();
                         flushDelayedSave();
@@ -2235,6 +2235,7 @@ void main_loop()
             }
             #endif    
         }
+        // Let audio_loop take care of updating MP status
     }
 
     millisNow = millis();
@@ -2349,6 +2350,7 @@ void main_loop()
                     if(haveSnds & HS_ABORT_TT) {
                         play_file(abortTTSound, PA_LINEOUT|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
                     } else {
+                        // if(playTTsounds) mp is stopped on TT, so no need to mp_stop()
                         stopAudio();
                     }
                 }
@@ -2858,11 +2860,12 @@ void main_loop()
             }
         }
         if(sgf & SGF_URotEncVol) {
-            int oldVol = curVolume;
-            curVolume = rotEncVol->updateVolume(curVolume, false);
-            if(oldVol != curVolume) {
+            int oldVol = aud_state.curVolume;
+            aud_state.curVolume = rotEncVol->updateVolume(aud_state.curVolume, false);
+            if(oldVol != aud_state.curVolume) {
                 storeCurVolume();
                 volChangedNow = millisNonZero();
+                // Let audio_loop take care of updating MP status
             }
         }
         #endif
@@ -3059,9 +3062,9 @@ void main_loop()
                                  checkAudioFree())               ||    //      and no audio(ex.beep) is being played     OR
                                */
                                ( (wifiIsOff ||                         //   if WiFi-STA is off (after being connected),
-                                  (wifiInAPMode && doAPretry)) &&      //                      or in AP-mode
+                                  (wifiInAPMode && doAPretry)) &&      //                      or in fall-back AP-mode
                                  authTimeExpired               &&      //      and authtime expired (or we never had any)
-                                 checkAudioFree()              &&      //      and no audio(ex.beep) being played
+                                 checkAudioFree()              &&      //      and no audio (ex.beep) being played
                                  keypadIsIdle()                &&      //      and keypad is idle (no press for >2mins)
                                  (lastHour <= 6)                       //      during night-time
                                )
@@ -3631,7 +3634,8 @@ int timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
     cancelEnterAnim();
     cancelETTAnim();
 
-    // Stop music if we are to play time travel sounds
+    // All props stop the musicplayer on TT if playTTsounds is true
+    // (regardless of whether they are playing sound immediately or not)
     if(playTTsounds) mp_stop();
     
     // Beep auto mode: Restart timer
@@ -3836,6 +3840,8 @@ int timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
                 play_file(preTTSound, PA_LINEOUT|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
             }
 
+            // Let audio_loop take care of updating MP status
+
             return 0;
         }
         
@@ -3902,11 +3908,15 @@ int timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
             timeTravelP1 = -1;
             csf |= CSF_P1;
 
+            // Let audio_loop take care of updating MP status
+
             return 0;
         }
 
         triggerP1 = triggerETTO = false;
         triggerLongTT(forceNoLead);
+
+        // Let audio_loop take care of updating MP status
 
         return 0;
     }
@@ -4031,6 +4041,8 @@ int timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
     }
     #endif
     */
+
+    // Let audio_loop take care of updating MP status
 
     return 0;
 }
@@ -4638,10 +4650,10 @@ static void mySetupNWCheck()
 static void myCustomDelay_int(unsigned long mydel, uint32_t gran)
 {
     unsigned long startNow = millis();
-    audio_loop();
+    audio_loop_quick();
     while(millis() - startNow < mydel) {
         delay(gran);
-        audio_loop();
+        audio_loop_quick();
         ntp_short_loop();
     }
 }
@@ -4663,7 +4675,7 @@ void myCustomDelay_KP(int iter, unsigned long mydel)
         bttfn_loop(BNLP_SK_MC|BNLP_SK_NOTDATA|BNLP_SK_EXPIRE);
         updAndDispRemoteSpeed();
         while(millis() - now < mydel) {
-            audio_loop();
+            audio_loop_quick();
         }
     } else
     #endif
@@ -4687,7 +4699,7 @@ void mydelay(unsigned long mydel)
     if(mydel <= 10) {
         while(millis() - startNow < mydel) {
             ntp_short_loop();
-            audio_loop();
+            audio_loop_quick();
         }
         return;
     }
@@ -4698,7 +4710,7 @@ void mydelay(unsigned long mydel)
         audio_loop();
         #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE) || defined(TC_HAVE_REMOTE)
         speedoUpdate_loop(false);  // GPS part: 6-12ms without delay, 8-13ms with delay
-        audio_loop();
+        audio_loop_quick();
         #endif
     }
 }
@@ -5262,10 +5274,15 @@ static void re_lockTemp()
 void re_vol_reset()
 {
     if(sgf & SGF_URotEncVol) {
-        rotEncVol->zeroPos((curVolume == 255) ? 0 : curVolume);
+        rotEncVol->zeroPos((aud_state.curVolume == 255) ? 0 : aud_state.curVolume);
     }
 }
 #endif
+
+void triggerDelayedVolSave()
+{
+    volChangedNow = millisNonZero();
+}
 
 // Called before reboot to save regardless of running delay
 void flushDelayedSave()
@@ -5856,13 +5873,13 @@ bool gpsMakePos(char *lat, char *lon)
 
     if(!(glat = myGPS.getPos(current))) {
         #ifndef IS_ACAR_DISPLAY
-        const char nodataDD[]  = "-       -----";
-        const char nodataDMS[] = "-      -~----";
-        const char nodataDMD[] = "-    -~ -----";
+        static const char nodataDD[]  = "-       -----";
+        static const char nodataDMS[] = "-      -~----";
+        static const char nodataDMD[] = "-    -~ -----";
         #else
-        const char nodataDD[]  = "-      -----";
-        const char nodataDMS[] = "-     -~----";
-        const char nodataDMD[] = "-   -~ -----";
+        static const char nodataDD[]  = "-      -----";
+        static const char nodataDMS[] = "-     -~----";
+        static const char nodataDMD[] = "-   -~ -----";
         #endif
         const char *nodata;
         switch(gpsDispMode) {
@@ -7678,6 +7695,10 @@ static void bttfn_fill_response(uint8_t *buf, int skipClear, uint8_t parm)
         buf[17] |= bttfnData17;
         if(parm & 0x80) {
             a = 0;
+            if(!skipClear) {
+                presentTime.getCompressed(&buf[41], a);
+                a <<= 2;
+            }
             destinationTime.getCompressed(&buf[32], a);
             a <<= 2;
             departedTime.getCompressed(&buf[36], a);

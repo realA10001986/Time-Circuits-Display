@@ -141,6 +141,18 @@
 
 /*  Changelog
  *          
+ *  2026/06/25 (A10001986) [3.24]
+ *    **********************************************************************************
+ *    ** If updating from below 3.20, please install 3.20 or 3.20.1 first to have     **
+ *    ** your settings converted. If 3.20(.1) is skipped, many of your settings       **
+ *    ** will be restored to default values. It suffices to install 3.20 or 3.20.1    **
+ *    ** and boot once; you can then immediately update to a later version.           **
+ *    ** https://github.com/realA10001986/Time-Circuits-Display/releases/tag/V3.20.1  **
+ *    **********************************************************************************
+ *    - MQTT: Add "VOLUME_UP"/"VOLUME_DOWN"/"VOLUME_SET_xxx" commands
+ *    - MQTT: Add publishing Music Player status to bttf/tcd/mpstatus
+ *    - Music Player: Use new sorting algorithm as the old one caused a crash on a 
+ *      large number of already sorted files (due to excessive recursion).
  *  2026/05/21 (A10001986) [3.23]
  *    **********************************************************************************
  *    ** If updating from below 3.20, please install 3.20 or 3.20.1 first to have     **

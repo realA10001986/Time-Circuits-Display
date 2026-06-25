@@ -704,7 +704,7 @@ void speedDisplay::setTemperature(float temp)
         char buf[8];
         char alignBuf[20];
         int t, strlenBuf = 0;
-        const char *myNan = "----";
+        static const char *myNan = "----";
     
         bool tempNan = isnan(temp);
     

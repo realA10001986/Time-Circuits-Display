@@ -606,10 +606,10 @@ void tcdDisplay::showHalfIPDirect(int a, int b, uint16_t flags)
 {
     char buf[16];
     #ifdef IS_ACAR_DISPLAY
-    const char *fmt1 = "%3d  %3d";
-    const char *fmt2 = "%2d   %3d";
+    static const char *fmt1 = "%3d  %3d";
+    static const char *fmt2 = "%2d   %3d";
     #else
-    const char *fmt = "%3d   %3d";
+    static const char *fmt = "%3d   %3d";
     #endif
 
     if(a > 255) a = 255;    // Avoid buf overflow if numbers too high

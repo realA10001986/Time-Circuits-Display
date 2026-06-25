@@ -246,7 +246,7 @@ static void displayRemString(char *buf);
 static void displayRemOffString();
 static void displayStalePTStatus();
 static void displayAlarmOff(bool snooze);
-static void doAnddisplayMPNext(int num, char *buf);
+static void doAnddisplayMPGoto(int num, char *buf);
 
 static void waitAudioDone();
 
@@ -403,7 +403,7 @@ static void keypadEvent(char key, KeyState kstate)
             if(!wifiOnWillBlock()) {
                 play_file("/ping.mp3", PA_INTSPKR|PA_CHECKNM|PA_ALLOWSD);
             } else {
-                if(haveMusic) mpWasActive = mp_stop();
+                mpWasActive = mp_stop();
                 play_file("/ping.mp3", PA_INTSPKR|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD);
                 waitAudioDone();
             }
@@ -415,11 +415,11 @@ static void keypadEvent(char key, KeyState kstate)
             if(mpWasActive) mp_play();   
             break;
         case '2':    // "2" held down -> musicplayer prev
-            if(haveMusic) mp_prev(mpActive);
-            else          playBad = true;
+            if(!(csf & CSF_NOMUSIC)) mp_prev(mpActive);
+            else  playBad = true;
             break;
         case '5':    // "5" held down -> musicplayer start/stop
-            if(haveMusic) {
+            if(!(csf & CSF_NOMUSIC)) {
                 if(mpActive) {
                     mp_stop();
                 } else {
@@ -428,7 +428,7 @@ static void keypadEvent(char key, KeyState kstate)
             } else playBad = true;
             break;
         case '8':   // "8" held down -> musicplayer next
-            if(haveMusic) mp_next(mpActive);
+            if(!(csf & CSF_NOMUSIC)) mp_next(mpActive);
             else          playBad = true;
             break;
         }
@@ -846,7 +846,7 @@ void keypad_loop()
                     break;
     
                 case 55:
-                    if(haveMusic) {
+                    if(!(csf & CSF_NOMUSIC)) {
                         specDisp = 10;
                         if(mpActive) {
                             #ifdef IS_ACAR_DISPLAY
@@ -896,16 +896,24 @@ void keypad_loop()
 
             code = atoi(keyBuffer);
 
-            if((code >= 300 && code <= 319) || code == 399) {
+            if((code >= 300 && code < (300 + VOL_LEVELS)) || code == 399) {
                 
-                curVolume = (code == 399) ? 255 : (code - 300);
+                aud_state.curVolume = (code == 399) ? 255 : (code - 300);
 
                 // Re-set RotEnc for current level
                 #ifdef TC_HAVE_RE
                 re_vol_reset();
                 #endif
+                #ifdef TC_HAVEMQTT
+                mp_sendStatus();
+                #endif
 
-                saveCurVolume();
+                if(eef & EEF_InputInjected) {
+                    storeCurVolume();
+                    triggerDelayedVolSave();
+                } else {
+                    saveCurVolume();
+                }
                 validEntry = 1;
               
             } else if(code >= 501 && code <= 509) {
@@ -918,7 +926,7 @@ void keypad_loop()
             
                 int idx = code - 600;
                 if(settings.mqmt[idx] && settings.mqmm[idx]) {
-                    mqttPublish(settings.mqmt[idx], settings.mqmm[idx], strlen(settings.mqmm[idx]));
+                    mqttPublish(settings.mqmt[idx], settings.mqmm[idx], strlen(settings.mqmm[idx]) + 1);
                 }
                 
                 validEntry = 0;   // Play no sound
@@ -1043,7 +1051,7 @@ void keypad_loop()
                     break;
                 case 222:               // 222: Turn shuffle off
                 case 555:               // 555: Turn shuffle on
-                    mp_makeShuffle((code == 555));  // Make regardless of haveMusic to save requested setting
+                    mp_makeShuffle((code == 555));  // Make regardless of CSF_NOMUSIC to save requested setting
                     #ifdef IS_ACAR_DISPLAY
                     dt_showTextDirect((code == 555) ? "SHUFFLE   ON"  : "SHUFFLE  OFF");
                     #else
@@ -1053,8 +1061,8 @@ void keypad_loop()
                     validEntry = 1;
                     break;
                 case 888:               // 888: Goto song #0
-                    if(haveMusic) {
-                        doAnddisplayMPNext(0, atxt);  // Sets specDisp = 10
+                    if(!(csf & CSF_NOMUSIC)) {
+                        doAnddisplayMPGoto(0, atxt);  // Sets specDisp = 10
                         validEntry = 1;
                     }
                     break;
@@ -1154,7 +1162,7 @@ void keypad_loop()
                         if(rcModeState != carMode) {
                             saveCarMode();
                             prepareReboot();
-                            delay(500);
+                            delay(1000);
                             esp_restart();
                         }
                         validEntry = 1;
@@ -1231,7 +1239,7 @@ void keypad_loop()
 
             if(!strncmp(keyBuffer, "64738", 5) && (!(eef & EEF_InputInjected))) {
                 prepareReboot();
-                delay(500);
+                delay(1000);
                 esp_restart();
             } else if(!strncmp(keyBuffer, "53281", 5)) {
                 showUpdAvail = !showUpdAvail;
@@ -1289,11 +1297,11 @@ void keypad_loop()
                     }
                 }
             
-            } else if(haveMusic && !strncmp(keyBuffer, "888", 3)) {
+            } else if((!(csf & CSF_NOMUSIC)) && !strncmp(keyBuffer, "888", 3)) {
 
                 int num = (binBuf[3] * 100) + read2digs(4);
                 
-                doAnddisplayMPNext(num, atxt); // Sets specDisp = 10
+                doAnddisplayMPGoto(num, atxt); // Sets specDisp = 10
 
                 validEntry = 1;
 
@@ -2106,9 +2114,9 @@ static void displayAlarmOff(bool snooze)
     specDisp = 10;
 }
 
-static void doAnddisplayMPNext(int num, char *buf)
+static void doAnddisplayMPGoto(int num, char *buf)
 {
-    num = mp_gotonum(num, mpActive);
+    num = mp_gotonum(num, true);
     #ifdef IS_ACAR_DISPLAY
     sprintf(buf, "NEXT     %03d", num);
     #else
@@ -2307,13 +2315,14 @@ void doCopyAudioFiles()
     delay(2000);
 
     prepareReboot();
-    delay(500);
+    delay(1000);
     esp_restart();
 }
 
 void start_file_copy()
 {
-    mp_stop();
+    csf |= CSF_REBOOT;
+    mp_stop(true);
     stopAudio();
   
     dt_showTextDirect("INSTALLING");
@@ -2368,7 +2377,8 @@ void doUploadSpinner(int doStart)
 
 void prepareReboot()
 {
-    mp_stop();
+    csf |= CSF_REBOOT;
+    mp_stop(true);
     stopAudio();
     ettoPulseEnd();
     allOff();

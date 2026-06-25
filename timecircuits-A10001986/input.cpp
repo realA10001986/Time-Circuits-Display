@@ -76,6 +76,7 @@
 #include <Arduino.h>
 
 #include "input.h"
+#include "tc_audio.h"
 
 #define OPEN    false
 #define CLOSED  true
@@ -494,7 +495,7 @@ enum DUV2_CONF2_PARAM {
 #define DFR_PID_L     0xf6
 
 #define DFR_GAIN_SPD  (1023 / (88 + OFF_SLOTS))
-#define DFR_GAIN_VOL  (1023 / 20)
+#define DFR_GAIN_VOL  (1023 / VOL_LEVELS)
 
 
 TCRotEnc::TCRotEnc(int numTypes, const uint8_t *addrArr)
@@ -734,8 +735,8 @@ int TCRotEnc::updateVolume(int curVol, bool force)
 
         curVol += (rotEncPos - t);
 
-        if(curVol < 0)        curVol = 0;
-        else if(curVol > 19)  curVol = 19;
+        if(curVol < 0) curVol = 0;
+        else if(curVol > VOL_LEVELS - 1) curVol = VOL_LEVELS - 1;
     }
     
     return curVol;

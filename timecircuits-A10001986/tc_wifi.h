@@ -74,7 +74,8 @@ int16_t filterOutUTF8(char *src, char *dst, int srcLen, int maxChars);
 
 #ifdef TC_HAVEMQTT
 bool mqttState();
-void mqttPublish(const char *topic, const char *pl, unsigned int len);
+bool mqttConnected();
+bool mqttPublish(const char *topic, const char *pl, unsigned int len);
 #endif
 
 extern bool wifiIsOff;
@@ -92,6 +93,7 @@ extern bool pubMQTT;
 extern bool useMQTT;
 extern const char *mqttAudioFile[];
 extern bool MQTTvarLead;
+extern bool pubMP;
 #endif
 
 #endif

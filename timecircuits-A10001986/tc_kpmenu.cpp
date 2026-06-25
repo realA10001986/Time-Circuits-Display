@@ -687,7 +687,7 @@ void enter_menu()
     allresetBrightness();
     // Do not propagate through BTTFN, menu is TCD-private
 
-    mpActive = mp_stop();
+    mpActive = mp_stop(true);
     stopAudio();
 
     flushDelayedSave();
@@ -1021,6 +1021,9 @@ quitMenu:
 
     // Restart mp if it was active before entering the menu
     if(mpActive) mp_play();
+    #ifdef TC_HAVEMQTT
+    else mp_sendStatus();
+    #endif
 }
 
 
@@ -1287,7 +1290,7 @@ static void showCurVolHWSW(bool blink)
     if(blink) {
         allOff();
     } else {
-        if(curVolume == 255) {
+        if(aud_state.curVolume == 255) {
             dt_showTextDirect("USE VOLUME");
             pt_showTextDirect("KNOB");
         } else {
@@ -1303,12 +1306,12 @@ static void showCurVol(bool blink, bool doComment)
     uint16_t flags = CDT_CLEAR;
     if(blink) flags |= CDT_BLINK;
     
-    destinationTime.showSettingValDirect("LEVEL", curVolume, flags);
+    destinationTime.showSettingValDirect("LEVEL", aud_state.curVolume, flags);
     dt_on();
 
     if(doComment) {
         int w = D_D;
-        if(!curVolume) {
+        if(!aud_state.curVolume) {
             pt_showTextDirect("MUTE");
             w |= D_P;
         }
@@ -1319,7 +1322,7 @@ static void showCurVol(bool blink, bool doComment)
 static int doSetVolume()
 {
     bool volDone = false;
-    int oldVol = curVolume;
+    int oldVol = aud_state.curVolume;
     unsigned long playNow;
     bool triggerPlay = false;
     bool blinkSwitch = false;
@@ -1344,10 +1347,10 @@ static int doSetVolume()
 
             if(!volDone) {
 
-                if(curVolume <= 19)
-                    curVolume = 255;
+                if(aud_state.curVolume < VOL_LEVELS)
+                    aud_state.curVolume = 255;
                 else
-                    curVolume = 0;
+                    aud_state.curVolume = 0;
 
                 showCurVolHWSW(false);
 
@@ -1374,13 +1377,13 @@ static int doSetVolume()
 
     keypadMode = 0;
 
-    if((volDone & (!wasQuit)) && curVolume != 255) {
+    if((volDone & (!wasQuit)) && aud_state.curVolume != 255) {
         
         if(oldVol == 255) {
-            curVolume = getSWVolFromHWVol();
+            aud_state.curVolume = getSWVolFromHWVol();
             triggerPlay = true;
         } else {
-            curVolume = oldVol;
+            aud_state.curVolume = oldVol;
         }
         
         showCurVol(false, true);
@@ -1411,9 +1414,9 @@ static int doSetVolume()
                 if(!volDone) {
 
                     if(dirDown) {
-                        if(curVolume > 0) curVolume--;
+                        if(aud_state.curVolume > 0) aud_state.curVolume--;
                     } else {
-                        if(curVolume < 19) curVolume++;
+                        if(aud_state.curVolume < VOL_LEVELS - 1) aud_state.curVolume++;
                     }
 
                     showCurVol(false, true);
@@ -1466,7 +1469,7 @@ static int doSetVolume()
 
     }
 
-    curVolume = oldVol;
+    aud_state.curVolume = oldVol;
 
     return 1;
 }
@@ -1485,9 +1488,7 @@ static void displayMSfx(int msfx, bool blink, bool doFolderChk, int& folderState
     dt_on();
     
     if(doFolderChk) {
-        pt_showTextDirect("WAIT...");
-        sw_sel(w);
-        folderState = mp_checkForFolder(msfx);
+        folderState = mfstatus[msfx];
         switch(folderState) {
         case 1:
             pt_showTextDirect("OK");
@@ -1587,7 +1588,7 @@ static int doSetMSfx()
             // regard to speedo action, especially).
             menuDelay(1000);
             prepareReboot();
-            delay(500);
+            delay(1000);
             esp_restart();
         } else {
             mp_init();
@@ -2105,7 +2106,7 @@ static void displayClient(int numCli, int number)
     char *id;
     uint8_t type;
     char idbuf[16];
-    const char *tpArr[6] = { "[FLUX]", "[SID]", "[GAUGES]", "[VSR]", "[AUX]", "[REMOTE]" };
+    static const char *tpArr[6] = { "[FLUX]", "[SID]", "[GAUGES]", "[VSR]", "[AUX]", "[REMOTE]" };
     
     if(!numCli) {
         dt_showTextDirect("NO CLIENTS");

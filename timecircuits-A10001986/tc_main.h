@@ -148,6 +148,7 @@ bool      tempInCelsius();
 void      re_vol_reset();
 #endif
 
+void      triggerDelayedVolSave();
 void      flushDelayedSave();
 
 void      animate(bool withLEDs = false);
@@ -337,6 +338,7 @@ extern uint32_t csf;
 #define CSF_REMKPALLOW 0x00000008    // DO NOT CHANGE. Remote Keypad allowed
 #define CSF_MA         0x00000010    // DO NOT CHANGE. Menu active = busy
 #define CSF_NS         0x00000020    // No scan: Suppress WiFi Scan (so we don't have to abuse any other flag)
+#define CSF_REBOOT     0x00000040    // Reboot ahead
 #define CSF_P0         0x00000100    // Time Travel sequence stages
 #define CSF_P1         0x00000200
 #define CSF_RE         0x00000400
@@ -348,6 +350,7 @@ extern uint32_t csf;
 #define CSF_RSM        0x00200000    // Remote is speed-master
 #define CSF_RPM        0x00400000    // Remote is power-master
 #define CSF_MQTTPM     0x00800000    // MQTT is power-master (MQTTPwrMaster)
+#define CSF_NOMUSIC    0x01000000    // Current music folder contrains no music
 #define CSF_RESTOREFP  0x20000000    // restore fake-power
 #define CSF_PWRLOW     0x40000000    // CPU in power-safe
 #define CSF_BOOTSTRAP  0x80000000    // We are in boot-stap

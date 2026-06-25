@@ -66,13 +66,8 @@
 #include <SD.h>
 #include <SPI.h>
 #include <FS.h>
-#ifdef USE_SPIFFS
-#define MYNVS SPIFFS
-#include <SPIFFS.h>
-#else
 #define MYNVS LittleFS
 #include <LittleFS.h>
-#endif
 #include <Update.h>
 
 #include "tc_settings.h"
@@ -1186,6 +1181,7 @@ static bool read_settings(File configFile, int cfgReadCount)
         wd |= CopyCheckValidNumParm(json["vMQTT"], settings.MQTTvarLead, sizeof(settings.MQTTvarLead), 0, 1, DEF_MQTT_VTT);
         wd |= CopyCheckValidNumParm(json["mqP"], settings.mqttPwr, sizeof(settings.mqttPwr), 0, 1, 0);
         wd |= CopyCheckValidNumParm(json["mqPO"], settings.mqttPwrOn, sizeof(settings.mqttPwrOn), 0, 1, 0);
+        wd |= CopyCheckValidNumParm(json["pMP"], settings.pubMP, sizeof(settings.pubMP), 0, 1, 0);
         #endif
 
         for(int i = 0; i < 10; i++) {
@@ -1361,6 +1357,7 @@ void write_settings()
     json["vMQTT"] = (const char *)settings.MQTTvarLead;
     json["mqP"] = (const char *)settings.mqttPwr;
     json["mqPO"] = (const char *)settings.mqttPwrOn;
+    json["pMP"] = (const char *)settings.pubMP;
     for(int i = 0; i < 10; i++) {
         mqm[2] = i + '0';
         mqm[3] = 't';
@@ -1594,7 +1591,10 @@ void settings_setup()
     #endif
 
     // Check if (current) audio data is installed
-    haveAudioFiles = audio_files_present(alienVER);
+    if((haveAudioFiles = audio_files_present(alienVER))) {
+        // Check for TCC, result required before wifi_setup()
+        checkForTCC();
+    }
 
     // Re-format flash FS if either alien VER found, or
     // neither VER nor our config file exist.
@@ -1843,8 +1843,8 @@ void loadCurVolume()
         #ifdef TC_DBG_BOOT
         Serial.println("loadCurVolume: extracting from secSettings");
         #endif
-        if(secSettings.curVolume == 255 || secSettings.curVolume <= 19) {
-            curVolume = secSettings.curVolume;
+        if(secSettings.curVolume == 255 || secSettings.curVolume < VOL_LEVELS) {
+            aud_state.curVolume = secSettings.curVolume;
         }
         if(secSettings.beepLvlIdx <= 3) {
             beepLvlIdx = secSettings.beepLvlIdx;
@@ -1858,7 +1858,7 @@ void loadCurVolume()
             if(!readJSONCfgFile(json, configFile)) {
                 if(!CopyCheckValidNumParm(json["volume"], NULL, temp, sizeof(temp), 0, 255, 255)) {
                     int ncv = atoi(temp);
-                    if((ncv >= 0 && ncv <= 19) || ncv == 255) curVolume = ncv;
+                    if((ncv >= 0 && ncv < VOL_LEVELS) || ncv == 255) aud_state.curVolume = ncv;
                 }
             } 
             configFile.close();
@@ -1873,7 +1873,7 @@ void storeCurVolume()
 {
     // Used to keep secSettings up-to-date in case
     // of delayed save
-    secSettings.curVolume = curVolume;
+    secSettings.curVolume = aud_state.curVolume;
     secSettings.beepLvlIdx = beepLvlIdx;
 }
 
@@ -2315,13 +2315,13 @@ void saveMusFoldNum()
 void loadShuffle()
 {
     if(haveSD && haveTerSettings) {
-        mpShuffle = !!terSettings.mpShuffle;
+        aud_state.mpShuffle = terSettings.mpShuffle;
     }
 }
 
 void saveShuffle()
 {
-    terSettings.mpShuffle = mpShuffle;
+    terSettings.mpShuffle = aud_state.mpShuffle;
     saveTerSettings(true);
 }
 
@@ -2769,7 +2769,7 @@ static bool audio_files_present(int& alienVER)
 {
     File file;
     uint8_t buf[4];
-    const char *fn = "/VER";
+    static const char *fn = "/VER";
 
     // alienVER is -1 if no VER found,
     //              0 if our VER-type found,
@@ -3156,7 +3156,7 @@ static void fw_error_blink(int n)
 
 static void firmware_update()
 {
-    const char *upderr = "Firmware update error %d\n";
+    static const char *upderr = "Firmware update error %d\n";
     uint8_t  buf[1024];
     unsigned int lastMillis = millis();
     bool     leds = false;

@@ -468,6 +468,7 @@ WiFiManagerParameter custom_mqttTopicP("MQtP", "Topic to show on Present Time di
 WiFiManagerParameter custom_mqttTopicL("MQtL", "Topic to show on Last Time Departed display", settings.mqttTopicL, 63, "", WFM_LABEL_BEFORE);
 WiFiManagerParameter custom_pubMQTT("MQpu", "Publish time travel and alarm events", settings.pubMQTT, "class='mt5'", WFM_LABEL_AFTER|WFM_IS_CHKBOX|WFM_SECTS);
 WiFiManagerParameter custom_vMQTT("MQpv", "Enhanced Time Travel notification", settings.MQTTvarLead, "class='mt5 ml20' title='Check to send time travel with variable lead.'", WFM_LABEL_AFTER|WFM_IS_CHKBOX);
+WiFiManagerParameter custom_pubMP("pMP", "Publish Music Player status to bttf/tcd/mpstatus", settings.pubMP, "class='mt5'", WFM_LABEL_AFTER|WFM_IS_CHKBOX|WFM_SECTS);
 WiFiManagerParameter custom_mqttPwr("MQp", "HA controls Fake-Power at startup", settings.mqttPwr, "class='mt5' title='Check to have HA control Fake-Power and take precendence over Fake-Power switch at power-up'", WFM_LABEL_AFTER|WFM_IS_CHKBOX|WFM_SECTS);
 WiFiManagerParameter custom_mqttPwrOn("MQpo", "Wait for POWER_ON at startup", settings.mqttPwrOn, "class='mt5 ml20'", WFM_LABEL_AFTER|WFM_IS_CHKBOX|WFM_FOOT);
 WiFiManagerParameter custom_mqtttm(wmBuildMQTTTM);
@@ -511,7 +512,7 @@ static const char rfw[] = _RFW;
 static const char myTitle[] = AA_TITLE;
 static const char myHead[]  = "<link rel='icon' type='image/png' href='data:image/png;base64," AA_ICON "'><script>window.onload=function(){xxx='" AA_TITLE "';yyy='?';wr=ge('wrap');if(wr){aa=ge('h3');if(aa){yyy=aa.innerHTML;aa.remove();dlel('h1')}zz=(Math.random()>0.8);dd=document.createElement('div');dd.classList.add('tpm0');dd.innerHTML='<div class=\"tpm\" onClick=\"shsp(1);window.location=\\'/\\'\"><div class=\"tpm2\"><img id=\"spi\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABAAQMAAACQp+OdAAAABlBMVEUAAABKnW0vhlhrAAAAAXRSTlMAQObYZgAAA'+(zz?'GBJREFUKM990aEVgCAABmF9BiIjsIIbsJYNRmMURiASePwSDPD0vPT12347GRejIfaOOIQwigSrRHDKBK9CCKoEqQF2qQMOSQAzEL9hB9ICNyMv8DPKgjCjLtAD+AV4dQM7O4VX9m1RYAAAAABJRU5ErkJggg==':'HtJREFUKM990bENwyAUBuFnuXDpNh0rZIBIrJUqMBqjMAIlBeIihQIF/fZVX39229PscYG32esCzeyjsXUzNHZsI0ocxJ0kcZIOsoQjnxQJT3FUiUD1NAloga6wQQd+4B/7QBQ4BpLAOZAn3IIy4RfUibCgTTDq+peG6AvsL/jPTu1L9wAAAABJRU5ErkJggg==')+'\" class=\"tpm3\"></div><H1 class=\"tpmh1\"'+(zz?' style=\"margin-left:1.4em\"':'')+'>'+xxx+'</H1>'+'<H3 class=\"tpmh3\"'+(zz?' style=\"padding-left:5em\"':'')+'>'+yyy+'</div></div>';wr.insertBefore(dd,wr.firstChild);wr.style.position='relative'}var lc=ge('lc');if(lc){lc.style.transform='rotate('+(358+[0,1,3,4,5][Math.floor(Math.random()*4)])+'deg)'}}</script><style>H1{font-family:Bahnschrift,-apple-system,'Segoe UI Semibold',Roboto,'Helvetica Neue',Arial,Verdana,sans-serif;margin:0;text-align:center;}H3{margin:0 0 5px 0;text-align:center;}input{border:thin inset}em > small{display:inline}form{margin-block-end:0;}.tpm{background-color:#fff;cursor:pointer;border:1px solid black;border-radius:5px;padding:0 0 0 0px;min-width:18em;}.tpm2{position:absolute;top:-0.7em;z-index:130;left:0.7em;}.tpm3{width:4em;height:4em;}.tpmh1{font-variant-caps:all-small-caps;font-weight:normal;margin-left:2.2em;overflow:clip;}.tpmh3{background:#000;font-size:0.6em;color:#ffa;padding-left:7.2em;margin-left:0.5em;margin-right:0.5em;border-radius:5px;overflow:hidden;white-space:nowrap}.tpm0{position:relative;width:20em;padding:5px 0px 5px 0px;margin:0 auto 0 auto;}.cmp0{margin:0;padding:0;}.sel0{font-size:90%;width:auto;margin-left:10px;vertical-align:baseline;}.mt5{margin-top:5px!important}.mb10{margin-bottom:10px!important}.mb0{margin-bottom:0px!important}.mb15{margin-bottom:15px!important}.ml20{margin-left:20px}.ss>label span{font-size:80%}</style>";
 static const char *myCustMenu = "<a href='https://circuitsetup.us' target=_blank><img style='display:block;margin:10px auto 5px auto;' src='data:image/png;base64,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'></a><div style='font-size:0.75em;line-height:1.2em;font-weight:bold;text-align:center;text-transform:uppercase'>" UNI_VERSION " (" UNI_VERSION_EXTRA ")<br>Powered by <a href='https://out-a-ti.me' target=_blank>A10001986</a> <a href='https://" WEBHOME ".out-a-ti.me' target=_blank>[Home/Updates]</a></div>";
-#ifdef CS_EDITION
+#if defined(CS_EDITION) && defined(CS_HAS_DNS)
 static const char r_link[]  = "github.com/CircuitSetup/Time-Circuits-Display/releases";
 #else
 static const char r_link[]  = WEBHOME "r.out-a-ti.me";
@@ -607,6 +608,7 @@ static bool          mqttPingDone = false;
 static unsigned long mqttPingNow = 0;
 static unsigned long mqttPingInt = MQTT_SHORT_INT;
 static uint16_t      mqttPingsExpired = 0;
+bool                 pubMP = false;
 #endif
 
 static unsigned int wmLenBuf = 0;
@@ -818,12 +820,17 @@ void wifi_setup()
       &custom_state,
       &custom_mqttServer, 
       &custom_mqttVers,
-      &custom_mqttUser, 
+      &custom_mqttUser,
+
       &custom_mqttTopic,
       &custom_mqttTopicP,
       &custom_mqttTopicL,
+
       &custom_pubMQTT,
       &custom_vMQTT,
+
+      &custom_pubMP,
+      
       &custom_mqttPwr,
       &custom_mqttPwrOn,
 
@@ -848,7 +855,8 @@ void wifi_setup()
 
     wm.setHostname(settings.hostName);
 
-    wm.showUploadContainer(haveSD, AA_CONTAINER, rspv, haveAudioFiles);
+    // Sound-pack installation status: Don't alert for missing TCC in main menu if no SD present
+    wm.showUploadContainer(haveSD, AA_CONTAINER, rspv, haveAudioFiles ? ((haveTCC || !haveSD) ? 1 : -1) : 0);
     wm.setReqFirmwareVersion(rfw);
 
     wm.setSaveWiFiCallback(saveWiFiCallback);
@@ -1041,6 +1049,8 @@ void wifi_setup()
         
         MQTTWaitForOn = (csf & CSF_MQTTPM) ? evalBool(settings.mqttPwrOn) : false;
 
+        pubMP = evalBool(settings.pubMP);
+
         // No WiFi power save if we're using MQTT
         origWiFiOffDelay = wifiOffDelay = 0;
 
@@ -1078,10 +1088,8 @@ void wifi_setup()
             
     } else {
 
-        pubMQTT = MQTTvarLead = false;
         csf &= ~CSF_MQTTPM;
-        MQTTWaitForOn = false;
-        
+        pubMP = pubMQTT = MQTTvarLead = MQTTWaitForOn = false;
 
         #ifdef TC_DBG_MQTT
         Serial.println("MQTT: Disabled");
@@ -1154,10 +1162,12 @@ void wifi_loop()
 
         int temp;
 
-        mp_stop();
+        csf |= CSF_REBOOT;  // Force MP "off" state
+        mp_stop(true);
         stopAudio();
-        ettoPulseEnd();
+
         send_abort_msg();
+        ettoPulseEnd();
 
         // Save settings and restart esp32
 
@@ -1335,6 +1345,7 @@ void wifi_loop()
             evalCB(settings.MQTTvarLead, &custom_vMQTT);
             evalCB(settings.mqttPwr, &custom_mqttPwr);
             evalCB(settings.mqttPwrOn, &custom_mqttPwrOn);
+            evalCB(settings.pubMP, &custom_pubMP);
             #endif
 
         }
@@ -1349,7 +1360,7 @@ void wifi_loop()
         Serial.flush();
 
         prepareReboot();
-        delay(500);
+        delay(1000);
         esp_restart();
     }
 
@@ -1575,6 +1586,7 @@ void wifiOn(unsigned long newDelay, bool alsoInAPMode, bool deferCP)
                 }
 
                 // Make sure we don't cause stutter (beep might be running)
+                // (Music Player is never on at this point)
                 stopAudio();
 
                 // If ON and User has config's a NW, disable WiFi at this point
@@ -1629,6 +1641,7 @@ void wifiOn(unsigned long newDelay, bool alsoInAPMode, bool deferCP)
             if(!wifiAPIsOff) {
 
                 // Make sure we don't cause stutter (beep might be running)
+                // Music Player is never on at this point
                 stopAudio();
 
                 // If ON, disable WiFi at this point
@@ -1663,6 +1676,7 @@ void wifiOn(unsigned long newDelay, bool alsoInAPMode, bool deferCP)
     }
 
     // Make sure we don't cause stutter; beep might still be running
+    // Music Player is never on at this point
     stopAudio();
 
     // (Re)connect
@@ -1781,7 +1795,7 @@ static void wifi_ntp_setup(bool doUseNTP)
 
 static void checkForUpdate()
 {
-    #ifdef CS_EDITION
+    #if defined(CS_EDITION) && defined(CS_HAS_DNS)
     #define _UPDD "tcdv.circuitsetup.us"
     #else
     #define _UPDD "tcdv.out-a-ti.me"
@@ -1972,7 +1986,8 @@ static void preUpdateCallback()
     wifiAPOffDelay = 0;
     origWiFiOffDelay = 0;
 
-    mp_stop();
+    csf |= CSF_REBOOT;  // Force MP "off" state
+    mp_stop(true);
     stopAudio();
 
     ettoPulseEnd();
@@ -2000,7 +2015,7 @@ static void postUpdateCallback(bool res)
     // However, our preparation destroyed too 
     // much, so we reboot anyway.
     if(!res) {
-        delay(500);
+        delay(1000);
         esp_restart();
     }
 }
@@ -2270,6 +2285,7 @@ static void updateConfigPortalValues()
     setCBVal(&custom_vMQTT, settings.MQTTvarLead);
     setCBVal(&custom_mqttPwr, settings.mqttPwr);
     setCBVal(&custom_mqttPwrOn, settings.mqttPwrOn);
+    setCBVal(&custom_pubMP, settings.pubMP);
     // MQTT topic/msg done on-the-fly
     #endif
 }
@@ -2729,8 +2745,8 @@ static const char *wmBuildMQTTTM(const char *dest, int op)
         if(dest) free((void *)dest);
         return NULL;
     }
-    const char HTTP_SECT_HEAD[] = "<div class='ss'>";
-    const char HTTP_SECT_FOOT[] = "</div>";
+    static const char HTTP_SECT_HEAD[] = "<div class='ss'>";
+    static const char HTTP_SECT_FOOT[] = "</div>";
     static const char mqtttm1[] = "<label for='%s'>Topic for %d</label><br><input id='%s' name='%s' maxlength='127' value='%s'%s><br><label for='%s'>Message for %d</label><br><input id='%s' name='%s' maxlength='63' value='%s' class='mb15'%s><br>";
     static const char mqtttmp1[] = " placeholder='Example: home/lights/1/'";
     static const char mqtttmp2[] = " placeholder='Example: ON'";
@@ -2779,7 +2795,7 @@ static void doReboot()
 {
     delay(1000);
     prepareReboot();
-    delay(500);
+    delay(1000);
     esp_restart();
 }
 
@@ -2911,8 +2927,8 @@ static void handleUploading()
 
 static void handleUploadDone()
 {
-    const char *ebuf = "ERROR";
-    const char *dbuf = "DONE";
+    static const char *ebuf = "ERROR";
+    static const char *dbuf = "DONE";
     char *buf = NULL;
     bool haveErrs = false;
     bool haveAC = false;
@@ -3395,16 +3411,16 @@ static void mqttCallback(char *topic, byte *payload, unsigned int length)
       "\xd1" "POWER_CONTROL_OFF",// 24 also when CSF_OFF or AL
       "\xca" "ALARM_STOP",       // 25 also when CSF_OFF or AL
       "\xcc" "ALARM_SNOOZE",     // 26 also when CSF_OFF or AL
+      "\x09" "VOLUME_UP",        // 27
+      "\x0b" "VOLUME_DOWN",      // 28
+      "\x0b" "VOLUME_SET_",      // 29                                VOLUME_SET_0 .. VOLUME_SET_100
+      "\xcc" "MP_REQSTATUS",     // 30 !!! also when CSF_OFF or AL or TT or MA etc.
       NULL
     };
 
     if(!length) return;
 
     if(!strcmp(topic, "bttf/tcd/cmd")) {
-
-        // Not taking commands under these circumstances:
-        if(csf & (CSF_MA|CSF_ST|CSF_P0|CSF_P1|CSF_RE))
-            return;
 
         if(ml < 4) return;
 
@@ -3417,6 +3433,15 @@ static void mqttCallback(char *topic, byte *payload, unsigned int length)
             tempBuf[tempBufLen] = a;
         }
         tempBuf[tempBufLen] = 0;
+
+        // Not taking commands under these circumstances:
+        if(csf & (CSF_MA|CSF_ST|CSF_P0|CSF_P1|CSF_RE)) {
+            // Except status requests
+            if(!strcmp(tempBuf, cmdList[30] + 1)) {
+                mp_sendStatus(1);
+            }
+            return;
+        }
 
         while(cmdList[i]) {
             const char *t = cmdList[i];
@@ -3472,16 +3497,16 @@ static void mqttCallback(char *topic, byte *payload, unsigned int length)
             mp_makeShuffle((i == 6));
             break;
         case 8:    
-            if(haveMusic) mp_play();
+            mp_play();
             break;
         case 9:
-            if(haveMusic) mp_stop();
+            mp_stop();
             break;
         case 10:
-            if(haveMusic) mp_next(mpActive);
+            mp_next(mpActive);
             break;
         case 11:
-            if(haveMusic) mp_prev(mpActive);
+            mp_prev(mpActive);
             break;
         case 12:
         case 13:
@@ -3539,6 +3564,39 @@ static void mqttCallback(char *topic, byte *payload, unsigned int length)
                     startSnooze();
                 }
             }
+            break;
+        case 27:
+        case 28:
+        case 29:
+            if(aud_state.curVolume != 255) {
+                int nv = aud_state.curVolume;
+                if(i == 27) {
+                    if(nv < VOL_LEVELS - 1) nv++;
+                } else if(i == 28) {
+                    if(nv > 0) nv--;
+                } else if(tempBufLen > j) {
+                    if(tempBuf[j] >= '0' && tempBuf[j] <= '9') {
+                        int p = atoi(&tempBuf[j]);
+                        if(p >= 0 && p <= 100) {
+                            nv = (VOL_LEVELS - 1) * p / 100;
+                        }
+                    }
+                }
+                if(nv != aud_state.curVolume) {
+                    aud_state.curVolume = nv;
+                    #ifdef TC_HAVE_RE
+                    re_vol_reset();
+                    #endif
+                    #ifdef TC_HAVEMQTT
+                    mp_sendStatus();
+                    #endif
+                    storeCurVolume();
+                    triggerDelayedVolSave();
+                }
+            }
+            break;
+        case 30:
+            mp_sendStatus(1);
             break;
         }
             
@@ -3679,6 +3737,10 @@ static void mqttSubscribe()
                 #endif
             }
         }
+
+        // Send out music player status as soon as possible
+        mp_sendStatus(1);
+        
         mqttSubAttempted = true;
     }
 }
@@ -3688,11 +3750,18 @@ bool mqttState()
     return (useMQTT && mqttClient.connected());
 }
 
-void mqttPublish(const char *topic, const char *pl, unsigned int len)
+bool mqttConnected()
+{
+    return (useMQTT && (mqttClient.state() == MQTT_CONNECTED));
+}
+
+bool mqttPublish(const char *topic, const char *pl, unsigned int len)
 {
     if(useMQTT) {
-        mqttClient.publish(topic, (uint8_t *)pl, len, false);
+        return mqttClient.publish(topic, (uint8_t *)pl, len, false);
     }
+
+    return true;
 }
 
 #endif
