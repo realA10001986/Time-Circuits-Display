@@ -313,7 +313,7 @@ class WiFiManager
 
     // show audio upload on Update page
     #ifdef WM_UPLOAD
-    void          showUploadContainer(bool enable, const char *contName, const char *contVer, bool isInstalled);
+    void          showUploadContainer(bool enable, const char *contName, const char *contVer, int isInstalled);
     #endif
 
     // set download link for updates
@@ -444,7 +444,7 @@ class WiFiManager
     bool          _showUploadSnd          = false; // Show upload audio on Update page
     char          _sndContName[8]         = "";    // File name of BIN file to upload
     const char *  _sndContVer             = NULL;
-    bool          _sndIsInstalled         = false;
+    int8_t        _sndIsInstalled         = 0;     // 0=missing, 1=complete, -1=partly
     #endif
 
     #ifdef WM_FW_HW_VER

@@ -1929,7 +1929,7 @@ unsigned int WiFiManager::calcRootLen(unsigned int& repSize, unsigned int& appEx
     uint32_t incFlags = incSTA|incC80;
 
     #ifdef WM_UPLOAD
-    if(_nv || !_sndIsInstalled) incFlags |= incUPLF;
+    if(_nv || (_sndIsInstalled < 1)) incFlags |= incUPLF;
     #else
     if(_nv) incFlags |= incUPLF;
     #endif
@@ -1956,7 +1956,7 @@ void WiFiManager::buildRootPage(String& page, unsigned int repSize, unsigned int
     uint32_t incFlags = incSTA|incC80;
 
     #ifdef WM_UPLOAD
-    if(_nv || !_sndIsInstalled) incFlags |= incUPLF;
+    if(_nv || (_sndIsInstalled < 1)) incFlags |= incUPLF;
     #else
     if(_nv) incFlags |= incUPLF;
     #endif
@@ -2973,9 +2973,10 @@ void WiFiManager::handleUpdate()
     }
     mySize += strlen(_sndContName);
     if(_sndContVer) {
-        mySize += STRLEN(HTTP_UPLOAD_SLINK1) + STRLEN(HTTP_UPLOAD_SLINK1B) + STRLEN(HTTP_UPLOAD_SLINK2) + STRLEN(HTTP_UPLOAD_SLINK3);
+        mySize += STRLEN(HTTP_UPLOAD_SLINK1) + STRLEN(HTTP_UPLOAD_SLINK1C) + STRLEN(HTTP_UPLOAD_SLINK2) + STRLEN(HTTP_UPLOAD_SLINK3);
         mySize += strlen(_sndContVer);
-        if(!_sndIsInstalled) mySize += STRLEN(HTTP_UPLOAD_SLINK1A) + STRLEN(HTTP_UPLOAD_SLINK2A);
+        if(!_sndIsInstalled)          mySize += STRLEN(HTTP_UPLOAD_SLINK1A) + STRLEN(HTTP_UPLOAD_SLINK2A);
+        else if(_sndIsInstalled < 0)  mySize += STRLEN(HTTP_UPLOAD_SLINK1B) + STRLEN(HTTP_UPLOAD_SLINK2B);
     }
 #endif
 
@@ -3031,11 +3032,13 @@ void WiFiManager::handleUpdate()
     page += FPSTR(HTTP_UPLOADSND2);
     if(_sndContVer) {
         page += FPSTR(HTTP_UPLOAD_SLINK1);
-        if(!_sndIsInstalled) page += FPSTR(HTTP_UPLOAD_SLINK1A);
-        page += FPSTR(HTTP_UPLOAD_SLINK1B);
+        if(!_sndIsInstalled)          page += FPSTR(HTTP_UPLOAD_SLINK1A);
+        else if(_sndIsInstalled < 0)  page += FPSTR(HTTP_UPLOAD_SLINK1B);
+        page += FPSTR(HTTP_UPLOAD_SLINK1C);
         page += _sndContVer;
         page += FPSTR(HTTP_UPLOAD_SLINK2);
-        if(!_sndIsInstalled) page += FPSTR(HTTP_UPLOAD_SLINK2A);
+        if(!_sndIsInstalled)          page += FPSTR(HTTP_UPLOAD_SLINK2A);
+        else if(_sndIsInstalled < 0)  page += FPSTR(HTTP_UPLOAD_SLINK2B);
         page += FPSTR(HTTP_UPLOAD_SLINK3);
     }
     if(_showUploadSnd) {
@@ -3265,7 +3268,7 @@ void WiFiManager::setMinimumRSSI(int rssi)
 
 // showUploadContainer(): Toggle displaying the sound-pack upload fields
 #ifdef WM_UPLOAD
-void WiFiManager::showUploadContainer(bool enable, const char *contName, const char *contVer, bool isInstalled)
+void WiFiManager::showUploadContainer(bool enable, const char *contName, const char *contVer, int isInstalled)
 {
     _showUploadSnd = enable;
     memset(_sndContName, 0, sizeof(_sndContName));

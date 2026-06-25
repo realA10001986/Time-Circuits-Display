@@ -115,7 +115,7 @@ static const char HTTP_STYLE_UPLF[] PROGMEM =
     "span.bf{color:" HTTP_YUPD ";animation:bf 1s ease-in-out infinite}";
 
 static const char HTTP_STYLE_STA[]  PROGMEM =
-    ".sta{color:#888;text-align:center;font-size:0.9em}"
+    ".sta{font-variant:small-caps;color:#888;text-align:center;font-size:0.9em}"
     ".sta>span.n{color:#888}"
     ".sta>span.g{color:#609b71}"
     ".sta>span.r{color:#be5c9c}"
@@ -152,7 +152,8 @@ static const char HTTP_STYLE_SET[]  PROGMEM =
 static const char HTTP_STYLE_UPL[]  PROGMEM =
     "input[type='file']{background:#fff;border:1px solid " HTTP_BLUE "}"
     "div.ba{font-size:80%;border-radius:5px;margin:0}"
-    "div.bar{background:#dc3630;color:#fff}";
+    "div.bar{background:#dc3630;color:#fff}"
+    "div.bap{background:#fa0}";
 
 static const char HTTP_STYLE_END [] PROGMEM = "</style>";
 
@@ -240,9 +241,11 @@ static const char HTTP_UPLOADSND1A[]      PROGMEM = "<div class='ss c' style='li
 static const char HTTP_UPLOADSND2[]       PROGMEM = ".bin) and/or mp3 file upload<br>";
 static const char HTTP_UPLOAD_SLINK1[]    PROGMEM = "<div class='c ba";
 static const char HTTP_UPLOAD_SLINK1A[]   PROGMEM = " bar";
-static const char HTTP_UPLOAD_SLINK1B[]   PROGMEM = "'>Required sound-pack: ";
+static const char HTTP_UPLOAD_SLINK1B[]   PROGMEM = " bap";
+static const char HTTP_UPLOAD_SLINK1C[]   PROGMEM = "'>Required sound-pack: ";
 static const char HTTP_UPLOAD_SLINK2[]    PROGMEM = " [";
 static const char HTTP_UPLOAD_SLINK2A[]   PROGMEM = "<strong>not</strong> ";
+static const char HTTP_UPLOAD_SLINK2B[]   PROGMEM = "partly ";
 static const char HTTP_UPLOAD_SLINK3[]    PROGMEM = "installed]</div>";
 static const char HTTP_UPLOADSND3[]       PROGMEM = "<input type='file' name='upac' multiple accept='.bin,application/octet-stream,.mp3,audio/mpeg'><br><button id='uacb' type='submit' class='h'>Upload</button></div></form>";
 static const char HTTP_UPLOAD_SDMSG[]     PROGMEM = "<br>SD card required for sound upload</div>";
