@@ -818,7 +818,7 @@ By default, the device uses the built-in hardware volume knob to determine the d
 - Press 5 or ENTER
 - Press 2/8 to toggle between "USE VOLUME KNOB" and "SELECT LEVEL"
 - Press 5 or ENTER
-- If you chose "SELECT LEVEL", you can now select the desired level by pressing 2/8. There are 21 levels available. The volume knob is now ignored.
+- If you chose "SELECT LEVEL", you can now select the desired level by pressing 2/8. The volume knob is now ignored.
 - Press 5 or ENTER to save and quit the menu. "SAVING" is displayed briefly.
 
 Pressing "9" at any point cancels and quits the menu.
