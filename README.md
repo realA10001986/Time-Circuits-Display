@@ -364,7 +364,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
     </tr>
   <tr>
      <td align="left">Select audio volume level</td>
-     <td align="left">300 - 319&#9166;</td>
+     <td align="left">300 - 320&#9166;</td>
     </tr>
     <tr>
      <td align="left">Disable/enable <a href="#audio-output">line-out audio</a> for music and time travel sounds</td>
@@ -419,7 +419,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left">770&#9166;</td>
     </tr>
     <tr>
-     <td align="left"><a href="#the-music-player">Music Player</a>: Show currently played song</td>
+     <td align="left"><a href="#the-music-player">Music Player</a>: Show currently played track</td>
      <td align="left">55&#9166;</td>
     </tr>
     <tr>
@@ -431,11 +431,11 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left">555&#9166;</td>
     </tr> 
     <tr>
-     <td align="left"><a href="#the-music-player">Music Player</a>: Go to song 0</td>
+     <td align="left"><a href="#the-music-player">Music Player</a>: Go to track 0</td>
      <td align="left">888&#9166;</td>
     </tr>
     <tr>
-     <td align="left"><a href="#the-music-player">Music Player</a>: Go to song xxx</td>
+     <td align="left"><a href="#the-music-player">Music Player</a>: Go to track xxx</td>
      <td align="left">888xxx&#9166;</td>
     </tr>
     <tr>
@@ -504,7 +504,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
     </tr>
     <tr>
      <td align="center">1<br>Toggle <a href="#alarm">Alarm</a> on/off</td>
-     <td align="center">2<br><a href="#the-music-player">Music Player</a>: Previous song</td>
+     <td align="center">2<br><a href="#the-music-player">Music Player</a>: Previous track</td>
      <td align="center">3<br><a href="#additional-custom-sounds">Play "key3.mp3"</a></td>
     </tr>
     <tr>
@@ -514,7 +514,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
     </tr>
     <tr>
      <td align="center">7<br><a href="#wifi-power-saving-features">Re-enable WiFi</a></td>
-     <td align="center">8<br><a href="#the-music-player">Music Player</a>: Next song</td>
+     <td align="center">8<br><a href="#the-music-player">Music Player</a>: Next track</td>
      <td align="center">9<br><a href="#time-travel">Return from Time Travel</a></td>
     </tr>
     <tr>
@@ -729,23 +729,27 @@ In order to delete a file from the SD card, upload a file whose name is prefixed
 
 For technical reasons, the TCD must reboot after mp3 files are uploaded in this way.
 
-Please remember that the maximum bitrate for mp3 files is 128kbps. Also note that the uploaded files are stored to the root folder of the SD card, so this way of uploading cannot be used to upload songs for the Music Player. 
+Please remember that the maximum bitrate for mp3 files is 128kbps. Also note that the uploaded files are stored to the root folder of the SD card, so this way of uploading cannot be used to upload music files for the Music Player. 
 
 ## The Music Player
 
 The firmware contains a simple music player to play mp3 files located on the SD card. 
 
-In order to be recognized, your mp3 files need to be organized in music folders named *music0* through *music9*. The folder number is 0 by default, ie the player starts searching for music in folder *music0*. This folder number can be changed in the [keypad menu](#how-to-select-the-music-folder-number).
+*The maximum bitrate is __128kpbs__. The free [Adapter](https://macroplant.com/adapter/audio-converter) tool can re-encode your mp3 files in batches.*
 
-The names of the audio files must only consist of three-digit numbers, starting at 000.mp3, in consecutive order. No numbers should be left out. Each folder can hold 1000 files (000.mp3-999.mp3). *The maximum bitrate is 128kpbs.*
+To be recognized, your mp3 files need to be organized in music folders named *music0* through *music9*. The folder number is 0 by default, i.e. the player starts searching for music in folder *music0*. This folder number can be changed in the [keypad menu](#how-to-select-the-music-folder-number).
 
-Since renaming mp3 files manually is somewhat cumbersome, the firmware can do this for you - provided you can live with the files being sorted in alphabetical order: Just copy your files with their original filenames to the music folder; upon boot or upon selecting a folder containing such files, they will be renamed following the 3-digit name scheme (as mentioned: in alphabetic order). You can also add files to a music folder later, they will be renamed properly; when you do so, delete the file "TCD_DONE.TXT" from the music folder on the SD card so that the firmware knows that something has changed. The renaming process can take a while (10 minutes for 1000 files in bad cases). Mac users are advised to delete the ._ files from the SD before putting it back into the TCD as this speeds up the process. _While the renaming is in progress, the TCD's display shows the number of files yet to be processed._
+The names of the audio files must only consist of three-digit numbers, starting at 000.mp3, in consecutive order. No numbers should be left out. Each folder can hold up to 1000 files (000.mp3-999.mp3). 
 
-To start and stop music playback, hold 5. Holding 2 jumps to the previous song, holding 8 to the next one.
+Since manually renaming mp3 files is somewhat cumbersome, the firmware can do this for you: Just copy your files with their original filenames to a music folder of your choice; when selecting that folder, the files will be sorted alphabetically and renamed according to the 3-digit name scheme. (If you want your tracks in a specific order, you must rename them, for instance by inserting a letter or number at the start.) The renaming process can take a while (11 minutes for 1000 files in bad cases). Mac users are advised to delete the ._ files from the SD before putting it back into the TCD as this speeds up the process. While the renaming is in progress, the TCD's display shows the number of files yet to be processed.
 
-By default, the songs are played in order, starting at 000.mp3, followed by 001.mp3 and so on. By entering keypad command 555 you can switch to shuffle mode, in which the songs are played in random order. Keypad command 222 switches back to consecutive mode. The Shuffle mode state is saved and persistent across reboots.
+To add files to a music folder later, just copy them to the folder and delete the file "TCD_DONE.TXT" (so that the firmware knows that something has changed). 
 
-Keypad command 888 re-starts the player at song 000, and 888xxx (xxx = three-digit number) jumps to song #xxx.
+To start and stop music playback, hold 5. Holding 2 jumps to the previous track, holding 8 to the next one.
+
+By default, the tracks are played in order, starting at 000.mp3, followed by 001.mp3 and so on. By entering keypad command 555 you can switch to shuffle mode, in which the tracks are played in random order. Keypad command 222 switches back to consecutive mode. The Shuffle mode state is saved and persistent across reboots.
+
+Keypad command 888 re-starts the player at track 000, and 888xxx (xxx = three-digit number) jumps to track #xxx.
 
 See [here](#keypad-reference) for a list of controls of the music player.
 
@@ -814,14 +818,14 @@ By default, the device uses the built-in hardware volume knob to determine the d
 - Press 5 or ENTER
 - Press 2/8 to toggle between "USE VOLUME KNOB" and "SELECT LEVEL"
 - Press 5 or ENTER
-- If you chose "SELECT LEVEL", you can now select the desired level by pressing 2/8. There are 20 levels available. The volume knob is now ignored.
+- If you chose "SELECT LEVEL", you can now select the desired level by pressing 2/8. There are 21 levels available. The volume knob is now ignored.
 - Press 5 or ENTER to save and quit the menu. "SAVING" is displayed briefly.
 
 Pressing "9" at any point cancels and quits the menu.
 
-You can also quickly set the volume through keypad commands 300-319 (select a level) and 399 (enables the volume knob).
+You can also quickly set the volume through keypad commands 300-320 (select a level) and 399 (enables the volume knob).
 
-If you are using a Rotary Encoder for volume, you need to disable the volume knob by pre-selecting a level (00-19). While the built-in volume knob is active, the Rotary Encoder will do nothing.
+If you are using a Rotary Encoder for volume, you need to disable the volume knob by pre-selecting a level (00-20). While the built-in volume knob is active, the Rotary Encoder will do nothing.
 
 #### How to select the music folder number:
 
@@ -1194,15 +1198,18 @@ The TCD can be controlled through messages sent to topic **bttf/tcd/cmd**. Suppo
 - NIGHTMODE_OFF: Disable manual [night mode](#night-mode)
 - MP_PLAY: Starts the Music Player
 - MP_STOP: Stops the Music Player
-- MP_NEXT: Jump to next song
-- MP_PREV: Jump to previous song
+- MP_NEXT: Jump to next track
+- MP_PREV: Jump to previous track
 - MP_SHUFFLE_ON: Enables shuffle mode in Music Player
 - MP_SHUFFLE_OFF: Disables shuffle mode in Music Player
+- MP_REQSTATUS: Publish current [music player status](#-publish-music-player-status-to-bttftcdmpstatus) to bttf/tcd/mpstatus
 - PLAYKEY_x: Play keyX.mp3 (from SD card), X being in the range from 1 to 9.
 - STOPKEY: Stop playback of keyX file. Does nothing if no keyX file is currently played back.
 - PLAY_DOOR_OPEN, PLAY_DOOR_CLOSE: Play door sound
 - PLAY_DOOR_OPEN_L, PLAY_DOOR_CLOSE_L: Play door sound on left stereo channel
 - PLAY_DOOR_OPEN_R, PLAY_DOOR_CLOSE_R: Play door sound on right stereo channel
+- VOLUME_UP, VOLUME_DOWN: Increase/decrease volume by a notch
+- VOLUME_SET_x: Set volume to x% (x=0-100)
 - POWER_CONTROL_ON: Take over Fake-Power control; POWER_xx commands now control Fake-Power.
 - POWER_CONTROL_OFF: Release Fake-Power control
 - POWER_ON, POWER_OFF: Switch Fake-Power on or off, respectively.
@@ -1786,6 +1793,26 @@ If this option is unchecked, the TCD publishes "TIMETRAVEL" and the time until t
 Note: If you have a GPS receiver, a rotary encoder or a Futaba remote control and use either of those as a source for speed, a time travel is triggered upon hitting 88mph. In this use case, however, the TCD cannot know if or when a speed of 88mph is actually be reached and therefore not inform other props 5 seconds ahead. If this options is unchecked, as a result, there will be a delay of 5 seconds from when the TCD's GPS/Rotary Encoder/Futaba Remote-induced speed hits 88mph until the temporal displayment sequence actually starts. As this certainly is undesirable, the option should be checked and your HA/MQTT devices should be configured to understand the enhanced TIMETRAVEL commands. 
 
 For detailed timing information, see [here](AddOns.md#synchronized-time-travel-through-hamqtt).
+
+##### &#9193; Publish Music Player status to bttf/tcd/mpstatus
+
+This option enables the Music Player's backchannel. The backchannel carries feedback and status information on the Music Player which can be used to comfortably remote-control the TCD's Music Player through HomeAssistant/MQTT.
+
+This option should be left unchecked if not used.
+
+Backchannel data is sent to _bttf/tcd/mpstatus_ on every change. It can also be triggered at any point by sending __MP_REQSTATUS__ to _bttf/tcd/cmd_.
+
+The data published on the backchannel is a JSON object, containing the following keys:
+- __S__: State. _Value_ can be "P" for playing, "I" for idle, and "O" for off/busy. In 'off' state, the TCD does not take commands.
+- __C__: Current track. _Value_ is an unsigned integer >= 0 as a string.
+- __F__: First track. This tells the remote control where to start counting track numbers. _Value_ is always 0 (zero) as a string.
+- __L__: Last track. This tells the remote control the last and highest possible track number. _Value_ is an unsigned integer >= 0 and <= 999 as a string.
+- __V__: Volume. This is an integer as a string. If -1, volume control is unavailable. Otherwise 0-100.
+- __SH__: Shuffle. This is an integer as a string, either "0" for 'off', or "1" for 'on'.
+
+Example: __{"S":"I","C":"1","V":"20","F":"0","L":"67","SH":"0"}__
+
+The backchannel is used/required by the upcoming A10001986 [Lou's Cafe Jukebox](https://jb.out-a-ti.me).
 
 ##### &#9193; HA controls Fake-Power at startup
 
