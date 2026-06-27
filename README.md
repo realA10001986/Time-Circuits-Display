@@ -1259,10 +1259,10 @@ MQTT and BTTFN work fine along each other.
 
 BTTFN is the primary way of inter-prop communication. The majority of network features (such as mutual remote controlling, transmission of speed, synchronized fake-power and night mode switching, etc.) _require_ a BTTFN connection. These features are not supported through MQTT. Therefore, all BTTFN-compatible props need to be properly configured to connect to the TCD through BTTFN.
 
-The only inter-prop communication features that are covered by both BTTFN and MQTT is time travel and alarm. 
+The only inter-prop communication features that are covered by both BTTFN and MQTT are _time travel_ and _alarm_. 
 
-The TCD can send out time travel and alarm notifications through **_either_ MQTT _or_ BTTFN**, but you have to choose between them.
-- If the option **_Publish time travel and alarm events_** on the HA/MQTT Settings page is checked, time travel/alarm notifications are exclusively sent over MQTT. That means that all props that are supposed to take part in time travel/alarm sequences must be connected to the same broker. That includes all A10001986/CircuitSetup props.
+The TCD can send out time travel and alarm notifications through **_either_ MQTT _or_ BTTFN**, and you must make a choice:
+- If the option **_Publish time travel and alarm events_** on the _HA/MQTT Settings_ page is checked, time travel/alarm notifications are exclusively sent over MQTT. That means that all props that are supposed to take part in time travel/alarm sequences must be connected to the same broker. That includes all CircuitSetup/A10001986 props.
 - If this option is unchecked, time travel/alarm notifications are sent exclusively over BTTFN.
 
 Checking this option really only makes sense if there are MQTT-capable, but BTTFN-incapable props to take part in time travel/alarm sequences. If that is not the case, please leave this option unchecked.
