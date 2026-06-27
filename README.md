@@ -1164,7 +1164,7 @@ See also [here](AddOns.md#other-props), chapter "Other props".
 
 ## Home Assistant / MQTT
 
-The TCD supports MQTT protocol versions 3.1.1 and 5.0 for the following features:
+The TCD supports MQTT protocol versions 3.1.1 and 5.0.
 
 ### Display messages
 
@@ -1254,13 +1254,17 @@ When the [alarm](#alarm) sounds, the TCD publishes "ALARM".
 
 MQTT and BTTFN can co-exist.
 
-Remote controlling through the TCD keypad, transmission of speed, synchronized fake-power and night mode switching requires a BTTFN connection. 
+The majority of network features (such as mutual remote controlling, transmission of speed, synchronized fake-power and night mode switching) _require_ a BTTFN connection. These features are not supported through MQTT. Therefore, all props need to be properly configured to connect to the TCD through BTTFN.
 
 As regards time travel and alarm:
 
-The TCD only sends out time travel and alarm notifications through _either_ MQTT _or_ BTTFN, never both; selection is done by checking or unchecking the option **_Publish time travel and alarm events_** on the HA/MQTT Settings page.
+The TCD can send out time travel and alarm notifications through **_either_ MQTT _or_ BTTFN**, but you have to choose between them:
 
-If you have other (third-party) MQTT-aware devices listening to the TCD's public topic (bttf/tcd/pub) in order to react to time travel or alarm messages, use MQTT (i.e. check **_Publish time travel and alarm events_**). If only BTTFN-aware devices are to be used, uncheck this option to use BTTFN as it has less latency.
+If the option **_Publish time travel and alarm events_** on the HA/MQTT Settings page is checked, timetravel/alarm notifications are sent only over MQTT. If this option is unchecked, timetravel/alarm notifications are sent only over BTTFN.
+
+If this option is checked, all props that are supposed to take part in timetravel sequences must be connected to the same broker!
+
+If you have other (third-party) MQTT-aware devices listening to the TCD's public topic (bttf/tcd/pub) in order to react to time travel or alarm messages, use MQTT (i.e. check **_Publish time travel and alarm events_**). Otherwise uncheck this option to use BTTFN. 
 
 ### Setup
 
