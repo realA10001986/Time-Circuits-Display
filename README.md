@@ -1173,7 +1173,7 @@ The TCD can subscribe to three user-configured topics and display messages recei
 If the SD card contains a file named 
 - "ha-alert.mp3" (for _Destination Time_ display),
 - "ha-alart-p.mp3" (for _Present Time_  display) and/or
-- "ha-alert-l.mp3" (for _Last Time Departed_  display),
+- "ha-alert-l.mp3" (for _Last Time Departed_  display),<br />
 this file will be played upon reception of a message for the respective display. There are no default sounds.
 
 Only ASCII messages are supported, the maximum length is 255 characters.
