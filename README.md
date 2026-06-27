@@ -1239,7 +1239,9 @@ Keypad command 996 works like POWER_CONTROL_OFF; it allows to separate HA from F
 
 ### Notify other devices of a time travel or alarm
 
-If both the TCD and the other props are connected to the same broker, and the option **_Publish time travel and alarm events_** is checked on the TCD's side, other compatible props will receive information on time travel and alarm and play their sequences in sync with the TCD. The topic is called  **bttf/tcd/pub**.
+The TCD can send out notifications on time travel and alarm through MQTT. This enables the use of MQTT-capable devices to react to, and take part in time travel or alarm sequences by simply listening to the TCD's public topic **bttf/tcd/pub**.
+
+To enable the sending of time travel and alarm notifications, check the option **_Publish time travel and alarm events_** on the _HA/MQTT Settings_ page in the Config Portal. This option, however, has some implications for BTTFN-connected devices, see [below](#MQTT-vs-BTTFN).
 
 The timing for time travel is described [here](AddOns.md#synchronized-time-travel-through-hamqtt), in short:
 - "PREPARE" might be published ahead of the time travel to prepare; the timing is not specified. Used on CircuitSetup/A10001986 props to disable the "Screen Saver".
@@ -1252,19 +1254,17 @@ When the [alarm](#alarm) sounds, the TCD publishes "ALARM".
 
 ### MQTT vs BTTFN
 
-MQTT and BTTFN can co-exist.
+MQTT and BTTFN work fine along each other.
 
-The majority of network features (such as mutual remote controlling, transmission of speed, synchronized fake-power and night mode switching) _require_ a BTTFN connection. These features are not supported through MQTT. Therefore, all props need to be properly configured to connect to the TCD through BTTFN.
+BTTFN is the primary way of inter-prop communication. The majority of network features (such as mutual remote controlling, transmission of speed, synchronized fake-power and night mode switching, etc.) _require_ a BTTFN connection. These features are not supported through MQTT. Therefore, all BTTFN-compatible props need to be properly configured to connect to the TCD through BTTFN.
 
-As regards time travel and alarm:
+The only inter-prop communication features that are covered by both BTTFN and MQTT is time travel and alarm. 
 
-The TCD can send out time travel and alarm notifications through **_either_ MQTT _or_ BTTFN**, but you have to choose between them:
+The TCD can send out time travel and alarm notifications through **_either_ MQTT _or_ BTTFN**, but you have to choose between them.
+- If the option **_Publish time travel and alarm events_** on the HA/MQTT Settings page is checked, time travel/alarm notifications are exclusively sent over MQTT. That means that all props that are supposed to take part in time travel/alarm sequences must be connected to the same broker. That includes all A10001986/CircuitSetup props.
+- If this option is unchecked, time travel/alarm notifications are sent exclusively over BTTFN.
 
-If the option **_Publish time travel and alarm events_** on the HA/MQTT Settings page is checked, timetravel/alarm notifications are sent only over MQTT. If this option is unchecked, timetravel/alarm notifications are sent only over BTTFN.
-
-If this option is checked, all props that are supposed to take part in timetravel sequences must be connected to the same broker!
-
-If you have other (third-party) MQTT-aware devices listening to the TCD's public topic (bttf/tcd/pub) in order to react to time travel or alarm messages, use MQTT (i.e. check **_Publish time travel and alarm events_**). Otherwise uncheck this option to use BTTFN. 
+Checking this option really only makes sense if there are MQTT-capable, but BTTFN-incapable props to take part in time travel/alarm sequences. If that is not the case, please leave this option unchecked.
 
 ### Setup
 
@@ -1280,7 +1280,7 @@ If your broker does not allow anonymous logins, a username and password can be s
 
 In order to display messages on the TCD as described above, you need to specify the **_topic to display_** in the respective field.
 
-If you want your TCD to publish messages to bttf/tcd/pub (ie if you want to notify other HA/MQTT-capable devices about a timetravel and/or alarm), check the **_Publish time travel and alarm events_** option.
+If you want your TCD to publish messages to bttf/tcd/pub (ie if you want to notify other HA/MQTT-capable devices about a time travel and/or alarm), check the **_Publish time travel and alarm events_** option.
 
 Limitations: TLS/SSL not supported; ".local" domains (MDNS) not supported; maximum message length 255 characters; server/broker must respond to PING (ICMP) echo requests. For proper operation with low latency, it is recommended that the broker is on your local network. Note that using HA/MQTT will disable [WiFi power saving](#wifi-power-saving-features). MQTT is disabled when the TCD is operated in AP-mode or car mode.
 
@@ -1784,9 +1784,9 @@ An optional topic the TCD subscribes to in order to display messages on the *Las
 
 ##### &#9193; Publish time travel and alarm events
 
-Check this if you want the TCD to send notifications on time travel and alarm via [MQTT](#home-assistant--mqtt).
+Check this if you want the TCD to send notifications on time travel and alarm through [MQTT](#home-assistant--mqtt).
 
-Note: If this option is checked, the TCD will _not_ send out such notifications through [BTTF-Network](#connecting-props-wirelessly-bttf-network-bttfn). Please see [here](#mqtt-vs-bttfn) for details.
+Note: If this option is checked, the TCD will send out such notifications through MQTT only, and no longer through [BTTF-Network](#connecting-props-wirelessly-bttf-network-bttfn). Please see [here](#mqtt-vs-bttfn) for details.
 
 ##### &#9193; Enhanced Time Travel notification
 
