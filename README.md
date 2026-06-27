@@ -1164,6 +1164,12 @@ See also [here](AddOns.md#other-props), chapter "Other props".
 
 ## Home Assistant / MQTT
 
+By means of MQTT, the TCD can
+- display messages on configured topics on its displays,
+- send pre-programmed messages to pre-programmed topics,
+- be remote controlled through commands sent to **bttf/tcd/cmd**
+- send out notifications on time travel and alarm for use by third party props.
+
 The TCD supports MQTT protocol versions 3.1.1 and 5.0.
 
 ### Display messages
@@ -1220,7 +1226,7 @@ The TCD can be controlled through messages sent to topic **bttf/tcd/cmd**. Suppo
 
 This command allows remote control of the TCD through HA/MQTT in the same way as through the TCD keypad by injecting commands into the TCD's command queue (hence the name). Commands are listed [here](#commandref); nearly all are supported. You need to specify the command exactly like when entering the code on the keypad. For example:
 
-To enable the "beep" (001), issue the following command: **INJECT_001**
+To enable the "beep" (21), issue the following command: **INJECT_21**
 
 To play "key2.mp3" (502), issue **INJECT_502**
 
