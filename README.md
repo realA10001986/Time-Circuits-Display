@@ -1251,7 +1251,7 @@ The TCD can send out notifications on time travel and alarm through MQTT. This e
 To enable the sending of time travel and alarm notifications, check the option **_Publish time travel and alarm events_** on the _HA/MQTT Settings_ page in the Config Portal. This option, however, has some implications for BTTFN-connected devices, see [below](#MQTT-vs-BTTFN).
 
 The timing for time travel is described [here](AddOns.md#synchronized-time-travel-through-hamqtt), in short:
-- "PREPARE" might be published ahead of the time travel to prepare; the timing is not specified. Used on CircuitSetup/A10001986 props to disable the "Screen Saver".
+- "PREPARE" might be published ahead of the time travel to prepare; the timing is not specified.
 - "[TIMETRAVEL](#-enhanced-time-travel-notification)" is published [on or 5 seconds ahead](#-enhanced-time-travel-notification) of the temporal displacement sequence.
 - "REENTRY" is published upon re-entry.
 
@@ -1263,7 +1263,7 @@ When the [alarm](#alarm) sounds, the TCD publishes "ALARM".
 
 MQTT and BTTFN work fine along each other.
 
-BTTFN is the primary way of inter-prop communication. The majority of network features (such as mutual remote controlling, transmission of speed, synchronized fake-power and night mode switching, etc.) _require_ a BTTFN connection. These features are not supported through MQTT. Therefore, all BTTFN-compatible props need to be properly configured to connect to the TCD through BTTFN.
+BTTFN is the primary way of inter-prop communication. The majority of network features (such as mutual remote controlling, transmission of speed, synchronized fake-power and night mode switching, etc.) _require_ a BTTFN connection. These features are not supported through MQTT. Therefore, to work as designed, all BTTFN-compatible props need to be properly configured to connect to the TCD through BTTFN.
 
 The only inter-prop communication features that are covered by both BTTFN and MQTT are _time travel_ and _alarm_. 
 
