@@ -1733,13 +1733,11 @@ _Power-up state HIGH:_ If this is checked, the pin will be set HIGH immediately 
 
 This selects whether the TT_OUT pin is activated upon a time-travel in order to play synchronized time travel sequences on other props, if those props are connected by wire.
 
-_Signal without 5s lead:_ If this option is unchecked (which is the default), TT-OUT is activated 5 seconds ahead of the temporal displacement, to give the prop time to play an acceleration sequence. If this option is checked, TT-OUT is activated at the beginning of the temporal displacement sequence.
+*__Signal without 5s lead:__* If this option is unchecked (which is the default), TT-OUT is activated 5 seconds ahead of the temporal displacement, to give the prop time to play, for example, an acceleration sequence. If this option is checked, TT-OUT is activated at the beginning of the temporal displacement sequence.
 
-For CircuitSetup/A10001986 original props, if they are connected by wire, this option should _not_ be set. If it has to be set (because you are also driving third-party props, for instance), the corresponding option must be set in the prop's Config Portal as well.
+Since a wired connection is mainly meant for third-party or DIY props, it is up to the nature of that prop if setting this option is needed or not. However, if you also have CircuitSetup/A10001986 original props _connected by wire_ and this option is checked, the corresponding option in the CircuitSetup/A10001986 prop's Config Portal must be set as well.
 
-Also see [here](#controlling-other-props).
-
-Note: If you have a GPS receiver, a rotary encoder or a Futaba remote control and use those as a source for speed, a time travel is triggered upon hitting 88mph. In this use case, however, the TCD cannot know if or when a speed of 88mph is actually be reached and therefore not inform other props 5 seconds ahead. If _Signal without 5s lead_ is unchecked, as a result, there will be a delay of 5 seconds from when the TCD's GPS/Rotary Encoder/Futaba Remote-induced speed hits 88mph until the temporal displayment sequence actually starts. As this certainly is undesirable, the option should be checked and your wired devices should be configured to immediately start a temporal displacment sequence when TT OUT becomes HIGH.
+If you have a GPS receiver, a rotary encoder or a Futaba remote control and use either of those as a source or control for speed, a time travel is automatically triggered by the TCD when hitting 88mph. In this case, the TCD cannot know in advance if or when a speed of 88mph is actually be reached and therefore not inform other props 5 seconds _ahead_. If *__Signal without 5s lead:__* is unchecked, as a result, there will be a delay of 5 seconds from when the TCD's GPS/Rotary Encoder/Futaba Remote-induced speed hits 88mph until the temporal displayment sequence actually starts. As this certainly is undesirable, this option should be checked and your wired devices should be configured to immediately start a temporal displacment sequence when TT OUT becomes HIGH.
 
 For detailed timing information, see [here](https://tcd.out-a-ti.me/AddOns.md#timing).
 
