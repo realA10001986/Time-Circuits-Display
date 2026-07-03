@@ -1285,10 +1285,6 @@ If your broker supports protocol version 3.1.1, stick with 3.1.1. Version 5.0 ha
 
 If your broker does not allow anonymous logins, a username and password can be specified.
 
-In order to display messages on the TCD as described above, you need to specify the **_topic to display_** in the respective field.
-
-If you want your TCD to publish messages to bttf/tcd/pub (ie if you want to notify other HA/MQTT-capable devices about a time travel and/or alarm), check the **_Publish time travel and alarm events_** option.
-
 Limitations: TLS/SSL not supported; ".local" domains (MDNS) not supported; maximum message length 255 characters; server/broker must respond to PING (ICMP) echo requests. For proper operation with low latency, it is recommended that the broker is on your local network. Note that using HA/MQTT will disable [WiFi power saving](#wifi-power-saving-features). MQTT is disabled when the TCD is operated in AP-mode or car mode.
 
 ## Futaba Remote Control
