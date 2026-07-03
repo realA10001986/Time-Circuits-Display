@@ -107,7 +107,7 @@ In a typical home setup, however, you might want to connect the TCD to your loca
 
 ![STAmode](img/stamode.png)
 
-To connect your TCD to your WiFI network, navigate to the Config Portal and click on "WiFi Configuration". The bare minimum is to select an WiFi network name (SSID) and a WiFi password.
+To connect your TCD to your WiFi network, navigate to the Config Portal and click on "WiFi Configuration". The bare minimum is to select an WiFi network name (SSID) and a WiFi password.
 
 <details>
 <summary>More...</summary>
@@ -1443,7 +1443,7 @@ If you forget this password and are thereby locked out of your TCD, power-down, 
 
 Here you can select one out of 11 channels or have the TCD choose a random channel for you. The default channel is 1. Preferred are channels 1, 6 and 11.
 
-WiFI channel selection is key for a trouble-free operation. Disturbed WiFi communication can lead to disrupted sequences, packet loss, hanging or freezing props, and other problems. A good article on WiFi channel selection is [here](https://community.ui.com/questions/Choosing-the-right-Wifi-Channel-on-2-4Ghz-Why-Conventional-Wisdom-is-Wrong/ea2ffae0-8028-45fb-8fbf-60569c6d026d).
+WiFi channel selection is key for a trouble-free operation. Disturbed WiFi communication can lead to disrupted sequences, packet loss, hanging or freezing props, and other problems. A good article on WiFi channel selection is [here](https://community.ui.com/questions/Choosing-the-right-Wifi-Channel-on-2-4Ghz-Why-Conventional-Wisdom-is-Wrong/ea2ffae0-8028-45fb-8fbf-60569c6d026d).
 
 If a WiFi Scan was done (which can be triggered by clicking "Scan for networks"), 
 
