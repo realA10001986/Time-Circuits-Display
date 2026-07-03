@@ -82,7 +82,7 @@ Setting actual time:
 
 #### Sound-pack re-installation (Firmware 3.23 an onwards)
 
-If your factory-fresh TCD came with firmware version 3.23 or later, but no SD card, you need to re-install the sound-pack at this point. The reason for this is that the sound-pack does not entirely fit into the device's flash memory and parts of it need to be installed on your SD card. Please see [here](#sound-pack-installation) for instructions.
+If your factory-fresh TCD came with firmware version 3.23 or later, but no SD card, and you have an SD card at hand, re-install the sound-pack at this point. The reason for this is that the sound-pack does not entirely fit into the device's flash memory and parts of it need to be installed on your SD card. Please see [here](#sound-pack-installation) for instructions.
 
 #### Connecting to a WiFi network
 
