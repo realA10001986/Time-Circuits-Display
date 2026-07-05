@@ -396,7 +396,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
     </tr>
     <tr>
      <td align="left"><a href="#count-down-timer">Timer</a>: Delete timer</td>
-     <td align="left">440</td>
+     <td align="left">440&#9166;</td>
     </tr>
     <tr>
      <td align="left"><a href="#yearlymonthly-reminder">Reminder</a>: Display reminder</td>
