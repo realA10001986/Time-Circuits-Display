@@ -440,11 +440,11 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
     </tr>
     <tr>
      <td align="left">Play "<a href="#additional-custom-sounds">keyX.mp3</a>" (X=1-9)</td>
-     <td align="left">501&#9166; - 509&#9166;</td>
+     <td align="left">501 - 509&#9166;</td>
     </tr>
     <tr>
      <td align="left">Send pre-configured <a href="#send-messages">HA/MQTT</a> messages</td>
-     <td align="left">600&#9166; - 609&#9166;</td>
+     <td align="left">600 - 609&#9166;</td>
     </tr>
     <tr>
      <td align="left">Set <a href="#connecting-props-by-wire">TT OUT</a> LOW / HIGH</td>
