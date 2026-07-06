@@ -259,7 +259,9 @@ Keypad command 351 enables playback over line-out for
 
 All other sounds, which are supposed to be emitted by the TCD itself, are always played over the built-in speaker. Note that the TCD's volume control (knob, software-selected level, rotary encoder) only has impact on the built-in speaker.
 
-Keypad command 350 disables line-out output. This setting is persistent over reboots.
+Keypad command 350 disables line-out output. 
+
+The chosen line-out setting is persistent over reboots.
 
 ### Common usage scenarios
 
