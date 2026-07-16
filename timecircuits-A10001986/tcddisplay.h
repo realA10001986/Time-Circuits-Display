@@ -60,7 +60,7 @@
 
 #include "rtc.h"
 
-struct dateStruct {
+struct [[gnu::packed]] dateStruct {
     uint16_t year;
     uint8_t month;
     uint8_t day;
@@ -147,19 +147,17 @@ class tcdDisplay {
 
         void setYearOffset(int16_t yearOffs);
 
-        uint8_t  getMonth()  { return _month; }
-        uint8_t  getDay()    { return _day;  }
-        uint16_t getYear()   { return _year; }
-        uint8_t  getHour()   { return _hour; }
-        uint8_t  getMinute() { return _minute; }
+        uint8_t  getMonth()  { return _cd.month; }
+        uint8_t  getDay()    { return _cd.day;  }
+        uint16_t getYear()   { return _cd.year; }
+        uint8_t  getHour()   { return _cd.hour; }
+        uint8_t  getMinute() { return _cd.minute; }
 
         #ifndef IS_ACAR_DISPLAY
         const char* getMonthString(uint8_t month);
         #endif
 
         int16_t getYearOffset() { return _yearoffset; }
-
-        void getCompressed(uint8_t *buf, uint8_t& over);
 
         void showMonthDirect(int monthNum, uint16_t dflags = 0);
         void showDayDirect(int dayNum, uint16_t dflags = 0);
@@ -227,13 +225,10 @@ class tcdDisplay {
         unsigned int _did = 0;
         uint8_t  _address = 0;
 
-        uint16_t _year = 2021;          // keep track of these
         int16_t  _yearoffset = 0;       // Offset for faking years > 2098
 
-        uint8_t _month = 1;
-        uint8_t _day = 1;
-        uint8_t _hour = 0;
-        uint8_t _minute = 0;
+        dateStruct _cd = { 2021, 1, 1, 0, 0 };
+        
         bool    _colon = false;         // should colon be on?
         bool    _beat = false;
 

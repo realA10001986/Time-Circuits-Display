@@ -105,6 +105,7 @@ void file_copy_done(int err);
 void doUploadSpinner(int doStart);
 
 void prepareReboot();
+void orderlyReboot();
 
 extern bool p3anim;
 

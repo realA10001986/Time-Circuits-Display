@@ -141,13 +141,17 @@
 
 /*  Changelog
  *          
+ *  2026/07/16 (A10001986) [3.25]
+ *    **********************************************************************************
+ *    ** If updating from below 3.20, please see boxed note at version 3.21 below     **
+ *    **********************************************************************************
+ *    - Bugfix: Year in BTTFN-broadcast time stamp was truncated
+ *    - Bugfix: Fix SD initialization in ESP32-Arduino to conform to specs.
+ *      Sandisk Ultra 32GB cards (and possibly others) are now finally recognized.
+ *    - Internal BTTFN changes
  *  2026/06/25 (A10001986) [3.24]
  *    **********************************************************************************
- *    ** If updating from below 3.20, please install 3.20 or 3.20.1 first to have     **
- *    ** your settings converted. If 3.20(.1) is skipped, many of your settings       **
- *    ** will be restored to default values. It suffices to install 3.20 or 3.20.1    **
- *    ** and boot once; you can then immediately update to a later version.           **
- *    ** https://github.com/realA10001986/Time-Circuits-Display/releases/tag/V3.20.1  **
+ *    ** If updating from below 3.20, please see boxed note at version 3.21 below     **
  *    **********************************************************************************
  *    - MQTT: Add "VOLUME_UP"/"VOLUME_DOWN"/"VOLUME_SET_xxx" commands
  *    - MQTT: Add publishing Music Player status to bttf/tcd/mpstatus
@@ -155,11 +159,7 @@
  *      large number of already sorted files (due to excessive recursion).
  *  2026/05/21 (A10001986) [3.23]
  *    **********************************************************************************
- *    ** If updating from below 3.20, please install 3.20 or 3.20.1 first to have     **
- *    ** your settings converted. If 3.20(.1) is skipped, many of your settings       **
- *    ** will be restored to default values. It suffices to install 3.20 or 3.20.1    **
- *    ** and boot once; you can then immediately update to a later version.           **
- *    ** https://github.com/realA10001986/Time-Circuits-Display/releases/tag/V3.20.1  **
+ *    ** If updating from below 3.20, please see boxed note at version 3.21 below     **
  *    **********************************************************************************
  *    - New Sound-Pack (TW07/CS07). Marty will tell you the displayed time whenever
  *      pressing ENTER without entering a command.
@@ -172,11 +172,7 @@
  *    - Internal BTTFN enhancements
  *  2026/04/19 (A10001986) [3.22]
  *    **********************************************************************************
- *    ** If updating from below 3.20, please install 3.20 or 3.20.1 first to have     **
- *    ** your settings converted. If 3.20(.1) is skipped, many of your settings       **
- *    ** will be restored to default values. It suffices to install 3.20 or 3.20.1    **
- *    ** and boot once; you can then immediately update to a later version.           **
- *    ** https://github.com/realA10001986/Time-Circuits-Display/releases/tag/V3.20.1  **
+ *    ** If updating from below 3.20, please see boxed note at version 3.21 below     **
  *    **********************************************************************************
  *    - "Persistent" time travels no longer overwrite stored user-programmed dates
  *      for red and yellow displays. User times can be brought back by 998 at any time.

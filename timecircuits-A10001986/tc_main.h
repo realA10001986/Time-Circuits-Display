@@ -81,12 +81,7 @@ void      send_abort_msg();
 void      setTTOUTpin(uint8_t val);
 void      ettoPulseEnd();
 
-void      bttfnSendFluxCmd(uint32_t payload);
-void      bttfnSendSIDCmd(uint32_t payload);
-void      bttfnSendPCGCmd(uint32_t payload);
-void      bttfnSendVSRCmd(uint32_t payload);
-void      bttfnSendAUXCmd(uint32_t payload);
-void      bttfnSendRemCmd(uint32_t payload);
+void      bttfnSendPropCmd(int kt, uint32_t p);
 
 void      resetPresentTime();
 
@@ -199,7 +194,7 @@ int       bttfnNumClients();
 bool      bttfnGetClientInfo(int c, char **id, uint8_t **ip, uint8_t *type);
 bool      bttfn_loop(uint32_t taskMask = 0);
 bool      bttfn_loop_ex();
-void      bttfn_notify_info();
+int       bttfn_notify_info();
 
 #ifdef TC_HAVE_REMOTE
 void      removeRemote();
@@ -238,12 +233,21 @@ extern uint32_t wcf;
 #define WCF_showName1   0x0040
 #define WCF_showName2   0x0080
 #define WCF_HaveRCM     0x8000
+
+#define WCFM_HaveBothTZ (WCF_HaveTZ1|WCF_HaveTZ2)
 extern int destShowAlt, depShowAlt;
+
+extern uint32_t schf;
+#define SCHF_STARTUP    0x0001
+#define SCHF_STARTUP2   0x0002
+#define SCHF_DEFERREDCP 0x0004
+#define SCHF_SENDINFO   0x0008
+#define SCHF_DOOR1      0x0010
+#define SCHF_DOOR2      0x0020
 
 extern bool syncTrigger;
 extern unsigned long syncTriggerNow;
 extern bool doAPretry;
-extern bool deferredCP;
 
 extern uint64_t lastAuthTime64;
 
@@ -277,6 +281,7 @@ extern uint32_t sgf;
 #define SGF_UGPSTime      0x0100    // useGPSTime
 #define SGF_DispGPSSpd    0x0200    // dispGPSSpeed
 #define SGF_GPS2BTTFN     0x0400    // provGPS2BTTFN
+#define SGF_HaveHum       0x1000    // tempSens.haveHum()
 #define SGF_TempCelsius   0x2000    // tempUnit
 #define SGF_ULightSens    0x4000    // useLight
 #define SGF_URotEncVol    0x8000    // useRotEncVol
@@ -319,7 +324,7 @@ extern uint32_t      alf;
 
 extern bool          ETTOcommands;
 
-extern uint8_t          autoInterval;
+extern unsigned int     autoInterval;
 extern const uint8_t    autoTimeIntervals[6];
 extern int              autoIntAnimRunning;
 #define NUM_AUTOTIMES 11
@@ -351,6 +356,7 @@ extern uint32_t csf;
 #define CSF_RPM        0x00400000    // Remote is power-master
 #define CSF_MQTTPM     0x00800000    // MQTT is power-master (MQTTPwrMaster)
 #define CSF_NOMUSIC    0x01000000    // Current music folder contrains no music
+#define CSF_INFOUPD    0x04000000    // Send INFO on account of changed times
 #define CSF_RESTOREFP  0x20000000    // restore fake-power
 #define CSF_PWRLOW     0x40000000    // CPU in power-safe
 #define CSF_BOOTSTRAP  0x80000000    // We are in boot-stap

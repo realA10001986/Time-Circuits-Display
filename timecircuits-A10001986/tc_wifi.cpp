@@ -977,7 +977,7 @@ void wifi_setup()
     }
            
     // Connect
-    wifiConnect(deferredCP);
+    wifiConnect(!!(schf & SCHF_DEFERREDCP));
 
     // MDNS. Needs to be called AFTER mode(STA) or softAP init
     #ifdef TC_MDNS
@@ -1277,7 +1277,7 @@ void wifi_loop()
             #endif
             evalCB(settings.revAmPm, &custom_rvapm);
 
-            autoInterval = (uint8_t)atoi(settings.autoRotateTimes);
+            autoInterval = atoi(settings.autoRotateTimes);
             beepMode = (uint8_t)atoi(settings.beep);
             saveBeepAutoInterval();
 
@@ -1359,9 +1359,7 @@ void wifi_loop()
         #endif
         Serial.flush();
 
-        prepareReboot();
-        delay(1000);
-        esp_restart();
+        orderlyReboot();
     }
 
     wm.process();
@@ -2794,9 +2792,7 @@ static void setupWebServerCallback()
 static void doReboot()
 {
     delay(1000);
-    prepareReboot();
-    delay(1000);
-    esp_restart();
+    orderlyReboot();
 }
 
 static void allocUplArrays()
@@ -3539,6 +3535,7 @@ static void mqttCallback(char *topic, byte *payload, unsigned int length)
             }
             doorSndNow = millis();
             doorSndDelay = 0;
+            schf |= SCHF_DOOR1;
             break;
         case 21:
             mqttFakePowerOn();

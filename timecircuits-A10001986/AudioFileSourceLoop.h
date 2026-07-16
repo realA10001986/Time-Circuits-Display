@@ -13,7 +13,7 @@
 #define _AudioFileSourceLoop_H
 
 #include "src/ESP8266Audio/AudioFileSource.h"
-#include <SD.h>
+#include "src/SD/SD.h"
 #include <LittleFS.h>
 
 class AudioFileSourceLoop : public AudioFileSource

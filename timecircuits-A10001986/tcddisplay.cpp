@@ -100,8 +100,8 @@ extern void        getClockDataP(uint64_t& timeDifference, bool &timeDiffUp);
 extern dateStruct *getClockDataDL(unsigned int did, int slot = 0);
 extern void        updateClockDataP();
 extern bool        saveClockDataP(bool force);
-extern void        updateClockDataDL(unsigned int did, int slot, uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute);
-extern bool        saveClockDataDL(bool force, unsigned int did, uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute);
+extern void        updateClockDataDL(unsigned int did, int slot, dateStruct *givenDate);
+extern bool        saveClockDataDL(bool force, unsigned int did, dateStruct *givenDate);
 
 #ifndef IS_ACAR_DISPLAY
 static const char months[13][4] = {
@@ -278,13 +278,8 @@ void tcdDisplay::getToParms(int& year, int& month, int& day, int& hour, int& min
 
 void tcdDisplay::getToStruct(dateStruct *s)
 {
-    s->year = getYear();
-    s->month = getMonth();
-    s->day = getDay();
-    s->hour = getHour();
-    s->minute = getMinute();
+    memcpy((void *)s, (void *)&_cd, sizeof(_cd));
 }
-
 
 // Show data in display --------------------------------------------------------
 
@@ -337,7 +332,7 @@ bool tcdDisplay::showAnimate3(int mystep)
         break;
     case 7:
         if(!_mode24) {
-            (_hour < 12) ? AM() : PM();
+            (_cd.hour < 12) ? AM() : PM();
         }
         // fall through
     default:
@@ -371,7 +366,7 @@ void tcdDisplay::setMonth(int monthNum)
         monthNum = (monthNum > 12) ? 12 : 1;
     }
 
-    _month = monthNum;
+    _cd.month = monthNum;
 
 #ifdef IS_ACAR_DISPLAY
     _displayBuffer[CD_MONTH_POS] = makeNum(monthNum);
@@ -385,7 +380,7 @@ void tcdDisplay::setMonth(int monthNum)
 
 void tcdDisplay::setDay(int dayNum)
 {
-    int maxDay = daysInMonth(_month, _year);
+    int maxDay = daysInMonth(_cd.month, _cd.year);
 
     // It is essential that setDay is called AFTER year
     // and month have been set!
@@ -394,7 +389,7 @@ void tcdDisplay::setDay(int dayNum)
         dayNum = (dayNum < 1) ? 1 : maxDay;
     }
 
-    _day = dayNum;
+    _cd.day = dayNum;
 
     _displayBuffer[CD_DAY_POS] = makeNum(dayNum);
 }
@@ -408,7 +403,7 @@ void tcdDisplay::setYear(uint16_t yearNum)
         seg = 0x8000;
     #endif
 
-    _year = yearNum;
+    _cd.year = yearNum;
 
     while(yearNum >= 10000)
         yearNum -= 10000;
@@ -422,7 +417,7 @@ void tcdDisplay::setHour(uint16_t hourNum)
     if(hourNum > 23)
         hourNum = 23;
 
-    _hour = hourNum;
+    _cd.hour = hourNum;
 
     if(!_mode24) {
         if(hourNum == 0) {
@@ -450,7 +445,7 @@ void tcdDisplay::setMinute(int minNum)
         minNum = (minNum > 59) ? 59 : 0;
     }
 
-    _minute = minNum;
+    _cd.minute = minNum;
 
     _displayBuffer[CD_MIN_POS] = makeNum(minNum) | seg;
 }
@@ -491,16 +486,6 @@ const char * tcdDisplay::getMonthString(uint8_t mon)
         return nullStr;
 }
 #endif
-
-void tcdDisplay::getCompressed(uint8_t *buf, uint8_t& over)
-{
-    buf[0] = (_year << 2) | (_month >> 2);
-    buf[1] = (_year >> 6);
-    buf[2] = (_month << 6) | (_day << 1) | (_hour >> 4);
-    buf[3] = (_hour << 4) | (_minute >> 2);
-    over |= _minute & 0x03;
-}
-
 
 // Put data directly on display (bypass buffer) --------------------------------
 
@@ -789,7 +774,7 @@ bool tcdDisplay::load(int slot)
 void tcdDisplay::copyToUserTimes()
 {
     if(_did != DISP_PRES) {
-        updateClockDataDL(_did, 1, _year, _month, _day, _hour, _minute);
+        updateClockDataDL(_did, 1, &_cd);
     }
 }
 
@@ -809,7 +794,7 @@ void tcdDisplay::savePending()
         return updateClockDataP();
     }
     
-    updateClockDataDL(_did, 0, _year, _month, _day, _hour, _minute);
+    updateClockDataDL(_did, 0, &_cd);
 }
 
 // Returns true if FS was accessed
@@ -830,7 +815,7 @@ bool tcdDisplay::save(bool force)
         return saveClockDataP(force);
     }
 
-    return saveClockDataDL(force, _did, _year, _month, _day, _hour, _minute);
+    return saveClockDataDL(force, _did, &_cd);
 }
 
 // Private functions ###########################################################
@@ -1005,7 +990,7 @@ void tcdDisplay::showInt(bool animate, bool Alt)
     }
 
     if(!_mode24) {
-        (_hour < 12) ? AM() : PM();
+        (_cd.hour < 12) ? AM() : PM();
     } else {
         _displayBuffer[CD_AMPM_POS] &= 0x7F7F;
     }

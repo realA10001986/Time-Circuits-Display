@@ -63,7 +63,7 @@
 #define ARDUINOJSON_ENABLE_STD_STRING 0
 #define ARDUINOJSON_ENABLE_NAN 0
 #include <ArduinoJson.h>  // https://github.com/bblanchon/ArduinoJson
-#include <SD.h>
+#include "src/SD/SD.h"
 #include <SPI.h>
 #include <FS.h>
 #define MYNVS LittleFS
@@ -75,16 +75,9 @@
 #include "tc_main.h"
 #include "tc_wifi.h"
 
-// If defined, old settings files will be used
-// and converted if no new settings file is found.
-//#define SETTINGS_TRANSITION
-// Stage 2: Assume new settings are present, but
-// still delete obsolete files.
+// Settings upgrade, stage 2: Assume new settings
+//  are present, but still delete obsolete files.
 #define SETTINGS_TRANSITION_2
-
-#ifdef SETTINGS_TRANSITION
-#undef SETTINGS_TRANSITION_2
-#endif
 
 // Size of main config JSON
 // Needs to be adapted when config grows
@@ -203,24 +196,6 @@ static const char *clkCfgName  = "/tcdckcfg";    // Clock data (flash/SD)
 static const char *secCfgName  = "/tcd2cfg";     // Secondary settings (flash/SD)
 static const char *terCfgName  = "/tcd3cfg";     // Tertiary settings (SD)
 
-#ifdef SETTINGS_TRANSITION
-static const char *ipCfgNameO = "/ipconfig.json";   // IP config (old)
-static const char *briCfgName = "/tcdbricfg.json";  // Brightness (old)
-static const char *ainCfgName = "/tcdaicfg.json";   // Beep+Auto-interval (old)
-static const char *volCfgName = "/tcdvolcfg.json";  // Volume config (old)
-static const char *almCfgName = "/tcdalmcfg.json";  // Alarm config (old)
-static const char *remCfgName = "/tcdremcfg.json";  // Reminder config (old)
-static const char *stCfgName  = "/stconfig";        // Exhib Mode (old)
-static const char *cmCfgName  = "/cmconfig.json";   // Carmode (old)
-static const char *loCfgName  = "/loconfig,json";   // LineOut (old)
-#ifdef TC_HAVE_REMOTE
-static const char *raCfgName  = "/raconfig.json";   // RemoteAllowed (old)
-#endif
-#ifdef SERVOSPEEDO
-static const char *scCfgName  = "/scconfig.json";   // Servo correction (old)
-#endif
-static const char *musCfgName = "/tcdmcfg.json";    // Music Folder
-#endif
 #ifdef SETTINGS_TRANSITION_2
 static const char *obsFiles[] = {
     "/ipconfig.json",   // Skipped for SD iteration
@@ -282,8 +257,8 @@ uint16_t    loadClockState(int16_t& yoffs);
 bool        saveClockState(uint16_t curYear, int16_t yearoffset);
 dateStruct *getClockDataDL(unsigned int did, int slot = 0);
 void        getClockDataP(uint64_t& timeDifference, bool &timeDiffUp);
-void        updateClockDataDL(unsigned int did, int slot, uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute);
-bool        saveClockDataDL(bool force, unsigned int did, uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute);
+void        updateClockDataDL(unsigned int did, int slot, dateStruct *givenDate);
+bool        saveClockDataDL(bool force, unsigned int did, dateStruct *givenDate);
 void        updateClockDataP();
 bool        saveClockDataP(bool force);
 static void loadAllClockData();
@@ -617,17 +592,6 @@ static bool saveTerSettings(bool useCache)
     return saveConfigFile(terCfgName, (uint8_t *)&terSettings, sizeof(terSettings), 1);
 }
 
-#ifdef SETTINGS_TRANSITION
-static void removeOldFiles(const char *oldfn)
-{
-    if(haveSD) SD.remove(oldfn);
-    if(haveFS) MYNVS.remove(oldfn);
-    #ifdef TC_DBG_BOOT
-    Serial.printf("removeOldFiles: Removing %s\n", oldfn);
-    #endif
-}
-#endif
-
 /*
  * Helpers for JSON config files
  */
@@ -784,54 +748,6 @@ static bool checkValidNumParmF(char *text, float lowerLim, float upperLim, float
     return ret;
 }
 
-#ifdef SETTINGS_TRANSITION
-static bool CopyTextParm(const char *json, const char *json2, char *setting, int setSize)
-{
-    if(json || json2) {
-        memset(setting, 0, setSize);
-        if(json) {
-            strncpy(setting, json, setSize - 1);
-            return false; // new tag used, ok
-        } else {
-            strncpy(setting, json2, setSize - 1);
-        }
-    }
-
-    return true;  // old tag, or not found
-}
-
-static bool CopyCheckValidNumParm(const char *json, const char *json2, char *text, int psize, int lowerLim, int upperLim, int setDefault)
-{
-    if(json || json2) {
-        memset(text, 0, psize);
-        if(json) {
-            strncpy(text, json, psize-1);
-        } else {
-            strncpy(text, json2, psize-1);
-        }
-
-        return checkValidNumParm(text, lowerLim, upperLim, setDefault);
-    } 
-       
-    return true;
-}
-
-static bool CopyCheckValidNumParmF(const char *json, const char *json2, char *text, int psize, float lowerLim, float upperLim, float setDefault)
-{
-    if(json || json2) {
-        memset(text, 0, psize);
-        if(json) {
-            strncpy(text, json, psize-1);
-        } else {
-            strncpy(text, json2, psize-1);
-        }
-
-        return checkValidNumParmF(text, lowerLim, upperLim, setDefault);
-    } 
-       
-    return true;
-}
-#else
 static bool CopyTextParm(const char *json, char *setting, int setSize)
 {
     if(!json) return true;
@@ -858,7 +774,6 @@ static bool CopyCheckValidNumParmF(const char *json, char *text, int psize, floa
     strncpy(text, json, psize-1);
     return checkValidNumParmF(text, lowerLim, upperLim, setDefault);
 }
-#endif
 
 bool evalBool(char *s)
 {
@@ -937,21 +852,6 @@ static bool read_settings(File configFile, int cfgReadCount)
             }
         }
 
-        #ifdef SETTINGS_TRANSITION
-
-        wd |= CopyTextParm(json["hn"], json["hostName"], settings.hostName, sizeof(settings.hostName));
-        
-        wd |= CopyCheckValidNumParm(json["wCR"], json["wifiConRetries"], settings.wifiConRetries, sizeof(settings.wifiConRetries), 1, 10, DEF_WIFI_RETRY);
-        wd |= CopyCheckValidNumParm(json["wPR"], json["wifiPRetry"], settings.wifiPRetry, sizeof(settings.wifiPRetry), 0, 1, DEF_WIFI_PRETRY);
-        wd |= CopyCheckValidNumParm(json["wOD"], json["wifiOffDelay"], settings.wifiOffDelay, sizeof(settings.wifiOffDelay), 0, 99, DEF_WIFI_OFFDELAY);
-
-        wd |= CopyTextParm(json["sID"], json["systemID"], settings.systemID, sizeof(settings.systemID));
-        wd |= CopyTextParm(json["appw"], NULL, settings.appw, sizeof(settings.appw));
-        wd |= CopyCheckValidNumParm(json["apch"], NULL, settings.apChnl, sizeof(settings.apChnl), 0, 11, DEF_AP_CHANNEL);
-        wd |= CopyCheckValidNumParm(json["wAOD"], json["wifiAPOffDelay"], settings.wifiAPOffDelay, sizeof(settings.wifiAPOffDelay), 0, 99, DEF_WIFI_APOFFDELAY);
-
-        #else
-
         wd |= CopyTextParm(json["hn"], settings.hostName, sizeof(settings.hostName));
         
         wd |= CopyCheckValidNumParm(json["wCR"], settings.wifiConRetries, sizeof(settings.wifiConRetries), 1, 10, DEF_WIFI_RETRY);
@@ -963,107 +863,7 @@ static bool read_settings(File configFile, int cfgReadCount)
         wd |= CopyCheckValidNumParm(json["apch"], settings.apChnl, sizeof(settings.apChnl), 0, 11, DEF_AP_CHANNEL);
         wd |= CopyCheckValidNumParm(json["wAOD"], settings.wifiAPOffDelay, sizeof(settings.wifiAPOffDelay), 0, 99, DEF_WIFI_APOFFDELAY);
 
-        #endif
-
         // Settings
-
-        #ifdef SETTINGS_TRANSITION // --------------------------------------------
-
-        wd |= CopyCheckValidNumParm(json["pI"], json["playIntro"], settings.playIntro, sizeof(settings.playIntro), 0, 1, DEF_PLAY_INTRO);
-        // Beep now in separate file, so it missing is ok
-        CopyCheckValidNumParm(json["bep"], json["beep"], settings.beep, sizeof(settings.beep), 0, 3, DEF_BEEP);
-        // Time cycling saved in separate file
-        wd |= CopyCheckValidNumParm(json["sARA"], NULL, settings.autoRotAnim, sizeof(settings.autoRotAnim), 0, 1, 1);
-        wd |= CopyCheckValidNumParm(json["skpTTA"], NULL, settings.skipTTAnim, sizeof(settings.skipTTAnim), 0, 1, DEF_SKIP_TTANIM);
-        #ifndef IS_ACAR_DISPLAY
-        wd |= CopyCheckValidNumParm(json["p3an"], NULL, settings.p3anim, sizeof(settings.p3anim), 0, 1, DEF_P3ANIM);
-        #endif
-        wd |= CopyCheckValidNumParm(json["pTTs"], json["playTTsnds"], settings.playTTsnds, sizeof(settings.playTTsnds), 0, 1, DEF_PLAY_TT_SND);
-        wd |= CopyCheckValidNumParm(json["alRTC"], json["alarmRTC"], settings.alarmRTC, sizeof(settings.alarmRTC), 0, 1, DEF_ALARM_RTC);
-        wd |= CopyCheckValidNumParm(json["md24"], json["mode24"], settings.mode24, sizeof(settings.mode24), 0, 1, DEF_MODE24);
-        
-        wd |= CopyTextParm(json["tZ"], json["timeZone"], settings.timeZone, sizeof(settings.timeZone));
-        wd |= CopyTextParm(json["ntpS"], json["ntpServer"], settings.ntpServer, sizeof(settings.ntpServer));
-        #ifdef TC_HAVEGPS
-        wd |= CopyCheckValidNumParm(json["gTme"], NULL, settings.useGPSTime, sizeof(settings.useGPSTime), 0, 1, DEF_USE_GPS_TIME);
-        #endif
-
-        wd |= CopyTextParm(json["tZDest"], json["timeZoneDest"], settings.timeZoneDest, sizeof(settings.timeZoneDest));
-        wd |= CopyTextParm(json["tZDep"], json["timeZoneDep"], settings.timeZoneDep, sizeof(settings.timeZoneDep));
-        wd |= CopyTextParm(json["tZNDest"], json["timeZoneNDest"], settings.timeZoneNDest, sizeof(settings.timeZoneNDest));
-        wd |= CopyTextParm(json["tZNDep"], json["timeZoneNDep"], settings.timeZoneNDep, sizeof(settings.timeZoneNDep));
-        wd |= CopyCheckValidNumParm(json["WCNP"], NULL, settings.WCNamePerm, sizeof(settings.WCNamePerm), 0, 1, DEF_WCSHOWNAME);
-
-        wd |= CopyCheckValidNumParm(json["almT"], NULL, settings.alarmType, sizeof(settings.alarmType), 0, 1, DEF_ALARM_TYPE);
-        wd |= CopyCheckValidNumParm(json["aSz"], NULL, settings.doSnooze, sizeof(settings.doSnooze), 0, 1, DEF_SNOOZE);
-        wd |= CopyCheckValidNumParm(json["aSzT"], NULL, settings.snoozeTime, sizeof(settings.snoozeTime), 1, 15, DEF_SNOOZE_TIME);
-        wd |= CopyCheckValidNumParm(json["aASz"], NULL, settings.autoSnooze, sizeof(settings.autoSnooze), 0, 1, DEF_ASNOOZE);
-        wd |= CopyCheckValidNumParm(json["aLU"], NULL, settings.almLoopUserSnd, sizeof(settings.almLoopUserSnd), 0, 1, DEF_LOOP_USER_SND);
-        
-        wd |= CopyCheckValidNumParm(json["dtNmOff"], NULL, settings.dtNmOff, sizeof(settings.dtNmOff), 0, 1, DEF_DT_OFF);
-        wd |= CopyCheckValidNumParm(json["ptNmOff"], NULL, settings.ptNmOff, sizeof(settings.ptNmOff), 0, 1, DEF_PT_OFF);
-        wd |= CopyCheckValidNumParm(json["ltNmOff"], NULL, settings.ltNmOff, sizeof(settings.ltNmOff), 0, 1, DEF_LT_OFF);
-        wd |= CopyCheckValidNumParm(json["aNMPre"], json["autoNMPreset"], settings.autoNMPreset, sizeof(settings.autoNMPreset), 0, 10, DEF_AUTONM_PRESET);
-        wd |= CopyCheckValidNumParm(json["aNMOn"], json["autoNMOn"], settings.autoNMOn, sizeof(settings.autoNMOn), 0, 23, DEF_AUTONM_ON);
-        wd |= CopyCheckValidNumParm(json["aNMOff"], json["autoNMOff"], settings.autoNMOff, sizeof(settings.autoNMOff), 0, 23, DEF_AUTONM_OFF);
-        #ifdef TC_HAVELIGHT
-        wd |= CopyCheckValidNumParm(json["uLgt"], json["useLight"], settings.useLight, sizeof(settings.useLight), 0, 1, DEF_USE_LIGHT);
-        wd |= CopyCheckValidNumParm(json["lxLim"], json["luxLimit"], settings.luxLimit, sizeof(settings.luxLimit), 0, 50000, DEF_LUX_LIMIT);
-        #endif
-
-        wd |= CopyCheckValidNumParm(json["CoSD"], json["CfgOnSD"], settings.CfgOnSD, sizeof(settings.CfgOnSD), 0, 1, DEF_CFG_ON_SD);
-        //wd |= CopyCheckValidNumParm(json["sdFreq"], NULL, settings.sdFreq, sizeof(settings.sdFreq), 0, 1, DEF_SD_FREQ);
-        wd |= CopyCheckValidNumParm(json["ttps"], json["timeTrPers"], settings.timesPers, sizeof(settings.timesPers), 0, 1, DEF_TIMES_PERS);
-
-        #ifdef IS_ACAR_DISPLAY
-        wd |= CopyCheckValidNumParm(json["swapDL"], NULL, settings.swapDL, sizeof(settings.swapDL), 0, 1, DEF_SWPDL);
-        #endif
-        wd |= CopyCheckValidNumParm(json["rAPM"], NULL, settings.revAmPm, sizeof(settings.revAmPm), 0, 1, DEF_REVAMPM);
-
-        wd |= CopyCheckValidNumParm(json["fPwr"], json["fakePwrOn"], settings.fakePwrOn, sizeof(settings.fakePwrOn), 0, 1, DEF_FAKE_PWR);
-
-        wd |= CopyCheckValidNumParm(json["spT"], json["speedoType"], settings.speedoType, sizeof(settings.speedoType), 0, 99, DEF_SPEEDO_TYPE);
-        wd |= CopyCheckValidNumParm(json["spB"], json["speedoBright"], settings.speedoBright, sizeof(settings.speedoBright), 0, 15, DEF_BRIGHT_SPEEDO);
-        wd |= CopyCheckValidNumParm(json["spAO"], NULL, settings.speedoAO, sizeof(settings.speedoAO), 0, 1, DEF_SPEEDO_AO);
-        wd |= CopyCheckValidNumParm(json["spAF"], json["speedoAF"], settings.speedoAF, sizeof(settings.speedoAF), 0, 1, DEF_SPEEDO_ACCELFIG);
-        wd |= CopyCheckValidNumParmF(json["spFc"], json["speedoFact"], settings.speedoFact, sizeof(settings.speedoFact), 0.5f, 5.0f, DEF_SPEEDO_FACT);
-        wd |= CopyCheckValidNumParm(json["spP3"], json["speedoL0Spd"], settings.speedoP3, sizeof(settings.speedoP3), 0, 1, DEF_SPEEDO_P3);
-        wd |= CopyCheckValidNumParm(json["spd3rd"], NULL, settings.speedo3rdD, sizeof(settings.speedo3rdD), 0, 1, DEF_SPEEDO_3RDD);
-        #ifdef TC_HAVEGPS
-        wd |= CopyCheckValidNumParm(json["uGPSS"], json["useGPSSpeed"], settings.dispGPSSpeed, sizeof(settings.dispGPSSpeed), 0, 1, DEF_USE_GPS_SPEED);
-        wd |= CopyCheckValidNumParm(json["spUR"], json["spdUpdRate"], settings.spdUpdRate, sizeof(settings.spdUpdRate), 0, 3, DEF_SPD_UPD_RATE);
-        #endif
-        #ifdef TC_HAVETEMP
-        wd |= CopyCheckValidNumParm(json["dTmp"], json["dispTemp"], settings.dispTemp, sizeof(settings.dispTemp), 0, 1, DEF_DISP_TEMP);
-        wd |= CopyCheckValidNumParm(json["tmpB"], json["tempBright"], settings.tempBright, sizeof(settings.tempBright), 0, 15, DEF_TEMP_BRIGHT);
-        wd |= CopyCheckValidNumParm(json["tmpONM"], json["tempOffNM"], settings.tempOffNM, sizeof(settings.tempOffNM), 0, 1, DEF_TEMP_OFF_NM);
-        #endif
-
-        #ifdef TC_HAVETEMP
-        wd |= CopyCheckValidNumParm(json["tmpU"], json["tempUnit"], settings.tempUnit, sizeof(settings.tempUnit), 0, 1, DEF_TEMP_UNIT);
-        wd |= CopyCheckValidNumParmF(json["tmpOf"], json["tempOffs"], settings.tempOffs, sizeof(settings.tempOffs), -3.0f, 3.0f, DEF_TEMP_OFFS);
-        #endif
-
-        wd |= CopyCheckValidNumParm(json["ettDl"], json["ettDelay"], settings.ettDelay, sizeof(settings.ettDelay), 0, ETT_MAX_DEL, DEF_ETT_DELAY);
-        
-        wd |= CopyCheckValidNumParm(json["ETTOc"], NULL, settings.ETTOcmd, sizeof(settings.ETTOcmd), 0, 1, DEF_ETTO_CMD);
-        wd |= CopyCheckValidNumParm(json["ETTOPU"], NULL, settings.ETTOpus, sizeof(settings.ETTOpus), 0, 1, DEF_ETTO_PUS);
-        wd |= CopyCheckValidNumParm(json["uETTO"], json["useETTO"], settings.useETTO, sizeof(settings.useETTO), 0, 1, DEF_USE_ETTO);
-        wd |= CopyCheckValidNumParm(json["nETTOL"], json["noETTOLead"], settings.noETTOLead, sizeof(settings.noETTOLead), 0, 1, DEF_NO_ETTO_LEAD);
-        wd |= CopyCheckValidNumParm(json["ETTOa"], NULL, settings.ETTOalm, sizeof(settings.ETTOalm), 0, 1, DEF_ETTO_ALM);
-        wd |= CopyCheckValidNumParm(json["ETTOAD"], NULL, settings.ETTOAD, sizeof(settings.ETTOAD), 3, 99, DEF_ETTO_ALM_D);
-        
-        
-        #ifdef SERVOSPEEDO
-        wd |= CopyCheckValidNumParm(json["tin"], NULL, settings.ttinpin, sizeof(settings.ttinpin), 0, 2, 0);
-        wd |= CopyCheckValidNumParm(json["tout"], NULL, settings.ttoutpin, sizeof(settings.ttoutpin), 0, 2, 0);
-        #endif
-
-        #ifdef TC_HAVEGPS
-        wd |= CopyCheckValidNumParm(json["qGPS"], json["quickGPS"], settings.provGPS2BTTFN, sizeof(settings.provGPS2BTTFN), 0, 1, DEF_GPS4BTTFN);
-        #endif
-
-        #else // SETTINGS_TRANSITION  --------------------------------------------
         
         wd |= CopyCheckValidNumParm(json["pI"], settings.playIntro, sizeof(settings.playIntro), 0, 1, DEF_PLAY_INTRO);
         // Beep, Time cycling saved in separate file
@@ -1156,20 +956,7 @@ static bool read_settings(File configFile, int cfgReadCount)
         wd |= CopyCheckValidNumParm(json["qGPS"], settings.provGPS2BTTFN, sizeof(settings.provGPS2BTTFN), 0, 1, DEF_GPS4BTTFN);
         #endif
         
-        #endif  // SETTINGS_TRANSITION  --------------------------------------------
-
-        #ifdef TC_HAVEMQTT
-        #ifdef SETTINGS_TRANSITION
-        wd |= CopyCheckValidNumParm(json["uMQTT"], json["useMQTT"], settings.useMQTT, sizeof(settings.useMQTT), 0, 1, 0);
-        wd |= CopyTextParm(json["mqttS"], json["mqttServer"], settings.mqttServer, sizeof(settings.mqttServer));
-        wd |= CopyCheckValidNumParm(json["mqttV"], NULL, settings.mqttVers, sizeof(settings.mqttVers), 0, 1, 0);
-        wd |= CopyTextParm(json["mqttU"], json["mqttUser"], settings.mqttUser, sizeof(settings.mqttUser));
-        wd |= CopyTextParm(json["mqttT"], json["mqttTopic"], settings.mqttTopic, sizeof(settings.mqttTopic));
-        wd |= CopyCheckValidNumParm(json["pMQTT"], json["pubMQTT"], settings.pubMQTT, sizeof(settings.pubMQTT), 0, 1, 0);
-        wd |= CopyCheckValidNumParm(json["vMQTT"], NULL, settings.MQTTvarLead, sizeof(settings.MQTTvarLead), 0, 1, DEF_MQTT_VTT);
-        wd |= CopyCheckValidNumParm(json["mqP"], NULL, settings.mqttPwr, sizeof(settings.mqttPwr), 0, 1, 0);
-        wd |= CopyCheckValidNumParm(json["mqPO"], NULL, settings.mqttPwrOn, sizeof(settings.mqttPwrOn), 0, 1, 0);
-        #else
+        #ifdef TC_HAVEMQTT   
         wd |= CopyCheckValidNumParm(json["uMQTT"], settings.useMQTT, sizeof(settings.useMQTT), 0, 1, 0);
         wd |= CopyTextParm(json["mqttS"], settings.mqttServer, sizeof(settings.mqttServer));
         wd |= CopyCheckValidNumParm(json["mqttV"], settings.mqttVers, sizeof(settings.mqttVers), 0, 1, 0);
@@ -1182,7 +969,6 @@ static bool read_settings(File configFile, int cfgReadCount)
         wd |= CopyCheckValidNumParm(json["mqP"], settings.mqttPwr, sizeof(settings.mqttPwr), 0, 1, 0);
         wd |= CopyCheckValidNumParm(json["mqPO"], settings.mqttPwrOn, sizeof(settings.mqttPwrOn), 0, 1, 0);
         wd |= CopyCheckValidNumParm(json["pMP"], settings.pubMP, sizeof(settings.pubMP), 0, 1, 0);
-        #endif
 
         for(int i = 0; i < 10; i++) {
             mqm[2] = i + '0';
@@ -1398,7 +1184,6 @@ void settings_setup()
     #endif
     bool writedefault = false;
     bool freshFS = false;
-    bool SDres = false;
     int alienVER = -1;
     int cfgReadCount = 0;
 
@@ -1517,33 +1302,22 @@ void settings_setup()
     }
     
     // Set up SD card
+    pinMode(SD_CS_PIN, OUTPUT);
+    digitalWrite(SD_CS_PIN, HIGH);
     SPI.begin(SPI_SCK_PIN, SPI_MISO_PIN, SPI_MOSI_PIN);
-
-    haveSD = false;
-
-    //uint32_t sdfreq = (settings.sdFreq[0] == '0') ? 16000000 : 4000000;
-    uint32_t sdfreq = 16000000;
-    #ifdef TC_DBG_BOOT
-    Serial.printf("%s: SD/SPI frequency %dMHz\n", funcName, sdfreq / 1000000);
-    #endif
+    delay(20);
 
     #ifdef TC_DBG_BOOT
     Serial.printf("%s: Mounting SD... ", funcName);
     #endif
 
-    if(!(SDres = SD.begin(SD_CS_PIN, SPI, sdfreq))) {
-        #ifdef TC_DBG_BOOT
-        Serial.printf("Retrying at 25Mhz... ");
-        #endif
-        SDres = SD.begin(SD_CS_PIN, SPI, 25000000);
+    // Two attemps. Not really a necessity after
+    // the SD init changes (jul 2026), but why not.
+    if(!(haveSD = SD.begin(SD_CS_PIN, SPI, 16000000))) {
+        delay(20);
+        haveSD = SD.begin(SD_CS_PIN, SPI, 25000000);
     }
-
-    if(SDres) {
-
-        #ifdef TC_DBG_BOOT
-        Serial.println("ok");
-        #endif
-
+    if(haveSD) {
         uint8_t cardType = SD.cardType();
        
         #ifdef TC_DBG_BOOT
@@ -1552,7 +1326,6 @@ void settings_setup()
         #endif
 
         haveSD = ((cardType != CARD_NONE) && (cardType != CARD_UNKNOWN));
-
     }
 
     if(haveSD) {
@@ -1583,7 +1356,9 @@ void settings_setup()
         }
 
     } else {
+        #ifdef TC_DBG_BOOT
         Serial.println("No SD card found");
+        #endif
     }
 
     #ifdef TC_HAVEMQTT
@@ -1714,27 +1489,6 @@ void settings_setup()
     }
 }
 
-#ifdef SETTINGS_TRANSITION
-static bool openCfgFileRead(const char *fn, File& f)
-{
-    bool haveConfigFile = false;
-    
-    if(configOnSD) {
-        if(SD.exists(fn)) {
-            haveConfigFile = (f = SD.open(fn, "r"));
-        }
-    }
-
-    if(!haveConfigFile && haveFS) {
-        if(MYNVS.exists(fn)) {
-            haveConfigFile = (f = MYNVS.open(fn, "r"));
-        }
-    }
-
-    return haveConfigFile;
-}
-#endif
-
 /*
  *  Load/save display brightness
  */
@@ -1748,27 +1502,6 @@ static bool loadBrightness()
         settings.destTimeBright = secSettings.brightness[0];
         settings.presTimeBright = secSettings.brightness[1];
         settings.lastTimeBright = secSettings.brightness[2];
-    } else {
-        #ifdef SETTINGS_TRANSITION
-        File configFile;
-        if(openCfgFileRead(briCfgName, configFile)) {
-            DECLARE_S_JSON(512,json);
-            char destTimeBright[4];
-            char presTimeBright[4];
-            char lastTimeBright[4];
-            if(!readJSONCfgFile(json, configFile)) {
-                CopyCheckValidNumParm(json["dBri"], NULL, destTimeBright, sizeof(destTimeBright), 0, 15, DEF_BRIGHT_DEST);
-                CopyCheckValidNumParm(json["pBri"], NULL, presTimeBright, sizeof(presTimeBright), 0, 15, DEF_BRIGHT_PRES);
-                CopyCheckValidNumParm(json["lBri"], NULL, lastTimeBright, sizeof(lastTimeBright), 0, 15, DEF_BRIGHT_DEPA);
-                settings.destTimeBright = atoi(destTimeBright);
-                settings.presTimeBright = atoi(presTimeBright);
-                settings.lastTimeBright = atoi(lastTimeBright);
-            }
-            configFile.close();
-            saveBrightness();
-        }
-        removeOldFiles(briCfgName);
-        #endif
     }
 
     return true;
@@ -1806,22 +1539,6 @@ static void loadBeepAutoInterval()
             beepMode = secSettings.beepMode;
         }
         updateAIntBeepCP();
-    } else {
-        #ifdef SETTINGS_TRANSITION
-        File configFile;
-        if(openCfgFileRead(ainCfgName, configFile)) {
-            DECLARE_S_JSON(512,json);
-            if(!readJSONCfgFile(json, configFile)) {
-                CopyCheckValidNumParm(json["ai"], NULL, settings.autoRotateTimes, sizeof(settings.autoRotateTimes), 0, 5, DEF_AUTOROTTIMES);
-                CopyCheckValidNumParm(json["beep"], NULL, settings.beep, sizeof(settings.beep), 0, 3, atoi(settings.beep));
-            }
-            configFile.close();
-        }
-        removeOldFiles(ainCfgName);
-        autoInterval = (uint8_t)atoi(settings.autoRotateTimes);
-        beepMode = (uint8_t)atoi(settings.beep);
-        saveBeepAutoInterval();
-        #endif
     }
 }
 
@@ -1849,23 +1566,6 @@ void loadCurVolume()
         if(secSettings.beepLvlIdx <= 3) {
             beepLvlIdx = secSettings.beepLvlIdx;
         }
-    } else {
-        #ifdef SETTINGS_TRANSITION
-        char temp[6];
-        File configFile;
-        if(openCfgFileRead(volCfgName, configFile)) {
-            DECLARE_S_JSON(512,json);
-            if(!readJSONCfgFile(json, configFile)) {
-                if(!CopyCheckValidNumParm(json["volume"], NULL, temp, sizeof(temp), 0, 255, 255)) {
-                    int ncv = atoi(temp);
-                    if((ncv >= 0 && ncv < VOL_LEVELS) || ncv == 255) aud_state.curVolume = ncv;
-                }
-            } 
-            configFile.close();
-            saveCurVolume();
-        }
-        removeOldFiles(volCfgName);
-        #endif
     }
 }
 
@@ -1901,38 +1601,6 @@ void loadAlarm()
             alarmWeekday = secSettings.alarmWeekday;
             if(alarmWeekday > 9 && (!(alarmWeekday & 0x80))) alarmWeekday = 0;
         }
-    } else {
-        #ifdef SETTINGS_TRANSITION
-        bool writedefault = true;
-        File configFile;
-        if(openCfgFileRead(almCfgName, configFile)) {
-            DECLARE_S_JSON(512,json);
-            if(!readJSONCfgFile(json, configFile)) {
-                if(json["alarmonoff"] && json["alarmhour"] && json["alarmmin"]) {
-                    int aoo = atoi(json["alarmonoff"]);
-                    alarmHour = atoi(json["alarmhour"]);
-                    alarmMinute = atoi(json["alarmmin"]);
-                    alarmOnOff = ((aoo & 0x0f) != 0);
-                    alarmWeekday = (aoo & 0xf0) >> 4;
-                    if(alarmWeekday > 9) alarmWeekday = 0;
-                    if(((alarmHour   == 255) || (alarmHour   <= 23)) &&
-                       ((alarmMinute == 255) || (alarmMinute <= 59))) {
-                        writedefault = false;
-                    }
-                }
-            } 
-            configFile.close();
-        }
-        removeOldFiles(almCfgName);
-        if(writedefault) {
-            alarmHour = DEF_ALARM_HOUR;
-            alarmMinute = DEF_ALARM_MINUTE;
-            alarmOnOff = DEF_ALARM_ONOFF;
-            alarmWeekday = DEF_ALARM_WD;
-        } else {
-            saveAlarm();
-        }
-        #endif
     }
 }
 
@@ -1962,38 +1630,6 @@ void loadReminder()
             remHour = secSettings.remHour;
             remMin  = secSettings.remMin;
         }
-    } else {
-        #ifdef SETTINGS_TRANSITION
-        bool writedefault = false;
-        File configFile;
-        if(!haveFS && !configOnSD) return;
-        if(openCfgFileRead(remCfgName, configFile)) {
-            DECLARE_S_JSON(512,json);
-            if(!readJSONCfgFile(json, configFile)) {
-                if(json["month"] && json["hour"] && json["min"]) {
-                    remMonth  = atoi(json["month"]);
-                    remDay  = atoi(json["day"]);
-                    remHour = atoi(json["hour"]);
-                    remMin  = atoi(json["min"]);
-                    if(remMonth > 12 ||               // month can be zero (=monthly reminder)
-                       remDay   > 31 || remDay < 1 ||
-                       remHour  > 23 || 
-                       remMin   > 59)
-                        writedefault = true;
-                }
-            } 
-            configFile.close();
-            if(writedefault) {
-                remMonth = 0;
-                remDay = 0;
-                remHour = 0;
-                remMin = 0;
-            } else {
-                saveReminder();
-            }
-        }
-        removeOldFiles(remCfgName);
-        #endif
     }
 }
 
@@ -2023,22 +1659,6 @@ static void loadCarMode()
         Serial.println("loadCarMode: extracting from secSettings");
         #endif
         carMode = !!secSettings.carMode;
-    } else {
-        #ifdef SETTINGS_TRANSITION
-        File configFile;
-        if(!haveFS && !configOnSD) return;
-        if(openCfgFileRead(cmCfgName, configFile)) {
-            DECLARE_S_JSON(512,json);
-            if(!readJSONCfgFile(json, configFile)) {
-                if(json["CarMode"]) {
-                    carMode = (atoi(json["CarMode"]) > 0);
-                }
-            } 
-            configFile.close();
-            saveCarMode();
-        }
-        removeOldFiles(cmCfgName);
-        #endif
     }
 }
 
@@ -2060,29 +1680,6 @@ void loadStaleTime(void *target, bool& currentOn)
         #endif
         currentOn = !!secSettings.exhOnOff;
         memcpy(target, (void *)&secSettings.exhDates[0], 2*sizeof(dateStruct));
-    } else {
-        #ifdef SETTINGS_TRANSITION
-        bool haveConfigFile = false;
-        uint8_t loadBuf[1+(2*sizeof(dateStruct))+1];
-        uint16_t sum = 0;
-        if(!haveFS && !configOnSD) return;
-        if(configOnSD) {
-            haveConfigFile = readFileFromSD(stCfgName, loadBuf, sizeof(loadBuf));
-        }
-        if(!haveConfigFile && haveFS) {
-            haveConfigFile = readFileFromFS(stCfgName, loadBuf, sizeof(loadBuf));
-        }
-        removeOldFiles(stCfgName);
-        if(!haveConfigFile) return;
-        for(uint8_t i = 0; i < 1+(2*sizeof(dateStruct)); i++) {
-            sum += (loadBuf[i] ^ 0x55);
-        }
-        if(((sum & 0xff) == loadBuf[1+(2*sizeof(dateStruct))])) {
-            currentOn = loadBuf[0] ? true : false;
-            memcpy(target, (void *)&loadBuf[1], 2*sizeof(dateStruct));
-            saveStaleTime(target, currentOn);
-        }
-        #endif
     }
 }
 
@@ -2113,22 +1710,6 @@ void loadLineOut()
         Serial.println("loadLineOut: extracting from secSettings");
         #endif
         useLineOut = !!secSettings.useLineOut;
-    } else {
-        #ifdef SETTINGS_TRANSITION
-        File configFile;
-        if(!haveFS && !configOnSD) return;
-        if(openCfgFileRead(loCfgName, configFile)) {
-            DECLARE_S_JSON(512,json);
-            if(!readJSONCfgFile(json, configFile)) {
-                if(json["LineOut"]) {
-                    useLineOut = (atoi(json["LineOut"]) > 0);
-                }
-            }
-            configFile.close();
-            saveLineOut();
-        }
-        removeOldFiles(loCfgName);
-        #endif
     }
 }
 
@@ -2155,26 +1736,6 @@ static void loadRemoteAllowed()
         csf &= ~(CSF_REMALLOW|CSF_REMKPALLOW);
         if(secSettings.remoteAllowed)   csf |= CSF_REMALLOW;
         if(secSettings.remoteKPAllowed) csf |= CSF_REMKPALLOW;
-    } else {
-        #ifdef SETTINGS_TRANSITION
-        File configFile;
-        if(!haveFS && !configOnSD) return;
-        if(openCfgFileRead(raCfgName, configFile)) {
-            DECLARE_S_JSON(512,json);
-            if(!readJSONCfgFile(json, configFile)) {
-                csf &= ~(CSF_REMALLOW|CSF_REMKPALLOW);
-                if(json["Remote"]) {
-                    if(atoi(json["Remote"]) > 0) csf |= CSF_REMALLOW;
-                }
-                if(json["RemoteKP"]) {
-                    if(atoi(json["RemoteKP"]) > 0) csf |= CSF_REMKPALLOW;
-                }
-            }
-            configFile.close();
-            saveRemoteAllowed();
-        }
-        removeOldFiles(raCfgName);
-        #endif
     }
 }
 
@@ -2195,25 +1756,6 @@ void loadServoCorr(int& scorr, int& tcorr)
         #endif
         scorr = secSettings.scorr;
         tcorr = secSettings.tcorr;
-    } else {
-        #ifdef SETTINGS_TRANSITION
-        bool haveConfigFile = false;
-        int8_t loadBuf[3];
-        if(configOnSD) {
-            haveConfigFile = readFileFromSD(scCfgName, (uint8_t *)loadBuf, sizeof(loadBuf));
-        }
-        if(!haveConfigFile && haveFS) {
-            haveConfigFile = readFileFromFS(scCfgName, (uint8_t *)loadBuf, sizeof(loadBuf));
-        }
-        if(haveConfigFile) {
-            if((loadBuf[0] ^ 0x55) == loadBuf[2]) {
-                scorr = loadBuf[0];
-                tcorr = loadBuf[1];
-                saveServoCorr(scorr, tcorr);
-            }
-        }
-        removeOldFiles(scCfgName);
-        #endif
     }
 }
 
@@ -2279,26 +1821,6 @@ void loadMusFoldNum()
         if(terSettings.musFolderNum <= 9) {
             musFolderNum = terSettings.musFolderNum;
         }
-    } else {
-        #ifdef SETTINGS_TRANSITION
-        char temp[4];
-        musFolderNum = 0;
-        if(SD.exists(musCfgName)) {
-            File configFile = SD.open(musCfgName, "r");
-            if(configFile) {
-                DECLARE_S_JSON(512,json);
-                if(!readJSONCfgFile(json, configFile)) {
-                    if(!CopyCheckValidNumParm(json["folder"], NULL, temp, sizeof(temp), 0, 9, 0)) {
-                        musFolderNum = atoi(temp);
-                    }
-                }
-                configFile.close();
-                saveMusFoldNum();
-            }
-        }
-        removeOldFiles(musCfgName);
-        #endif
-        
     }
 }
 
@@ -2360,20 +1882,6 @@ void saveBootMode()
  * Load/save/delete settings for static IP configuration
  */
 
-#ifdef SETTINGS_TRANSITION
-static bool CopyIPParm(const char *json, char *text, uint8_t psize)
-{
-    if(!json) return true;
-
-    if(strlen(json) == 0)
-        return true;
-
-    memset(text, 0, psize);
-    strncpy(text, json, psize-1);
-    return false;
-}
-#endif
-
 bool loadIpSettings()
 {
     memset((void *)&ipsettings, 0, sizeof(ipsettings));
@@ -2395,36 +1903,6 @@ bool loadIpSettings()
                 deleteIpSettings();
             }
         }
-    } else {
-        #ifdef SETTINGS_TRANSITION
-        bool invalid = false;
-        bool haveConfig = false;
-        if( (!FlashROMode && MYNVS.exists(ipCfgNameO)) ||
-            (FlashROMode && SD.exists(ipCfgNameO)) ) {
-            File configFile = FlashROMode ? SD.open(ipCfgNameO, "r") : MYNVS.open(ipCfgNameO, "r");
-            if(configFile) {
-                DECLARE_S_JSON(512,json);
-                DeserializationError error = readJSONCfgFile(json, configFile);
-                if(!error) {
-                    invalid |= CopyIPParm(json["IpAddress"], ipsettings.ip, sizeof(ipsettings.ip));
-                    invalid |= CopyIPParm(json["Gateway"], ipsettings.gateway, sizeof(ipsettings.gateway));
-                    invalid |= CopyIPParm(json["Netmask"], ipsettings.netmask, sizeof(ipsettings.netmask));
-                    invalid |= CopyIPParm(json["DNS"], ipsettings.dns, sizeof(ipsettings.dns));
-                    haveConfig = !invalid;
-                } else {
-                    invalid = true;
-                }
-                configFile.close();
-            }
-            removeOldFiles(ipCfgNameO);
-        }
-        if(invalid) {
-            memset((void *)&ipsettings, 0, sizeof(ipsettings));
-        } else {
-            writeIpSettings();
-        }
-        return haveConfig;
-        #endif
     }
 
     ipHash = 0;
@@ -2505,10 +1983,8 @@ static dateStruct *getClockDataPtr(unsigned int did, int slot)
     switch(did) {
     case DISP_DEST:
         return slot ? &clockData.dUDate : &clockData.dDate;
-        break;
     case DISP_LAST:
         return slot ? &clockData.lUDate : &clockData.lDate;
-        break;
     default:
         return NULL;
     }
@@ -2548,22 +2024,18 @@ static bool saveClockData(bool force)
     return true;  // fs access
 }
 
-void updateClockDataDL(unsigned int did, int slot, uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute)
+void updateClockDataDL(unsigned int did, int slot, dateStruct *givenDate)
 {
     dateStruct *myDate = getClockDataPtr(did, slot);
 
     if(myDate) {
-        myDate->year = year;
-        myDate->month = month;
-        myDate->day = day;
-        myDate->hour = hour;
-        myDate->minute = minute;
+        memcpy((void *)myDate, (void *)givenDate, sizeof(dateStruct));
     }
 }
 
-bool saveClockDataDL(bool force, unsigned int did, uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute)
+bool saveClockDataDL(bool force, unsigned int did, dateStruct *givenDate)
 {
-    updateClockDataDL(did, 0, year, month, day, hour, minute);
+    updateClockDataDL(did, 0, givenDate);
     return saveClockData(force);
 }
 
@@ -2587,33 +2059,6 @@ static void loadAllClockData()
         #ifdef TC_DBG_BOOT
         Serial.printf("loadClockData: Loaded clock state from %s (%d %d)\n", clkSCfgName, clockState.lastYear, clockState.yoffs);
         #endif
-    } else {
-        #ifdef SETTINGS_TRANSITION
-        const char *fnLastYear   = "/tcdly";
-        const char *fnLastYearSD = "/tcdly.bin";
-        uint8_t loadBuf[8];
-        if(FlashROMode) {
-            readFileFromSD(fnLastYearSD, loadBuf, 8);
-        } else {
-            readFileFromFS(fnLastYear, loadBuf, 8);
-        }
-        if(haveFS) MYNVS.remove(fnLastYear);
-        if(haveSD) SD.remove(fnLastYearSD);
-        uint16_t curYear = 0; 
-        int16_t yearoffset = 0;
-        if( (loadBuf[0] == (loadBuf[2] ^ 0xff)) &&
-            (loadBuf[1] == (loadBuf[3] ^ 0xff)) ) {
-            if( (loadBuf[4] == (loadBuf[6] ^ 0x55)) &&
-                (loadBuf[5] == (loadBuf[7] ^ 0x55)) ) {
-                yearoffset = (int16_t)((loadBuf[5] << 8) | loadBuf[4]);
-            }
-            curYear = (int16_t)((loadBuf[1] << 8) | loadBuf[0]);
-            #ifdef TC_DBG_BOOT
-            Serial.printf("loadClockData: Loading old state (%d %d)\n", curYear, yearoffset);
-            #endif
-        }
-        saveClockState(curYear, yearoffset);
-        #endif // SETTINGS_TRANSITION
     }
 
     // Load display-specific clock data
@@ -2623,58 +2068,6 @@ static void loadAllClockData()
         #ifdef TC_DBG_BOOT
         Serial.printf("loadClockData: Loaded clockdata from %s\n", clkCfgName);
         #endif
-    } else {
-        #ifdef SETTINGS_TRANSITION
-        const char *fnEEPROM[3] = { "/tcddt",     "/tcdpt",     "/tcdlt" };
-        const char *fnSD[3] =     { "/tcddt.bin", "/tcdpt.bin", "/tcdlt.bin" };
-        uint8_t loadBuf[10];
-        for(int i = 0; i < 3; i++) {
-            memset((void *)loadBuf, 0, sizeof(loadBuf));
-            if(configOnSD) {
-                readFileFromSD(fnSD[i], loadBuf, 10);
-            } else {
-                readFileFromFS(fnEEPROM[i], loadBuf, 10);
-            }
-            #ifdef TC_DBG_BOOT
-            Serial.printf("loadClockData: Deleting %s[.bin]\n", fnSD[i]);
-            #endif
-            if(haveSD) SD.remove(fnSD[i]);
-            if(haveFS) MYNVS.remove(fnEEPROM[i]);
-            uint16_t sum = 0;
-            for(int j = 0; j < 9; j++) {
-                sum += (loadBuf[j] ^ 0x55);
-            }
-            if((sum & 0xff) == loadBuf[9]) {
-                switch(i) {
-                case DISP_DEST:
-                case DISP_LAST:
-                    {
-                        dateStruct *myDate = (i == DISP_DEST) ? &clockData.dDate : &clockData.lDate;
-                        myDate->year   = (loadBuf[1] << 8) | loadBuf[0];
-                        myDate->month  = loadBuf[4];
-                        myDate->day    = loadBuf[5];
-                        myDate->hour   = loadBuf[6];
-                        myDate->minute = loadBuf[7];
-                    }
-                    break;
-                case DISP_PRES:
-                    clockData.timeDifference = 
-                                     ((uint64_t)loadBuf[3] << 32) |  // Dumb casts for
-                                     ((uint64_t)loadBuf[4] << 24) |  // silencing compiler
-                                     ((uint64_t)loadBuf[5] << 16) |
-                                     ((uint64_t)loadBuf[6] <<  8) |
-                                      (uint64_t)loadBuf[7];
-                    clockData.timeDiffUp = loadBuf[8] ? 1 : 0;
-                    break;
-                }
-            } else {
-                #ifdef TC_DBG_BOOT
-                Serial.printf("loadClockData: old data - invalid checksum disp %d: %d <> %d\n", i, sum & 0xff, loadBuf[9]);
-                #endif
-            }
-        }
-        saveClockData(true);
-        #endif // SETTINGS_TRANSITION
     }
 }
 

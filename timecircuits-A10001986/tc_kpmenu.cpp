@@ -993,7 +993,7 @@ quitMenu:
     UTCtoLocal(gdtu, gdtl, 0);
     
     if(stalePresent)
-        updateStalePresent(1);  // presentTime.setFromStruct(&stalePresentTime[1]);
+        updateStalePresent(1);
     else
         updatePresentTime();    // Uses gdt{u,l}
 
@@ -1587,9 +1587,7 @@ static int doSetMSfx()
             // not suitable for our "multitasking" (with
             // regard to speedo action, especially).
             menuDelay(1000);
-            prepareReboot();
-            delay(1000);
-            esp_restart();
+            orderlyReboot();
         } else {
             mp_init();
         }
@@ -1632,7 +1630,7 @@ static void displayAI(int interval, bool blink, bool doComment)
 static int doSetAutoInterval()
 {
     bool autoDone = false;
-    int newAutoInterval = autoInterval;
+    unsigned int newAutoInterval = autoInterval;
     bool blinkSwitch = false;
     unsigned long blinkNow = millis();
     bool wasEnter, dirDown, wasQuit = false, wasSelect;
@@ -1697,7 +1695,7 @@ static int doSetAutoInterval()
         saveBeepAutoInterval();
 
         // End pause if current setting != off
-        if(autoTimeIntervals[autoInterval]) 
+        if(autoInterval)
             endPauseAuto();
 
         menuDelay(1000);
@@ -1831,7 +1829,7 @@ static void doShowSensors()
     #ifdef TC_HAVETEMP
     if(sgf & SGF_UTemp) {  
         numberArr[numIdx++] = 1;
-        if(tempSens.haveHum()) numberArr[numIdx++] = 2;
+        if((sgf & SGF_HaveHum)) numberArr[numIdx++] = 2;
     }
     #endif
     maxIdx = numIdx - 1;

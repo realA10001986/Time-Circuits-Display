@@ -20,7 +20,7 @@
 //#define IS_ACAR_DISPLAY
 
 // Uncomment if using a GTE keypad control board
-#define GTE_KEYPAD
+//#define GTE_KEYPAD
 
 /*************************************************************************
  ***                          Version Strings                          ***
@@ -28,11 +28,11 @@
 
 // These must not contain any characters other than
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
-#define TC_VERSION_REV   "V3.24"      // 7 chars max. Do NOT change format.
+#define TC_VERSION_REV   "V3.25"      // 7 chars max. Do NOT change format.
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "JUN252026"  // 13 chars max
+#define TC_VERSION_EXTRA "JUL162026"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "06252026"   // 12 chars max
+#define TC_VERSION_EXTRA "07162026"   // 12 chars max
 #endif
 
 /*************************************************************************
@@ -144,12 +144,12 @@
 #define TC_DBG_BOOT           // Boot strap & settings
 //#define TC_DBG_WIFI           // WiFi-related
 //#define TC_DBG_MQTT           // MQTT-related
-#define TC_DBG_AUDIO          // Audio-related
+//#define TC_DBG_AUDIO          // Audio-related
 //#define TC_DBG_TIME           // Time handling
 //#define TC_DBG_NET            // Prop network
 //#define TC_DBG_TT             // Time travel
 //#define TC_DBG_GPS            // GPS-related
-#define TC_DBG_GEN            // Generic
+//#define TC_DBG_GEN            // Generic
 #endif
 
 /*************************************************************************

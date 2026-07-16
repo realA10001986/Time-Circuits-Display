@@ -268,7 +268,7 @@ static void handleTTrefusal(int reason)
 {
     switch(reason) {
     case 1:
-        bttfnSendRemCmd(REM_BRAKE);
+        bttfnSendPropCmd(7, REM_BRAKE);
         break;
     /*
     case 2:
@@ -732,7 +732,7 @@ void keypad_loop()
             eef &= ~(EEF_EnterHeld|EEF_EnterPressed|EEF_EttPressed|EEF_EttHeld|EEF_EttImmediate);
     
             csf &= ~CSF_MA;
-            bttfn_notify_info();
+            csf |= CSF_INFOUPD;
 
         }
 
@@ -941,7 +941,7 @@ void keypad_loop()
                         if(!needDep) {
                             if(isWcMode() && ((wcf & WCF_HaveTZ2) || isRcMode())) needDep = true;
                             #ifdef TC_HAVETEMP
-                            else if(isRcMode() && tempSens.haveHum()) needDep = true;
+                            else if(isRcMode() && (sgf & SGF_HaveHum)) needDep = true;
                             #endif
                             #ifdef TC_HAVEGPS
                             else if(isNavMode()) needDep = true;
@@ -981,7 +981,7 @@ void keypad_loop()
                         } else {
                             toggleRcMode();
                         }
-                        if(tempSens.haveHum()) needDepTime = 1;
+                        if(sgf & SGF_HaveHum) needDepTime = 1;
                         validEntry = 1;
                     }
                     break;
@@ -999,7 +999,7 @@ void keypad_loop()
                             } else {
                                 // If coming from pure RC, we need to restore/update
                                 // Dep if RC had hum or we now display TZ2.
-                                if(tempSens.haveHum() || (wcf & WCF_HaveTZ2)) needDepTime = 1;
+                                if((sgf & SGF_HaveHum) || (wcf & WCF_HaveTZ2)) needDepTime = 1;
                                 toggleWcMode();
                             }
                         } else {
@@ -1161,9 +1161,7 @@ void keypad_loop()
                         carMode = (code == 991);
                         if(rcModeState != carMode) {
                             saveCarMode();
-                            prepareReboot();
-                            delay(1000);
-                            esp_restart();
+                            orderlyReboot();
                         }
                         validEntry = 1;
                     }
@@ -1179,7 +1177,7 @@ void keypad_loop()
                             saveRemoteAllowed();
                             if(!(csf & CSF_REMALLOW)) {
                                 removeRemote();
-                                bttfn_notify_info();
+                                csf |= CSF_INFOUPD;
                             }
                         }
                         validEntry = 1;
@@ -1195,7 +1193,7 @@ void keypad_loop()
                             saveRemoteAllowed();
                             if(!(csf & CSF_REMKPALLOW)) {
                                 removeKPRemote();
-                                bttfn_notify_info();
+                                csf |= CSF_INFOUPD;
                             }
                         }
                         validEntry = 1;
@@ -1223,6 +1221,7 @@ void keypad_loop()
                     backupLastTime();
                     departedTime.savePending();
                     destinationTime.save();
+                    csf |= CSF_INFOUPD;
                     needDepTime = 1;
                     validEntry = 1;
                     break;
@@ -1230,6 +1229,7 @@ void keypad_loop()
                     stalePresent = !stalePresent;
                     displayStalePTStatus();   // Sets specDisp = 10
                     saveStaleTime((void *)&stalePresentTime[0], stalePresent);
+                    csf |= CSF_INFOUPD;
                     validEntry = 1;
                     break;
                 }
@@ -1238,9 +1238,7 @@ void keypad_loop()
         } else if(strLen == DATELEN_INT) {
 
             if(!strncmp(keyBuffer, "64738", 5) && (!(eef & EEF_InputInjected))) {
-                prepareReboot();
-                delay(1000);
-                esp_restart();
+                orderlyReboot();
             } else if(!strncmp(keyBuffer, "53281", 5)) {
                 showUpdAvail = !showUpdAvail;
                 saveUpdAvail();
@@ -1363,35 +1361,17 @@ void keypad_loop()
 
         } else if((strLen == DATELEN_TIME || strLen == DATELEN_ECMD) && (binBuf[0] >= 3)) {
                       
-            uint32_t cmd;
-            if(strLen == DATELEN_TIME)
-                cmd = (binBuf[1] * 100) + read2digs(2);
-            else
-                cmd = (read2digs(1) * 10000) + (read2digs(3) * 100) + read2digs(5);
+            uint32_t cmd = 0;
 
             validEntry = 1;
-            switch(binBuf[0]) {
-            case 3:
-                bttfnSendFluxCmd(cmd);
-                break;
-            case 5:
-                bttfnSendAUXCmd(cmd);
-                break;
-            case 6:
-                bttfnSendSIDCmd(cmd);
-                break;
-            case 7:
-                bttfnSendRemCmd(cmd);
-                break;
-            case 8:
-                bttfnSendVSRCmd(cmd);
-                break;
-            case 9:
-                bttfnSendPCGCmd(cmd);
-                break;
-            default:
+            if(strLen == DATELEN_TIME)
+                cmd = (binBuf[1] * 100) + read2digs(2);
+            else if(binBuf[0] != 4)
+                cmd = (read2digs(1) * 10000) + (read2digs(3) * 100) + read2digs(5);
+            else 
                 validEntry = 2;
-            }
+
+            if(cmd) bttfnSendPropCmd(binBuf[0], cmd);
         
         } else if(strLen == DATELEN_REM) {
            
@@ -1479,6 +1459,8 @@ void keypad_loop()
                     saveStaleTime((void *)&stalePresentTime[0], stalePresent);
                     displayStalePTStatus();   // Sets specDisp = 10
                 }
+
+                csf |= CSF_INFOUPD;
 
                 validEntry = 1;
             }
@@ -1597,6 +1579,9 @@ void keypad_loop()
 
             // Beep auto mode: Restart timer
             startBeepTimer();
+
+            // Trigger INFO on account of changed Destination Time
+            csf |= CSF_INFOUPD;
 
             // Send "wakeup" to network clients
             send_wakeup_msg();
@@ -1759,7 +1744,7 @@ void keypad_loop()
                         if(needDepTime) {
                             if(isWcMode() && (wcf & WCF_HaveTZ1)) {
                                 departedTime.showTempDirect(tempSens.readLastTemp(), i);
-                            } else if(!isWcMode() && tempSens.haveHum()) {
+                            } else if(!isWcMode() && (sgf & SGF_HaveHum)) {
                                 departedTime.showHumDirect(tempSens.readHum(), i);
                             } else {
                                 departedTime.showAnimate(i);
@@ -1776,7 +1761,7 @@ void keypad_loop()
                     if(needDepTime) {
                         if(isWcMode() && (wcf & WCF_HaveTZ1)) {
                             departedTime.showTempDirect(tempSens.readLastTemp(), false);
-                        } else if(!isWcMode() && tempSens.haveHum()) {
+                        } else if(!isWcMode() && (sgf & SGF_HaveHum)) {
                             departedTime.showHumDirect(tempSens.readHum(), false);
                         } else {
                             departedTime.show();
@@ -1881,7 +1866,7 @@ void cancelEnterAnim(bool reenableDT)
                 if(isRcMode()) {
                     if(isWcMode() && (wcf & WCF_HaveTZ1)) {
                         departedTime.showTempDirect(tempSens.readLastTemp());
-                    } else if(!isWcMode() && tempSens.haveHum()) {
+                    } else if(!isWcMode() && (sgf & SGF_HaveHum)) {
                         departedTime.showHumDirect(tempSens.readHum());
                     } else {
                         departedTime.show();
@@ -1948,7 +1933,7 @@ static void resetDisplayMode(bool setDep)
 {
     // Reset the red display and disable nav&rc&wc&mini modes if they use it.
     // if setDep is set, reset the yellow display instead, and disable
-    // rc/wc/nav/mini it they use it.
+    // rc/wc/nav/mini if they use it.
 
     // Mini & Nav use both displays, so disable regardless of display to set
 
@@ -1965,7 +1950,7 @@ static void resetDisplayMode(bool setDep)
     #endif
 
     #ifdef TC_HAVETEMP
-    bool rcUsesLT = (isRcMode() && (tempSens.haveHum() || isWcMode()));
+    bool rcUsesLT = (isRcMode() && ((sgf & SGF_HaveHum) || isWcMode()));
     #endif
 
     if(!setDep) {
@@ -2201,7 +2186,7 @@ static void setNightMode(bool nm)
 {
     allNightmode(nm);
     if(sgf & SGF_USpeedoDisp) speedo.setNightMode(nm);
-    bttfn_notify_info();
+    csf |= CSF_INFOUPD;
 }
 
 void nightModeOn()
@@ -2314,9 +2299,7 @@ void doCopyAudioFiles()
     
     delay(2000);
 
-    prepareReboot();
-    delay(1000);
-    esp_restart();
+    orderlyReboot();
 }
 
 void start_file_copy()
@@ -2390,6 +2373,13 @@ void prepareReboot()
     digitalWrite(WHITE_LED_PIN, LOW);
     unmount_fs();
     delay(ENTER_DELAY + 600);
+}
+
+void orderlyReboot()
+{
+    prepareReboot();
+    delay(1000);
+    esp_restart();
 }
 
 // Wait for audio to finish.

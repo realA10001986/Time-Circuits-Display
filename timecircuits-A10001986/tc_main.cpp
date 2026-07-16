@@ -169,6 +169,10 @@
 
 bool                 showUpdAvail = true;
 
+// deferredCP = true: Start CP later; 
+//            =false: Start CP at connect
+uint32_t             schf = SCHF_DEFERREDCP;
+
 // millis64
 static unsigned long lastMillis64 = 0;
 static uint32_t      millisEpoch = 0;
@@ -182,9 +186,6 @@ bool                 syncTrigger = false;
 unsigned long        syncTriggerNow = 0;
 bool                 doAPretry = true;
 
-// deferredCP = true: Start CP later; 
-//            =false: Start CP at connect
-bool                 deferredCP = true;
 static unsigned long deferredCPNow = 0;
 
 // For tracking second changes
@@ -318,7 +319,6 @@ static unsigned long volChangedNow = 0;
 static unsigned long disChangedNow = 0;
 
 // The startup sequence
-static bool          startupTrigger = false;
 static unsigned long startupNow   = 0;
 
 // Timetravel sequence: Timers, triggers, state
@@ -379,6 +379,7 @@ static bool postHSecChangeBusy = false;
 static bool autoIntDone        = false;
 int         autoIntAnimRunning = 0;
 static bool autoReadjust       = false;
+static int  infoLastMin        = -1;
 
 static uint8_t* (*r)(uint8_t *, uint32_t, int);
 int         specDisp = 0;
@@ -438,7 +439,6 @@ uint16_t    mqttIdx[3]    = { 0 };
 int16_t     mqttMaxIdx[3] = { 0 };
 char        *mqttMsg[3]   = { NULL };
 bool        mqttST[3]     = { false };
-
 #endif
 
 // NTP/GPS
@@ -458,7 +458,7 @@ static bool          NTPPacketDue = false;
 static bool          NTPWiFiUp = false;
 static uint8_t       NTPfailCount = 0;
 static bool          NTPLookupFail = false;
- 
+
 // The RTC object
 #if defined(HAVE_DS3231) && defined(HAVE_PCF2129)
 #define RTC_NUMTYPES 2
@@ -550,14 +550,13 @@ dateStruct stalePresentTime[2] = {
 uint8_t stalePresentWeekDay[2] = { 0 };
 
 // Time cycling
-const uint8_t  autoTimeIntervals[6] = {0, 5, 10, 15, 30, 60};  // first must be 0 (=off)
-uint8_t        autoInterval = DEF_AUTOROTTIMES;
+const uint8_t  autoTimeIntervals[6] = {0, 5, 10, 15, 30, 60};  // first one must be 0 (=off)
+unsigned int   autoInterval = DEF_AUTOROTTIMES;
 static bool    autoRotAnim = true;
 static uint8_t autoIntSec  = 59;
 static int     autoTime    = 0;
-static bool          autoPaused = false;
-static unsigned long pauseNow = 0;
-static unsigned long pauseDelay = 30*60*1000;  // Pause for 30 minutes
+static unsigned long autoPaused = 0;
+static unsigned long pauseDelay = 0;
 
 #ifndef TWPRIVATE //  ----------------- OFFICIAL
 
@@ -920,12 +919,13 @@ int bttfnHaveClients = 0; // This is a bool by nature (0, !0)
 #define BTTFN_SSRC_P0           4
 #define BTTFN_SSRC_P1           5
 #define BTTFN_SSRC_P2           6
-#define BTTFN_TCDI1_NOREM   0x0001
-#define BTTFN_TCDI1_NOREMKP 0x0002
-#define BTTFN_TCDI1_EXT     0x0004
-#define BTTFN_TCDI1_OFF     0x0008
-#define BTTFN_TCDI1_NM      0x0010
-#define BTTFN_TCDI2_BUSY    0x0001
+#define BTTFN_TCDI1_NOREM     0x0001
+#define BTTFN_TCDI1_NOREMKP   0x0002
+#define BTTFN_TCDI1_EXT       0x0004
+#define BTTFN_TCDI1_OFF       0x0008
+#define BTTFN_TCDI1_NM        0x0010
+#define BTTFN_TCDI2_BUSY      0x0001
+#define BTTFN_TCDI2_TIMEINFO  0x8000
 #define BTTFN_VERSION              1
 #define BTTF_PACKET_SIZE          48
 #define BTTF_DEFAULT_LOCAL_PORT 1338
@@ -962,7 +962,6 @@ static byte          BTTFMCBuf[BTTF_PACKET_SIZE];
 static uint8_t       bttfnNotAllSupportMC = 0;
 static uint8_t       bttfnAtLeastOneMC = 0;
 static uint8_t       bttfnAtLeastOneND = 0;
-static uint8_t       bttfnDataParm = 0;
 static int           oldBTTFNSpd = -2;
 static uint16_t      oldBTTFNSSrc = 0xffff;
 static unsigned long bttfnLastSpeedNot = 0;
@@ -970,6 +969,7 @@ static unsigned long bttfnLastDataNot = 0;
 static unsigned long bttfnLastInfo = 0;
 static int           TCDBusyStatus = 0;
 static uint8_t       bttfnData17 = 0, bttfnData18, bttfnData19;
+static unsigned long bttfnScheduleInfo;
 #ifdef TC_HAVE_REMOTE
 static uint32_t      registeredRemID  = 0;
 static uint32_t      registeredRemKPID = 0;
@@ -995,6 +995,8 @@ static uint32_t      bttfnBsgf = 0;
  */
 #define GET32(a,b)    *((uint32_t *)((a) + (b)))
 #define SET32(a,b,c)  *((uint32_t *)((a) + (b))) = c
+#define GET16(a,b)    *((uint16_t *)((a) + (b)))
+#define SET16(a,b,c)  *((uint16_t *)((a) + (b))) = c
 #else
 #define GET32(a,b)          \
     (((a)[b])            |  \
@@ -1006,6 +1008,12 @@ static uint32_t      bttfnBsgf = 0;
     ((a)[(b)+1]) = ((uint32_t)(c)) >> 8;    \
     ((a)[(b)+2]) = ((uint32_t)(c)) >> 16;   \
     ((a)[(b)+3]) = ((uint32_t)(c)) >> 24; 
+#define GET16(a,b)          \
+    (((a)[b])            |  \
+    (((a)[(b)+1]) << 8))   
+#define SET16(a,b,c)                        \
+    (a)[b]       = ((uint16_t)(c)) & 0xff;  \
+    ((a)[(b)+1]) = ((uint16_t)(c)) >> 8;
 #endif
 
 #ifdef TC_HAVEMQTT
@@ -1072,7 +1080,7 @@ static bool NTPHaveCurrentTime();
 static bool NTPGetUTC(int& year, int& month, int& day, int& hour, int& minute, int& second);
 
 // Basic Telematics Transmission Framework
-static void bttfn_notify(uint8_t targetType, uint8_t event, uint16_t payload = 0, uint16_t payload2 = 0, uint16_t payload3 = 0);
+static void bttfn_notify(uint8_t targetType, uint8_t event, uint16_t *payload = NULL, uint8_t *payload2 = NULL);
 static void bttfn_notify_speed();
 static void bttfn_send_autoUpdates();
 static void bttfn_setup();
@@ -1473,15 +1481,15 @@ void main_setup()
     }
 
     // Start the Config Portal (if deferred)
-    if(deferredCP) {
+    if(schf & SCHF_DEFERREDCP) {
         if(WiFi.status() == WL_CONNECTED) {
             if(playIntro || (useFakePowerSwitch && 
                             (digitalRead(FAKE_POWER_BUTTON_PIN) == HIGH))) {
                 wifiStartCP();
-                deferredCP = false;
+                schf &= ~SCHF_DEFERREDCP;
             }
         } else {
-            deferredCP = false;
+            schf &= ~SCHF_DEFERREDCP;
         }
     }
 
@@ -1682,7 +1690,7 @@ void main_setup()
     }
 
     // If time cycling enabled, put up the first one
-    if(autoTimeIntervals[autoInterval]) {
+    if(autoInterval) {
         destinationTime.setFromStruct(&destinationTimes[0]);
         departedTime.setFromStruct(&departedTimes[0]);
     }
@@ -1862,6 +1870,7 @@ void main_setup()
     if(tempSens.begin(myCustomDelay_Sens, !!(sgf & SGF_TempCelsius))) {
         tempSens.setOffset((float)strtof(settings.tempOffs, NULL));
         wcf |= WCF_HaveRCM;
+        if(tempSens.haveHum()) sgf |= SGF_HaveHum;
         tempBrightness = atoi(settings.tempBright);
         tempOffNM = evalBool(settings.tempOffNM);
         if(sgf & SGF_DispTemp) {
@@ -2066,9 +2075,9 @@ void main_setup()
 
         if(bootNow) {
 
-            csf |= CSF_ST;
             csf &= ~CSF_OFF;
-            startupTrigger = true;
+            csf |= CSF_ST;
+            schf |= SCHF_STARTUP;
             leds_on();
             if(beepMode >= 2)      startBeepTimer();
             else if(beepMode == 1) muteBeep = false;
@@ -2076,7 +2085,7 @@ void main_setup()
         }
     }
 
-    if(deferredCP) deferredCPNow = millis();
+    deferredCPNow = millis();
 
     // Read firmware version of GPS receiver module
     #ifdef TC_HAVEGPS
@@ -2107,9 +2116,10 @@ void main_loop()
         fakePowerOnKey.scan();
 
         if(isFPBKeyChange) {
+            deferredCPNow = millisNow;
             if(isFPBKeyPressed) {
                 if(csf & CSF_OFF) {
-                    startupTrigger = true;
+                    schf |= SCHF_STARTUP;
                     csf |= CSF_ST;
                     csf &= ~CSF_OFF;
                     if(beepMode >= 2)      startBeepTimer();
@@ -2144,11 +2154,11 @@ void main_loop()
                     #endif
                     wcf |= WCF_Trigger;
                     destShowAlt = depShowAlt = 0; // Reset WC's TZ-Name-Animation
+                    // Time-cycling is unpaused through startup_trigger
                 }
             } else {
                 if(!(csf & CSF_OFF)) {
-                    startupTrigger = false;
-                    startupNow = 0;
+                    schf &= ~(SCHF_STARTUP|SCHF_STARTUP2);
                     triggerP1 = false;
                     triggerETTO = false;
                     ettoPulseEnd();
@@ -2184,79 +2194,90 @@ void main_loop()
                 }
             }
             isFPBKeyChange = false;
-            if(deferredCP) deferredCPNow = millis();
-            bttfn_notify_info();
+            csf |= CSF_INFOUPD;
         }
-    }
-
-    if(deferredCP && (millis() - deferredCPNow > 4000)) {
-        wifiStartCP();
-        deferredCP = false;
-    }
-
-    // Initiate startup delay, play startup sound
-    if(startupTrigger) {
-        startupNow = pauseNow = millisNonZero();
-        if(!(csf & (CSF_AL|CSF_AE))) {
-            play_file("/startup.mp3", PA_INTSPKR|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD, 0.8);
-        }
-        startupTrigger = false;
-        // Don't let autoInt interrupt us
-        autoPaused = true;
-        pauseDelay = STARTUP_DELAY + 500;
-    }
-
-    // Turn display on after startup delay
-    if(startupNow && (millis() - startupNow >= STARTUP_DELAY)) {
-        startupNow = 0;
-        animate(true);
-        csf &= ~CSF_ST;
-        if((sgf & SGF_USpeedoDisp) && (!(sgf & SGF_DispGPSSpd)) && (!(csf & CSF_RSM))) {
-            #ifdef TC_HAVE_RE
-            if(sgf & SGF_DispRotEnc) {
-                speedo.on();
-            } else {
-            #endif
-                #ifdef TC_HAVETEMP
-                updateTemperature(true);
-                if(sgf & SGF_DispTemp) {
-                    dispTemperature(true);
-                } else {
-                #endif
-                    if(sgf & SGF_SpAlwsOn) {
-                        dispIdleZero(true);
-                    } else {
-                        speedo.off(); // Yes, off.
-                    }
-                #ifdef TC_HAVETEMP
-                }
-                #endif
-            #ifdef TC_HAVE_RE
-            }
-            #endif    
-        }
-        // Let audio_loop take care of updating MP status
     }
 
     millisNow = millis();
 
-    // Timers for door sound
-    if(doorSnd) {
-        unsigned long timePassed = millisNow - doorSndNow;
-        // delay door sound by max 500ms, otherwise effect is lost and we skip it
-        if(timePassed > doorSndDelay) {
-            if(timePassed <= doorSndDelay + 500) {
-                play_door_snd(1, doorSnd, doorFlags);
+    // Seldomly scheduled events: Startup, door sound, scheduled INFO
+    if(schf) {
+
+        // Startup, p1: Initiate startup delay, play startup sound,
+        // pause time-cycling for a few seconds
+        if(schf & SCHF_STARTUP) {
+            schf &= ~SCHF_STARTUP;
+            schf |= SCHF_STARTUP2;
+            // autoPause now, don't let autoInt interrupt us
+            startupNow = autoPaused = millisNonZero();
+            pauseDelay = STARTUP_DELAY + 2000;
+            if(!(csf & (CSF_AL|CSF_AE))) {
+                play_file("/startup.mp3", PA_INTSPKR|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD, 0.8);
             }
-            doorSnd = 0;
         }
-    } else if(door2Snd) {
-        unsigned long timePassed = millisNow - door2SndNow;
-        if(timePassed > door2SndDelay) {
-            if(timePassed <= door2SndDelay + 500) {
-                play_door_snd(2, door2Snd, door2Flags);
+
+        // Startup, p2: Turn display on after startup delay, switch on speedo
+        if((schf & SCHF_STARTUP2) && (millisNow - startupNow >= STARTUP_DELAY)) {
+            schf &= ~SCHF_STARTUP2;
+            animate(true);
+            csf &= ~CSF_ST;
+            if((sgf & SGF_USpeedoDisp) && (!(sgf & SGF_DispGPSSpd)) && (!(csf & CSF_RSM))) {
+                #ifdef TC_HAVE_RE
+                if(sgf & SGF_DispRotEnc) {
+                    speedo.on();
+                } else {
+                #endif
+                    #ifdef TC_HAVETEMP
+                    updateTemperature(true);
+                    if(sgf & SGF_DispTemp) {
+                        dispTemperature(true);
+                    } else {
+                    #endif
+                        if(sgf & SGF_SpAlwsOn) {
+                            dispIdleZero(true);
+                        } else {
+                            speedo.off(); // Yes, off.
+                        }
+                    #ifdef TC_HAVETEMP
+                    }
+                    #endif
+                #ifdef TC_HAVE_RE
+                }
+                #endif    
             }
-            door2Snd = 0;
+            // Let audio_loop take care of updating MP status
+        }
+
+        // Timer for deferred CP start
+        if((schf & SCHF_DEFERREDCP) && (millisNow - deferredCPNow > 4000)) {
+            schf &= ~SCHF_DEFERREDCP;
+            wifiStartCP();
+        }
+        
+        // Timers for door sound
+        if(schf & SCHF_DOOR1) {
+            unsigned long timePassed = millisNow - doorSndNow;
+            // delay door sound by max 500ms, otherwise effect is lost and we skip it
+            if(timePassed > doorSndDelay) {
+                schf &= ~SCHF_DOOR1;
+                if(timePassed <= doorSndDelay + 500) {
+                    play_door_snd(1, doorSnd, doorFlags);
+                }
+            }
+        } else if(schf & SCHF_DOOR2) {
+            unsigned long timePassed = millisNow - door2SndNow;
+            if(timePassed > door2SndDelay) {
+                schf &= ~SCHF_DOOR2;
+                if(timePassed <= door2SndDelay + 500) {
+                    play_door_snd(2, door2Snd, door2Flags);
+                }
+            }
+        }
+
+        // Scheduled INFO for newly registered BTTFN clients
+        if((schf & SCHF_SENDINFO) && (millisNow - bttfnScheduleInfo > 5000)) {
+            schf &= ~SCHF_SENDINFO;
+            csf |= CSF_INFOUPD;
         }
     }
 
@@ -2276,197 +2297,206 @@ void main_loop()
         #endif
     }
 
+    millisNow = millis();
+
     // Time travel animation, phase 0: Speed counts up
-    if((csf & CSF_P0) && (millis() - timetravelP0Now >= timetravelP0Delay)) {
+    if(csf & CSF_P0) {
+      
+        if(millisNow - timetravelP0Now >= timetravelP0Delay) {
 
-        unsigned long univNow = millis();
-        long timetravelP0DelayT = 0;
-
-        timeTravelP0stalled = 0;
-
-        timeTravelP0Speed++;
-
-        if(timeTravelP0Speed < 88) {
-            unsigned long ttP0NowT = univNow;
-            long ttP0LDOver = 0, ttP0LastDelay = ttP0NowT - ttP0Now;
-            ttP0Now = ttP0NowT;
-            ttP0LDOver = ttP0LastDelay - timetravelP0Delay;
-            timetravelP0DelayT = (long)(((float)(tt_p0_delays[timeTravelP0Speed])) / ttP0TimeFactor) - ttP0LDOver;
-            while(timetravelP0DelayT <= 0 && timeTravelP0Speed < 88) {
-                timeTravelP0Speed++;
-                timetravelP0DelayT += (long)(((float)(tt_p0_delays[timeTravelP0Speed])) / ttP0TimeFactor);
-            }
-        }
-
-        if(timeTravelP0Speed < 88) {
-
-            timetravelP0Delay = timetravelP0DelayT;
-            timetravelP0Now = univNow;
-
-        } else {
-
-            csf &= ~CSF_P0;
-
-        }
-
-        speedo.setSpeed(timeTravelP0Speed);
-        speedo.show();
-
-        // Overwrite fakeSpeed/bttfnRemCurSpd for BTTFN clients who keep polling
-        // until P1-ETTO_LEAD
-        #ifdef TC_HAVE_RE
-        if(sgf & SGF_URotEnc) {
-            // Need to keep -1, otherwise we can't detect if enc was off
-            // ahead of the tt, see also P2
-            fakeSpeed = rotEnc.IsOff() ? -1 : timeTravelP0Speed;
-        }
-        #endif
-        #ifdef TC_HAVE_REMOTE
-        // Update for BTTFN clients
-        bttfnRemCurSpd = timeTravelP0Speed;
-        #endif
-
-        // P0 is cancelled if brake is hit on the Remote
-        // but not if P1 has already started
-        #ifdef TC_HAVE_REMOTE
-        if((csf & CSF_RSM) && (csf & CSF_P0) && bttfnRemStop) {
-            if(timeTravelP1 <= 0) {
-                if(!triggerETTO) {
-                    // Send abort (only if TT was already signalled)
-                    send_abort_msg();
-                    ettoPulseEnd();
+            long timetravelP0DelayT = 0;
+    
+            timeTravelP0stalled = 0;
+    
+            timeTravelP0Speed++;
+    
+            if(timeTravelP0Speed < 88) {
+                unsigned long ttP0NowT = millisNow;
+                long ttP0LDOver = 0, ttP0LastDelay = (long)(ttP0NowT - ttP0Now);
+                ttP0Now = ttP0NowT;
+                ttP0LDOver = ttP0LastDelay - timetravelP0Delay;
+                timetravelP0DelayT = (long)(((float)(tt_p0_delays[timeTravelP0Speed])) / ttP0TimeFactor) - ttP0LDOver;
+                while(timetravelP0DelayT <= 0 && timeTravelP0Speed < 88) {
+                    timeTravelP0Speed++;
+                    timetravelP0DelayT += (long)(((float)(tt_p0_delays[timeTravelP0Speed])) / ttP0TimeFactor);
                 }
+            }
+    
+            if(timeTravelP0Speed < 88) {
+    
+                timetravelP0Delay = timetravelP0DelayT;
+                timetravelP0Now = millisNow;
+    
+            } else {
+    
                 csf &= ~CSF_P0;
-                // Fake for following updAndDispRemoteSpeed()-call.
-                // (Remote does not send updates while in P0 [which
-                // would be pointless as it would only mirror our P0
-                // speed], so bttfnRemoteSpeed is outdated now)
-                // (This is also needed when fake-switched off)
-                bttfnRemoteSpeed = timeTravelP0Speed;
-                triggerP1 = false;
-                triggerETTO = false;
-                timeTravelP0stalled = 0;
-                if(playTTsounds) {
-                    if(haveSnds & HS_ABORT_TT) {
-                        play_file(abortTTSound, PA_LINEOUT|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
-                    } else {
-                        // if(playTTsounds) mp is stopped on TT, so no need to mp_stop()
-                        stopAudio();
-                    }
-                }
-                // SGF_URotEnc = 0 while Remote=SpeedMaster, no reset required
+    
             }
-        }
-        #endif
-    }
-
-    // Time travel animation, phase 2: Speed counts down
-    if((csf & CSF_P2) && (millis() - timetravelP0Now >= timetravelP0Delay)) {
-        bool countToGPSSpeed = false;
-        int  targetSpeed = 0;
-        #ifdef TC_HAVE_REMOTE
-        if(csf & CSF_RSM) {
-            countToGPSSpeed = true;
-            targetSpeed = bttfnRemStop ? 0 : bttfnRemoteSpeed;
-        } else
-        #endif
-        {
-            #ifdef TC_HAVEGPS
-            int tgpsSpd = myGPS.getSpeed();
-            countToGPSSpeed = ((sgf & SGF_DispGPSSpd) && (tgpsSpd >= 0));
-            targetSpeed = countToGPSSpeed ? tgpsSpd : 0;
-            #endif
-        }
-        if((timeTravelP0Speed <= targetSpeed) || (targetSpeed >= 88)) {
-            csf &= ~CSF_P2;
-            #ifdef NOT_MY_RESPONSIBILITY
-            if(countToGPSSpeed && targetSpeed >= 88) {
-                // Avoid an immediately repeated time travel
-                // if speed increased in the meantime
-                // (For button-triggered TT while speed < 88)
-                GPSabove88 = true;
-            }
-            #endif
-            #ifdef TC_HAVE_RE
-            if(sgf & SGF_URotEnc) {
-                // We MUST reset the encoder; user might have moved
-                // it while we blocked updates during P0-P2.
-                // If fakeSpeed is -1 at this point, it was disabled
-                // when starting P0 (which is why we don't overwrite
-                // fakeSpeed when enc is off, see above at P0)
-                if(fakeSpeed < 0) {
-                    // Reset enc to "disabled" position
-                    re_init(false);
-                } else {
-                    // Reset enc to "zero" position
-                    re_init();
-                    re_lockTemp();
-                }
-                GPSabove88 = false;
-            }
-            #endif
-            if((!(sgf & (SGF_DispGPSSpd|SGF_DispRotEnc))) && (!(csf & CSF_RSM))) {
-                if(sgf & SGF_SpAlwsOn) {
-                    dispIdleZero(true);
-                } else {
-                    speedo.off();
-                }
-            }
-            #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE)
-            displayGPSorRESpeed(true);
-            #endif
-            #ifdef TC_HAVETEMP
-            updateTemperature(true);
-            dispTemperature(true);
-            #endif
-            #ifdef TC_HAVE_REMOTE
-            updAndDispRemoteSpeed();
-            #endif    
-        } else {
-            timetravelP0Now = millis();
-            timeTravelP0Speed--;
+    
             speedo.setSpeed(timeTravelP0Speed);
             speedo.show();
-            #ifdef TC_HAVE_REMOTE
-            // Overwrite for BTTFN clients, and in case Remote kicked in during TT
-            // in which case the saved displayed speed would be outdated at the end of P2
-            // and updAndDispRemoteSpeed() would start count down from the outdated
-            // speed again.
-            bttfnRemCurSpd = timeTravelP0Speed; 
-            #endif
+    
+            // Overwrite fakeSpeed/bttfnRemCurSpd for BTTFN clients who keep polling
+            // until P1-ETTO_LEAD
             #ifdef TC_HAVE_RE
             if(sgf & SGF_URotEnc) {
                 // Need to keep -1, otherwise we can't detect if enc was off
-                // ahead of the tt, see end of P2
+                // ahead of the tt, see also P2
                 fakeSpeed = rotEnc.IsOff() ? -1 : timeTravelP0Speed;
             }
             #endif
-            #if defined(TC_HAVEGPS) || defined(TC_HAVE_REMOTE)
-            if(countToGPSSpeed) {
-                if(targetSpeed == timeTravelP0Speed) {
-                    timetravelP0Delay = 0;
-                } else {
-                    uint8_t tt = ((timeTravelP0Speed-targetSpeed)*100) / (88 - targetSpeed);
-                    timetravelP0Delay = ((100 - tt) * 150) / 100;
-                    if(timetravelP0Delay < 40) timetravelP0Delay = 40;
-                }
-            } else {
+            #ifdef TC_HAVE_REMOTE
+            // Update for BTTFN clients
+            bttfnRemCurSpd = timeTravelP0Speed;
             #endif
-                timetravelP0Delay = ((timeTravelP0Speed == 0) && (!(sgf & SGF_DispRotEnc))) ? 4000 : 40;
-            #if defined(TC_HAVEGPS) || defined(TC_HAVE_REMOTE)
+    
+            // P0 is cancelled if brake is hit on the Remote
+            // but not if P1 has already started
+            #ifdef TC_HAVE_REMOTE
+            if((csf & CSF_RSM) && (csf & CSF_P0) && bttfnRemStop) {
+                if(timeTravelP1 <= 0) {
+                    if(!triggerETTO) {
+                        // Send abort (only if TT was already signalled)
+                        send_abort_msg();
+                        ettoPulseEnd();
+                    }
+                    csf &= ~CSF_P0;
+                    // Fake for following updAndDispRemoteSpeed()-call.
+                    // (Remote does not send updates while in P0 [which
+                    // would be pointless as it would only mirror our P0
+                    // speed], so bttfnRemoteSpeed is outdated now)
+                    // (This is also needed when fake-switched off)
+                    bttfnRemoteSpeed = timeTravelP0Speed;
+                    triggerP1 = false;
+                    triggerETTO = false;
+                    timeTravelP0stalled = 0;
+                    if(playTTsounds) {
+                        if(haveSnds & HS_ABORT_TT) {
+                            play_file(abortTTSound, PA_LINEOUT|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
+                        } else {
+                            // if(playTTsounds) mp is stopped on TT, so no need to mp_stop()
+                            stopAudio();
+                        }
+                    }
+                    // SGF_URotEnc = 0 while Remote=SpeedMaster, no reset required
+                }
             }
             #endif
         }
+
+    // Time travel animation, phase 2: Speed counts down
+    } else if(csf & CSF_P2) {
+
+        if(millisNow - timetravelP0Now >= timetravelP0Delay) {
+
+            bool countToGPSSpeed = false;
+            int  targetSpeed = 0;
+            #ifdef TC_HAVE_REMOTE
+            if(csf & CSF_RSM) {
+                countToGPSSpeed = true;
+                targetSpeed = bttfnRemStop ? 0 : bttfnRemoteSpeed;
+            } else
+            #endif
+            {
+                #ifdef TC_HAVEGPS
+                int tgpsSpd = myGPS.getSpeed();
+                countToGPSSpeed = ((sgf & SGF_DispGPSSpd) && (tgpsSpd >= 0));
+                targetSpeed = countToGPSSpeed ? tgpsSpd : 0;
+                #endif
+            }
+            if((timeTravelP0Speed <= targetSpeed) || (targetSpeed >= 88)) {
+                csf &= ~CSF_P2;
+                #ifdef NOT_MY_RESPONSIBILITY
+                if(countToGPSSpeed && targetSpeed >= 88) {
+                    // Avoid an immediately repeated time travel
+                    // if speed increased in the meantime
+                    // (For button-triggered TT while speed < 88)
+                    GPSabove88 = true;
+                }
+                #endif
+                #ifdef TC_HAVE_RE
+                if(sgf & SGF_URotEnc) {
+                    // We MUST reset the encoder; user might have moved
+                    // it while we blocked updates during P0-P2.
+                    // If fakeSpeed is -1 at this point, it was disabled
+                    // when starting P0 (which is why we don't overwrite
+                    // fakeSpeed when enc is off, see above at P0)
+                    if(fakeSpeed < 0) {
+                        // Reset enc to "disabled" position
+                        re_init(false);
+                    } else {
+                        // Reset enc to "zero" position
+                        re_init();
+                        re_lockTemp();
+                    }
+                    GPSabove88 = false;
+                }
+                #endif
+                if((!(sgf & (SGF_DispGPSSpd|SGF_DispRotEnc))) && (!(csf & CSF_RSM))) {
+                    if(sgf & SGF_SpAlwsOn) {
+                        dispIdleZero(true);
+                    } else {
+                        speedo.off();
+                    }
+                }
+                #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE)
+                displayGPSorRESpeed(true);
+                #endif
+                #ifdef TC_HAVETEMP
+                updateTemperature(true);
+                dispTemperature(true);
+                #endif
+                #ifdef TC_HAVE_REMOTE
+                updAndDispRemoteSpeed();
+                #endif    
+            } else {
+                timetravelP0Now = millis();
+                timeTravelP0Speed--;
+                speedo.setSpeed(timeTravelP0Speed);
+                speedo.show();
+                #ifdef TC_HAVE_REMOTE
+                // Overwrite for BTTFN clients, and in case Remote kicked in during TT
+                // in which case the saved displayed speed would be outdated at the end of P2
+                // and updAndDispRemoteSpeed() would start count down from the outdated
+                // speed again.
+                bttfnRemCurSpd = timeTravelP0Speed; 
+                #endif
+                #ifdef TC_HAVE_RE
+                if(sgf & SGF_URotEnc) {
+                    // Need to keep -1, otherwise we can't detect if enc was off
+                    // ahead of the tt, see end of P2
+                    fakeSpeed = rotEnc.IsOff() ? -1 : timeTravelP0Speed;
+                }
+                #endif
+                #if defined(TC_HAVEGPS) || defined(TC_HAVE_REMOTE)
+                if(countToGPSSpeed) {
+                    if(targetSpeed == timeTravelP0Speed) {
+                        timetravelP0Delay = 0;
+                    } else {
+                        uint8_t tt = ((timeTravelP0Speed-targetSpeed)*100) / (88 - targetSpeed);
+                        timetravelP0Delay = ((100 - tt) * 150) / 100;
+                        if(timetravelP0Delay < 40) timetravelP0Delay = 40;
+                    }
+                } else {
+                #endif
+                    timetravelP0Delay = ((timeTravelP0Speed == 0) && (!(sgf & SGF_DispRotEnc))) ? 4000 : 40;
+                #if defined(TC_HAVEGPS) || defined(TC_HAVE_REMOTE)
+                }
+                #endif
+            }
+        }
     }
 
+    millisNow = millis();
+    
     // Time travel animation, phase 1: Display disruption
-    if((timeTravelP1 > 0) && (millis() - timetravelP1Now >= timetravelP1Delay)) {
+    if((timeTravelP1 > 0) && (millisNow - timetravelP1Now >= timetravelP1Delay)) {
         timeTravelP1++;
-        timetravelP1Now = millis();
+        timetravelP1Now = millisNow;
         switch(timeTravelP1) {
         case 2:
             #ifdef TC_DBG_TT
-            Serial.printf("TT initiated %d\n", millis());
+            Serial.printf("TT initiated %d\n", millisNow);
             #endif
             ettoPulseStartNoLead();
             if(!skipTTAnim) allOff();
@@ -2493,8 +2523,8 @@ void main_loop()
 
     // Turn display back on after time traveling
     if((csf & CSF_RE) && (millis() - timetravelNow >= REENTRY_DURATION)) {
-        animate();
         csf &= ~CSF_RE;
+        animate();
     }
 
     // Post half-sec change slot: Save data
@@ -2967,7 +2997,7 @@ void main_loop()
       
         if(y == 0) {
 
-            int8_t minNext;
+            uint8_t minNext;
 
             // Set colon
             destinationTime.setColon(true);
@@ -3033,8 +3063,7 @@ void main_loop()
             bool itsTime = false;
             bool doWiFi = false;
             
-            if(couldHaveAuthTime && 
-               (!(csf & (CSF_ST|CSF_P0|CSF_P1|CSF_RE|CSF_P2)))) {
+            if(couldHaveAuthTime && (!(csf & (CSF_ST|CSF_P0|CSF_P1|CSF_RE|CSF_P2)))) {
 
                 itsTime = ( (gdtu.minute() == 1) ||
                             (gdtu.minute() == 2) ||
@@ -3226,8 +3255,8 @@ void main_loop()
             // Convert UTC to local (parses TZ in the process)
             UTCtoLocal(gdtu, gdtl, 0);
 
-            bttfnDateBuf[0] = (uint8_t)gdtl.year() & 0xff;
-            bttfnDateBuf[1] = (uint8_t)gdtl.year() >> 8; 
+            bttfnDateBuf[0] = (uint8_t)(gdtl.year() & 0xff);
+            bttfnDateBuf[1] = (uint8_t)(gdtl.year() >> 8); 
             bttfnDateBuf[2] = gdtl.month();
             bttfnDateBuf[3] = gdtl.day();
             bttfnDateBuf[4] = lastHour = gdtl.hour();
@@ -3235,11 +3264,18 @@ void main_loop()
             bttfnDateBuf[6] = gdtl.second();
             bttfnDateBuf[7] = dayOfWeek(gdtl.day(), gdtl.month(), gdtl.year());
 
-            // Write time to presentTime display
-            if(stalePresent)
+            // Write time to presentTime display and
+            // get minNext for time cycling. If we animate, we
+            // cycle on previous minute:59. We use the displayed 
+            // minute, not the local time's minute unless we're in 
+            // Exhibition Mode.
+            if(stalePresent) {
                 updateStalePresent(1);
-            else
+                minNext = gdtl.minute();
+            } else {
                 updatePresentTime(bttfnDateBuf[7] + 1);  // uses gdt{u,l}
+                minNext = presentTime.getMinute();
+            }
             
             // Handle WC mode (load dates/times for dest/dep display)
             // (Restoring not needed, done elsewhere)
@@ -3271,26 +3307,18 @@ void main_loop()
 
             // Handle Time Cycling
 
-            // If we animate, do this on previous minute:59
-            // We use the displayed minute, not the local time's minute
-            // unless we're in Exhibition Mode
-            if(stalePresent)
-                minNext = gdtl.minute();
-            else
-                minNext = presentTime.getMinute();
+            // Check if autoPause has run out
+            if(autoPaused && (millis() - autoPaused >= pauseDelay)) {
+                autoPaused = 0;
+            }
 
             if(autoRotAnim) {
                 minNext++;
                 if(minNext > 59) minNext = 0;
             }
 
-            // Check if autoPause has run out
-            if(autoPaused && (millis() - pauseNow >= pauseDelay)) {
-                autoPaused = false;
-            }
-
             if((gdtl.second() == autoIntSec)                            &&
-               autoTimeIntervals[autoInterval]                          &&
+               autoInterval                                             &&
                (minNext % autoTimeIntervals[autoInterval] == 0)         &&
                (!autoPaused)                                            &&
                (!isMiniMode())                                          &&
@@ -3298,13 +3326,13 @@ void main_loop()
                (!isNavMode())                                           &&
                #endif
                #ifdef TC_HAVETEMP
-               ( !(isRcMode() && (isWcMode() || tempSens.haveHum())) )  &&  // Skip in rcMode if (temp&hum available || wcMode)
+               (!isRcMode() || (!isWcMode() && !(sgf & SGF_HaveHum)))   &&        // Skip in rcMode if (temp&hum available || wcMode)
                #endif
+               (!isWcMode() || ((wcf & WCFM_HaveBothTZ) != WCFM_HaveBothTZ)) &&   // Skip in wcMode if both TZs configured
                #ifdef TC_HAVEMQTT
-               (!mqttDisp)                                              &&
+               (!mqttDisp)                                              &&        // Skip at msg for any display, since we allOff() them
                #endif
-               (!specDisp)                                              &&
-               (!isWcMode() || (!(wcf & WCF_HaveTZ1)) || (!(wcf & WCF_HaveTZ2))) ) {  // Skip in wcMode if both TZs configured
+               (!specDisp)) {  
 
                 if(!autoIntDone) {
 
@@ -3319,10 +3347,12 @@ void main_loop()
                     if(!isWcMode() || (!(wcf & WCF_HaveTZ1))) {
                         destinationTime.setFromStruct(&destinationTimes[autoTime]);
                         backupDestTime();
+                        // Don't trigger INFO, will be sent the next second anyway
                     }
                     if(!isWcMode() || (!(wcf & WCF_HaveTZ2))) {
                         departedTime.setFromStruct(&departedTimes[autoTime]);
                         backupLastTime();
+                        // Don't trigger INFO, will be sent the next second anyway
                     }
 
                     if(autoRotAnim) {
@@ -3338,6 +3368,14 @@ void main_loop()
                 if(autoIntAnimRunning)
                     autoIntAnimRunning++;
 
+            }
+
+            // Send INFO on changed time(s)
+            if((gdtu.minute() != infoLastMin) || (csf & CSF_INFOUPD)) {
+                if(bttfn_notify_info()) {  // 2ms
+                    infoLastMin = gdtu.minute();
+                    csf &= ~CSF_INFOUPD;
+                }
             }
 
             postSecChange = true;
@@ -3462,7 +3500,7 @@ void main_loop()
                     if(!(mqttDisp & MQ_DISP_L)) {
                         if(isWcMode() && (wcf & WCF_HaveTZ1)) {
                             departedTime.showTempDirect(tempSens.readLastTemp());
-                        } else if(!isWcMode() && tempSens.haveHum()) {
+                        } else if(!isWcMode() && (sgf & SGF_HaveHum)) {
                             departedTime.showHumDirect(tempSens.readHum());
                         } else {
                             depShowAlt ? departedTime.showAlt() : departedTime.show();
@@ -3994,6 +4032,9 @@ int timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
     }
     ettoPulseEnd();
 
+    // Trigger INFO on account of changed Last Time Departed (Present is not yet at this point)
+    csf |= CSF_INFOUPD;
+
     // If P0 was played (or faked when we hit 88 by RotEnc):
     // Initiate P2 - count speed down
     // (We know P0 was played or faked if timeTravelP0Speed = 88)
@@ -4129,7 +4170,7 @@ static char *i2a(char *d, unsigned int t)
 
 void send_refill_msg()
 {
-    bttfn_notify(BTTFN_TYPE_PCG, BTTFN_NOT_REFILL, 0, 0);
+    bttfn_notify(BTTFN_TYPE_PCG, BTTFN_NOT_REFILL);
 }
 
 void send_wakeup_msg()
@@ -4170,7 +4211,8 @@ static void sendTTNetWorkMsg(uint16_t bttfnPayload, uint16_t bttfnPayload2)
         return;
     }
     #endif
-    bttfn_notify(BTTFN_TYPE_ANY, BTTFN_NOT_TT, bttfnPayload, bttfnPayload2);
+    uint16_t parms[3] = { bttfnPayload, bttfnPayload2, 0 };
+    bttfn_notify(BTTFN_TYPE_ANY, BTTFN_NOT_TT, parms);
 }
 
 // Send notification message via MQTT -or- BTTFN.
@@ -4187,32 +4229,29 @@ static void sendNetWorkMsg(const char *pl, unsigned int len, uint8_t bttfnMsg, u
         return;
     }
     #endif
-    bttfn_notify(BTTFN_TYPE_ANY, bttfnMsg, bttfnPayload, bttfnPayload2);
+    uint16_t parms[3] = { bttfnPayload, bttfnPayload2, 0 };
+    bttfn_notify(BTTFN_TYPE_ANY, bttfnMsg, parms);
 }
 
-void bttfnSendFluxCmd(uint32_t payload)
+void bttfnSendPropCmd(int kt, uint32_t p)
 {
-    bttfn_notify(BTTFN_TYPE_FLUX, BTTFN_NOT_FLUX_CMD, payload & 0xffff, payload >> 16);
-}
-void bttfnSendSIDCmd(uint32_t payload)
-{
-    bttfn_notify(BTTFN_TYPE_SID, BTTFN_NOT_SID_CMD, payload & 0xffff, payload >> 16);
-}
-void bttfnSendPCGCmd(uint32_t payload)
-{
-    bttfn_notify(BTTFN_TYPE_PCG, BTTFN_NOT_PCG_CMD, payload & 0xffff, payload >> 16);
-}
-void bttfnSendVSRCmd(uint32_t payload)
-{
-    bttfn_notify(BTTFN_TYPE_VSR, BTTFN_NOT_VSR_CMD, payload & 0xffff, payload >> 16);
-}
-void bttfnSendAUXCmd(uint32_t payload)
-{
-    bttfn_notify(BTTFN_TYPE_AUX, BTTFN_NOT_AUX_CMD, payload & 0xffff, payload >> 16);
-}
-void bttfnSendRemCmd(uint32_t payload)
-{
-    bttfn_notify(BTTFN_TYPE_REMOTE, BTTFN_NOT_REM_CMD, payload & 0xffff, payload >> 16);
+    static const uint8_t pt[7] = { 
+        BTTFN_TYPE_FLUX, 0, BTTFN_TYPE_AUX, 
+        BTTFN_TYPE_SID, BTTFN_TYPE_REMOTE, BTTFN_TYPE_VSR, 
+        BTTFN_TYPE_PCG 
+    };
+    static const uint8_t pc[7] = {
+        BTTFN_NOT_FLUX_CMD, 0, BTTFN_NOT_AUX_CMD, 
+        BTTFN_NOT_SID_CMD, BTTFN_NOT_REM_CMD, BTTFN_NOT_VSR_CMD,
+        BTTFN_NOT_PCG_CMD 
+    };
+
+    uint16_t parms[3] = { (uint16_t)(p & 0xffff), (uint16_t)(p >> 16), 0 };
+
+    // kt = prop key (3=FC, 5=AUX, etc)
+    
+    kt -= 3;  
+    bttfn_notify(pt[kt], pc[kt], parms);
 }
 
 /*
@@ -4296,6 +4335,9 @@ void resetPresentTime()
 
     // Wake up network clients
     send_wakeup_msg();
+
+    // Trigger INFO on account of changed Last Time Departed (Present is not yet at this point)
+    csf |= CSF_INFOUPD;
 }
 
 static void copyPresentToDeparted(bool isReturn)
@@ -4338,6 +4380,8 @@ void backupDestTime()
 void restoreDestTime()
 {
     destinationTime.setFromStruct(&destTimeBackup);
+    // Trigger INFO on account of changed Destination Time
+    csf |= CSF_INFOUPD;
 }
 
 void backupLastTime()
@@ -4348,6 +4392,8 @@ void backupLastTime()
 void restoreLastTime()
 {
     departedTime.setFromStruct(&lastTimeBackup);
+    // Trigger INFO on account of changed Last Time Dep
+    csf |= CSF_INFOUPD;
 }
 
 /*
@@ -4407,11 +4453,13 @@ void updatePresentTime(uint8_t wdplus1)
     }
 
     presentTime.setFromStruct(&ptCache.tDate);
+    // Do NOT set CSF_INFOUPD here
 }
 
 void updateStalePresent(int index)
 {
     presentTime.setFromStruct(&stalePresentTime[index]);
+    // Do NOT set CSF_INFOUPD here
 }
 
 void get_time_segs(int pbt, int whichone, int16_t *sL, int gh, int gm)
@@ -4476,10 +4524,9 @@ void get_time_segs(int pbt, int whichone, int16_t *sL, int gh, int gm)
 // Subsequent calls re-start the pause.
 void pauseAuto(void)
 {
-    if(autoTimeIntervals[autoInterval]) {
+    if(autoInterval) {
         pauseDelay = 30 * 60 * 1000;
-        autoPaused = true;
-        pauseNow = millis();
+        autoPaused = millisNonZero();
         #ifdef TC_DBG_GEN
         Serial.println("pauseAuto: autoInterval paused for 30 minutes");
         #endif
@@ -4488,7 +4535,7 @@ void pauseAuto(void)
 
 bool checkIfAutoPaused()
 {
-    if(!autoPaused || (millis() - pauseNow >= pauseDelay)) {
+    if(!autoPaused || (millis() - autoPaused >= pauseDelay)) {
         return false;
     }
     return true;
@@ -4496,7 +4543,7 @@ bool checkIfAutoPaused()
 
 void endPauseAuto(void)
 {
-    autoPaused = false;
+    autoPaused = 0;
 }
 
 /*
@@ -4841,6 +4888,7 @@ void enableWcMode(bool onOff)
             destShowAlt = depShowAlt = 0; // Reset TZ-Name-Animation
         }
         wcf |= WCF_Trigger;
+        csf |= CSF_INFOUPD;
         triggerSaveDisplayMode();
     }
 }
@@ -5353,7 +5401,7 @@ void animate(bool withLEDs)
             if(isRcMode()) {
                 if(isWcMode() && (wcf & WCF_HaveTZ1)) {
                     departedTime.showTempDirect(tempSens.readLastTemp(), i);
-                } else if(!isWcMode() && tempSens.haveHum()) {
+                } else if(!isWcMode() && (sgf & SGF_HaveHum)) {
                     departedTime.showHumDirect(tempSens.readHum(), i);
                 } else {
                     departedTime.showAnimate(i);
@@ -5402,7 +5450,7 @@ void animate(bool withLEDs)
         if(isRcMode()) {
             if(isWcMode() && (wcf & WCF_HaveTZ1)) {
                 departedTime.showTempDirect(tempSens.readLastTemp(), false);
-            } else if(!isWcMode() && tempSens.haveHum()) {
+            } else if(!isWcMode() && (sgf & SGF_HaveHum)) {
                 departedTime.showHumDirect(tempSens.readHum(), false);
             } else {
                 departedTime.show();
@@ -6030,7 +6078,7 @@ void speedoUpdate_loop(bool async)
 uint8_t dayOfWeek(int d, int m, int y)
 {
     // Sakamoto's method
-    const int t[] = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
+    static const int t[] = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
     if(y > 0) {
         if(m < 3) y -= 1;
         return (y + y/4 - y/100 + y/400 + t[m-1] + d) % 7;
@@ -6040,8 +6088,8 @@ uint8_t dayOfWeek(int d, int m, int y)
 #else
 uint8_t dayOfWeek(int d, int m, int y)
 {
-    const int t[] = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
-    const int u[] = { 5, 1, 0, 3, 5, 1, 3, 6, 2, 4, 0, 2 };
+    static const int t[] = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
+    static const int u[] = { 5, 1, 0, 3, 5, 1, 3, 6, 2, 4, 0, 2 };
     
     // Sakamoto's method
     if(((y << 16) | (m << 8) | d) > jSwitchHash) {
@@ -7465,6 +7513,7 @@ static void bttfn_evalremotecommand(uint32_t seq, uint8_t cmd, uint8_t p1, uint8
                 p1 &= 0x1f;
                 door2SndDelay = (p1 << 8) | p2;
                 door2SndNow = millis();
+                schf |= SCHF_DOOR1;
             } else {
                 doorFlags = PA_DOOR;
                 if(p1 & 0x20) doorFlags |= PA_DOORL;
@@ -7472,6 +7521,7 @@ static void bttfn_evalremotecommand(uint32_t seq, uint8_t cmd, uint8_t p1, uint8
                 p1 &= 0x1f;
                 doorSndDelay = (p1 << 8) | p2;
                 doorSndNow = millis();
+                schf |= SCHF_DOOR2;
             }
         }
         bttfnLastSeq_do = seq;
@@ -7553,6 +7603,8 @@ static uint32_t storeBTTFNClient(uint32_t ip, uint8_t *buf, uint8_t type, uint8_
 stcl_copyIP:
 
     newClient->IP32 = ip;
+    schf |= SCHF_SENDINFO;
+    bttfnScheduleInfo = millis();
 
 stcl_ipIdentical:
 
@@ -7645,7 +7697,7 @@ static void bttfn_expire_clients()
         }
     }
 
-    k = bttfnNotAllSupportMC = bttfnDataParm = 0;
+    k = bttfnNotAllSupportMC = 0;
     for(int i = 0; i < BTTFN_MAX_CLIENTS; i++) {
         if(bttfnClient[i].IP32) {
             k |= bttfnClient[i].Flags;
@@ -7657,8 +7709,6 @@ static void bttfn_expire_clients()
     }
     bttfnAtLeastOneMC = k & 0x02;
     bttfnAtLeastOneND = k & 0x01;
-    // See if any of the remaining clients requests packed dest/dep dates
-    if(k & 0x04) bttfnDataParm = 0x80;
     
     if(!bttfnHaveClients) wifiRestartPSTimer();
 }
@@ -7693,17 +7743,6 @@ static void bttfn_fill_response(uint8_t *buf, int skipClear, uint8_t parm)
     if(buf[5] & 0x01) {    // date/time
         memcpy(&buf[10], bttfnDateBuf, sizeof(bttfnDateBuf));
         buf[17] |= bttfnData17;
-        if(parm & 0x80) {
-            a = 0;
-            if(!skipClear) {
-                presentTime.getCompressed(&buf[41], a);
-                a <<= 2;
-            }
-            destinationTime.getCompressed(&buf[32], a);
-            a <<= 2;
-            departedTime.getCompressed(&buf[36], a);
-            buf[40] = a;
-        }
     }
     if(buf[5] & 0x02) {    // speed  (-1 if unavailable)
         temp = -1;         // (Client is supposed to support MC-notifications instead)
@@ -7789,14 +7828,14 @@ static void bttfn_fill_response(uint8_t *buf, int skipClear, uint8_t parm)
     
     // TCD Capabilities (was buf[5]&0x40, now always transmitted)
     // 0:Support MC notifications 
-    // 1:(tainted; was useSpeedo until 3.8)
-    // 2:Can send dest/dep times
+    // 1:0 (tainted; was useSpeedo until 3.8)
+    // 2:0 (Was:Can send compressed dest/dep times. Removed in favor of putting times in INFO).
     // 3:Remote KP support
     // 4:Support NOT_DATA
     // 5:Support REMCMD_DOOR
     // 6:Sends SSID-appendix & password marker in NOT_DATA
     // 7 for future use.
-    buf[31] = 0x01 | 0x04 | 0x08 | 0x10 | 0x20 | 0x40;
+    buf[31] = 0x01 | 0x08 | 0x10 | 0x20 | 0x40;
     
     // buf[5]&0x80 taken (TT)
 }
@@ -7828,6 +7867,8 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
             if(GET32(buf, 31) != hostNameHash) {
                 return false;
             }
+            schf |= SCHF_SENDINFO;
+            bttfnScheduleInfo = millis();
         } else {
             return false;
         }
@@ -7852,15 +7893,8 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
     // Retrieve (optional) request parameter
     // 0-3: Device type for IP lookup
     // 4-6: For future use
-    // 7:   Request displayed destination and departed times with date/time request
+    // 7:   0 (Was: Request displayed destination and departed times with date/time request)
     parm = buf[24];
-
-    // If client requested compressed time/date data,
-    // do it from now on in the NOT_DATA notification
-    if(parm & 0x80) {
-        bttfnDataParm = 0x80;
-        cFlags |= 0x04;
-    }
 
     receivedRemID = storeBTTFNClient(tip32, buf, ctype, cFlags);
 
@@ -7925,7 +7959,7 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
 }
 
 // Send event notification
-static void bttfn_notify(uint8_t targetType, uint8_t event, uint16_t payload, uint16_t payload2, uint16_t payload3)
+static void bttfn_notify(uint8_t targetType, uint8_t event, uint16_t *payload, uint8_t *payload2)
 {
     // No clients?
     if(!bttfnHaveClients)
@@ -7936,21 +7970,22 @@ static void bttfn_notify(uint8_t targetType, uint8_t event, uint16_t payload, ui
     // Clear & copy ID and VERSION|0x40
     memcpy(BTTFUDPBuf, BTTFUDPHD, BTTF_PACKET_SIZE);
 
-    //BTTFUDPBuf[4] = BTTFN_VERSION + 0x40;  // Version + notify marker - already there
-    BTTFUDPBuf[5]  = event;                  // Store event id
-    BTTFUDPBuf[6]  = payload & 0xff;         // store payload
-    BTTFUDPBuf[7]  = payload >> 8;           //
-    BTTFUDPBuf[8]  = payload2 & 0xff;        // store payload 2
-    BTTFUDPBuf[9]  = payload2 >> 8;          //
-    BTTFUDPBuf[10] = payload3 & 0xff;        // store payload 3
-    BTTFUDPBuf[11] = payload3 >> 8;          //
-    
-    if(event == BTTFN_NOT_SPD) {
+    //BTTFUDPBuf[4] = BTTFN_VERSION + 0x40;         // Version + notify marker - already there
+    if((BTTFUDPBuf[5] = event) == BTTFN_NOT_SPD) {  // Store event id
         SET32(BTTFUDPBuf, 12, bttfnSeqCnt);
         bttfnSeqCnt++;
         if(!bttfnSeqCnt) bttfnSeqCnt = 1;
     } else if(targetType || bttfnNotAllSupportMC) {
         sendMC = false;
+    }
+
+    if(payload) {
+        SET16(BTTFUDPBuf, 6, payload[0]);
+        SET16(BTTFUDPBuf, 8, payload[1]);
+        SET16(BTTFUDPBuf, 10, payload[2]);
+    }
+    if(payload2) {
+        memcpy(BTTFUDPBuf + 16, payload2, 30);    // Always 30 bytes!
     }
     
     // Checksum
@@ -7975,9 +8010,8 @@ static void bttfn_notify(uint8_t targetType, uint8_t event, uint16_t payload, ui
 
 static void bttfn_notify_speed()
 {
+    uint16_t parms[3] = { 0, BTTFN_SSRC_NONE, 0 };
     int      spd = -1;
-    uint16_t ssrc = BTTFN_SSRC_NONE;
-    uint16_t parm3 = 0;
     unsigned long now;
 
     if(!bttfnAtLeastOneMC)
@@ -7985,39 +8019,39 @@ static void bttfn_notify_speed()
     
     if(csf & CSF_P0) {
         spd = timeTravelP0Speed;
-        ssrc = BTTFN_SSRC_P0;
-        parm3 = timeTravelP0stalled;
+        parms[1] = BTTFN_SSRC_P0;
+        parms[2] = timeTravelP0stalled;
     } else if(csf & CSF_P1) {
         spd = 88;
-        ssrc = BTTFN_SSRC_P1;
+        parms[1] = BTTFN_SSRC_P1;
     } else if(csf & CSF_P2) {
         spd = timeTravelP0Speed;
-        ssrc = BTTFN_SSRC_P2;
+        parms[1] = BTTFN_SSRC_P2;
     #ifdef TC_HAVE_REMOTE
     } else if(csf & CSF_RSM) {
         spd = bttfnRemCurSpd;
-        ssrc = BTTFN_SSRC_REM;
+        parms[1] = BTTFN_SSRC_REM;
     #endif
     #ifdef TC_HAVEGPS
     } else if((sgf & (SGF_UGPS|SGF_GPS2BTTFN)) == (SGF_UGPS|SGF_GPS2BTTFN)) {
         // Why "&& (sgf & SGF_GPS2BTTFN)"?
-        // Because: If stationary user uses GPS for time only, speed will
+        // Because: If stationary setup uses GPS for time only, speed will
         // be 0 permanently, and rotary encoder never gets a chance.
         spd = myGPS.getSpeed();
-        ssrc = BTTFN_SSRC_GPS;
+        parms[1] = BTTFN_SSRC_GPS;
     #endif
     #ifdef TC_HAVE_RE
     } else if((sgf & SGF_URotEnc) && (!(csf & CSF_OFF))) {
         spd = fakeSpeed;
-        ssrc = BTTFN_SSRC_ROTENC;
+        parms[1] = BTTFN_SSRC_ROTENC;
     #endif
     }
 
     now = millis();
-    if(spd != oldBTTFNSpd || ssrc != oldBTTFNSSrc || (now - bttfnLastSpeedNot > 2775)) {
-        oldBTTFNSpd = spd;
-        oldBTTFNSSrc = ssrc;
-        bttfn_notify(BTTFN_TYPE_ANY, BTTFN_NOT_SPD, (uint16_t)spd, ssrc, parm3);
+    if(spd != oldBTTFNSpd || parms[1] != oldBTTFNSSrc || (now - bttfnLastSpeedNot > 2775)) {
+        oldBTTFNSpd  = parms[0] = spd;
+        oldBTTFNSSrc = parms[1];
+        bttfn_notify(BTTFN_TYPE_ANY, BTTFN_NOT_SPD, parms);
         bttfnLastSpeedNot = now;
         #ifdef TC_DBG_NET
         Serial.printf("Sent NOT_SPD %d\n", spd);
@@ -8025,21 +8059,40 @@ static void bttfn_notify_speed()
     }
 }
 
-void bttfn_notify_info()
+int bttfn_notify_info()
 {
-    uint16_t parm1 = BTTFN_TCDI1_EXT, parm2 = 0, parm3 = 0;
+    uint16_t parms[3] = { BTTFN_TCDI1_EXT, BTTFN_TCDI2_TIMEINFO, 0 };
+    uint8_t  payload[30];
+
+    // Postpone during time-critical phase of P0 and P2
+    if((csf & (CSF_P0|CSF_P2)) && timeTravelP0Speed < 30)
+        return 0;
+    
     #ifdef TC_HAVE_REMOTE
-    if(!(csf & CSF_REMALLOW))   parm1 |= BTTFN_TCDI1_NOREM; 
-    if(!(csf & CSF_REMKPALLOW)) parm1 |= BTTFN_TCDI1_NOREMKP;
+    if(!(csf & CSF_REMALLOW))   parms[0] |= BTTFN_TCDI1_NOREM; 
+    if(!(csf & CSF_REMKPALLOW)) parms[0] |= BTTFN_TCDI1_NOREMKP;
+    #else
+    parm1 |= (BTTFN_TCDI1_NOREM|BTTFN_TCDI1_NOREMKP); 
     #endif
-    if(csf & CSF_OFF) parm1 |= BTTFN_TCDI1_OFF;
-    if(csf & CSF_NM)  parm1 |= BTTFN_TCDI1_NM;
-    if(csf & CSF_MA)  parm2 |= BTTFN_TCDI2_BUSY;    // busy, not ready for tt (atm only when menuActive)
-    bttfn_notify(BTTFN_TYPE_ANY, BTTFN_NOT_INFO, parm1, parm2, parm3);
+    if(csf & CSF_OFF) parms[0] |= BTTFN_TCDI1_OFF;
+    if(csf & CSF_NM)  parms[0] |= BTTFN_TCDI1_NM;
+    if(csf & CSF_MA)  parms[1] |= BTTFN_TCDI2_BUSY;    // busy, not ready for tt (atm only when menuActive)
+
+    memcpy(payload, bttfnDateBuf, sizeof(bttfnDateBuf));
+    payload[7] |= bttfnData17;    // 12/24 flag
+    destinationTime.getToStruct((dateStruct *)(payload + 8));
+    presentTime.getToStruct((dateStruct *)(payload + 8 + 6));
+    departedTime.getToStruct((dateStruct *)(payload + 8 + 6 + 6));
+    memset(payload + 8 + 6 + 6 + 6, 0, 4);
+    
+    bttfn_notify(BTTFN_TYPE_ANY, BTTFN_NOT_INFO, parms, payload);
+    
     bttfnLastInfo = millisNonZero();
     #ifdef TC_DBG_NET
     Serial.println("Sent NOT_INFO");
     #endif
+
+    return 1;
 }
 
 static void bttfn_notify_data()
@@ -8064,7 +8117,7 @@ static void bttfn_notify_data()
     if((csf & (CSF_P0|CSF_P2)) && timeTravelP0Speed < 30)
         return;
 
-    bttfn_fill_response(BTTFDataBuf, 7, bttfnDataParm);
+    bttfn_fill_response(BTTFDataBuf, 7, 0);
     
     SET32(BTTFDataBuf, 6, bttfnDataSeqCnt);
     bttfnDataSeqCnt++;
