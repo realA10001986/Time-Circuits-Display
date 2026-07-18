@@ -194,7 +194,7 @@ Neither the Gregorian nor the Julian Calendar know a "year 0"; 1AD followed afte
 
 ### Time-cycling
 
-"Time cycling" is a kind of decorative mode in which the device cycles through a list of pre-programmed *destination* and *last time departed* times. These pre-programmed times match the dates/times of all time-travels that take place in the three movies.
+"Time cycling" is a decorative mode of operation in which the device cycles through a list of pre-programmed *destination* and *last time departed* times. These pre-programmed times match the dates/times of all time-travels that take place in the three movies.
 
 Time-cycling is enabled by setting up a **_Time-cycling Interval_** in the Config Portal or the [keypad menu](#how-to-select-the-time-cycling-interval). The device will then cycle through named list every 5th, 10th, 15th, 30th or 60th minute. The option **_Animate time-cycling_** decides whether the times simply switch or the cycling event looks like someone entered a new destination date.
 
