@@ -123,7 +123,7 @@ After completing these steps, your TCD is ready for use; you can also continue c
 
 ## The Config Portal
 
-The "Config Portal" is the TCD's configuration web site. 
+The "Config Portal" is the TCD's configuration website. 
 
 | ![The Config Portal](img/cpm.png) |
 |:--:| 
