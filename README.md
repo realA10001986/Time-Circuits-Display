@@ -1821,7 +1821,7 @@ The data published on the backchannel is a JSON object, containing the following
 
 Example: __{"S":"I","C":"1","V":"20","F":"0","L":"67","SH":"0"}__
 
-The backchannel is used/required by the upcoming A10001986 [Lou's Cafe Jukebox](https://jb.out-a-ti.me).
+The backchannel is used/required by the A10001986 [Lou's Cafe Jukebox](https://jb.out-a-ti.me).
 
 ##### &#9193; HA controls Fake-Power at startup
 
