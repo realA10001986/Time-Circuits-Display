@@ -1868,5 +1868,5 @@ The reason for this is in 99.9% of cases a problem with i2c cabling connecting y
 List will be extended when problems are reported.
 
 ---
-_Text & images: (C) Thomas Winischhofer ("A10001986"). See LICENSE._ [Source](https://tcd.out-a%2dti.me)   
+_Text & images: (C) Thomas Winischhofer ("A10001986"). See LICENSE._ [Source](https://tcd.out%2da%2dti%2eme)   
 _Other props: [Flux Capacitor](https://fc.out-a%2dti.me) ... [SID](https://sid.out%2da%2dti.me) ... [Dash Gauges](https://dg.out%2da-ti.me) ... [VSR](https://vsr.out-a%2dti.me) ... [Remote Control](https://remote.out-a%2dti%2eme) ... [TFC](https://tfc.out-a%2dti.me) ... [Jukebox](https://jb.out-a%2dti.me)_
