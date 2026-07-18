@@ -1466,7 +1466,7 @@ Selects whether the animated intro should be played upon power-up.
 
 ##### &#9193; Beep mode
 
-Selects the ["beep"](#beep-on-the-second) mode. "Auto: xx secs" enables the beep for xx seconds after entering a destination time, after triggering a time travel, and upon (real or fake) power-on. Can be changed at any time through keypad commands 000 (off), 001 (on), 002 (Auto 30secs) or 003 (Auto 60secs).
+Selects the ["beep"](#beep-on-the-second) mode. "Auto: xx secs" enables the beep for xx seconds after entering a destination time, after triggering a time travel, and upon (real or fake) power-on. Can be changed at any time through keypad commands 20 (off), 21 (on), 22 (Auto 30secs) or 23 (Auto 60secs).
 
 ##### &#9193; Time-cycling interval
 
