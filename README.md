@@ -35,7 +35,7 @@ Features include
   - Movie-accurate [time travel](#time-travel) function
   - Configuration options to emulate nearly all variations of the TCD shown in the trilogy
   - ["Return from Time Travel"](#time-travel): Return to real present time easily
-  - ["Decorative mode"](#time-cycling): Movie-accurate time travel times displayed in *destination time* and *last time departed* displays, and cycled in configurable interval
+  - ["Time-cycling"](#time-cycling): Movie-accurate time travel times displayed in *destination time* and *last time departed* displays, and cycled in configurable interval
   - [Exhibition mode](#exhibition-mode): Show a fixed time in *Present Time* display instead of a running clock. Helpful for filming or museums.
 - Network capabilities:
   - Advanced network-accessible [Config Portal](#the-config-portal) for setup (http://timecircuits.local)
