@@ -47,7 +47,7 @@ Features include
 - Audio output through [line-out](#audio-output) for time travel sounds and music (requires Control Board 1.4.5 or later), allows connecting your TCD to your (car) stereo for high-quality stereo-sound.
 - Support for [SD cards](#sd-card) up to 32GB
 - [Keypad-controlled menu](#the-keypad-menu) for adjusting various settings and viewing status through the three displays
-- Support for numerious [peripherals](#peripherals):
+- Support for numerous [peripherals](#peripherals):
   - [Fake "power switch"](#fake-power-switch) (eg. a [TFC drive switch](https://tfc.out-a-ti.me))
   - [Speedometer](#speedometer) (eg. CircuitSetup's [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit) with built-in GPS receiver)
   - [GPS receiver](#gps-receiver) for time synchronization and actual [speed](#gps-for-speed) to be displayed on speedo
