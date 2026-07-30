@@ -58,7 +58,7 @@ Features include
   
 >[This repository](https://tcd.out-a%2dti.me) is the upstream source for CircuitSetup's releases. The differences are that both code and documentation [here](https://tcd.out%2da-ti.me) might be ahead in development, and in the sound-packs.
 
-For information on updating the firmware on your TCD, see [here](#firmware-installation--firmware-update).
+For information on updating the firmware of your TCD, see [here](#firmware-installation--firmware-update).
 
 ## Initial Configuration
 
