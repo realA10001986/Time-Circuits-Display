@@ -62,8 +62,6 @@ For information on updating the firmware of your TCD, see [here](#firmware-insta
 
 ## Initial Configuration
 
->The following instructions only need to be followed once, on factory-fresh TCDs. They do not need to be repeated after a firmware update.
-
 The first step is to establish access to the TCD's configuration website ("Config Portal") in order to configure your TCD:
 
 - Power up the TCD and wait until it shows a time (which is probably wrong).
