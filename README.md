@@ -70,7 +70,7 @@ The first step is to establish access to the TCD's configuration website ("Confi
 
 #### Time zone and Time
 
-The next step in initial configuration is to set the TCD's time zone. If the time zone isn't properly configured, the TCD will show a wrong time, and DST (daylight saving) will not be switched on/off correctly.
+The next step is to set the TCD's time zone. If the time zone isn't properly configured, the TCD will show a wrong time, and DST (daylight saving) will not be switched on/off correctly.
 
 Click on "Settings" on the Config Portal's main page, and specify your [time zone](#-time-zone). Then click "SAVE"; the TCD will reboot.
 
@@ -80,7 +80,7 @@ Setting actual time:
 
 #### Sound-pack re-installation (Firmware 3.23 an onwards)
 
-If your factory-fresh TCD came with firmware version 3.23 or later, but no SD card, and you have an SD card at hand, re-install the sound-pack at this point. The reason for this is that the sound-pack does not entirely fit into the device's flash memory and parts of it need to be installed on your SD card. Please see [here](#sound-pack-installation) for instructions.
+If your factory-fresh TCD came with firmware version 3.23 or later, but no SD card, and you have an SD card at hand, the next step is to re-install the sound-pack. The reason for this is that the sound-pack does not entirely fit into the device's flash memory and parts of it need to be installed on your SD card. Please see [here](#sound-pack-installation) for instructions.
 
 #### Connecting to a WiFi network
 
