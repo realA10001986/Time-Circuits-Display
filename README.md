@@ -158,7 +158,7 @@ A full reference of the Config Portal is [here](#appendix-a-the-config-portal).
 
 ## Basic Operation
 
-*Present time* is a clock and normally shows the actual local present time, as received from the network or set up through the [keypad menu](#how-to-set-the-real-time-clock-rtc).
+*Present time* is a clock and normally shows actual local present time, as received from the network or set up through the [keypad menu](#how-to-set-the-real-time-clock-rtc).
 
 *Destination time* and *Last time departed* are stale. These, by default, work like in the movie: Upon a time travel, *present time* becomes *last time departed*, and *destination time* becomes *present time*. Or in Doc's words: The red one tells you where you're going. The green one tells you where you are. The yellow one tells you where you were.
 
@@ -166,23 +166,23 @@ The keypad is for programming destination times like in the movies and for contr
 
 <details>
 <summary>"REPLACE BATTERY" displayed on boot?</summary>
-If "REPLACE BATTERY" is shown upon boot, the onboard CR2032 battery is depleted and needs to be replaced. For technical reasons, "REPLACE BATTERY" will also show up the very first time you power-up the TCD *after* changing the battery. You can, of course, disregard that message in this case.
+If "REPLACE BATTERY" is shown upon boot, the onboard CR2032 battery is depleted and needs to be replaced. For technical reasons, "REPLACE BATTERY" will also show up the very first time you power-up the TCD *after* changing the battery. You can, of course, disregard that message at that point.
 </details>
 
 ### Powering down the TCD
 
-The TCD sometimes writes data to either the internal flash file system or the SD card. These write operations should not be interrupted by a power loss.
+The TCD sometimes writes data to either the internal flash memory or the SD card. These write operations should not be interrupted by a power loss.
 
 In general, it is safe to power-down the TCD when it has been idle for 15 seconds or after it has been fake-powered-down. Try to avoid powering down the TCD
 - when it is clearly busy (such as when copying or renaming audio files);
-- within 15 seconds after an audio volume change through a Rotary Encoder or changing the display mode (World Clock, Room condition, geolocation),
+- within 15 seconds after changing audio volume through a Rotary Encoder or the display mode (World Clock, Room condition, geolocation, …),
 - if [**_Make time travel persistent_**](#persistent--non-persistent-time-travels) is checked: in the first few seconds after a timetravel.
 
 ### Calendar system
 
-The TCD firmware uses the [Julian Calendar](https://en.wikipedia.org/wiki/Julian_calendar) from Jan 1, 1, until Sep 2, 1752, and for later dates the [Gregorian](https://en.wikipedia.org/wiki/Gregorian_calendar) one. Sep 2, 1752, was the last day the Julian calendar was used in the ["First" British Empire](https://en.wikipedia.org/wiki/British_Empire#%22First%22_British_Empire_(1707%E2%80%931783)) (Great Britain and its colonies, including eastern parts of North America, Canada). Other countries stopped using this calendar system way earlier; most of Europe, including Spain plus its colonies worldwide, had switched in 1582 already. DK/NO/NL (except Holland and Zeeland) switched in 1700, Japan in 1872, China in 1912, Russia in 1918.
+The TCD firmware uses the [Julian Calendar](https://en.wikipedia.org/wiki/Julian_calendar) from Jan 1, 1, until Sep 2, 1752, and for later dates the [Gregorian](https://en.wikipedia.org/wiki/Gregorian_calendar) one. Sep 2, 1752, was the last day the Julian calendar was used in the ["First" British Empire](https://en.wikipedia.org/wiki/British_Empire#%22First%22_British_Empire_(1707%E2%80%931783)) (Great Britain and its colonies, including eastern parts of North America, Canada). Other countries stopped using this calendar system way earlier; most of Europe, including Spain and its colonies worldwide, had switched in 1582 already.
 
-Since the time machine was built in the USA, using 1752 for the TCD seems appropriate.
+Since the time machine was built in the USA, my guess is Doc would have picked 1752. (One might argue that California was a Spanish colony, but it only became that in 1769, 13 years later.)
 
 So, what does this mean? First off, in the Julian calendar every 4th year is a leap year; in the Gregorian calendar there are some exceptions to this rule. As a result, the two calendars were drifting apart over time, and dates didn't match. As of 2023, the Julian calendar is 13 days ahead.
 
