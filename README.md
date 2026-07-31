@@ -1085,7 +1085,7 @@ The firmware supports connecting a temperature/humidity sensor for "room conditi
 
 ![rcmode](img/rcmode.jpg)
 
-Room condition mode can be used together with [World Clock mode](#world-clock-mode); if both are enabled, only one alternative time and only temperature is shown. To toggle RC and WC mode simultaneously, type 113 and press ENTER.
+Room condition mode can be used together with [World Clock mode](#world-clock-mode) as a hybrid; in that case only one alternative time and only temperature is shown. Keypad command 113 toggles RC/WC hybrid mode.
 
 Temperature on speedometer display: Unless you do time travelling on a regular basis, the [speedo](#speedometer) is idle most of the time in a typical home setup. To give it more of a purpose, the firmware can display ambient temperature on the speedo while idle.
 
