@@ -242,7 +242,7 @@ Here's the timing diagram for a time travel signal:
 
 1) Option **_Signal without 5s lead_** unchecked
 
-If a time travel sequence is started by button and the TCD is doing the acceleration on the speedo, the TCD can calculate when the temporal displacement starts and notify other props 5 seconds ahead:
+If a time travel sequence is started by button, the TCD itself is taking care of the "acceleration" on the speedo, and can therefore calculate in advance when the temporal displacement will start and notify other props 5 seconds ahead:
 
 ```
 |<---------- speedo acceleration --------->|                         |<--speedo deceleration--->|
@@ -258,9 +258,9 @@ If a time travel sequence is started by button and the TCD is doing the accelera
              TT-OUT: LOW->HIGH                                       TT-OUT: HIGH->LOW
  ```
 
-"ETTO lead", ie the lead time between TT-OUT going HIGH and the actual start of a temporal displacement is defined as 5000ms (5 seconds). In this window of time, the prop can play its pre-time-travel (warm-up/acceleration/etc) sequence. The sequence inside the temporal displacment follows after that lead time, and when TT-OUT goes LOW, the re-entry into the destination time takes place.
+"ETTO lead", ie the lead time between TT-OUT going HIGH and the actual start of a temporal displacement is defined as 5000ms (5 seconds). In this window of time, the prop can play its pre-time-travel (warm-up/acceleration/etc) sequence. The sequence inside the temporal displacement follows after that lead time, and as soon as TT-OUT goes LOW, re-entry into the destination time takes place.
 
-This lead time becomes a problem if you have a GPS receiver, a rotary encoder or a Futaba remote control and use either of those as a source for speed: A time travel is triggered upon hitting 88mph. In this use case, the TCD cannot know if or when a speed of 88mph is actually be reached and therefore not inform other props 5 seconds ahead. As a result, there will be a delay of 5 seconds from when the TCD's GPS/Rotary Encoder/Futaba Remote-induced speed hits 88mph until the temporal displayment sequence actually starts:
+This fixed lead time becomes a problem if using GPS speed, a rotary encoder for speed, or a Futaba remote to control speed: In that case, a time travel is automatically triggered upon hitting 88mph. In this scenario, the TCD cannot know in advance if or when a speed of 88mph is actually reached, and therefore not inform other props 5 seconds ahead. As a result, there will be a delay of 5 seconds from when the TCD's GPS/Rotary Encoder/Futaba Remote-induced speed hits 88mph until the temporal displacement sequence actually starts:
 
 ```
 |<---------- speedo acceleration --------->|<- waiting, waiting...........|                         |<--speedo deceleration-->|
@@ -294,15 +294,15 @@ This lead time becomes a problem if you have a GPS receiver, a rotary encoder or
                                            TT-OUT: LOW->HIGH         TT-OUT: HIGH->LOW
  ```
 
-In this case, there is no lead. TT-OUT goes high when the temporal displayment sequence starts.
+In this case, there is no lead. TT-OUT goes high when the temporal displacement sequence starts.
 
 Conclusion: 
 
-If you are not planning on using GPS/Rotary Encoder/Futaba remote speed with your TCD, you can use the normal 5-second-lead technique if your prop is designed to play some kind of pre-time-travel sequence (acceleration, warm-up, etc). 
+If you are not planning on using GPS speed, a Rotary Encoder for speed or a Futaba remote to control speed on your TCD, you can use the normal 5-second-lead technique if your prop is designed to play some kind of pre-time-travel sequence (acceleration, warm-up, etc). 
 
-Checking **_Signal without 5s lead_** is required if you are using a GPS receiver, rotary encoder or Futaba remote control as a source for speed, in order to avoid a "stall" when hitting 88mph. The downside is that other props do not get time to play any kind of "acceleration" sequence.
+Checking **_Signal without 5s lead_** is required if you are using GPS speed, a Rotary Encoder for speed or a Futaba remote to control speed on your TCD, in order to avoid a "stall" when hitting 88mph. The downside is that other props do not get time to play any kind of "acceleration" sequence.
 
-If you connect original CircuitSetup/A10001986 props by wire, make sure you set the option _TCD signals Time Travel without 5s lead_ in the prop's config portal accordingly.
+If you connect original CircuitSetup/A10001986 props by wire, make sure you check/uncheck the option _TCD signals Time Travel without 5s lead_ in the prop's Config Portal accordingly.
 
 ## Synchronized time travel through HA/MQTT
 
@@ -310,7 +310,7 @@ Time Travel timing:
 
 1) Option **_Enhanced Time Travel notification_** unchecked
 
-If a time travel sequence is started by button and the TCD is doing the acceleration on the speedo, the TCD can calculate when the temporal displacement starts and notify other props 5 seconds ahead using the simple TIMETRAVEL command:
+If a time travel sequence is started by button, the TCD itself is taking care of the "acceleration" on the speedo, and can therefore calculate in advance when the temporal displacement will start and notify other props 5 seconds ahead using the simple TIMETRAVEL message:
 
 ```
 |<---------- speedo acceleration --------->|                         |<--speedo deceleration--->|
@@ -326,7 +326,9 @@ If a time travel sequence is started by button and the TCD is doing the accelera
              MQTT: TIMETRAVEL                                        MQTT: REENTRY
  ```
 
-If you have a GPS receiver, a rotary encoder or a Futaba remote control and use either of those as a source for speed, a time travel is triggered upon hitting 88mph. In this use case, however, the TCD cannot know if or when a speed of 88mph is actually be reached and therefore not inform other props 5 seconds ahead. As a result, there will be a delay of 5 seconds from when the TCD's GPS/Rotary Encoder/Futaba Remote-induced speed hits 88mph until the temporal displayment sequence actually starts:
+"ETTO lead", ie the lead time between the "TIMETRAVEL" message and the actual start of a temporal displacement is defined as 5000ms (5 seconds). In this window of time, the prop can play its pre-time-travel (warm-up/acceleration/etc) sequence. The sequence inside the temporal displacement follows after that lead time, and as soon as "REENTRY" is sent, re-entry into the destination time takes place.
+
+This fixed lead time becomes a problem if using GPS speed, a rotary encoder for speed, or a Futaba remote to control speed: In that case, a time travel is automatically triggered upon hitting 88mph. In this scenario, the TCD cannot know in advance if or when a speed of 88mph is actually reached, and therefore not inform other props 5 seconds ahead. As a result, there will be a delay of 5 seconds from when the TCD's GPS/Rotary Encoder/Futaba Remote-induced speed hits 88mph until the temporal displacement sequence actually starts:
 
 ```
 |<---------- speedo acceleration --------->|<- waiting, waiting...........|                         |<--speedo deceleration-->|
@@ -346,7 +348,7 @@ If you have a GPS receiver, a rotary encoder or a Futaba remote control and use 
 
 2) Option **_Enhanced Time Travel notification_** checked
 
-If a time travel sequence is started by button and the TCD doing the acceleration on the speedo, the situation is as above: The TCD can calculate when the temporal displacement starts and notify other props 5 seconds ahead - and actually tell those props when exactly the temporal displacement is expected to start:
+If a time travel sequence is started by button, the situation is as above: The TCD itself takes care of the "acceleration" on the speedo, calculates in advance when the temporal displacement will start and notifies other props 5 seconds ahead. However, by using the enhanced TIMETRAVEL message, the lead time becomes variable. The TCD can actually tell other props when exactly the temporal displacement is expected to start:
 
 ```
 |<---------- speedo acceleration --------->|                         |<--speedo deceleration--->|
@@ -362,7 +364,7 @@ If a time travel sequence is started by button and the TCD doing the acceleratio
              MQTT: TIMETRAVEL_5000_yyyy                              MQTT: REENTRY
  ```
 
-Now, again the GPS receiver/rotary encoder/Futaba remote control scenario:
+Now, again the GPS speed/rotary encoder/Futaba remote control scenario:
 
 ```
 |<---------- speedo acceleration --------->|                         |<--speedo deceleration--->|
@@ -380,7 +382,7 @@ Now, again the GPS receiver/rotary encoder/Futaba remote control scenario:
 
 As you can see, there is no stall: The props receive proper info on when the temporal displacement starts - in this case immediately (0ms).
 
-Conclusion: If you are not planning on using GPS/Rotary Encoder/Futaba remote speed with your TCD, you can use the normal TIMETRAVEL command. In the other case, you need to teach your MQTT-aware device how to interpret the enhanced TIMETRAVEL_xxxx_yyyy command. Both xxxx and yyyy are always four digits. xxxx is the time until temporal displacement starts, yyyy is an approximation of the duration of the temporal displacement; however, don't use this value to time the reentry, instead wait for the REENTRY command to initiate your re-entry sequence.
+Conclusion: If you are not planning on using GPS speed, a Rotary Encoder for speed or a Futaba remote to control speed on your TCD, you can use the simple TIMETRAVEL message. In the other case, you need to teach your MQTT-aware device how to interpret the enhanced TIMETRAVEL_xxxx_yyyy message. Both xxxx and yyyy are always four digits. xxxx is the time until temporal displacement starts, yyyy is an approximation of the duration of the temporal displacement; however, don't use this value to time the reentry, instead wait for the REENTRY message to initiate your re-entry sequence.
 
 ---
 _Text & images: (C) Thomas Winischhofer ("A10001986"). See LICENSE._ Source: https://tcd.out-a-ti.me
