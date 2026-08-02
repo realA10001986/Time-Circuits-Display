@@ -675,7 +675,7 @@ At the time the reminder is due, the TCD plays a sound. If a file named "reminde
 
 >Only SD/SDHC/SDXC cards up to 32GB are supported. Card needs to be FAT32-formatted (not exFAT). Transcend, Sandisk Ultra (as of firmware version 3.25) and Industrial, Verbatim Premium and Samsung Pro Endurance SDHC cards usually work fine. Some SD cards might not be recognized due to off-specs initialization quirks. SDUC cards are not supported.
 
-The SD card, apart from being required for [installing](#sound-pack-installation) and partly hosting the built-in sound-pack, can be used for substituting built-in sound effects, some additional custom sound effects, and for music played back by the [Music player](#the-music-player). Also, it is _strongly recommended_ to store [secondary settings](#-save-secondary-settings-on-sd) on the SD card to minimize [Flash Wear](#flash-wear).
+The SD card, apart from being required for [installing](#sound-pack-installation) and partly hosting the sound-pack, can be used for substituting built-in sound effects, some additional custom sound effects, and for music played back by the [Music player](#the-music-player). Also, it is _strongly recommended_ to store [secondary settings](#-save-secondary-settings-on-sd) on the SD card to minimize [Flash Wear](#flash-wear).
 
 The SD card must be inserted before powering up the TCD. It is not recognized if inserted while the TCD is running. Furthermore, do not remove the SD card while the TCD is powered.
 
