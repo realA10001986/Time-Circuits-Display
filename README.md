@@ -182,7 +182,7 @@ In general, it is safe to power-down the TCD when it has been idle for 15 second
 
 The TCD firmware uses the [Julian Calendar](https://en.wikipedia.org/wiki/Julian_calendar) from Jan 1, 1, until Sep 2, 1752, and for later dates the [Gregorian](https://en.wikipedia.org/wiki/Gregorian_calendar) one. Sep 2, 1752, was the last day the Julian calendar was used in the ["First" British Empire](https://en.wikipedia.org/wiki/British_Empire#%22First%22_British_Empire_(1707%E2%80%931783)) (Great Britain and its colonies, including eastern parts of North America, Canada). Other countries stopped using this calendar system way earlier; most of Europe, including Spain and its colonies worldwide, had switched in 1582 already.
 
-Since the time machine was built in the USA, my guess is Doc would have picked 1752. (One might argue that California was a Spanish colony, but it only became that in 1769, 13 years later.)
+Since the time machine was built in the USA, my guess is Doc would have picked 1752. (One might argue that California was a Spanish colony, but it only became that in 1769.)
 
 So, what does this mean? First off, in the Julian calendar every 4th year is a leap year; in the Gregorian calendar there are some exceptions to this rule. As a result, the two calendars were drifting apart over time, and dates didn't match. As of 2023, the Julian calendar is 13 days ahead.
 
