@@ -24,7 +24,7 @@ Features include
   - Time keeping for years 1-9999, accurately based on Julian and Gregorian [calendars](#calendar-system)
   - Support for time zones and automatic DST (Daylight Saving adjustment)
   - Time synchronization through Internet ([NTP](https://en.wikipedia.org/wiki/Network_Time_Protocol)) or [GPS](#gps-receiver)
-  - [World Clock mode](#world-clock-mode): Show current time in different time zones in *destination time* and/or *last time departed* displays
+  - [World Clock mode](#world-clock-mode): Show current time in different time zones on *destination time* and/or *last time departed* displays
   - [Alarm function](#alarm): Daily alarms, with weekday selection as well as snooze and auto-snooze functions
   - [Count-down timer](#count-down-timer): Count down from up to 99 minutes
   - [Yearly/monthly reminder](#yearlymonthly-reminder): Get a yearly or monthly acoustic reminder
