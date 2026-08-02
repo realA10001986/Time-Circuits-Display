@@ -219,7 +219,7 @@ For logical reasons, WC mode will be automatically disabled in some situations:
 
 #### WC/RC hybrid mode
 
-[Room Condition (RC) mode](#room-condition-mode-temperaturehumidity-sensor) can be enabled together with WC mode. In that case, one display is used for temperature, the other for world time. If there is a time zone configured for the red display, temperature will be shown in the yellow display. If there is no time zone for the red display, it's used for temperature, and the yellow display will show world time.
+In this mode, which is a hybrid of [Room Condition (RC) mode](#room-condition-mode-temperaturehumidity-sensor) and WC mode, one display is used for room conditions, the other for world time. If there is a time zone configured for the red display, room conditions will be shown in the yellow display. If there is no time zone for the red display, it's used for room conditions, and the yellow display will show world time.
 
 | ![WC/RC hybrid](img/hybmode.jpg) |
 |:--:|
@@ -1004,7 +1004,7 @@ If you want to make your own speedo, see [here](AddOns.md#speedometer).
 
 #### Software setup
 
-In order to use the Speedometer display, select the correct model/display type in the Config Portal. This is, surprisingly, "CircuitSetup" for the CircuitSetup speedo. 
+In order to use the Speedometer display, select the correct model/display type in the Config Portal. 
 
 ## GPS receiver
 
@@ -1012,7 +1012,7 @@ A GPS receiver can be used as a source of authoritative time (like NTP), speed o
 
 The CircuitSetup original [speedo](https://circuitsetup.us/product/delorean-time-machine-speedometer-kit) has a built-in GPS receiver. If you want to use a third party GPS receiver, see [here](AddOns.md#gps-receiver). 
 
-GPS receivers receive signals from satellites, but in order to do so, they need to be "tuned in" (aka get a "fix"). This "tuning" process can take a long time; after first power up, it can take 30 minutes or more for a receiver to be able to determine its position. To speed up this process, modern GPS receivers have special "assisting" features. One key element is knowledge of current time, as this helps identifying satellite signals quicker. So, in other words, initially, you need to tell the receiver what it is supposed to tell you. However, as soon as the receiver has received satellite signals for 15-20 minutes, it saves the data it collected to its battery-backed memory and will find a fix within seconds after power-up in the future.
+GPS receivers receive signals from satellites, but in order to do so, they need to be "tuned in" (in GPS-lingo: get a "fix"). This "tuning" process can take a long time; after first power up, it can take 30 minutes or more for a receiver to be able to determine its position. To speed up this process, modern GPS receivers have special "assisting" features. One key element is knowledge of current time, as this helps identifying satellite signals quicker. So, in other words, initially, you need to tell the receiver what it is supposed to tell you. However, as soon as the receiver has received satellite signals for 15-20 minutes, it saves the data it collected to its battery-backed memory and will find a fix within seconds after power-up in the future.
 
 For using GPS effectively as a long-term source of accurate time, it is therefore essential, that 
 - the correct time zone is defined in the Config Portal,
@@ -1036,7 +1036,7 @@ Three different notations are supported:
 - DMS: Degrees, minutes, seconds;
 - DMD: Degrees, decimal minutes. This is the most precise one of the three.
 
-To toggle geolocation mode, enter keypad commands 114 (DD), 115 (DMS) or 116 (DMD). Geolocation mode is mutually exclusive to World Clock and Room Condition mode, and disabled when a Time Travel is initiated. If an SD card is present, Geolocation mode is persistent across reboots.
+To toggle geolocation mode, enter keypad commands 114 (DD), 115 (DMS) or 116 (DMD). Geolocation mode is mutually exclusive to World Clock, Room Condition and Minimal mode, and disabled when a Time Travel is initiated. If an SD card is present, Geolocation mode is persistent across reboots.
 
 ### GPS for speed
 
@@ -1048,21 +1048,21 @@ One nice feature of GPS is that the receiver can deliver current speed of moveme
 
 To have GPS speed displayed on your speedo, check **_Display GPS speed_** in the Config Portal. 
 
-To let other props connected via [BTTF-Network](#connecting-props-wirelessly-bttf-network-bttfn) know about current GPS speed, check the option **_Provide GPS speed to wireless props_**.
+To let other props connected through [BTTF-Network](#connecting-props-wirelessly-bttf-network-bttfn) know about current GPS speed, check the option **_Provide GPS speed to wireless props_**.
 
-Setting these options gives GPS speed priority over speed from a rotary encoder, and, as regards the speedo display, over other purposes (such as displaying temperature). Checking them really does not make sense when your props are permanently stationary.
+Setting these options gives GPS speed priority over speed from a [rotary encoder](#rotary-encoder), and, as regards the speedo display, over other purposes (such as displaying temperature). Checking them really does not make sense when your props are permanently stationary.
 
 ## Rotary Encoder
 
 A rotary encoder is, simply put, a turnable knob. On the TCD, rotary encoders can be used for speed and/or audio volume.
 
-For information on supported encoder models/types and configuration, see [here](AddOns.md#rotary-encoder).
+For information on supported encoder models/types and wiring, see [here](AddOns.md#rotary-encoder).
 
 Up to two rotary encoders can be connected, one for speed, one for volume.
 
 ### Rotary Encoder for Speed 
 
-The rotary encoder, if configured for speed, allows manually selecting a speed to be displayed on the speedo, as well as to be sent to [BTTFN](#connecting-props-wirelessly-bttf-network-bttfn) clients in place of actual (GPS) speed.
+A rotary encoder for speed allows manually selecting speed to be displayed on the speedo, as well as to be sent to [BTTFN](#connecting-props-wirelessly-bttf-network-bttfn) clients in place of actual (GPS) speed.
 
 | [![Watch the video](https://img.youtube.com/vi/Y6uu1SU6YJA/0.jpg)](https://youtu.be/Y6uu1SU6YJA) |
 |:--:|
@@ -1075,21 +1075,19 @@ Remarks:
 
 ### Rotary Encoder for Audio Volume
 
-The rotary encoder for volume replaces the volume knob on back of the TCD's keypad. The advantages of the rotary encoder are that it is more precise, especially at lower volume levels, and it can be relocated. To use the rotary encoder for volume, the TCD's own volume knob must be disabled; this is done by pre-selecting an audio level in the keypad menu or by entering keypad commands 3xx (xx being 00-20).
+A rotary encoder for volume replaces the volume knob on back of the TCD's keypad. The advantages of the rotary encoder are that it is more precise, especially at lower volume levels, and it can be physically relocated. To use a rotary encoder for volume, the TCD's own volume knob must be disabled; this is done by pre-selecting an audio level in the keypad menu or by entering keypad commands 3xx (xx being 00-20).
 
 ## Room Condition Mode, Temperature/humidity sensor
 
-The firmware supports connecting a temperature/humidity sensor for "room condition mode"; in this mode, *destination* and *last departed* times are replaced by temperature and humidity (if applicable), respectively. To toggle between normal and room condition mode, enter 111 and press ENTER. If an SD card is present, room condition mode is persistent across reboots.
+The firmware supports various [temperature/humidity sensors](AddOns.md#temperaturehumidity-sensor) for "Room Condition mode"; in this mode, *destination* and *last departed* times are replaced by temperature and humidity, respectively. To toggle between normal and Room Condition mode, enter 111 and press ENTER. If an SD card is present, Room Condition mode is persistent across reboots.
 
 ![rcmode](img/rcmode.jpg)
 
-Room condition mode can be used together with [World Clock mode](#world-clock-mode) as a hybrid; in that case only one alternative time and only temperature is shown. Keypad command 113 toggles RC/WC hybrid mode.
+"WC/RC hybrid mode", which is Room condition mode combined with [World Clock mode](#world-clock-mode), is described [here](#wcrc-hybrid-mode).
 
-Temperature on speedometer display: Unless you do time travelling on a regular basis, the [speedo](#speedometer) is idle most of the time in a typical home setup. To give it more of a purpose, the firmware can display ambient temperature on the speedo while idle.
+Temperature on speedometer display: Unless you do time travelling on a regular basis, the [speedo](#speedometer) is idle most of the time in a typical home setup. To give it more of a purpose, the firmware can display ambient [temperature on the speedo](#-display-temperature) while idle. 
 
-In order to use a temperature/humidity sensor, no special configuration is required. If a sensor is detected by the firmware during boot, it will be used.
-
-For information on supported sensor models/types and configuration, see [here](AddOns.md#temperaturehumidity-sensor).
+A connected sensor is auto-detected, no configuration is required. For information on supported sensor models and wiring, see [here](AddOns.md#temperaturehumidity-sensor).
 
 ## Controlling other props
 
