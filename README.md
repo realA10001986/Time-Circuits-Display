@@ -327,7 +327,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="left">112&#9166;</td>
     </tr>
     <tr>
-     <td align="left">Toggle <a href="#world-clock-mode">World Clock</a> and <a href="#room-condition-mode-temperaturehumidity-sensor">Room Condition</a> (WC/RC) hybrid mode</td>
+     <td align="left">Toggle <a href="#wcrc-hybrid-mode">WC/RC hybrid mode</a></td>
      <td align="left">113&#9166;</td>
     </tr>
     <tr>
