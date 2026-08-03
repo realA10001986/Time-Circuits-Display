@@ -242,10 +242,10 @@ Here's the timing diagram for a time travel signal:
 
 1) Option **_Signal without 5s lead_** unchecked
 
-If a time travel sequence is started by button, the TCD itself is taking care of the "acceleration" on the speedo, and can therefore calculate in advance when the temporal displacement will start and notify other props 5 seconds ahead:
+If a time travel sequence is started by button, the TCD itself is taking care of "acceleration", and can therefore calculate in advance when the temporal displacement will start and notify other props 5 seconds ahead:
 
 ```
-|<---------- speedo acceleration --------->|<-Temporal displacement->|<--speedo deceleration--->|
+|<-------------- acceleration ------------>|<-Temporal displacement->|<--speedo deceleration--->|
 0....10....20....................xx....87..88------------------------88...87....................0
                                            |  (Display disruption)   |
                                            |                         |
@@ -313,7 +313,7 @@ Time Travel timing:
 If a time travel sequence is started by button, the TCD itself is taking care of the "acceleration" on the speedo, and can therefore calculate in advance when the temporal displacement will start and notify other props 5 seconds ahead using the simple TIMETRAVEL message:
 
 ```
-|<---------- speedo acceleration --------->|<-Temporal displacement->|<--speedo deceleration--->|
+|<-------------- acceleration ------------>|<-Temporal displacement->|<--speedo deceleration--->|
 0....10....20....................xx....87..88------------------------88...87....................0
                                            |  (Display disruption)   |
                                            |                         |
@@ -348,10 +348,10 @@ This fixed lead time becomes a problem if using GPS speed, a rotary encoder for 
 
 2) Option **_Enhanced Time Travel notification_** checked
 
-If a time travel sequence is started by button, the situation is as above: The TCD itself takes care of the "acceleration" on the speedo, calculates in advance when the temporal displacement will start and notifies other props 5 seconds ahead. However, by using the enhanced TIMETRAVEL message, the lead time becomes variable. The TCD can actually tell other props when exactly the temporal displacement is expected to start:
+If a time travel sequence is started by button, the situation is as above: The TCD itself takes care of "acceleration", calculates in advance when the temporal displacement will start and notifies other props 5 seconds ahead. However, by using the enhanced TIMETRAVEL message, the lead time becomes variable. The TCD can actually tell other props when exactly the temporal displacement is expected to start:
 
 ```
-|<---------- speedo acceleration --------->|<-Temporal displacement->|<--speedo deceleration--->|
+|<------------- acceleration ------------->|<-Temporal displacement->|<--speedo deceleration--->|
 0....10....20....................xx....87..88------------------------88...87....................0
                                            |  (Display disruption)   |
                                            |                         |
