@@ -245,10 +245,10 @@ Here's the timing diagram for a time travel signal:
 If a time travel sequence is started by button, the TCD itself is taking care of the "acceleration" on the speedo, and can therefore calculate in advance when the temporal displacement will start and notify other props 5 seconds ahead:
 
 ```
-|<---------- speedo acceleration --------->|                         |<--speedo deceleration--->|
+|<---------- speedo acceleration --------->|<-Temporal displacement->|<--speedo deceleration--->|
 0....10....20....................xx....87..88------------------------88...87....................0
-                                           |<-Temporal displacement->|
                                            |  (Display disruption)   |
+                                           |                         |
                                       TT starts                      Reentry phase
                                            |                         |
              |<---------ETTO lead--------->|                         |
@@ -263,10 +263,10 @@ If a time travel sequence is started by button, the TCD itself is taking care of
 This fixed lead time becomes a problem if using GPS speed, a rotary encoder for speed, or a Futaba remote to control speed: In that case, a time travel is automatically triggered upon hitting 88mph. In this scenario, the TCD cannot know in advance if or when a speed of 88mph is actually reached, and therefore not inform other props 5 seconds ahead. As a result, there will be a delay of 5 seconds from when the TCD's GPS/Rotary Encoder/Futaba Remote-induced speed hits 88mph until the temporal displacement sequence actually starts:
 
 ```
-|<--------- random speedo action --------->|<- waiting, waiting...........|                         |<--speedo deceleration-->|
+|<--------- random speedo action --------->|<- waiting, waiting...........|<-Temporal displacement->|<--speedo deceleration-->|
 0....20....40.....87......80.....20....81..88******************************-------------------------88...87...................0
-                                                                          |<-Temporal displacement->|
                                                                           |  (Display disruption)   |
+                                                                          |                         |
                                                                      TT starts                      Reentry phase
                                                                           |                         |
                                            |<----------ETTO lead--------->|                         |
@@ -281,10 +281,10 @@ This fixed lead time becomes a problem if using GPS speed, a rotary encoder for 
 2) Option **_Signal without 5s lead_** checked
 
 ```
-|<-- acceleration/random speed changes --->|                         |<--speedo deceleration--->|
+|<-- acceleration/random speed changes --->|<-Temporal displacement->|<--speedo deceleration--->|
 0....xx....xx.......xx......xx...xx....xx..88------------------------88...87....................0
-                                           |<-Temporal displacement->|
                                            |  (Display disruption)   |
+                                           |                         |
                                       TT starts                      Reentry phase
                                            |                         |
                                            |                         |
@@ -313,10 +313,10 @@ Time Travel timing:
 If a time travel sequence is started by button, the TCD itself is taking care of the "acceleration" on the speedo, and can therefore calculate in advance when the temporal displacement will start and notify other props 5 seconds ahead using the simple TIMETRAVEL message:
 
 ```
-|<---------- speedo acceleration --------->|                         |<--speedo deceleration--->|
+|<---------- speedo acceleration --------->|<-Temporal displacement->|<--speedo deceleration--->|
 0....10....20....................xx....87..88------------------------88...87....................0
-                                           |<-Temporal displacement->|
                                            |  (Display disruption)   |
+                                           |                         |
                                       TT starts                      Reentry phase
                                            |                         |
              |<---------ETTO lead--------->|                         |
@@ -331,10 +331,10 @@ If a time travel sequence is started by button, the TCD itself is taking care of
 This fixed lead time becomes a problem if using GPS speed, a rotary encoder for speed, or a Futaba remote to control speed: In that case, a time travel is automatically triggered upon hitting 88mph. In this scenario, the TCD cannot know in advance if or when a speed of 88mph is actually reached, and therefore not inform other props 5 seconds ahead. As a result, there will be a delay of 5 seconds from when the TCD's GPS/Rotary Encoder/Futaba Remote-induced speed hits 88mph until the temporal displacement sequence actually starts:
 
 ```
-|<--------- random speedo action --------->|<- waiting, waiting...........|                         |<--speedo deceleration-->|
+|<--------- random speedo action --------->|<- waiting, waiting...........|<-Temporal displacement->|<--speedo deceleration-->|
 0....10....30....20.....60.......40....81..88******************************-------------------------88...87...................0
-                                                                          |<-Temporal displacement->|
                                                                           |  (Display disruption)   |
+                                                                          |                         |
                                                                      TT starts                      Reentry phase
                                                                           |                         |
                                            |<----------ETTO lead--------->|                         |
@@ -351,10 +351,10 @@ This fixed lead time becomes a problem if using GPS speed, a rotary encoder for 
 If a time travel sequence is started by button, the situation is as above: The TCD itself takes care of the "acceleration" on the speedo, calculates in advance when the temporal displacement will start and notifies other props 5 seconds ahead. However, by using the enhanced TIMETRAVEL message, the lead time becomes variable. The TCD can actually tell other props when exactly the temporal displacement is expected to start:
 
 ```
-|<---------- speedo acceleration --------->|                         |<--speedo deceleration--->|
+|<---------- speedo acceleration --------->|<-Temporal displacement->|<--speedo deceleration--->|
 0....10....20....................xx....87..88------------------------88...87....................0
-                                           |<-Temporal displacement->|
                                            |  (Display disruption)   |
+                                           |                         |
                                       TT starts                      Reentry phase
                                            |                         |
              |<---------ETTO lead--------->|                         |
@@ -367,10 +367,10 @@ If a time travel sequence is started by button, the situation is as above: The T
 Now, again the GPS speed/rotary encoder/Futaba remote control scenario:
 
 ```
-|<--------- random speedo action --------->|                         |<--speedo deceleration--->|
+|<--------- random speedo action --------->|<-Temporal displacement->|<--speedo deceleration--->|
 0....20....10.......45......87......70.....88------------------------88...87....................0
-                                           |<-Temporal displacement->|
                                            |  (Display disruption)   |
+                                           |                         |
                                       TT starts                      Reentry phase
                                            |                         |
                                            |                         |
