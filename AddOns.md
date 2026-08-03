@@ -11,14 +11,14 @@
 
 ## Rotary Encoder
 
-A rotary encoder is, simply put, a turnable knob. On the TCD, rotary encoders can be used for speed and/or audio volume.
+A rotary encoder is a sensor that converts the physical rotation or position of a shaft into electrical signals or, simply put, a turnable knob. The TCD supports rotary encoders for adjusting speed and/or audio volume.
 
 The firmware currently supports the 
 - [Adafruit 4991](https://www.adafruit.com/product/4991)/[5880](https://www.adafruit.com/product/5880),
 - [DuPPA I2CEncoder 2.1](https://www.duppa.net/shop/i2cencoder-v2-1/) (or [here](https://www.elecrow.com/i2cencoder-v2-1.html)) and
 - [DFRobot Gravity 360](https://www.dfrobot.com/product-2575.html)
 
-i2c rotary encoders. For the Adafruit and the DuPPa, I recommend buying the PCBs without an actual encoder and soldering on a Bourns PEC11R-42xxy-S0024.
+i2c rotary encoders. For the Adafruit and the DuPPa, I recommend buying the PCBs without an encoder and soldering on a Bourns PEC11R-42xxy-S0024.
 
 Up to two rotary encoders can be connected, one for speed, one for volume.
 
