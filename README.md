@@ -1054,7 +1054,7 @@ Setting these options gives GPS speed priority over speed from a [rotary encoder
 
 ## Rotary Encoder
 
-A rotary encoder is, simply put, a turnable knob. On the TCD, rotary encoders can be used for speed and/or audio volume.
+A rotary encoder is a sensor that converts the physical rotation or position of a shaft into electrical signals or, simply put, a turnable knob. The TCD supports rotary encoders for adjusting speed and/or audio volume.
 
 For information on supported encoder models/types and wiring, see [here](AddOns.md#rotary-encoder).
 
