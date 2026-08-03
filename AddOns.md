@@ -263,17 +263,17 @@ If a time travel sequence is started by button, the TCD itself is taking care of
 This fixed lead time becomes a problem if using GPS speed, a rotary encoder for speed, or a Futaba remote to control speed: In that case, a time travel is automatically triggered upon hitting 88mph. In this scenario, the TCD cannot know in advance if or when a speed of 88mph is actually reached, and therefore not inform other props 5 seconds ahead. As a result, there will be a delay of 5 seconds from when the TCD's GPS/Rotary Encoder/Futaba Remote-induced speed hits 88mph until the temporal displacement sequence actually starts:
 
 ```
-|<---------- speedo acceleration --------->|<- waiting, waiting...........|                         |<--speedo deceleration-->|
-0....10....20....................xx....87..88******************************------------------------88...87....................0
+|<--------- random speedo action --------->|<- waiting, waiting...........|                         |<--speedo deceleration-->|
+0....20....40.....87......80.....20....81..88******************************-------------------------88...87...................0
                                                                           |<-Temporal displacement->|
                                                                           |  (Display disruption)   |
                                                                      TT starts                      Reentry phase
                                                                           |                         |
-                                            |<---------ETTO lead--------->|                         |
-                                            |                                                       |
-                                            |                                                       |
-                                            |                                                       |
-                                            TT-OUT: LOW->HIGH                                       TT-OUT: HIGH->LOW
+                                           |<----------ETTO lead--------->|                         |
+                                           |                                                        |
+                                           |                                                        |
+                                           |                                                        |
+                                           TT-OUT: LOW->HIGH                                        TT-OUT: HIGH->LOW
  ```
 
 **** marks the certainly unwanted 5 seconds "stall". 
@@ -281,8 +281,8 @@ This fixed lead time becomes a problem if using GPS speed, a rotary encoder for 
 2) Option **_Signal without 5s lead_** checked
 
 ```
-|<---------- speedo acceleration --------->|                         |<--speedo deceleration--->|
-0....10....20....................xx....87..88------------------------88...87....................0
+|<-- acceleration/random speed changes --->|                         |<--speedo deceleration--->|
+0....xx....xx.......xx......xx...xx....xx..88------------------------88...87....................0
                                            |<-Temporal displacement->|
                                            |  (Display disruption)   |
                                       TT starts                      Reentry phase
@@ -331,17 +331,17 @@ If a time travel sequence is started by button, the TCD itself is taking care of
 This fixed lead time becomes a problem if using GPS speed, a rotary encoder for speed, or a Futaba remote to control speed: In that case, a time travel is automatically triggered upon hitting 88mph. In this scenario, the TCD cannot know in advance if or when a speed of 88mph is actually reached, and therefore not inform other props 5 seconds ahead. As a result, there will be a delay of 5 seconds from when the TCD's GPS/Rotary Encoder/Futaba Remote-induced speed hits 88mph until the temporal displacement sequence actually starts:
 
 ```
-|<---------- speedo acceleration --------->|<- waiting, waiting...........|                         |<--speedo deceleration-->|
-0....10....20....................xx....87..88******************************------------------------88...87....................0
+|<--------- random speedo action --------->|<- waiting, waiting...........|                         |<--speedo deceleration-->|
+0....10....30....20.....60.......40....81..88******************************-------------------------88...87...................0
                                                                           |<-Temporal displacement->|
                                                                           |  (Display disruption)   |
                                                                      TT starts                      Reentry phase
                                                                           |                         |
-                                            |<---------ETTO lead--------->|                         |
-                                            |           (5000ms)                                    |
-                                            |                                                       |
-                                            |                                                       |
-                                            MQTT: TIMETRAVEL                                        MQTT: REENTRY
+                                           |<----------ETTO lead--------->|                         |
+                                           |           (5000ms)                                     |
+                                           |                                                        |
+                                           |                                                        |
+                                           MQTT: TIMETRAVEL                                         MQTT: REENTRY
  ```
 
 **** marks the certainly unwanted 5 seconds "stall".
@@ -367,8 +367,8 @@ If a time travel sequence is started by button, the situation is as above: The T
 Now, again the GPS speed/rotary encoder/Futaba remote control scenario:
 
 ```
-|<---------- speedo acceleration --------->|                         |<--speedo deceleration--->|
-0....10....20....................xx....87..88------------------------88...87....................0
+|<--------- random speedo action --------->|                         |<--speedo deceleration--->|
+0....20....10.......45......87......70.....88------------------------88...87....................0
                                            |<-Temporal displacement->|
                                            |  (Display disruption)   |
                                       TT starts                      Reentry phase
