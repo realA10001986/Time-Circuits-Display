@@ -1210,9 +1210,9 @@ The TCD can be controlled through messages sent to topic **bttf/tcd/cmd**. Suppo
 - ```MP_REQSTATUS```: Publish current [music player status](#-publish-music-player-status-to-bttftcdmpstatus) to bttf/tcd/mpstatus
 - ```PLAYKEY_x```: Play keyX.mp3 (from SD card), X being in the range from 1 to 9.
 - ```STOPKEY```: Stop playback of keyX file. Does nothing if no keyX file is currently played back.
-- ```PLAY_DOOR_OPEN```, PLAY_DOOR_CLOSE: Play door sound
-- ```PLAY_DOOR_OPEN_L```, PLAY_DOOR_CLOSE_L: Play door sound on left stereo channel
-- ```PLAY_DOOR_OPEN_R```, PLAY_DOOR_CLOSE_R: Play door sound on right stereo channel
+- ```PLAY_DOOR_OPEN```, ```PLAY_DOOR_CLOSE```: Play door sound
+- ```PLAY_DOOR_OPEN_L```, ```PLAY_DOOR_CLOSE_L```: Play door sound on left stereo channel
+- ```PLAY_DOOR_OPEN_R```, ```PLAY_DOOR_CLOSE_R```: Play door sound on right stereo channel
 - ```VOLUME_UP```, ```VOLUME_DOWN```: Increase/decrease volume by a notch
 - ```VOLUME_SET_x```: Set volume to x% (x=0-100)
 - ```POWER_CONTROL_ON```: Take over Fake-Power control; POWER_xx commands now control Fake-Power.
