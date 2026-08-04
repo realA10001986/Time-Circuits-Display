@@ -1190,35 +1190,35 @@ The TCD can send configurable messages to configurable topics through keypad com
 ### Control the TCD via MQTT
 
 The TCD can be controlled through messages sent to topic **bttf/tcd/cmd**. Supported commands are
-- TIMETRAVEL: Start a time travel
-- RETURN: Return from time travel
-- BEEP_ON: Enables the [beep](#beep-on-the-second)
-- BEEP_OFF: Disables the [beep](#beep-on-the-second)
-- BEEP_30, BEEP_60: Set the beep modes as described [here](#beep-on-the-second)
-- ALARM_ON: Enable the alarm
-- ALARM_OFF: Disable the alarm
-- ALARM_STOP: Stop on-going alarm and cancel a snoozed alarm
-- ALARM_SNOOZE: Put an on-going alarm into snooze
-- NIGHTMODE_ON: Enable manual [night mode](#night-mode)
-- NIGHTMODE_OFF: Disable manual [night mode](#night-mode)
-- MP_PLAY: Starts the Music Player
-- MP_STOP: Stops the Music Player
-- MP_NEXT: Jump to next track
-- MP_PREV: Jump to previous track
-- MP_SHUFFLE_ON: Enables shuffle mode in Music Player
-- MP_SHUFFLE_OFF: Disables shuffle mode in Music Player
-- MP_REQSTATUS: Publish current [music player status](#-publish-music-player-status-to-bttftcdmpstatus) to bttf/tcd/mpstatus
-- PLAYKEY_x: Play keyX.mp3 (from SD card), X being in the range from 1 to 9.
-- STOPKEY: Stop playback of keyX file. Does nothing if no keyX file is currently played back.
-- PLAY_DOOR_OPEN, PLAY_DOOR_CLOSE: Play door sound
-- PLAY_DOOR_OPEN_L, PLAY_DOOR_CLOSE_L: Play door sound on left stereo channel
-- PLAY_DOOR_OPEN_R, PLAY_DOOR_CLOSE_R: Play door sound on right stereo channel
-- VOLUME_UP, VOLUME_DOWN: Increase/decrease volume by a notch
-- VOLUME_SET_x: Set volume to x% (x=0-100)
-- POWER_CONTROL_ON: Take over Fake-Power control; POWER_xx commands now control Fake-Power.
-- POWER_CONTROL_OFF: Release Fake-Power control
-- POWER_ON, POWER_OFF: Switch Fake-Power on or off, respectively.
-- INJECT_x: See immediately below.
+- ```TIMETRAVEL```: Start a time travel
+- ```RETURN```: Return from time travel
+- ```BEEP_ON```: Enables the [beep](#beep-on-the-second)
+- ```BEEP_OFF```: Disables the [beep](#beep-on-the-second)
+- ```BEEP_30```, ```BEEP_60```: Set the beep modes as described [here](#beep-on-the-second)
+- ```ALARM_ON```: Enable the alarm
+- ```ALARM_OFF```: Disable the alarm
+- ```ALARM_STOP```: Stop on-going alarm and cancel a snoozed alarm
+- ```ALARM_SNOOZE```: Put an on-going alarm into snooze
+- ```NIGHTMODE_ON```: Enable manual [night mode](#night-mode)
+- ```NIGHTMODE_OFF```: Disable manual [night mode](#night-mode)
+- ```MP_PLAY```: Starts the Music Player
+- ```MP_STOP```: Stops the Music Player
+- ```MP_NEXT```: Jump to next track
+- ```MP_PREV```: Jump to previous track
+- ```MP_SHUFFLE_ON```: Enables shuffle mode in Music Player
+- ```MP_SHUFFLE_OFF```: Disables shuffle mode in Music Player
+- ```MP_REQSTATUS```: Publish current [music player status](#-publish-music-player-status-to-bttftcdmpstatus) to bttf/tcd/mpstatus
+- ```PLAYKEY_x```: Play keyX.mp3 (from SD card), X being in the range from 1 to 9.
+- ```STOPKEY```: Stop playback of keyX file. Does nothing if no keyX file is currently played back.
+- ```PLAY_DOOR_OPEN```, PLAY_DOOR_CLOSE: Play door sound
+- ```PLAY_DOOR_OPEN_L```, PLAY_DOOR_CLOSE_L: Play door sound on left stereo channel
+- ```PLAY_DOOR_OPEN_R```, PLAY_DOOR_CLOSE_R: Play door sound on right stereo channel
+- ```VOLUME_UP```, ```VOLUME_DOWN```: Increase/decrease volume by a notch
+- ```VOLUME_SET_x```: Set volume to x% (x=0-100)
+- ```POWER_CONTROL_ON```: Take over Fake-Power control; POWER_xx commands now control Fake-Power.
+- ```POWER_CONTROL_OFF```: Release Fake-Power control
+- ```POWER_ON```, ```POWER_OFF```: Switch Fake-Power on or off, respectively.
+- ```INJECT_x```: See immediately below.
 
 #### The INJECT_x command
 
@@ -1234,13 +1234,13 @@ To set the alarm to 9:00am (110900), issue **INJECT_110900**
 
 HA can control [Fake-Power](#fake-power-switch), overruling a Fake-Power switch.
 
-In order to let HA/MQTT control fake power, first publish POWER_CONTROL_ON to **bttf/tcd/cmd**. Subsequent POWER_ON or POWER_OFF commands switch Fake-Power on or off, respectively.
+In order to let HA/MQTT control fake power, first publish ```POWER_CONTROL_ON``` to **bttf/tcd/cmd**. Subsequent ```POWER_ON``` or ```POWER_OFF``` commands switch Fake-Power on or off, respectively.
 
-POWER_CONTROL_OFF relinquishes Fake-Power control; afterwards, if a Fake-Power switch is connected, its state becomes effective. If no switch is connected, Fake-Power will be switched on.
+```POWER_CONTROL_OFF``` relinquishes Fake-Power control; afterwards, if a Fake-Power switch is connected, its state becomes effective. If no switch is connected, Fake-Power will be switched on.
 
 The initial power-up state of POWER_CONTROL and POWER can be configured in the [Config Portal](#-ha-controls-fake-power-at-startup).
 
-Keypad command 996 works like POWER_CONTROL_OFF; it allows to separate HA from Fake-Power control. This is useful when, for instance, the broker isn't reachable.
+Keypad command 996 works like ```POWER_CONTROL_OFF```; it allows to separate HA from Fake-Power control. This is useful when, for instance, the broker isn't reachable.
 
 ### Notify other devices of a time travel or alarm
 
