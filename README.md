@@ -1224,11 +1224,11 @@ The TCD can be controlled through messages sent to topic **bttf/tcd/cmd**. Suppo
 
 This command allows remote control of the TCD through HA/MQTT in the same way as through the TCD keypad by injecting commands into the TCD's command queue (hence the name). Commands are listed [here](#commandref); nearly all are supported. You need to specify the command exactly like when entering the code on the keypad. For example:
 
-To enable the "beep" (21), issue the following command: **INJECT_21**
+To enable the "beep" (21), issue the following command: ```INJECT_21```
 
-To play "key2.mp3" (502), issue **INJECT_502**
+To play "key2.mp3" (502), issue ```INJECT_502```
 
-To set the alarm to 9:00am (110900), issue **INJECT_110900**
+To set the alarm to 9:00am (110900), issue ```INJECT_110900```
 
 #### Fake-Power control through HA
 
