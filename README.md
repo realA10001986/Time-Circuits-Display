@@ -1794,11 +1794,9 @@ Note: If this option is checked, the TCD will send out such notifications throug
 
 ##### &#9193; Enhanced Time Travel notification
 
-If this option is checked, the TCD will send out 'enhanced' time travel messages over MQTT; the message format is 
-```TIMETRAVEL_xxxx_yyyy``` 
-where xxxx is the number of milliseconds until the temporal displacement sequence starts, and yyyy the number of ms the temporal displacement phase takes; the latter is an approximation, the temporal displacement phase ends when the message "REENTRY" is published. xxxx and yyyy is always 4 digits for easy parsing; both can be 0.
+If this option is checked, the TCD will send out 'enhanced' time travel messages over MQTT; the message format is ```TIMETRAVEL_xxxx_yyyy```, where xxxx is the number of milliseconds until the temporal displacement sequence starts, and yyyy the number of ms the temporal displacement phase takes; the latter is an approximation, the temporal displacement phase ends when the message ```REENTRY``` is published. xxxx and yyyy is always 4 digits for easy parsing; both can be 0.
 
-If this option is unchecked, the TCD publishes "TIMETRAVEL" and the time until the temporal displacement sequence starts is always 5000ms.
+If this option is unchecked, the TCD publishes ```TIMETRAVEL``` and the time until the temporal displacement sequence starts is always 5000ms.
 
 Note: If you 
 - have a GPS receiver and your speedo is configured to [display GPS speed](#-display-gps-speed),
@@ -1814,7 +1812,7 @@ This option enables the Music Player's backchannel. The backchannel carries feed
 
 This option should be left unchecked if not used.
 
-Backchannel data is sent to _bttf/tcd/mpstatus_ on every change. It can also be triggered at any point by sending __MP_REQSTATUS__ to _bttf/tcd/cmd_.
+Backchannel data is sent to _bttf/tcd/mpstatus_ on every change. It can also be triggered at any point by sending ```MP_REQSTATUS``` to _bttf/tcd/cmd_.
 
 The data published on the backchannel is a JSON object, containing the following keys:
 - __S__: State. _Value_ can be "P" for playing, "I" for idle, and "O" for off/busy. In 'off' state, the TCD does not take commands.
@@ -1824,19 +1822,19 @@ The data published on the backchannel is a JSON object, containing the following
 - __V__: Volume. This is an integer as a string. If -1, volume control is unavailable. Otherwise 0-100.
 - __SH__: Shuffle. This is an integer as a string, either "0" for 'off', or "1" for 'on'.
 
-Example: __{"S":"I","C":"1","V":"20","F":"0","L":"67","SH":"0"}__
+Example: ```{"S":"I","C":"1","V":"20","F":"0","L":"67","SH":"0"}```
 
 The backchannel is used/required by the A10001986 [Lou's Cafe Jukebox](https://jb.out-a-ti.me).
 
 ##### &#9193; HA controls Fake-Power at startup
 
-This option selects whether HA should be in control of Fake-Power at startup or not. If this is checked, the TCD assumes HA has control of Fake-Power, overruling a ("TFC") Fake-Power switch. If this is unchecked, Fake-Power control remains with the switch (if connected), and HA can take over only after sending "POWER_CONTROL_ON".
+This option selects whether HA should be in control of Fake-Power at startup or not. If this is checked, the TCD assumes HA has control of Fake-Power, overruling a ("TFC") Fake-Power switch. If this is unchecked, Fake-Power control remains with the switch (if connected), and HA can take over only after sending ```POWER_CONTROL_ON```.
 
 ##### &#9193; Wait for POWER_ON at startup
 
 If HA is configured to have Fake-Power control at startup (as per the option *__HA controls Fake-Power at startup__*), this option decides the state of Fake-Power at startup:
 
-If this option is checked, the TCD waits for a POWER_ON command from HA/MQTT.
+If this option is checked, the TCD waits for a ```POWER_ON``` command from HA/MQTT.
 
 If this option is unchecked, the TCD starts without waiting.
 
