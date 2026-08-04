@@ -258,7 +258,7 @@ If a time travel sequence is started by button, the TCD itself is taking care of
              TT-OUT: LOW->HIGH                                       TT-OUT: HIGH->LOW
  ```
 
-"ETTO lead", ie the lead time between TT-OUT going HIGH and the actual start of a temporal displacement is defined as 5000ms (5 seconds). In this window of time, the prop can play its pre-time-travel (warm-up/acceleration/etc) sequence. The sequence inside the temporal displacement follows after that lead time, and as soon as TT-OUT goes LOW, re-entry into the destination time takes place.
+"ETTO lead", ie the lead time between TT-OUT going HIGH and the actual start of a temporal displacement, is fixed and always 5000ms (5 seconds). In this window of time, the prop can play its pre-time-travel (warm-up/acceleration/etc) sequence. The sequence inside the temporal displacement follows after that lead time, and as soon as TT-OUT goes LOW, re-entry into the destination time takes place.
 
 This fixed lead time becomes a problem if using GPS speed, a rotary encoder for speed, or a Futaba remote to control speed: In that case, a time travel is automatically triggered upon hitting 88mph. In this scenario, the TCD cannot know in advance if or when a speed of 88mph is actually reached, and therefore not inform other props 5 seconds ahead. As a result, there will be a delay of 5 seconds from when the TCD's GPS/Rotary Encoder/Futaba Remote-induced speed hits 88mph until the temporal displacement sequence actually starts:
 
@@ -326,7 +326,7 @@ If a time travel sequence is started by button, the TCD itself is taking care of
              MQTT: TIMETRAVEL                                        MQTT: REENTRY
  ```
 
-"ETTO lead", ie the lead time between the "TIMETRAVEL" message and the actual start of a temporal displacement is defined as 5000ms (5 seconds). In this window of time, the prop can play its pre-time-travel (warm-up/acceleration/etc) sequence. The sequence inside the temporal displacement follows after that lead time, and as soon as "REENTRY" is sent, re-entry into the destination time takes place.
+"ETTO lead", ie the lead time between dispatch of the "TIMETRAVEL" message and the actual start of a temporal displacement, is fixed and always 5000ms (5 seconds). In this window of time, the prop can play its pre-time-travel (warm-up/acceleration/etc) sequence. The sequence inside the temporal displacement follows after that lead time, and as soon as "REENTRY" is sent, re-entry into the destination time takes place.
 
 This fixed lead time becomes a problem if using GPS speed, a rotary encoder for speed, or a Futaba remote to control speed: In that case, a time travel is automatically triggered upon hitting 88mph. In this scenario, the TCD cannot know in advance if or when a speed of 88mph is actually reached, and therefore not inform other props 5 seconds ahead. As a result, there will be a delay of 5 seconds from when the TCD's GPS/Rotary Encoder/Futaba Remote-induced speed hits 88mph until the temporal displacement sequence actually starts:
 
@@ -380,9 +380,9 @@ Now, again the GPS speed/rotary encoder/Futaba remote control scenario:
                                            MQTT: TIMETRAVEL_0000_yyyy
  ```
 
-As you can see, there is no stall: The props receive proper info on when the temporal displacement starts - in this case immediately (0ms).
+Note that there is no stall: The props receive proper info on when the temporal displacement starts - in this case immediately (0ms).
 
-Conclusion: If you are not planning on using GPS speed, a Rotary Encoder for speed or a Futaba remote to control speed on your TCD, you can use the simple TIMETRAVEL message. In the other case, you need to teach your MQTT-aware device how to interpret the enhanced TIMETRAVEL_xxxx_yyyy message. Both xxxx and yyyy are always four digits. xxxx is the time until temporal displacement starts, yyyy is an approximation of the duration of the temporal displacement; however, don't use this value to time the reentry, instead wait for the REENTRY message to initiate your re-entry sequence.
+Conclusion: If you are not planning on using GPS speed, a rotary encoder for speed or a Futaba remote to control speed on your TCD, you can leave **_Enhanced Time Travel notification_**  unchecked and thereby have the TCD send out the simple TIMETRAVEL message. Otherwise you need to check **_Enhanced Time Travel notification_** and teach your MQTT-aware prop how to interpret the enhanced TIMETRAVEL_xxxx_yyyy message. Both xxxx and yyyy denote milliseconds, always consist of four digits, and both can be zero. xxxx is the time until temporal displacement starts, yyyy is an approximation of the duration of the temporal displacement; however, don't use this value to schedule re-entry, instead wait for the REENTRY message to initiate your re-entry sequence.
 
 ---
 _Text & images: (C) Thomas Winischhofer ("A10001986"). See LICENSE._ Source: https://tcd.out-a-ti.me
