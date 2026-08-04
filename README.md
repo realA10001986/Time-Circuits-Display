@@ -1249,13 +1249,13 @@ The TCD can send out notifications on time travel and alarm through MQTT. This e
 To enable the sending of time travel and alarm notifications, check the option **_Publish time travel and alarm events_** on the _HA/MQTT Settings_ page in the Config Portal. This option, however, has some implications for BTTFN-connected devices, see [below](#MQTT-vs-BTTFN).
 
 The timing for time travel is described [here](AddOns.md#synchronized-time-travel-through-hamqtt), in short:
-- "PREPARE" might be published ahead of the time travel to prepare; the timing is not specified.
-- "[TIMETRAVEL](#-enhanced-time-travel-notification)" is published [on or 5 seconds ahead](#-enhanced-time-travel-notification) of the temporal displacement sequence.
-- "REENTRY" is published upon re-entry.
+- ```PREPARE``` might be published ahead of the time travel to prepare; the timing is not specified.
+- ```[TIMETRAVEL](#-enhanced-time-travel-notification)``` is published [on or 5 seconds ahead](#-enhanced-time-travel-notification) of the temporal displacement sequence.
+- ```REENTRY``` is published upon re-entry.
 
-"WAKEUP" is published if something happens on the TCD, like destination time entry or speed changes.
+```WAKEUP``` is published if something happens on the TCD, like destination time entry or speed changes.
 
-When the [alarm](#alarm) sounds, the TCD publishes "ALARM".
+When the [alarm](#alarm) sounds, the TCD publishes ```ALARM```.
 
 ### MQTT vs BTTFN
 
