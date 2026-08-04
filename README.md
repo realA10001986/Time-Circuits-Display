@@ -1250,7 +1250,7 @@ To enable the sending of time travel and alarm notifications, check the option *
 
 The timing for time travel is described [here](AddOns.md#synchronized-time-travel-through-hamqtt), in short:
 - ```PREPARE``` might be published ahead of the time travel to prepare; the timing is not specified.
-- ```[TIMETRAVEL](#-enhanced-time-travel-notification)``` is published [on or 5 seconds ahead](#-enhanced-time-travel-notification) of the temporal displacement sequence.
+- ```TIMETRAVEL``` or ```TIMETRAVEL_xxxx_yyyy``` is published [on or 5 seconds ahead](#-enhanced-time-travel-notification) of the temporal displacement sequence.
 - ```REENTRY``` is published upon re-entry.
 
 ```WAKEUP``` is published if something happens on the TCD, like destination time entry or speed changes.
