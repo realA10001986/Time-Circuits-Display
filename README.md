@@ -1338,7 +1338,7 @@ Next, head to the [Config Portal](#the-config-portal), click on "Update & Upload
 
 <details>
 <summary>Alternative way</summary>
-<br>
+<br><br>
 Alternatively, you can install the sound-pack the following way:
 <ul>
 <li>Using a computer, copy "TCDA.bin" to the root directory of a FAT32 formatted SD card;</li>
