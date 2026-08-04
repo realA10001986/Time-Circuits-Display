@@ -242,7 +242,7 @@ Here's the timing diagram for a time travel signal:
 
 1) Option **_Signal without 5s lead_** unchecked
 
-If a time travel sequence is started by button, the TCD itself is taking care of "acceleration", and can therefore calculate in advance when the temporal displacement will start and notify other props 5 seconds ahead:
+If a time travel sequence is started by button, the TCD itself is taking care of "acceleration", and can therefore calculate in advance when the temporal displacement sequence will start and notify other props 5 seconds ahead:
 
 ```
 |<-------------- acceleration ------------>|<-Temporal displacement->|<--speedo deceleration--->|
@@ -310,7 +310,7 @@ Time Travel timing:
 
 1) Option **_Enhanced Time Travel notification_** unchecked
 
-If a time travel sequence is started by button, the TCD itself is taking care of the "acceleration" on the speedo, and can therefore calculate in advance when the temporal displacement will start and notify other props 5 seconds ahead using the simple TIMETRAVEL message:
+If a time travel sequence is started by button, the TCD itself is taking care of "acceleration", and can therefore calculate in advance when the temporal displacement sequence will start and notify other props 5 seconds ahead using the simple TIMETRAVEL message:
 
 ```
 |<-------------- acceleration ------------>|<-Temporal displacement->|<--speedo deceleration--->|
@@ -348,7 +348,7 @@ This fixed lead time becomes a problem if using GPS speed, a rotary encoder for 
 
 2) Option **_Enhanced Time Travel notification_** checked
 
-If a time travel sequence is started by button, the situation is as above: The TCD itself takes care of "acceleration", calculates in advance when the temporal displacement will start and notifies other props 5 seconds ahead. However, by using the enhanced TIMETRAVEL message, the lead time becomes variable. The TCD can actually tell other props when exactly the temporal displacement is expected to start:
+If a time travel sequence is started by button, the situation is as above: The TCD itself takes care of "acceleration", calculates in advance when the temporal displacement sequence will start and notifies other props 5 seconds ahead. However, by using the enhanced TIMETRAVEL message, the lead time becomes variable. The enhanced message enables the TCD to tell other props when exactly the temporal displacement is expected to start:
 
 ```
 |<------------- acceleration ------------->|<-Temporal displacement->|<--speedo deceleration--->|
@@ -364,7 +364,7 @@ If a time travel sequence is started by button, the situation is as above: The T
              MQTT: TIMETRAVEL_5000_yyyy                              MQTT: REENTRY
  ```
 
-Now, again the GPS speed/rotary encoder/Futaba remote control scenario:
+And here the GPS speed/rotary encoder/Futaba remote control scenario:
 
 ```
 |<--------- random speedo action --------->|<-Temporal displacement->|<--speedo deceleration--->|
@@ -382,7 +382,11 @@ Now, again the GPS speed/rotary encoder/Futaba remote control scenario:
 
 Note that there is no stall: The props receive proper info on when the temporal displacement starts - in this case immediately (0ms).
 
-Conclusion: If you are not planning on using GPS speed, a rotary encoder for speed or a Futaba remote to control speed on your TCD, you can leave **_Enhanced Time Travel notification_**  unchecked and thereby have the TCD send out the simple TIMETRAVEL message. Otherwise you need to check **_Enhanced Time Travel notification_** and teach your MQTT-aware prop how to interpret the enhanced TIMETRAVEL_xxxx_yyyy message. Both xxxx and yyyy denote milliseconds, always consist of four digits, and both can be zero. xxxx is the time until temporal displacement starts, yyyy is an approximation of the duration of the temporal displacement; however, don't use this value to schedule re-entry, instead wait for the REENTRY message to initiate your re-entry sequence.
+Conclusion: 
+
+If you are not planning on using GPS speed, a rotary encoder for speed or a Futaba remote to control speed on your TCD, you can leave **_Enhanced Time Travel notification_**  unchecked and thereby have the TCD send out the simple TIMETRAVEL message. 
+
+Otherwise you need to check **_Enhanced Time Travel notification_** and teach your MQTT-aware prop how to interpret the enhanced TIMETRAVEL_xxxx_yyyy message. Both xxxx and yyyy denote milliseconds, always consist of four digits, and both can be zero. xxxx is the time until temporal displacement starts, yyyy is an approximation of the duration of the temporal displacement; however, don't use this value to schedule re-entry, instead wait for the REENTRY message to initiate your re-entry sequence.
 
 ---
 _Text & images: (C) Thomas Winischhofer ("A10001986"). See LICENSE._ Source: https://tcd.out-a-ti.me
