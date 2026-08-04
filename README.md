@@ -1791,7 +1791,9 @@ Note: If this option is checked, the TCD will send out such notifications throug
 
 ##### &#9193; Enhanced Time Travel notification
 
-If this option is checked, the TCD will send out 'enhanced' time travel messages over MQTT; the message format is TIMETRAVEL_xxxx_yyyy, where xxxx is the number of milliseconds until the temporal displacement sequence starts, and yyyy the number of ms the temporal displacement phase takes; the latter is an approximation, the temporal displacement phase ends when the message "REENTRY" is published. xxxx and yyyy is always 4 digits for easy parsing; both can be 0.
+If this option is checked, the TCD will send out 'enhanced' time travel messages over MQTT; the message format is 
+```TIMETRAVEL_xxxx_yyyy``` 
+where xxxx is the number of milliseconds until the temporal displacement sequence starts, and yyyy the number of ms the temporal displacement phase takes; the latter is an approximation, the temporal displacement phase ends when the message "REENTRY" is published. xxxx and yyyy is always 4 digits for easy parsing; both can be 0.
 
 If this option is unchecked, the TCD publishes "TIMETRAVEL" and the time until the temporal displacement sequence starts is always 5000ms.
 
