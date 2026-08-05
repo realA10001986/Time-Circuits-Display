@@ -316,107 +316,107 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
     </tr>
    <tr>
      <td align="left">Reset display mode (disable 111-117)</a></td>
-     <td align="left">110&#9166;</td>
+     <td align="left"><code>110</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left">Toggle <a href="#room-condition-mode-temperaturehumidity-sensor">Room Condition mode</a></td>
-     <td align="left">111&#9166;</td>
+     <td align="left"><code>111</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left">Toggle <a href="#world-clock-mode">World Clock mode</a></td>
-     <td align="left">112&#9166;</td>
+     <td align="left"><code>112</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left">Toggle <a href="#wcrc-hybrid-mode">WC/RC hybrid mode</a></td>
-     <td align="left">113&#9166;</td>
+     <td align="left"><code>113</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left">Toggle <a href="#geolocation-mode">geolocation mode</a> (DD/DMS/DMD)</td>
-     <td align="left">114&#9166;/115&#9166;/116&#9166;</td>
+     <td align="left"><code>114</code>&#9166;/<code>115</code>&#9166;/<code>116</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left">Toggle <a href="#minimal-mode">Minimal</a> mode</td>
-     <td align="left">117&#9166;</td>
+     <td align="left"><code>117</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left">Display weekday of currently displayed <i>present time</i> date</td>
-     <td align="left">39&#9166;</td>
+     <td align="left"><code>39</code>&#9166;</td>
     </tr>
   <tr>
      <td align="left">Disable <a href="#beep-on-the-second">beep</a> sound</td>
-     <td align="left">20&#9166;</td>
+     <td align="left"><code>20</code>&#9166;</td>
    </tr>
    <tr>
      <td align="left">Enable <a href="#beep-on-the-second">beep</a> sound</td>
-     <td align="left">21&#9166;</td>
+     <td align="left"><code>21</code>&#9166;</td>
    </tr>
    <tr>
      <td align="left">Enable <a href="#beep-on-the-second">beep</a> sound (30 seconds)</td>
-     <td align="left">22&#9166;</td>
+     <td align="left"><code>22</code>&#9166;</td>
    </tr>
    <tr>
      <td align="left">Enable <a href="#beep-on-the-second">beep</a> sound (60 seconds)</td>
-     <td align="left">23&#9166;</td>
+     <td align="left"><code>23</code>&#9166;</td>
    </tr>
     <tr>
      <td align="left">Select relative beep volume level</td>
-     <td align="left">30 - 33&#9166;</td>
+     <td align="left"><code>30</code> - <code>33</code>&#9166;</td>
     </tr>
   <tr>
      <td align="left">Select audio volume level</td>
-     <td align="left">300 - 320&#9166;</td>
+     <td align="left"><code>300</code> - <code>320</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left">Disable/enable <a href="#audio-output">line-out audio</a> for music and time travel sounds</td>
-     <td align="left">350&#9166; / 351&#9166;</td>
+     <td align="left"><code>350</code>&#9166; / <code>351</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left">Enable built-in volume knob</td>
-     <td align="left">399&#9166;</td>
+     <td align="left"><code>399</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left">Show current <a href="#alarm">alarm</a> time/weekday</td>
-     <td align="left">11&#9166;</td>
+     <td align="left"><code>11</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left">Set <a href="#alarm">alarm</a> to hh:MM</td>
-     <td align="left">11hhMM&#9166;</td>
+     <td align="left"><code>11hhMM</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left">Stop <a href="#alarm">alarm</a>, cancel Snooze</td>
-     <td align="left">12&#9166;</td>
+     <td align="left"><code>12</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left"><a href="#count-down-timer">Timer</a>: Show remaining time</td>
-     <td align="left">44&#9166;</td>
+     <td align="left"><code>44</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left"><a href="#count-down-timer">Timer</a>: Set timer to MM minutes</td>
-     <td align="left">44MM&#9166;</td>
+     <td align="left"><code>44MM</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left"><a href="#count-down-timer">Timer</a>: Delete timer</td>
-     <td align="left">440&#9166;</td>
+     <td align="left"><code>440</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left"><a href="#yearlymonthly-reminder">Reminder</a>: Display reminder</td>
-     <td align="left">77&#9166;</td>
+     <td align="left"><code>77</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left"><a href="#yearlymonthly-reminder">Reminder</a>: Display time until reminder</td>
-     <td align="left">777&#9166;</td>
+     <td align="left"><code>777</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left"><a href="#yearlymonthly-reminder">Reminder</a>: Program reminder</td>
-     <td align="left">77mmdd&#9166;</td>
+     <td align="left"><code>77mmdd</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left"><a href="#yearlymonthly-reminder">Reminder</a>: Program reminder</td>
-     <td align="left">77mmddhhMM&#9166;</td>
+     <td align="left"><code>77mmddhhMM</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left"><a href="#yearlymonthly-reminder">Reminder</a>: Delete reminder</td>
-     <td align="left">770&#9166;</td>
+     <td align="left"><code>770</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left"><a href="#the-music-player">Music Player</a>: Show currently played track</td>
