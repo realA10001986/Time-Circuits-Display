@@ -420,79 +420,79 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
     </tr>
     <tr>
      <td align="left"><a href="#the-music-player">Music Player</a>: Show currently played track</td>
-     <td align="left">55&#9166;</td>
+     <td align="left"><code>55</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left"><a href="#the-music-player">Music Player</a>: Shuffle off</td>
-     <td align="left">222&#9166;</td>
+     <td align="left"><code>222</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left"><a href="#the-music-player">Music Player</a>: Shuffle on</td>
-     <td align="left">555&#9166;</td>
+     <td align="left"><code>555</code>&#9166;</td>
     </tr> 
     <tr>
      <td align="left"><a href="#the-music-player">Music Player</a>: Go to track 0</td>
-     <td align="left">888&#9166;</td>
+     <td align="left"><code>888</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left"><a href="#the-music-player">Music Player</a>: Go to track xxx</td>
-     <td align="left">888xxx&#9166;</td>
+     <td align="left"><code>888xxx</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left">Play "<a href="#additional-custom-sounds">keyX.mp3</a>" (X=1-9)</td>
-     <td align="left">501 - 509&#9166;</td>
+     <td align="left"><code>501</code> - <code>509</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left">Send pre-configured <a href="#send-messages">HA/MQTT</a> messages</td>
-     <td align="left">600 - 609&#9166;</td>
+     <td align="left"><code>600</code> - <code>609</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left">Set <a href="#connecting-props-by-wire">TT OUT</a> LOW / HIGH</td>
-     <td align="left">900&#9166; / 901&#9166;</td>
+     <td align="left"><code>900</code>&#9166; / <code>901</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left">Disable / enable <a href="#car-mode">car mode</a>(*)</td>
-     <td align="left">990&#9166; / 991&#9166;</td>
+     <td align="left"><code>990</code>&#9166; / <code>991</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left">Forbid / allow TCD to be <a href="#futaba-remote-control">remote controlled</a>(*)</td>
-     <td align="left">992&#9166; / 993&#9166;</td>
+     <td align="left"><code>992</code>&#9166; / <code>993</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left">Forbid / allow TCD keypad to be <a href="#remote-controlling-the-tcds-keypad">remote controlled</a>(*)</td>
-     <td align="left">994&#9166; / 995&#9166;</td>
+     <td align="left"><code>994</code>&#9166; / <code>995</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left">Release HA from <a href="#fake-power-control-through-ha">Fake-Power control</a>(*)</td>
-     <td align="left">996&#9166;</td>
+     <td align="left"><code>996</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left">Restore user destination/last time dep. times</td>
-     <td align="left">998&#9166;</td>
+     <td align="left"><code>998</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left">Enable / disable <a href="#exhibition-mode">Exhibition mode</a></td>
-     <td align="left">999&#9166;</td>
+     <td align="left"><code>999</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left">Program and save time for <a href="#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays"><i>Destination Time</i> display</a></td>
-     <td align="left">91mmddyyyyhhMM&#9166;</td>
+     <td align="left"><code>91mmddyyyyhhMM</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left">Program and save time for <a href="#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays"><i>Last Time Departed</i> display</a></td>
-     <td align="left">92mmddyyyyhhMM&#9166;</td>
+     <td align="left"><code>92mmddyyyyhhMM</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left">Program time for <a href="#exhibition-mode">Exhibition mode</a></td>
-     <td align="left">99mmddyyyyhhMM&#9166;</td>
+     <td align="left"><code>99mmddyyyyhhMM</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left">Toggle firmware update message at power-up</td>
-     <td align="left">53281&#9166;</td>
+     <td align="left"><code>53281</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left">Reboot the device(*)</td>
-     <td align="left">64738&#9166;</td>
+     <td align="left"><code>64738</code>&#9166;</td>
     </tr>
 </table>
 
