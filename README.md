@@ -804,7 +804,7 @@ When the alarm is set and enabled, the dot in the present time's minute field wi
 
 Under normal operation (ie outside of the menu), holding "1" toggles the alarm on/off.
 
-The alarm time can also quickly be set by typing ```11hhMM``` (eg. 110645 for 6:45am, or 112300 for 11:00pm) and pressing ENTER, just like when setting a time travel destination time. (The weekday selection has still to be done via the keypad menu.) Keypad command ```11``` shows the currently set time and weekday selection briefly.
+The alarm time can also quickly be set by typing ```11hhMM``` (eg. ```110645``` for 6:45am, or ```112300``` for 11:00pm) and pressing ENTER, just like when setting a time travel destination time. (The weekday selection has still to be done via the keypad menu.) Keypad command ```11``` shows the currently set time and weekday selection briefly.
 
 The alarm is recurring, i.e. it rings daily at the programmed time, unless disabled. 
 
