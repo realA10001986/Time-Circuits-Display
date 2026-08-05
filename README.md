@@ -210,7 +210,7 @@ In World Clock (WC) mode, the red and yellow displays show not some stale times,
 |:--:|
 | *World Clock mode* |
 
-WC mode is toggled through keypad command 112. If an SD card is present, WC mode is persistent across reboots. To return to the default display mode, enter keypad command 110.
+WC mode is toggled through keypad command ```112```. If an SD card is present, WC mode is persistent across reboots. To return to the default display mode, enter keypad command ```110```.
 
 For logical reasons, WC mode will be automatically disabled in some situations:
 
@@ -225,11 +225,11 @@ In this mode, which is a hybrid of [Room Condition (RC) mode](#room-condition-mo
 |:--:|
 | *WC/RC hybrid mode* |
 
-To toggle WC/RC hybrid mode, enter keypad command 113. To return to the default display mode, enter keypad command 110.
+To toggle WC/RC hybrid mode, enter keypad command ```113```. To return to the default display mode, enter keypad command ```110```.
 
 ### Minimal mode
 
-In "Minimal" mode, the *Present Time* display shows the weekday instead of the year, the other displays are switched off. To enable this mode, enter keypad command 117. If an SD card is present, Minimal mode is persistent across reboots. To return to the default display mode, enter keypad command 110.
+In "Minimal" mode, the *Present Time* display shows the weekday instead of the year, the other displays are switched off. To enable this mode, enter keypad command ```117```. If an SD card is present, Minimal mode is persistent across reboots. To return to the default display mode, enter keypad command ```110```.
 
 Minimal mode is disabled automatically under the same conditions as World Clock mode.
 
@@ -1839,11 +1839,11 @@ If this option is checked, the TCD waits for a ```POWER_ON``` command from HA/MQ
 
 If this option is unchecked, the TCD starts without waiting.
 
-Note: If both this and the option *__HA controls Fake-Power at startup__* are checked, the TCD will switch Fake-Power on if a connection to the broker can't be established within 45 seconds after booting. Keypad command 996 can be then used to switch off HA Fake-Power control.
+Note: If both this and the option *__HA controls Fake-Power at startup__* are checked, the TCD will switch Fake-Power on if a connection to the broker can't be established within 45 seconds after booting. Keypad command ```996``` can be then used to switch off HA Fake-Power control.
 
 ##### &#9193; Message/Topic for 60x
 
-Those text fields contain both topics as well as messages to be sent through keypad commands 600 to 609.
+Those text fields contain both topics as well as messages to be sent through keypad commands ```600``` to ```609```.
 
 ## Appendix B: Time zones
 
