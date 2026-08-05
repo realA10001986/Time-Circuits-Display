@@ -545,7 +545,7 @@ On the Config Portal's "Settings" page, there is an option item named **_Make ti
 >For using this feature, an SD card is required and the option **_Save secondary settings on SD_** must be checked as well.
 
 If time travels are persistent
-- any *destination time* entered (by typing mmddyyyyhhMM/mmddyyyy/hhMM) is immediately saved and retrieved upon power-up/reboot.
+- any *destination time* entered (by typing ```mmddyyyyhhMM```/```mmddyyyy```/```hhMM```) is immediately saved and retrieved upon power-up/reboot.
 - *last time departed* is saved when changed during a time travel and retrieved upon power-up/reboot.
 - *present time*, be it actual present time or "fake" after time travelling, will continue to run while the device is not powered, as long as its battery lasts, and displayed on power-up/reboot.
 
