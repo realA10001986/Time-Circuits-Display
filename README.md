@@ -237,11 +237,11 @@ Minimal mode is disabled automatically under the same conditions as World Clock 
 
 In this mode, the TCD shows a fixed, pre-programmed time in the *Present Time* display. Also after a time travel, the *Present Time* display will stay fixed at the time you travelled to. This is useful for exhibitions or for filming.
 
-To enable this mode, enter keypad command 999. The default fixed time will be displayed. To change this time, type 99mmddyyyyhhMM followed by ENTER. Keypad command 999 takes you back to normal mode.
+To enable this mode, enter keypad command ```999```. The default fixed time will be displayed. To change this time, type ```99mmddyyyyhhMM``` followed by ENTER. Keypad command ```999``` takes you back to normal mode.
 
 Exhibition mode is persistent; the pre-programmed time will be stored and retrieved after a reboot/power-down.
 
-Not strictly part of Exhibition mode, but related: If you want your TCD to display specific times in the *Destination Time* and/or *Last Time Departed* displays, you can program those times through the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays). To quickly reset the displays to your pre-programmed times (such as after a time travel, during which they were replaced by other dates/times), enter keypad command 998.
+Not strictly part of Exhibition mode, but related: If you want your TCD to display specific times in the *Destination Time* and/or *Last Time Departed* displays, you can program those times through the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays). To quickly reset the displays to your pre-programmed times (such as after a time travel, during which they were replaced by other dates/times), enter keypad command ```998```.
 
 ### Audio Output
 
@@ -251,13 +251,13 @@ Control boards 1.4.5 and later have two ways of audio output:
 
 By default, all audio is played over the speaker. 
 
-Keypad command 351 enables playback over line-out for
+Keypad command ```351``` enables playback over line-out for
 - music and
 - time travel sounds.
 
 All other sounds, which are supposed to be emitted by the TCD itself, are always played over the built-in speaker. Note that the TCD's volume control (knob, software-selected level, rotary encoder) only has impact on the built-in speaker.
 
-Keypad command 350 disables line-out output. 
+Keypad command ```350``` disables line-out output. 
 
 The chosen line-out setting is persistent over reboots.
 
@@ -277,7 +277,7 @@ In this case, head to the Config Portal and
 
 Then enter the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays) and set your favorite *Destination* and *Last time departed* times.
 
-Time-travelling will naturally lead to the displays showing other times. To bring them back without rebooting, enter keypad command 998.
+Time-travelling will naturally lead to the displays showing other times. To bring them back without rebooting, enter keypad command ```998```.
 
 #### 	&#9193; I want my TCD to show/cycle movie times
 
@@ -528,13 +528,13 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
 
 #### Remote controlling the TCD's keypad
 
-The TCD's keypad can be remote controlled through either [Flux Capacitor](https://circuitsetup.us/product/flux-capacitor-light-sound-kit/) or [SID](https://circuitsetup.us/product/delorean-time-machine-status-indicator-display-sid/), using their respective IR remote control. In order to permit keypad remote controlling, enter keypad command 995. To prohibit remote controlling, enter keypad command 994. No further configuration is required on the TCD's side. Please see the [Flux Capacitor](https://fc.out-a-ti.me) and/or [SID](https://sid.out-a-ti.me) documentation for details. 
+The TCD's keypad can be remote controlled through either [Flux Capacitor](https://circuitsetup.us/product/flux-capacitor-light-sound-kit/) or [SID](https://circuitsetup.us/product/delorean-time-machine-status-indicator-display-sid/), using their respective IR remote control. In order to permit keypad remote controlling, enter keypad command ```995```. To prohibit remote controlling, enter keypad command ```994```. No further configuration is required on the TCD's side. Please see the [Flux Capacitor](https://fc.out-a-ti.me) and/or [SID](https://sid.out-a-ti.me) documentation for details. 
 
 ## Time travel
 
 To travel through time, hold "0" for 2 seconds (or use an [external trigger](#external-time-travel-trigger)). The *destination time*, as shown in the red display, will be your new *present time*, the old *present time* will be the *last time departed*. The new *present time* will continue to run like a normal clock.
 
-Before triggering the time travel, you can also first quickly set a new destination time by entering a date on the keypad: mmddyyyy, mmddyyyyhhMM or hhMM, then press ENTER. While typing, there is no visual feedback, but the date is then shown on the *destination time* display after pressing ENTER.
+Before triggering the time travel, you can also first quickly set a new destination time by entering a date on the keypad: ```mmddyyyy```, ```mmddyyyyhhMM``` or ```hhMM```, then press ENTER. While typing, there is no visual feedback, but the date is then shown on the *destination time* display after pressing ENTER.
 
 To travel back to actual present time, hold "9" for 2 seconds.
 
@@ -568,9 +568,9 @@ The beep can be permanently disabled, permanently enabled, or enabled for 30 or 
 - after switching on the TCD (real power-up or fake power-up),
 - after changing "speed" using a [Rotary Encoder](#rotary-encoder).
 
-The different modes are selected through keypad commands 20 (disabled), 21 (enabled), 22 (enabled for 30 secs) or 23 (enabled for 60 secs).
+The different modes are selected through keypad commands ```20``` (disabled), ```21``` (enabled), ```22``` (enabled for 30 secs) or ```23``` (enabled for 60 secs).
 
-The beep volume level can be selected relative to general volume, in four steps (keypad commands 30-33). _Relative to general volume_ means that the beep volume is a percentage of general volume, and as a result, the lower your general volume, the less of a difference will be between the relative beep levels.
+The beep volume level can be selected relative to general volume, in four steps (keypad commands ```30```-```33```). _Relative to general volume_ means that the beep volume is a percentage of general volume, and as a result, the lower your general volume, the less of a difference will be between the relative beep levels.
 
 For technical reasons, the beep is suppressed whenever other sounds are played-back.
 
@@ -619,9 +619,9 @@ For information on supported sensor models/types and configuration, see [here](A
 
 The alarm function works like any common alarm clock: An alarm sounds at a pre-programmed time.
 
-The alarm can be programmed through the [keypad menu](#how-to-set-up-the-alarm) or quickly through keypad command 11hhMM (h=hour, 0-23; m=minute). Weekday selection must be done through the [keypad menu](#how-to-set-up-the-alarm).
+The alarm can be programmed through the [keypad menu](#how-to-set-up-the-alarm) or quickly through keypad command ```11hhMM``` (h=hour, 0-23; m=minute). Weekday selection must be done through the [keypad menu](#how-to-set-up-the-alarm).
 
-Holding "1" enables and disables the alarm; the state is shown by the dot in the present time's minute field. Keypad command 11 shows the currently programmed alarm time and the weekdays.
+Holding "1" enables and disables the alarm; the state is shown by the dot in the present time's minute field. Keypad command ```11``` shows the currently programmed alarm time and the weekdays.
 
 As regards the alarm event itself, the alarm function knows two modes of operation: Legacy and Extended.
 
@@ -637,7 +637,7 @@ If Snooze is enabled in the Config Portal,
 
 If Auto-Snooze is enabled, and the user does not react to the alarm with the ENTER button, the alarm will be silenced after two minutes and automatically repeat after the configured "Snooze Time".
 
-While on snooze, the _Present time_'s minute's dot blinks and the alarm can be cancelled by keypad command 12.
+While on snooze, the _Present time_'s minute's dot blinks and the alarm can be cancelled by keypad command ```12```.
 
 Alarms can also be stopped or put into snooze through [Home Assistant](#home-assistant--mqtt) (ALARM_STOP, ALARM_SNOOZE).
 
@@ -651,23 +651,23 @@ An alarm can also be signalled through the [TT-OUT pin](-signals-alarm) to third
 
 The firmware features a simple count-down timer. This timer can count down from max 99 minutes and plays a sound upon expiration.
 
-- To set the timer to MM minutes, type 44MM and press ENTER. A single-digit number of minutes must be preceded by 0.
-- To cancel a running timer, type 440 and press ENTER.
-- The check the remaining time, type 44 and press ENTER.
+- To set the timer to MM minutes, type ```44MM``` and press ENTER. A single-digit number of minutes must be preceded by 0.
+- To cancel a running timer, type ```440``` and press ENTER.
+- The check the remaining time, type ```44``` and press ENTER.
 
 ## Yearly/monthly reminder
 
 A reminder is yearly or monthly alarm.
 
-To program a yearly reminder, enter 77mmddhhMM and press ENTER. For example: 7705150900 sets the reminder to May 15, 9am. Now a reminder sound will play every year on May 15 at 9am.
+To program a yearly reminder, enter ```77mmddhhMM``` and press ENTER. For example: ```7705150900``` sets the reminder to May 15, 9am. Now a reminder sound will play every year on May 15 at 9am.
 
-To program a monthly reminder, enter 7700ddhhMM and press ENTER. For example: 7700152300 sets the reminder to the 15th of each month, at 11pm.
+To program a monthly reminder, enter ```7700ddhhMM``` and press ENTER. For example: ```7700152300``` sets the reminder to the 15th of each month, at 11pm.
 
 You can also leave out the hhMM part; in that case the time remains unchanged from a previous setting, unless both hour and minute were 0 (zero), in which case the reminder time is set to 9am.
 
 _All fields consist of two digits, and hours are entered in 24-hour notation._
 
-Keypad command 77 displays the programmed reminder, 770 deletes it, and 777 displays the days/hours/minutes until the next reminder.
+Keypad command ```77``` displays the programmed reminder, ```770``` deletes it, and ```777``` displays the days/hours/minutes until the next reminder.
 
 At the time the reminder is due, the TCD plays a sound. If a file named "reminder.mp3" is on your SD card, this will be played instead of the default sound.
 
@@ -747,9 +747,9 @@ To add files to a music folder later, just copy them to the folder and delete th
 
 To start and stop music playback, hold 5. Holding 2 jumps to the previous track, holding 8 to the next one.
 
-By default, the tracks are played in order, starting at 000.mp3, followed by 001.mp3 and so on. By entering keypad command 555 you can switch to shuffle mode, in which the tracks are played in random order. Keypad command 222 switches back to consecutive mode. The Shuffle mode state is saved and persistent across reboots.
+By default, the tracks are played in order, starting at 000.mp3, followed by 001.mp3 and so on. By entering keypad command ```555``` you can switch to shuffle mode, in which the tracks are played in random order. Keypad command ```222``` switches back to consecutive mode. The Shuffle mode state is saved and persistent across reboots.
 
-Keypad command 888 re-starts the player at track 000, and 888xxx (xxx = three-digit number) jumps to track #xxx.
+Keypad command ```888``` re-starts the player at track 000, and ```888xxx``` (xxx = three-digit number) jumps to track #xxx.
 
 See [here](#keypad-reference) for a list of controls of the music player.
 
@@ -804,7 +804,7 @@ When the alarm is set and enabled, the dot in the present time's minute field wi
 
 Under normal operation (ie outside of the menu), holding "1" toggles the alarm on/off.
 
-The alarm time can also quickly be set by typing 11hhMM (eg. 110645 for 6:45am, or 112300 for 11:00pm) and pressing ENTER, just like when setting a time travel destination time. (The weekday selection has still to be done via the keypad menu.) Keypad command 11 shows the currently set time and weekday selection briefly.
+The alarm time can also quickly be set by typing ```11hhMM``` (eg. 110645 for 6:45am, or 112300 for 11:00pm) and pressing ENTER, just like when setting a time travel destination time. (The weekday selection has still to be done via the keypad menu.) Keypad command ```11``` shows the currently set time and weekday selection briefly.
 
 The alarm is recurring, i.e. it rings daily at the programmed time, unless disabled. 
 
@@ -825,7 +825,7 @@ By default, the device uses the built-in hardware volume knob to determine the d
 
 Pressing "9" at any point cancels and quits the menu.
 
-You can also quickly set the volume through keypad commands 300-320 (select a level) and 399 (enables the volume knob).
+You can also quickly set the volume through keypad commands ```300```-```320``` (select a level) and ```399``` (enables the volume knob).
 
 If you are using a Rotary Encoder for volume, you need to disable the volume knob by pre-selecting a level (00-20). While the built-in volume knob is active, the Rotary Encoder will do nothing.
 
@@ -896,11 +896,11 @@ The time you entered will be re-set/overruled/re-adjusted when the TCD has acces
 - Data entry works as described [above](#the-keypad-menu); remember that months need to be entered numerically (01-12), and hours in 24-hour notation (0-23).
 - After entering data into all fields, the data is saved and the menu is left automatically.
 
-Your entered date/time(s) are stored, and shown until replaced by the results of time travels; you can then quickly bring your times back to the displays by entering keypad command 998.
+Your entered date/time(s) are stored, and shown until replaced by the results of time travels; you can then quickly bring your times back to the displays by entering keypad command ```998```.
 
 When entering dates/times into the *destination time* or *last time departed* displays, Time-cycling Interval is paused for 30 minutes. 
 
-Alternatively, you can program and store a "destination time" outside of the keypad menu by typing 91mmddyyyyhhMM, and a "last time departed" by 92mmddyyyyhhMM. 
+Alternatively, you can program and store a "destination time" outside of the keypad menu by typing ```91mmddyyyyhhMM```, and a "last time departed" by ```92mmddyyyyhhMM```. 
 
 #### How to view sensor info
 
@@ -1036,7 +1036,7 @@ Three different notations are supported:
 - DMS: Degrees, minutes, seconds;
 - DMD: Degrees, decimal minutes. This is the most precise one of the three.
 
-To toggle geolocation mode, enter keypad commands 114 (DD), 115 (DMS) or 116 (DMD). Geolocation mode is mutually exclusive to World Clock, Room Condition and Minimal mode, and disabled when a Time Travel is initiated. If an SD card is present, Geolocation mode is persistent across reboots.
+To toggle geolocation mode, enter keypad commands ```114``` (DD), ```115``` (DMS) or ```116``` (DMD). Geolocation mode is mutually exclusive to World Clock, Room Condition and Minimal mode, and disabled when a Time Travel is initiated. If an SD card is present, Geolocation mode is persistent across reboots.
 
 ### GPS for speed
 
@@ -1075,11 +1075,11 @@ Remarks:
 
 ### Rotary Encoder for Audio Volume
 
-A rotary encoder for volume replaces the volume knob on back of the TCD's keypad. The advantages of the rotary encoder are that it is more precise, especially at lower volume levels, and it can be physically relocated. To use a rotary encoder for volume, the TCD's own volume knob must be disabled; this is done by pre-selecting an audio level in the keypad menu or by entering keypad commands 3xx (xx being 00-20).
+A rotary encoder for volume replaces the volume knob on back of the TCD's keypad. The advantages of the rotary encoder are that it is more precise, especially at lower volume levels, and it can be physically relocated. To use a rotary encoder for volume, the TCD's own volume knob must be disabled; this is done by pre-selecting an audio level in the keypad menu or by entering keypad commands ```3xx``` (xx being 00-20).
 
 ## Room Condition Mode, Temperature/humidity sensor
 
-The firmware supports various [temperature/humidity sensors](AddOns.md#temperaturehumidity-sensor) for "Room Condition mode"; in this mode, *destination* and *last departed* times are replaced by temperature and humidity, respectively. To toggle between normal and Room Condition mode, enter 111 and press ENTER. If an SD card is present, Room Condition mode is persistent across reboots.
+The firmware supports various [temperature/humidity sensors](AddOns.md#temperaturehumidity-sensor) for "Room Condition mode"; in this mode, *destination* and *last departed* times are replaced by temperature and humidity, respectively. To toggle between normal and Room Condition mode, enter ```111``` and press ENTER. If an SD card is present, Room Condition mode is persistent across reboots.
 
 ![rcmode](img/rcmode.jpg)
 
@@ -1121,9 +1121,9 @@ As [discussed](#connecting-to-a-wifi-network), in a car or other places without 
 
 When set in *Car Mode*, the TCD _always boots into AP-mode_, regardless of a configured WiFi network. Not attempting to connect to a network speeds up the boot process and allows other BTTFN-capable props to quickly connect to "TCD-AP".
 
-To enable *Car Mode*, enter keypad command 991. The TCD will reboot in AP mode. If a WiFi network to connect to is configured at that point, it is ignored; no connection attempt is made.
+To enable *Car Mode*, enter keypad command ```991```. The TCD will reboot in AP mode. If a WiFi network to connect to is configured at that point, it is ignored; no connection attempt is made.
 
-To disable *Car Mode*, enter keypad command 990. The TCD will reboot and attempt to connect to a previously configured WiFi network.
+To disable *Car Mode*, enter keypad command ```990```. The TCD will reboot and attempt to connect to a previously configured WiFi network.
 
 *Car Mode* is persistent, i.e. it remains active (even across reboots and power-downs) until disabled.
 
@@ -1150,7 +1150,7 @@ If the option [TT-OUT (IO14) pin] **_signals alarm_** is checked in the Config P
 
 #### Switching TT-OUT manually
 
-If the option [TT-OUT (IO14) pin] **_is controlled by commands 990/991_** is checked in the Config Portal, commands 900 (off) and 901 (on) allow switching this pin manually. The power-up state of the TT OUT pin can be set to HIGH by checking the **_Power-up state HIGH_** option.
+If the option [TT-OUT (IO14) pin] **_is controlled by commands 990/991_** is checked in the Config Portal, commands ```900``` (off) and ```901``` (on) allow switching this pin manually. The power-up state of the TT OUT pin can be set to HIGH by checking the **_Power-up state HIGH_** option.
 
 #### Limitations
 
@@ -1185,7 +1185,7 @@ Only ASCII messages are supported, the maximum length is 255 characters.
 
 ### Send messages
 
-The TCD can send configurable messages to configurable topics through keypad commands "600" up to "609". Both topics and messages are programmed in the Config Portal.
+The TCD can send configurable messages to configurable topics through keypad commands ```600``` up to ```609```. Both topics and messages are programmed in the Config Portal.
 
 ### Control the TCD via MQTT
 
@@ -1240,7 +1240,7 @@ In order to let HA/MQTT control fake power, first publish ```POWER_CONTROL_ON```
 
 The initial power-up state of POWER_CONTROL and POWER can be configured in the [Config Portal](#-ha-controls-fake-power-at-startup).
 
-Keypad command 996 works like ```POWER_CONTROL_OFF```; it allows to separate HA from Fake-Power control. This is useful when, for instance, the broker isn't reachable.
+Keypad command ```996``` works like ```POWER_CONTROL_OFF```; it allows to separate HA from Fake-Power control. This is useful when, for instance, the broker isn't reachable.
 
 ### Notify other devices of a time travel or alarm
 
@@ -1289,9 +1289,9 @@ Limitations: TLS/SSL not supported; ".local" domains (MDNS, Bonjour) not support
 
 CircuitSetup's [kit for modifying a Futaba remote control](https://circuitsetup.us/product/futaba-remote-stanley-display-wireless-control-kit/) allows, among many features, to control the TCD's speedo. The Remote can increase/decrease speed, trigger a time travel, switch fake power, and more. 
 
-In order to permit remote controlling, enter keypad command 993. No further configuration is required on the TCD's side.
+In order to permit remote controlling, enter keypad command ```993```. No further configuration is required on the TCD's side.
 
-To prohibit remote controlling, enter keypad command 992. 
+To prohibit remote controlling, enter keypad command ```992```. 
 
 For more information, see [here](https://remote.out-a-ti.me).
 
@@ -1465,7 +1465,7 @@ Selects whether the animated intro should be played upon power-up.
 
 ##### &#9193; Beep mode
 
-Selects the ["beep"](#beep-on-the-second) mode. "Auto: xx secs" enables the beep for xx seconds after entering a destination time, after triggering a time travel, and upon (real or fake) power-on. Can be changed at any time through keypad commands 20 (off), 21 (on), 22 (Auto 30secs) or 23 (Auto 60secs).
+Selects the ["beep"](#beep-on-the-second) mode. "Auto: xx secs" enables the beep for xx seconds after entering a destination time, after triggering a time travel, and upon (real or fake) power-on. Can be changed at any time through keypad commands ```20``` (off), ```21``` (on), ```22``` (Auto 30secs) or ```23``` (Auto 60secs).
 
 ##### &#9193; Time-cycling interval
 
@@ -1513,9 +1513,9 @@ Name of your preferred NTP (network time protocol) server for time synchronizati
 
 ##### &#9193; Use GPS time
 
-If this option is checked (which it is by default), the TCD uses GPS as a source for authorative time, in the same way like NTP.
+If this option is checked (which it is by default), the TCD uses GPS as a source for authoritative time, in the same way like NTP.
 
-The issue with GPS time and the reason for this option is so-called "GPS week rollovers". Traditional GPS (L1/L1A aka "Legacy C/A") encodes time information in shape of "number of weeks" since 1980, and uses a 10 bit counter. As a result, this counter overflows every 1024 weeks, which is every about 19 years. The receivers' firmware is usually pretty dumb and only works for one of those periods (and it appears manufacturers prohibit longer periods of operation on purpose by refusing manual date/time feeds beyond the next rollover). The TCD firmware knows some measures to overcome a rollover if it were handled smartly, but I have no idea what the receivers actually are going to do (report time 19 years in the past? Report any time in the past, perhaps depending on the firmware's week-offet? Stop working at all?), and I cannot test this in any way. In case the TCD syncs to wrong time as a result of the receiver unable to properly cope with a roll-over, you can disable usage of GPS time information using this option. The next rollover is due in 2038, but trouble might come earlier, if the receiver firmware uses a week-offset to shift its working period across a rollover. According to the datasheets of some MTK3333 receivers, these might stop reporting correct time already in 2034. More modern GPS signals (L1C, L2C, L5) overcome this issue by using 13 bits for weeks, but given those signals are either not yet broadcast by many satellites and/or considered pre-operational as of this writing (2026), and rollout plans reach into the early 2030s, receivers supporting them are scarce and unreasonably expensive.
+The issue with GPS time and the reason for this option is so-called "GPS week rollovers". Traditional GPS (L1/L1A aka "Legacy C/A") encodes time information in shape of "number of weeks" since 1980, and uses a 10 bit counter. As a result, this counter overflows every 1024 weeks, which is every about 19 years. The receivers' firmware is usually pretty dumb and only works for one of those periods (and it appears manufacturers prohibit longer periods of operation on purpose by refusing manual date/time feeds beyond the next rollover). The TCD firmware knows some measures to overcome a rollover if it were handled smartly, but I have no idea what the receivers actually are going to do (report time 19 years in the past? Report any time in the past, perhaps depending on the firmware's week-offset? Stop working at all?), and I cannot test this in any way. In case the TCD syncs to wrong time as a result of the receiver unable to properly cope with a roll-over, you can disable usage of GPS time information using this option. The next rollover is due in 2038, but trouble might come earlier, if the receiver firmware uses a week-offset to shift its working period across a rollover. According to the datasheets of some MTK3333 receivers, these might stop reporting correct time already in 2034. More modern GPS signals (L1C, L2C, L5) overcome this issue by using 13 bits for weeks, but given those signals are either not yet broadcast by many satellites and/or considered pre-operational as of this writing (2026), and rollout plans reach into the early 2030s, receivers supporting them are scarce and unreasonably expensive.
 
 #### <ins>World Clock mode</ins>
 
@@ -1549,7 +1549,7 @@ This allows choosing between standard/legacy or extended [alarm function](#alarm
 
 ##### &#9193; Snooze
 
-This enables the Snooze funcion. If enabled, (briefly) pressing ENTER while the alarm sounds activates a repeated alarm after a selectable time period ("Snooze Time"). 
+This enables the Snooze function. If enabled, (briefly) pressing ENTER while the alarm sounds activates a repeated alarm after a selectable time period ("Snooze Time"). 
 
 ##### &#9193; Snooze Time
 
@@ -1561,7 +1561,7 @@ If this is checked, and the user does not react to an alarm by either pressing o
 
 ##### &#9193; Loop user-provided Alarm sound
 
-The alarm plays for 2 minutes. If the alarm sound is [substituted](#sound-substitution) by a user-provided mp3 file, this option allows looping it, which is useful if it is considerably shorter than two minutes. Note that you can only snooze or disable the alarm using the ENTER button while the alarm sounds. Afterwards the alarm can only be stopped through keypad command 12 if snooze is enabled.
+The alarm plays for 2 minutes. If the alarm sound is [substituted](#sound-substitution) by a user-provided mp3 file, this option allows looping it, which is useful if it is considerably shorter than two minutes. Note that you can only snooze or disable the alarm using the ENTER button while the alarm sounds. Afterwards the alarm can only be stopped through keypad command ```12``` if snooze is enabled.
 
 #### <ins>Night-mode</ins>
 
@@ -1622,7 +1622,7 @@ See [here](#persistent--non-persistent-time-travels). For this option to take ef
 
 ##### &#9193; Swap red and yellow displays like B-Car
 
-The B-Car had the red and yellow displayes flipped; the red one was mounted at the bottom, the yellow one on top. If you assemble your TCD in that very way, check this option to swap the ways of operation for the red and yellow displays. so that the yellow display will act as the _Destination Time_ display, the red one as _Last Time Departed_. _This option is only available in the A-Car version._
+The B-Car had the red and yellow displays flipped; the red one was mounted at the bottom, the yellow one on top. If you assemble your TCD in that very way, check this option to swap the ways of operation for the red and yellow displays. so that the yellow display will act as the _Destination Time_ display, the red one as _Last Time Departed_. _This option is only available in the A-Car version._
 
 ##### &#9193; Reverse AM/PM like in parts 2/3
 
@@ -1694,7 +1694,7 @@ It appears that the GPS receiver calculates speed on every satellite position up
 
 ##### &#9193; Display temperature
 
-Selects whether temperature as received from a suitable sensor is displayed on the speedo, when it is idle (ie no time travel is in progress, and no speed from GPS or rotary encoder is to be displayed).
+Selects whether temperature as received from a suitable sensor is displayed on the speedo, when it is idle (i.e. no time travel is in progress, and no speed from GPS or rotary encoder is to be displayed).
 
 ##### &#9193; Temperature brightness
 
