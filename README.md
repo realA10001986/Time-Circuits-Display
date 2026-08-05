@@ -1724,7 +1724,7 @@ Selects a delay (in milliseconds) from when pressing the external time travel bu
 
 ##### &#9193; is controlled by commands 990/991
 
-If this option is checked, the state of the TT-OUT pin can be controlled by commands 990 (off) and 991 (on).
+If this option is checked, the state of the TT-OUT pin can be controlled by keypad commands ```990``` (off) and ```991``` (on).
 
 *__Power-up state HIGH:__* If this is checked, the pin will be set HIGH immediately upon power-up. Otherwise it will remain LOW.
 
