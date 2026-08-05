@@ -1802,6 +1802,7 @@ Note: If you
 - have a GPS receiver and your speedo is configured to [display GPS speed](#-display-gps-speed),
 - have installed a [rotary encoder for speed](#rotary-encoder-for-speed), or
 - use a [Futaba remote control](#futaba-remote-control) to control speed on your TCD,
+
 a time travel sequence is triggered upon hitting 88mph. In these cases, speed is not controlled by the TCD, and the TCD therefore cannot know in advance if or when a speed of 88mph is actually reached and, as a result, not inform other props 5 seconds ahead. If the option **Enhanced Time Travel notification** is _unchecked_, there will therefore be a delay (stall) of 5 seconds from when the TCD's GPS/Rotary Encoder/Futaba Remote-induced speed reaches 88mph until the temporal displacement sequence actually starts. As this certainly is undesirable, this option should be checked and your HA/MQTT-controlled prop be enabled to interpret the enhanced TIMETRAVEL command.
 
 For detailed timing information, see [here](AddOns.md#synchronized-time-travel-through-hamqtt).
