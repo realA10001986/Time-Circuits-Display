@@ -1150,7 +1150,7 @@ If the option [TT-OUT (IO14) pin] **_signals alarm_** is checked in the Config P
 
 #### Switching TT-OUT manually
 
-If the option [TT-OUT (IO14) pin] **_is controlled by commands 990/991_** is checked in the Config Portal, commands ```900``` (off) and ```901``` (on) allow switching this pin manually. The power-up state of the TT OUT pin can be set to HIGH by checking the **_Power-up state HIGH_** option.
+If the option [TT-OUT (IO14) pin] **_is controlled by commands 990/991_** is checked in the Config Portal, keypad commands ```900``` (off) and ```901``` (on) allow switching this pin manually. The power-up state of the TT OUT pin can be set to HIGH by checking the **_Power-up state HIGH_** option.
 
 #### Limitations
 
