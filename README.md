@@ -1266,24 +1266,24 @@ BTTFN is the primary way of inter-prop communication. The majority of network fe
 The only inter-prop communication features that are covered by both BTTFN and MQTT are _time travel_ and _alarm_. 
 
 The TCD can send out time travel and alarm notifications through **_either_ MQTT _or_ BTTFN**, and you must make a choice:
-- If the option **_Publish time travel and alarm events_** on the _HA/MQTT Settings_ page is checked, time travel/alarm notifications are exclusively sent over MQTT. That means that all props that are supposed to take part in time travel/alarm sequences must be connected to the same broker. That includes all CircuitSetup/A10001986 props.
+- If the option **_Publish time travel and alarm events_** on the _HA/MQTT Settings_ page is checked, time travel/alarm notifications are exclusively sent over MQTT. Therefore, all props that are supposed to take part in time travel/alarm sequences must be connected to the same broker. That includes all CircuitSetup/A10001986 props.
 - If this option is unchecked, time travel/alarm notifications are sent exclusively over BTTFN.
 
 Checking this option really only makes sense if there are MQTT-capable, but BTTFN-incapable props to take part in time travel/alarm sequences. If that is not the case, please leave this option unchecked.
 
 ### Setup
 
-MQTT requires a "broker" (such as [mosquitto](https://mosquitto.org/), [EMQ X](https://www.emqx.io/), [Cassandana](https://github.com/mtsoleimani/cassandana), [RabbitMQ](https://www.rabbitmq.com/), [Ejjaberd](https://www.ejabberd.im/), [HiveMQ](https://www.hivemq.com/) to name a few).
+MQTT requires a "broker" such as [mosquitto](https://mosquitto.org/), [Cassandana](https://github.com/mtsoleimani/cassandana), [RabbitMQ](https://www.rabbitmq.com/), [Ejjaberd](https://www.ejabberd.im/), [HiveMQ](https://www.hivemq.com/) or [EMQX](https://www.emqx.com/), to name a few. For proper operation with low latency, running the broker on your local network is recommended.
 
 ![MQTT connection](img/stamode-mqtt.png)
 
-The broker's address needs to be configured in the Config Portal. It can be specified either by domain or IP (IP preferred, spares us a DNS call). The default port is 1883. If a different port is to be used, append a ":" followed by the port number to the domain/IP, such as "192.168.1.5:1884". 
+The broker's address needs to be configured in the Config Portal. It can be specified by either domain or IP (IP preferred). The default port is 1883. If a different port is to be used, append a ":" followed by the port number to the domain/IP, such as "192.168.1.5:1884". 
 
 If your broker supports protocol version 3.1.1, stick with 3.1.1. Version 5.0 has no advantages, but more overhead.
 
 If your broker does not allow anonymous logins, a username and password can be specified.
 
-Limitations: TLS/SSL not supported; ".local" domains (MDNS) not supported; maximum message length 255 characters; server/broker must respond to PING (ICMP) echo requests. For proper operation with low latency, it is recommended that the broker is on your local network. Using HA/MQTT will disable [WiFi power saving](#wifi-power-saving-features). MQTT is disabled when the TCD is operated in AP-mode or car mode.
+Limitations: TLS/SSL not supported; ".local" domains (MDNS, Bonjour) not supported; maximum message length 255 characters; the machine running the broker must respond to PING (ICMP) echo requests. Using HA/MQTT will disable [WiFi power saving](#wifi-power-saving-features). MQTT is disabled when the TCD is operated in AP-mode or car mode.
 
 ## Futaba Remote Control
 
