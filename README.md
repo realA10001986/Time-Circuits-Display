@@ -765,7 +765,7 @@ The menu is invoked by holding the ```ENTER``` button for 2 seconds.
 
 Menu navigation uses
 - ```2``` for "up" or "+",
-- "```8``` for "down" or "-",
+- ```8``` for "down" or "-",
 - ```5``` or ```ENTER``` for select, and
 - ```9``` for cancel/quit.
 
@@ -924,7 +924,7 @@ Alternatively, you can program and store a "destination time" outside of the key
 
 #### How to leave the menu:
 
-Press "9" in the main menu.
+Press ```9``` in the main menu.
 
 ## Peripherals
 
@@ -964,7 +964,7 @@ Fake-Power can also be controlled through [HomeAssistant/MQTT](#home-assistant--
 
 ## External Time Travel Trigger
 
-As mentioned above, a time travel can be triggered by holding "0" on the keypad. Since this doesn't really allow for an authentic movie-like experience, the firmware also supports an external trigger, such as a button switch or even another prop to trigger a time travel. Unlike the [Fake Power Switch](#fake-power-switch), this trigger must be a momentary toggle.
+As mentioned above, a time travel can be triggered by holding ```0``` on the keypad. Since this doesn't really allow for an authentic movie-like experience, the firmware also supports an external trigger, such as a button switch or even another prop to trigger a time travel. Unlike the [Fake Power Switch](#fake-power-switch), this trigger must be a momentary toggle.
 
 On Control Boards V1.3 and later, there is a dedicated header for the button labeled "Time Travel". The button needs to connect pins "TT IN" and "GND".
 
