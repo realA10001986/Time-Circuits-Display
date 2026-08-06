@@ -277,14 +277,14 @@ In this case, head to the Config Portal and
 
 Then enter the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays) and set your favorite *Destination* and *Last time departed* times.
 
-Time-travelling will naturally lead to the displays showing other times. To bring them back without rebooting, enter keypad command ```998```.
+Time-traveling will naturally lead to the displays showing other times. To bring them back without rebooting, enter keypad command ```998```.
 
 #### 	&#9193; I want my TCD to show/cycle movie times
 
 In this case, head to the Config Portal and
 - set the **_Time Cycling Interval_** to the desired interval
 
-Time-travelling will interrupt the cycling of movie times for 30 minutes.
+Time-traveling will interrupt the cycling of movie times for 30 minutes.
 
 ### Keypad reference
 
@@ -547,7 +547,7 @@ On the Config Portal's "Settings" page, there is an option item named **_Make ti
 If time travels are persistent
 - any *destination time* entered (by typing ```mmddyyyyhhMM```/```mmddyyyy```/```hhMM```) is immediately saved and retrieved upon power-up/reboot.
 - *last time departed* is saved when changed during a time travel and retrieved upon power-up/reboot.
-- *present time*, be it actual present time or "fake" after time travelling, will continue to run while the device is not powered, as long as its battery lasts, and displayed on power-up/reboot.
+- *present time*, be it actual present time or "fake" after time traveling, will continue to run while the device is not powered, as long as its battery lasts, and displayed on power-up/reboot.
 
 If time travels are non-persistent
 - *destination time* is not saved,
@@ -1085,7 +1085,7 @@ The firmware supports various [temperature/humidity sensors](AddOns.md#temperatu
 
 "WC/RC hybrid mode", which is Room condition mode combined with [World Clock mode](#world-clock-mode), is described [here](#wcrc-hybrid-mode).
 
-Temperature on speedometer display: Unless you do time travelling on a regular basis, the [speedo](#speedometer) is idle most of the time in a typical home setup. To give it more of a purpose, the firmware can display ambient [temperature on the speedo](#-display-temperature) while idle. 
+Temperature on speedometer display: Unless you do time traveling on a regular basis, the [speedo](#speedometer) is idle most of the time in a typical home setup. To give it more of a purpose, the firmware can display ambient [temperature on the speedo](#-display-temperature) while idle. 
 
 A connected sensor is auto-detected, no configuration is required. For information on supported sensor models and wiring, see [here](AddOns.md#temperaturehumidity-sensor).
 
