@@ -1150,7 +1150,7 @@ If the option [TT-OUT (IO14) pin] **_signals alarm_** is checked in the Config P
 
 #### Switching TT-OUT manually
 
-If the option [TT-OUT (IO14) pin] **_is controlled by commands 990/991_** is checked in the Config Portal, keypad commands ```900``` (off) and ```901``` (on) allow switching this pin manually. The power-up state of the TT OUT pin can be set to HIGH by checking the **_Power-up state HIGH_** option.
+If the option [TT-OUT (IO14) pin] **_is controlled by commands 900/901_** is checked in the Config Portal, keypad commands ```900``` (off) and ```901``` (on) allow switching this pin manually. The power-up state of the TT OUT pin can be set to HIGH by checking the **_Power-up state HIGH_** option.
 
 #### Limitations
 
@@ -1722,9 +1722,9 @@ Selects a delay (in milliseconds) from when pressing the external time travel bu
 
 #### <ins>Settings for wired peripherals: TT-OUT (IO14) pin</ins>
 
-##### &#9193; is controlled by commands 990/991
+##### &#9193; is controlled by commands 900/901
 
-If this option is checked, the state of the TT-OUT pin can be controlled by keypad commands ```990``` (off) and ```991``` (on).
+If this option is checked, the state of the TT-OUT pin can be controlled by keypad commands ```900``` (off) and ```901``` (on).
 
 *__Power-up state HIGH:__* If this is checked, the pin will be set HIGH immediately upon power-up. Otherwise it will remain LOW.
 
