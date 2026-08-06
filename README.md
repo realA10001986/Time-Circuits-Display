@@ -639,7 +639,7 @@ If Auto-Snooze is enabled, and the user does not react to the alarm with the ```
 
 While on snooze, the _Present time_'s minute's dot blinks and the alarm can be cancelled by keypad command ```12```.
 
-Alarms can also be stopped or put into snooze through [Home Assistant](#home-assistant--mqtt) (ALARM_STOP, ALARM_SNOOZE).
+Alarms can also be stopped or put into snooze through [Home Assistant](#home-assistant--mqtt) (```ALARM_STOP```, ```ALARM_SNOOZE```).
 
 A [substitution](#sound-substitution) alarm sound file will be played once. If it is considerably shorter than two minutes, it can be "looped". However, it is stopped after two minutes.
 
