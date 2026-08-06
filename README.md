@@ -651,7 +651,7 @@ An alarm can also be signalled through the [TT-OUT pin](-signals-alarm) to third
 
 The firmware features a simple count-down timer. This timer can count down from max 99 minutes and plays a sound upon expiration.
 
-- To set the timer to MM minutes, type ```44MM``` and press ENTER. A single-digit number of minutes must be preceded by 0.
+- To set the timer to MM minutes, type ```44MM``` and press ```ENTER```. A single-digit number of minutes must be preceded by 0.
 - To cancel a running timer, enter keypad command ```440```.
 - The check the remaining time, enter keypad command ```44```.
 
