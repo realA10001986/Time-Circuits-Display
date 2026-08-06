@@ -890,10 +890,10 @@ The time you entered will be re-set/overruled/re-adjusted when the TCD has acces
 #### How to program dates/times for the *Destination* and *Last Time Departed* displays:
 
 - Hold ```ENTER``` to invoke main menu
-- Press ```2```/```8``` repeatedly until the display says "PROGRAME DATE" and the desired display shows a date and time
+- Press ```2```/```8``` repeatedly until the display says "PROGRAM DATE" and the desired display shows a date and time
 - Press ```5``` or ```ENTER```
 - The display goes off and only the field to enter data into is shown, pre-set with its current value
-- Data entry works as described [above](#the-keypad-menu); remember that months need to be entered numerically (01-12), and hours in 24-hour notation (0-23).
+- Data entry works as described [above](#the-keypad-menu); remember that months need to be entered numerically (01-12), and hours in 24-hour notation (00-23).
 - After entering data into all fields, the data is saved and the menu is left automatically.
 
 Your entered date/time(s) are stored, and shown until replaced by the results of time travels; you can then quickly bring your times back to the displays by entering keypad command ```998```.
