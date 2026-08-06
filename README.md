@@ -112,7 +112,7 @@ To connect your TCD to your WiFi network, navigate to the Config Portal and clic
   
 >If there are several APs with identical SSID nearby, the TCD will connect to the first one found which might not be the nearest/strongest. It is therefore recommended to select a specific AP by its BSSID (AP's MAC address). You can either manually find out your AP's BSSID and enter it or have it filled out automatically: Click "Scan for networks", then "Show all". If you click on an AP, its BSSID will be copied into BSSID field in the form below. To see which AP is which, hover over the name to see its BSSID as a tooltip.
 
->The TCD requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). If the device is inaccessible as a result of incorrect static IPs, hold ENTER while powering it up until the white LED lights up; static IP data will be deleted and the device will return to DHCP.
+>The TCD requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). If the device is inaccessible as a result of incorrect static IPs, hold ```ENTER``` while powering it up until the white LED lights up; static IP data will be deleted and the device will return to DHCP.
 </details>
 
 After saving the WiFi configuration settings, the TCD reboots and tries to connect to your selected WiFi network. If that fails, it will again start in access point mode.
@@ -145,7 +145,7 @@ It can be accessed as follows:
 
   >Accessing the Config Portal through this address requires the operating system of your handheld/computer to support Bonjour/mDNS: Windows 10 version TH2     (1511) [other sources say 1703] and later, Android 13 and later; MacOS and iOS since the dawn of time.
 
-  >If connecting to http://timecircuits.local fails due to a name resolution error, you need to find out the TCD's IP address: Hold ENTER on the TCD's keypad for 2 seconds, then repeatedly  press 8 until "NETWORK" is shown, then press 5. The TCD will show its current IP address. Then, on your handheld or computer, navigate to http://a.b.c.d (a.b.c.d being the IP address as shown on the display) in order to enter the Config Portal.
+  >If connecting to http://timecircuits.local fails due to a name resolution error, you need to find out the TCD's IP address: Hold ```ENTER``` on the TCD's keypad for 2 seconds, then repeatedly  press 8 until "NETWORK" is shown, then press ```5```. The TCD will show its current IP address. Then, on your handheld or computer, navigate to http://a.b.c.d (a.b.c.d being the IP address as shown on the display) in order to enter the Config Portal.
 </details>
 
 In the main menu, click on "Settings" or "Peripherals" to configure your TCD. 
@@ -162,7 +162,7 @@ A full reference of the Config Portal is [here](#appendix-a-the-config-portal).
 
 *Destination time* and *Last time departed* are stale. These, by default, work like in the movie: Upon a time travel, *present time* becomes *last time departed*, and *destination time* becomes *present time*. Or in Doc's words: The red one tells you where you're going. The green one tells you where you are. The yellow one tells you where you were.
 
-The keypad is for programming destination times like in the movies and for controlling the TCD through commands. "Keypad commands" are multi-digit codes to be typed on the digit keys followed by ENTER. ENTER is the button right above the "Clear" badge.
+The keypad is for programming destination times like in the movies and for controlling the TCD through commands. "Keypad commands" are multi-digit codes to be typed on the digit keys followed by ```ENTER```. ```ENTER``` is the button right above the "Clear" badge.
 
 <details>
 <summary>"REPLACE BATTERY" displayed on boot?</summary>
@@ -237,7 +237,7 @@ Minimal mode is disabled automatically under the same conditions as World Clock 
 
 In this mode, the TCD shows a fixed, pre-programmed time in the *Present Time* display. Also after a time travel, the *Present Time* display will stay fixed at the time you travelled to. This is useful for exhibitions or for filming.
 
-To enable this mode, enter keypad command ```999```. The default fixed time will be displayed. To change this time, type ```99mmddyyyyhhMM``` followed by ENTER. Keypad command ```999``` takes you back to normal mode.
+To enable this mode, enter keypad command ```999```. The default fixed time will be displayed. To change this time, type ```99mmddyyyyhhMM``` followed by ```ENTER```. Keypad command ```999``` takes you back to normal mode.
 
 Exhibition mode is persistent; the pre-programmed time will be stored and retrieved after a reboot/power-down.
 
@@ -294,7 +294,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
 
 <table id="commandref">
     <tr>
-     <td align="center" colspan="2">Destination time programming<br>(&#9166; = ENTER key)</td>
+     <td align="center" colspan="2">Destination time programming<br>(&#9166; = <code>ENTER</code> key)</td>
     </tr>
     <tr>
      <td align="center"><code>mmddyyyyhhMM</code>&#9166;</td>
@@ -312,7 +312,7 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
 
 <table>
     <tr>
-     <td align="center" colspan="2">Keypad commands<br>(&#9166; = ENTER key)</td>
+     <td align="center" colspan="2">Keypad commands<br>(&#9166; = <code>ENTER</code> key)</td>
     </tr>
    <tr>
      <td align="left">Reset display mode (disable 111-117)</a></td>
@@ -503,23 +503,23 @@ mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits)
      <td align="center" colspan="3">Holding keys for 2 seconds</td>
     </tr>
     <tr>
-     <td align="center">1<br>Toggle <a href="#alarm">Alarm</a> on/off</td>
-     <td align="center">2<br><a href="#the-music-player">Music Player</a>: Previous track</td>
-     <td align="center">3<br><a href="#additional-custom-sounds">Play "key3.mp3"</a></td>
+     <td align="center"><code>1</code><br>Toggle <a href="#alarm">Alarm</a> on/off</td>
+     <td align="center"><code>2</code><br><a href="#the-music-player">Music Player</a>: Previous track</td>
+     <td align="center"><code>3</code><br><a href="#additional-custom-sounds">Play "key3.mp3"</a></td>
     </tr>
     <tr>
-     <td align="center">4<br>Toggle <a href="#night-mode">Night mode</a> on/off</td>
-     <td align="center">5<br><a href="#the-music-player">Music Player</a>: Play/Stop</a></td>
-     <td align="center">6<br><a href="#additional-custom-sounds">Play "key6.mp3"</a></td>
+     <td align="center"><code>4</code><br>Toggle <a href="#night-mode">Night mode</a> on/off</td>
+     <td align="center"><code>5</code><br><a href="#the-music-player">Music Player</a>: Play/Stop</a></td>
+     <td align="center"><code>6</code><br><a href="#additional-custom-sounds">Play "key6.mp3"</a></td>
     </tr>
     <tr>
-     <td align="center">7<br><a href="#wifi-power-saving-features">Re-enable WiFi</a></td>
-     <td align="center">8<br><a href="#the-music-player">Music Player</a>: Next track</td>
-     <td align="center">9<br><a href="#time-travel">Return from Time Travel</a></td>
+     <td align="center"><code>7</code><br><a href="#wifi-power-saving-features">Re-enable WiFi</a></td>
+     <td align="center"><code>8</code><br><a href="#the-music-player">Music Player</a>: Next track</td>
+     <td align="center"><code>9</code><br><a href="#time-travel">Return from Time Travel</a></td>
     </tr>
     <tr>
      <td align="center"></td>
-     <td align="center">0<br><a href="#time-travel">Time Travel</a></td>
+     <td align="center"><code>0</code><br><a href="#time-travel">Time Travel</a></td>
      <td align="center"></td>
     </tr>
 </table>
@@ -532,11 +532,11 @@ The TCD's keypad can be remote controlled through either [Flux Capacitor](https:
 
 ## Time travel
 
-To travel through time, hold "0" for 2 seconds (or use an [external trigger](#external-time-travel-trigger)). The *destination time*, as shown in the red display, will be your new *present time*, the old *present time* will be the *last time departed*. The new *present time* will continue to run like a normal clock.
+To travel through time, hold ```0``` for 2 seconds (or use an [external trigger](#external-time-travel-trigger)). The *destination time*, as shown in the red display, will be your new *present time*, the old *present time* will be the *last time departed*. The new *present time* will continue to run like a normal clock.
 
-Before triggering the time travel, you can also first quickly set a new destination time by entering a date on the keypad: ```mmddyyyy```, ```mmddyyyyhhMM``` or ```hhMM```, then press ENTER. While typing, there is no visual feedback, but the date is then shown on the *destination time* display after pressing ENTER.
+Before triggering the time travel, you can also first quickly set a new destination time by entering a date on the keypad: ```mmddyyyy```, ```mmddyyyyhhMM``` or ```hhMM```, then press ```ENTER```. While typing, there is no visual feedback, but the date is then shown on the *destination time* display after pressing ```ENTER```.
 
-To travel back to actual present time, hold "9" for 2 seconds.
+To travel back to actual present time, hold ```9``` for 2 seconds.
 
 ### Persistent / Non-persistent time travels
 
@@ -563,7 +563,7 @@ If you want your device to display exactly the same after a power loss, choose p
 In the movies, the Time Circuits emit a "beep" sound every second, which is only really audible in the scene in which Doc explains to Marty how the time machine works. The firmware supports that beep, too.
 
 The beep can be permanently disabled, permanently enabled, or enabled for 30 or 60 seconds
-- after a destination time is entered (and ENTER is pressed),
+- after a destination time is entered (and ```ENTER``` is pressed),
 - upon triggering a time travel,
 - after switching on the TCD (real power-up or fake power-up),
 - after changing "speed" using a [Rotary Encoder](#rotary-encoder).
@@ -576,7 +576,7 @@ For technical reasons, the beep is suppressed whenever other sounds are played-b
 
 ## Marty's time announcement
 
-As of version 3.23, the TCD, or rather "Marty McFly", will tell you the time out loud on pressing ENTER (without a command).
+As of version 3.23, the TCD, or rather "Marty McFly", will tell you the time out loud on pressing ```ENTER``` (without a command).
 
 ## Night mode
 
@@ -586,7 +586,7 @@ You can configure the displays' behavior in night-mode in the Config Portal: The
 
 #### Manually switching to night-mode
 
-To toggle night-mode on/off manually, hold "4".
+To toggle night-mode on/off manually, hold ```4```.
 
 #### Scheduled night-mode
 
@@ -621,7 +621,7 @@ The alarm function works like any common alarm clock: An alarm sounds at a pre-p
 
 The alarm can be programmed through the [keypad menu](#how-to-set-up-the-alarm) or quickly through keypad command ```11hhMM``` (hh=hour, 00-23; MM=minute, 00-59). Weekday selection must be done through the [keypad menu](#how-to-set-up-the-alarm).
 
-Holding "1" enables and disables the alarm; the state is shown by the dot in the present time's minute field. Keypad command ```11``` shows the currently programmed alarm time and the weekdays.
+Holding ```1``` enables and disables the alarm; the state is shown by the dot in the present time's minute field. Keypad command ```11``` shows the currently programmed alarm time and the weekdays.
 
 As regards the alarm event itself, the alarm function knows two modes of operation: Legacy and Extended.
 
@@ -629,13 +629,13 @@ Legacy means a simple one-time alarm sound at the programmed time. The default a
 
 #### Extended Alarm 
 
-In extended mode, the alarm sounds for two minutes, and can be stopped by pressing or holding ENTER while the alarm sound plays.
+In extended mode, the alarm sounds for two minutes, and can be stopped by pressing or holding ```ENTER``` while the alarm sound plays.
 
 If Snooze is enabled in the Config Portal, 
-- (briefly) pressing ENTER while the alarm sounds starts Snooze: The alarm will be silenced and repeat after the configured "Snooze Time".
-- hold ENTER for 2 seconds while the alarm sounds to stop the alarm.
+- (briefly) pressing ```ENTER``` while the alarm sounds starts Snooze: The alarm will be silenced and repeat after the configured "Snooze Time".
+- hold ```ENTER``` for 2 seconds while the alarm sounds to stop the alarm.
 
-If Auto-Snooze is enabled, and the user does not react to the alarm with the ENTER button, the alarm will be silenced after two minutes and automatically repeat after the configured "Snooze Time".
+If Auto-Snooze is enabled, and the user does not react to the alarm with the ```ENTER``` button, the alarm will be silenced after two minutes and automatically repeat after the configured "Snooze Time".
 
 While on snooze, the _Present time_'s minute's dot blinks and the alarm can be cancelled by keypad command ```12```.
 
@@ -652,16 +652,16 @@ An alarm can also be signalled through the [TT-OUT pin](-signals-alarm) to third
 The firmware features a simple count-down timer. This timer can count down from max 99 minutes and plays a sound upon expiration.
 
 - To set the timer to MM minutes, type ```44MM``` and press ENTER. A single-digit number of minutes must be preceded by 0.
-- To cancel a running timer, type ```440``` and press ENTER.
-- The check the remaining time, type ```44``` and press ENTER.
+- To cancel a running timer, enter keypad command ```440```.
+- The check the remaining time, enter keypad command ```44```.
 
 ## Yearly/monthly reminder
 
 A reminder is yearly or monthly alarm.
 
-To program a yearly reminder, enter ```77mmddhhMM``` and press ENTER. For example: ```7705150900``` sets the reminder to May 15, 9am. Now a reminder sound will play every year on May 15 at 9am.
+To program a yearly reminder, enter ```77mmddhhMM``` and press ```ENTER```. For example: ```7705150900``` sets the reminder to May 15, 9am. Now a reminder sound will play every year on May 15 at 9am.
 
-To program a monthly reminder, enter ```7700ddhhMM``` and press ENTER. For example: ```7700152300``` sets the reminder to the 15th of each month, at 11pm.
+To program a monthly reminder, enter ```7700ddhhMM``` and press ```ENTER```. For example: ```7700152300``` sets the reminder to the 15th of each month, at 11pm.
 
 You can also leave out the hhMM part; in that case the time remains unchanged from a previous setting, unless both hour and minute were 0 (zero), in which case the reminder time is set to 9am.
 
@@ -691,12 +691,12 @@ Your replacements need to be put in the root (top-most) directory of the SD card
 - "nmoff.mp3": Played when manually disabling night mode,
 - "reminder.mp3": Played when the reminder is due.
 - "timer.mp3": Played when the count-down timer expires.
-- "ping.mp3": Played when re-connecting/re-enabling WiFi by holding '7' on the keypad.
+- "ping.mp3": Played when re-connecting/re-enabling WiFi by holding ```7``` on the keypad.
 - "remoteon.mp3" / "remoteoff.mp3": Those are played back if a [Futaba remote control](#futaba-remote-control) takes over speed-control or relinquishes it, respectively. Those sounds are played through [line-out](#audio-output), if enabled.
 
 The following sounds are time-sync'd to display action. If you decide to substitute these with your own, be prepared to lose synchronicity:
-- "enter.mp3": Played when a date was entered and ENTER was pressed.
-- "baddate.mp3": Played when a bad (too short or too long) date was entered and ENTER was pressed.
+- "enter.mp3": Played when a date was entered and ```ENTER``` was pressed.
+- "baddate.mp3": Played when a bad (too short or too long) date was entered and ```ENTER``` was pressed.
 - "intro.mp3": Played during the power-up intro.
 - "travelstart.mp3": Played when a time travel starts (including "acceleration").
 - "travelstart2.mp3": Played when a time travel starts (without "acceleration").
@@ -712,7 +712,7 @@ The firmware supports some additional, user-provided sound effects, which it wil
 - "ttcancel.mp3": Will be played when a time travel acceleration phase is cancelled by hitting the brake on the [Remote](#futaba-remote-control). This sound is played through [line-out](#audio-output), if enabled.
 - "hour.mp3": Will be played every hour, on the hour. This feature is disabled in night mode.
 - "hour-xx.mp3", xx being 00 through 23: Sounds-on-the-hour for specific hours that will be played instead of "hour.mp3". If a sound for a specific hour is not present, "hour.mp3" will be played, if that one exists.
-- "key1.mp3" - "key9.mp3": Will be played on a ```50x``` keypad command (x=1-9); additionally, "key3.mp3"/"key6.mp3" will be played when holding the "3"/"6" key for 2 seconds. Those sounds are played through [line-out](#audio-output), if enabled.
+- "key1.mp3" - "key9.mp3": Will be played on a ```50x``` keypad command (x=1-9); additionally, "key3.mp3"/"key6.mp3" will be played when holding the ```3```/```6``` key for 2 seconds. Those sounds are played through [line-out](#audio-output), if enabled.
 - "ha-alert.mp3": Will be played when a [HA/MQTT](#home-assistant--mqtt) message is received.
 
 Those files are not provided here. You can use any mp3, with a bitrate of 128kpbs or less. Examples are in the install/alt_sound folder.
@@ -745,7 +745,7 @@ Since manually renaming mp3 files is somewhat cumbersome, the firmware can do th
 
 To add files to a music folder later, just copy them to the folder and delete the file "TCD_DONE.TXT" (so that the firmware knows that something has changed). 
 
-To start and stop music playback, hold 5. Holding 2 jumps to the previous track, holding 8 to the next one.
+To start and stop music playback, hold ```5```. Holding ```2``` jumps to the previous track, holding ```8``` to the next one.
 
 By default, the tracks are played in order, starting at 000.mp3, followed by 001.mp3 and so on. By entering keypad command ```555``` you can switch to shuffle mode, in which the tracks are played in random order. Keypad command ```222``` switches back to consecutive mode. The Shuffle mode state is saved and persistent across reboots.
 
@@ -759,17 +759,17 @@ While the music player is playing music, most sound effects are disabled/muted, 
  
 The keypad menu is an additional way to configure your TCD; it only involves the three displays and the keypad. 
 
-The menu is invoked by holding the ENTER button for 2 seconds.
+The menu is invoked by holding the ```ENTER``` button for 2 seconds.
 
 *If the keypad menu is active at a time when the alarm, the reminder, the count-down timer or sound-on-the-hour are due, those events will be missed and no sounds are played.*
 
 Menu navigation uses
-- "2" for "up" or "+",
-- "8" for "down" or "-",
-- "5" or ENTER for select, and
-- "9" for cancel/quit.
+- ```2``` for "up" or "+",
+- "```8``` for "down" or "-",
+- ```5``` or ```ENTER``` for select, and
+- ```9``` for cancel/quit.
 
-Data entry, such as for dates and times, is done through the keypad's number keys and works as follows: Whenever a data entry is requested, the field for that data is lit (while the rest of the display is dark) and a pre-set value is shown. If you want to keep that pre-set, press ENTER to proceed to next field. Otherwise press a digit on the keypad; the pre-set is then overwritten by the value entered. 2 digits can be entered (4 for years). After entering a value, press ENTER to proceed. A month needs to be entered numerically (01-12), and hours need to be entered in 24-hour notation (00-23), regardless of 12-hour or 24-hour mode as per the Config Portal setting.
+Data entry, such as for dates and times, is done through the keypad's number keys and works as follows: Whenever a data entry is requested, the field for that data is lit (while the rest of the display is dark) and a pre-set value is shown. If you want to keep that pre-set, press ```ENTER``` to proceed to next field. Otherwise press a digit on the keypad; the pre-set is then overwritten by the value entered. 2 digits can be entered (4 for years). After entering a value, press ```ENTER``` to proceed. A month needs to be entered numerically (01-12), and hours need to be entered in 24-hour notation (00-23), regardless of 12-hour or 24-hour mode as per the Config Portal setting.
 
 After invoking the keypad menu, the first step is to choose a menu item. The available items are  
 - set the alarm ("ALARM"),
@@ -784,27 +784,27 @@ After invoking the keypad menu, the first step is to choose a menu item. The ava
 - show when time was last sync'd with NTP or GPS ("TIME SYNC"),
 - see a list of [BTTFN-Clients](#connecting-props-wirelessly-bttf-network-bttfn) currently connected ("BTTFN CLIENTS").
  
-Pressing ENTER or "2"/"8" cycles through the list, holding ENTER or pressing "5" selects an item. "9" quits the menu.
+Pressing ```ENTER``` or ```2```/```8``` cycles through the list, holding ```ENTER``` or pressing ```5``` selects an item. ```9``` quits the menu.
  
 #### How to set up the [alarm](#alarm):
 
-- Hold ENTER to invoke main menu
-- (Currently, the alarm is the first menu item; otherwise press 2/8 until "ALARM" is shown)
-- Press 5 or ENTER
-- Press 2/8 to toggle the alarm on and off, press 5 or ENTER to proceed
+- Hold ```ENTER``` to invoke main menu
+- (Currently, the alarm is the first menu item; otherwise press ```2```/```8``` until "ALARM" is shown)
+- Press ```5``` or ```ENTER```
+- Press ```2```/```8``` to toggle the alarm on and off, press ```5``` or ```ENTER``` to proceed
 - Then enter the hour and minutes. This works as described above under "Data entry".
-- Choose the weekday(s) by pressing 2/8 to cycle through options
-- Press 5 or ENTER to select
-- If you chose "USER DAYS", press keys 1 through 7 to toggle each day.
-- Press ENTER to proceed to save and quit the menu. "SAVING" is displayed briefly.
+- Choose the weekday(s) by pressing ```2```/```8``` to cycle through options
+- Press ```5``` or ```ENTER``` to select
+- If you chose "USER DAYS", press keys ```1``` through ```7``` to toggle each day.
+- Press ```ENTER``` to proceed to save and quit the menu. "SAVING" is displayed briefly.
 
-Pressing "9" at any point - except when entering hour and minutes - cancels and quits the menu.
+Pressing ```9``` at any point - except when entering hour and minutes - cancels and quits the menu.
 
 When the alarm is set and enabled, the dot in the present time's minute field will light up. 
 
-Under normal operation (ie outside of the menu), holding "1" toggles the alarm on/off.
+Under normal operation (ie outside of the menu), holding ```1``` toggles the alarm on/off.
 
-The alarm time can also quickly be set by typing ```11hhMM``` (eg. ```110645``` for 6:45am, or ```112300``` for 11:00pm) and pressing ENTER, just like when setting a time travel destination time. (The weekday selection has still to be done via the keypad menu.) Keypad command ```11``` shows the currently set time and weekday selection briefly.
+The alarm time can also quickly be set by typing ```11hhMM``` (eg. ```110645``` for 6:45am, or ```112300``` for 11:00pm) and pressing ```ENTER```, just like when setting a time travel destination time. (The weekday selection has still to be done via the keypad menu.) Keypad command ```11``` shows the currently set time and weekday selection briefly.
 
 The alarm is recurring, i.e. it rings daily at the programmed time, unless disabled. 
 
@@ -815,15 +815,15 @@ The alarm time is, by default, based on your actual local time, not the time dis
 #### How to set the audio volume:
 
 By default, the device uses the built-in hardware volume knob to determine the desired volume. You can change this to a pre-selected level as follows:
-- Hold ENTER to invoke main menu
-- Press 2/8 repeatedly until "VOLUME" is shown
-- Press 5 or ENTER
-- Press 2/8 to toggle between "USE VOLUME KNOB" and "SELECT LEVEL"
-- Press 5 or ENTER
-- If you chose "SELECT LEVEL", you can now select the desired level by pressing 2/8. The volume knob is now ignored.
-- Press 5 or ENTER to save and quit the menu. "SAVING" is displayed briefly.
+- Hold ```ENTER``` to invoke main menu
+- Press ```2```/```8``` repeatedly until "VOLUME" is shown
+- Press ```5``` or ```ENTER```
+- Press ```2```/```8``` to toggle between "USE VOLUME KNOB" and "SELECT LEVEL"
+- Press ```5``` or ```ENTER```
+- If you chose "SELECT LEVEL", you can now select the desired level by pressing ```2```/```8```. The volume knob is now ignored.
+- Press ```5``` or ```ENTER``` to save and quit the menu. "SAVING" is displayed briefly.
 
-Pressing "9" at any point cancels and quits the menu.
+Pressing ```9``` at any point cancels and quits the menu.
 
 You can also quickly set the volume through keypad commands ```300```-```320``` (select a level) and ```399``` (enables the volume knob).
 
@@ -833,44 +833,44 @@ If you are using a Rotary Encoder for volume, you need to disable the volume kno
 
 In order for this menu item to show up, an SD card is required.
 
-- Hold ENTER to invoke main menu
-- Press 2/8 repeatedly until "MUSIC FOLDER NUMBER" is shown
-- Press 5 or ENTER, "FOLDER" and a number is displayed
-- Press 2/8 repeatedly to cycle through the possible values. The message "NOT FOUND" appears if either the folder itself or 000.mp3 in that very folder is not present. "PROCESSING REQUIRED" means that the TCD will prepare the folder (eg rename files) after selection; this requires a reboot.
-- Press 5 or ENTER to select the value shown and exit the menu. "SAVING" is displayed briefly.
+- Hold ```ENTER``` to invoke main menu
+- Press ```2```/```8``` repeatedly until "MUSIC FOLDER NUMBER" is shown
+- Press ```5``` or ```ENTER```, "FOLDER" and a number is displayed
+- Press ```2```/```8``` repeatedly to cycle through the possible values. The message "NOT FOUND" appears if either the folder itself or 000.mp3 in that very folder is not present. "PROCESSING REQUIRED" means that the TCD will prepare the folder (eg rename files) after selection; this requires a reboot.
+- Press ```5``` or ```ENTER``` to select the value shown and exit the menu. "SAVING" is displayed briefly.
 
-Pressing "9" at any point cancels and quits the menu.
+Pressing ```9``` at any point cancels and quits the menu.
 
 If shuffle was enabled before, the new folder is also played in shuffled order.
 
 #### How to select the Time-cycling Interval:
 
-- Hold ENTER to invoke main menu
-- Press 2/8 repeatedly until "TIME-CYCLING" is shown
-- Press 5 or ENTER, "INTERVAL" is displayed
-- Press 2/8 repeatedly to cycle through the possible Time-cycling intervals. "0" disables automatic time cycling ("OFF").
-- Press 5 or ENTER to select the value shown and exit the menu. "SAVING" is displayed briefly.
+- Hold ```ENTER``` to invoke main menu
+- Press ```2```/```8``` repeatedly until "TIME-CYCLING" is shown
+- Press ```5``` or ```ENTER```, "INTERVAL" is displayed
+- Press ```2```/```8``` repeatedly to cycle through the possible Time-cycling intervals. "0" disables automatic time cycling ("OFF").
+- Press ```5``` or ```ENTER``` to select the value shown and exit the menu. "SAVING" is displayed briefly.
 
-Pressing "9" at any point cancels and quits the menu.
+Pressing ```9``` at any point cancels and quits the menu.
  
 #### How to adjust the display brightness:
 
-- Hold ENTER to invoke main menu
-- Press 2/8 repeatedly until "BRIGHTNESS" is shown
-- Press 5 or ENTER, the displays show all elements, the top-most display says "LVL"
-- Press 2/8 repeatedly to cycle through the possible levels (1-15)
-- Press 5 or ENTER to use current value and proceed to next display
+- Hold ```ENTER``` to invoke main menu
+- Press ```2```/```8``` repeatedly until "BRIGHTNESS" is shown
+- Press ```5``` or ```ENTER```, the displays show all elements, the top-most display says "LVL"
+- Press ```2```/```8``` repeatedly to cycle through the possible levels (1-15)
+- Press ```5``` or ```ENTER``` to use current value and proceed to next display
 - After the third display, "SAVING" is displayed briefly and the menu is left automatically.
 
-Pressing "9" at any point cancels and quits the menu.
+Pressing ```9``` at any point cancels and quits the menu.
  
 #### How to find out the IP address and WiFi status:
 
-- Hold ENTER to invoke main menu
-- Press 2/8 repeatedly until "NETWORK" is shown
-- Press 5 or ENTER, the displays show the IP address
-- Repeatedly press 2/8 to cycle between IP address, WiFi status, MAC address (in station mode) and Home Assistant connection status.
-- Press 5 or ENTER or 9 to leave the menu
+- Hold ```ENTER``` to invoke main menu
+- Press ```2```/```8``` repeatedly until "NETWORK" is shown
+- Press ```5``` or ```ENTER```, the displays show the IP address
+- Repeatedly press ```2```/```8``` to cycle between IP address, WiFi status, MAC address (in station mode) and Home Assistant connection status.
+- Press ```5``` or ```ENTER``` or 9 to leave the menu
 
 #### How to set the Real Time Clock (RTC):
 
@@ -878,9 +878,9 @@ If you can't use network time (NTP) as a source of time, you need to manually ad
 
 Always set your actual local present time here; if you want to display some other time, use the Time Travel function. 
 
-- Hold ENTER to invoke main menu
-- Press 2/8 repeatedly until "SET CLOCK" is displayed and the *Present Time* display shows a date and time 
-- Press 5 or ENTER
+- Hold ```ENTER``` to invoke main menu
+- Press ```2```/```8``` repeatedly until "SET CLOCK" is displayed and the *Present Time* display shows a date and time 
+- Press ```5``` or ```ENTER```
 - The *Present Time* display goes off and only the field to enter data into is shown, pre-set with its current value
 - Data entry works as described [above](#the-keypad-menu); remember that months need to be entered numerically (01-12), and hours in 24-hour notation (0-23).
 - After entering data into all fields, the data is saved and the menu is left automatically.
@@ -889,9 +889,9 @@ The time you entered will be re-set/overruled/re-adjusted when the TCD has acces
 
 #### How to program dates/times for the *Destination* and *Last Time Departed* displays:
 
-- Hold ENTER to invoke main menu
-- Press 2/8 repeatedly until the display says "PROGRAME DATE" and the desired display shows a date and time
-- Press 5 or ENTER
+- Hold ```ENTER``` to invoke main menu
+- Press ```2```/```8``` repeatedly until the display says "PROGRAME DATE" and the desired display shows a date and time
+- Press ```5``` or ```ENTER```
 - The display goes off and only the field to enter data into is shown, pre-set with its current value
 - Data entry works as described [above](#the-keypad-menu); remember that months need to be entered numerically (01-12), and hours in 24-hour notation (0-23).
 - After entering data into all fields, the data is saved and the menu is left automatically.
@@ -904,23 +904,23 @@ Alternatively, you can program and store a "destination time" outside of the key
 
 #### How to view sensor info
 
-- Hold ENTER to invoke main menu
-- Press 2/8 repeatedly until "SENSORS" is shown. If that menu item is missing, a light or temperature sensor was not detected during boot.
-- Press 5 or ENTER
+- Hold ```ENTER``` to invoke main menu
+- Press ```2```/```8``` repeatedly until "SENSORS" is shown. If that menu item is missing, a light or temperature sensor was not detected during boot.
+- Press ```5``` or ```ENTER```
 - Now the currently measured lux level or temperature is displayed.
-- Press 2/8 to toggle between light sensor and temperature sensor info (if both are connected)
-- Press 5 or ENTER or 9 to exit the menu
+- Press ```2```/```8``` to toggle between light sensor and temperature sensor info (if both are connected)
+- Press ```5``` or ```ENTER``` or 9 to exit the menu
 
 >Sometimes a lux value of -1 might be displayed, indicating a sensor overload. This can have the following reasons: The TCD firmware sets up the sensors for indoor usage and, as a result, sensors will overload in broad daylight. Secondly, some sensors have issues with halogen lamps (reportedly TSL2561), and most sensors also "overload" if too much IR light is directed at them, for instance from surveillance cameras.
 
 #### How to see a list of BTTF-Network clients
 
-- Hold ENTER to invoke main menu
-- Press 2/8 repeatedly until "BTTFN CLIENTS" is shown.
-- Press 5 or ENTER
+- Hold ```ENTER``` to invoke main menu
+- Press ```2```/```8``` repeatedly until "BTTFN CLIENTS" is shown.
+- Press ```5``` or ```ENTER```
 - Now one of the connected clients is displayed, or "NO CLIENTS" if currently no clients are connected.
-- Press 2/8 to cycle through the list of connected clients.
-- Press 5 or ENTER or 9 to exit the menu
+- Press ```2```/```8``` to cycle through the list of connected clients.
+- Press ```5``` or ```ENTER``` or 9 to exit the menu
 
 #### How to leave the menu:
 
@@ -1079,7 +1079,7 @@ A rotary encoder for volume replaces the volume knob on back of the TCD's keypad
 
 ## Room Condition Mode, Temperature/humidity sensor
 
-The firmware supports various [temperature/humidity sensors](AddOns.md#temperaturehumidity-sensor) for "Room Condition mode"; in this mode, *destination* and *last departed* times are replaced by temperature and humidity, respectively. To toggle between normal and Room Condition mode, enter ```111``` and press ENTER. If an SD card is present, Room Condition mode is persistent across reboots.
+The firmware supports various [temperature/humidity sensors](AddOns.md#temperaturehumidity-sensor) for "Room Condition mode"; in this mode, *destination* and *last departed* times are replaced by temperature and humidity, respectively. To toggle between normal and Room Condition mode, enter keypad command ```111```. If an SD card is present, Room Condition mode is persistent across reboots.
 
 ![rcmode](img/rcmode.jpg)
 
@@ -1434,7 +1434,7 @@ By default, when your TCD creates a WiFi network of its own ("AP-mode"), this ne
 
 By default, and if this field is empty, the TCD's own WiFi network ("TCD-AP") will be unprotected. If you want to protect your TCD access point, enter your password here. It needs to be 8 characters in length and only characters A-Z, a-z, 0-9 and - are allowed.
 
-If you forget this password and are thereby locked out of your TCD, power-down, hold the ENTER key, power-up and wait until the white LED flashes, then release the ENTER key. The TCD will boot and start the access point temporarily without a password. Then connect to the TCD's AP with your computer or handheld, enter the Config Portal ( http://192.168.4.1 ) and either look up or change your AP WiFi password. This ENTER-key-procedure is not persistent: When you reboot or re-power the TCD, the AP will be password protected again.
+If you forget this password and are thereby locked out of your TCD, power-down, hold the ```ENTER``` key, power-up and wait until the white LED flashes, then release the ```ENTER``` key. The TCD will boot and start the access point temporarily without a password. Then connect to the TCD's AP with your computer or handheld, enter the Config Portal ( http://192.168.4.1 ) and either look up or change your AP WiFi password. This ENTER-key-procedure is not persistent: When you reboot or re-power the TCD, the AP will be password protected again.
 
 ##### &#9193; WiFi channel
 
@@ -1549,7 +1549,7 @@ This allows choosing between standard/legacy or extended [alarm function](#alarm
 
 ##### &#9193; Snooze
 
-This enables the Snooze function. If enabled, (briefly) pressing ENTER while the alarm sounds activates a repeated alarm after a selectable time period ("Snooze Time"). 
+This enables the Snooze function. If enabled, (briefly) pressing ```ENTER``` while the alarm sounds activates a repeated alarm after a selectable time period ("Snooze Time"). 
 
 ##### &#9193; Snooze Time
 
@@ -1557,11 +1557,11 @@ This selects the time period after which an alarm is repeated when Snooze is act
 
 ##### &#9193; Auto Snooze
 
-If this is checked, and the user does not react to an alarm by either pressing or holding ENTER within 2 minutes, the alarm is silenced and repeated after the selected "Snooze Time".
+If this is checked, and the user does not react to an alarm by either pressing or holding ```ENTER``` within 2 minutes, the alarm is silenced and repeated after the selected "Snooze Time".
 
 ##### &#9193; Loop user-provided Alarm sound
 
-The alarm plays for 2 minutes. If the alarm sound is [substituted](#sound-substitution) by a user-provided mp3 file, this option allows looping it, which is useful if it is considerably shorter than two minutes. Note that you can only snooze or disable the alarm using the ENTER button while the alarm sounds. Afterwards the alarm can only be stopped through keypad command ```12``` if snooze is enabled.
+The alarm plays for 2 minutes. If the alarm sound is [substituted](#sound-substitution) by a user-provided mp3 file, this option allows looping it, which is useful if it is considerably shorter than two minutes. Note that you can only snooze or disable the alarm using the ```ENTER``` button while the alarm sounds. Afterwards the alarm can only be stopped through keypad command ```12``` if snooze is enabled.
 
 #### <ins>Night-mode</ins>
 
