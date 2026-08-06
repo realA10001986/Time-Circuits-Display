@@ -1303,9 +1303,9 @@ The timers can be set to 0 (which disables them; WiFi is never switched off; thi
 
 The reason for having two different timers for AP-mode and for station mode is that if the device is used in a car, it might act as an access point (such as in [car mode](#car-mode)), while at home it is most probably connected to a WiFi network as a client. Since in a car, unless other props are installed that communicate wirelessly, WiFi will most likely not be used on a regular basis, the timer for AP mode can be short (eg 10 minutes), while the timer for station mode can be disabled.
 
-After WiFi has been switched off due to timer expiration, it can be re-enabled by holding "7" on the keypad for approx. 2 seconds, in which case the timers are restarted (ie WiFi is again switched off after timer expiration).
+After WiFi has been switched off due to timer expiration, it can be re-enabled by holding ```7``` on the keypad for approx. 2 seconds, in which case the timers are restarted (ie WiFi is again switched off after timer expiration).
 
-If your configured WiFi network was not available when the TCD was trying to connect, it will end up in AP-mode. Holding "7" in that case will trigger another attempt to connect to your WiFi network.
+If your configured WiFi network was not available when the TCD was trying to connect, it will end up in AP-mode. Holding ```7``` in that case will trigger another attempt to connect to your WiFi network.
 
 ## Flash Wear
 
