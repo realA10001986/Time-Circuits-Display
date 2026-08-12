@@ -1328,7 +1328,7 @@ The firmware comes with a sound-pack which needs to be installed separately. The
 
 _Installing the sound-pack requires an [SD card](#sd-card)._
 
->If your factory-fresh TCD came without an SD card, you need to re-install the sound-pack to be able to enjoy all of the provided sounds. Parts of the sound-pack are being installed to your SD card.
+>If your factory-fresh TCD came without an SD card, you need to re-install the sound-pack to be able to enjoy all of the provided sounds. Parts of the sound-pack are installed to your SD card.
 
 >A10001986 and CircuitSetup use different sound-packs. If you switch from one version to the other, the matching sound-pack must be re-installed. [A10001986-releases](https://github.com/realA10001986/Time-Circuits-Display/releases) use "sound-pack-**tw**XX", while [CircuitSetup's](https://github.com/CircuitSetup/Time-Circuits-Display/releases) are named "sound-pack-**cs**XX". The Config Portal will tell you which version is required to be installed.
 
