@@ -290,7 +290,7 @@ Time-traveling will interrupt the cycling of movie times for 30 minutes.
 
 In the following, "pressing" means briefly pressing a key, "holding" means keeping the key pressed for 2 seconds or longer.
 
-mm = month (01-12, 2 digits); dd = day (01-31, 2 digits); yyyy = year (4 digits); hh = hour (00-23, 2 digits); MM = minute (00-59, 2 digits)
+```mm``` = month (01-12, 2 digits); ```dd``` = day (01-31, 2 digits); ```yyyy``` = year (4 digits); ```hh``` = hour (00-23, 2 digits); ```MM``` = minute (00-59, 2 digits)
 
 <table id="commandref">
     <tr>
