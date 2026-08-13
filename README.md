@@ -1622,7 +1622,7 @@ See [here](#persistent--non-persistent-time-travels). For this option to take ef
 
 ##### &#9193; Swap red and yellow displays like B-Car
 
-The B-Car had the red and yellow displays flipped; the red one was mounted at the bottom, the yellow one on top. If you assemble your TCD in that very way, check this option to swap the ways of operation for the red and yellow displays. so that the yellow display will act as the _Destination Time_ display, the red one as _Last Time Departed_. _This option is only available in the A-Car version._
+The B-Car had the red and yellow displays flipped; the red one was mounted at the bottom, the yellow one on top. This version of the TCD is briefly shown in part 1 when Doc opens the frozen Delorean's door after Einstein had returned. If you assemble your TCD in that very way, check this option to swap the ways of operation for the red and yellow displays so that the yellow display will act as the _Destination Time_ display, the red one as _Last Time Departed_. _This option is only available in the A-Car version._
 
 ##### &#9193; Reverse AM/PM like in parts 2/3
 
