@@ -46,7 +46,6 @@ Features include
 - [Music player](#the-music-player): Play mp3 files located on an SD card
 - Audio output through [line-out](#audio-output) for time travel sounds and music, allows connecting your TCD to your (car) stereo for high-quality stereo-sound. (Requires Control Board 1.4.5 or later)
 - Support for [SD cards](#sd-card) up to 32GB
-- A few Easter eggs 
 - [Keypad-controlled menu](#the-keypad-menu) for adjusting various settings and viewing status through the three displays
 - Support for numerous [peripherals](#peripherals):
   - [Fake "power switch"](#fake-power-switch) (eg. a [TFC drive switch](https://tfc.out-a-ti.me))
