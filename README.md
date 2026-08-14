@@ -55,7 +55,7 @@ Features include
   - External [Time Travel trigger](#external-time-travel-trigger), with optional delay
   - [Temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for [Room Condition mode](#room-condition-mode-temperaturehumidity-sensor) [display temperature and humidity in *destination time* and *last time departed* displays] and for displaying temperature on speedo while idle
   - Multi-purpose output for signaling/controlling other props [connected by wire](#connecting-props-by-wire) (for example flux lights, third party props)
-- &#128007; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370;
+- &#128007; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370;
 
 >[This repository](https://tcd.out-a%2dti.me) is the upstream source for CircuitSetup's releases. The differences are that both code and documentation [here](https://tcd.out%2da-ti.me) might be ahead in development, and in the sound-packs.
 
