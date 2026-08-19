@@ -517,8 +517,8 @@ private:
  *
  * The initialization sequence follows the SD card protocol:
  * 1. Power-up sequence with 74+ clock cycles
- * 2. GO_IDLE_STATE command to reset the card
- * 3. CRC_ON_OFF to enable/disable CRC checking
+ * 2. GO_IDLE_STATE command to reset the card (2 attempts)
+ * 3. CRC_ON_OFF to enable/disable CRC checking (2 attempts)
  * 4. SEND_IF_COND to identify SDHC/SDXC cards
  * 5. APP_OP_COND to set operating conditions
  * 6. Card type detection (SD/SDHC/MMC)
@@ -546,15 +546,15 @@ DSTATUS ff_sd_initialize(uint8_t pdrv)
     // Step 1: Power-up sequence - Send at least 74 clock cycles with CS high and MOSI high
     // This is required by the SD card specification to ensure proper card state reset
     // We send 20 bytes (160 clock cycles) to exceed the minimum requirement
-    // TW: We do two attempts. Intenso card needs a little push after power-on.
-    do {
-        digitalWrite(card->ssPin, HIGH);
-        for (int i = 0; i < 20; i++) {
-            card->spi->transfer(0XFF);
-        }
+    digitalWrite(card->ssPin, HIGH);
+    for (int i = 0; i < 20; i++) {
+        card->spi->transfer(0XFF);
+    }
 
+    do {
         // Step 2: Select the card and send GO_IDLE_STATE command
         // This command resets the card to idle state and enables SPI mode
+        // TW: We do two attempts. Intenso cards need a little push after power-on.
         digitalWrite(card->ssPin, LOW);
         #ifdef TW_SD_DEBUG
         if(!sdWait(pdrv, 500)) {
@@ -584,13 +584,21 @@ DSTATUS ff_sd_initialize(uint8_t pdrv)
             #endif
             goto unknown_card;
         }
+
+        delay(20);
+
     } while(1);
 
     // Step 3: Configure CRC checking
     // Enable CRC for data transfers in SPI mode (required for reliable communication)
+    // TW: Some cards apparently reject the first CRC_ON_OFF; retry once (same as IDF).
     token = sdTransaction(pdrv, CRC_ON_OFF, 1, NULL);
-    if (token == 0x5) {
-        //old card maybe
+    if (token != 1 && token != 5) {
+        delay(10);
+        token = sdTransaction(pdrv, CRC_ON_OFF, 1, NULL);
+    }
+    if (token == 5) {
+        // old card, not supporting CRC
         card->supports_crc = false;
     } else if (token != 1) {
         #ifdef TW_SD_DEBUG
@@ -619,13 +627,13 @@ DSTATUS ff_sd_initialize(uint8_t pdrv)
         }
 
         // Send APP_OP_COND (ACMD41) to set operating conditions for SDHC/SDXC
-        // Wait up to 1 second for the card to become ready
+        // Wait up to at least 1 second for the card to become ready
         start = millis();
         do {
             //token = sdTransaction(pdrv, APP_OP_COND, 0x40100000, NULL);
             // TW: Only bit 30 is defined, all others "shall be 0" in SPI mode
             token = sdTransaction(pdrv, APP_OP_COND, 0x40000000, NULL);
-        } while (token == 1 && (millis() - start) < 1000);
+        } while (token == 1 && (millis() - start) < 2000);
 
         if (token) {
             #ifdef TW_SD_DEBUG
@@ -662,7 +670,7 @@ DSTATUS ff_sd_initialize(uint8_t pdrv)
             //token = sdTransaction(pdrv, APP_OP_COND, 0x100000, NULL);
             // TW: Only bit 30 is defined, all others "shall be 0" in SPI mode
             token = sdTransaction(pdrv, APP_OP_COND, 0, NULL);
-        } while (token == 0x01 && (millis() - start) < 1000);
+        } while (token == 1 && (millis() - start) < 2000);
 
         if (!token) {
             card->type = CARD_SD;   // Standard SD card
@@ -673,9 +681,9 @@ DSTATUS ff_sd_initialize(uint8_t pdrv)
                 //token = sdTransaction(pdrv, SEND_OP_COND, 0x100000, NULL);
                 // TW: For MMC, SEND_OP_COND has no arguments, hence 0
                 token = sdTransaction(pdrv, SEND_OP_COND, 0, NULL);
-            } while (token != 0x00 && (millis() - start) < 1000);
+            } while (token && (millis() - start) < 2000);
 
-            if (token == 0x00) {
+            if (!token) {
                 card->type = CARD_MMC;
             } else {
                 #ifdef TW_SD_DEBUG
@@ -712,7 +720,7 @@ DSTATUS ff_sd_initialize(uint8_t pdrv)
 
     start = (card->type != CARD_MMC) ? 25000000 : 20000000;
     // TW: Limit frequency to 25MHz (20MHz for MMC) for compatibility
-    // (SD spec maximum for non-UHS cards in SPI mode)
+    // (SD spec: 25Mhz maximum for non-UHS cards in SPI mode)
     if (card->frequency > start) {
         card->frequency = start;
     }
