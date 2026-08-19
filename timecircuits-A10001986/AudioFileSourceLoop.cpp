@@ -1,9 +1,9 @@
 /*
  * AudioFileSourceLoop
- * Read SD/SPIFFS/LittleFS file to be used by AudioGenerator
+ * Read SD/LittleFS file to be used by AudioGenerator
  * Reads file in a loop (for looped playback)
  * 
- * Thomas Winischhofer (A10001986), 2023
+ * Thomas Winischhofer (A10001986), 2023/2026
  *
  * Based on AudioFileSourceSD by Earle F. Philhower, III
  *
@@ -11,8 +11,6 @@
 
 #include "tc_global.h"
 #include "AudioFileSourceLoop.h"
-
-
 
 AudioFileSourceLoop::~AudioFileSourceLoop()
 {
@@ -71,15 +69,19 @@ bool AudioFileSourceLoop::open_c(const char *filename, const int16_t *segs)
     if((toc = (int32_t *)malloc(segIdx * 4))) {
         if(open(filename)) {
             if(read((uint8_t *)&temp[0], 12) == 12) {
+                int16_t hsegi = (temp[2] >> 2) - 2;
                 if((ftoc = (int32_t *)malloc(temp[2]))) {
                     if(read((uint8_t *)ftoc, temp[2]) == temp[2]) {
                         while(gsi) {
+                            if(segs[gsi] > hsegi) break;
                             toc[si++] = ftoc[segs[gsi]] - ftoc[segs[gsi] + 1];
                             toc[si++] = ~ftoc[segs[gsi--]];
                         }
-                        free(ftoc);
-                        ftype = 2;
-                        if(seekNext()) return true;
+                        if(!gsi) {
+                            free(ftoc);
+                            ftype = 2;
+                            if(seekNext()) return true;
+                        }
                     }
                 }
             }

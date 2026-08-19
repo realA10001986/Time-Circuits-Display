@@ -90,7 +90,8 @@ typedef enum {
 
 struct KeyStruct {
     unsigned long startTime;
-    int       kCode;
+    uint32_t  kRow;
+    int       kCol;
     KeyState  kState;
     char      kChar;
     bool      stateChanged;
@@ -101,7 +102,7 @@ class Keypad_I2C {
     public:
 
         Keypad_I2C(char *userKeymap, const uint8_t *row, const uint8_t *col, 
-                   uint8_t numRows, uint8_t numCols,
+                   unsigned int numRows, unsigned int numCols,
                    int address);
 
         void begin(unsigned int scanInterval, unsigned int holdTime, void (*myDelay)(int, unsigned long));
@@ -125,13 +126,13 @@ class Keypad_I2C {
         unsigned int  _holdTime;
         const uint8_t *_rowPins;
         const uint8_t *_columnPins;
-        uint8_t       _rows;
-        uint8_t       _columns;
+        unsigned int  _rows;
+        unsigned int  _columns;
         char          *_keymap;
         int           _i2caddr;
 
         unsigned long _scanTime = 0;        
-        uint16_t      _rowMask;
+        uint32_t      _rowMask;
 
         uint8_t       _pinState;  // shadow for output pins
 
@@ -156,10 +157,8 @@ typedef enum {
 class TCButton {
   
     public:
-        TCButton(const int pin, const bool activeLow = true, const bool pullupActive = true);
-        void begin();
-      
-        void setTiming(const int debounceDur, const int pressDur, const int lPressDur);
+        TCButton(const uint8_t pin);
+        void begin(const int button_pressed, const uint8_t pu_mode, const int debounceDur, const int pressDur, const int lPressDur);
 
         void attachPressStart(void (*newFunction)(void))     { _pressStartFunc = newFunction; }
         void attachPress(void (*newFunction)(void))          { _pressFunc = newFunction; }
@@ -178,8 +177,7 @@ class TCButton {
         void (*_longPressStartFunc)(void) = NULL;
         void (*_longPressStopFunc)(void) = NULL;
 
-        int _pin;
-        bool _pullupActive;
+        uint8_t _pin;
         
         unsigned int _debounceDur = 50;
         unsigned int _pressDur = 400;

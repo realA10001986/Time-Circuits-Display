@@ -63,6 +63,8 @@
 #include "tcddisplay.h"
 #include "tc_font.h"
 
+#define STRLEN(x) (sizeof(x)-1)
+
 #define CD_MONTH_POS  0
 #ifdef IS_ACAR_DISPLAY      // A-Car (2-digit-month) ---------------------
 #define CD_MONTH_SIZE 1     //      number of words
@@ -86,7 +88,7 @@ extern bool     gpsHaveFix();
 extern int      gpsGetDM();
 #endif
 #ifdef TC_HAVETEMP
-extern bool     tempInCelsius();
+extern char     tempUnitChar();
 #endif
 
 extern uint64_t timeDifference;
@@ -119,15 +121,49 @@ static const uint8_t idxtbl[] = {
     CD_HOUR_POS, CD_HOUR_POS, 
     CD_MIN_POS, CD_MIN_POS
 };
+
+static const char *nullStr = "";
 #endif
 
 static const char weekdays[7][4] = {
     "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"
 };
 
-static const char *nullStr = "";
+#ifdef TC_HAVETEMP
+static const char *nilTH    = "  ----";
+#ifdef IS_ACAR_DISPLAY
 static const char tempStr[] = "TEMP";
 static const char humStr[]  = "HUMIDITY";
+#else
+static const char tempStr[] = "TEMP ";
+static const char humStr[]  = "HUMIDITY ";
+#endif
+
+static void makeTemperature(char *buf, float temp)
+{
+    char unit[3];
+    unit[0] = '~';
+    unit[1] = tempUnitChar();
+    unit[2] = 0;
+    
+    if(isnan(temp)) {
+        strcpy(buf, nilTH);
+    } else {
+        sprintf(buf, "%4d%02d", (int)temp, abs((int)(temp * 100.0f) - ((int)temp * 100)));
+    }
+    strcat(buf, unit);
+}
+
+static void makeHumidity(char *buf, int hum)
+{    
+    if(hum < 0) {
+        strcpy(buf, nilTH + 4);
+    } else {
+        sprintf(buf, "%2d", hum);
+    }
+    strcat(buf, "\x7f\x80");
+}
+#endif
 
 /*
  * tcdDisplay class
@@ -626,28 +662,18 @@ void tcdDisplay::showSettingValDirect(const char* setting, int8_t val, uint16_t 
 #ifdef TC_HAVETEMP
 void tcdDisplay::showTempDirect(float temp, bool animate)
 {
-    char buf[32];
-    const char *ttem = animate ? nullStr : tempStr;
-    int t2;
-    char u = tempInCelsius() ? 'C' : 'F';
-
     if(!handleNM())
         return;
+        
+    char buf[16];
 
-    if(isnan(temp)) {
-        #ifdef IS_ACAR_DISPLAY
-        sprintf(buf, "%4.4s  ----~%c", ttem, u);
-        #else
-        sprintf(buf, "%4.4s   ----~%c", ttem, u);
-        #endif
+    if(animate) {
+        memset(buf, 0x20, STRLEN(tempStr));
     } else {
-        t2 = abs((int)(temp * 100.0f) - ((int)temp * 100));
-        #ifdef IS_ACAR_DISPLAY
-        sprintf(buf, "%4.4s%4d%02d~%c", ttem, (int)temp, t2, u);
-        #else
-        sprintf(buf, "%4.4s %4d%02d~%c", ttem, (int)temp, t2, u);
-        #endif
+        strcpy(buf, tempStr);
     }
+
+    makeTemperature(buf + STRLEN(tempStr), temp);
     
     showTextDirect(buf, CDT_CLEAR|CDT_YRDOT);
 
@@ -656,27 +682,46 @@ void tcdDisplay::showTempDirect(float temp, bool animate)
 
 void tcdDisplay::showHumDirect(int hum, bool animate)
 {
+    if(!handleNM())
+        return;
+        
     char buf[16];
-    const char *thum = animate ? nullStr : humStr;
+
+    if(animate) {
+        memset(buf, 0x20, STRLEN(humStr));
+    } else {
+        strcpy(buf, humStr);
+    }
+
+    makeHumidity(buf + STRLEN(humStr), hum);
+
+    showTextDirect(buf);
+
+    showIntTail(animate);
+}
+
+void tcdDisplay::showTempHumDirect(float temp, int hum, bool animate)
+{
+    if(animate) {
+        showTempDirect(temp, animate);
+        return;
+    }
 
     if(!handleNM())
         return;
 
-    if(hum < 0) {
-        #ifdef IS_ACAR_DISPLAY
-        sprintf(buf, "%8.8s--\x7f\x80", thum);
-        #else
-        sprintf(buf, "%8.8s --\x7f\x80", thum);
-        #endif
-    } else {
-        #ifdef IS_ACAR_DISPLAY
-        sprintf(buf, "%8.8s%2d\x7f\x80", thum, hum);
-        #else
-        sprintf(buf, "%8.8s %2d\x7f\x80", thum, hum);
-        #endif
-    }
+    char buf[16];
+    char *bufp = buf;
+     
+    #ifndef IS_ACAR_DISPLAY
+    *bufp++ = ' ';
+    #endif
 
-    showTextDirect(buf);
+    makeHumidity(bufp, hum);
+    
+    makeTemperature(bufp + 4, temp);
+
+    showTextDirect(buf, CDT_CLEAR|CDT_YRDOT);
 
     showIntTail(animate);
 }

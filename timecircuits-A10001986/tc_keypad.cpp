@@ -88,6 +88,7 @@
 #define SPEC_DELAY   3000
 #define TMR_DELAY    5000
 
+#define EE1_DELAY   12000
 #define EE1_DELAY2   3000
 #define EE1_DELAY3   2000
 #define EE2_DELAY     600
@@ -154,6 +155,8 @@ static const char spTxtS2[]  = { 181, 224, 179, 231, 199, 140, 197, 129, 197, 14
 static const char spTxtS4[]  = { 175, 253, 178, 246, 163, 224, 180, 148, 218, 149, 193 };
 static const char spTxtS5[]  = { 190, 253, 169, 252, 189, 241, 189, 228 };
 static const char spTxtS6[]  = { 185, 235, 174, 235 };
+static const int16_t ee1SegList[2] = { 1, 733 };
+static const int16_t ee3SegList[2] = { 1, 734 };
 
 static char snoozeString[14];
 
@@ -176,18 +179,16 @@ static unsigned long enterTimerNow = 0;
 
 static unsigned long lastKeyPressed = 0;
 
-#define DATELEN_STPR  14   // 99mmddyyyyHHMM  exh mode: month, day, year, hour, min; also 91/92 for storing dest/last
-#define DATELEN_ALL   12   // mmddyyyyHHMM  dt: month, day, year, hour, min
-#define DATELEN_REM   10   // 77mmddHHMM    set reminder
-#define DATELEN_DATE   8   // mmddyyyy      dt: month, day, year
-#define DATELEN_ECMD   7   // xyyyyyy       6-digit command for FC, SID, DG, VSR, REMOTE, AUX
-#define DATELEN_QALM   6   // 11HHMM/888xxx 11, hour, min (alarm-set shortcut); 888xxx (mp)
-#define DATELEN_INT    5   // xxxxx         reset etc
-#define DATELEN_TIME   4   // HHMM          dt: hour, minute; 4xxx timer & servo speedo; 3-9xxx BTTFN commands
-#define DATELEN_CODE   3   // xxx           special codes
-#define DATELEN_CODE2  2   // xx            show alarm time, set beep mode, etc.
-#define DATELEN_CMIN   DATELEN_CODE2     // min length of code entry
-#define DATELEN_CMAX   DATELEN_QALM     // max length of code entry
+#define DATELEN_STPR  14   // 9XmmddyyyyHHMM exh mode: month, day, year, hour, min; also 91/92 for storing dest/last
+#define DATELEN_ALL   12   // mmddyyyyHHMM   dt: month, day, year, hour, min
+#define DATELEN_REM   10   // 77mmddHHMM     set reminder
+#define DATELEN_DATE   8   // mmddyyyy       dt: month, day, year
+#define DATELEN_ECMD   7   // xyyyyyy        6-digit command for FC, SID, DG, VSR, REMOTE, AUX
+#define DATELEN_QALM   6   // 11HHMM/888xxx  11, hour, min (alarm-set shortcut); 888xxx (mp)
+#define DATELEN_INT    5   // xxxxx          reset etc
+#define DATELEN_TIME   4   // HHMM           dt: hour, minute; 4xxx timer & servo speedo; 3-9xxx BTTFN commands
+#define DATELEN_CODE   3   // xxx            keypad commands
+#define DATELEN_CODE2  2   // xx             show alarm time, set beep mode, etc.
 #define DATELEN_MAX    DATELEN_STPR
 
 static char dateBuffer[DATELEN_MAX + 2];
@@ -209,15 +210,9 @@ static unsigned long enterDelay = 0;
 static char mp3Track[16];
 static char mp3Artist[16];
 
-static TCButton enterKey = TCButton(ENTER_BUTTON_PIN,
-    false,    // Button is active HIGH
-    false     // Disable internal pull-up resistor
-);
+static TCButton enterKey = TCButton(ENTER_BUTTON_PIN);  // act high, no pu
 
-static TCButton ettKey = TCButton(EXTERNAL_TIMETRAVEL_IN_PIN,
-    true,     // Button is active LOW
-    true      // Enable internal pull-up resistor
-);
+static TCButton ettKey = TCButton(EXTERNAL_TIMETRAVEL_IN_PIN);  // act low, pu
 
 // File copy/Upload progress
 static unsigned long fcstart = 0;
@@ -286,18 +281,63 @@ static void prepareSpecText(const char *p, char *d, int l)
     }
 }
 
+void s2(bool c)
+{
+    char spTxt[16];
+    uint16_t f = CDT_CLEAR;
+    if(c) f |= CDT_COLON;
+    prepareSpecText(spTxtS1, spTxt, sizeof(spTxtS1));
+    dt_showTextDirect(spTxt, f);
+}
+
 void s5(bool b)
 {
     dt_showTextDirect(b ? spTxtS5A : spTxtS5B, CDT_CLEAR);
 }
+
+#ifdef TC_HAVETEMP
+bool showRCDest(bool i)
+{
+    if(!isWcMode() || (!(wcf & WCF_HaveTZ1))) {
+        if(isWcMode() && (sgf & SGF_HaveHum))
+            destinationTime.showTempHumDirect(tempSens.readLastTemp(), tempSens.readHum(), i);
+        else
+            destinationTime.showTempDirect(tempSens.readLastTemp(), i);
+    } else {
+        return false;
+    }
+
+    return true;
+}
+
+bool showRCDep(bool i)
+{
+    if(isWcMode() && (wcf & WCF_HaveTZ1)) {
+        if(sgf & SGF_HaveHum)
+            departedTime.showTempHumDirect(tempSens.readLastTemp(), tempSens.readHum(), i);
+        else
+            departedTime.showTempDirect(tempSens.readLastTemp(), i);
+    } else if(!isWcMode() && (sgf & SGF_HaveHum)) {
+        departedTime.showHumDirect(tempSens.readHum(), i);
+    } else {
+        return false;
+    }
+
+    return true;
+}
+#endif
 
 /*
  * keypad_setup()
  */
 void keypad_setup()
 {
-    enterKey.begin();
-
+    // Set up Enter button
+    enterKey.begin(HIGH, INPUT, ENTER_DEBOUNCE, ENTER_PRESS_TIME, ENTER_HOLD_TIME);
+    enterKey.attachPress(enterKeyPressed);
+    enterKey.attachLongPressStart(enterKeyHeld);
+    enterKey.attachPressStart(enterKeyPushedDown);
+    
     // Set up the keypad
     keypad.begin(20, ENTER_HOLD_TIME, myCustomDelay_KP);
 
@@ -307,19 +347,16 @@ void keypad_setup()
     pinMode(WHITE_LED_PIN, OUTPUT);
     digitalWrite(WHITE_LED_PIN, LOW);
 
-    // Set up Enter button
-    enterKey.setTiming(ENTER_DEBOUNCE, ENTER_PRESS_TIME, ENTER_HOLD_TIME);
-    enterKey.attachPress(enterKeyPressed);
-    enterKey.attachLongPressStart(enterKeyHeld);
-    enterKey.attachPressStart(enterKeyPushedDown);
-
     // Set up External time travel button
+    #ifdef SERVOSPEEDO
     if(!ttinpin) {
-        ettKey.begin();
-        ettKey.setTiming(ETT_DEBOUNCE, ETT_PRESS_TIME, ETT_HOLD_TIME);
+    #endif
+        ettKey.begin(LOW, INPUT_PULLUP, ETT_DEBOUNCE, ETT_PRESS_TIME, ETT_HOLD_TIME);
         ettKey.attachPress(ettKeyPressed);
         ettKey.attachLongPressStart(ettKeyHeld);
+    #ifdef SERVOSPEEDO
     }
+    #endif
 
     ettDelay = atoi(settings.ettDelay);
     if(ettDelay > ETT_MAX_DEL) ettDelay = ETT_MAX_DEL;
@@ -512,7 +549,6 @@ static void ettKeyHeld()
     eef |= EEF_EttHeld;
     pwrNeedFullNow();
 }
-
 
 void resetTimebufIndices()
 {
@@ -1014,7 +1050,7 @@ void keypad_loop()
                 case 113:               // 113: Toggle rc+wc hybrid mode
                     if((wcf & (WCF_HaveRCM|WCF_HaveWCM)) == (WCF_HaveRCM|WCF_HaveWCM)) {
                         // Dep Time display needed in any case:
-                        // Either for TZ2 or TEMP
+                        // Either for TZ2 or HUM/TEMP
                         rcModeState = !(isRcMode() && isWcMode());
                         enableRcMode(rcModeState);
                         enableWcMode(rcModeState);
@@ -1511,7 +1547,6 @@ void keypad_loop()
                 spTmp = (uint32_t)_setYear << 16 | _setMonth << 8 | _setDay;
                 if((spTmp ^ getHrs1KYrs(7)) == EEXSP1) {
                     special = 1;
-                    prepareSpecText(spTxtS1, spTxt, sizeof(spTxtS1));
                 } else if((spTmp ^ getHrs1KYrs(8)) == EEXSP2)  {
                     if(_setHour >= 9 && _setHour <= 12) {
                         special = 2;
@@ -1530,9 +1565,8 @@ void keypad_loop()
 
             switch(special) {
             case 1:
-                dt_showTextDirect(spTxt, CDT_CLEAR|CDT_COLON);
+                validEntry = haveTCC ? 0 : 1;
                 specDisp = 1;
-                validEntry = 1;
                 break;
             case 2:
                 play_file("/ee2.mp3", PA_LINEOUT|PA_CHECKNM|PA_INTRMUS);
@@ -1540,7 +1574,11 @@ void keypad_loop()
                 validEntry = 0;
                 break;
             case 3:
-                play_file("/ee3.mp3", PA_INTSPKR|PA_CHECKNM|PA_INTRMUS);
+                if(haveTCC) {
+                    play_file((const char *)ee3SegList, PA_TCSEGS|PA_INTSPKR|PA_CHECKNM|PA_INTRMUS);
+                } else {
+                    play_file("/ee3.mp3", PA_INTSPKR|PA_CHECKNM|PA_INTRMUS);
+                }
                 enterDelay = EE3_DELAY;
                 validEntry = 0;
                 break;
@@ -1557,7 +1595,7 @@ void keypad_loop()
             }
 
             // Copy date to destination time
-            if(_setYear >= 0) destinationTime.setYear(_setYear);   // ny0: >
+            if(_setYear >= 0) destinationTime.setYear(_setYear);
             if(_setMonth > 0) destinationTime.setMonth(_setMonth);
             if(_setDay > 0)   destinationTime.setDay(_setDay);
             if(_setHour >= 0) destinationTime.setHour(_setHour);
@@ -1632,8 +1670,14 @@ void keypad_loop()
             enterDelay = SPEC_DELAY;
             switch(specDisp) {
             case 2:
+                s2(destinationTime.getColon());
                 destinationTime.onCond();
-                enterDelay = EE1_DELAY2;
+                if(haveTCC) {
+                    play_file((const char *)ee1SegList, PA_TCSEGS|PA_LINEOUT|PA_CHECKNM|PA_INTRMUS);
+                    enterDelay = EE1_DELAY;
+                } else {
+                    enterDelay = EE1_DELAY2;
+                }
                 break;
             case 6:
                 prepareSpecText(spTxtS4, spTxt, sizeof(spTxtS4));
@@ -1653,7 +1697,7 @@ void keypad_loop()
             specDisp++;
             prepareSpecText(spTxtS2, spTxt, sizeof(spTxtS2));            
             dt_showTextDirect(spTxt);
-            play_file("/ee1.mp3", PA_LINEOUT|PA_CHECKNM|PA_INTRMUS);
+            if(!haveTCC) play_file("/ee1.mp3", PA_LINEOUT|PA_CHECKNM|PA_INTRMUS);
             enterTimerNow = millisNonZero();
             enterDelay = EE1_DELAY3;
             break;
@@ -1691,7 +1735,7 @@ void keypad_loop()
         if(!specDisp) {
 
             #ifdef TC_HAVEMQTT
-            // We overwrite dest time display here, so restart 
+            // We overwrite dest/dep time displays here, so restart 
             // MQTT message afterwards.
             if(mqttDisp & MQ_DISP_D) {
                 mqttOldDisp &= ~MQ_DISP_D;
@@ -1736,36 +1780,16 @@ void keypad_loop()
 
                     #ifndef TC_NO_MONTH_ANIM // -----------------------------------
                     for(bool i : { true, false }) {
-                        if(!isWcMode() || (!(wcf & WCF_HaveTZ1))) {
-                            destinationTime.showTempDirect(tempSens.readLastTemp(), i);
-                        } else {
-                            destinationTime.showAnimate(i);
-                        }
+                        if(!showRCDest(i)) destinationTime.showAnimate(i);
                         if(needDepTime) {
-                            if(isWcMode() && (wcf & WCF_HaveTZ1)) {
-                                departedTime.showTempDirect(tempSens.readLastTemp(), i);
-                            } else if(!isWcMode() && (sgf & SGF_HaveHum)) {
-                                departedTime.showHumDirect(tempSens.readHum(), i);
-                            } else {
-                                departedTime.showAnimate(i);
-                            }
+                            if(!showRCDep(i)) departedTime.showAnimate(i);
                         }
                         if(i) mydelay(80);
                     }
                     #else // TC_NO_MONTH_ANIM -------------------------------------
-                    if(!isWcMode() || (!(wcf & WCF_HaveTZ1))) {
-                        destinationTime.showTempDirect(tempSens.readLastTemp(), false);
-                    } else {
-                        destinationTime.show();
-                    }
+                    if(!showRCDest(false)) destinationTime.show();
                     if(needDepTime) {
-                        if(isWcMode() && (wcf & WCF_HaveTZ1)) {
-                            departedTime.showTempDirect(tempSens.readLastTemp(), false);
-                        } else if(!isWcMode() && (sgf & SGF_HaveHum)) {
-                            departedTime.showHumDirect(tempSens.readHum(), false);
-                        } else {
-                            departedTime.show();
-                        }
+                        if(!showRCDep(false)) departedTime.show();
                         departedTime.onCond();
                     }
                     destinationTime.onCond();
@@ -1847,15 +1871,16 @@ void cancelEnterAnim(bool reenableDT)
             } else
             #endif
             #ifdef TC_HAVETEMP
-            if(isRcMode() && (!isWcMode() || (!(wcf & WCF_HaveTZ1)))) {
-                destinationTime.showTempDirect(tempSens.readLastTemp());
-            } else
+            if(!isRcMode() || !showRCDest(false)) {
             #endif
-            if(isMiniMode())
-                destinationTime.clearDisplay();
-            else
-                destinationTime.show();
-
+                if(isMiniMode())
+                    destinationTime.clearDisplay();
+                else
+                    destinationTime.show();
+            #ifdef TC_HAVETEMP
+            }
+            #endif
+            
             if(needDepTime) {
                 #ifdef TC_HAVEGPS
                 if(isNavMode()) {
@@ -1863,20 +1888,15 @@ void cancelEnterAnim(bool reenableDT)
                 } else
                 #endif
                 #ifdef TC_HAVETEMP
-                if(isRcMode()) {
-                    if(isWcMode() && (wcf & WCF_HaveTZ1)) {
-                        departedTime.showTempDirect(tempSens.readLastTemp());
-                    } else if(!isWcMode() && (sgf & SGF_HaveHum)) {
-                        departedTime.showHumDirect(tempSens.readHum());
-                    } else {
-                        departedTime.show();
-                    }
-                } else
+                if(!isRcMode() || !showRCDep(false)) {
                 #endif
-                if(isMiniMode())
-                    departedTime.clearDisplay();
-                else
-                    departedTime.show();
+                    if(isMiniMode())
+                        departedTime.clearDisplay();
+                    else
+                        departedTime.show();
+                #ifdef TC_HAVETEMP
+                }
+                #endif
 
                 departedTime.onCond();
             }
@@ -2118,36 +2138,30 @@ static void doAnddisplayMPGoto(int num, char *buf)
 void setBeepMode(int mode)
 {
     bool nb = (mode != beepMode);
-    unsigned long now = millis();
     
     switch(mode) {
     case 0:
         muteBeep = true;
-        beepMode = 0;
         beepTimer = false;
         break;
     case 1:
         muteBeep = false;
-        beepMode = 1;
         beepTimer = false;
         break;
     case 2:
-        if(beepMode == 1) {
-            beepTimerNow = now;
-            beepTimer = true;
-        }
-        beepMode = 2;
-        beepTimeout = BEEPM2_SECS*1000;
-        break;
     case 3:
         if(beepMode == 1) {
-            beepTimerNow = now;
+            beepTimerNow = millis();
             beepTimer = true;
         }
-        beepMode = 3;
-        beepTimeout = BEEPM3_SECS*1000;
+        beepTimeout = (mode == 2) ? BEEPM2_SECS*1000 : BEEPM3_SECS*1000;
         break;
+    default:
+        return;
     }
+
+    beepMode = mode;
+    
     if(nb) {
         settings.beep[0] = beepMode + '0';
         saveBeepAutoInterval();
@@ -2313,8 +2327,7 @@ void start_file_copy()
     lt_showTextDirect("");
     allOn();
     allresetBrightness();
-    
-    //fcprog = false;
+
     fcstart = millis();
 }
 

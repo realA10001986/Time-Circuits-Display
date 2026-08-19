@@ -141,13 +141,27 @@
 
 /*  Changelog
  *          
+ *  2026/08/19 (A10001986) [3.26]
+ *    **********************************************************************************
+ *    ** If updating from below 3.20, please see boxed note at version 3.21 below     **
+ *    **********************************************************************************
+ *    - New sound-pack (TW08/CS08)
+ *    - WC/RC-hybrid display mode: Show both temperature and humidity on same display
+ *    - Door sound playback: Fix regression introduced in 3.25 
+ *    - More robust error handling in case of malformed config files
+ *    - SD: More compatibility fixes
+ *    - Fix typos in Config Portal: TT_OUT is switched by 900/901 (not 990/991).
+ *    - "Time Cycling": Correct some times of tt
+ *    - Internal BTTFN enhancements
+ *    - Code optimizations
  *  2026/07/16 (A10001986) [3.25]
  *    **********************************************************************************
  *    ** If updating from below 3.20, please see boxed note at version 3.21 below     **
  *    **********************************************************************************
  *    - Bugfix: Year in BTTFN-broadcast time stamp was truncated
  *    - Bugfix: Fix SD initialization in ESP32-Arduino to conform to specs.
- *      Sandisk Ultra 32GB cards (and possibly others) are now finally recognized.
+ *      Sandisk Ultra 32GB cards (and possibly others that previously were not usable) 
+ *      are now recognized.
  *    - Internal BTTFN changes
  *  2026/06/25 (A10001986) [3.24]
  *    **********************************************************************************
@@ -1804,6 +1818,6 @@ void loop()
 }
 #endif
 
-#if defined(TC_DBG_TIME) || defined(TC_DBG_NET) || defined(TC_DBG_GPS)
+#if defined(TC_DBG_TIME) || defined(TC_DBG_NET) || defined(TC_DBG_GPS) || defined(TC_DBG_GEN)
 #warning "Debug output is enabled. Binary not suitable for release."
 #endif

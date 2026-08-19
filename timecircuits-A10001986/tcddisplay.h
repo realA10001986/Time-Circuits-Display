@@ -144,6 +144,7 @@ class tcdDisplay {
         void setWeekDay(int wd);
 
         void setColon(bool col) { _colon = _nightmode ? true : col; _beat ^= col; } // colon is on in night mode
+        bool getColon() { return _colon; }
 
         void setYearOffset(int16_t yearOffs);
 
@@ -172,6 +173,7 @@ class tcdDisplay {
         #ifdef TC_HAVETEMP
         void showTempDirect(float temp, bool animate = false);
         void showHumDirect(int hum, bool animate = false);
+        void showTempHumDirect(float temp, int hum, bool animate = false);
         #endif
 
         #ifdef TC_HAVEGPS

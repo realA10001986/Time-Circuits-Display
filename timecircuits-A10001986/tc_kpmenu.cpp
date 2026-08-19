@@ -942,7 +942,7 @@ void enter_menu()
         doShowSensors();
     #endif
 
-    }                                      // LTS, VERSION: Bail out
+    }                                       // LTS, VERSION: Bail out
 
 quitMenu:
 

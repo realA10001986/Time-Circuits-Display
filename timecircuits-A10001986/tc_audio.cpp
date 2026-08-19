@@ -89,8 +89,8 @@ class AudioGeneratorWAVP : public AudioGeneratorWAV
         channels = chnls;
         sampleRate = sr;
         availBytes = slen;
-        
-        file->seek(stPos, SEEK_SET);
+
+        file->seek(stPos, SEEK_SET);  // 12-13ms
       
         // Now set up the buffer or fail
         buff = reinterpret_cast<uint8_t *>(malloc(buffSize));
@@ -191,12 +191,12 @@ static uint32_t haveKeySnd = 0;
 
 int8_t          mfstatus[10] = { 0 };
 
-#define TCC_VER   1
-bool              haveTCC = false;
-static bool       sayTimeOnTheHour = false;
-static const char tcc_fn[] = "/TCC.bin";
+bool                  haveTCC = false;
+static bool           sayTimeOnTheHour = false;
+static const char     tcc_fn[] = "/TCC.bin";
 static const uint32_t tcc_magic = (TCC_VER << 24) | 0x434354;
-static int16_t    segList[5];
+static int16_t        segList[5];
+static int16_t        tsSegList[3] = { 1, 0 };
 
 /*
 static char     append_audio_file[32];
@@ -210,12 +210,17 @@ bool          headLineShown = false;
 bool          blinker       = true;
 unsigned long renNow1, renNow2;
 
+static const char dtmfFn[] = "/dtmf.bin";
+
+static const uint16_t koffs[10] = {
+         (0+44)/2,  (0x2e04+44)/2,  (0x5c00+44)/2,  (0x8a00+44)/2,  (0xb82a+44)/2,
+    (0xe646+44)/2, (0x11462+44)/2, (0x14242+44)/2, (0x16ff4+44)/2, (0x19e02+44)/2
+};
+
 static const uint16_t klens[10] = {
     11780-44, 11772-44, 11776-44, 11818-44, 11804-44,
     11804-44, 11744-44, 11698-44, 11790-44, 11818-44
 };
-
-static char       dtmfBuf[] = "/Dtmf-0.wav";    // Not const
 
 #define HHS_HAVEHRSOUND 0x80000000
 static const char *hsnd     = "/hour.mp3";
@@ -383,6 +388,7 @@ void audio_loop_quick()
             mp3->stop();
             key_playing = 0;
             clear_sig_playing(alarmCanRunOut);
+            //checkAppend();
         }
     }
 }
@@ -404,28 +410,34 @@ static int32_t skipID3(char *buf)
     return 0;
 }
 
-/*
-void append_file(const char *audio_file, uint32_t flags, float volumeFactor)
+static void setupLoopAndBegin(AudioFileSourceLoop *src, uint32_t flags)
 {
-    if(strlen(audio_file) >= sizeof(append_audio_file) - 1) {
-        #ifdef TC_DBG_AUDIO
-        Serial.printf("Internal error: Sound file name too long (%d vs max %d)\n", strlen(audio_file), sizeof(append_audio_file));
-        #endif
-        return;
+    int32_t pos = 0;
+    char    buf[10];
+
+    buf[0] = 0;
+
+    if(flags & PA_ISWAV) {
+        src->setPlayLoop(false);
+        wav->begin(src, out);
+    } else {
+        src->setPlayLoop(!!(flags & PA_LOOP));
+        if(flags & PA_DOID3TS) {
+            src->read((void *)buf, 10);
+            pos = skipID3(buf);
+            src->seek(pos, SEEK_SET);
+        }
+        src->setStartPos(pos);
+        mp3->begin(src, out);
     }
-    strcpy(append_audio_file, audio_file);
-    append_flags = flags;
-    append_vol = volumeFactor;
-    appendFile = 1;
 }
-*/
 
 void play_file(const char *audio_file, uint32_t flags, float volumeFactor)
 {
-    char buf[10];
+    char    *id3;
     int32_t pos = 0;
     #ifdef TC_HAVEMQTT
-    bool mpWasActive = false;
+    bool    mpWasActive = false;
     #endif
 
     //appendFile = 0;   // Clear appended, append must be called AFTER play_file
@@ -458,7 +470,7 @@ void play_file(const char *audio_file, uint32_t flags, float volumeFactor)
 
     mutechannels = alarmCanRunOut = 0;
 
-    playLineOut = (haveLineOut && useLineOut && (flags & PA_LINEOUT)) ? true : false;
+    playLineOut = (haveLineOut && useLineOut && (flags & PA_LINEOUT));
     setLineOut(playLineOut);
     if(playLineOut) {
         curChkNM = dynVol = false;
@@ -468,8 +480,8 @@ void play_file(const char *audio_file, uint32_t flags, float volumeFactor)
             flags &= ~PA_KEYMASK;
         }
     } else {
-        curChkNM = (flags & PA_CHECKNM) ? true : false;
-        dynVol   = (flags & PA_DYNVOL) ? true : false;
+        curChkNM = !!(flags & PA_CHECKNM);
+        dynVol   = !!(flags & PA_DYNVOL);
         if(flags & PA_DOOR) {
             flags &= ~PA_KEYMASK;
         }
@@ -492,8 +504,6 @@ void play_file(const char *audio_file, uint32_t flags, float volumeFactor)
 
     out->SetGain(getVolume(), mutechannels);
 
-    buf[0] = 0;
-
     if(flags & PA_TCSEGS) {
         if(haveTCC && (mySD0->c = t) && mySD0->open_c(tcc_fn, (const int16_t *)audio_file)) {
             if(flags & PA_ISWAV) {
@@ -501,49 +511,35 @@ void play_file(const char *audio_file, uint32_t flags, float volumeFactor)
             } else {
                 mp3->begin(mySD0, out);
             }
+        /*
+         * Should we ever play signals or key sounds through segments, enable this. Not likely.
+        } else {
+            key_playing = 0;
+            clear_sig_playing();
+        */
         }
     } else if(haveSD && ((flags & PA_ALLOWSD) || FlashROMode) && mySD0->open(audio_file)) {
-        mySD0->setPlayLoop(false);
-        if(flags & PA_ISWAV) {
-            wav->begin(mySD0, out);
-        } else {
-            if(flags & PA_DOID3TS) {
-                char *id3 = (char *)malloc(MAXID3LEN);
-                if(id3) {
-                    id3[0] = 0;
-                    mySD0->read((void *)id3, 10);
-                    if((pos = skipID3(id3))) {
-                        int Id3Size = pos <= MAXID3LEN ? pos : MAXID3LEN;
-                        mySD0->read((void *)((char *)id3 + 10), Id3Size - 10);
-                        decodeID3(id3artist, id3track, id3, Id3Size);
-                    }
-                    free(id3);
-                    mySD0->seek(pos, SEEK_SET);
-                }
-            } else {
-                mySD0->setPlayLoop(!!(flags & PA_LOOP));
-                mySD0->read((void *)buf, 10);
-                pos = skipID3(buf);
-                mySD0->setStartPos(pos);
-                mySD0->seek(pos, SEEK_SET);
+        if((flags & PA_DOID3TS) && ((id3 = (char *)malloc(MAXID3LEN)))) {
+            id3[0] = 0;
+            mySD0->read((void *)id3, 10);
+            if((pos = skipID3(id3))) {
+                int Id3Size = pos <= MAXID3LEN ? pos : MAXID3LEN;
+                mySD0->read((void *)((char *)id3 + 10), Id3Size - 10);
+                decodeID3(id3artist, id3track, id3, Id3Size);
             }
+            free(id3);
+            mySD0->setPlayLoop(!!(flags & PA_LOOP));
+            mySD0->setStartPos(pos);
+            mySD0->seek(pos, SEEK_SET);
             mp3->begin(mySD0, out);
+        } else {
+            setupLoopAndBegin(mySD0, flags|PA_DOID3TS);
         }
         #ifdef TC_DBG_AUDIO
         Serial.println("Playing from SD");
         #endif
     } else if(haveFS && myFS0->open(audio_file)) {
-        if(flags & PA_ISWAV) {
-            myFS0->setPlayLoop(false);
-            wav->begin(myFS0, out);
-        } else {
-            myFS0->setPlayLoop(!!(flags & PA_LOOP));
-            myFS0->read((void *)buf, 10);
-            pos = skipID3(buf);
-            myFS0->setStartPos(pos);
-            myFS0->seek(pos, SEEK_SET);
-            mp3->begin(myFS0, out);
-        }
+        setupLoopAndBegin(myFS0, flags);
         #ifdef TC_DBG_AUDIO
         Serial.println("Playing from flash FS");
         #endif
@@ -568,9 +564,7 @@ void play_file(const char *audio_file, uint32_t flags, float volumeFactor)
 uint32_t play_keypad_sound(char key)
 {
     uint32_t kp = key_playing;
-    AudioFileSource *src = NULL;
-    
-    dtmfBuf[6] = key;
+    AudioFileSourceLoop *src = NULL;
 
     if(mpActive || sig_playing) return kp;
 
@@ -588,11 +582,13 @@ uint32_t play_keypad_sound(char key)
 
     out->SetGain(getVolume(), 0);
 
-    if(FlashROMode && mySD0->open(dtmfBuf)) src = mySD0;
-    else if(haveFS && myFS0->open(dtmfBuf)) src = myFS0;
+    // open: 26ms
+    if(FlashROMode && mySD0->open(dtmfFn)) src = mySD0;
+    else if(haveFS && myFS0->open(dtmfFn)) src = myFS0;
 
     if(src) {
-        wav->beginQuick(src, out, 1, 32000, 44, (uint32_t)klens[key-'0']);
+        src->setPlayLoop(false);
+        wav->beginQuick(src, out, 1, 32000, (uint32_t)koffs[key-'0'] << 1, (uint32_t)klens[key-'0']);
     }
     return kp;
 }
@@ -621,7 +617,7 @@ void play_beep()
        mp3->isRunning()                       ||
        (csf & (CSF_NM|CSF_OFF|CSF_AL|CSF_AE)) ||
        mpActive                               ||
-       //appendFile                             ||
+       //appendFile                           ||
        (wavRunning && !beepRunning)) {
         return;
     }
@@ -691,6 +687,16 @@ void play_door_snd(int doorNum, int state, uint32_t doorFlags)
     }
 }
 
+void play_ts_snd(int16_t *s)
+{
+    unsigned long now = millis();
+    memcpy((void *)tsSegList, (void *)s, 3*2);
+    if(!tsSegList[0] || tsSegList[0] > 2) return;
+    if(haveTCC && (!(csf & CSF_ST)) && ((!(csf & (CSF_P0|CSF_P1|CSF_RE))) || !playTTsounds || checkAudioFree())) {
+        play_file((const char *)tsSegList, PA_TCSEGS|PA_LINEOUT|PA_CHECKNM|PA_INTRMUS);
+    }
+}
+
 bool say_time(int pbt, int whichone, int gh, int gm)
 {
     int h, m;
@@ -704,12 +710,37 @@ bool say_time(int pbt, int whichone, int gh, int gm)
         // pbt: 0 normal, 1 fancy; wo: -1 = displayed, 0 = current, 1 = given
         get_time_segs(pbt, whichone, segList, gh, gm);
 
-        play_file((const char *)segList, PA_TCSEGS|PA_LINEOUT|PA_CHECKNM, 1.0);
+        play_file((const char *)segList, PA_TCSEGS|PA_LINEOUT|PA_CHECKNM);
         return true;
     }
     
     return false;
 }
+
+/*
+ * Append file to currently played one
+ * Unused on TCD
+ */
+/*
+void append_file(const char *audio_file, uint32_t flags, float volumeFactor)
+{
+    if(strlen(audio_file) >= sizeof(append_audio_file) - 1) {
+        #ifdef TC_DBG_AUDIO
+        Serial.printf("Internal error: Sound file name too long (%d vs max %d)\n", strlen(audio_file), sizeof(append_audio_file));
+        #endif
+        return;
+    }
+    strcpy(append_audio_file, audio_file);
+    append_flags = flags;
+    append_vol = volumeFactor;
+    appendFile = 1;
+}
+
+bool append_pending()
+{
+    return appendFile;
+}
+*/
 
 // Returns value for volume based on the position of the pot
 // Since the values vary we do some noise reduction
@@ -839,7 +870,7 @@ bool check_file_SD(const char *audio_file)
     return (haveSD && SD.exists(audio_file));
 }
 
-unsigned int check_file_len_SD(const char *audio_file, bool& file_exists, uint8_t *tbuf, uint32_t tsz)
+static unsigned int check_file_len_SD(const char *audio_file, uint8_t *tbuf = NULL, uint32_t tsz = 0)
 {
     unsigned int s = 0;
     if(haveSD) {
@@ -852,7 +883,6 @@ unsigned int check_file_len_SD(const char *audio_file, bool& file_exists, uint8_
             file.close();
         }
     }
-    file_exists = (s > 0);
     return s;
 }
 
@@ -861,11 +891,10 @@ void checkForTCC()
     unsigned int sps = 0;
     uint32_t tbuf[3];
     
-    if((sps = check_file_len_SD(tcc_fn, haveTCC, (uint8_t *)&tbuf[0], 12))) {
+    if((sps = check_file_len_SD(tcc_fn, (uint8_t *)&tbuf[0], 12))) {
         haveTCC = ((tbuf[0] == tcc_magic) && (tbuf[1] == sps ^ tcc_magic));
     }
 }
-
 
 int getSWVolFromHWVol()
 {
@@ -965,13 +994,6 @@ static void clear_sig_playing(int ranOut)
     }
     sig_playing = 0;
 }
-
-/*
-bool append_pending()
-{
-    return appendFile;
-}
-*/
 
 /*
  * ID3 handling

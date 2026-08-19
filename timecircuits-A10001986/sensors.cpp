@@ -32,7 +32,7 @@
  * VEML7700:      0x10
  * 
  * If a MT(K)333x-based GPS receiver or the CircuitSetup speedo is 
- * connected at the same time, 
+ * connected, 
  * - VEML7700 cannot be used;
  * - VEML6030 needs to be set to address 0x48.
  * -------------------------------------------------------------------

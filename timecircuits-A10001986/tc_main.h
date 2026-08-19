@@ -136,7 +136,7 @@ bool      toggleRcMode();
 bool      isRcMode();
 
 #ifdef TC_HAVETEMP
-bool      tempInCelsius();
+char      tempUnitChar();
 #endif
 
 #ifdef TC_HAVE_RE
@@ -244,6 +244,7 @@ extern uint32_t schf;
 #define SCHF_SENDINFO   0x0008
 #define SCHF_DOOR1      0x0010
 #define SCHF_DOOR2      0x0020
+#define SCHF_TS         0x0040
 
 extern bool syncTrigger;
 extern unsigned long syncTriggerNow;

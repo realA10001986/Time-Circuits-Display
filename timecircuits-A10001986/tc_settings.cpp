@@ -75,6 +75,13 @@
 #include "tc_main.h"
 #include "tc_wifi.h"
 
+// SPI speed for SD. We used 16000000 in the past,
+// but since we have short traces and likely no
+// extender, we go a bit higher now.
+// 25000000 is max for SD, 20000000 is max for MMC
+// SD-code automatically limits according to card type
+#define SD_SPI_FREQ 20000000
+
 // Settings upgrade, stage 2: Assume new settings
 //  are present, but still delete obsolete files.
 #define SETTINGS_TRANSITION_2
@@ -88,18 +95,18 @@
 #else
 #define DECLARE_S_JSON(x,n) StaticJsonDocument<x> n;
 #define DECLARE_D_JSON(x,n) DynamicJsonDocument n(x);
-#endif 
+#endif
 
-#define NUM_AUDIOFILES 25
+#define NUM_AUDIOFILES 26
 #define AC_FMTV 2
-#define AC_OHSZ (14 + ((10+NUM_AUDIOFILES+1)*(32+4)))
+#define AC_OHSZ (14 + ((NUM_AUDIOFILES+1)*(32+4)))
 #ifdef CS_EDITION
-#define SND_REQ_VERSION "CS07"
-#define AC_TS 17070333
+#define SND_REQ_VERSION "CS08"
+#define AC_TS 17656774
 #define SND_NON_ALIEN "TW"
 #else
-#define SND_REQ_VERSION "TW07"
-#define AC_TS 17065620
+#define SND_REQ_VERSION "TW08"
+#define AC_TS 17651759
 #define SND_NON_ALIEN "CS"
 #endif
 
@@ -245,7 +252,7 @@ unsigned int musFolderNum = 0;
 int sspeedopin = 0;
 int stachopin = 0;
 
-static bool loadBrightness();
+static void loadBrightness();
 static void loadBeepAutoInterval();
 static void loadCarMode();
 #ifdef TC_HAVE_REMOTE
@@ -380,14 +387,14 @@ static bool readFile(File& myFile, uint8_t *buf, int len)
 static bool readFileU(File& myFile, uint8_t*& buf, int& len)
 {
     if(myFile) {
-        len = myFile.size();
-        buf = (uint8_t *)malloc(len+1);
-        if(buf) {
-            buf[len] = 0;
-            return readFile(myFile, buf, len);
-        } else {
-            myFile.close();
+        if((len = myFile.size())) {
+            buf = (uint8_t *)malloc(len+1);
+            if(buf) {
+                buf[len] = 0;
+                return readFile(myFile, buf, len);
+            }
         }
+        myFile.close();
     }
     return false;
 }
@@ -491,6 +498,7 @@ static bool loadConfigFile(const char *fn, uint8_t *buf, int len, int& validByte
     if(!haveConfigFile && haveFS && (!forcefs || (forcefs < 0 && !FlashROMode))) {
         haveConfigFile = readFileFromFSU(fn, bbuf, fl);
     }
+    if(haveConfigFile && (fl < 2)) haveConfigFile = false;
     if(haveConfigFile) {
         uint8_t chksum = cfChkSum(bbuf, fl - 1);
         if((haveConfigFile = (bbuf[fl - 1] == chksum))) {
@@ -602,8 +610,13 @@ static DeserializationError readJSONCfgFile(JsonDocument& json, File& configFile
     size_t bufSize = configFile.size();
     DeserializationError ret;
 
+    if(!bufSize)
+        return DeserializationError::InvalidInput;
+
     if(!(buf = (const char *)malloc(bufSize + 1))) {
+        #ifdef TC_DBG_BOOT
         Serial.printf("rJSON: malloc failed (%d)\n", bufSize);
+        #endif
         return DeserializationError::NoMemory;
     }
 
@@ -633,7 +646,9 @@ static bool writeJSONCfgFile(const JsonDocument& json, const char *fn, bool useS
     bool success = false;
 
     if(!(buf = (char *)malloc(bufSize + 1))) {
+        #ifdef TC_DBG_BOOT
         Serial.printf("wJSON: malloc failed (%d) (%s)\n", bufSize, fn);
+        #endif
         return false;
     }
 
@@ -669,9 +684,11 @@ static bool writeJSONCfgFile(const JsonDocument& json, const char *fn, bool useS
 
     free(buf);
 
+    #ifdef TC_DBG_BOOT
     if(!success) {
         Serial.printf("wJSON: %s - %s\n", fn, failFileWrite);
     }
+    #endif
 
     return success;
 }
@@ -808,23 +825,21 @@ static bool read_settings(File configFile, int cfgReadCount)
     
     DECLARE_D_JSON(JSON_SIZE,json);
 
-    DeserializationError error = readJSONCfgFile(json, configFile, &mainConfigHash);
+    if(!readJSONCfgFile(json, configFile, &mainConfigHash)) {
 
-    #if ARDUINOJSON_VERSION_MAJOR < 7
-    jsonSize = json.memoryUsage();
-    if(jsonSize > JSON_SIZE) {
-        Serial.printf("ERROR: Config too large (%d vs %d)\n", jsonSize, JSON_SIZE);
-    }
-    
-    #ifdef TC_DBG_BOOT
-    if(jsonSize > JSON_SIZE - 256) {
-          Serial.printf("%s: WARNING: JSON_SIZE needs to be adapted **************\n", funcName);
-    }
-    Serial.printf("%s: Size of document: %d (JSON_SIZE %d)\n", funcName, jsonSize, JSON_SIZE);
-    #endif
-    #endif
-
-    if(!error) {
+        #if ARDUINOJSON_VERSION_MAJOR < 7
+        jsonSize = json.memoryUsage();
+        if(jsonSize > JSON_SIZE) {
+            Serial.printf("ERROR: Config too large (%d vs %d)\n", jsonSize, JSON_SIZE);
+        }
+        
+        #ifdef TC_DBG_BOOT
+        if(jsonSize > JSON_SIZE - 256) {
+              Serial.printf("%s: WARNING: JSON_SIZE needs to be adapted **************\n", funcName);
+        }
+        Serial.printf("%s: Size of document: %d (JSON_SIZE %d)\n", funcName, jsonSize, JSON_SIZE);
+        #endif
+        #endif
 
         // WiFi Configuration
 
@@ -906,7 +921,6 @@ static bool read_settings(File configFile, int cfgReadCount)
         #endif
 
         wd |= CopyCheckValidNumParm(json["CoSD"], settings.CfgOnSD, sizeof(settings.CfgOnSD), 0, 1, DEF_CFG_ON_SD);
-        //wd |= CopyCheckValidNumParm(json["sdFreq"], settings.sdFreq, sizeof(settings.sdFreq), 0, 1, DEF_SD_FREQ);
         wd |= CopyCheckValidNumParm(json["ttps"], settings.timesPers, sizeof(settings.timesPers), 0, 1, DEF_TIMES_PERS);
 
         #ifdef IS_ACAR_DISPLAY
@@ -1081,7 +1095,6 @@ void write_settings()
     #endif
 
     json["CoSD"] = (const char *)settings.CfgOnSD;
-    //json["sdFreq"] = (const char *)settings.sdFreq;
     json["ttps"] = (const char *)settings.timesPers;
 
     #ifdef IS_ACAR_DISPLAY
@@ -1166,10 +1179,33 @@ void write_settings()
     writeJSONCfgFile(json, cfgName, FlashROMode, mainConfigHash, &mainConfigHash);
 }
 
+static void removeObsFiles()
+{
+    // Remove files that no longer should exist
+    char dtmfBuf1[] = "/Dtmf-0.mp3";
+    char dtmfBuf2[] = "/Dtmf-0.wav";
+    if(MYNVS.exists(dtmfBuf1) || MYNVS.exists(dtmfBuf2)) {
+        for(int i = 0; i < 10; i++) {
+            dtmfBuf1[6] = dtmfBuf2[6] = i + '0';
+            MYNVS.remove(dtmfBuf1);
+            MYNVS.remove(dtmfBuf2);
+        }
+    }
+    
+    #ifdef SETTINGS_TRANSITION_2
+    for(int i = 0; ; i++) {
+        if(!obsFiles[i]) break;
+        MYNVS.remove(obsFiles[i]);
+    }
+    #else
+    MYNVS.remove("/beep.mp3");
+    #endif
+}
+
 /*
  * settings_setup()
  * 
- * Mount LittleFS/SPIFFS and SD (if available).
+ * Mount LittleFS and SD (if available).
  * Read configuration from JSON config file
  * If config file not found, create one with default settings
  *
@@ -1260,25 +1296,7 @@ void settings_setup()
         Serial.printf("ok.\nFlashFS: %d total, %d used, %d free\n", MYNVS.totalBytes(), MYNVS.usedBytes(), MYNVS.totalBytes() - MYNVS.usedBytes());
         #endif
         
-        // Remove files that no longer should exist
-        char dtmfBuf[] = "/Dtmf-0.mp3";
-        if(MYNVS.exists(dtmfBuf)) {
-            #ifdef TC_DBG_BOOT
-            Serial.println("Removing old audio files");
-            #endif
-            for(int i = 0; i < 10; i++) {
-                dtmfBuf[6] = i + '0';
-                MYNVS.remove(dtmfBuf);
-            }
-        }
-        #ifdef SETTINGS_TRANSITION_2
-        for(int i = 0; ; i++) {
-            if(!obsFiles[i]) break;
-            MYNVS.remove(obsFiles[i]);
-        }
-        #else
-        MYNVS.remove("/beep.mp3");
-        #endif
+        removeObsFiles();
         
         if(MYNVS.exists(cfgName)) {
             File configFile = MYNVS.open(cfgName, "r");
@@ -1297,7 +1315,10 @@ void settings_setup()
 
     } else {
 
-        Serial.println("failed.\n*** Mounting flash FS failed. Using SD (if available)");
+        #ifdef TC_DBG_BOOT
+        Serial.println("failed.");
+        #endif
+        Serial.println("*** Mounting flash FS failed. Using SD (if available)");
 
     }
     
@@ -1313,10 +1334,11 @@ void settings_setup()
 
     // Two attemps. Not really a necessity after
     // the SD init changes (jul 2026), but why not.
-    if(!(haveSD = SD.begin(SD_CS_PIN, SPI, 16000000))) {
+    if(!(haveSD = SD.begin(SD_CS_PIN, SPI, SD_SPI_FREQ))) {
         delay(20);
-        haveSD = SD.begin(SD_CS_PIN, SPI, 25000000);
+        haveSD = SD.begin(SD_CS_PIN, SPI, SD_SPI_FREQ);
     }
+
     if(haveSD) {
         uint8_t cardType = SD.cardType();
        
@@ -1493,7 +1515,7 @@ void settings_setup()
  *  Load/save display brightness
  */
 
-static bool loadBrightness()
+static void loadBrightness()
 {
     if(haveSecSettings) {
         #ifdef TC_DBG_BOOT
@@ -1503,8 +1525,6 @@ static bool loadBrightness()
         settings.presTimeBright = secSettings.brightness[1];
         settings.lastTimeBright = secSettings.brightness[2];
     }
-
-    return true;
 }
 
 void saveBrightness()
@@ -1811,9 +1831,6 @@ void saveUpdVers(int v, int r)
 
 void loadMusFoldNum()
 {
-    if(!haveSD)
-        return;
-
     if(haveTerSettings) {
         #ifdef TC_DBG_BOOT
         Serial.println("loadMusFoldNum: extracting from terSettings");
@@ -1836,7 +1853,7 @@ void saveMusFoldNum()
 
 void loadShuffle()
 {
-    if(haveSD && haveTerSettings) {
+    if(haveTerSettings) {
         aud_state.mpShuffle = terSettings.mpShuffle;
     }
 }
@@ -1853,7 +1870,7 @@ void saveShuffle()
 
 uint8_t loadBootMode()
 {
-    if(haveSD && haveTerSettings) {
+    if(haveTerSettings) {
         return terSettings.bootMode;
     }
 
@@ -2124,6 +2141,7 @@ void moveSettings()
         #ifdef TC_DBG_BOOT
         Serial.println("moveSettings: Writing to flash prohibted (FlashROMode), aborting.");
         #endif
+        return;
     }
 
     // Flush pending saves
@@ -2276,11 +2294,11 @@ bool check_if_default_audio_present()
             ts = file.size();
             file.read(dbuf, 14);
             file.close();
-            if((!memcmp(dbuf, CONID, 4))             && 
-               ((*(dbuf+4) & 0x7f) == AC_FMTV)       &&
-               (!memcmp(dbuf+5, rspv, 4))            &&
-               (*(dbuf+9) == (10+NUM_AUDIOFILES+1))  &&
-               (getuint32(dbuf+10) == soa)           &&
+            if((!memcmp(dbuf, CONID, 4))         && 
+               ((*(dbuf+4) & 0x7f) == AC_FMTV)   &&
+               (!memcmp(dbuf+5, rspv, 4))        &&
+               (*(dbuf+9) == (NUM_AUDIOFILES+1)) &&
+               (getuint32(dbuf+10) == soa)       &&
                (ts > soa + AC_OHSZ)) {
                 ic = true;
                 if(!(*(dbuf+4) & 0x80)) r=f;
@@ -2312,7 +2330,7 @@ bool copy_audio_files(bool& delIDfile)
         if(sfile = SD.open(CONFN, FILE_READ)) {
             ts = sfile.size();
             sfile.seek(14);
-            for(i = 0; i < NUM_AUDIOFILES+10+1; i++) {
+            for(i = 0; i < NUM_AUDIOFILES+1; i++) {
                cfc(sfile, haveErr, haveWriteErr, tw, ts);
                if(haveErr) break;
             }

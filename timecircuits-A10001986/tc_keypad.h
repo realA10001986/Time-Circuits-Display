@@ -56,6 +56,11 @@
 #ifndef _TC_KEYPAD_H
 #define _TC_KEYPAD_H
 
+#ifdef TC_HAVETEMP
+bool showRCDest(bool i);
+bool showRCDep(bool i);
+#endif
+
 void keypad_setup();
 bool scanKeypad();
 
@@ -96,6 +101,7 @@ void enterkeyScan();
 
 void displayTmrString();
 void s5(bool b);
+void s2(bool c);
 
 void doCopyAudioFiles();
 void start_file_copy();

@@ -388,7 +388,6 @@ WiFiManagerParameter custom_CfgOnSD("CfgSD", "Save secondary settings on SD<br><
 #ifdef PERSISTENT_SD_ONLY
 WiFiManagerParameter custom_ttrp("ttrp", "Make time travel persistent<br><span>Requires SD card</span>", settings.timesPers, "class='mt5 ml20'", WFM_LABEL_AFTER|WFM_IS_CHKBOX);
 #endif
-//WiFiManagerParameter custom_sdFrq("sdFrq", "4MHz SD clock speed<br><span>Checking this might help in case of SD card problems</span>", settings.sdFreq, WFM_LABEL_AFTER|WFM_IS_CHKBOX);
 
 #ifdef IS_ACAR_DISPLAY
 WiFiManagerParameter custom_swapDL("swapDL", "Swap red and yellow displays like B-Car", settings.swapDL, "", WFM_LABEL_AFTER|WFM_IS_CHKBOX|WFM_SECTS);
@@ -438,7 +437,7 @@ WiFiManagerParameter custom_ttouthl("<div style='margin:10px 0 5px 0;padding:0;'
 #else
 WiFiManagerParameter custom_sectstart_etto("TT-OUT (IO14)", WFM_SECTS|WFM_HL);
 #endif
-WiFiManagerParameter custom_ETTOcmd("EtCd", "is controlled by commands 990/991", settings.ETTOcmd, "class='mt5'", WFM_LABEL_AFTER|WFM_IS_CHKBOX);
+WiFiManagerParameter custom_ETTOcmd("EtCd", "is controlled by commands 900/901", settings.ETTOcmd, "class='mt5'", WFM_LABEL_AFTER|WFM_IS_CHKBOX);
 WiFiManagerParameter custom_ETTOPUS("EtPU", "Power-up state HIGH", settings.ETTOpus, "class='mt5 mb10 ml20'", WFM_LABEL_AFTER|WFM_IS_CHKBOX);
 WiFiManagerParameter custom_useETTO("uEtto", "signals time travel", settings.useETTO, "class='mt5'", WFM_LABEL_AFTER|WFM_IS_CHKBOX);
 WiFiManagerParameter custom_noETTOL("uEtNL", "Signal without 5 second lead", settings.noETTOLead, "class='mt5 mb10 ml20'", WFM_LABEL_AFTER|WFM_IS_CHKBOX);
@@ -748,7 +747,6 @@ void wifi_setup()
       #ifdef PERSISTENT_SD_ONLY
       &custom_ttrp,
       #endif
-      //&custom_sdFrq,
 
       #ifdef IS_ACAR_DISPLAY
       &custom_swapDL,
@@ -1269,7 +1267,6 @@ void wifi_loop()
 
             oldCfgOnSD = settings.CfgOnSD[0];
             evalCB(settings.CfgOnSD, &custom_CfgOnSD);
-            //evalCB(settings.sdFreq, &custom_sdFrq);
             evalCB(settings.timesPers, &custom_ttrp);
 
             #ifdef IS_ACAR_DISPLAY
@@ -1827,7 +1824,7 @@ static void checkForUpdate()
     if(uver) {
         haveCVer = true;
         if(((uver << 8) | urev) > ((cver << 8) | crev)) {
-            snprintf(newversion, sizeof(newversion), "%d.%d", uver, urev);
+            snprintf(newversion, sizeof(newversion), "%d.%02d", uver, urev);
         }
     }
 
@@ -2224,7 +2221,6 @@ static void updateConfigPortalValues()
     #endif
 
     setCBVal(&custom_CfgOnSD, settings.CfgOnSD);
-    //setCBVal(&custom_sdFrq, settings.sdFreq);
     setCBVal(&custom_ttrp, settings.timesPers);
 
     #ifdef IS_ACAR_DISPLAY

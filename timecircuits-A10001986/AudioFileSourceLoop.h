@@ -3,7 +3,7 @@
  * Read SD/SPIFFS/LittleFS file to be used by AudioGenerator
  * Reads file in a loop (for looped playback)
  * 
- * Thomas Winischhofer (A10001986), 2023
+ * Thomas Winischhofer (A10001986), 2023/2026
  *
  * Based on AudioFileSourceSD by Earle F. Philhower, III
  *

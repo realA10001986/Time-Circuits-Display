@@ -562,29 +562,29 @@ static unsigned long pauseDelay = 0;
 
 const dateStruct destinationTimes[NUM_AUTOTIMES] = {
     {1985, 10, 26,  1, 21},   // Einstein 1:20 -> 1:21
-    {1955, 11,  5,  6,  0},   // Marty -> 1955
+    {1955, 11,  5,  6,  0},   // Marty -> 1955 ("6" visible; time never programmed, so I assume the TCD defaulted to 0600am)
     {1985, 10, 26,  1, 24},   // Marty -> 1985
     {2015, 10, 21, 16, 29},   // Marty, Doc, Jennifer -> 2015
     {1955, 11, 12,  8,  0},   // Old Biff -> 1955 (time unknown)
-    {2015, 10, 21, 19, 25},   // Old Biff -> 2015 (time assumed from run of scene)
+    {2015, 10, 21, 19, 25},   // Old Biff -> 2015 (time assumed from run of scene, backwards from 1928 as shown)
     {1985, 10, 26, 21,  0},   // Marty, Doc, Jennifer -> 1985
     {1955, 11, 12,  6,  0},   // Marty, Doc -> 1955
     {1885,  1,  1,  0,  0},   // Doc in thunderstorm -> 1885 (date/time assumed from letter)
-    {1885,  9,  2,  8,  0},   // Marty -> 1885
-    {1985, 10, 27, 11,  0}    // Marty -> 1985
+    {1885,  9,  2,  8,  0},   // Marty -> 1885 (Date/time spoken by Doc)
+    {1985, 10, 27, 11,  0}    // Marty -> 1985 (Time shown during loco-push)
 };
 const dateStruct departedTimes[NUM_AUTOTIMES] = {
     {1985, 10, 26,  1, 20},   // Einstein 1:20 -> 1:21
-    {1985, 10, 26,  1, 29},   // Marty -> 1955 (time assumed)
+    {1985, 10, 26,  1, 29},   // Marty -> 1955 (time assumed; 7 minutes after 1:22, assuming movie runs in real-time)
     {1955, 11, 12, 22,  4},   // Marty -> 1985
-    {1985, 10, 26, 11, 35},   // Marty, Doc, Jennifer -> 2015 (time random)
+    {1985, 10, 26, 10, 33},   // Marty, Doc, Jennifer -> 2015 (time calculated from wake-up at 10:28 until tt)
     {2015, 10, 21, 19, 15},   // Old Biff -> 1955  (time assumed from run of scene)
     {1955, 11, 12, 18, 38},   // Old Biff -> 2015
     {2015, 10, 21, 19, 28},   // Marty, Doc, Jennifer -> 1985
     {1985, 10, 27,  2, 42},   // Marty, Doc -> 1955
     {1955, 11, 12, 21, 33},   // Doc in thunderstorm -> 1885 (time assumed from following events)
-    {1955, 11, 15, 11, 11},   // Marty -> 1885 (Date shown in movie 11/5 - wrong! Must be after 11/12! Date&time guessed)
-    {1885,  9,  7,  8, 22}    // Marty -> 1985 (time guessed/assumed)
+    {1955, 11, 16, 11, 11},   // Marty -> 1885 (Date shown in PT in movie [11/5] at departure is wrong, must be after 11/12. Date 11/16 briefly shown in LTD when Delorean is pushed by locomotive. Time guessed)
+    {1885,  9,  7,  8, 15}    // Marty -> 1985 (time calculated starting from 0755am shown on newly arrived clock tower clock, and from what could be a blurry "0810" during the loco-push)
 };
 
 #else //  --------------------------- TWPRIVATE
@@ -671,10 +671,8 @@ unsigned long ctDown = 0;
 unsigned long ctDownNow = 0;
 
 // Fake "power" feature (TFC switch, MQTT, remote)
-static TCButton fakePowerOnKey = TCButton(FAKE_POWER_BUTTON_PIN,
-    true,    // Button is active LOW
-    true     // Enable internal pull-up resistor
-);
+static TCButton fakePowerOnKey = TCButton(FAKE_POWER_BUTTON_PIN); // act low, pu
+
 static bool useFakePowerSwitch = false;
 bool        MQTTWaitForOn = false;
 static bool isFPBKeyChange = false;
@@ -695,6 +693,9 @@ int           door2Snd = 0;
 uint32_t      door2Flags = 0;
 unsigned long door2SndDelay = 0;
 unsigned long door2SndNow = 0;
+
+static unsigned long tsSndNow = 0;
+static int16_t       tsSndSeg[3] = { 0 };
 
 // Date & time stuff
 static const uint8_t monthDays[] =
@@ -899,7 +900,7 @@ int bttfnHaveClients = 0; // This is a bool by nature (0, !0)
 #define BTTFN_NOT_AUX_CMD  11
 #define BTTFN_NOT_VSR_CMD  12
 #define BTTFN_NOT_REM_CMD  13
-#define BTTFN_NOT_REM_SPD  14  // No longer in use
+#define BTTFN_NOT_REM_SPD  14  // Obsolete
 #define BTTFN_NOT_SPD      15
 #define BTTFN_NOT_INFO     16
 #define BTTFN_NOT_DATA     128 // bit only, not value
@@ -912,6 +913,7 @@ int bttfnHaveClients = 0; // This is a bool by nature (0, !0)
 #define BTTFN_OPEN_CMDS        100
 #define BTTFN_REMCMD_DOOR      100
 #define BTTFN_REMCMD_KEEPALIVE 101
+#define BTTFN_REMCMD_PS        102
 #define BTTFN_SSRC_NONE         0
 #define BTTFN_SSRC_GPS          1
 #define BTTFN_SSRC_ROTENC       2
@@ -968,7 +970,7 @@ static unsigned long bttfnLastSpeedNot = 0;
 static unsigned long bttfnLastDataNot = 0;
 static unsigned long bttfnLastInfo = 0;
 static int           TCDBusyStatus = 0;
-static uint8_t       bttfnData17 = 0, bttfnData18, bttfnData19;
+static uint8_t       bttfnData17 = 0, bttfnData18, bttfnData19, bttfnCap32;
 static unsigned long bttfnScheduleInfo;
 #ifdef TC_HAVE_REMOTE
 static uint32_t      registeredRemID  = 0;
@@ -1141,8 +1143,7 @@ void main_setup()
 
     // Init fake power switch
     useFakePowerSwitch = evalBool(settings.fakePwrOn);
-    fakePowerOnKey.begin();
-    fakePowerOnKey.setTiming(50, 10, 50);
+    fakePowerOnKey.begin(LOW, INPUT_PULLUP, 50, 10, 50);
     if(useFakePowerSwitch) {
         fakePowerOnKey.attachLongPressStart(fpbKeyPressed);
         fakePowerOnKey.attachLongPressStop(fpbKeyLongPressStop);
@@ -2212,7 +2213,7 @@ void main_loop()
             startupNow = autoPaused = millisNonZero();
             pauseDelay = STARTUP_DELAY + 2000;
             if(!(csf & (CSF_AL|CSF_AE))) {
-                play_file("/startup.mp3", PA_INTSPKR|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD, 0.8);
+                play_file("/startup.mp3", PA_INTSPKR|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD, 0.8f);
             }
         }
 
@@ -2278,6 +2279,11 @@ void main_loop()
         if((schf & SCHF_SENDINFO) && (millisNow - bttfnScheduleInfo > 5000)) {
             schf &= ~SCHF_SENDINFO;
             csf |= CSF_INFOUPD;
+        }
+
+        if(schf & SCHF_TS) {
+            schf &= ~SCHF_TS;
+            if(millisNow - tsSndNow < 500) play_ts_snd(tsSndSeg);
         }
     }
 
@@ -3491,20 +3497,10 @@ void main_loop()
                 #ifdef TC_HAVETEMP
                 if(isRcMode()) {
                     if(!specDisp && !(mqttDisp & MQ_DISP_D)) {
-                        if(!isWcMode() || (!(wcf & WCF_HaveTZ1))) {
-                            destinationTime.showTempDirect(tempSens.readLastTemp());
-                        } else {
-                            destShowAlt ? destinationTime.showAlt() : destinationTime.show();
-                        }
+                        if(!showRCDest(false)) destShowAlt ? destinationTime.showAlt() : destinationTime.show();
                     }
                     if(!(mqttDisp & MQ_DISP_L)) {
-                        if(isWcMode() && (wcf & WCF_HaveTZ1)) {
-                            departedTime.showTempDirect(tempSens.readLastTemp());
-                        } else if(!isWcMode() && (sgf & SGF_HaveHum)) {
-                            departedTime.showHumDirect(tempSens.readHum());
-                        } else {
-                            depShowAlt ? departedTime.showAlt() : departedTime.show();
-                        }
+                        if(!showRCDep(false)) depShowAlt ? departedTime.showAlt() : departedTime.show();
                     }
                 } else {
                 #endif
@@ -3529,6 +3525,7 @@ void main_loop()
 
             if(specDisp == 5) s5(postSecChange);
             else if(specDisp == 31) displayTmrString();
+            else if(specDisp == 2) s2(destinationTime.getColon());
 
         }
 
@@ -3886,7 +3883,7 @@ int timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
         // If (GPS or RotEnc or Remote) speed >= 88, trigger P1 immediately
 
         if(!ETTWithFixedLead) {
-            // If we have GPS, rotEnc or Remote speed and its >= 88, don't
+            // If we have GPS, rotEnc or Remote speed and it's >= 88, don't
             // waste time on the lead (unless 5s-lead-depending props need it)
             forceNoLead = true;
         }
@@ -4327,17 +4324,16 @@ void resetPresentTime()
         play_file("/timetravel.mp3", PA_LINEOUT|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
     }
 
+    // This is essentially a "Re-entry", so set it up accordingly.
+    // Also, trigger INFO on account of changed Last Time Departed (Present is not yet at this point)
     timetravelNow = millis();
-    csf |= CSF_RE;
+    csf |= (CSF_RE | CSF_INFOUPD);
 
     // Beep auto mode: Restart timer
     startBeepTimer();
 
     // Wake up network clients
     send_wakeup_msg();
-
-    // Trigger INFO on account of changed Last Time Departed (Present is not yet at this point)
-    csf |= CSF_INFOUPD;
 }
 
 static void copyPresentToDeparted(bool isReturn)
@@ -5014,9 +5010,9 @@ static void updateTemperature(bool force)
     }
 }
 
-bool tempInCelsius()
+char tempUnitChar()
 {
-    return !!(sgf & SGF_TempCelsius);
+    return (sgf & SGF_TempCelsius) ? 'C' : 'F';
 }
 #endif
 
@@ -5383,35 +5379,31 @@ void animate(bool withLEDs)
         } else
         #endif
         #ifdef TC_HAVETEMP
-        if(isRcMode() && (!isWcMode() || (!(wcf & WCF_HaveTZ1)))) {
-            destinationTime.showTempDirect(tempSens.readLastTemp(), i);
-        } else
+        if(!isRcMode() || !showRCDest(i)) {
         #endif
             if(isMiniMode())
                 destinationTime.clearDisplay();
             else
                 destinationTime.showAnimate(i);
-    
+        #ifdef TC_HAVETEMP
+        }
+        #endif
+        
         presentTime.showAnimate(i);
     
         #ifdef TC_HAVEGPS
         if(!isNavMode()) {
         #endif
             #ifdef TC_HAVETEMP
-            if(isRcMode()) {
-                if(isWcMode() && (wcf & WCF_HaveTZ1)) {
-                    departedTime.showTempDirect(tempSens.readLastTemp(), i);
-                } else if(!isWcMode() && (sgf & SGF_HaveHum)) {
-                    departedTime.showHumDirect(tempSens.readHum(), i);
-                } else {
-                    departedTime.showAnimate(i);
-                }
-            } else
+            if(!isRcMode() || !showRCDep(i)) {
             #endif
                 if(isMiniMode())
                     departedTime.clearDisplay();
                 else
                     departedTime.showAnimate(i);
+            #ifdef TC_HAVETEMP
+            }
+            #endif
         #ifdef TC_HAVEGPS
         }
         #endif
@@ -5432,35 +5424,31 @@ void animate(bool withLEDs)
     } else
     #endif
     #ifdef TC_HAVETEMP
-    if(isRcMode() && (!isWcMode() || (!(wcf & WCF_HaveTZ1)))) {
-        destinationTime.showTempDirect(tempSens.readLastTemp(), false);
-    } else
+    if(!isRcMode() || !showRCDest(false)) {
     #endif
-    if(isMiniMode())
-        destinationTime.clearDisplay();
-    else
-        destinationTime.show();
-
+        if(isMiniMode())
+            destinationTime.clearDisplay();
+        else
+            destinationTime.show();
+    #ifdef TC_HAVETEMP
+    }
+    #endif
+    
     presentTime.show();
 
     #ifdef TC_HAVEGPS
     if(!isNavMode()) {
     #endif
         #ifdef TC_HAVETEMP
-        if(isRcMode()) {
-            if(isWcMode() && (wcf & WCF_HaveTZ1)) {
-                departedTime.showTempDirect(tempSens.readLastTemp(), false);
-            } else if(!isWcMode() && (sgf & SGF_HaveHum)) {
-                departedTime.showHumDirect(tempSens.readHum(), false);
-            } else {
-                departedTime.show();
-            }
-        } else
+        if(!isRcMode() || !showRCDep(false)) {
         #endif
             if(isMiniMode())
                 departedTime.clearDisplay();
             else
                 departedTime.show();
+        #ifdef TC_HAVETEMP
+        }
+        #endif
     #ifdef TC_HAVEGPS
     }
     #endif
@@ -7136,7 +7124,7 @@ static uint32_t NTPGetCurrSecsSinceTCepoch()
 
 static bool NTPHaveCurrentTime()
 {
-    return NTPsecsSinceTCepoch ? true : false;
+    return !!NTPsecsSinceTCepoch;
 }
 
 // Get UTC time from NTP response
@@ -7461,8 +7449,9 @@ void removeKPRemote()
     bttfnLastSeq_ky = 0;    // seq cnt starts at 1 after every registration
 }
 
-static void bttfn_evalremotecommand(uint32_t seq, uint8_t cmd, uint8_t p1, uint8_t p2)
+static void bttfn_evalremotecommand(uint32_t seq, uint8_t cmd, uint8_t *parms)
 {
+    uint8_t p1 = parms[0], p2 = parms[1];
     #ifdef TC_DBG_NET
     Serial.printf("Remote command %d  p1 %d  (seq %d)\n", cmd, p1, seq);
     #endif
@@ -7513,7 +7502,7 @@ static void bttfn_evalremotecommand(uint32_t seq, uint8_t cmd, uint8_t p1, uint8
                 p1 &= 0x1f;
                 door2SndDelay = (p1 << 8) | p2;
                 door2SndNow = millis();
-                schf |= SCHF_DOOR1;
+                schf |= SCHF_DOOR2;
             } else {
                 doorFlags = PA_DOOR;
                 if(p1 & 0x20) doorFlags |= PA_DOORL;
@@ -7521,10 +7510,18 @@ static void bttfn_evalremotecommand(uint32_t seq, uint8_t cmd, uint8_t p1, uint8
                 p1 &= 0x1f;
                 doorSndDelay = (p1 << 8) | p2;
                 doorSndNow = millis();
-                schf |= SCHF_DOOR2;
+                schf |= SCHF_DOOR1;
             }
         }
         bttfnLastSeq_do = seq;
+        break;
+
+    case BTTFN_REMCMD_PS:
+        tsSndNow = millis();
+        tsSndSeg[0] = (int16_t)(p1 & 0xff);
+        tsSndSeg[1] = (int16_t)((parms[2] << 8) | p2);
+        tsSndSeg[2] = (int16_t)((parms[4] << 8) | parms[3]);
+        schf |= SCHF_TS;
         break;
 
     case BTTFN_REMCMD_BYE:
@@ -7834,8 +7831,13 @@ static void bttfn_fill_response(uint8_t *buf, int skipClear, uint8_t parm)
     // 4:Support NOT_DATA
     // 5:Support REMCMD_DOOR
     // 6:Sends SSID-appendix & password marker in NOT_DATA
-    // 7 for future use.
-    buf[31] = 0x01 | 0x08 | 0x10 | 0x20 | 0x40;
+    // 7:TCD Extended Capabilities and TCC version available
+    buf[31] = 0x01 | 0x08 | 0x10 | 0x20 | 0x40 | 0x80;
+    // TCD Extended Capabilities (valid if [31] & 0x80)
+    // 0: have TCC
+    // 1-7: ffu.
+    buf[32] = bttfnCap32;
+    buf[33] = TCC_VER;
     
     // buf[5]&0x80 taken (TT)
 }
@@ -7934,7 +7936,7 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
         // Eval command from remote: 
         // 25: Command code
         // 26, 27: parameters
-        bttfn_evalremotecommand(seq, cmd, buf[26], buf[27]);
+        bttfn_evalremotecommand(seq, cmd, &buf[26]);
 
         // Send no response
         return false;
@@ -8200,6 +8202,7 @@ static void bttfn_setup()
     // Prepare rest of SSID and pw marker
     bttfnData18 = settings.systemID[6];
     bttfnData19 = *settings.appw ? 1 : 0;
+    bttfnCap32 = haveTCC ? 0x01 : 0;
 
     do {
         bttfnSessionID = esp_random() ^ esp_random() ^ esp_random();

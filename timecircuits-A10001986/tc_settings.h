@@ -190,13 +190,12 @@ void   freeUploadFileNames();
 #define DEF_LUX_LIMIT       3     // Lux threshold for night mode
 #define DEF_CFG_ON_SD       1     // 1: Save secondary settings on SD, 0: Do not (use internal Flash)
 #define DEF_TIMES_PERS      0     // 0: Timetravels not persistent; 1: TT persistent
-#define DEF_SD_FREQ         0     // 0: SD/SPI frequency: Default 16MHz
 #define DEF_REVAMPM         0     // 0: AM/PM like in P1, 1: AM/PM like in P2/P3
 
 #define DEF_FAKE_PWR        0     // 0: Do not use external fake "power" switch, 1: Do
 #define DEF_SPEEDO_TYPE     99    // 99: None
 #define DEF_BRIGHT_SPEEDO   15    // Brightness for speedo
-#ifdef SP_ALWAYS_ON
+#ifdef CS_EDITION
 #define DEF_SPEEDO_AO       0     // Speedo: 0: Keep on when idle, do not switch off, 1: switch off when idle (=old behavior)
 #else
 #define DEF_SPEEDO_AO       1     // Speedo: 0: Keep on when idle, do not switch off, 1: switch off when idle (=old behavior)
@@ -206,7 +205,7 @@ void   freeUploadFileNames();
 #define DEF_SPEEDO_P3       0     // Speedo: 1: Like part 3 (leading 0 < 10, no dot) / 0: like parts 1/2 (single digit < 10, dot)
 #define DEF_SPEEDO_3RDD     0     // Speedo: 1: Enable third digit (always 0) on CircuitSetup speedo, 0: Do not
 #define DEF_USE_GPS_SPEED   0     // 0: Do not show GPS speed on speedo display; 1: Do
-#define DEF_SPD_UPD_RATE    1     // 0: 1Hz, 1: 2Hz (default), 2: 4Hz, 3: 5Hz
+#define DEF_SPD_UPD_RATE    1     // 0: 1Hz, 1: 2Hz, 2: 4Hz, 3: 5Hz
 #define DEF_DISP_TEMP       1     // 1: Display temperature (if available) on speedo; 0: do not (speedo off)
 #define DEF_TEMP_BRIGHT     3     // Temperature brightness
 #define DEF_TEMP_OFF_NM     1     // 1: temperature off in night mode; 0: dimmed
@@ -285,7 +284,6 @@ struct Settings {
 #endif
     char CfgOnSD[2]         = MS(DEF_CFG_ON_SD);
     char timesPers[2]       = MS(DEF_TIMES_PERS);
-    //char sdFreq[2]          = MS(DEF_SD_FREQ);
     char revAmPm[4]         = MS(DEF_REVAMPM);
 
     char fakePwrOn[2]       = MS(DEF_FAKE_PWR);

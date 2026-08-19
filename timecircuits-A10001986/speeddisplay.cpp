@@ -710,7 +710,7 @@ void speedDisplay::setTemperature(float temp)
     
         switch(_num_digs) {
         case 2:
-            if(tempNan)            setText(myNan);
+            if(tempNan)             setText(myNan);
             else if(temp <= -10.0f) setText("Lo");
             else if(temp >= 100.0f) setText("Hi");
             else if(temp >= 10.0f || temp < 0.0f) {

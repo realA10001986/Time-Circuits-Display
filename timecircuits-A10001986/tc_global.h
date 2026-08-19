@@ -28,11 +28,11 @@
 
 // These must not contain any characters other than
 // '0'-'9', 'A'-'Z', '(', ')', '.', '_', '-' or space
-#define TC_VERSION_REV   "V3.25"      // 7 chars max. Do NOT change format.
+#define TC_VERSION_REV   "V3.26"      // 7 chars max. Do NOT change format.
 #ifndef IS_ACAR_DISPLAY
-#define TC_VERSION_EXTRA "JUL162026"  // 13 chars max
+#define TC_VERSION_EXTRA "AUG192026"  // 13 chars max
 #else   // A-Car
-#define TC_VERSION_EXTRA "07162026"   // 12 chars max
+#define TC_VERSION_EXTRA "08192026"   // 12 chars max
 #endif
 
 /*************************************************************************
@@ -141,7 +141,7 @@
 #define TCD_DBG_NONE
 
 #if !defined(TCD_DBG_NONE)
-#define TC_DBG_BOOT           // Boot strap & settings
+//#define TC_DBG_BOOT           // Boot strap & settings
 //#define TC_DBG_WIFI           // WiFi-related
 //#define TC_DBG_MQTT           // MQTT-related
 //#define TC_DBG_AUDIO          // Audio-related

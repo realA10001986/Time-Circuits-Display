@@ -94,14 +94,14 @@ void     play_hour_sound(int hour);
 void     play_beep();
 void     play_key(int k, uint32_t preDTMFkp);
 void     play_door_snd(int doorNum, int state, uint32_t doorFlags);
+void     play_ts_snd(int16_t *s);
 
 bool     say_time(int pbt, int whichone, int gh, int gm);
 
 void     setBeepLevel(unsigned int levelIdx);
 
-bool         check_file_SD(const char *audio_file);
-unsigned int check_file_len_SD(const char *audio_file, bool& file_exists, uint8_t *tbuf = NULL, uint32_t tsz = 0);
-void         checkForTCC();
+bool     check_file_SD(const char *audio_file);
+void     checkForTCC();
 
 int      getSWVolFromHWVol();
 
@@ -152,6 +152,7 @@ extern char id3track[];
 extern bool haveLineOut;
 extern bool useLineOut;
 
+#define TCC_VER 2
 extern bool haveTCC;
 
 extern unsigned int beepLvlIdx;
