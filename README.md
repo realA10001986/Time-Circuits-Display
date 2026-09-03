@@ -266,7 +266,7 @@ The chosen line-out setting is persistent over reboots.
 
 ####  &#9193; I want my TCD to work like in the movie
 
-In this case, head to the Config Portal and set the **_Time Cycling Interval_** to OFF
+In this case, head to the Config Portal and set the **_Time Cycling Interval_** to OFF.
 
 >Note that *actual* time travel is not supported.
 
@@ -276,7 +276,7 @@ In this case,
 - head to the Config Portal and set the **_Time Cycling Interval_** to OFF, and
 - then, using the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays), program your favorite *Destination* and *Last time departed* times.
 
-Time-traveling will naturally lead to the displays showing other times. To bring them back without rebooting, enter keypad command ```998```.
+Time-traveling will naturally lead to the displays showing other times. To bring your favorite times back without rebooting, enter keypad command ```998```.
 
 #### 	&#9193; I want my TCD to show/cycle movie times
 
