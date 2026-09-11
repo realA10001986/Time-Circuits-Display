@@ -1345,8 +1345,7 @@ Alternatively, you can install the sound-pack the following way:
 <li>power up the TCD; the sound-pack will be installed automatically.</li>
 </ul>
   
-> [!NOTE]
-> Since version 3.23, a considerable part of the sound-pack is installed on the SD card itself. As a result, to enjoy all provided sound effects, the SD card has to remain in the slot.
+*Since version 3.23, a considerable part of the sound-pack is installed on the SD card itself. As a result, to enjoy all provided sound effects, the SD card has to remain in the slot.*
 </details>
 
 ---
