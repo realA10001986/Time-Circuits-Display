@@ -1220,7 +1220,9 @@ The TCD can be controlled through messages sent to topic **bttf/tcd/cmd**. Suppo
 
 #### The INJECT_x command
 
-This command allows remote control of the TCD through HA/MQTT in the same way as through the TCD keypad by injecting commands into the TCD's command queue (hence the name). Commands are listed [here](#commandref); nearly all are supported. You need to specify the command exactly like when entering the code on the keypad. For example:
+This command allows controlling the TCD through HA/MQTT in the same way as through pressing keys on the keypad. By means of this command, you can "enter" dates/times as well as keypad commands. Commands are listed [here](#commandref); nearly all are supported. For example:
+
+To set 12/25/0000 as the destination date, issue ```INJECT_12250000```
 
 To enable the "beep" (21), issue the following command: ```INJECT_21```
 
