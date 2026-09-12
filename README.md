@@ -761,7 +761,7 @@ The keypad menu is an additional way to configure your TCD; it only involves the
 The menu is invoked by holding the ```ENTER``` button for 2 seconds.
 
 > [!NOTE]
-> If the keypad menu is active at a time when the alarm, the reminder, the count-down timer or sound-on-the-hour are due, those events will be missed and no sounds are played.
+> If the keypad menu is active at a time when the alarm, the reminder or sound-on-the-hour are due, those events will be missed. In case of the count-down timer, the expiration sound will be played after leaving the keypad menu, hence not on time.
 
 Menu navigation uses
 - ```2``` for "up" or "+",
