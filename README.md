@@ -473,17 +473,17 @@ In the following, "pressing" means briefly pressing a key, "holding" means keepi
      <td align="left"><code>999</code>&#9166;</td>
     </tr>
     <tr>
+     <td align="left">Program time for <a href="#exhibition-mode">Exhibition mode</a></td>
+     <td align="left"><code>99mmddyyyyhhMM</code>&#9166;</td>
+    </tr>
+    <tr>
      <td align="left">Program and save time for <a href="#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays"><i>Destination Time</i> display</a></td>
      <td align="left"><code>91mmddyyyyhhMM</code>&#9166;</td>
     </tr>
     <tr>
      <td align="left">Program and save time for <a href="#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays"><i>Last Time Departed</i> display</a></td>
      <td align="left"><code>92mmddyyyyhhMM</code>&#9166;</td>
-    </tr>
-    <tr>
-     <td align="left">Program time for <a href="#exhibition-mode">Exhibition mode</a></td>
-     <td align="left"><code>99mmddyyyyhhMM</code>&#9166;</td>
-    </tr>
+    </tr>    
     <tr>
      <td align="left">Toggle firmware update message at power-up</td>
      <td align="left"><code>53281</code>&#9166;</td>
