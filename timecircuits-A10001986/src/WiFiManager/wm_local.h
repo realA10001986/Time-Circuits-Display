@@ -38,8 +38,6 @@
 // Show sound upload form (or "SD required" message")
 #define WM_UPLOAD
 
-#define WM_FWPROT "CIRCUITS"
-
 // #define WM_AP_STATIC_IP
 // #define WM_APCALLBACK
 // #define WM_PRECONNECTCB

@@ -25,8 +25,7 @@
 #define HTTP_BUTTON_TEXT "#000"
 #endif
 
-#define HTTP_HEAD_TITLE_START 203
-static const char HTTP_HEAD_START[] PROGMEM =   // If this is ever changed, check getHTTPSTART()
+static const char HTTP_HEAD_START[] PROGMEM =
     "<!DOCTYPE html>"
     "<html lang='en'><head>"
     "<meta name='format-detection' content='telephone=no'>"
@@ -131,8 +130,8 @@ static const char HTTP_STYLE_MSG[]  PROGMEM =
 static const char HTTP_STYLE_QI[]   PROGMEM =
     "button.s{width:initial;line-height:1.3em;margin:0}"
     ".q{height:16px;margin:0;padding:0 5px;text-align:right;min-width:38px;float:right}"
-    ".q.q-0::after,.q.q-1::after{background-position-x:0}"
-    //".q.q-1::after{background-position-x:0}"
+    ".q.q-0::after{background-position-x:0}"
+    ".q.q-1::after{background-position-x:0}"
     ".q.q-2::after{background-position-x:-21px}"
     ".q.q-3::after{background-position-x:-42px}"
     ".q.q-4::after{background-position-x:-63px}"
@@ -218,7 +217,7 @@ static const char HTTP_CCMOFF[]           PROGMEM = "<div id='lc' class='msg S'>
 
 static const char HTTP_PARAMSAVED[]       PROGMEM = "<div id='lc' class='msg S'>Settings saved. Rebooting.<br>";
 static const char HTTP_SAVED_NORMAL[]     PROGMEM = "Trying to connect to network.<br>In case of error, device boots in AP mode.";
-static const char HTTP_SAVED_CARMODE[]    PROGMEM = "<br>Device is run in <b>car mode</b> and will <em>not</em><br>connect to WiFi network after reboot.";
+static const char HTTP_SAVED_CARMODE[]    PROGMEM = "<br>Device is run in <strong>car mode</strong> and will <em>not</em><br>connect to WiFi network after reboot.";
 static const char HTTP_SAVED_ERASED[]     PROGMEM = "WiFi network credentials deleted.<br>Restarting in AP mode.<br>";
 #define           HTTP_PARAMSAVED_END     HTTP_DIV_END
 
@@ -245,21 +244,16 @@ static const char HTTP_UPLOAD_SLINK1A[]   PROGMEM = " bar";
 static const char HTTP_UPLOAD_SLINK1B[]   PROGMEM = " bap";
 static const char HTTP_UPLOAD_SLINK1C[]   PROGMEM = "'>Required sound-pack: ";
 static const char HTTP_UPLOAD_SLINK2[]    PROGMEM = " [";
-static const char HTTP_UPLOAD_SLINK2A[]   PROGMEM = "<b>not</b> ";
+static const char HTTP_UPLOAD_SLINK2A[]   PROGMEM = "<strong>not</strong> ";
 static const char HTTP_UPLOAD_SLINK2B[]   PROGMEM = "partly ";
 static const char HTTP_UPLOAD_SLINK3[]    PROGMEM = "installed]</div>";
 static const char HTTP_UPLOADSND3[]       PROGMEM = "<input type='file' name='upac' multiple accept='.bin,application/octet-stream,.mp3,audio/mpeg'><br><button id='uacb' type='submit' class='h'>Upload</button></div></form>";
 static const char HTTP_UPLOAD_SDMSG[]     PROGMEM = "<br>SD card required for sound upload</div>";
 #endif
 
-static const char HTTP_UPDATE_FAIL1[]     PROGMEM = "<div class='msg D'><b>Upload failed.</b><br>";
-#ifdef WM_FWPROT
-static const char HTTP_UPDATE_FAILF[]     PROGMEM = "Filename must contain \"" WM_FWPROT "\"";
-#else
-static const char HTTP_UPDATE_FAILF[]     PROGMEM = "";
-#endif
+static const char HTTP_UPDATE_FAIL1[]     PROGMEM = "<div class='msg D'><strong>Upload failed.</strong><br>";
 #define           HTTP_UPDATE_FAIL2       HTTP_DIV_END
-static const char HTTP_UPDATE_SUCCESS[]   PROGMEM = "<div id='lc' class='msg S'><b>Upload complete.</b><br>Device rebooting.</div>";
+static const char HTTP_UPDATE_SUCCESS[]   PROGMEM = "<div id='lc' class='msg S'><strong>Upload complete.</strong><br>Device rebooting.</div>";
 
 static const char HTTP_STATUS_HEAD[]      PROGMEM = "<div class='sta'><span class='{c}'>&#x25CF;</span> ";
 #define           HTTP_STATUS_TAIL        HTTP_DIV_END
@@ -311,7 +305,7 @@ static const char S_staticgw[]     PROGMEM = "Static gateway";
 static const char S_staticdns[]    PROGMEM = "Static DNS";
 static const char S_subnet[]       PROGMEM = "Static subnet mask";
 
-static const char S_brand[]        PROGMEM = "WiFiMgr";
+static const char S_brand[]        PROGMEM = "WiFiManager";
 
 static const char S_GET[]          PROGMEM = "GET";
 static const char S_POST[]         PROGMEM = "POST";

@@ -86,38 +86,25 @@
     #define WM_NOCOUNTRY
 #endif
 
-#ifdef WM_FWPROT
-static int mystrstr(const char *s1, const char *s2)
-{
-    int r = 0;
-    char *p = (char *)malloc(strlen(s1) + 1), *q;
-    strcpy(p, s1);
-    for(q = p; *q ; q++) { if(*q >= 'a' && *q <= 'z') *q &= ~0x20; }
-    if(strstr(p, s2)) r = 1;
-    free(p);
-    return r;
-}
-#endif
-
 /**********************************************************************************
  * --------------------------------------------------------------------------------
  *  WiFiManagerParameter Class
  * --------------------------------------------------------------------------------
  **********************************************************************************/
 
-WiFiManagerParameter::WiFiManagerParameter(const char *label, const char *defaultValue, unsigned int length, uint8_t flags)
+WiFiManagerParameter::WiFiManagerParameter(const char *id, const char *label, const char *defaultValue, int length, uint8_t flags)
 {
-    init(label, defaultValue, length, NULL, flags);
+    init(id, label, defaultValue, length, NULL, flags);
 }
 
-WiFiManagerParameter::WiFiManagerParameter(const char *label, const char *defaultValue, unsigned int length, const char *custom, uint8_t flags)
+WiFiManagerParameter::WiFiManagerParameter(const char *id, const char *label, const char *defaultValue, int length, const char *custom, uint8_t flags)
 {
-    init(label, defaultValue, length, custom, flags);
+    init(id, label, defaultValue, length, custom, flags);
 }
 
-WiFiManagerParameter::WiFiManagerParameter(const char *label, const char *defaultValue, const char *custom, uint8_t flags)
+WiFiManagerParameter::WiFiManagerParameter(const char *id, const char *label, const char *defaultValue, const char *custom, uint8_t flags)
 {
-    init(label, defaultValue, 1, custom, flags);
+    init(id, label, defaultValue, 1, custom, flags);
 }
 
 WiFiManagerParameter::WiFiManagerParameter(const char *custom, uint8_t flags)
@@ -132,35 +119,31 @@ WiFiManagerParameter::WiFiManagerParameter(const char *(*CustomHTMLGenerator)(co
 
 WiFiManagerParameter::~WiFiManagerParameter()
 {
-    // Rule: Do not, EVER, destroy a WiFiManagerParameter.
-
-    if(_id >= 0 && _value != NULL) {
+    if(_id && _value != NULL) {
         delete[] _value;
         _value = NULL;
     }
 
+    // setting length 0, ideally the entire parameter should be removed,
+    // or added to wifimanager scope so it follows
     _length = 0;
 }
 
-void WiFiManagerParameter::init(const char *label, const char *defaultValue, unsigned int length, const char *custom, uint8_t flags)
+void WiFiManagerParameter::init(const char *id, const char *label, const char *defaultValue, int length, const char *custom, uint8_t flags)
 {
-    _id             = 0;
+    _id             = id;
     _label          = label;
     _flags          = flags;
     _customHTML     = custom;
-    _source         = defaultValue;
-
+    _length         = 0;
+    _value          = NULL;
     if(flags & WFM_IS_CHKBOX) length = 1;
-
-    _length = length;
-    _value  = new char[_length + 1];
-
-    updateValue();
+    setValue(defaultValue, length);
 }
 
 void WiFiManagerParameter::initC(const char *custom, const char *(*CustomHTMLGenerator)(const char *, int), uint8_t flags)
 {
-    _id             = -1;
+    _id             = NULL;
     _label          = NULL;
     _length         = 0;
     //_value is union with Generator
@@ -169,24 +152,31 @@ void WiFiManagerParameter::initC(const char *custom, const char *(*CustomHTMLGen
     _customHTMLGenerator = CustomHTMLGenerator;
 }
 
-void WiFiManagerParameter::setValue(const char *newValue)
+void WiFiManagerParameter::setValue(const char *defaultValue, int length)
 {
-    if(_id < 0)
+    if(!_id)
+        return;
+
+    if(_length != length || !_value) {
+        _length = length;
+        if(_value) {
+            delete[] _value;
+        }
+        _value  = new char[_length + 1];
+    }
+
+    setValue(defaultValue);
+}
+
+void WiFiManagerParameter::setValue(const char *defaultValue)
+{
+    if(!_id)
         return;
 
     memset(_value, 0, _length + 1); // +1 for 0-term
-    if(newValue) {
-        if(_flags & WFM_IS_CHKBOX) {
-            _value[0] = (*newValue == '0') ? '0' : '1';
-        } else {
-            strncpy(_value, newValue, _length);
-        }
+    if(defaultValue) {
+        strncpy(_value, defaultValue, _length);
     }
-}
-
-void WiFiManagerParameter::updateValue()
-{
-    setValue(_source);
 }
 
 /**********************************************************************************
@@ -249,12 +239,27 @@ void WiFiManager::_end()
 
 // Params handling
 
+bool WiFiManager::CheckParmID(const char *id)
+{
+    for(int i = 0; i < strlen(id); i++) {
+        if(!(isAlphaNumeric(id[i])) && !(id[i] == '_')) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 bool WiFiManager::addParameter(int idx, WiFiManagerParameter *p)
 {
+    // check param id is valid, unless null
+    if(p->getID()) {
+        if(!CheckParmID(p->getID())) return false;
+    }
+
     // init params if never malloc
     if(!_params[idx]) {
         _params[idx] = (WiFiManagerParameter**)malloc(_max_params[idx] * sizeof(WiFiManagerParameter*));
-        if(!_params[idx]) return false;
     }
 
     // resize the params array by increment of WIFI_MANAGER_MAX_PARAMS
@@ -271,21 +276,9 @@ bool WiFiManager::addParameter(int idx, WiFiManagerParameter *p)
     }
 
     _params[idx][_paramsCount[idx]] = p;
-
-    if(p->_id >= 0) p->_id = _paramsCount[idx];
-
     _paramsCount[idx]++;
 
     return true;
-}
-
-void WiFiManager::updateParameters(int idx)
-{
-    if(_paramsCount[idx] > 0) {
-        for(int i = 0; i < _paramsCount[idx]; i++) {
-            if(_params[idx][i]) _params[idx][i]->updateValue();
-        }
-    }
 }
 
 /****************************************************************************
@@ -320,13 +313,13 @@ bool WiFiManager::wifiConnect(const char *ssid, const char *pass, const char *bs
         strncpy(_bssid, bssid, sizeof(_bssid) - 1);
     }
 
-    checkWiFiOffProgress();
+    _wifiOffFlag = 0;
 
     // We do never ever use NVS saved data, nor do we save data to NVS
     WiFi.persistent(false);
 
     // Install WiFi event handler
-    installWiFiEventHandler();
+    WiFi_installEventHandler();
 
     // Set hostname (if given)
 
@@ -407,9 +400,7 @@ bool WiFiManager::wifiConnect(const char *ssid, const char *pass, const char *bs
         #endif
 
         // init mDNS
-        #ifdef WM_MDNS
         setupMDNS();
-        #endif
 
         return true; // connected success
     }
@@ -577,7 +568,7 @@ uint8_t WiFiManager::connectWifi(const char *ssid, const char *pass, const char 
 
 uint8_t WiFiManager::waitForConnectResult(bool haveStatic, unsigned long timeout, bool& waitTimedOut, bool& DHCPtimeout)
 {
-    unsigned long startmillis, bcb;
+    unsigned long startmillis;
     uint8_t       status;
     bool          waitforDHCP = false;
 
@@ -623,7 +614,7 @@ uint8_t WiFiManager::waitForConnectResult(bool haveStatic, unsigned long timeout
      }
      */
 
-    while((bcb = millis()) - startmillis < timeout) {
+    while(millis() - startmillis < timeout) {
 
         status = WiFi.status();
 
@@ -665,13 +656,7 @@ uint8_t WiFiManager::waitForConnectResult(bool haveStatic, unsigned long timeout
             }
         }
 
-        if(_waitforconnectcallback) {
-            _waitforconnectcallback();
-        }
-
-        bcb = millis() - bcb;
-        if(bcb < 100) _delay(100 - bcb);
-
+        _delay(100);
     }
 
     #ifdef _A10001986_DBG
@@ -743,7 +728,7 @@ bool WiFiManager::startAPModeAndPortal(char const *apName, char const *apPasswor
         return false;
     }
 
-    checkWiFiOffProgress();
+    _wifiOffFlag = 0;
 
     // We never ever use NVS saved data, nor do we write to NVS
     WiFi.persistent(false);
@@ -786,7 +771,7 @@ bool WiFiManager::startAPModeAndPortal(char const *apName, char const *apPasswor
     }
 
     // Install WiFi event handler
-    installWiFiEventHandler();
+    WiFi_installEventHandler();
 
     // Disconnect if connected
     if(WiFi.isConnected()) {
@@ -823,9 +808,7 @@ bool WiFiManager::startAPModeAndPortal(char const *apName, char const *apPasswor
     setupDNSD();
 
     // Start mDNS
-    #ifdef WM_MDNS
     setupMDNS();
-    #endif
 
     // Reset network scan cache
     _lastscan = 0;
@@ -959,6 +942,8 @@ void WiFiManager::setupHTTPServer()
     #endif
 
     server.reset(new WebServer(_httpPort));
+    // This is not the safest way to reset the webserver, it can cause crashes
+    // on callbacks initialized before this and since its a shared pointer...
 
     if(_webservercallback) {
         _webservercallback();
@@ -1010,52 +995,15 @@ void WiFiManager::setupDNSD()
               WiFi.softAPIP());
 }
 
-#ifdef WM_MDNS
 void WiFiManager::setupMDNS()
 {
-    #ifdef _A10001986_DBG
-    if(_mdnsStarted) {
-        Serial.println("setupMDNS() called despite already started");
-    }
-    #endif
+    #ifdef WM_MDNS
     if(MDNS.begin(_hostname)) {
         MDNS.addService("http", "tcp", 80);
         _mdnsStarted = true;
-        _mdnsGoodBye = false;
-        #ifdef _A10001986_DBG
-        Serial.println("MDNS started successfully");
-        #endif
-    } else {
-        #ifdef _A10001986_DBG
-        Serial.println("MDNS.begin() failed");
-        #endif
     }
+    #endif
 }
-
-void WiFiManager::stopMDNS()
-{
-    if(_mdnsStarted) {
-        #ifdef _A10001986_DBG
-        Serial.println("Stopping MDNS");
-        #endif
-        MDNS.end();
-        _mdnsStarted = false;
-    }
-}
-
-// This sends a "good bye" MDNS packet
-// Call this before reboots
-void WiFiManager::sendMDNSgoodBye()
-{
-    if(_mdnsStarted && !_mdnsGoodBye) {
-        mdns_service_remove_all();
-        _mdnsGoodBye = true;
-        #ifdef _A10001986_DBG
-        Serial.println("MDNS good bye dispatched");
-        #endif
-    }
-}
-#endif
 
 /****************************************************************************
  *
@@ -1099,20 +1047,20 @@ void WiFiManager::process(bool handleWeb)
 
         switch(_wifiOffFlag) {
         case 1:
-            if( (_WiFiEventMask & WM_EVB_APSTART) ||   /*WM_EVB_APSTOP*/
-                (millis() - _wifiOffNow > 2000) ) {
-                _wifiOffNow = millis();
-                _wifiOffFlag++;
-            }
-            break;
+          if( (_WiFiEventMask & WM_EVB_APSTART) ||   /*WM_EVB_APSTOP*/
+              (millis() - _wifiOffNow > 2000) ) {
+              _wifiOffNow = millis();
+              _wifiOffFlag++;
+          }
+          break;
         case 2:
-            if(millis() - _wifiOffNow > 2000) {
-                WiFi.mode(WIFI_OFF);
-                _wifiOffFlag = 0;
-                #ifdef _A10001986_DBG
-                Serial.println("WiFi turned off");
-                #endif
-            }
+          if(millis() - _wifiOffNow > 1000) {
+              WiFi.mode(WIFI_OFF);
+              _wifiOffFlag = 0;
+              #ifdef _A10001986_DBG
+              Serial.println("WiFi turned off");
+              #endif
+          }
         }
 
     }
@@ -1124,34 +1072,6 @@ void WiFiManager::process(bool handleWeb)
  *
  ****************************************************************************/
 
-// checkWiFiOffProgress
-// This is called in startAPModeAndPortal() and wifiConnect()
-// and checks if a wifi-off-process is currently in progress.
-// It finishes up this process so that WiFi is in defined
-// state before proceeding.
-// private.
-void WiFiManager::checkWiFiOffProgress()
-{
-    switch(_wifiOffFlag) {
-    case 0:
-        return;
-    case 1:
-        if(!waitEvent(WM_EVB_APSTART, 2000)) {
-            #ifdef _A10001986_DBG
-            Serial.println("checkWiFiOffProgress: Waiting for WM_EVB_APSTART timed-out");
-            #endif
-        }
-        _delay(1000);
-        break;
-    case 2:
-        unsigned long g = millis() - _wifiOffNow;
-        if(g < 1000) _delay(1000 - g);
-        break;
-    }
-
-    WiFi.mode(WIFI_OFF);
-    _wifiOffFlag = 0;
-}
 
 // disableWiFi
 //
@@ -1173,24 +1093,15 @@ void WiFiManager::disableWiFi(bool waitForOFF)
         // will result in same run-time errors as
         // described for softAPdisconnect(true).
         if(waitForOFF && _wifiOffFlag) {
-            // We check for _woF==1 because we might be called twice in close
-            // succession (power-safe first, then user pressing "7" on TCD
-            // [which triggers a call to disableWiFi(true) when switching
-            // between AP mode and network-connection]), which shutdownWebPortal()
-            // handles nicely (due to APPortalActive), but the first call
-            // initiated a wifi-off, which might have progressed to stage 2
-            // at this point.
-            if(_wifiOffFlag == 1) {
-                // (Why START, not STOP? Because softAPdisconnect restarts the AP
-                // with a zero SSID; in this process, a STOP and a START event are
-                // sent; if we wait for STOP, we might switch off WiFi while the
-                // AP is restarted with that zero-SSID; by waiting for START, we
-                // stop it right after it has started and is in defined state.)
-                if(!waitEvent(WM_EVB_APSTART, 2000)) {        /*WM_EVB_APSTOP*/
-                    #ifdef _A10001986_DBG
-                    Serial.println("disableWiFi: Waiting for WM_EVB_APSTART timed-out");
-                    #endif
-                }
+            // (Why START, not STOP? Because softAPdisconnect restarts the AP
+            // with a zero SSID; in this process, a STOP and a START event are
+            // sent; if we wait for STOP, we might switch off WiFi while the
+            // AP is restarted with that zero-SSID; by waiting for START, we
+            // stop it right after it has started already.)
+            if(!waitEvent(WM_EVB_APSTART, 2000)) {        /*WM_EVB_APSTOP*/
+                #ifdef _A10001986_DBG
+                Serial.println("disableWiFi: Waiting for WM_EVB_APSTART timed-out");
+                #endif
             }
             _delay(1000);   // Apparently need this to avoid possible race/crash
             WiFi.mode(WIFI_OFF);
@@ -1238,12 +1149,11 @@ bool WiFiManager::shutdownWebPortal()
     _lastscan = 0;
 
     // Stop MDNS
-    // This unfortunately does not send a "good bye". While
-    // the packet is dispatched, it is never sent because
-    // the MDNS process is killed immediately after dispatch
-    // in mdns_free().
     #ifdef WM_MDNS
-    stopMDNS();
+    if(_mdnsStarted) {
+        MDNS.end();
+        _mdnsStarted = false;
+    }
     #endif
 
     // Bail here if we are not in AP mode
@@ -1566,25 +1476,24 @@ void WiFiManager::reportStatus(String& page, unsigned int estSize, bool withMac)
             str.replace(FPSTR(T_v), htmlEntities(SSID, true));
             switch(_lastconxresult) {
             case TWL_DHCP_TIMEOUT:    // dhcp timeout
+                str.replace(FPSTR(T_c), "r");
+                str.replace(FPSTR(T_r), FPSTR(HTTP_STATUS_NODHCP));
+                str.replace(FPSTR(T_V), FPSTR(HTTP_STATUS_APMODE));
+                break;
             case WL_NO_SSID_AVAIL:    // connect failed, or ap not found
+                str.replace(FPSTR(T_c), "r");
+                str.replace(FPSTR(T_r), FPSTR(HTTP_STATUS_OFFNOAP));
+                str.replace(FPSTR(T_V), FPSTR(HTTP_STATUS_APMODE));
+                break;
             case WL_CONNECT_FAILED:   // connect failed
             case WL_CONNECTION_LOST:  // connect failed, state is ambiguous
+                str.replace(FPSTR(T_c), "r");
+                str.replace(FPSTR(T_r), FPSTR(HTTP_STATUS_OFFFAIL));
+                str.replace(FPSTR(T_V), FPSTR(HTTP_STATUS_APMODE));
+                break;
             case WL_DISCONNECTED:     // disconnected; wrong or missing password
                 str.replace(FPSTR(T_c), "r");
-                switch(_lastconxresult) {
-                case TWL_DHCP_TIMEOUT:    // dhcp timeout
-                    str.replace(FPSTR(T_r), FPSTR(HTTP_STATUS_NODHCP));
-                    break;
-                case WL_NO_SSID_AVAIL:    // connect failed, or ap not found
-                    str.replace(FPSTR(T_r), FPSTR(HTTP_STATUS_OFFNOAP));
-                    break;
-                case WL_DISCONNECTED:     // disconnected; wrong or missing password
-                    str.replace(FPSTR(T_r), FPSTR(HTTP_STATUS_DISCONN));
-                    break;
-                default:
-                    str.replace(FPSTR(T_r), FPSTR(HTTP_STATUS_OFFFAIL));
-                    break;
-                }
+                str.replace(FPSTR(T_r), FPSTR(HTTP_STATUS_DISCONN));
                 str.replace(FPSTR(T_V), FPSTR(HTTP_STATUS_APMODE));
                 break;
             default:
@@ -1628,8 +1537,10 @@ unsigned int WiFiManager::getParamOutSize(WiFiManagerParameter** params,
 
         for(int i = 0; i < paramsCount; i++) {
 
-            // Rule: Do not, EVER, destroy a WiFiManagerParameter.
-            if(!params[i]) {
+            if(!params[i] || params[i]->_length > 99999) {
+                #ifdef _A10001986_DBG
+                Serial.println("[ERROR getParamOutSize] WiFiManagerParameter is out of scope");
+                #endif
                 continue;
             }
 
@@ -1646,7 +1557,7 @@ unsigned int WiFiManager::getParamOutSize(WiFiManagerParameter** params,
                 mysize += STRLEN(HTTP_SECT_FOOT);
             }
 
-            if(params[i]->getID() >= 0) {
+            if(params[i]->getID()) {
 
                 bool haveLabel = true;
 
@@ -1669,7 +1580,7 @@ unsigned int WiFiManager::getParamOutSize(WiFiManagerParameter** params,
 
                 // <label for='{i}'>{t}</label>
                 // <input id='{i}' name='{n}' {l} value='{v}' {c} {f}>
-                mysize += (5 * 3);    // "wmXX" - 2x{i}, 1x{n}
+                mysize += (strlen(params[i]->getID()) * 3);    // 2x{i}, 1x{n}
                 if(haveLabel && params[i]->getLabel()) {
                     mysize += strlen(params[i]->getLabel());
                 }
@@ -1678,7 +1589,11 @@ unsigned int WiFiManager::getParamOutSize(WiFiManagerParameter** params,
                     if(*(params[i]->getValue()) == '1') mysize += 7;  // "checked"
                     mysize += STRLEN(HTML_CHKBOX);
                 } else {
-                    mysize += 5+12; // "maxlength='%d'
+                    int vl = params[i]->getValueLength();
+                    if     (vl <   10) mysize += 1+12;
+                    else if(vl <  100) mysize += 2+12;
+                    else if(vl < 1000) mysize += 3+12;
+                    else               mysize += 5+12;
                     mysize += strlen(params[i]->getValue());
                 }
                 if(params[i]->getCustomHTML()) {
@@ -1724,8 +1639,6 @@ unsigned int WiFiManager::getParamOutSize(WiFiManagerParameter** params,
 void WiFiManager::getParamOut(String &page, WiFiManagerParameter** params,
                     int paramsCount, unsigned int maxItemSize)
 {
-    char pids[6];
-
     if(paramsCount > 0) {
 
         char valLength[12+6];
@@ -1737,8 +1650,11 @@ void WiFiManager::getParamOut(String &page, WiFiManagerParameter** params,
         // add the extra parameters to the form
         for(int i = 0; i < paramsCount; i++) {
 
-            // Rule: Do not, EVER, destroy a WiFiManagerParameter.
-            if(!params[i]) {
+            // Just see if any of our params has been destructed in the meantime
+            if(!params[i] || params[i]->_length > 99999) {
+                #ifdef _A10001986_DBG
+                Serial.println("[ERROR] WiFiManagerParameter is out of scope");
+                #endif
                 continue;
             }
 
@@ -1750,7 +1666,6 @@ void WiFiManager::getParamOut(String &page, WiFiManagerParameter** params,
             // if no ID, use customhtml for item, else generate from param string
 
             uint8_t pflags = params[i]->getFlags();
-            int16_t pid = params[i]->getID();
 
             if(pflags & WFM_SECTS_HEAD) {
                 pitem += FPSTR(HTTP_SECT_HEAD);
@@ -1759,11 +1674,9 @@ void WiFiManager::getParamOut(String &page, WiFiManagerParameter** params,
                 pitem += FPSTR(HTTP_SECT_HEAD);
             }
 
-            if(pid >= 0) {
+            if(params[i]->getID()) {
 
                 bool haveLabel = true;
-
-                sprintf(pids, "wm%02x", pid);
 
                 switch(pflags & WFM_LABEL_MASK) {
                 case WFM_LABEL_BEFORE:
@@ -1784,8 +1697,8 @@ void WiFiManager::getParamOut(String &page, WiFiManagerParameter** params,
                     break;
                 }
 
-                pitem.replace(FPSTR(T_i), pids);     // T_i id name
-                pitem.replace(FPSTR(T_n), pids);     // T_n id name alias
+                pitem.replace(FPSTR(T_i), params[i]->getID());     // T_i id name
+                pitem.replace(FPSTR(T_n), params[i]->getID());     // T_n id name alias
                 if(haveLabel) {
                     if(params[i]->getLabel()) {
                         pitem.replace(FPSTR(T_t), params[i]->getLabel());  // T_t title/label
@@ -1850,43 +1763,39 @@ void WiFiManager::getParamOut(String &page, WiFiManagerParameter** params,
 
 void WiFiManager::doParamSave(WiFiManagerParameter** params, int paramsCount)
 {
-    char pids[6];
-    int16_t pid;
-
     if(paramsCount > 0) {
 
         for(int i = 0; i < paramsCount; i++) {
 
-            // Rule: Do not, EVER, destroy a WiFiManagerParameter.
-            if(!params[i]) {
+            // Just see if any of our params has been destructed in the meantime
+            if(!params[i] || params[i]->_length > 99999) {
+                #ifdef _A10001986_DBG
+                Serial.println("[ERROR] WiFiManagerParameter is out of scope");
+                #endif
                 break;
             }
 
-            pid = params[i]->getID();
-
             // Skip pure customHTML parms
-            if(pid < 0) {
+            if(!params[i]->getID()) {
                 #ifdef _A10001986_DBG
                 Serial.printf("doSaveParms: skipped parm %d\n", i);
                 #endif
                 continue;
             }
 
-            sprintf(pids, "wm%02x", pid);
-
             // read parameter from server
-            String value = server->arg(pids);
+            String value = server->arg(params[i]->getID());
 
             if(value == "" && (params[i]->getFlags() & WFM_IS_CHKBOX)) {
                 strcpy(params[i]->_value, "0");
                 #ifdef _A10001986_DBG
-                Serial.printf("doSaveParms: checkbox '%s' set to 0\n", pids);
+                Serial.printf("doSaveParms: checkbox '%s' set to 0\n", params[i]->getID());
                 #endif
             } else {
                 // store it in params array; +1 for zero termination
                 value.toCharArray(params[i]->_value, params[i]->_length + 1);
                 #ifdef _A10001986_DBG
-                Serial.printf("doSaveParms: '%s' set to '%s'\n", pids, params[i]->_value);
+                Serial.printf("doSaveParms: '%s' set to '%s'\n", params[i]->getID(), params[i]->_value);
                 #endif
             }
 
@@ -2082,7 +1991,7 @@ void WiFiManager::handleRoot()
         _gpcallback(WM_LP_PREHTTPSEND);
     }
 
-    HTTPSend(page, true);
+    HTTPSend(page, false);
 
     if(_gpcallback) {
         _gpcallback(WM_LP_POSTHTTPSEND);
@@ -3161,7 +3070,7 @@ void WiFiManager::handleUpdating()
 
     if(upload.status == UPLOAD_FILE_START) {
 
-        _uplError = 0;
+        _uplError = false;
 
         // Callback for before OTA update
         if(_preotaupdatecallback) {
@@ -3172,19 +3081,11 @@ void WiFiManager::handleUpdating()
         Serial.printf("[OTA] Update file: %s\n", upload.filename.c_str());
         #endif
 
-        #ifdef WM_FWPROT
-        if(!mystrstr(upload.filename.c_str(), WM_FWPROT)) {
-            #ifdef _A10001986_DBG
-            Serial.println("[ERROR] OTA Update ERROR: Bad filename\n");
-            #endif
-            _uplError = -1;
-        } else
-        #endif
         if(!Update.begin(UPDATE_SIZE_UNKNOWN)) {
             #ifdef _A10001986_DBG
             Serial.printf("[ERROR] OTA Update ERROR %d\n", Update.getError());
             #endif
-            _uplError = 1;
+            _uplError = true;
         }
 
     } else if(upload.status == UPLOAD_FILE_WRITE) {
@@ -3195,7 +3096,7 @@ void WiFiManager::handleUpdating()
                 #ifdef _A10001986_DBG
                 Serial.printf("[ERROR] OTA Update WRITE ERROR %d\n", Update.getError());
                 #endif
-                _uplError = 1;
+                _uplError = true;
             }
 
         }
@@ -3209,7 +3110,7 @@ void WiFiManager::handleUpdating()
             #endif
 
             if(!Update.end(true)) {
-                _uplError = 1;
+                _uplError = true;
             }
 
         }
@@ -3226,10 +3127,6 @@ void WiFiManager::handleUpdating()
             _postotaupdatecallback(false);
         }
 
-        #ifdef WM_MDNS
-        sendMDNSgoodBye();
-        #endif
-
         delay(1000);  // Not '_delay'
 
         ESP.restart();
@@ -3245,21 +3142,22 @@ void WiFiManager::handleUpdateDone()
 {
     unsigned int mySize = 0;
     uint32_t incFlags = 0;
-    bool res = (_uplError < 0) ? false : (!Update.hasError());
+    bool res = !Update.hasError();
 
     #ifdef _A10001986_V_DBG
     Serial.println("<- Handle update done");
     #endif
 
+    if(res) incFlags = incGFXMSG;
+
+    mySize = getHTTPHeadLength(S_titleupd, incFlags);
+
     if(res) {
         mySize += STRLEN(HTTP_UPDATE_SUCCESS);
-        incFlags = incGFXMSG;
     } else {
         mySize += STRLEN(HTTP_UPDATE_FAIL1) + STRLEN(HTTP_UPDATE_FAIL2);
-        mySize += ((_uplError < 0) ? STRLEN(HTTP_UPDATE_FAILF) : strlen(Update.errorString()));
+        mySize += strlen(Update.errorString());
     }
-
-    mySize += getHTTPHeadLength(S_titleupd, incFlags);
 
     mySize += STRLEN(HTTP_END);
 
@@ -3279,11 +3177,7 @@ void WiFiManager::handleUpdateDone()
         #endif
     } else {
         page += FPSTR(HTTP_UPDATE_FAIL1);
-        if(_uplError < 0) {
-            page += FPSTR(HTTP_UPDATE_FAILF);
-        } else {
-            page += Update.errorString();
-        }
+        page += Update.errorString();
         page += FPSTR(HTTP_UPDATE_FAIL2);
         #ifdef _A10001986_DBG
         Serial.println("[OTA] update failed");
@@ -3298,13 +3192,11 @@ void WiFiManager::handleUpdateDone()
         _postotaupdatecallback(res);
     }
 
-    #ifdef WM_MDNS
-    sendMDNSgoodBye();
-    #endif
-
     delay(1000);  // Not '_delay'
 
-    ESP.restart();
+    if(res) {
+        ESP.restart();
+    }
 }
 
 /**
@@ -3446,17 +3338,12 @@ void WiFiManager::setWiFiAPMaxClients(int newmax)
 // Make some HTML templates available to user app
 const char * WiFiManager::getHTTPSTART(int& titleStart)
 {
-#ifndef HTTP_HEAD_TITLE_START
     char *t = strstr(HTTP_HEAD_START, T_v);
     if(t) {
         titleStart = t - HTTP_HEAD_START;
-        Serial.printf("getHTTPSTART: titlestart %d\n", titleStart);
     } else {
         titleStart = -1;
     }
-#else
-    titleStart = HTTP_HEAD_TITLE_START;
-#endif
     return HTTP_HEAD_START;
 }
 
@@ -3690,14 +3577,6 @@ void WiFiManager::getDefaultAPName(char *apName)
     }
 }
 
-static int utf8seqlen(unsigned char c)
-{
-    int e = 1;
-    if     (c >= 192 && c < 224)  e = 2;
-    else if(c >= 224 && c < 240)  e = 3;
-    else if(c >= 240 && c < 248)  e = 4;
-    return e;
-}
 
 // htmlEntities(): Encode for HTML, but do not garble UTF8 characters
 String WiFiManager::htmlEntities(String& str, bool forprint)
@@ -3717,7 +3596,10 @@ String WiFiManager::htmlEntities(String& str, bool forprint)
         else if(c == '>')   dstr += "&gt;";
         else if(c == ' ' && forprint) dstr += "&nbsp;";
         else {
-            e = utf8seqlen(c);
+            e = 1;
+            if     (c >= 192 && c < 224)  e = 2;
+            else if(c >= 224 && c < 240)  e = 3;
+            else if(c >= 240 && c < 248)  e = 4;  // Invalid UTF8 >= 245, but consider 4-byte char anyway
 
             if((i + e) >= slen) {
                 e = slen - i;
@@ -3745,7 +3627,10 @@ int WiFiManager::htmlEntitiesLen(String& str, bool forprint)
         else if(c == '<' || c == '>')   size += 4;
         else if(c == ' ')               size += forprint ? 6 : 1;
         else {
-            e = utf8seqlen(c);
+            e = 1;
+            if     (c >= 192 && c < 224)  e = 2;
+            else if(c >= 224 && c < 240)  e = 3;
+            else if(c >= 240 && c < 248)  e = 4;  // Invalid UTF8 >= 245, but consider 4-byte char anyway
 
             if((i + e) >= slen) {
                 e = slen - i;
@@ -3770,7 +3655,10 @@ bool WiFiManager::checkSSID(String &ssid)
         c = (unsigned char)ssid.charAt(i);
         if(c < 32 || c == 127) return false;
 
-        e = utf8seqlen(c);
+        e = 1;
+        if     (c >= 192 && c < 224)  e = 2;
+        else if(c >= 224 && c < 240)  e = 3;
+        else if(c >= 240 && c < 248)  e = 4;  // Invalid UTF8 >= 245, but consider 4-byte char anyway
 
         if((i + e) >= slen) {
             e = slen - i;
@@ -3903,7 +3791,7 @@ void WiFiManager::WiFiEvent(WiFiEvent_t event, arduino_event_info_t info)
     #endif
 }
 
-void WiFiManager::installWiFiEventHandler()
+void WiFiManager::WiFi_installEventHandler()
 {
     using namespace std::placeholders;
     if(wm_event_id == 0) {
