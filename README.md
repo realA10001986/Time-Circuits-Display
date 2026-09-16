@@ -1019,7 +1019,7 @@ For using GPS effectively as a long-term source of accurate time, it is therefor
 - the Time Circuit's RTC (real time clock) is initially [set to correct local time](#how-to-set-the-real-time-clock-rtc), 
 - and the GPS receiver has been receiving data for 15-20 mins at least once a month.
 
-If/as long as the GPS receiver has a fix and receives data from satellites, the dot in the present time's year field is lit.
+If/as long as the GPS receiver has a fix and receives data from satellites, the dot in the *present time*'s year field is lit.
 
 To use the GPS receiver as a source of time, the option [**_Use GPS time_**](#-use-gps-time) must be checked in the Config Portal (which it is by default).
 
@@ -1051,6 +1051,9 @@ To have GPS speed displayed on your speedo, check **_Display GPS speed_** in the
 To let other props connected through [BTTF-Network](#connecting-props-wirelessly-bttf-network-bttfn) know about current GPS speed, check the option **_Provide GPS speed to wireless props_**.
 
 Setting these options gives GPS speed priority over speed from a [rotary encoder](#rotary-encoder), and, as regards the speedo display, over other purposes (such as displaying temperature). Checking them really does not make sense when your props are permanently stationary.
+
+> [[NOTE]]
+> The only indicator for a fix is the dot in the *present time*'s year field. The speedo will show "0" when the receiver has no fix. If there was a fix, and speed was greater than 3mph when the signal was lost, the speedo will display "-" for 60 seconds and then switch to "0". 
 
 ## Rotary Encoder
 
