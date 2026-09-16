@@ -1052,7 +1052,7 @@ To let other props connected through [BTTF-Network](#connecting-props-wirelessly
 
 Setting these options gives GPS speed priority over speed from a [rotary encoder](#rotary-encoder), and, as regards the speedo display, over other purposes (such as displaying temperature). Checking them really does not make sense when your props are permanently stationary.
 
-> [[NOTE]]
+> [!NOTE]
 > The only indicator for a fix is the dot in the *present time*'s year field. The speedo will show "0" when the receiver has no fix. If there was a fix, and speed was greater than 3mph when the signal was lost, the speedo will display "-" for 60 seconds and then switch to "0". 
 
 ## Rotary Encoder
