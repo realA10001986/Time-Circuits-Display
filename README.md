@@ -181,7 +181,7 @@ In general, it is safe to power-down the TCD when it has been idle for 15 second
 
 ### Calendar system
 
-The TCD firmware uses the [Julian Calendar](https://en.wikipedia.org/wiki/Julian_calendar) from Jan 1, 1, until Sep 2, 1752, and for later dates the [Gregorian](https://en.wikipedia.org/wiki/Gregorian_calendar) one. Sep 2, 1752, was the last day the Julian calendar was used in the ["First" British Empire](https://en.wikipedia.org/wiki/British_Empire#%22First%22_British_Empire_(1707%E2%80%931783)) (Great Britain and its colonies, including eastern parts of North America, Canada). Other countries stopped using this calendar system way earlier; most of Europe, including Spain and its colonies worldwide, had switched in 1582 already.
+The TCD firmware uses the [Julian Calendar&#10548;](https://en.wikipedia.org/wiki/Julian_calendar) from Jan 1, 1, until Sep 2, 1752, and for later dates the [Gregorian&#10548;](https://en.wikipedia.org/wiki/Gregorian_calendar) one. Sep 2, 1752, was the last day the Julian calendar was used in the ["First" British Empire&#10548;](https://en.wikipedia.org/wiki/British_Empire#%22First%22_British_Empire_(1707%E2%80%931783)) (Great Britain and its colonies, including eastern parts of North America, Canada). Other countries stopped using this calendar system way earlier; most of Europe, including Spain and its colonies worldwide, had switched in 1582 already.
 
 Since the time machine was built in the USA, my guess is Doc would have picked 1752. (One might argue that California was a Spanish colony, but it only became that in 1769.)
 
@@ -734,7 +734,7 @@ The uploaded files are stored to the root folder of the SD card, so this way of 
 The firmware contains a simple music player to play mp3 files located on the SD card. 
 
 > [!NOTE]
-> The maximum mp3 bitrate is __128kpbs__. The free [Adapter](https://macroplant.com/adapter/audio-converter) tool can re-encode your mp3 files in batches.
+> The maximum mp3 bitrate is __128kpbs__. The free [Adapter&#10548;](https://macroplant.com/adapter/audio-converter) tool can re-encode your mp3 files in batches.
 
 To be recognized, your mp3 files need to be organized in music folders named *music0* through *music9*. The folder number is 0 by default, i.e. the player starts searching for music in folder *music0*. This folder number can be changed in the [keypad menu](#how-to-select-the-music-folder-number).
 
@@ -1278,7 +1278,7 @@ Checking this option really only makes sense if there are MQTT-capable, but BTTF
 
 ### Setup
 
-MQTT requires a "broker" such as [mosquitto](https://mosquitto.org/), [Cassandana](https://github.com/mtsoleimani/cassandana), [RabbitMQ](https://www.rabbitmq.com/), [Ejjaberd](https://www.ejabberd.im/), [HiveMQ](https://www.hivemq.com/) or [EMQX](https://www.emqx.com/), to name a few. For proper operation with low latency, running the broker on your local network is recommended.
+MQTT requires a "broker" such as [mosquitto&#10548;](https://mosquitto.org/), [Cassandana&#10548;](https://github.com/mtsoleimani/cassandana), [RabbitMQ&#10548;](https://www.rabbitmq.com/), [Ejjaberd&#10548;](https://www.ejabberd.im/), [HiveMQ&#10548;](https://www.hivemq.com/) or [EMQX&#10548;](https://www.emqx.com/), to name a few. For proper operation with low latency, running the broker on your local network is recommended.
 
 ![MQTT connection](img/stamode-mqtt.png)
 
@@ -1453,7 +1453,7 @@ If you forget this password and are thereby locked out of your TCD, power-down, 
 
 Here you can select one out of 11 channels or have the TCD choose a random channel for you. The default channel is 1. Preferred are channels 1, 6 and 11.
 
-WiFi channel selection is key for a trouble-free operation. Disturbed WiFi communication can lead to disrupted sequences, packet loss, hanging or freezing props, and other problems. A good article on WiFi channel selection is [here](https://community.ui.com/questions/Choosing-the-right-Wifi-Channel-on-2-4Ghz-Why-Conventional-Wisdom-is-Wrong/ea2ffae0-8028-45fb-8fbf-60569c6d026d).
+WiFi channel selection is key for a trouble-free operation. Disturbed WiFi communication can lead to disrupted sequences, packet loss, hanging or freezing props, and other problems. A good article on WiFi channel selection is [here&#10548;](https://community.ui.com/questions/Choosing-the-right-Wifi-Channel-on-2-4Ghz-Why-Conventional-Wisdom-is-Wrong/ea2ffae0-8028-45fb-8fbf-60569c6d026d).
 
 If a WiFi Scan was done (which can be triggered by clicking "Scan for networks"), 
 
@@ -1518,7 +1518,7 @@ Selects 24-hour clock mode, ie hours go from 0 to 23, "AM" and "PM" are permanen
 
 ##### &#9193; Time zone
 
-The time zone of the place where the device is operated in POSIX format. Needs to be set in order to use NTP or GPS, and for DST (daylight saving). Defaults to UTC0. See [here](#appendix-b-time-zones), [here](https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv) or [here](https://tz.out-a-ti.me) for a list of valid time zones.
+The time zone of the place where the device is operated in POSIX format. Needs to be set in order to use NTP or GPS, and for DST (daylight saving). Defaults to UTC0. See [here](#appendix-b-time-zones), [here&#10548;](https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv) or [here](https://tz.out-a-ti.me) for a list of valid time zones.
 
 ##### &#9193; NTP Server
 
