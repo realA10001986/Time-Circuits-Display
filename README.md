@@ -1318,7 +1318,7 @@ To reduce the number of write operations and thereby prolong the life of your TC
 
 ## Firmware Installation / Firmware Update
 
-If a previous version of the TCD firmware is installed on your device, you can update easily using the pre-compiled binary. Enter the [Config Portal](#the-config-portal), click on "Update & Upload", select the pre-compiled binary file ("**timecircuits-A10001986-Vx.xxx-XXXX.bin**" for A10001986 releases, "**Time_Circuits_Display_vX.YY.bin**" for CircuitSetup releases) provided in the [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases), and click on *Update*. 
+To update the firmware of your TCD, enter the [Config Portal](#the-config-portal), click on "Update & Upload", select the pre-compiled binary file ("**timecircuits-A10001986-Vx.xxx-XXXX.bin**" for A10001986 releases, "**Time_Circuits_Display_vX.YY.bin**" for CircuitSetup releases) provided in the [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases), and click on *Update*. 
 
 > [!IMPORTANT]
 > Do not install "A-Car" and/or "GTE" labeled versions on standard versions of the TCD, those are for modified/different hardware! Unless you know for a fact that you have "A-Car" displays or a "GTE" keypad, you need the "standard" firmware file.
