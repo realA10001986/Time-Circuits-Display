@@ -250,13 +250,11 @@ Control boards 1.4.5 and later have two ways of audio output:
 - built-in speaker or
 - line-out (at line-level, for connecting the TCD to a stereo's line-in)
 
-By default, all audio is played over the speaker. 
+By default, all audio is played over the speaker.
 
-Keypad command ```351``` enables playback over line-out for
-- music and
-- time travel sounds.
+Keypad command ```351``` enables playback over line-out for music, time travel sound, user-added sound as well as some other sound effects.
 
-All other sounds, which are supposed to be emitted by the TCD itself, are always played over the built-in speaker. Note that the TCD's volume control (knob, software-selected level, rotary encoder) only has impact on the built-in speaker.
+All sounds, which are supposed to be emitted by the TCD itself, are always played over the built-in speaker. Note that the TCD's volume control (knob, software-selected level, rotary encoder) only has impact on the built-in speaker.
 
 Keypad command ```350``` disables line-out output. 
 
