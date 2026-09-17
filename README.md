@@ -39,13 +39,13 @@ Features include
   - [Exhibition mode](#exhibition-mode): Show a fixed time in *Present Time* display instead of a running clock. Helpful for filming or museums.
 - Network capabilities:
   - Advanced network-accessible [Config Portal](#the-config-portal) for setup (http://timecircuits.local)
-  - [Wireless communication](#connecting-props-wirelessly-bttf-network-bttfn) with compatible props such as CircuitSetup's [Flux Capacitor](https://circuitsetup.us/product/flux-capacitor-light-sound-kit/) and [SID](https://circuitsetup.us/product/delorean-time-machine-status-indicator-display-sid/), as well as the [Dash Gauges](https://circuitsetup.us/product/delorean-time-machine-dash-gauge-control-board/), [VSR](https://vsr.out-a-ti.me) and modified [Futaba Remote Control](https://circuitsetup.us/product/futaba-remote-stanley-display-wireless-control-kit/), for synchronized Time Travel sequences, replaying movie scenes, mutual remote control, and more.
+  - [Wireless communication](#connecting-props-wirelessly-bttf-network-bttfn) with compatible props such as CircuitSetup's [Flux Capacitor](https://circuitsetup.us/product/flux-capacitor-light-sound-kit/) and [SID](https://circuitsetup.us/product/delorean-time-machine-status-indicator-display-sid/), as well as the [Dash Gauges](https://circuitsetup.us/product/delorean-time-machine-dash-gauge-control-board/), [VSR](https://vsr.out-a-ti.me) and modified [Futaba Remote Control](https://circuitsetup.us/product/futaba-remote-stanley-display-wireless-control-kit/), for synchronized Time Travel sequences, replaying movie scenes, mutual remote control, and more. No need for even more wires in your Delorean.
   - [Home Assistant](#home-assistant--mqtt) (MQTT) support for sending and displaying messages, remote controlling and more.
-  - Easy [firmware updates](#firmware-installation--firmware-update) over-the-air
-- [Night mode](#night-mode): Dim or switch off displays on schedule, manually or sensor-controlled.
-- [Music player](#the-music-player): Play mp3 files located on an SD card
-- Audio output through [line-out](#audio-output) for time travel sounds and music, allows connecting your TCD to your (car) stereo for high-quality stereo-sound. (Requires Control Board 1.4.5 or later)
+  - Easy [firmware updates](#firmware-installation--firmware-update) over-the-air. No need to send in stuff for firmware updates, it's the 2020s after all.
+- [Night mode](#night-mode): Dim or switch off displays on schedule, manually or sensor-controlled. So you won't be blinded during night drives.
 - Support for [SD cards](#sd-card) up to 32GB
+- Audio output through [line-out](#audio-output) for time travel sounds and music. Connect your TCD to your (car) stereo for high-quality stereo-sound (Requires Control Board 1.4.5 or later). No more "time traveling" through a 2" speaker.
+- [Music player](#the-music-player): Play your mp3 files located on SD card, through your (car) stereo if available. 
 - [Keypad-controlled menu](#the-keypad-menu) for adjusting various settings and viewing status through the three displays
 - Support for numerous [peripherals](#peripherals):
   - [Fake "power switch"](#fake-power-switch) (eg. a [TFC drive switch](https://tfc.out-a-ti.me))
