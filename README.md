@@ -576,6 +576,8 @@ For technical reasons, the beep is suppressed whenever other sounds are played-b
 
 As of version 3.23, the TCD, or rather "Marty McFly", will tell you the time out loud on pressing ```ENTER``` (without a command).
 
+Furthermore, since version 3.27, a default "sound on the hour" can be enabled in the Config Portal, which consists of the Clock Tower Bell and a time announcement from "Marty McFly".
+
 ## Night mode
 
 In night-mode, by default, the *destination time* and *last time departed* displays are switched off, the *present time* display is dimmed to a minimum, and the volume of sound playback is reduced (except the alarm). Apart from considerably increasing the displays' lifetime, night-mode reduces the power consumption of the device from around 4.5W to around 2.5W.
@@ -708,8 +710,8 @@ The firmware supports some additional, user-provided sound effects, which it wil
 
 - "ttaccel.mp3": Will be played immediately upon triggering a time travel when a speedo is connected, during the acceleration phase (ie while the speedo counts up to 88). This sound is then interrupted by the usual time travel sound. You can use, for instance, the sound of a car accelerating for this. This sound is played through [line-out](#audio-output), if enabled.
 - "ttcancel.mp3": Will be played when a time travel acceleration phase is canceled by hitting the brake on the [Remote](#futaba-remote-control). This sound is played through [line-out](#audio-output), if enabled.
-- "hour.mp3": Will be played every hour, on the hour. This feature is disabled in night mode.
-- "hour-xx.mp3", xx being 00 through 23: Sounds-on-the-hour for specific hours that will be played instead of "hour.mp3". If a sound for a specific hour is not present, "hour.mp3" will be played, if that one exists.
+- "hour.mp3": Will be played every hour, on the hour. If this file is present, it will be played instead of the default. This feature is disabled in night mode.
+- "hour-xx.mp3", xx being 00 through 23: Sounds-on-the-hour for specific hours that will be played instead of "hour.mp3". If a sound for a specific hour is not present, "hour.mp3" will be played, if that one exists, otherwise the default (if enabled in the Config Portal). This feature is disabled in night mode.
 - "key1.mp3" - "key9.mp3": Will be played on a ```50x``` keypad command (x=1-9); additionally, "key3.mp3"/"key6.mp3" will be played when holding the ```3```/```6``` key for 2 seconds. Those sounds are played through [line-out](#audio-output), if enabled.
 - "ha-alert.mp3": Will be played when a [HA/MQTT](#home-assistant--mqtt) message is received.
 
@@ -1540,6 +1542,12 @@ If this is checked, the TCD will show a different animation upon entering a Dest
 If other props are connected, they might bring their own time travel sound effects. In this case, you can uncheck this to disable the Time Circuit's own time travel sounds. 
 
 This option only covers sounds played during time travel, not other sound effects.
+
+##### &#9193; Play default sound-on-the-hour
+
+If this option is checked, the TCD will play a sound on every hour. You will hear Hill Valley's clock tower bell and Marty McFly telling you the time.
+
+Note that if there is either ["hour.mp3" or a "hour-xx.mp3"](#additional-custom-sounds) file for the current hour present on the SD card, this sound will be played instead of the default.
 
 ##### &#9193; Alarm base is real present time
 
