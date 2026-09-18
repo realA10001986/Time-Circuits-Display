@@ -1327,7 +1327,7 @@ The TCD has no internet access while in Car Mode; this means that, unless a GPS 
 For the first alternative, it is recommended to pre-configure the TCD to connect to a WiFi network (eg. the iPhone's WiFi hotspot) when NOT in Car mode. In order to do so, 
 - quit car mode (```990```) if enabled,
 - enter the TCD's Config Portal by connecting to "TCD-AP" and navigating to http//timecircuits.local, enter "WiFi Settings", and connect the TCD to your WiFi.
-- After saving the new settings, reboot, and re-enable Car Mode (```991```).
+- After saving the new settings and thereby rebooting, re-enable Car Mode (```991```).
 
 In order to sync time, have your WiFi network ready (eg, by enabling the iPhone hotspot), and
 - power up the TCD in Car Mode,
