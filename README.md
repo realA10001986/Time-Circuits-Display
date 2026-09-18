@@ -1324,11 +1324,11 @@ This configuration is achieved automatically by putting all props into [Car Mode
 
 #### Time Synchonization
 
-The TCD has no internet access while in Car Mode; this means that, unless a GPS receiver is present, it cannot update its clock automatically. If the clock runs off over time, you either quit Car Mode once in a while and allow the TCD connect to a internet-connected WiFi network (the iPhone's Personal Hotspot works fine) or re-adjust time using the [keypad menu](#how-to-set-the-real-time-clock-rtc).
+The TCD has no internet access while in Car Mode; this means that, unless a GPS receiver is present, it cannot update its clock automatically. If the clock runs off over time (which usually is something like 1 minute in 6-8 months), you either quit Car Mode once in a while and allow the TCD connect to a internet-connected WiFi network or re-adjust time using the [keypad menu](#how-to-set-the-real-time-clock-rtc). 
 
-For the first alternative, it is recommended to pre-configure the TCD to connect to a WiFi network (eg. the iPhone's WiFi hotspot) when *not* in Car mode. In order to do so, 
-- quit Car Mode (```990```) if enabled,
-- enter the TCD's Config Portal by connecting to "TCD-AP" and navigating to http//timecircuits.local, enter "WiFi Settings", and connect the TCD to your WiFi.
+For the first alternative, it is recommended to pre-configure the TCD to connect to a WiFi network (eg. your iPhone's WiFi hotspot) when *not* in Car mode. In order to do so, 
+- quit Car Mode (```990```),
+- enter the TCD's Config Portal by connecting to "TCD-AP" and navigating to http//timecircuits.local, enter "WiFi Settings", and connect the TCD to your WiFi network.
 - After saving the new settings and thereby rebooting, re-enable Car Mode (```991```).
 
 In order to sync time, have your WiFi network ready (eg, by enabling the iPhone hotspot), and
