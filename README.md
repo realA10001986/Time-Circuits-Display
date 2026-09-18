@@ -1305,7 +1305,7 @@ For more information, see [here](https://remote.out-a-ti.me).
 
 ![APmode](img/apmode-car.png)
 
-This configuration is achieved automatically by putting all props into [Car Mode](#car-mode). On the TCD, keypad commands ´´´990´´´/´´´991´´´ disable/enable Car Mode. Please refer to the other props' documentation, chapter "Car Setup", on how to put them into Car Mode: [Flux Capacitor](https://fc.out-a%2dti.me#car-setup), [SID](https://sid.out%2da%2dti.me#car-setup), [Dash Gauges](https://dg.out%2da-ti.me#car-setup), [VSR](https://vsr.out-a%2dti.me#car-setup), [Remote Control](https://remote.out-a%2dti%2eme#car-setup).
+This configuration is achieved automatically by putting all props into [Car Mode](#car-mode). On the TCD, keypad commands ```990```/```991``` disable/enable Car Mode. Please refer to the other props' documentation, chapter "Car Setup", on how to put them into Car Mode: [Flux Capacitor](https://fc.out-a%2dti.me#car-setup), [SID](https://sid.out%2da%2dti.me#car-setup), [Dash Gauges](https://dg.out%2da-ti.me#car-setup), [VSR](https://vsr.out-a%2dti.me#car-setup), [Remote Control](https://remote.out-a%2dti%2eme#car-setup).
 
 #### Changing settings while in Car Mode
 
@@ -1324,9 +1324,9 @@ This configuration is achieved automatically by putting all props into [Car Mode
 The TCD has no internet access while in Car Mode; this means that, unless a GPS receiver is present, it cannot update its clock automatically. If the clock runs off over time, you either quit Car Mode once in a while and allow the TCD connect to a internet-connected WiFi network (the iPhone's Personal Hotspot works fine) or to re-adjust time using the [keypad menu](#how-to-set-the-real-time-clock-rtc).
 
 For the first alternative, it is recommended to pre-configure the TCD to connect to a WiFi network (eg. the iPhone's WiFi hotspot) when NOT in Car mode. In order to do so, 
-- quit car mode (´´´990´´´) if enabled,
+- quit car mode (```990```) if enabled,
 - enter the TCD's Config Portal by connecting to "TCD-AP" and navigating to http//timecircuits.local, enter "WiFi Settings", and connect the TCD to your WiFi.
-- After saving the new settings, reboot, and re-enable Car Mode (´´´991´´´).
+- After saving the new settings, reboot, and re-enable Car Mode (```991```).
 
 ## WiFi power saving features
 
