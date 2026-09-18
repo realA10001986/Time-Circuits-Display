@@ -1128,7 +1128,8 @@ To disable *Car Mode*, enter keypad command ```990```. The TCD will reboot and a
 
 *Car Mode* is persistent, i.e. it remains active (even across reboots and power-downs) until disabled.
 
->The TCD has no internet access while in Car Mode; this means that, unless a GPS receiver is present, it cannot update its clock automatically. If the time runs off over time, you either need to quit Car Mode once in a while and allow the TCD connect to a internet-connected WiFi network (the iPhone's Personal Hotspot works fine) or to re-adjust time using the [keypad menu](#how-to-set-the-real-time-clock-rtc). 
+> [!TIP]
+> The TCD has no internet access while in Car Mode; this means that, unless a GPS receiver is present, it cannot update its clock automatically. If the time runs off over time, you either need to quit Car Mode once in a while and allow the TCD connect to a internet-connected WiFi network (the iPhone's Personal Hotspot works fine) or to re-adjust time using the [keypad menu](#how-to-set-the-real-time-clock-rtc).
 
 ### Connecting props by wire
 
