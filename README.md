@@ -120,7 +120,7 @@ After saving the WiFi configuration settings, the TCD reboots and tries to conne
 
 After completing these steps, your TCD is ready for use; you can also continue configuring it to your personal preferences through the Config Portal.
 
-> If your TCD is mounted in a car, there is a special Car Mode that allows having a WiFi network configured (for administrative purposes and NTP time synchronization) and switching between AP-Mode and WiFi-connection through keypad commands. See [here](car-mode) and [here](#car-setup---best-practice). So, despite using your TCD in a car without WiFi, you can at this point configure a WiFi Connection, eg. to your cell phone's hotspot, and then put the TCD into Car Mode which reboots it into Access-Point mode. 
+> If your TCD is mounted in a car, there is a special Car Mode that allows having a WiFi network configured (for administrative purposes and NTP time synchronization) and switching between AP-Mode and WiFi-connection through keypad commands. See [here](#car-mode) and [here](#car-setup---best-practice). So, despite using your TCD in a car without WiFi, you can at this point configure a WiFi Connection, eg. to your cell phone's hotspot, and then put the TCD into Car Mode which reboots it into Access-Point mode. 
 
 ## The Config Portal
 
