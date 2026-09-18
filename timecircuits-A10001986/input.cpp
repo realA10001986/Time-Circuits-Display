@@ -16,7 +16,7 @@
  * - DFRobot Gravity 360: SW1 off, SW2 on (i2c address 0x55)
  * - DuPPA I2CEncoder 2.1: A0 and A1 closed (i2c address 0x03)
  * 
- * Keypad part inspired by "Keypad" library by M. Stanley & A. Brevig
+ * Keypad part based on concepts by M. Stanley & A. Brevig
  * -------------------------------------------------------------------
  * License: Modified MIT NON-AI
  * 
@@ -331,7 +331,7 @@ void TCButton::scan()
         break;
 
     case TCBS_PRESSED:
-        if((!active) && (waitTime < _debounceDur)) {  // de-bounce
+        if((!active) && (waitTime < _debounceDur)) {
             transitionTo(_lastState);
         } else if(!active) {
             transitionTo(TCBS_RELEASED);
@@ -343,7 +343,7 @@ void TCButton::scan()
         break;
 
     case TCBS_RELEASED:
-        if((active) && (waitTime < _debounceDur)) {  // de-bounce
+        if((active) && (waitTime < _debounceDur)) {
             transitionTo(_lastState);
         } else if((!active) && (waitTime > _pressDur)) {
             if(_pressFunc) _pressFunc();
@@ -359,7 +359,7 @@ void TCButton::scan()
         break;
 
     case TCBS_LONGPRESSEND:
-        if((active) && (waitTime < _debounceDur)) { // de-bounce
+        if((active) && (waitTime < _debounceDur)) {
             transitionTo(_lastState);
         } else if(waitTime >= _debounceDur) {
             if(_longPressStopFunc) _longPressStopFunc();
@@ -392,7 +392,7 @@ void TCButton::transitionTo(ButtonState nextState)
 }
 
 
-#ifdef TC_HAVE_RE
+#ifdef HAVE_RE
 
 /*
  * TCRotEnc class

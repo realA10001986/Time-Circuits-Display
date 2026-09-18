@@ -66,7 +66,7 @@
 #include "tc_audio.h"
 #include "tc_wifi.h"
 #include "tc_settings.h"
-#if defined(TC_HAVE_RE) || defined(TC_HAVE_REMOTE)
+#if defined(HAVE_RE) || defined(HAVE_REMOTE)
 #include "input.h"
 #endif
 
@@ -182,8 +182,7 @@ static bool          haveAuthTime = false;
 uint16_t             lastYear = 0;
 static uint8_t       lastHour = 23;
 static uint8_t       resyncInt = 5;
-bool                 syncTrigger = false;
-unsigned long        syncTriggerNow = 0;
+unsigned long        syncTrigger = 0;
 bool                 doAPretry = true;
 
 static unsigned long deferredCPNow = 0;
@@ -194,27 +193,14 @@ static bool          y = false;
 
 // For beep-auto-modes
 uint8_t              beepMode = DEF_BEEP;
-bool                 beepTimer = false;
+unsigned long        beepTimer = 0;
 unsigned long        beepTimeout = 30*1000;
-unsigned long        beepTimerNow = 0;
 
 // Speech
 static int pbcnt = 0, ppbt = -2, phm = -1;
 
-// Persistent time travels:
-// This controls the firmware's behavior as regards saving times to NVM.
-// If this is true, times are saved to NVM, whenever
-//  - the user enters a destination time for time travel and presses ENTER
-//  - the user activates time travel (hold "0")
-//  - the user returns from a time travel (hold "9")
-// True means that playing around with time travel is persistent, and even
-// present time is kept over a power loss (if the battery backed RTC keeps
-// the time). Downside is that the user's custom destination and last
-// departure times are overwritten during a time travel.
-// False means that time travel games are non-persistent, and the user's
-// custom times (as set up in the keypad menu) are never overwritten.
-// Also, "false" reduces flash wear considerably if not saved to SD.
-bool                 timetravelPersistent = false;
+// Persistent time travels
+bool    timetravelPersistent = false;
 
 // Alarm
 bool    alarmOnOff                  = DEF_ALARM_ONOFF;
@@ -275,18 +261,17 @@ static uint32_t      haveSnds = 0;
 #define HS_ABORT_TT  0x0002
 #define HS_USER_ALM  0x0004
 
-#ifdef TC_HAVEGPS
+#ifdef HAVE_GPS
 static unsigned long dispGPSnow = 0;
 #endif
 static unsigned long dispIdlenow = 0;
-#ifdef TC_HAVETEMP
-static int           tempBrightness = DEF_TEMP_BRIGHT;
+#ifdef HAVE_TEMP
 static bool          tempOldNM = false;
 #endif
-#if (defined(TC_HAVEGPS) && defined(NOT_MY_RESPONSIBILITY)) || defined(TC_HAVE_RE)
+#if (defined(HAVE_GPS) && defined(NOT_MY_RESPONSIBILITY)) || defined(HAVE_RE)
 static bool          GPSabove88 = false;
 #endif
-#ifdef TC_HAVE_REMOTE
+#ifdef HAVE_REMOTE
 static bool          bttfnRemStop     = false;  // Status of "Stop" switch/light
 static int           bttfnRemoteSpeed = 0;      // What is displayed on remote
 static int           bttfnRemCurSpd   = 0;      // What is displayed on speedo
@@ -299,7 +284,7 @@ static const char    *remoteOnSound = "/remoteon.mp3";
 static const char    *remoteOffSound = "/remoteoff.mp3";
 static uint32_t      oldptnmrem = 0;
 #endif
-#ifdef TC_HAVE_RE
+#ifdef HAVE_RE
 static int           fakeSpeed = 0;
 static int           oldFSpd = 0;
 static int           oldFakeSpeed = -1;
@@ -308,7 +293,7 @@ static unsigned long tempLockNow = 0;
 static bool          spdreOldNM = false;
 #endif
 bool                 tempOffNM = true;
-#ifdef TC_HAVETEMP
+#ifdef HAVE_TEMP
 static unsigned long tempReadNow = 0;
 static unsigned long tempDispNow = 0;
 static unsigned long tempUpdInt = TEMP_UPD_INT_L;
@@ -344,10 +329,10 @@ static long          origEttoLeadPoint = 0;
 static uint16_t      bttfnTTLeadTime = 0;
 static long          ettoBase;
 static bool          pubMQTTVL = false;
-#ifdef TC_HAVE_REMOTE
+#ifdef HAVE_REMOTE
 static bool          remoteInducedTT = false;
 #endif
-#ifdef IS_ACAR_DISPLAY
+#ifdef ACAR_DISPLAY
 #define P1JAN011885 "010118851200"
 #define P1JAN011801 "010118011000"
 #define P1ERR900    "  00900 9000"
@@ -410,7 +395,7 @@ static int  tzDiffGMTDST[3] = { 0, 0, 0 };               // Difference to UTC in
 static int  tzDiff[3]       = { 0, 0, 0 };               // difference between DST and non-DST in minutes
 static int  DSTonMins[3]    = { -1, -1, -1 };            // DST-on date/time in minutes since 1/1 00:00 (in non-DST time)
 static int  DSToffMins[3]   = { 600000, 600000, 600000}; // DST-off date/time in minutes since 1/1 00:00 (in DST time)
-bool        couldDST[3]     = { false, false, false };   // Could use own DST management (and DST is defined in TZ)
+static bool couldDST[3]     = { false, false, false };   // Could use own DST management (and DST is defined in TZ)
 static int8_t tzIsValid[3]  = { -1, -1, -1 };
 static int8_t tzHasDST[3]   = { -1, -1, -1 };
 #ifdef TC_DBG_BOOT
@@ -432,7 +417,7 @@ static bool miniMode    = false;
 
 // MQTT
 uint32_t    mqttDisp = 0;
-#ifdef TC_HAVEMQTT
+#ifdef HAVE_MQTT
 static unsigned long mqttStartNow[3] = { 0 };
 uint32_t    mqttOldDisp   = 0;
 uint16_t    mqttIdx[3]    = { 0 };
@@ -482,7 +467,7 @@ static bool          OTPRinProgress = false;
 #endif
 
 // The GPS object
-#ifdef TC_HAVEGPS
+#ifdef HAVE_GPS
 #define GPS_NUMTYPES 1
 static const uint8_t gpsAddr[GPS_NUMTYPES*2] = {
     GPS_MTK_ADDR, GPST_MTK333X
@@ -501,7 +486,7 @@ tcdDisplay departedTime(DISP_LAST, DEPT_TIME_ADDR);
 
 // The speedo and temp.sensor objects
 speedDisplay speedo(SPEEDO_ADDR);
-#ifdef TC_HAVE_RE
+#ifdef HAVE_RE
 static const uint8_t rotEncAddr[3*2] = { 
     ADDA4991_ADDR, TC_RE_TYPE_ADA4991,
     DUPPAV2_ADDR,  TC_RE_TYPE_DUPPAV2,
@@ -516,7 +501,7 @@ static TCRotEnc rotEnc(3, rotEncAddr);
 static TCRotEnc rotEncV(3, rotEncVAddr);
 static TCRotEnc *rotEncVol;
 #endif
-#ifdef TC_HAVETEMP
+#ifdef HAVE_TEMP
 static const uint8_t tempSensAddr[9*2] = { 
     MCP9808_ADDR, MCP9808,
     BMx280_ADDR,  BMx280,
@@ -530,7 +515,7 @@ static const uint8_t tempSensAddr[9*2] = {
 };
 tempSensor tempSens(9, tempSensAddr);
 #endif
-#ifdef TC_HAVELIGHT
+#ifdef HAVE_LIGHT
 static const uint8_t lightSensAddr[6*2] = { 
     LTR3xx_ADDR,  LST_LTR3xx,   // must be before TSL26x1
     TSL2591_ADDR, LST_TSL2591,  // must be after LTR3xx
@@ -656,7 +641,7 @@ const uint32_t *autoNMPresets[AUTONM_NUM_PRESETS] = {
     autoNMoffice2Preset, autoNMshopPreset,
     autoNMmcPreset
 };
-#ifdef TC_HAVELIGHT
+#ifdef HAVE_LIGHT
 static unsigned long lastLoopLight = 0;
 #endif
 
@@ -677,10 +662,10 @@ static bool useFakePowerSwitch = false;
 bool        MQTTWaitForOn = false;
 static bool isFPBKeyChange = false;
 static bool isFPBKeyPressed = false;
-#if defined(TC_HAVE_REMOTE) || defined(TC_HAVEMQTT)
+#if defined(HAVE_REMOTE) || defined(HAVE_MQTT)
 static bool shadowFPBKeyPressed = false;
 #endif
-#ifdef TC_HAVEMQTT
+#ifdef HAVE_MQTT
 static bool shadowMQTTFPBKeyPressed = false;
 #endif
 
@@ -716,7 +701,7 @@ static const unsigned int mon_ydayt24t60[2][13] =
 };
 static const uint64_t mins1kYears[] =
 {
-#ifndef TC_JULIAN_CAL  
+#ifndef JULIAN_CAL  
              0,  262975680,  525949920,  788924160, 1051898400,
     1314874080, 1577848320, 1840822560, 2103796800, 2366772480,
     2629746720, 2892720960, 3155695200, 3418670880, 3681645120,
@@ -773,7 +758,7 @@ static const uint64_t mins1kYears[] =
 uint32_t (*t)(uint8_t *, uint32_t, uint32_t);
 static const uint32_t hours1kYears[] =
 {
-#ifndef TC_JULIAN_CAL
+#ifndef JULIAN_CAL
                 0,  262975680/60,  525949920/60,  788924160/60, 1051898400/60,
     1314874080/60, 1577848320/60, 1840822560/60, 2103796800/60, 2366772480/60, 
     2629746720/60, 2892720960/60, 3155695200/60, 3418670880/60, 3681645120/60, 
@@ -828,7 +813,7 @@ static const uint32_t hours1kYears[] =
 #endif    
 };
 
-#ifdef TC_JULIAN_CAL
+#ifdef JULIAN_CAL
 static const uint64_t tdro = 5258967840;
 #ifndef JSWITCH_1582
 static const int jCentStart   = 1700;      // Start of century when switch took place
@@ -914,6 +899,7 @@ int bttfnHaveClients = 0; // This is a bool by nature (0, !0)
 #define BTTFN_REMCMD_DOOR      100
 #define BTTFN_REMCMD_KEEPALIVE 101
 #define BTTFN_REMCMD_PS        102
+#define BTTFN_REMCMD_DGREFILL  103
 #define BTTFN_SSRC_NONE         0
 #define BTTFN_SSRC_GPS          1
 #define BTTFN_SSRC_ROTENC       2
@@ -934,7 +920,7 @@ int bttfnHaveClients = 0; // This is a bool by nature (0, !0)
 #define BTTFN_MAX_CLIENTS          6
 struct _bttfnClient {
     unsigned long ALIVE;
-    #ifdef TC_HAVE_REMOTE
+    #ifdef HAVE_REMOTE
     uint32_t      RemID;
     #endif
     union {
@@ -969,10 +955,9 @@ static uint16_t      oldBTTFNSSrc = 0xffff;
 static unsigned long bttfnLastSpeedNot = 0;
 static unsigned long bttfnLastDataNot = 0;
 static unsigned long bttfnLastInfo = 0;
-static int           TCDBusyStatus = 0;
 static uint8_t       bttfnData17 = 0, bttfnData18, bttfnData19, bttfnCap32;
 static unsigned long bttfnScheduleInfo;
-#ifdef TC_HAVE_REMOTE
+#ifdef HAVE_REMOTE
 static uint32_t      registeredRemID  = 0;
 static uint32_t      registeredRemKPID = 0;
 static uint32_t      bttfnLastSeq_co  = 0;
@@ -983,7 +968,7 @@ static unsigned long bttfnScheduleRemOffSnd = 0;
 static unsigned long bttfnScheduleWakeup = 0;
 static bool          bttfnScheduleRefill = false;
 static uint32_t      bttfnBsgf = 0;
-#endif // TC_HAVE_REMOTE
+#endif // HAVE_REMOTE
 
 #ifdef ESP32
 /*  "warning: taking address of packed member of 'struct <anonymous>' may 
@@ -1018,7 +1003,7 @@ static uint32_t      bttfnBsgf = 0;
     ((a)[(b)+1]) = ((uint16_t)(c)) >> 8;
 #endif
 
-#ifdef TC_HAVEMQTT
+#ifdef HAVE_MQTT
 static void displayMQTTmessage(uint32_t dmask, int idx, tcdDisplay *targetdisplay);
 #endif
 
@@ -1035,30 +1020,30 @@ static unsigned long play_alarm_sound();
 
 static bool getNTPOrGPSTime(bool weHaveAuthTime, DateTime& dt, bool updateRTC = true, bool wifiAllowed = true);
 static bool getNTPTime(bool weHaveAuthTime, DateTime& dt, bool updateRTC = true, bool wifiAllowed = true);
-#ifdef TC_HAVEGPS
+#ifdef HAVE_GPS
 static bool getGPStime(DateTime& dt, uint16_t currYear, bool updateRTC = true);
 static bool setGPStime();
 bool        gpsHaveFix();
 static bool gpsHaveTime();
 #endif
-#if defined(TC_HAVEGPS) || defined(TC_HAVE_RE)
+#if defined(HAVE_GPS) || defined(HAVE_RE)
 static bool displayGPSorRESpeed(bool force = false);
 #endif
-#ifdef TC_HAVE_REMOTE
+#ifdef HAVE_REMOTE
 static bool updAndDispRemoteSpeed();
 #endif
-#ifdef TC_HAVETEMP
+#ifdef HAVE_TEMP
 static void updateTemperature(bool force = false);
 static bool dispTemperature(bool force = false);
 #endif
 static void dispIdleZero(bool force = false);
-#ifdef TC_HAVE_RE                
+#ifdef HAVE_RE                
 static void re_init(bool zero = true);
 static void re_lockTemp();
 #endif
 
 static void triggerLongTT(bool noLead = false);
-#if (defined(TC_HAVEGPS) && defined(NOT_MY_RESPONSIBILITY)) || defined(TC_HAVE_RE)
+#if (defined(HAVE_GPS) && defined(NOT_MY_RESPONSIBILITY)) || defined(HAVE_RE)
 static void checkForSpeedTT(bool doP2, bool isRemote);
 #endif
 
@@ -1067,12 +1052,13 @@ static void copyPresentToDeparted(bool isReturn);
 static void ettoPulseStart();
 static void ettoPulseStartNoLead();
 static void sendTTNetWorkMsg(uint16_t bttfnPayload, uint16_t bttfnPayload2);
-static void sendNetWorkMsg(const char *pl, unsigned int len, uint8_t bttfnMsg, uint16_t bttfnPayload = 0, uint16_t bttfnPayload2 = 0);
+static void sendNetWorkMsg(const char *pl, uint8_t bttfnMsg, uint16_t bttfnPayload = 0, uint16_t bttfnPayload2 = 0);
+static void sendAlarmNetWorkMsg();
 
 // Time calculations
 static uint64_t  dateToMins(int year, int month, int day, int hour, int minute);
 static void      minsToDate(uint64_t total, int& year, int& month, int& day, int& hour, int& minute);
-#ifdef TC_JULIAN_CAL
+#ifdef JULIAN_CAL
 static void      calcJulianData();
 #endif
 static void      convTime(int diff, int& y, int& m, int& d, int& h, int& mm);
@@ -1087,6 +1073,27 @@ static void bttfn_notify_speed();
 static void bttfn_send_autoUpdates();
 static void bttfn_setup();
 static void bttfn_setup_sensors();
+
+static void allShowText(const char *d, const char *p, const char *l, int o)
+{
+    if(d) { destinationTime.showTextDirect(d); if(o & 1) destinationTime.on(); }
+    if(p) { presentTime.showTextDirect(p);     if(o & 2) presentTime.on(); }
+    if(l) { departedTime.showTextDirect(l);    if(o & 4) departedTime.on(); }
+}
+
+static void allRestoreBri()
+{
+    destinationTime.setBrightness(255);
+    presentTime.setBrightness(255);
+    departedTime.setBrightness(255);
+}
+
+static void allBriDirect(int d, int p, int l)
+{
+    destinationTime.setBrightnessDirect(d);
+    presentTime.setBrightnessDirect(p);
+    departedTime.setBrightnessDirect(l);
+}
 
 /*
  * main_boot()
@@ -1118,7 +1125,7 @@ void main_boot()
 void main_setup()
 {
     uint64_t oldTime = 0, newTime;
-    #ifdef TC_HAVEGPS
+    #ifdef HAVE_GPS
     int quickGPSupdates = -1;
     int speedoUpdateRate = 0;
     bool haveAuthTimeGPS = false;
@@ -1202,12 +1209,12 @@ void main_setup()
     rtc.clockOutEnable();
 
     // Calculate data for Julian Calendar
-    #ifdef TC_JULIAN_CAL
+    #ifdef JULIAN_CAL
     calcJulianData();
     #endif
 
     // Swap red and yellow displays if so configured
-    #ifdef IS_ACAR_DISPLAY
+    #ifdef ACAR_DISPLAY
     if(evalBool(settings.swapDL)) {
         destinationTime.setAddress(DEPT_TIME_ADDR);
         departedTime.setAddress(DEST_TIME_ADDR);
@@ -1231,7 +1238,7 @@ void main_setup()
         departedTime.setAMPMOrder(tempmode);
     }
 
-    #ifndef IS_ACAR_DISPLAY
+    #ifndef ACAR_DISPLAY
     p3anim = evalBool(settings.p3anim);
     #endif
     skipTTAnim = evalBool(settings.skipTTAnim);
@@ -1283,7 +1290,7 @@ void main_setup()
             oldTime -= timeDifference;
         }
         if(oldTime >= 
-        #ifndef TC_JULIAN_CAL
+        #ifndef JULIAN_CAL
                       mins1kYears[(10000 / 500)]
         #else
                       mins1kYears[(10000 / 100)]
@@ -1350,6 +1357,7 @@ void main_setup()
 
         if((sgf & SGF_USpeedo) && (speedo.haveSpeedoDisplay() || !bttfnSpeedoFallback)) {
             sgf |= SGF_USpeedoDisp;
+            speedo.setupBrightness(atoi(settings.speedoBright), atoi(settings.tempBright));
         }
 
         // SGF_USpeedo is set if tt sequences should potentially be done with P0 and P2
@@ -1359,7 +1367,7 @@ void main_setup()
     }
     
     // Set up GPS receiver
-    #ifdef TC_HAVEGPS
+    #ifdef HAVE_GPS
     evalBoolSetClear(settings.useGPSTime, sgf, SGF_UGPSTime);
     
     if(sgf & SGF_USpeedoDisp) {
@@ -1414,6 +1422,7 @@ void main_setup()
     #endif
     
     // Try to obtain initial authoritative time
+    // (First NTP request was sent in wifi_ntp_setup())
     if(useNTP && (WiFi.status() == WL_CONNECTED)) {
         int timeout = 50;
         do {
@@ -1447,7 +1456,7 @@ void main_setup()
     } else {
       
         // GPS might have a fix, so try fetching time from GPS
-        #ifdef TC_HAVEGPS
+        #ifdef HAVE_GPS
         if(sgf & SGF_UGPS) {
 
             // Pull old data from buffer
@@ -1495,7 +1504,7 @@ void main_setup()
     }
 
     // Preset this for BTTFN status requests during boot
-    #ifdef TC_HAVEMQTT
+    #ifdef HAVE_MQTT
     if(csf & CSF_MQTTPM) {
         if(!(shadowMQTTFPBKeyPressed = !MQTTWaitForOn)) csf |= CSF_OFF;
     } else
@@ -1611,7 +1620,7 @@ void main_setup()
         updatePresentTime();   // uses gdt{u,l}
 
     // Set GPS receiver's RTC
-    #ifdef TC_HAVEGPS
+    #ifdef HAVE_GPS
     if(sgf & SGF_UGPS) {
         if(!haveAuthTimeGPS && (haveAuthTime || !rtcbad)) {
             setGPStime();
@@ -1744,7 +1753,7 @@ void main_setup()
     if(beepMode >= 3) {
         beepMode = 3;
         beepTimeout = BEEPM3_SECS*1000;
-    } else if(beepMode == 2) 
+    } else if(beepMode == 2)
         beepTimeout = BEEPM2_SECS*1000;
 
     // Set up speedo display
@@ -1759,13 +1768,15 @@ void main_setup()
     if(sgf & SGF_USpeedo) {
       
         if(sgf & SGF_USpeedoDisp) {
-            speedo.setBrightness(atoi(settings.speedoBright), true);
+
+            bool rAligned = false;
             
             // Negate this flag, option reads "Switch off", not "Keep on"
             if(!(evalBool(settings.speedoAO))) sgf |= SGF_SpAlwsOn;
     
             // P1/P2 vs P3 speedo style
             if(evalBool(settings.speedoP3)) {
+                rAligned = evalBool(settings.speedoP3R);
                 speedo.dispL0Spd = true;
                 speedo.thirdDig = false;
                 speedo.setDot(false);
@@ -1774,7 +1785,7 @@ void main_setup()
                 speedo.thirdDig &= evalBool(settings.speedo3rdD);
                 speedo.setDot(true);
             }
-            speedo.validateSetup();
+            speedo.finishSetup(rAligned);
         }
 
         // No TT sounds to play -> no user-provided sound.
@@ -1806,7 +1817,7 @@ void main_setup()
         if(sgf & SGF_USpeedoDisp) {
             speedo.off();
     
-            #ifdef TC_HAVEGPS
+            #ifdef HAVE_GPS
             if(sgf & SGF_DispGPSSpd) {
                 // display (actual) speed, regardless of fake power
                 displayGPSorRESpeed(true);
@@ -1816,12 +1827,12 @@ void main_setup()
                 if(sgf & SGF_SpAlwsOn) {
                     if(!(csf & CSF_OFF)) {
                         speedo.setSpeed(0);
-                        speedo.on();
                         speedo.show();
+                        speedo.on();
                         speedoStatus = SPST_ZERO;
                     }
                 }
-            #ifdef TC_HAVEGPS
+            #ifdef HAVE_GPS
             }
             #endif
         }
@@ -1833,7 +1844,7 @@ void main_setup()
     // Use primary RotEnc for speed, if either no speedo is present, or,
     // if a speedo is present, GPS speed is not to be displayed on it; or
     // if no GPS receiver is present.
-    #ifdef TC_HAVE_RE
+    #ifdef HAVE_RE
     if(!(sgf & SGF_DispGPSSpd)) {
         if(rotEnc.begin(true)) {
             sgf |= SGF_URotEnc;
@@ -1862,7 +1873,7 @@ void main_setup()
     mySetupNWCheck();
 
     // Set up temperature sensor
-    #ifdef TC_HAVETEMP
+    #ifdef HAVE_TEMP
     sgf |= SGF_UTemp;   // Use if detected
     if((sgf & SGF_USpeedoDisp) && (!(sgf & SGF_DispGPSSpd)) && speedo.supportsTemperature()) {
         evalBoolSetClear(settings.dispTemp, sgf, SGF_DispTemp);
@@ -1872,7 +1883,6 @@ void main_setup()
         tempSens.setOffset((float)strtof(settings.tempOffs, NULL));
         wcf |= WCF_HaveRCM;
         if(tempSens.haveHum()) sgf |= SGF_HaveHum;
-        tempBrightness = atoi(settings.tempBright);
         tempOffNM = evalBool(settings.tempOffNM);
         if(sgf & SGF_DispTemp) {
             if(!(csf & CSF_OFF)) {
@@ -1887,7 +1897,7 @@ void main_setup()
     sgf &= ~(SGF_UTemp|SGF_DispTemp);
     #endif
 
-    #ifdef TC_HAVELIGHT
+    #ifdef HAVE_LIGHT
     evalBoolSetClear(settings.useLight, sgf, SGF_ULightSens);
     luxLimit = atoi(settings.luxLimit);
     if(sgf & SGF_ULightSens) {
@@ -1931,7 +1941,7 @@ void main_setup()
 
     // MQTT: If 'extended TIMETRAVEL command' is to be used,
     // we need to lead. Otherwise, we do.
-    #ifdef TC_HAVEMQTT
+    #ifdef HAVE_MQTT
     if(pubMQTT) {
         if(MQTTvarLead) pubMQTTVL = true;           // No lead needed
         else            ETTWithFixedLead = true;    // Lead needed
@@ -1944,10 +1954,7 @@ void main_setup()
     // Note: This also shows up the first time you power-up the clock
     // AFTER a battery change.
     if((rtcbad && !isVirgin) || rtc.battLow()) {
-        destinationTime.showTextDirect("REPLACE");
-        presentTime.showTextDirect("BATTERY");
-        destinationTime.on();
-        presentTime.on();
+        allShowText("REPLACE", "BATTERY", NULL, 1+2);
         mySetupDelay(5000);
         allOff();
     } else {
@@ -1955,10 +1962,7 @@ void main_setup()
     }
 
     if(tzbad) {
-        destinationTime.showTextDirect("BAD");
-        presentTime.showTextDirect("TIME ZONE");
-        destinationTime.on();
-        presentTime.on();
+        allShowText("BAD", "TIME ZONE", NULL, 1+2);
         mySetupDelay(5000);
         allOff();
     }
@@ -1970,17 +1974,11 @@ void main_setup()
     }
 
     if(!haveAudioFiles) {
-        destinationTime.showTextDirect("PLEASE");
-        presentTime.showTextDirect("INSTALL");
-        departedTime.showTextDirect("SOUND PACK");
-        allOn();
+        allShowText("PLEASE", "INSTALL", "SOUND PACK", 1+2+4);
         mySetupDelay(5000);
         allOff();
     } else if(showUpdAvail && updateAvailable()) {
-        destinationTime.showTextDirect("UPDATE");
-        presentTime.showTextDirect("AVAILABLE");
-        destinationTime.on();
-        presentTime.on();
+        allShowText("UPDATE", "AVAILABLE", NULL, 1+2);
         mySetupDelay(1000);
         allOff();
     }
@@ -1996,19 +1994,12 @@ void main_setup()
         play_file("/intro.mp3", PA_LINEOUT|PA_CHECKNM|PA_INTRMUS|PA_ALLOWSD|PA_DYNVOL);
 
         mySetupDelay(1200);
-        destinationTime.setBrightnessDirect(15);
-        presentTime.setBrightnessDirect(15);
-        departedTime.setBrightnessDirect(0);
+        allBriDirect(15, 15, 0);
         departedTime.off();
-        destinationTime.showTextDirect(t1);
-        presentTime.showTextDirect(t2);
-        departedTime.showTextDirect(t3);
-        destinationTime.on();
-        presentTime.on();
+        allShowText(t1, t2, t3, 1+2);
         for(int i = 0; i < 14; i++) {
            mySetupDelay(50, false);
-           destinationTime.showTextDirect(&t1[i]);
-           presentTime.showTextDirect(&t2[i]);
+           allShowText(&t1[i], &t2[i], NULL, 0);
         }
         mySetupDelay(500);
         departedTime.on();
@@ -2018,15 +2009,11 @@ void main_setup()
         }
         mySetupDelay(1500);
         for(int i = 15; i >= 0; i--) {
-            destinationTime.setBrightnessDirect(i);
-            presentTime.setBrightnessDirect(i);
-            departedTime.setBrightnessDirect(i);
+            allBriDirect(i, i, i);
             mySetupDelay(20, false);
         }
         allOff();
-        destinationTime.setBrightness(255);
-        presentTime.setBrightness(255);
-        departedTime.setBrightness(255);
+        allRestoreBri();
 
         waitAudioDoneSetup();
         stopAudio();
@@ -2041,14 +2028,14 @@ void main_setup()
     uint8_t d = loadBootMode();
     if(!(wcf & WCF_HaveRCM)) d &= ~0x01;
     if(!(wcf & WCF_HaveWCM)) d &= ~0x02;
-    #ifdef TC_HAVEGPS
+    #ifdef HAVE_GPS
     if(!haveNavMode())       d &= ~0x04;
     #else
     d &= ~0x04;
     #endif
     if(d & 0x01) enableRcMode(true);
     if(d & 0x02) enableWcMode(true);
-    #ifdef TC_HAVEGPS
+    #ifdef HAVE_GPS
     if(d & 0x04) enableNavMode(true);
     #endif
     if(d & 0x08) enableMiniMode(true);
@@ -2089,7 +2076,7 @@ void main_setup()
     deferredCPNow = millis();
 
     // Read firmware version of GPS receiver module
-    #ifdef TC_HAVEGPS
+    #ifdef HAVE_GPS
     if(sgf & SGF_UGPS) {
         myGPS.requestVersion();
     }
@@ -2125,10 +2112,8 @@ void main_loop()
                     csf &= ~CSF_OFF;
                     if(beepMode >= 2)      startBeepTimer();
                     else if(beepMode == 1) muteBeep = false;
-                    destinationTime.setBrightness(255); // restore brightnesses
-                    presentTime.setBrightness(255);     // in case we got switched
-                    departedTime.setBrightness(255);    // off during time travel
-                    #ifdef TC_HAVE_RE
+                    allRestoreBri();  // restore brightnesses in case we got switched off during time travel
+                    #ifdef HAVE_RE
                     if(sgf & SGF_URotEnc) {
                         re_init();
                         re_lockTemp();
@@ -2139,9 +2124,8 @@ void main_loop()
                     if((sgf & SGF_USpeedoDisp) && (!(sgf & SGF_DispGPSSpd)) && (!(csf & CSF_RSM))) {
                         if(sgf & (SGF_SpAlwsOn|SGF_DispRotEnc)) {
                             speedo.setSpeed(0);
-                            speedo.setBrightness(255);
                             speedo.show();
-                            #ifdef TC_HAVE_RE
+                            #ifdef HAVE_RE
                             speedoStatus = (sgf & SGF_DispRotEnc) ? SPST_RE : SPST_ZERO;
                             #else
                             speedoStatus = SPST_ZERO;
@@ -2149,7 +2133,7 @@ void main_loop()
                         }
                     }
                     
-                    #ifdef TC_HAVETEMP
+                    #ifdef HAVE_TEMP
                     updateTemperature(true);
                     dispTemperature(true);
                     #endif
@@ -2164,7 +2148,7 @@ void main_loop()
                     triggerETTO = false;
                     ettoPulseEnd();
                     send_abort_msg();
-                    #ifdef TC_HAVE_REMOTE
+                    #ifdef HAVE_REMOTE
                     if((csf & CSF_P0) && (csf & CSF_RSM)) {
                         // Need to fake if P0 was running
                         // (See comment when cancelling P0)
@@ -2173,7 +2157,7 @@ void main_loop()
                     #endif
                     timeTravelP1 = 0;
                     timeTravelP0stalled = 0;
-                    #ifdef TC_HAVE_REMOTE
+                    #ifdef HAVE_REMOTE
                     remoteInducedTT = false;
                     #endif
                     csf &= ~(CSF_ST|CSF_P0|CSF_P1|CSF_RE|CSF_P2);
@@ -2223,12 +2207,12 @@ void main_loop()
             animate(true);
             csf &= ~CSF_ST;
             if((sgf & SGF_USpeedoDisp) && (!(sgf & SGF_DispGPSSpd)) && (!(csf & CSF_RSM))) {
-                #ifdef TC_HAVE_RE
+                #ifdef HAVE_RE
                 if(sgf & SGF_DispRotEnc) {
                     speedo.on();
                 } else {
                 #endif
-                    #ifdef TC_HAVETEMP
+                    #ifdef HAVE_TEMP
                     updateTemperature(true);
                     if(sgf & SGF_DispTemp) {
                         dispTemperature(true);
@@ -2239,10 +2223,10 @@ void main_loop()
                         } else {
                             speedo.off(); // Yes, off.
                         }
-                    #ifdef TC_HAVETEMP
+                    #ifdef HAVE_TEMP
                     }
                     #endif
-                #ifdef TC_HAVE_RE
+                #ifdef HAVE_RE
                 }
                 #endif    
             }
@@ -2344,21 +2328,21 @@ void main_loop()
     
             // Overwrite fakeSpeed/bttfnRemCurSpd for BTTFN clients who keep polling
             // until P1-ETTO_LEAD
-            #ifdef TC_HAVE_RE
+            #ifdef HAVE_RE
             if(sgf & SGF_URotEnc) {
                 // Need to keep -1, otherwise we can't detect if enc was off
                 // ahead of the tt, see also P2
                 fakeSpeed = rotEnc.IsOff() ? -1 : timeTravelP0Speed;
             }
             #endif
-            #ifdef TC_HAVE_REMOTE
+            #ifdef HAVE_REMOTE
             // Update for BTTFN clients
             bttfnRemCurSpd = timeTravelP0Speed;
             #endif
     
             // P0 is cancelled if brake is hit on the Remote
             // but not if P1 has already started
-            #ifdef TC_HAVE_REMOTE
+            #ifdef HAVE_REMOTE
             if((csf & CSF_RSM) && (csf & CSF_P0) && bttfnRemStop) {
                 if(timeTravelP1 <= 0) {
                     if(!triggerETTO) {
@@ -2397,17 +2381,21 @@ void main_loop()
 
             bool countToGPSSpeed = false;
             int  targetSpeed = 0;
-            #ifdef TC_HAVE_REMOTE
+            #ifdef HAVE_REMOTE
             if(csf & CSF_RSM) {
                 countToGPSSpeed = true;
                 targetSpeed = bttfnRemStop ? 0 : bttfnRemoteSpeed;
             } else
             #endif
             {
-                #ifdef TC_HAVEGPS
-                int tgpsSpd = myGPS.getSpeed();
-                countToGPSSpeed = ((sgf & SGF_DispGPSSpd) && (tgpsSpd >= 0));
-                targetSpeed = countToGPSSpeed ? tgpsSpd : 0;
+                #ifdef HAVE_GPS
+                if(sgf & SGF_DispGPSSpd) {
+                    int tgpsSpd = myGPS.getSpeed();
+                    if(tgpsSpd >= 0) {
+                        countToGPSSpeed = true;
+                        targetSpeed = tgpsSpd;
+                    }
+                }
                 #endif
             }
             if((timeTravelP0Speed <= targetSpeed) || (targetSpeed >= 88)) {
@@ -2420,7 +2408,7 @@ void main_loop()
                     GPSabove88 = true;
                 }
                 #endif
-                #ifdef TC_HAVE_RE
+                #ifdef HAVE_RE
                 if(sgf & SGF_URotEnc) {
                     // We MUST reset the encoder; user might have moved
                     // it while we blocked updates during P0-P2.
@@ -2445,14 +2433,14 @@ void main_loop()
                         speedo.off();
                     }
                 }
-                #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE)
+                #if defined(HAVE_GPS) || defined(HAVE_RE)
                 displayGPSorRESpeed(true);
                 #endif
-                #ifdef TC_HAVETEMP
+                #ifdef HAVE_TEMP
                 updateTemperature(true);
                 dispTemperature(true);
                 #endif
-                #ifdef TC_HAVE_REMOTE
+                #ifdef HAVE_REMOTE
                 updAndDispRemoteSpeed();
                 #endif    
             } else {
@@ -2460,21 +2448,21 @@ void main_loop()
                 timeTravelP0Speed--;
                 speedo.setSpeed(timeTravelP0Speed);
                 speedo.show();
-                #ifdef TC_HAVE_REMOTE
+                #ifdef HAVE_REMOTE
                 // Overwrite for BTTFN clients, and in case Remote kicked in during TT
                 // in which case the saved displayed speed would be outdated at the end of P2
                 // and updAndDispRemoteSpeed() would start count down from the outdated
                 // speed again.
                 bttfnRemCurSpd = timeTravelP0Speed; 
                 #endif
-                #ifdef TC_HAVE_RE
+                #ifdef HAVE_RE
                 if(sgf & SGF_URotEnc) {
                     // Need to keep -1, otherwise we can't detect if enc was off
                     // ahead of the tt, see end of P2
                     fakeSpeed = rotEnc.IsOff() ? -1 : timeTravelP0Speed;
                 }
                 #endif
-                #if defined(TC_HAVEGPS) || defined(TC_HAVE_REMOTE)
+                #if defined(HAVE_GPS) || defined(HAVE_REMOTE)
                 if(countToGPSSpeed) {
                     if(targetSpeed == timeTravelP0Speed) {
                         timetravelP0Delay = 0;
@@ -2486,7 +2474,7 @@ void main_loop()
                 } else {
                 #endif
                     timetravelP0Delay = ((timeTravelP0Speed == 0) && (!(sgf & SGF_DispRotEnc))) ? 4000 : 40;
-                #if defined(TC_HAVEGPS) || defined(TC_HAVE_REMOTE)
+                #if defined(HAVE_GPS) || defined(HAVE_REMOTE)
                 }
                 #endif
             }
@@ -2520,9 +2508,7 @@ void main_loop()
         default:
             timeTravelP1 = 0;
             csf &= ~CSF_P1;
-            destinationTime.setBrightness(255); // restore
-            presentTime.setBrightness(255);
-            departedTime.setBrightness(255);
+            allRestoreBri();  // restore
             timeTravel(false, true);
         }
     }
@@ -2598,7 +2584,7 @@ void main_loop()
 
         // Post sec-change slot:
 
-        #ifdef TC_HAVELIGHT
+        #ifdef HAVE_LIGHT
         bool switchNMoff = false;
         #endif
       
@@ -2713,7 +2699,7 @@ void main_loop()
                         if(sigFlags & SF_AQ) {
                             alarmPlaying = ap;
                             origAlarmStart = millisNonZero();
-                            sendNetWorkMsg("ALARM\0", 6, BTTFN_NOT_ALARM);
+                            sendAlarmNetWorkMsg();
                             if(ETTOalarm) {
                                 setTTOUTpin(HIGH);
                                 ETTOAlmNow = millisNonZero();
@@ -2758,7 +2744,7 @@ void main_loop()
                         nightModeOn();
                         timedNightMode = 1;
                     } else {
-                        #ifdef TC_HAVELIGHT
+                        #ifdef HAVE_LIGHT
                         switchNMoff = true;
                         #else
                         nightModeOff();
@@ -2772,7 +2758,7 @@ void main_loop()
             }
             forceReEvalANM = false;
         }
-        #ifdef TC_HAVELIGHT
+        #ifdef HAVE_LIGHT
         // Light sensor overrules scheduled NM only in non-NightMode periods
         if((sgf & SGF_ULightSens) && (manualNightMode < 0) && (timedNightMode < 1)) {
             int32_t myLux = lightSens.readLux();
@@ -2797,7 +2783,7 @@ void main_loop()
 
     }
 
-    #ifdef TC_HAVE_REMOTE
+    #ifdef HAVE_REMOTE
     updAndDispRemoteSpeed();  // 1ms
     #endif
 
@@ -2845,7 +2831,7 @@ void main_loop()
         }
 
         // Handle Remote
-        #ifdef TC_HAVE_REMOTE
+        #ifdef HAVE_REMOTE
         /*
         if(!!(csf & CSF_RSM) != bttfnOldRemoteSpeedMaster) {
             bttfnOldRemoteSpeedMaster = !!(csf & CSF_RSM);
@@ -2879,7 +2865,7 @@ void main_loop()
         #endif
 
         // Handle RotEnc
-        #ifdef TC_HAVE_RE   // Not CSF_RE here; RotEnc is reset at start of RE (if no P2)
+        #ifdef HAVE_RE   // Not CSF_RE here; RotEnc is reset at start of RE (if no P2)
         if((sgf & SGF_URotEnc) && (!(csf & (CSF_OFF|CSF_ST|CSF_P0|CSF_P1|CSF_P2)))) {
             fakeSpeed = rotEnc.updateFakeSpeed();
             if(fakeSpeed != oldFSpd) {
@@ -2909,7 +2895,7 @@ void main_loop()
         millisNow = millis();
         
         // Read GPS, and display GPS speed
-        #ifdef TC_HAVEGPS
+        #ifdef HAVE_GPS
         if(sgf & SGF_UGPS) {
             if(millis64() >= lastLoopGPS) {
                 lastLoopGPS += (uint64_t)GPSupdateFreq;
@@ -2928,7 +2914,7 @@ void main_loop()
                     }
                     #endif
                 }
-            #ifdef TC_HAVE_REMOTE
+            #ifdef HAVE_REMOTE
             } else if(remoteWasMaster) {
                 displayGPSorRESpeed(true);
             #endif
@@ -2941,7 +2927,7 @@ void main_loop()
         // Can only reduce when GPS is not used, WiFi is off and no sound playing
         if((!(csf & CSF_PWRLOW)) &&
            (wifiIsOff || wifiAPIsOff) && 
-           #ifdef TC_HAVEGPS
+           #ifdef HAVE_GPS
            (!(sgf & SGF_UGPS)) &&
            #endif
            checkAudioDone() && 
@@ -2955,14 +2941,14 @@ void main_loop()
         }
 
         // Beep auto modes
-        if(beepTimer && (millisNow - beepTimerNow > beepTimeout)) {
+        if(beepTimer && (millisNow - beepTimer > beepTimeout)) {
+            beepTimer = 0;
             muteBeep = true;
-            beepTimer = false;
         }
 
         // Update sensors
 
-        #ifdef TC_HAVETEMP
+        #ifdef HAVE_TEMP
         updateTemperature();
         didUpdSpeedo = dispTemperature();
         #endif
@@ -2972,7 +2958,7 @@ void main_loop()
             dispIdleZero();
         }
         
-        #ifdef TC_HAVELIGHT
+        #ifdef HAVE_LIGHT
         if((sgf & SGF_ULightSens) && (millisNow - lastLoopLight >= 3000)) {
             lastLoopLight = millisNow;
             lightSens.loop();
@@ -3027,13 +3013,11 @@ void main_loop()
             // Expire syncTrigger to allow PS any time later
             // if syncing keeps failing. (7 mins to be well
             // below minimum PS timeout)
-            if(syncTrigger) {
-                if((millis() - syncTriggerNow) > 7*60*1000) {
-                    syncTrigger = false;
-                }
+            if(syncTrigger && (millis() - syncTrigger > 7*60*1000)) {
+                syncTrigger = 0;
             }
 
-            #ifdef TC_HAVEGPS
+            #ifdef HAVE_GPS
             bool GPShasTime = gpsHaveTime();
             #else
             bool GPShasTime = false;
@@ -3109,7 +3093,7 @@ void main_loop()
             
             #ifdef TC_DBG_TIME
             if(gdtu.second() == 35) {
-                Serial.printf("%s%d %d %d %d %d\n", funcName, couldHaveAuthTime, itsTime, doWiFi, haveAuthTime, syncTrigger);
+                Serial.printf("%s%d %d %d %d %d\n", funcName, couldHaveAuthTime, itsTime, doWiFi, haveAuthTime, syncTrigger ? 1 : 0);
             }
             #endif
             
@@ -3131,7 +3115,7 @@ void main_loop()
 
                         autoReadjust = true;
                         resyncInt = 5;
-                        syncTrigger = false;
+                        syncTrigger = 0;
 
                         haveAuthTime = true;
                         lastAuthTime = millis();
@@ -3328,14 +3312,14 @@ void main_loop()
                (minNext % autoTimeIntervals[autoInterval] == 0)         &&
                (!autoPaused)                                            &&
                (!isMiniMode())                                          &&
-               #ifdef TC_HAVEGPS
+               #ifdef HAVE_GPS
                (!isNavMode())                                           &&
                #endif
-               #ifdef TC_HAVETEMP
+               #ifdef HAVE_TEMP
                (!isRcMode() || (!isWcMode() && !(sgf & SGF_HaveHum)))   &&        // Skip in rcMode if (temp&hum available || wcMode)
                #endif
                (!isWcMode() || ((wcf & WCFM_HaveBothTZ) != WCFM_HaveBothTZ)) &&   // Skip in wcMode if both TZs configured
-               #ifdef TC_HAVEMQTT
+               #ifdef HAVE_MQTT
                (!mqttDisp)                                              &&        // Skip at msg for any display, since we allOff() them
                #endif
                (!specDisp)) {  
@@ -3473,7 +3457,7 @@ void main_loop()
 
         } else if(!(csf & (CSF_ST|CSF_RE|CSF_OFF))) {
 
-            #ifdef TC_HAVEMQTT
+            #ifdef HAVE_MQTT
             if(mqttDisp) {
                 displayMQTTmessage(MQ_DISP_D, 0, &destinationTime);
                 displayMQTTmessage(MQ_DISP_P, 1, &presentTime);
@@ -3481,7 +3465,7 @@ void main_loop()
             }
             #endif
 
-            #ifdef TC_HAVEGPS
+            #ifdef HAVE_GPS
             if(isNavMode()) {
                 char destDisp[16];
                 char depDisp[16];
@@ -3494,7 +3478,7 @@ void main_loop()
                 }
             } else {
             #endif
-                #ifdef TC_HAVETEMP
+                #ifdef HAVE_TEMP
                 if(isRcMode()) {
                     if(!specDisp && !(mqttDisp & MQ_DISP_D)) {
                         if(!showRCDest(false)) destShowAlt ? destinationTime.showAlt() : destinationTime.show();
@@ -3512,10 +3496,10 @@ void main_loop()
                         if(isMiniMode()) departedTime.clearDisplay();
                         else depShowAlt ? departedTime.showAlt() : departedTime.show();
                     }
-                #ifdef TC_HAVETEMP
+                #ifdef HAVE_TEMP
                 }
                 #endif
-            #ifdef TC_HAVEGPS
+            #ifdef HAVE_GPS
             }
             #endif
 
@@ -3534,7 +3518,7 @@ void main_loop()
     } 
 }
 
-#ifdef TC_HAVEMQTT
+#ifdef HAVE_MQTT
 static void displayMQTTmessage(uint32_t dmask, int idx, tcdDisplay *targetdisplay)
 {
     if(mqttDisp & dmask) {
@@ -3609,7 +3593,7 @@ int timeTravelProbe(bool doComplete, bool& withSpeedo, bool forceNoLead)
     } else {
         // If no speedo display and no remote -> withSpeedo = off
         if((!(sgf & SGF_USpeedoDisp))
-                             #ifdef TC_HAVE_REMOTE
+                             #ifdef HAVE_REMOTE
                              && ((!(csf & CSF_HAVEREM)) || ((!(csf & CSF_RSM)) && !bttfnRemOffSpd))
                              #endif
                                                                                                   ) {
@@ -3618,7 +3602,7 @@ int timeTravelProbe(bool doComplete, bool& withSpeedo, bool forceNoLead)
     }
 
     // Don't start if Remote is Master and brake is on
-    #ifdef TC_HAVE_REMOTE
+    #ifdef HAVE_REMOTE
     if(doComplete && withSpeedo && (csf & CSF_RSM)) {
         if(bttfnRemStop) {
             return 1;
@@ -3661,7 +3645,7 @@ int timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
         if(wcf & WCF_HaveTZ1) backupDestTime();
         enableWcMode(false);
     }
-    #ifdef TC_HAVEGPS
+    #ifdef HAVE_GPS
     enableNavMode(false);
     #endif
     enableMiniMode(false);
@@ -3691,7 +3675,7 @@ int timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
         bool doLeadLessP1 = doPreTTSound;
         long myPointOfP1  = doPreTTSound ? pointOfP1NoLead : pointOfP1;
 
-        #ifdef TC_HAVE_REMOTE
+        #ifdef HAVE_REMOTE
         remoteInducedTT = false;
         #endif
 
@@ -3703,18 +3687,18 @@ int timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
         ettoLeadPoint = origEttoLeadPoint;
         bttfnTTLeadTime = ettoLeadTime;
         
-        #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE) || defined(TC_HAVE_REMOTE)
+        #if defined(HAVE_GPS) || defined(HAVE_RE) || defined(HAVE_REMOTE)
         if((sgf & (SGF_DispGPSSpd|SGF_DispRotEnc)) || (csf & CSF_RSM)) {
-            #if defined(TC_HAVEGPS) && defined(TC_HAVE_RE)
+            #if defined(HAVE_GPS) && defined(HAVE_RE)
             int tempSpeed = (sgf & SGF_DispGPSSpd) ? myGPS.getSpeed() : fakeSpeed;
-            #elif defined(TC_HAVEGPS)
+            #elif defined(HAVE_GPS)
             int tempSpeed = myGPS.getSpeed();
-            #elif defined(TC_HAVE_RE)
+            #elif defined(HAVE_RE)
             int tempSpeed = fakeSpeed;
             #else
             int tempSpeed = 0;
             #endif
-            #ifdef TC_HAVE_REMOTE
+            #ifdef HAVE_REMOTE
             if(csf & CSF_RSM) {
                 tempSpeed = bttfnRemCurSpd;
             }
@@ -3835,7 +3819,7 @@ int timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
                 // If there is time between NOW and ETTO_LEAD start, send
                 // PREPARE message to networked clients.
                 if(triggerETTOLeadTime > 500) {
-                    sendNetWorkMsg("PREPARE\0", 8, BTTFN_NOT_PREPARE);
+                    sendNetWorkMsg("PREPARE", BTTFN_NOT_PREPARE);
                 }
                 
                 ttUnivNow = millis();
@@ -3854,7 +3838,6 @@ int timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
             triggerP1NoLead = doLeadLessP1;
 
             speedo.setSpeed(timeTravelP0Speed);
-            speedo.setBrightness(255);
             speedo.show();
             speedo.on();
             timetravelP0Now = ttP0Now = ttUnivNow;
@@ -3863,7 +3846,7 @@ int timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
 
             timeTravelP0stalled = (timetravelP0Delay > 0) ? 1 : 0;
 
-            #ifdef TC_HAVE_REMOTE
+            #ifdef HAVE_REMOTE
             // Set for polling BTTFN clients
             bttfnRemCurSpd = timeTravelP0Speed;
             #endif
@@ -3895,7 +3878,7 @@ int timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
      */
     if(doComplete) {
 
-        #ifdef TC_HAVE_REMOTE
+        #ifdef HAVE_REMOTE
         // Clear it here, will be set after timetravel() in caller
         remoteInducedTT = false;
         #endif
@@ -3932,7 +3915,7 @@ int timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
                 triggerETTOLeadTime = P1_88 - ettoLeadT;
 
                 if(triggerETTOLeadTime > 500) {
-                    sendNetWorkMsg("PREPARE\0", 8, BTTFN_NOT_PREPARE);
+                    sendNetWorkMsg("PREPARE", BTTFN_NOT_PREPARE);
                 }
             }
 
@@ -4025,7 +4008,7 @@ int timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
 
     // For external props: Signal Re-Entry
     if(pubMQTT || bttfnHaveClients) {
-        sendNetWorkMsg("REENTRY\0", 8, BTTFN_NOT_REENTRY);
+        sendNetWorkMsg("REENTRY", BTTFN_NOT_REENTRY);
     }
     ettoPulseEnd();
 
@@ -4038,7 +4021,7 @@ int timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
     // This is not the case if the Remote triggered the TT by hitting
     // 88mph.
     
-    #ifdef TC_HAVE_REMOTE
+    #ifdef HAVE_REMOTE
     // If TT triggered by remote now gone, we do P2
     if((!(csf & CSF_RSM)) && remoteInducedTT) {
         if(withSpeedo) timeTravelP0Speed = 88;
@@ -4050,7 +4033,7 @@ int timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
         timetravelP0Delay = 2000;   // Delay count-down by 2 seconds
     }
 
-    #ifdef TC_HAVE_REMOTE
+    #ifdef HAVE_REMOTE
     remoteInducedTT = false;
     #endif
 
@@ -4058,7 +4041,7 @@ int timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
     // we reset the RotEnc here (it could have been
     // moved during P1 while we didn't poll).
     // This is otherwise done at the end of P2.
-    #ifdef TC_HAVE_RE
+    #ifdef HAVE_RE
     if((!(csf & CSF_P2)) && (sgf & SGF_URotEnc)) {
         if(rotEnc.IsOff()) {
             re_init(false);
@@ -4073,7 +4056,7 @@ int timeTravel(bool doComplete, bool withSpeedo, bool forceNoLead)
     // If there is no P2, we sync to the remote here.
     // This is otherwise done at the end of P2.
     /* No, see comment in updAndDispRemoteSpeed().
-    #ifdef TC_HAVE_REMOTE
+    #ifdef HAVE_REMOTE
     if(!(csf & CSF_P2)) {
         updAndDispRemoteSpeed();
     }
@@ -4097,7 +4080,7 @@ static void triggerLongTT(bool noLead)
     csf &= ~CSF_P2;
 }
 
-#if (defined(TC_HAVEGPS) && defined(NOT_MY_RESPONSIBILITY)) || defined(TC_HAVE_RE) || defined(TC_HAVE_REMOTE)
+#if (defined(HAVE_GPS) && defined(NOT_MY_RESPONSIBILITY)) || defined(HAVE_RE) || defined(HAVE_REMOTE)
 static void checkForSpeedTT(bool doP2, bool isRemote)
 {
     if(!GPSabove88) {
@@ -4108,7 +4091,7 @@ static void checkForSpeedTT(bool doP2, bool isRemote)
             // to set this to trigger P2 at end of TT.
             // This is not set if the Remote is the source.
             if(doP2) timeTravelP0Speed = 88;
-            #ifdef TC_HAVE_REMOTE
+            #ifdef HAVE_REMOTE
             remoteInducedTT = isRemote;
             #endif
         }
@@ -4173,7 +4156,7 @@ void send_refill_msg()
 void send_wakeup_msg()
 {
     if(pubMQTT || bttfnHaveClients) {
-        sendNetWorkMsg("WAKEUP\0", 7, BTTFN_NOT_WAKEUP);
+        sendNetWorkMsg("WAKEUP", BTTFN_NOT_WAKEUP);
     }
 }
                    
@@ -4181,7 +4164,7 @@ void send_abort_msg()
 {
     if(pubMQTT || bttfnHaveClients) {
         if((timeTravelP1 > 0) || (csf & (CSF_P0|CSF_RE|CSF_P2))) {
-            sendNetWorkMsg("ABORT_TT\0", 9, BTTFN_NOT_ABORT_TT);
+            sendNetWorkMsg("ABORT_TT", BTTFN_NOT_ABORT_TT);
             #ifdef TC_DBG_TT
             Serial.println("Sending ABORT");
             #endif
@@ -4194,7 +4177,7 @@ static void sendTTNetWorkMsg(uint16_t bttfnPayload, uint16_t bttfnPayload2)
     #ifdef TC_DBG_NET
     Serial.printf("sendTTNetWorkMsg: %d %d\n", bttfnPayload, bttfnPayload2);
     #endif
-    #ifdef TC_HAVEMQTT
+    #ifdef HAVE_MQTT
     if(pubMQTT) {
         char pl[32] = "TIMETRAVEL\0\0";
         if(MQTTvarLead) {
@@ -4204,7 +4187,7 @@ static void sendTTNetWorkMsg(uint16_t bttfnPayload, uint16_t bttfnPayload2)
             d = i2a(d, bttfnPayload2);
             *d = 0;
         }
-        mqttPublish("bttf/tcd/pub", pl, strlen(pl)+1);
+        mqttPublish("bttf/tcd/pub", pl, strlen(pl) + 1);
         return;
     }
     #endif
@@ -4218,16 +4201,27 @@ static void sendTTNetWorkMsg(uint16_t bttfnPayload, uint16_t bttfnPayload2)
 // Otherwise, send via BTTFN.
 // Props can rely on getting only ONE notification message if they listen
 // to both MQTT and BTTFN.
-static void sendNetWorkMsg(const char *pl, unsigned int len, uint8_t bttfnMsg, uint16_t bttfnPayload, uint16_t bttfnPayload2)
+static void sendNetWorkMsg(const char *pl, uint8_t bttfnMsg, uint16_t bttfnPayload, uint16_t bttfnPayload2)
 {
-    #ifdef TC_HAVEMQTT
+    #ifdef HAVE_MQTT
     if(pubMQTT) {
-        mqttPublish("bttf/tcd/pub", pl, len);
+        mqttPublish("bttf/tcd/pub", pl, strlen(pl) + 1);
         return;
     }
     #endif
     uint16_t parms[3] = { bttfnPayload, bttfnPayload2, 0 };
     bttfn_notify(BTTFN_TYPE_ANY, bttfnMsg, parms);
+}
+
+static void sendAlarmNetWorkMsg()
+{
+    #ifdef HAVE_MQTT
+    if(pubMQTTAl) {
+        mqttPublish("bttf/tcd/pub", "ALARM", 6);
+        return;
+    }
+    #endif
+    bttfn_notify(BTTFN_TYPE_ANY, BTTFN_NOT_ALARM);
 }
 
 void bttfnSendPropCmd(int kt, uint32_t p)
@@ -4277,7 +4271,7 @@ void resetPresentTime()
         if(wcf & WCF_HaveTZ1) backupDestTime();
         enableWcMode(false);
     }
-    #ifdef TC_HAVEGPS
+    #ifdef HAVE_GPS
     enableNavMode(false);
     #endif
     enableMiniMode(false);
@@ -4504,6 +4498,8 @@ void get_time_segs(int pbt, int whichone, int16_t *sL, int gh, int gm)
             }
         } else if(pbcnt == 3) sL[si++] = 720;
         else if(pbcnt == 4)   sL[si++] = 721;
+    } else if(pbt < 0) {
+        sL[si++] = 736;
     }
 
     if(s < 0) {
@@ -4545,11 +4541,11 @@ void endPauseAuto(void)
 /*
  * Callbacks for fake power switch
  */
-#if defined(TC_HAVEMQTT)
+#if defined(HAVE_MQTT)
 void mqttFakePowerControl(bool isPwrMaster)
 {
     if((!!(csf & CSF_MQTTPM)) != isPwrMaster) {
-        #ifdef TC_HAVE_REMOTE
+        #ifdef HAVE_REMOTE
         if(!(csf & CSF_RPM)) {
         #endif
             if(!isPwrMaster) {
@@ -4564,7 +4560,7 @@ void mqttFakePowerControl(bool isPwrMaster)
                 isFPBKeyPressed = shadowMQTTFPBKeyPressed;
                 isFPBKeyChange = true;
             }
-        #ifdef TC_HAVE_REMOTE
+        #ifdef HAVE_REMOTE
         }
         #endif
         if(isPwrMaster) csf |= CSF_MQTTPM;
@@ -4575,7 +4571,7 @@ void mqttFakePowerControl(bool isPwrMaster)
 void mqttFakePowerOn()
 {
     shadowMQTTFPBKeyPressed = true;
-    #ifdef TC_HAVE_REMOTE
+    #ifdef HAVE_REMOTE
     if(csf & CSF_RPM) return;
     #endif
     if(!(csf & CSF_MQTTPM)) return;
@@ -4586,24 +4582,24 @@ void mqttFakePowerOn()
 void mqttFakePowerOff()
 {
     shadowMQTTFPBKeyPressed = false;
-    #ifdef TC_HAVE_REMOTE
+    #ifdef HAVE_REMOTE
     if(csf & CSF_RPM) return;
     #endif
     if(!(csf & CSF_MQTTPM)) return;
     isFPBKeyPressed = false;
     isFPBKeyChange = true;
 }
-#endif // TC_HAVEMQTT
+#endif // HAVE_MQTT
 
 void fpbKeyPressed()
 {
-    #if defined(TC_HAVE_REMOTE) || defined(TC_HAVEMQTT)
+    #if defined(HAVE_REMOTE) || defined(HAVE_MQTT)
     shadowFPBKeyPressed = true;
     #endif
-    #ifdef TC_HAVE_REMOTE
+    #ifdef HAVE_REMOTE
     if(csf & CSF_RPM) return;
     #endif
-    #ifdef TC_HAVEMQTT
+    #ifdef HAVE_MQTT
     if(csf & CSF_MQTTPM) return;
     #endif
     isFPBKeyPressed = true;
@@ -4612,13 +4608,13 @@ void fpbKeyPressed()
 
 void fpbKeyLongPressStop()
 {
-    #if defined(TC_HAVE_REMOTE) || defined(TC_HAVEMQTT)
+    #if defined(HAVE_REMOTE) || defined(HAVE_MQTT)
     shadowFPBKeyPressed = false;
     #endif
-    #ifdef TC_HAVE_REMOTE
+    #ifdef HAVE_REMOTE
     if(csf & CSF_RPM) return;
     #endif
-    #ifdef TC_HAVEMQTT
+    #ifdef HAVE_MQTT
     if(csf & CSF_MQTTPM) return;
     #endif
     isFPBKeyPressed = false;
@@ -4639,7 +4635,7 @@ static void mySetupDelay(unsigned int mydel, bool heavy)
     while(millis() - startNow < mydel) {
         audio_loop();
         ntp_short_loop();
-        #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE) || defined(TC_HAVE_REMOTE)
+        #if defined(HAVE_GPS) || defined(HAVE_RE) || defined(HAVE_REMOTE)
         speedoUpdate_loop(true);
         #endif
         if(heavy) {
@@ -4669,7 +4665,7 @@ static void waitAudioDoneSetup()
         ntp_short_loop();
         bttfn_loop(BNLP_SK_EXPIRE);
         audio_loop();
-        #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE) || defined(TC_HAVE_REMOTE)
+        #if defined(HAVE_GPS) || defined(HAVE_RE) || defined(HAVE_REMOTE)
         speedoUpdate_loop(true);
         audio_loop();
         #endif
@@ -4712,7 +4708,7 @@ static void myCustomDelay_GPS(unsigned long mydel)
 // Internal delay for keypad scanning (called twice with mydel=5)
 void myCustomDelay_KP(int iter, unsigned long mydel)
 {
-    #ifdef TC_HAVE_REMOTE
+    #ifdef HAVE_REMOTE
     if(!iter && (csf & CSF_RSM)) {
         unsigned long now = millis();
         bttfn_loop(BNLP_SK_MC|BNLP_SK_NOTDATA|BNLP_SK_EXPIRE);
@@ -4751,7 +4747,7 @@ void mydelay(unsigned long mydel)
         ntp_short_loop();
         bttfn_loop(BNLP_SK_MC|BNLP_SK_NOTDATA|BNLP_SK_EXPIRE);
         audio_loop();
-        #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE) || defined(TC_HAVE_REMOTE)
+        #if defined(HAVE_GPS) || defined(HAVE_RE) || defined(HAVE_REMOTE)
         speedoUpdate_loop(false);  // GPS part: 6-12ms without delay, 8-13ms with delay
         audio_loop_quick();
         #endif
@@ -4876,7 +4872,7 @@ void enableWcMode(bool onOff)
 {
     if(wcf & WCF_HaveWCM) {
         if((wcMode = onOff)) {
-            #ifdef TC_HAVEGPS
+            #ifdef HAVE_GPS
             enableNavMode(false);
             #endif
             enableMiniMode(false);
@@ -4927,7 +4923,7 @@ void setDatesTimesWC(DateTime& dtu)
 void enableMiniMode(bool onOff)
 {
     if((miniMode = onOff)) {
-        #ifdef TC_HAVEGPS
+        #ifdef HAVE_GPS
         enableNavMode(false);
         #endif
         enableRcMode(false);
@@ -4955,10 +4951,10 @@ bool isMiniMode()
 
 void enableRcMode(bool onOff)
 {
-    #ifdef TC_HAVETEMP
+    #ifdef HAVE_TEMP
     if(wcf & WCF_HaveRCM) {
         if((rcMode = onOff)) {
-            #ifdef TC_HAVEGPS
+            #ifdef HAVE_GPS
             enableNavMode(false);
             #endif
             enableMiniMode(false);
@@ -4971,7 +4967,7 @@ void enableRcMode(bool onOff)
 
 bool toggleRcMode()
 {
-    #ifdef TC_HAVETEMP
+    #ifdef HAVE_TEMP
     enableRcMode(!rcMode);
     return rcMode;
     #else
@@ -4981,7 +4977,7 @@ bool toggleRcMode()
 
 bool isRcMode()
 {
-    #ifdef TC_HAVETEMP
+    #ifdef HAVE_TEMP
     return rcMode;
     #else
     return false;
@@ -4991,7 +4987,7 @@ bool isRcMode()
 /*
  * Temperature / GPS speed display
  */
-#ifdef TC_HAVETEMP
+#ifdef HAVE_TEMP
 static void updateTemperature(bool force)
 {
     unsigned long tui = tempUpdInt;
@@ -5016,7 +5012,7 @@ char tempUnitChar()
 }
 #endif
 
-#if defined(TC_HAVEGPS) || defined(TC_HAVE_RE)
+#if defined(HAVE_GPS) || defined(HAVE_RE)
 static bool displayGPSorRESpeed(bool force)
 {
     bool ret = false;
@@ -5029,7 +5025,7 @@ static bool displayGPSorRESpeed(bool force)
     if(csf & (CSF_P0|CSF_P1|CSF_RE|CSF_P2))
         return ret;
 
-    #ifdef TC_HAVE_RE
+    #ifdef HAVE_RE
     if((sgf & SGF_DispRotEnc) && (csf & (CSF_OFF|CSF_ST)))
         return ret;
     #endif
@@ -5037,9 +5033,9 @@ static bool displayGPSorRESpeed(bool force)
     unsigned long now = millis();
 
     if(sgf & SGF_DispGPSSpd) {
-        #ifdef TC_HAVEGPS
+        #ifdef HAVE_GPS
         int gpsSpeed = myGPS.getSpeed();
-        #ifdef TC_HAVE_REMOTE
+        #ifdef HAVE_REMOTE
         if(remoteWasMaster) {
             int speedoSpeed = speedo.getSpeed();
             if(gpsSpeed < 0 || speedoSpeed < 0 || speedoSpeed == gpsSpeed) {
@@ -5077,33 +5073,30 @@ static bool displayGPSorRESpeed(bool force)
                 speedoStatus = SPST_GPS;
                 ret = true;
             }
-        #ifdef TC_HAVE_REMOTE
+        #ifdef HAVE_REMOTE
         }
         #endif
         #endif
     } else if(sgf & SGF_DispRotEnc) {
-        #ifdef TC_HAVE_RE
+        #ifdef HAVE_RE
         spdreNM = !!(csf & CSF_NM);
         spdreChgNM = (spdreNM != spdreOldNM);
         spdreOldNM = spdreNM;
-        if((spdreChgNM && speedoStatus == SPST_RE) || force || (fakeSpeed != oldFakeSpeed)) {
-            if((sgf & SGF_DispTemp) || fakeSpeed >= 0) {
-                speedo.setSpeed(fakeSpeed);
-                if(speedoStatus == SPST_TEMP) {
-                    speedo.setBrightness(255);
-                }
+        if((fakeSpeed != oldFakeSpeed) || force || (spdreChgNM && speedoStatus == SPST_RE)) {
+            if(fakeSpeed >= 0 || (sgf & SGF_DispTemp)) {
+                speedo.setSpeed((fakeSpeed >= 0) ? fakeSpeed : 0);
                 speedo.show();
                 speedo.on();
             } else {
                 speedo.off();
             }
             ret = true;
-            if(force || (fakeSpeed != oldFakeSpeed)) {
+            if((fakeSpeed != oldFakeSpeed) || force) {
                 if(fakeSpeed >= 0) {
                     re_lockTemp();
                 } else {
                     tempLock = false;
-                    #ifdef TC_HAVETEMP
+                    #ifdef HAVE_TEMP
                     tempDispNow = millis() - 2*60*1000;   // Force immediate re-display of temp
                     #endif
                 }
@@ -5118,7 +5111,7 @@ static bool displayGPSorRESpeed(bool force)
 }
 #endif
 
-#ifdef TC_HAVETEMP
+#ifdef HAVE_TEMP
 static bool dispTemperature(bool force)
 {
     bool tempNM = !!(csf & CSF_NM);
@@ -5130,7 +5123,7 @@ static bool dispTemperature(bool force)
     if(csf & (CSF_OFF|CSF_ST|CSF_P0|CSF_P1|CSF_RE|CSF_P2))
         return false;
 
-    #ifdef TC_HAVE_RE
+    #ifdef HAVE_RE
     if((sgf & SGF_DispRotEnc) && tempLock) {
         if(now - tempLockNow < 5 * 60 * 1000) {
             return false;
@@ -5155,9 +5148,6 @@ static bool dispTemperature(bool force)
         } else {
             speedo.setTemperature(tempSens.readLastTemp());
             speedo.show();
-            if(!tempNM) {
-                speedo.setBrightnessDirect(tempBrightness); // after show b/c brightness touched by show
-            }
             speedo.on();
         }
         tempDispNow = now;
@@ -5186,7 +5176,7 @@ static void dispIdleZero(bool force)
     }
 }
 
-#ifdef TC_HAVE_REMOTE
+#ifdef HAVE_REMOTE
 static bool updAndDispRemoteSpeed()
 {
     bool ret = false;
@@ -5265,9 +5255,6 @@ static bool updAndDispRemoteSpeed()
            (csf & CSF_NM) != oldptnmrem) {
             bttfnOldRemCurSpd = bttfnRemCurSpd;
             speedo.setSpeed(bttfnRemCurSpd);
-            if(speedoStatus == SPST_TEMP) {
-                speedo.setBrightness(255);
-            }
             speedo.show();
             speedo.on();
             speedoStatus = SPST_REM;
@@ -5287,7 +5274,7 @@ static bool updAndDispRemoteSpeed()
 }
 #endif
 
-#ifdef TC_HAVE_RE                
+#ifdef HAVE_RE                
 static void re_init(bool zero)
 {                
     if(zero) {
@@ -5360,7 +5347,7 @@ static void triggerSaveDisplayMode()
 
 void animate(bool withLEDs)
 {
-    #ifdef TC_HAVEGPS
+    #ifdef HAVE_GPS
     char destDisp[16];
     char depDisp[16];
     #endif
@@ -5368,43 +5355,43 @@ void animate(bool withLEDs)
     // Fill audio buffer, avoid a pause in the actual animation
     audio_loop();
 
-    #ifndef TC_NO_MONTH_ANIM  // ---------------------
+    #ifndef NO_MONTH_ANIM  // ---------------------
 
     for(bool i : { true, false }) {
-        #ifdef TC_HAVEGPS
+        #ifdef HAVE_GPS
         if(isNavMode()) {
             if(i) gpsMakePos(destDisp, depDisp);
             destinationTime.showNavDirect(destDisp, i);
             departedTime.showNavDirect(depDisp, i);
         } else
         #endif
-        #ifdef TC_HAVETEMP
+        #ifdef HAVE_TEMP
         if(!isRcMode() || !showRCDest(i)) {
         #endif
             if(isMiniMode())
                 destinationTime.clearDisplay();
             else
                 destinationTime.showAnimate(i);
-        #ifdef TC_HAVETEMP
+        #ifdef HAVE_TEMP
         }
         #endif
         
         presentTime.showAnimate(i);
     
-        #ifdef TC_HAVEGPS
+        #ifdef HAVE_GPS
         if(!isNavMode()) {
         #endif
-            #ifdef TC_HAVETEMP
+            #ifdef HAVE_TEMP
             if(!isRcMode() || !showRCDep(i)) {
             #endif
                 if(isMiniMode())
                     departedTime.clearDisplay();
                 else
                     departedTime.showAnimate(i);
-            #ifdef TC_HAVETEMP
+            #ifdef HAVE_TEMP
             }
             #endif
-        #ifdef TC_HAVEGPS
+        #ifdef HAVE_GPS
         }
         #endif
 
@@ -5414,42 +5401,42 @@ void animate(bool withLEDs)
         }
     }
 
-    #else // TC_NO_MONTH_ANIM ---------------------
+    #else // NO_MONTH_ANIM ---------------------
 
-    #ifdef TC_HAVEGPS
+    #ifdef HAVE_GPS
     if(isNavMode()) {
         gpsMakePos(destDisp, depDisp);
         destinationTime.showNavDirect(destDisp, false);
         departedTime.showNavDirect(depDisp, false);
     } else
     #endif
-    #ifdef TC_HAVETEMP
+    #ifdef HAVE_TEMP
     if(!isRcMode() || !showRCDest(false)) {
     #endif
         if(isMiniMode())
             destinationTime.clearDisplay();
         else
             destinationTime.show();
-    #ifdef TC_HAVETEMP
+    #ifdef HAVE_TEMP
     }
     #endif
     
     presentTime.show();
 
-    #ifdef TC_HAVEGPS
+    #ifdef HAVE_GPS
     if(!isNavMode()) {
     #endif
-        #ifdef TC_HAVETEMP
+        #ifdef HAVE_TEMP
         if(!isRcMode() || !showRCDep(false)) {
         #endif
             if(isMiniMode())
                 departedTime.clearDisplay();
             else
                 departedTime.show();
-        #ifdef TC_HAVETEMP
+        #ifdef HAVE_TEMP
         }
         #endif
-    #ifdef TC_HAVEGPS
+    #ifdef HAVE_GPS
     }
     #endif
 
@@ -5459,7 +5446,7 @@ void animate(bool withLEDs)
 
     if(withLEDs) leds_on();
 
-    #endif // TC_NO_MONTH_ANIM  ---------------------
+    #endif // NO_MONTH_ANIM  ---------------------
 }
 
 // Activate lamp test on all displays and turn on
@@ -5537,7 +5524,7 @@ static bool getNTPOrGPSTime(bool weHaveAuthTime, DateTime& dt, bool updateRTC, b
     // when Wifi reconnects are undesirable, but
     // main_loop() found out that GPS has valid time.
     // So we must try GPS first.
-    #ifdef TC_HAVEGPS
+    #ifdef HAVE_GPS
     if(getGPStime(dt, lastYear, updateRTC)) return true;
     #endif
 
@@ -5630,7 +5617,7 @@ static bool getNTPTime(bool weHaveAuthTime, DateTime& dt, bool adjustRTC, bool w
  * Saves time to RTC; sets yearOffs (but does not save it to NVM)
  * 
  */
-#ifdef TC_HAVEGPS
+#ifdef HAVE_GPS
 static bool getGPStime(DateTime& dt, uint16_t currYear, bool adjustRTC)
 {
     struct tm timeinfo;
@@ -5898,7 +5885,7 @@ bool gpsMakePos(char *lat, char *lon)
     bool isS, isW;
     int j = 1;
     bool current;
-    #ifndef IS_ACAR_DISPLAY
+    #ifndef ACAR_DISPLAY
     #define MP_DSTART 3
     #else
     #define MP_DSTART 2
@@ -5908,7 +5895,7 @@ bool gpsMakePos(char *lat, char *lon)
         return false;
 
     if(!(glat = myGPS.getPos(current))) {
-        #ifndef IS_ACAR_DISPLAY
+        #ifndef ACAR_DISPLAY
         static const char nodataDD[]  = "-       -----";
         static const char nodataDMS[] = "-      -~----";
         static const char nodataDMD[] = "-    -~ -----";
@@ -6003,7 +5990,7 @@ void setNavDisplayMode(int dm)
 
 bool isNavMode()
 {
-    #ifdef TC_HAVEGPS
+    #ifdef HAVE_GPS
     return navMode;
     #else
     return false;
@@ -6018,11 +6005,11 @@ bool isNavMode()
  * (leads to RotEnc double-polling and other issues)
  * Calls myGPS.loop(false), hence without delay inside, ergo no audio_loop() etc.
  */
-#if defined(TC_HAVEGPS) || defined(TC_HAVE_RE) || defined(TC_HAVE_REMOTE)
+#if defined(HAVE_GPS) || defined(HAVE_RE) || defined(HAVE_REMOTE)
 void speedoUpdate_loop(bool async)
 {
     bool chg = false;
-    #ifdef TC_HAVEGPS
+    #ifdef HAVE_GPS
     if((sgf & SGF_UGPS) && (millis64() >= lastLoopGPS)) {
         lastLoopGPS += (uint64_t)GPSupdateFreq;
         myGPS.loop(false);
@@ -6030,20 +6017,20 @@ void speedoUpdate_loop(bool async)
     }
     #endif
     if(async) {
-        #ifdef TC_HAVE_RE
+        #ifdef HAVE_RE
         if((sgf & SGF_URotEnc) && (!(csf & CSF_P2))) {
             // Set oldFSpd as well to avoid unwanted beep-restarts
             fakeSpeed = oldFSpd = rotEnc.updateFakeSpeed(); 
             if(sgf & SGF_DispRotEnc) chg |= displayGPSorRESpeed();
         }
         #endif
-        #ifdef TC_HAVE_REMOTE
+        #ifdef HAVE_REMOTE
         chg |= updAndDispRemoteSpeed();
         // Avoid unwanted beep-restarts (like with RE)
         bttfnRemCurSpdOld = bttfnRemCurSpd; 
         #endif
         /* No, this is overdoing it.
-        #ifdef TC_HAVETEMP
+        #ifdef HAVE_TEMP
         //updateTemperature();
         chg |= dispTemperature();
         #endif
@@ -6062,7 +6049,7 @@ void speedoUpdate_loop(bool async)
 /*
  * Return doW from given date (year=yyyy)
  */
-#ifndef TC_JULIAN_CAL
+#ifndef JULIAN_CAL
 uint8_t dayOfWeek(int d, int m, int y)
 {
     // Sakamoto's method
@@ -6107,7 +6094,7 @@ int daysInMonth(int month, int year)
 /* 
  * Determine if provided year is a leap year 
  */
-#ifndef TC_JULIAN_CAL 
+#ifndef JULIAN_CAL 
 bool isLeapYear(int year)
 {
     if((year & 3) == 0) { 
@@ -6146,7 +6133,7 @@ bool isLeapYear(int year)
 /*
  *  Convert a date into "minutes since 1/1/0 0:0"
  */
-#ifndef TC_JULIAN_CAL 
+#ifndef JULIAN_CAL 
 uint64_t dateToMins(int year, int month, int day, int hour, int minute)
 {
     uint64_t total64 = 0;
@@ -6225,7 +6212,7 @@ uint64_t dateToMins(int year, int month, int day, int hour, int minute)
 /*
  *  Convert "minutes since 1/1/0 0:0" into date
  */
-#ifndef TC_JULIAN_CAL
+#ifndef JULIAN_CAL
 void minsToDate(uint64_t total64, int& year, int& month, int& day, int& hour, int& minute)
 {
     int c = 0, d = (sizeof(mins1kYears)/sizeof(mins1kYears[0]))-1;  // ny0: c=1
@@ -6353,7 +6340,7 @@ uint32_t getHrs1KYrs(int index)
     return hours1kYears[index*2];
 }
 
-#ifdef TC_JULIAN_CAL
+#ifdef JULIAN_CAL
 static void calcJulianData()
 {
     int l = isLeapYear(jSwitchYear) ? 1 : 0;
@@ -7196,6 +7183,8 @@ void ntp_setup(bool doUseNTP, IPAddress& ntpServer, bool couldHaveNTP, bool ntpL
         couldHaveAuthTime &= ~2;
     }
 
+    NTPPacketDue = false;
+
     NTPLookupFail = ntpLUF;
 }
 
@@ -7242,13 +7231,18 @@ int ntp_status()
     return 0;
 }
 
+void ntp_cancel()
+{
+    NTPPacketDue = false;
+}
+
 /**************************************************************
  ***                                                        ***
  ***     Basic Telematics Transmission Framework (BTTFN)    ***
  ***                                                        ***
  **************************************************************/
 
-#ifdef TC_HAVE_REMOTE
+#ifdef HAVE_REMOTE
 static bool checkToPlayRemoteSnd()
 {
     if(csf & (CSF_NM|CSF_P0|CSF_P1|CSF_RE|CSF_MA)) return false;
@@ -7279,7 +7273,7 @@ static void bttfnMakeRemoteSpeedMaster(bool doit, bool isPwrMaster)
     if((!!(csf & CSF_RPM)) != isPwrMaster) {
         if(!isPwrMaster) {
             csf &= ~CSF_RPM;
-            #ifdef TC_HAVEMQTT
+            #ifdef HAVE_MQTT
             if(csf & CSF_MQTTPM) {
                 isFPBKeyPressed = shadowMQTTFPBKeyPressed;
             } else
@@ -7368,7 +7362,7 @@ static void bttfnMakeRemoteSpeedMaster(bool doit, bool isPwrMaster)
         sgf &= ~(SGF_URotEnc|SGF_DispRotEnc|SGF_DispGPSSpd|SGF_GPS2BTTFN|SGF_DispTemp);
         sgf |= bttfnBsgf;
 
-        #ifdef TC_HAVE_RE
+        #ifdef HAVE_RE
         if((sgf & SGF_URotEnc) && (!(csf & (CSF_P0|CSF_P1|CSF_P2)))) {
             // We MUST reset the encoder; user might have moved
             // it while disabled.
@@ -7396,7 +7390,7 @@ static void bttfnMakeRemoteSpeedMaster(bool doit, bool isPwrMaster)
         #endif
         
         if(sgf & SGF_USpeedoDisp) {
-            #ifdef TC_HAVEGPS
+            #ifdef HAVE_GPS
             if(sgf & SGF_DispGPSSpd) {
                 // Do not set remoteWasMaster during P0, P1; but do
                 // so during P2, so that speedo is updated smoothly
@@ -7423,10 +7417,10 @@ static void bttfnMakeRemoteSpeedMaster(bool doit, bool isPwrMaster)
                     }
                 }
             }
-            #if defined(TC_HAVEGPS) || defined(TC_HAVE_RE)
+            #if defined(HAVE_GPS) || defined(HAVE_RE)
             displayGPSorRESpeed(true);
             #endif
-            #ifdef TC_HAVETEMP
+            #ifdef HAVE_TEMP
             dispTemperature(true);
             #endif
         }
@@ -7539,6 +7533,10 @@ static void bttfn_evalremotecommand(uint32_t seq, uint8_t cmd, uint8_t *parms)
         #endif
         break;
 
+    case BTTFN_REMCMD_DGREFILL:
+        bttfnScheduleRefill = true;
+        break;
+
     #ifdef TC_DBG_NET
     case BTTFN_REMCMD_PING:
     case BTTFN_REMCMD_KP_PING:
@@ -7621,7 +7619,7 @@ stcl_ipIdentical:
         bttfnNotAllSupportMC = 1;
     }
     
-    #ifdef TC_HAVE_REMOTE
+    #ifdef HAVE_REMOTE
     #ifdef ESP32
     newClient->RemID = GET32(buf, 35);
     #else
@@ -7652,7 +7650,7 @@ static void bttfn_expire_clients()
             numClients++;
             if(now - bttfnClient[i].ALIVE > 5*60*1000) {
                 bttfnClient[i].IP32 = 0;
-                #ifdef TC_HAVE_REMOTE
+                #ifdef HAVE_REMOTE
                 #ifdef TC_DBG_NET
                 Serial.printf("Expiring device type %d\n", bttfnClient[i].Type);
                 #endif
@@ -7669,7 +7667,7 @@ static void bttfn_expire_clients()
                     #endif
                     removeKPRemote();
                 }
-                #endif  // TC_HAVE_REMOTE
+                #endif  // HAVE_REMOTE
                 numClients--;
                 didST++;
             }
@@ -7743,14 +7741,14 @@ static void bttfn_fill_response(uint8_t *buf, int skipClear, uint8_t parm)
     }
     if(buf[5] & 0x02) {    // speed  (-1 if unavailable)
         temp = -1;         // (Client is supposed to support MC-notifications instead)
-        #ifdef TC_HAVE_REMOTE
+        #ifdef HAVE_REMOTE
         if(csf & CSF_RSM) {
             // bttfnRemCurSpd is P0-speed during P0, see below for reason
             temp = bttfnRemCurSpd;
             buf[26] |= 0x20;       // Signal that speed is from Remote
         } else {
         #endif
-            #ifdef TC_HAVEGPS
+            #ifdef HAVE_GPS
             if((sgf & (SGF_UGPS|SGF_GPS2BTTFN)) == (SGF_UGPS|SGF_GPS2BTTFN)) {
                 // Why "&& (sgf & SGF_GPS2BTTFN)"?
                 // Because: If stationary user uses GPS for time only, speed will
@@ -7761,17 +7759,17 @@ static void bttfn_fill_response(uint8_t *buf, int skipClear, uint8_t parm)
                 temp = (csf & CSF_P0) ? timeTravelP0Speed : myGPS.getSpeed();
             } else {                        
             #endif
-                #ifdef TC_HAVE_RE
+                #ifdef HAVE_RE
                 if((sgf & SGF_URotEnc) && (!(csf & CSF_OFF))) {  // fakespeed only valid if FP on
                     // fakeSpeed is P0-speed during P0, see above for reason
                     temp = fakeSpeed;
                     buf[26] |= 0x80;   // Signal that speed is from RotEnc
                 }
                 #endif
-            #ifdef TC_HAVEGPS
+            #ifdef HAVE_GPS
             }
             #endif
-        #ifdef TC_HAVE_REMOTE
+        #ifdef HAVE_REMOTE
         }
         #endif
         buf[18] = (uint16_t)temp & 0xff;
@@ -7779,20 +7777,20 @@ static void bttfn_fill_response(uint8_t *buf, int skipClear, uint8_t parm)
     }
     if(buf[5] & 0x04) {    // temperature * 100 (-32768 if unavailable)
         temp = -32768;
-        #ifdef TC_HAVETEMP
+        #ifdef HAVE_TEMP
         if(sgf & SGF_UTemp) {
             temp = tempSens.readLastTempT100();
         }
         #endif
         buf[20] = (uint16_t)temp & 0xff;
         buf[21] = (uint16_t)temp >> 8;
-        #ifdef TC_HAVETEMP
+        #ifdef HAVE_TEMP
         if(sgf & SGF_TempCelsius) buf[26] |= 0x40;   // Signal temp unit (0=F, 1=C)
         #endif
     }
     if(buf[5] & 0x08) {    // lux (-1 if unavailable)
         int32_t temp32 = -1;
-        #ifdef TC_HAVELIGHT
+        #ifdef HAVE_LIGHT
         if(sgf & SGF_ULightSens) {
             temp32 = lightSens.readLux();
         }
@@ -7901,7 +7899,7 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
     receivedRemID = storeBTTFNClient(tip32, buf, ctype, cFlags);
 
     // Check if we received a command
-    #ifdef TC_HAVE_REMOTE
+    #ifdef HAVE_REMOTE
     if((cmd = buf[25])) {
 
         if(cmd < BTTFN_OPEN_CMDS) {
@@ -7950,7 +7948,7 @@ static bool bttfn_handlePacket(uint8_t *buf, bool isMC)
         // Eval query and build reply into buf
         bttfn_fill_response(buf, 0, parm);
         
-    #ifdef TC_HAVE_REMOTE
+    #ifdef HAVE_REMOTE
     }
     #endif
 
@@ -8029,12 +8027,12 @@ static void bttfn_notify_speed()
     } else if(csf & CSF_P2) {
         spd = timeTravelP0Speed;
         parms[1] = BTTFN_SSRC_P2;
-    #ifdef TC_HAVE_REMOTE
+    #ifdef HAVE_REMOTE
     } else if(csf & CSF_RSM) {
         spd = bttfnRemCurSpd;
         parms[1] = BTTFN_SSRC_REM;
     #endif
-    #ifdef TC_HAVEGPS
+    #ifdef HAVE_GPS
     } else if((sgf & (SGF_UGPS|SGF_GPS2BTTFN)) == (SGF_UGPS|SGF_GPS2BTTFN)) {
         // Why "&& (sgf & SGF_GPS2BTTFN)"?
         // Because: If stationary setup uses GPS for time only, speed will
@@ -8042,7 +8040,7 @@ static void bttfn_notify_speed()
         spd = myGPS.getSpeed();
         parms[1] = BTTFN_SSRC_GPS;
     #endif
-    #ifdef TC_HAVE_RE
+    #ifdef HAVE_RE
     } else if((sgf & SGF_URotEnc) && (!(csf & CSF_OFF))) {
         spd = fakeSpeed;
         parms[1] = BTTFN_SSRC_ROTENC;
@@ -8070,7 +8068,7 @@ int bttfn_notify_info()
     if((csf & (CSF_P0|CSF_P2)) && timeTravelP0Speed < 30)
         return 0;
     
-    #ifdef TC_HAVE_REMOTE
+    #ifdef HAVE_REMOTE
     if(!(csf & CSF_REMALLOW))   parms[0] |= BTTFN_TCDI1_NOREM; 
     if(!(csf & CSF_REMKPALLOW)) parms[0] |= BTTFN_TCDI1_NOREMKP;
     #else
@@ -8142,8 +8140,6 @@ static void bttfn_notify_data()
     #ifdef TC_DBG_NET
     Serial.println("Sent NOT_DATA");
     #endif
-
-    return;
 }
 
 static bool bttfn_checkmc()
@@ -8212,10 +8208,10 @@ static void bttfn_setup()
 static void bttfn_setup_sensors()
 {
     BTTFDataBuf[5] &= ~0x0c;
-    #ifdef TC_HAVETEMP
+    #ifdef HAVE_TEMP
     if(sgf & SGF_UTemp)      BTTFDataBuf[5] |= 0x04;
     #endif
-    #ifdef TC_HAVELIGHT
+    #ifdef HAVE_LIGHT
     if(sgf & SGF_ULightSens) BTTFDataBuf[5] |= 0x08;
     #endif
 }
@@ -8259,7 +8255,7 @@ bool bttfn_loop(uint32_t taskMask)
 
 bool bttfn_loop_ex()
 {
-    #ifdef TC_HAVE_REMOTE
+    #ifdef HAVE_REMOTE
     updAndDispRemoteSpeed();    // 1ms (with Speedo update)
     bttfn_play_snd(bttfnScheduleRemOnSnd, remoteOnSound);
     bttfn_play_snd(bttfnScheduleRemOffSnd, remoteOffSound);

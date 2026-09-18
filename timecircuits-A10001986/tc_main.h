@@ -58,11 +58,11 @@
 
 #include "rtc.h"
 #include "tcddisplay.h"
-#ifdef TC_HAVEGPS
+#ifdef HAVE_GPS
 #include "gps.h"
 #endif
 #include "speeddisplay.h"
-#if defined(TC_HAVELIGHT) || defined(TC_HAVETEMP)
+#if defined(HAVE_LIGHT) || defined(HAVE_TEMP)
 #include "sensors.h"
 #endif
 
@@ -101,7 +101,7 @@ void      pauseAuto();
 bool      checkIfAutoPaused();
 void      endPauseAuto(void);
 
-#ifdef TC_HAVEMQTT
+#ifdef HAVE_MQTT
 void      mqttFakePowerControl(bool);
 void      mqttFakePowerOn();
 void      mqttFakePowerOff();
@@ -135,11 +135,11 @@ void      enableRcMode(bool onOff);
 bool      toggleRcMode();
 bool      isRcMode();
 
-#ifdef TC_HAVETEMP
+#ifdef HAVE_TEMP
 char      tempUnitChar();
 #endif
 
-#ifdef TC_HAVE_RE
+#ifdef HAVE_RE
 void      re_vol_reset();
 #endif
 
@@ -153,7 +153,7 @@ void      allOn();
 void      allresetBrightness();
 void      loadUserDLTimes();
 
-#ifdef TC_HAVEGPS
+#ifdef HAVE_GPS
 bool      gpsHaveFix();
 bool      gpsMakePos(char *lat, char *lon);
 bool      haveNavMode();
@@ -164,7 +164,7 @@ void      setNavDisplayMode(int dm);
 #endif
 bool      isNavMode();
 
-#if defined(TC_HAVEGPS) || defined(TC_HAVE_RE) || defined(TC_HAVE_REMOTE)
+#if defined(HAVE_GPS) || defined(HAVE_RE) || defined(HAVE_REMOTE)
 void      speedoUpdate_loop(bool async);
 #endif
 
@@ -174,7 +174,7 @@ uint8_t   dayOfWeek(int d, int m, int y);
 int       daysInMonth(int month, int year);
 bool      isLeapYear(int year);
 uint32_t  getHrs1KYrs(int index);
-#ifdef TC_JULIAN_CAL
+#ifdef JULIAN_CAL
 void      correctNonExistingDate(int year, int month, int& day);
 #endif
 uint8_t*  e(uint8_t *, uint32_t, int);
@@ -189,6 +189,7 @@ void      ntp_setup(bool doUseNTP, IPAddress& ntpServer, bool couldHaveNTP, bool
 void      ntp_loop();
 void      ntp_short_loop();
 int       ntp_status();
+void      ntp_cancel();
 
 int       bttfnNumClients();
 bool      bttfnGetClientInfo(int c, char **id, uint8_t **ip, uint8_t *type);
@@ -196,7 +197,7 @@ bool      bttfn_loop(uint32_t taskMask = 0);
 bool      bttfn_loop_ex();
 int       bttfn_notify_info();
 
-#ifdef TC_HAVE_REMOTE
+#ifdef HAVE_REMOTE
 void      removeRemote();
 void      removeKPRemote();
 #endif
@@ -206,7 +207,7 @@ void      removeKPRemote();
 #define BTTFN_TYPE_SID     2    // SID
 #define BTTFN_TYPE_PCG     3    // Dash gauges
 #define BTTFN_TYPE_VSR     4    // VSR
-#define BTTFN_TYPE_AUX     5    // Aux (user custom device)
+#define BTTFN_TYPE_AUX     5    // Aux (user custom device, Jukebox)
 #define BTTFN_TYPE_REMOTE  6    // Futaba remote control
 #define BTTFN_TYPE__MIN    1
 #define BTTFN_TYPE__MAX    BTTFN_TYPE_REMOTE
@@ -223,7 +224,6 @@ extern bool showUpdAvail;
 extern uint16_t lastYear;
 
 extern DateTime gdtu, gdtl;
-extern bool couldDST[3];
 
 extern uint32_t wcf;
 #define WCF_HaveWCM     0x0001
@@ -246,8 +246,7 @@ extern uint32_t schf;
 #define SCHF_DOOR2      0x0020
 #define SCHF_TS         0x0040
 
-extern bool syncTrigger;
-extern unsigned long syncTriggerNow;
+extern unsigned long syncTrigger;
 extern bool doAPretry;
 
 extern uint64_t lastAuthTime64;
@@ -288,10 +287,10 @@ extern uint32_t sgf;
 #define SGF_URotEncVol    0x8000    // useRotEncVol
 
 extern speedDisplay speedo;
-#ifdef TC_HAVETEMP
+#ifdef HAVE_TEMP
 extern tempSensor tempSens;
 #endif
-#ifdef TC_HAVELIGHT
+#ifdef HAVE_LIGHT
 extern lightSensor lightSens;
 #endif
 
@@ -371,7 +370,7 @@ extern uint32_t csf;
 #define BNLP_SK_EXPIRE  8   // skip client expiry
 
 extern uint32_t  mqttDisp;
-#ifdef TC_HAVEMQTT
+#ifdef HAVE_MQTT
 #define MQ_DISP_D 1
 #define MQ_DISP_P 2
 #define MQ_DISP_L 4
@@ -393,8 +392,7 @@ extern bool timetravelPersistent;
 extern bool MQTTWaitForOn;
 
 extern uint8_t beepMode;
-extern bool beepTimer;
+extern unsigned long beepTimer;
 extern unsigned long beepTimeout;
-extern unsigned long beepTimerNow;
 
 #endif

@@ -19,14 +19,24 @@ AudioFileSourceLoop::~AudioFileSourceLoop()
 
 uint32_t AudioFileSourceLoop::read(void *data, uint32_t len)
 {
-    uint32_t glen = 0, rlen = len, g;
+    uint32_t glen = 0, rlen = len, g, p, l = 5;
     
     switch(ftype) {
     case 1:
-        glen = f.read((uint8_t *)data, len);
-        if(!doPlayLoop || glen == len) return glen;
-        seek(startPos, SEEK_SET);
-        glen += f.read(((uint8_t *)data) + glen, len - glen);
+        while(l--) {
+            if(endPos) {
+                if((p = f.position()) < endPos) {
+                    g = f.read((uint8_t *)data, (p + len > endPos) ? endPos - p : len);
+                } else g = 0;
+            } else {
+                g = f.read((uint8_t *)data, len);
+            }
+            glen += g;
+            len  -= g;
+            if(!doPlayLoop || !len) return glen;
+            data = (void *)((uint8_t *)data + g);
+            seek(startPos, SEEK_SET);
+        }
         break;
     case 2:
         while(ftype && (len > glen)) {

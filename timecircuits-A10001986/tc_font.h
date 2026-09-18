@@ -56,7 +56,7 @@
 #ifndef _TC_FONT_H
 #define _TC_FONT_H
 
-#ifndef IS_ACAR_DISPLAY
+#ifndef ACAR_DISPLAY
 static const uint16_t alphaChars[127-31-1+4] = {
     0b0000000000000000,  // <space>
     0b0000000000000110,  // !

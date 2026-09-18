@@ -141,6 +141,33 @@
 
 /*  Changelog
  *          
+ *  2026/09/18 (A10001986) [3.27]
+ *    **********************************************************************************
+ *    ** If updating from below 3.20, please see boxed note at version 3.21 below     **
+ *    **********************************************************************************
+ *    - New sound-pack (TW09/CS09)
+ *    - Add option to play a default sound-on-the-hour (clock tower bell plus spoken
+ *      time; requires fully installed sound-pack; only played if not user-overridden by 
+ *      "hour[-xx].mp3" sounds on SD card)
+ *    - MQTT: Split "Publish time travel and alarm events" option into two options, 
+ *      "Time Travel" and "Alarm".can now go different MQTT/BTTFN routes.
+ *    - Keypad command "9" sends "refill" command to Dash Gauges ("009" is also still
+ *      supported).
+ *    - Add support for forwarding "refill" command from FC's and SID's IR remote control
+ *      to the Dash Gauges. (FC 1.107+, SID 1.76+)
+ *    - Fix minor issues with ID3v1 and ID3v2.4-UTF8 tags.
+ *    - Speed up booting with music folders containing many files
+ *    - Music Player: The "TCD_DONE.TXT" file is now obsolete. The firmware instead uses
+ *      a cache file in the top-most folder of the SD card ("musicXc") which needs to be
+ *      deleted when files are added to the respective folder.
+ *    - Protect the TCD from uploading a wrong firmware by accident. The filename of
+ *      the firmware binary now must contain the word "circuits". The check is case-
+ *      insensitive.
+ *    - Add option to configure speedo as briefly shown in part 3 with the left-most
+ *      digit covered by gaffer tape. Only supported on upcoming CircuitSetup speedo v2 
+ *      (featuring a complete third digit).
+ *    - Bonjour/mDNS: Send good-bye packet on controlled reboots
+ *    - Minor tweaks and fixes
  *  2026/08/19 (A10001986) [3.26]
  *    **********************************************************************************
  *    ** If updating from below 3.20, please see boxed note at version 3.21 below     **
@@ -264,7 +291,7 @@
  *    - World Clock mode: Display location name with time if both fit
  *    - Config files are now only written if actually changed which prolongs
  *      Flash life-span.
- *    - Add TC_NO_MONTH_ANIM compile-time option to skip the date-entry animation.
+ *    - Add NO_MONTH_ANIM compile-time option to skip the date-entry animation.
  *      Might be desirable when using A-car displays: Given the "month" is just
  *      an ordinary 2-digit number (and no back-lit gel) the real thing probably
  *      switched on the entire line at once.
@@ -392,7 +419,7 @@
  *    - [Broken in 3.7] Add "Remote fake power controls TCD fake power" feature. 
  *      While Remote is Master, TFC switch changes are tracked but ignored. When 
  *      Remote releases fake power control, TFC switch state becomes immediately
- *       effective. Configuration of this feature is done solely on the Remote.
+ *      effective. Configuration of this feature is done solely on the Remote.
  *      Requires firmware >= 1.12 on Remote. 
  *    - Save beep mode when changed on-the-fly so it's restored on power-up.
  *    - Fix deleting a bad .bin file after upload

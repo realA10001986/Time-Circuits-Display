@@ -16,7 +16,7 @@
  * - DFRobot Gravity 360: SW1 off, SW2 on (i2c address 0x55)
  * - DuPPA I2CEncoder 2.1: A0 and A1 closed (i2c address 0x03)
  *
- * Keypad part inspired by "Keypad" library by M. Stanley & A. Brevig
+ * Keypad part based on concepts by M. Stanley & A. Brevig
  * -------------------------------------------------------------------
  * License: Modified MIT NON-AI
  * 
@@ -191,7 +191,7 @@ class TCButton {
         unsigned long _startTime;
 };
 
-#ifdef TC_HAVE_RE
+#ifdef HAVE_RE
 /*
  * TCRotEnc class
  */
@@ -237,6 +237,6 @@ class TCRotEnc {
         int           dfrgain;
         int           dfroffslots;
 };
-#endif  // TC_HAVE_RE
+#endif  // HAVE_RE
 
 #endif

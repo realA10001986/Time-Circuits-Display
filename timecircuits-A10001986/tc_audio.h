@@ -83,6 +83,7 @@
 #define PA_SIGMASK (PA_SIGNAL|PA_ALARM|PA_REM|PA_TMR)
 
 void  audio_setup();
+void  audio_loopup_files();
 void  audio_loop();
 void  audio_loop_quick();
 
@@ -124,7 +125,7 @@ int   mp_gotonum(int num, bool force = false);
 void  mp_makeShuffle(bool enable);
 int   mp_checkForFolder(int num);
 int   mp_get_currently_playing();
-#ifdef TC_HAVEMQTT
+#ifdef HAVE_MQTT
 void  mp_sendStatus(int force = 0);
 #endif
 

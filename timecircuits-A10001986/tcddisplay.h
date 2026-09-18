@@ -89,7 +89,7 @@ class tcdDisplay {
     public:
 
         tcdDisplay(unsigned int did, uint8_t address);
-        #ifdef IS_ACAR_DISPLAY
+        #ifdef ACAR_DISPLAY
         void setAddress(uint8_t address) { _address = address; }
         #endif
         void begin();
@@ -119,10 +119,10 @@ class tcdDisplay {
         bool isRTC() { return _rtc; }
 
         void show();
-        #ifndef TC_NO_MONTH_ANIM
+        #ifndef NO_MONTH_ANIM
         void showAnimate(bool firstStage);
         #endif
-        #ifndef IS_ACAR_DISPLAY
+        #ifndef ACAR_DISPLAY
         bool showAnimate3(int mystep);
         #endif
 
@@ -154,7 +154,7 @@ class tcdDisplay {
         uint8_t  getHour()   { return _cd.hour; }
         uint8_t  getMinute() { return _cd.minute; }
 
-        #ifndef IS_ACAR_DISPLAY
+        #ifndef ACAR_DISPLAY
         const char* getMonthString(uint8_t month);
         #endif
 
@@ -170,13 +170,13 @@ class tcdDisplay {
         void showHalfIPDirect(int a, int b, uint16_t flags = 0);
         void showSettingValDirect(const char* setting, int8_t val = -1, uint16_t flags = 0);
 
-        #ifdef TC_HAVETEMP
+        #ifdef HAVE_TEMP
         void showTempDirect(float temp, bool animate = false);
         void showHumDirect(int hum, bool animate = false);
         void showTempHumDirect(float temp, int hum, bool animate = false);
         #endif
 
-        #ifdef TC_HAVEGPS
+        #ifdef HAVE_GPS
         void showNavDirect(char *msg, bool animate);
         #endif
 
@@ -194,7 +194,7 @@ class tcdDisplay {
     private:
 
         uint8_t  getLED7AlphaChar(uint8_t value);
-        #ifndef IS_ACAR_DISPLAY
+        #ifndef ACAR_DISPLAY
         uint16_t getLEDAlphaChar(uint8_t value);
         #endif
 
@@ -204,8 +204,8 @@ class tcdDisplay {
 
         bool handleNM();
         
-        #ifdef IS_ACAR_DISPLAY
-        #ifndef TC_NO_MONTH_ANIM
+        #ifdef ACAR_DISPLAY
+        #ifndef NO_MONTH_ANIM
         void showAnimate2();
         #endif
         #else

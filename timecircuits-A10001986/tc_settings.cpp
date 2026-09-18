@@ -59,9 +59,12 @@
 #define ARDUINOJSON_USE_DOUBLE 0
 #define ARDUINOJSON_ENABLE_ARDUINO_STRING 0
 #define ARDUINOJSON_ENABLE_ARDUINO_STREAM 0
+#define ARDUINOJSON_ENABLE_ARDUINO_PRINT 0
+#define ARDUINOJSON_DECODE_UNICODE 0
 #define ARDUINOJSON_ENABLE_STD_STREAM 0
 #define ARDUINOJSON_ENABLE_STD_STRING 0
 #define ARDUINOJSON_ENABLE_NAN 0
+#define ARDUINOJSON_ENABLE_INFINITY 0
 #include <ArduinoJson.h>  // https://github.com/bblanchon/ArduinoJson
 #include "src/SD/SD.h"
 #include <SPI.h>
@@ -101,12 +104,12 @@
 #define AC_FMTV 2
 #define AC_OHSZ (14 + ((NUM_AUDIOFILES+1)*(32+4)))
 #ifdef CS_EDITION
-#define SND_REQ_VERSION "CS08"
-#define AC_TS 17656774
+#define SND_REQ_VERSION "CS09"
+#define AC_TS 17687967
 #define SND_NON_ALIEN "TW"
 #else
-#define SND_REQ_VERSION "TW08"
-#define AC_TS 17651759
+#define SND_REQ_VERSION "TW09"
+#define AC_TS 17682952
 #define SND_NON_ALIEN "CS"
 #endif
 
@@ -206,11 +209,11 @@ static const char *terCfgName  = "/tcd3cfg";     // Tertiary settings (SD)
 #ifdef SETTINGS_TRANSITION_2
 static const char *obsFiles[] = {
     "/ipconfig.json",   // Skipped for SD iteration
+    "/beep.mp3",        // Skipped for SD iteration
     "/tcdly", "/tcddt", "/tcdpt", "/tcdlt",
     "/tcdbricfg.json", "/tcdaicfg.json", "/tcdvolcfg.json", "/tcdalmcfg.json", 
     "/tcdremcfg.json", "/stconfig",      "/scconfig.json",  "/cmconfig.json",
-    "/loconfig,json",  "/raconfig.json", "/tcdmcfg.json",   "/_installing.mp3",
-    "/beep.mp3",
+    "/loconfig,json",  "/raconfig.json", "/tcdmcfg.json",
     NULL
 };
 #endif
@@ -224,7 +227,7 @@ static const char *failFileWrite = "Failed to open file for writing";
 static const char *badConfig     = "Settings bad/missing/incomplete; writing new file";
 #endif
 
-#ifdef TC_HAVEMQTT
+#ifdef HAVE_MQTT
 static char mqm[] = "mqxx";
 #endif
 
@@ -255,7 +258,7 @@ int stachopin = 0;
 static void loadBrightness();
 static void loadBeepAutoInterval();
 static void loadCarMode();
-#ifdef TC_HAVE_REMOTE
+#ifdef HAVE_REMOTE
 static void loadRemoteAllowed();
 #endif
 static void loadUpdAvail();
@@ -280,7 +283,7 @@ extern void start_file_copy();
 extern void file_copy_progress(uint32_t ts, uint32_t tw);
 extern void file_copy_done(int err);
 
-#ifdef TC_HAVEMQTT
+#ifdef HAVE_MQTT
 static void preAllocMQTTTopMsg()
 {
     for(int i = 0; i < 10; i++) {
@@ -374,6 +377,13 @@ void unmount_fs()
  * Generic file readers/writers
  */
 
+void deleteFileFromSD(const char *fn)
+{
+    if(haveSD) {
+        SD.remove(fn);
+    }
+}
+
 static bool readFile(File& myFile, uint8_t *buf, int len)
 {
     if(myFile) {
@@ -420,7 +430,7 @@ static bool readFileFromFSU(const char *fn, uint8_t*& buf, int& len)
 }
 
 // Read file of known size from SD
-static bool readFileFromSD(const char *fn, uint8_t *buf, int len)
+bool readFileFromSD(const char *fn, uint8_t *buf, int len)
 {   
     if(!haveSD)
         return false;
@@ -450,7 +460,7 @@ static bool writeFile(File& myFile, uint8_t *buf, int len)
 }
 
 // Write file to SD
-static bool writeFileToSD(const char *fn, uint8_t *buf, int len)
+bool writeFileToSD(const char *fn, uint8_t *buf, int len)
 {
     if(!haveSD)
         return false;
@@ -697,74 +707,6 @@ static bool writeJSONCfgFile(const JsonDocument& json, const char *fn, bool useS
  *  Helpers for parm copying & checking
  */
 
-static bool checkValidNumParm(char *text, int lowerLim, int upperLim, int setDefault)
-{
-    int i, len = strlen(text);
-    bool ret = false;
-
-    if(!len) {
-        i = setDefault;
-        ret = true;
-    } else {
-        for(int j = 0; j < len; j++) {
-            if(text[j] < '0' || text[j] > '9') {
-                i = setDefault;
-                ret = true;
-                break;
-            }
-        }
-        if(!ret) {
-            i = atoi(text);   
-            if(i < lowerLim) {
-                i = lowerLim;
-                ret = true;
-            } else if(i > upperLim) {
-                i = upperLim;
-                ret = true;
-            }
-        }
-    }
-
-    // Re-do to get rid of formatting errors (eg "000")
-    sprintf(text, "%d", i);
-
-    return ret;
-}
-
-static bool checkValidNumParmF(char *text, float lowerLim, float upperLim, float setDefault)
-{
-    int i, len = strlen(text);
-    bool ret = false;
-    float f;
-
-    if(!len) {
-        f = setDefault;
-        ret = true;
-    } else {
-        for(i = 0; i < len; i++) {
-            if(text[i] != '.' && text[i] != '-' && (text[i] < '0' || text[i] > '9')) {
-                f = setDefault;
-                ret = true;
-                break;
-            }
-        }
-        if(!ret) {
-            f = strtof(text, NULL);
-            if(f < lowerLim) {
-                f = lowerLim;
-                ret = true;
-            } else if(f > upperLim) {
-                f = upperLim;
-                ret = true;
-            }
-        }
-    }
-    // Re-do to get rid of formatting errors (eg "0.")
-    sprintf(text, "%.1f", f);
-
-    return ret;
-}
-
 static bool CopyTextParm(const char *json, char *setting, int setSize)
 {
     if(!json) return true;
@@ -774,22 +716,56 @@ static bool CopyTextParm(const char *json, char *setting, int setSize)
     return false;
 }
 
-static bool CopyCheckValidNumParm(const char *json, char *text, int psize, int lowerLim, int upperLim, int setDefault)
+static bool CopyCBParm(const char *json, char *text, int setDefault)
 {
-    if(!json) return true;
+    text[1] = 0;
+    
+    if(json && (*json == '0' || *json == '1')) {
+        *text = *json;
+        return false;
+    }
 
-    memset(text, 0, psize);
-    strncpy(text, json, psize-1);
-    return checkValidNumParm(text, lowerLim, upperLim, setDefault);
+    *text = setDefault ? '1' : '0';
+
+    return true;
 }
 
-static bool CopyCheckValidNumParmF(const char *json, char *text, int psize, float lowerLim, float upperLim, float setDefault)
+static bool CopyCheckValidNumParm(const char *json, char *text, int lowerLim, int upperLim, int setDefault)
 {
-    if(!json) return true;
+    bool ret = true;
+    int t = setDefault;
 
-    memset(text, 0, psize);
-    strncpy(text, json, psize-1);
-    return checkValidNumParmF(text, lowerLim, upperLim, setDefault);
+    if(json) {
+        int u = atoi(json);    
+        if(u >= lowerLim && u <= upperLim) {
+            t = u;
+            ret = false;
+        }
+    }
+
+    // Re-do to get rid of formatting errors (eg "000")
+    sprintf(text, "%d", t);
+
+    return ret;
+}
+
+static bool CopyCheckValidNumParmF(const char *json, char *text, float lowerLim, float upperLim, float setDefault)
+{
+    bool ret = true;
+    float t = setDefault;
+
+    if(json) {
+        float u = strtof(json, NULL);
+        if(u >= lowerLim && u <= upperLim) {
+            t = u;
+            ret = false;
+        }
+    }
+
+    // Re-do to get rid of formatting errors (eg "0.")
+    sprintf(text, "%.1f", t);
+
+    return ret;
 }
 
 bool evalBool(char *s)
@@ -869,120 +845,123 @@ static bool read_settings(File configFile, int cfgReadCount)
 
         wd |= CopyTextParm(json["hn"], settings.hostName, sizeof(settings.hostName));
         
-        wd |= CopyCheckValidNumParm(json["wCR"], settings.wifiConRetries, sizeof(settings.wifiConRetries), 1, 10, DEF_WIFI_RETRY);
-        wd |= CopyCheckValidNumParm(json["wPR"], settings.wifiPRetry, sizeof(settings.wifiPRetry), 0, 1, DEF_WIFI_PRETRY);
-        wd |= CopyCheckValidNumParm(json["wOD"], settings.wifiOffDelay, sizeof(settings.wifiOffDelay), 0, 99, DEF_WIFI_OFFDELAY);
+        wd |= CopyCheckValidNumParm(json["wCR"], settings.wifiConRetries, 1, 10, DEF_WIFI_RETRY);
+        wd |= CopyCBParm(json["wPR"], settings.wifiPRetry, DEF_WIFI_PRETRY);
+        wd |= CopyCheckValidNumParm(json["wOD"], settings.wifiOffDelay, 0, 99, DEF_WIFI_OFFDELAY);
 
         wd |= CopyTextParm(json["sID"], settings.systemID, sizeof(settings.systemID));
         wd |= CopyTextParm(json["appw"], settings.appw, sizeof(settings.appw));
-        wd |= CopyCheckValidNumParm(json["apch"], settings.apChnl, sizeof(settings.apChnl), 0, 11, DEF_AP_CHANNEL);
-        wd |= CopyCheckValidNumParm(json["wAOD"], settings.wifiAPOffDelay, sizeof(settings.wifiAPOffDelay), 0, 99, DEF_WIFI_APOFFDELAY);
+        wd |= CopyCheckValidNumParm(json["apch"], settings.apChnl, 0, 11, DEF_AP_CHANNEL);
+        wd |= CopyCheckValidNumParm(json["wAOD"], settings.wifiAPOffDelay, 0, 99, DEF_WIFI_APOFFDELAY);
 
         // Settings
         
-        wd |= CopyCheckValidNumParm(json["pI"], settings.playIntro, sizeof(settings.playIntro), 0, 1, DEF_PLAY_INTRO);
+        wd |= CopyCBParm(json["pI"], settings.playIntro, DEF_PLAY_INTRO);
         // Beep, Time cycling saved in separate file
-        wd |= CopyCheckValidNumParm(json["sARA"], settings.autoRotAnim, sizeof(settings.autoRotAnim), 0, 1, 1);
-        wd |= CopyCheckValidNumParm(json["skpTTA"], settings.skipTTAnim, sizeof(settings.skipTTAnim), 0, 1, DEF_SKIP_TTANIM);
-        #ifndef IS_ACAR_DISPLAY
-        wd |= CopyCheckValidNumParm(json["p3an"], settings.p3anim, sizeof(settings.p3anim), 0, 1, DEF_P3ANIM);
+        wd |= CopyCBParm(json["sARA"], settings.autoRotAnim, 1);
+        wd |= CopyCBParm(json["skpTTA"], settings.skipTTAnim, DEF_SKIP_TTANIM);
+        #ifndef ACAR_DISPLAY
+        wd |= CopyCBParm(json["p3an"], settings.p3anim, DEF_P3ANIM);
         #endif
-        wd |= CopyCheckValidNumParm(json["pTTs"], settings.playTTsnds, sizeof(settings.playTTsnds), 0, 1, DEF_PLAY_TT_SND);
-        wd |= CopyCheckValidNumParm(json["alRTC"], settings.alarmRTC, sizeof(settings.alarmRTC), 0, 1, DEF_ALARM_RTC);
-        wd |= CopyCheckValidNumParm(json["md24"], settings.mode24, sizeof(settings.mode24), 0, 1, DEF_MODE24);
+        wd |= CopyCBParm(json["pTTs"], settings.playTTsnds, DEF_PLAY_TT_SND);
+        wd |= CopyCBParm(json["pTOTH"], settings.sayTOTH, DEF_PLAY_TOTH); 
+        wd |= CopyCBParm(json["alRTC"], settings.alarmRTC, DEF_ALARM_RTC);
+        wd |= CopyCBParm(json["md24"], settings.mode24, DEF_MODE24);
         
         wd |= CopyTextParm(json["tZ"], settings.timeZone, sizeof(settings.timeZone));
         wd |= CopyTextParm(json["ntpS"], settings.ntpServer, sizeof(settings.ntpServer));
-        #ifdef TC_HAVEGPS
-        wd |= CopyCheckValidNumParm(json["gTme"], settings.useGPSTime, sizeof(settings.useGPSTime), 0, 1, DEF_USE_GPS_TIME);
+        #ifdef HAVE_GPS
+        wd |= CopyCBParm(json["gTme"], settings.useGPSTime, DEF_USE_GPS_TIME);
         #endif
 
         wd |= CopyTextParm(json["tZDest"], settings.timeZoneDest, sizeof(settings.timeZoneDest));
         wd |= CopyTextParm(json["tZDep"], settings.timeZoneDep, sizeof(settings.timeZoneDep));
         wd |= CopyTextParm(json["tZNDest"], settings.timeZoneNDest, sizeof(settings.timeZoneNDest));
         wd |= CopyTextParm(json["tZNDep"], settings.timeZoneNDep, sizeof(settings.timeZoneNDep));
-        wd |= CopyCheckValidNumParm(json["WCNP"], settings.WCNamePerm, sizeof(settings.WCNamePerm), 0, 1, DEF_WCSHOWNAME);
+        wd |= CopyCBParm(json["WCNP"], settings.WCNamePerm, DEF_WCSHOWNAME);
 
-        wd |= CopyCheckValidNumParm(json["almT"], settings.alarmType, sizeof(settings.alarmType), 0, 1, DEF_ALARM_TYPE);
-        wd |= CopyCheckValidNumParm(json["aSz"], settings.doSnooze, sizeof(settings.doSnooze), 0, 1, DEF_SNOOZE);
-        wd |= CopyCheckValidNumParm(json["aSzT"], settings.snoozeTime, sizeof(settings.snoozeTime), 1, 15, DEF_SNOOZE_TIME);
-        wd |= CopyCheckValidNumParm(json["aASz"], settings.autoSnooze, sizeof(settings.autoSnooze), 0, 1, DEF_ASNOOZE);
-        wd |= CopyCheckValidNumParm(json["aLU"], settings.almLoopUserSnd, sizeof(settings.almLoopUserSnd), 0, 1, DEF_LOOP_USER_SND);
+        wd |= CopyCheckValidNumParm(json["almT"], settings.alarmType, 0, 1, DEF_ALARM_TYPE);
+        wd |= CopyCBParm(json["aSz"], settings.doSnooze, DEF_SNOOZE);
+        wd |= CopyCheckValidNumParm(json["aSzT"], settings.snoozeTime, 1, 15, DEF_SNOOZE_TIME);
+        wd |= CopyCBParm(json["aASz"], settings.autoSnooze, DEF_ASNOOZE);
+        wd |= CopyCBParm(json["aLU"], settings.almLoopUserSnd, DEF_LOOP_USER_SND);
         
-        wd |= CopyCheckValidNumParm(json["dtNmOff"], settings.dtNmOff, sizeof(settings.dtNmOff), 0, 1, DEF_DT_OFF);
-        wd |= CopyCheckValidNumParm(json["ptNmOff"], settings.ptNmOff, sizeof(settings.ptNmOff), 0, 1, DEF_PT_OFF);
-        wd |= CopyCheckValidNumParm(json["ltNmOff"], settings.ltNmOff, sizeof(settings.ltNmOff), 0, 1, DEF_LT_OFF);
-        wd |= CopyCheckValidNumParm(json["aNMPre"], settings.autoNMPreset, sizeof(settings.autoNMPreset), 0, 10, DEF_AUTONM_PRESET);
-        wd |= CopyCheckValidNumParm(json["aNMOn"], settings.autoNMOn, sizeof(settings.autoNMOn), 0, 23, DEF_AUTONM_ON);
-        wd |= CopyCheckValidNumParm(json["aNMOff"], settings.autoNMOff, sizeof(settings.autoNMOff), 0, 23, DEF_AUTONM_OFF);
-        #ifdef TC_HAVELIGHT
-        wd |= CopyCheckValidNumParm(json["uLgt"], settings.useLight, sizeof(settings.useLight), 0, 1, DEF_USE_LIGHT);
-        wd |= CopyCheckValidNumParm(json["lxLim"], settings.luxLimit, sizeof(settings.luxLimit), 0, 50000, DEF_LUX_LIMIT);
+        wd |= CopyCBParm(json["dtNmOff"], settings.dtNmOff, DEF_DT_OFF);
+        wd |= CopyCBParm(json["ptNmOff"], settings.ptNmOff, DEF_PT_OFF);
+        wd |= CopyCBParm(json["ltNmOff"], settings.ltNmOff, DEF_LT_OFF);
+        wd |= CopyCheckValidNumParm(json["aNMPre"], settings.autoNMPreset, 0, 10, DEF_AUTONM_PRESET);
+        wd |= CopyCheckValidNumParm(json["aNMOn"], settings.autoNMOn, 0, 23, DEF_AUTONM_ON);
+        wd |= CopyCheckValidNumParm(json["aNMOff"], settings.autoNMOff, 0, 23, DEF_AUTONM_OFF);
+        #ifdef HAVE_LIGHT
+        wd |= CopyCBParm(json["uLgt"], settings.useLight, DEF_USE_LIGHT);
+        wd |= CopyCheckValidNumParm(json["lxLim"], settings.luxLimit, 0, 50000, DEF_LUX_LIMIT);
         #endif
 
-        wd |= CopyCheckValidNumParm(json["CoSD"], settings.CfgOnSD, sizeof(settings.CfgOnSD), 0, 1, DEF_CFG_ON_SD);
-        wd |= CopyCheckValidNumParm(json["ttps"], settings.timesPers, sizeof(settings.timesPers), 0, 1, DEF_TIMES_PERS);
+        wd |= CopyCBParm(json["CoSD"], settings.CfgOnSD, DEF_CFG_ON_SD);
+        wd |= CopyCBParm(json["ttps"], settings.timesPers, DEF_TIMES_PERS);
 
-        #ifdef IS_ACAR_DISPLAY
-        wd |= CopyCheckValidNumParm(json["swapDL"],settings.swapDL, sizeof(settings.swapDL), 0, 1, DEF_SWPDL);
+        #ifdef ACAR_DISPLAY
+        wd |= CopyCBParm(json["swapDL"],settings.swapDL, DEF_SWPDL);
         #endif
-        wd |= CopyCheckValidNumParm(json["rAPM"], settings.revAmPm, sizeof(settings.revAmPm), 0, 1, DEF_REVAMPM);
+        wd |= CopyCBParm(json["rAPM"], settings.revAmPm, DEF_REVAMPM);
 
-        wd |= CopyCheckValidNumParm(json["fPwr"], settings.fakePwrOn, sizeof(settings.fakePwrOn), 0, 1, DEF_FAKE_PWR);
+        wd |= CopyCBParm(json["fPwr"], settings.fakePwrOn, DEF_FAKE_PWR);
 
-        #ifdef TC_HAVETEMP
-        wd |= CopyCheckValidNumParm(json["tmpU"], settings.tempUnit, sizeof(settings.tempUnit), 0, 1, DEF_TEMP_UNIT);
-        wd |= CopyCheckValidNumParmF(json["tmpOf"], settings.tempOffs, sizeof(settings.tempOffs), -3.0f, 3.0f, DEF_TEMP_OFFS);
-        #endif
-
-        wd |= CopyCheckValidNumParm(json["spT"], settings.speedoType, sizeof(settings.speedoType), 0, 99, DEF_SPEEDO_TYPE);
-        wd |= CopyCheckValidNumParm(json["spB"], settings.speedoBright, sizeof(settings.speedoBright), 0, 15, DEF_BRIGHT_SPEEDO);
-        wd |= CopyCheckValidNumParm(json["spAO"], settings.speedoAO, sizeof(settings.speedoAO), 0, 1, DEF_SPEEDO_AO);
-        wd |= CopyCheckValidNumParm(json["spAF"], settings.speedoAF, sizeof(settings.speedoAF), 0, 1, DEF_SPEEDO_ACCELFIG);
-        wd |= CopyCheckValidNumParmF(json["spFc"], settings.speedoFact, sizeof(settings.speedoFact), 0.5f, 5.0f, DEF_SPEEDO_FACT);
-        wd |= CopyCheckValidNumParm(json["spP3"], settings.speedoP3, sizeof(settings.speedoP3), 0, 1, DEF_SPEEDO_P3);
-        wd |= CopyCheckValidNumParm(json["spd3rd"], settings.speedo3rdD, sizeof(settings.speedo3rdD), 0, 1, DEF_SPEEDO_3RDD);
-        #ifdef TC_HAVEGPS
-        wd |= CopyCheckValidNumParm(json["uGPSS"], settings.dispGPSSpeed, sizeof(settings.dispGPSSpeed), 0, 1, DEF_USE_GPS_SPEED);
-        wd |= CopyCheckValidNumParm(json["spUR"], settings.spdUpdRate, sizeof(settings.spdUpdRate), 0, 3, DEF_SPD_UPD_RATE);
-        #endif
-        #ifdef TC_HAVETEMP
-        wd |= CopyCheckValidNumParm(json["dTmp"], settings.dispTemp, sizeof(settings.dispTemp), 0, 1, DEF_DISP_TEMP);
-        wd |= CopyCheckValidNumParm(json["tmpB"], settings.tempBright, sizeof(settings.tempBright), 0, 15, DEF_TEMP_BRIGHT);
-        wd |= CopyCheckValidNumParm(json["tmpONM"], settings.tempOffNM, sizeof(settings.tempOffNM), 0, 1, DEF_TEMP_OFF_NM);
+        #ifdef HAVE_TEMP
+        wd |= CopyCBParm(json["tmpU"], settings.tempUnit, DEF_TEMP_UNIT);
+        wd |= CopyCheckValidNumParmF(json["tmpOf"], settings.tempOffs, -3.0f, 3.0f, DEF_TEMP_OFFS);
         #endif
 
-        wd |= CopyCheckValidNumParm(json["ettDl"], settings.ettDelay, sizeof(settings.ettDelay), 0, ETT_MAX_DEL, DEF_ETT_DELAY);
+        wd |= CopyCheckValidNumParm(json["spT"], settings.speedoType, 0, 99, DEF_SPEEDO_TYPE);
+        wd |= CopyCheckValidNumParm(json["spB"], settings.speedoBright, 0, 15, DEF_BRIGHT_SPEEDO);
+        wd |= CopyCBParm(json["spAO"], settings.speedoAO, DEF_SPEEDO_AO);
+        wd |= CopyCBParm(json["spAF"], settings.speedoAF, DEF_SPEEDO_ACCELFIG);
+        wd |= CopyCheckValidNumParmF(json["spFc"], settings.speedoFact, 0.5f, 5.0f, DEF_SPEEDO_FACT);
+        wd |= CopyCBParm(json["spP3"], settings.speedoP3, DEF_SPEEDO_P3);
+        wd |= CopyCBParm(json["spP3R"], settings.speedoP3R, 0);
+        wd |= CopyCBParm(json["spd3rd"], settings.speedo3rdD, DEF_SPEEDO_3RDD);
+        #ifdef HAVE_GPS
+        wd |= CopyCBParm(json["uGPSS"], settings.dispGPSSpeed, DEF_USE_GPS_SPEED);
+        wd |= CopyCheckValidNumParm(json["spUR"], settings.spdUpdRate, 0, 3, DEF_SPD_UPD_RATE);
+        #endif
+        #ifdef HAVE_TEMP
+        wd |= CopyCBParm(json["dTmp"], settings.dispTemp, DEF_DISP_TEMP);
+        wd |= CopyCheckValidNumParm(json["tmpB"], settings.tempBright, 0, 15, DEF_TEMP_BRIGHT);
+        wd |= CopyCBParm(json["tmpONM"], settings.tempOffNM, DEF_TEMP_OFF_NM);
+        #endif
+
+        wd |= CopyCheckValidNumParm(json["ettDl"], settings.ettDelay, 0, ETT_MAX_DEL, DEF_ETT_DELAY);
         
-        wd |= CopyCheckValidNumParm(json["ETTOc"], settings.ETTOcmd, sizeof(settings.ETTOcmd), 0, 1, DEF_ETTO_CMD);
-        wd |= CopyCheckValidNumParm(json["ETTOPU"], settings.ETTOpus, sizeof(settings.ETTOpus), 0, 1, DEF_ETTO_PUS);
-        wd |= CopyCheckValidNumParm(json["uETTO"], settings.useETTO, sizeof(settings.useETTO), 0, 1, DEF_USE_ETTO);
-        wd |= CopyCheckValidNumParm(json["nETTOL"], settings.noETTOLead, sizeof(settings.noETTOLead), 0, 1, DEF_NO_ETTO_LEAD);
-        wd |= CopyCheckValidNumParm(json["ETTOa"], settings.ETTOalm, sizeof(settings.ETTOalm), 0, 1, DEF_ETTO_ALM);
-        wd |= CopyCheckValidNumParm(json["ETTOAD"], settings.ETTOAD, sizeof(settings.ETTOAD), 3, 99, DEF_ETTO_ALM_D);
+        wd |= CopyCBParm(json["ETTOc"], settings.ETTOcmd, DEF_ETTO_CMD);
+        wd |= CopyCBParm(json["ETTOPU"], settings.ETTOpus, DEF_ETTO_PUS);
+        wd |= CopyCBParm(json["uETTO"], settings.useETTO, DEF_USE_ETTO);
+        wd |= CopyCBParm(json["nETTOL"], settings.noETTOLead, DEF_NO_ETTO_LEAD);
+        wd |= CopyCBParm(json["ETTOa"], settings.ETTOalm, DEF_ETTO_ALM);
+        wd |= CopyCheckValidNumParm(json["ETTOAD"], settings.ETTOAD, 3, 99, DEF_ETTO_ALM_D);
 
         #ifdef SERVOSPEEDO
-        wd |= CopyCheckValidNumParm(json["tin"], settings.ttinpin, sizeof(settings.ttinpin), 0, 2, 0);
-        wd |= CopyCheckValidNumParm(json["tout"], settings.ttoutpin, sizeof(settings.ttoutpin), 0, 2, 0);
+        wd |= CopyCheckValidNumParm(json["tin"], settings.ttinpin, 0, 2, 0);
+        wd |= CopyCheckValidNumParm(json["tout"], settings.ttoutpin, 0, 2, 0);
         #endif
 
-        #ifdef TC_HAVEGPS
-        wd |= CopyCheckValidNumParm(json["qGPS"], settings.provGPS2BTTFN, sizeof(settings.provGPS2BTTFN), 0, 1, DEF_GPS4BTTFN);
+        #ifdef HAVE_GPS
+        wd |= CopyCBParm(json["qGPS"], settings.provGPS2BTTFN, DEF_GPS4BTTFN);
         #endif
         
-        #ifdef TC_HAVEMQTT   
-        wd |= CopyCheckValidNumParm(json["uMQTT"], settings.useMQTT, sizeof(settings.useMQTT), 0, 1, 0);
+        #ifdef HAVE_MQTT   
+        wd |= CopyCBParm(json["uMQTT"], settings.useMQTT, 0);
         wd |= CopyTextParm(json["mqttS"], settings.mqttServer, sizeof(settings.mqttServer));
-        wd |= CopyCheckValidNumParm(json["mqttV"], settings.mqttVers, sizeof(settings.mqttVers), 0, 1, 0);
+        wd |= CopyCheckValidNumParm(json["mqttV"], settings.mqttVers, 0, 1, 0);
         wd |= CopyTextParm(json["mqttU"], settings.mqttUser, sizeof(settings.mqttUser));
         wd |= CopyTextParm(json["mqttT"], settings.mqttTopic, sizeof(settings.mqttTopic));
         wd |= CopyTextParm(json["mqttTP"], settings.mqttTopicP, sizeof(settings.mqttTopicP));
         wd |= CopyTextParm(json["mqttTL"], settings.mqttTopicL, sizeof(settings.mqttTopicL));
-        wd |= CopyCheckValidNumParm(json["pMQTT"], settings.pubMQTT, sizeof(settings.pubMQTT), 0, 1, 0);
-        wd |= CopyCheckValidNumParm(json["vMQTT"], settings.MQTTvarLead, sizeof(settings.MQTTvarLead), 0, 1, DEF_MQTT_VTT);
-        wd |= CopyCheckValidNumParm(json["mqP"], settings.mqttPwr, sizeof(settings.mqttPwr), 0, 1, 0);
-        wd |= CopyCheckValidNumParm(json["mqPO"], settings.mqttPwrOn, sizeof(settings.mqttPwrOn), 0, 1, 0);
-        wd |= CopyCheckValidNumParm(json["pMP"], settings.pubMP, sizeof(settings.pubMP), 0, 1, 0);
+        wd |= CopyCBParm(json["pMQTT"], settings.pubMQTT, 0);
+        wd |= CopyCBParm(json["vMQTT"], settings.MQTTvarLead, DEF_MQTT_VTT);
+        wd |= CopyCBParm(json["aMQTT"], settings.pubMQTTAl, 0);
+        wd |= CopyCBParm(json["mqP"], settings.mqttPwr, 0);
+        wd |= CopyCBParm(json["mqPO"], settings.mqttPwrOn, 0);
+        wd |= CopyCBParm(json["pMP"], settings.pubMP, 0);
 
         for(int i = 0; i < 10; i++) {
             mqm[2] = i + '0';
@@ -1058,16 +1037,17 @@ void write_settings()
     json["pI"] = (const char *)settings.playIntro;
     json["sARA"] = (const char *)settings.autoRotAnim;
     json["skpTTA"] = (const char *)settings.skipTTAnim;
-    #ifndef IS_ACAR_DISPLAY
+    #ifndef ACAR_DISPLAY
     json["p3an"] = (const char *)settings.p3anim;
     #endif
     json["pTTs"] = (const char *)settings.playTTsnds;
+    json["pTOTH"] = (const char *)settings.sayTOTH;
     json["alRTC"] = (const char *)settings.alarmRTC;
     json["md24"] = (const char *)settings.mode24;
 
     json["tZ"] = (const char *)settings.timeZone;
     json["ntpS"] = (const char *)settings.ntpServer;
-    #ifdef TC_HAVEGPS
+    #ifdef HAVE_GPS
     json["gTme"] = (const char *)settings.useGPSTime;
     #endif
 
@@ -1089,7 +1069,7 @@ void write_settings()
     json["aNMPre"] = (const char *)settings.autoNMPreset;
     json["aNMOn"] = (const char *)settings.autoNMOn;
     json["aNMOff"] = (const char *)settings.autoNMOff;
-    #ifdef TC_HAVELIGHT
+    #ifdef HAVE_LIGHT
     json["uLgt"] = (const char *)settings.useLight;
     json["lxLim"] = (const char *)settings.luxLimit;
     #endif
@@ -1097,7 +1077,7 @@ void write_settings()
     json["CoSD"] = (const char *)settings.CfgOnSD;
     json["ttps"] = (const char *)settings.timesPers;
 
-    #ifdef IS_ACAR_DISPLAY
+    #ifdef ACAR_DISPLAY
     json["swapDL"] = (const char *)settings.swapDL;
     #endif
     json["rAPM"] = (const char *)settings.revAmPm;
@@ -1110,25 +1090,26 @@ void write_settings()
     json["spAF"] = (const char *)settings.speedoAF;
     json["spFc"] = (const char *)settings.speedoFact;
     json["spP3"] = (const char *)settings.speedoP3;
+    json["spP3R"] = (const char *)settings.speedoP3R;
     json["spd3rd"] = (const char *)settings.speedo3rdD;
-    #ifdef TC_HAVEGPS
+    #ifdef HAVE_GPS
     json["uGPSS"] = (const char *)settings.dispGPSSpeed;
     json["spUR"] = (const char *)settings.spdUpdRate;
     #endif
-    #ifdef TC_HAVETEMP
+    #ifdef HAVE_TEMP
     json["dTmp"] = (const char *)settings.dispTemp;
     json["tmpB"] = (const char *)settings.tempBright;
     json["tmpONM"] = (const char *)settings.tempOffNM;
     #endif
 
-    #ifdef TC_HAVETEMP
+    #ifdef HAVE_TEMP
     json["tmpU"] = (const char *)settings.tempUnit;
     json["tmpOf"] = (const char *)settings.tempOffs;
     #endif
 
     json["ettDl"] = (const char *)settings.ettDelay;
     
-    #ifdef TC_HAVEGPS
+    #ifdef HAVE_GPS
     json["qGPS"] = (const char *)settings.provGPS2BTTFN;
     #endif
 
@@ -1144,7 +1125,7 @@ void write_settings()
     json["tout"] = (const char *)settings.ttoutpin;
     #endif
 
-    #ifdef TC_HAVEMQTT
+    #ifdef HAVE_MQTT
     json["uMQTT"] = (const char *)settings.useMQTT;
     json["mqttS"] = (const char *)settings.mqttServer;
     json["mqttV"] = (const char *)settings.mqttVers;
@@ -1154,6 +1135,7 @@ void write_settings()
     json["mqttTL"] = (const char *)settings.mqttTopicL;
     json["pMQTT"] = (const char *)settings.pubMQTT;
     json["vMQTT"] = (const char *)settings.MQTTvarLead;
+    json["aMQTT"] = (const char *)settings.pubMQTTAl;
     json["mqP"] = (const char *)settings.mqttPwr;
     json["mqPO"] = (const char *)settings.mqttPwrOn;
     json["pMP"] = (const char *)settings.pubMP;
@@ -1260,7 +1242,7 @@ void settings_setup()
 
     pinMode(volumePin, INPUT);
 
-    #ifdef TC_HAVEMQTT
+    #ifdef HAVE_MQTT
     for(int i = 0; i < 10; i++) {
         settings.mqmt[i] = settings.mqmm[i] = NULL;
     }
@@ -1343,7 +1325,7 @@ void settings_setup()
         uint8_t cardType = SD.cardType();
        
         #ifdef TC_DBG_BOOT
-        const char *sdTypes[5] = { "No card", "MMC", "SD", "SDHC", "unknown (SD not usable)" };
+        const char *sdTypes[5] = { "No card", "MMC", "SD", "SDHC", "unknown (unusable)" };
         Serial.printf("SD card type: %s\n", sdTypes[cardType > 4 ? 4 : cardType]);
         #endif
 
@@ -1358,7 +1340,7 @@ void settings_setup()
             bool writedefault2 = true;
             FlashROMode = true;
             Serial.println("Flash-RO mode: Using SD only.");
-            #ifdef TC_HAVEMQTT
+            #ifdef HAVE_MQTT
             preAllocMQTTTopMsg();
             #endif
             if(SD.exists(cfgName)) {
@@ -1383,7 +1365,7 @@ void settings_setup()
         #endif
     }
 
-    #ifdef TC_HAVEMQTT
+    #ifdef HAVE_MQTT
     freeUnusedMQTTTopMsg();
     #endif
 
@@ -1419,9 +1401,9 @@ void settings_setup()
 
     #ifdef SETTINGS_TRANSITION_2
     if(haveSD) {
-        for(int i = 1; ; i++) {
+        for(int i = 2; ; i++) {
             if(!obsFiles[i]) break;
-            SD.remove(obsFiles[i]);
+            deleteFileFromSD(obsFiles[i]);
         }
     }
     #endif
@@ -1452,7 +1434,7 @@ void settings_setup()
 
     loadCarMode();
 
-    #ifdef TC_HAVE_REMOTE
+    #ifdef HAVE_REMOTE
     loadRemoteAllowed();
     #endif
 
@@ -1746,7 +1728,7 @@ void saveLineOut()
  *  Load/save remoteAllowed
  */
 
-#ifdef TC_HAVE_REMOTE
+#ifdef HAVE_REMOTE
 static void loadRemoteAllowed()
 {
     if(haveSecSettings) {
@@ -1882,7 +1864,7 @@ void storeBootMode()
     uint8_t t = 0;
     if(isRcMode())   t |= 0x01;
     if(isWcMode())   t |= 0x02;
-    #ifdef TC_HAVEGPS
+    #ifdef HAVE_GPS
     if(isNavMode())  t |= 0x04;
     #endif
     if(isMiniMode()) t |= 0x08;
@@ -1959,7 +1941,7 @@ void deleteIpSettings()
     ipHash = 0;
 
     if(FlashROMode) {
-        SD.remove(ipCfgName);
+        deleteFileFromSD(ipCfgName);
     } else if(haveFS) {
         MYNVS.remove(ipCfgName);
     }
@@ -2162,8 +2144,8 @@ void moveSettings()
     configOnSD = !configOnSD;
 
     if(configOnSD) {
-        SD.remove(clkCfgName);
-        SD.remove(secCfgName);
+        deleteFileFromSD(clkCfgName);
+        deleteFileFromSD(secCfgName);
     } else {
         MYNVS.remove(clkCfgName);
         MYNVS.remove(secCfgName);
@@ -2352,7 +2334,7 @@ bool copy_audio_files(bool& delIDfile)
 void delete_ID_file()
 {
     if(haveSD && ic) {
-        SD.remove(CONFND);
+        deleteFileFromSD(CONFND);
         SD.rename(CONFN, CONFND);
     }
 }
@@ -2423,7 +2405,7 @@ bool openUploadFile(String& fn, File& file, int idx, bool haveAC, int& opType, i
                 Serial.printf("openUploadFile: Deleting %s\n", uploadFileName+8);
                 #endif
                 
-                SD.remove(uploadFileName+8);
+                deleteFileFromSD(uploadFileName+8);
                 
                 #ifdef TC_DBG_BOOT
                 uploadFileName[8] = t;
@@ -2488,7 +2470,7 @@ void removeACFile(int idx)
             #ifdef TC_DBG_BOOT
             Serial.printf("removeACFile: Deleting %s\n", uploadRealFileNames[idx]);
             #endif
-            SD.remove(uploadRealFileNames[idx]);
+            deleteFileFromSD(uploadRealFileNames[idx]);
         }
     }
 }
@@ -2535,7 +2517,7 @@ void renameUploadFile(int idx)
         Serial.printf("renameUploadFile [1]: Deleting %s\n", t);
         #endif
         
-        SD.remove(t);
+        deleteFileFromSD(t);
         
         #ifdef TC_DBG_BOOT
         Serial.printf("renameUploadFile [2]: Renaming %s to %s\n", uploadFileName, t);
@@ -2609,7 +2591,7 @@ static void firmware_update()
     myFile.close();
     // Rename/remove in any case, we don't
     // want an update loop hammer our flash
-    SD.remove(fwfnold);
+    deleteFileFromSD(fwfnold);
     SD.rename(fwfn, fwfnold);
     unmount_fs();
     delay(1000);

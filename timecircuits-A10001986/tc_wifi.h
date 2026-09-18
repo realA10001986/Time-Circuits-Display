@@ -64,15 +64,17 @@ void wifiRestartPSTimer();
 void wifiStartCP();
 bool updateAvailable();
 
+void wifiMDNSGoodBye();
+
 int  wifi_getStatus();
 bool wifi_getIP(uint8_t& a, uint8_t& b, uint8_t& c, uint8_t& d);
 void wifi_getMAC(char *buf, bool sta, bool s = true);
 
 bool checkIPConfig();
 
-int16_t filterOutUTF8(char *src, char *dst, int srcLen, int maxChars);
+int  filterOutUTF8(char *src, char *dst, int srcLen, int maxChars);
 
-#ifdef TC_HAVEMQTT
+#ifdef HAVE_MQTT
 bool mqttState();
 bool mqttConnected();
 bool mqttPublish(const char *topic, const char *pl, unsigned int len);
@@ -89,7 +91,8 @@ extern bool blockWiFiSTAPS;
 extern bool carMode;
 
 extern bool pubMQTT;
-#ifdef TC_HAVEMQTT
+extern bool pubMQTTAl;
+#ifdef HAVE_MQTT
 extern bool useMQTT;
 extern const char *mqttAudioFile[];
 extern bool MQTTvarLead;

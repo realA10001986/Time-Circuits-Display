@@ -56,7 +56,7 @@
 #ifndef _TC_KEYPAD_H
 #define _TC_KEYPAD_H
 
-#ifdef TC_HAVETEMP
+#ifdef HAVE_TEMP
 bool showRCDest(bool i);
 bool showRCDep(bool i);
 #endif
@@ -67,11 +67,11 @@ bool scanKeypad();
 void resetKeypadState();
 void discardKeypadInput();
 
-#ifdef TC_HAVEMQTT
+#ifdef HAVE_MQTT
 bool injectInput(const char *src);
 #endif
 
-#ifdef TC_HAVE_REMOTE
+#ifdef HAVE_REMOTE
 void injectKeypadKey(char key, int kaction);
 #endif
 
