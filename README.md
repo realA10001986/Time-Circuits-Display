@@ -1732,6 +1732,12 @@ In part 3 of the series, the speedo displays two digits (even for speeds below 1
 
 This option is mutually exclusive to **_Display '0' after dot like A-car_**.
 
+##### &#9193; Gaffer tape covers left-most digit
+
+In part 3 of the series, there is a continuity error. Within minutes, two different speedo configurations are shown: One with the right-most digit covered, one with the left-most digit covered. This option allows to select between those two.
+
+Note: Checking this option requires CircuitSetup's speedo v2, which is not yet available at the time of this writing (Sep 2026).
+
 ##### &#9193; Display '0' after dot like A-car
 
 The CircuitSetup speedo features a third digit behind the gaffer tape. This digit is usually dark, in accordance with the speedo close-ups in all three parts of the series.
