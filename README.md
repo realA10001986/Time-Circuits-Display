@@ -1706,7 +1706,7 @@ Brightness of speedo display when displaying speed.
 
 ##### &#9193; Switch speedo off when idle
 
-If this is checked, the Speedo is switched off when idle, i.e. when no time travel takes place, no speed from GPS or a rotary encoder and no temperature are available. If checked, the speedo shows "0." in those situations. Having this checked will wear the LEDs of your speedo in the long run.
+If this is checked, the Speedo is switched off when idle, i.e. when no time travel takes place, no speed from GPS or a rotary encoder and no temperature are available. If checked, the speedo shows a speed of zero in those situations. Having this checked will wear the LEDs of your speedo in the long run.
 
 ##### &#9193; Real-life acceleration figures
 
@@ -1720,7 +1720,7 @@ If you are using your TCD together with a Futaba Remote Control prop, leave this
 
 ##### &#9193; Factor for Real-life figures
 
-Since the DMC-12 wasn't the world's fastest car, its (real-life) acceleration might soon cause boredom if played in real-time as part of the time travel sequence with a Speedo. This factor speeds up the acceleration. For instance, a factor of 2.0 means "twice as fast as the real car".
+Since the DMC-12 wasn't the world's fastest car, its real-life acceleration might soon cause boredom if played in real-time as part of the time travel sequence with a Speedo. This factor speeds up the acceleration. For instance, a factor of 2.0 means "twice as fast as the real car".
 
 This setting has no effect if the **_Real-life acceleration figures_** option is unchecked.
 
@@ -1742,7 +1742,7 @@ Note: Checking this option requires CircuitSetup's speedo v2, which is not yet a
 
 The CircuitSetup speedo features a third digit behind the gaffer tape. This digit is usually dark, in accordance with the speedo close-ups in all three parts of the series.
 
-The A-Car, shown very briefly in part 1 of the series when Doc sends Einstein a minute into the future, had a speedo which showed "0.0". Check this option to display a "0" after the dot using the hidden digit. Please note that only "0" is ever displayed, fractions are not supported.
+The A-Car, shown very briefly in part 1 of the series when Doc sends Einstein a minute into the future, had a speedo displaying "0.0". Check this option to display a "0" after the dot using the hidden digit. Please note that only "0" is ever displayed, fractions are not supported.
 
 ##### &#9193; Display GPS speed
 
