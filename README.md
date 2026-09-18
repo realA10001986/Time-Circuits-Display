@@ -742,7 +742,7 @@ The names of the audio files must only consist of three-digit numbers, starting 
 
 Since manually renaming mp3 files is somewhat cumbersome, the firmware can do this for you: Just copy your files with their original filenames to a music folder of your choice; when selecting that folder, the files will be sorted alphabetically and renamed according to the 3-digit name scheme. (If you want your tracks in a specific order, you must rename them, for instance by inserting a letter or number at the start.) The renaming process can take a while (11 minutes for 1000 files in bad cases). Mac users are advised to delete the ._ files from the SD before putting it back into the TCD as this speeds up the process. While the renaming is in progress, the TCD's display shows the number of files yet to be processed.
 
-To add files to a music folder later, just copy them to the folder and delete the file "TCD_DONE.TXT" (so that the firmware knows that something has changed). 
+To add files to a music folder later, just copy them to the music folder, and delete the cache file "musicXc" (X being the folder number) located in the top-most folder. That way that the firmware knows that something has changed and will examine the folder. 
 
 To start and stop music playback, hold ```5```. Holding ```2``` jumps to the previous track, holding ```8``` to the next one.
 
@@ -1271,10 +1271,10 @@ BTTFN is the primary way of inter-prop communication. The majority of network fe
 The only inter-prop communication features that are covered by both BTTFN and MQTT are _time travel_ and _alarm_. 
 
 The TCD can send out time travel and alarm notifications through **_either_ MQTT _or_ BTTFN**, and you must make a choice:
-- If the option **_Publish time travel and alarm events_** on the _HA/MQTT Settings_ page is checked, time travel/alarm notifications are exclusively sent over MQTT. Therefore, all props that are supposed to take part in time travel/alarm sequences must be connected to the same broker. That includes all CircuitSetup/A10001986 props.
-- If this option is unchecked, time travel/alarm notifications are sent exclusively over BTTFN.
+- If the options **_Publish time travel events_** and **_Publish alarm events_** on the _HA/MQTT Settings_ page are checked, respective notifications are exclusively sent over MQTT. Therefore, all props that are supposed to take part in time travel and/or alarm sequences must be connected to the same broker. That includes all CircuitSetup/A10001986 props.
+- If either of these options is unchecked, respective notifications are sent exclusively over BTTFN.
 
-Checking this option really only makes sense if there are MQTT-capable, but BTTFN-incapable props to take part in time travel/alarm sequences. If that is not the case, please leave this option unchecked.
+Checking these options really only makes sense if there are MQTT-capable, but BTTFN-incapable props to take part in time travel and/or alarm sequences. If that is not the case, please leave these options unchecked.
 
 ### Setup
 
@@ -1836,11 +1836,17 @@ An optional topic the TCD subscribes to in order to display messages on the *Pre
 
 An optional topic the TCD subscribes to in order to display messages on the *Last Time Departed* display.
 
-##### &#9193; Publish time travel and alarm events
+##### &#9193; Publish time travel events
 
-Check this if you want the TCD to send notifications on time travel and alarm through [MQTT](#home-assistant--mqtt).
+Check this if you want the TCD to send notifications on time travel through [MQTT](#home-assistant--mqtt).
 
-Note: If this option is checked, the TCD will send out such notifications through MQTT only, and no longer through [BTTF-Network](#connecting-props-wirelessly-bttf-network-bttfn). Please see [here](#mqtt-vs-bttfn) for details.
+Note: If this option is checked, the TCD will send out time travel notifications through MQTT only, and no longer through [BTTF-Network](#connecting-props-wirelessly-bttf-network-bttfn). Please see [here](#mqtt-vs-bttfn) for details.
+
+##### &#9193; Publish alarm events
+
+Check this if you want the TCD to send notifications on alarm through [MQTT](#home-assistant--mqtt).
+
+Note: If this option is checked, the TCD will send out alarm notifications through MQTT only, and no longer through [BTTF-Network](#connecting-props-wirelessly-bttf-network-bttfn). Please see [here](#mqtt-vs-bttfn) for details.
 
 ##### &#9193; Enhanced Time Travel notification
 
