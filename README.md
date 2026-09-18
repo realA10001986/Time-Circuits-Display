@@ -1128,8 +1128,7 @@ To disable *Car Mode*, enter keypad command ```990```. The TCD will reboot and a
 
 *Car Mode* is persistent, i.e. it remains active (even across reboots and power-downs) until disabled.
 
-> [!TIP]
-> The TCD has no internet access while in Car Mode; this means that, unless a GPS receiver is present, it cannot update its clock automatically. If the time runs off over time, you either need to quit Car Mode once in a while and allow the TCD connect to a internet-connected WiFi network (the iPhone's Personal Hotspot works fine) or to re-adjust time using the [keypad menu](#how-to-set-the-real-time-clock-rtc).
+A compilation of best practices in Car Mode is [here](#car-setup---best-practice).
 
 ### Connecting props by wire
 
@@ -1303,23 +1302,25 @@ For more information, see [here](https://remote.out-a-ti.me).
 
 #### Network setup
 
+In a car, the TCD acts as WiFi access point, to which the other props are connected:
+
 ![APmode](img/apmode-car.png)
 
 This configuration is achieved automatically by putting all props into [Car Mode](#car-mode). On the TCD, keypad commands ```990```/```991``` disable/enable Car Mode. Please refer to the other props' documentation, chapter "Car Setup", on how to put them into Car Mode: [Flux Capacitor](https://fc.out-a%2dti.me#car-setup), [SID](https://sid.out%2da%2dti.me#car-setup), [Dash Gauges](https://dg.out%2da-ti.me#car-setup), [VSR](https://vsr.out-a%2dti.me#car-setup), [Remote Control](https://remote.out-a%2dti%2eme#car-setup).
 
-#### Changing settings while in Car Mode
+#### Accessing the Config Portal while in Car Mode
 
 1. Connect your notebook/handheld to WiFi network "TCD-AP".
 2. Navigate your browser to the prop's Config Portal. By default the domains are http//timecircuits.local, http//flux.local, http//sid.local, http//gauges.local, http//vsr.local, http//dtmremote.local.
 
-#### Firmware updates
+#### Performing Firmware Updates
 
 1. Download the firmware binaries and sound-packs for all props to be updated to your notebook/handheld.
 2. Connect said notebook/handheld to WiFi network "TCD-AP".
 3. Navigate your browser to the prop's Config Portal. By default the domains are http//timecircuits.local, http//flux.local, http//sid.local, http//gauges.local, http//vsr.local, http//dtmremote.local.
 4. Perform firmware update procedure. Repeat steps 2-4 for installing the sound-pack, if a new version is available.
 
-#### Time synchonization
+#### Time Synchonization
 
 The TCD has no internet access while in Car Mode; this means that, unless a GPS receiver is present, it cannot update its clock automatically. If the clock runs off over time, you either quit Car Mode once in a while and allow the TCD connect to a internet-connected WiFi network (the iPhone's Personal Hotspot works fine) or to re-adjust time using the [keypad menu](#how-to-set-the-real-time-clock-rtc).
 
@@ -1327,6 +1328,12 @@ For the first alternative, it is recommended to pre-configure the TCD to connect
 - quit car mode (```990```) if enabled,
 - enter the TCD's Config Portal by connecting to "TCD-AP" and navigating to http//timecircuits.local, enter "WiFi Settings", and connect the TCD to your WiFi.
 - After saving the new settings, reboot, and re-enable Car Mode (```991```).
+
+In order to sync time, have your WiFi network ready (eg, by enabling the iPhone hotspot), and
+- power up the TCD in Car Mode,
+- disable Car Mode (```990```),
+- and wait until the TCD has rebooted and connected to your WiFi network. Time synchronization is usually done in the first few seconds after a reboot.
+- re-enable Car Mode (```991```).
 
 ## WiFi power saving features
 
