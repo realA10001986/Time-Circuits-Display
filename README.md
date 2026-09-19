@@ -1323,15 +1323,13 @@ This configuration is achieved automatically by putting all props into [Car Mode
 
 #### Option setting
 
-##### TCD
+- TCD:
+  - Check **_Display GPS Speed_**.
+  - Check **_Provide GPS speed to BTTFN clients_**
 
-Check **_Display GPS Speed_**.
-Check **_Provide GPS speed to BTTFN clients_**
-
-##### Other props (FC, SID, Dash Gauges, VSR)
-
-Put TCD's hostname (usually _timecircuits_) in **_Hostname or IP address of TCD_**
-Uncheck **_TCD is connected by wire_**
+- Other props (FC, SID, Dash Gauges, VSR, Remote):
+  - Put TCD's hostname (usually _timecircuits_) in **_Hostname or IP address of TCD_**
+  - Uncheck **_TCD is connected by wire_**
 
 #### Performing Firmware Updates
 
