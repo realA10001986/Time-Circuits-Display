@@ -1251,9 +1251,9 @@ Keypad command ```996``` works like ```POWER_CONTROL_OFF```; it allows to separa
 
 ### Notify other devices of a time travel or alarm
 
-The TCD can send out notifications on time travel and alarm through MQTT. This enables the use of MQTT-capable devices to react to, and take part in time travel or alarm sequences by simply listening to the TCD's public topic **bttf/tcd/pub**.
+The TCD can send out notifications on time travel and/or alarm through MQTT. This enables the use of MQTT-capable devices to react to, and take part in time travel and/or alarm sequences by simply listening to the TCD's public topic **bttf/tcd/pub**.
 
-To enable the sending of time travel and alarm notifications, check the option **_Publish time travel and alarm events_** on the _HA/MQTT Settings_ page in the Config Portal. This option, however, has some implications for BTTFN-connected devices, see [below](#MQTT-vs-BTTFN).
+To enable the sending of time travel and/or alarm notifications, check the options **_Publish time travel events_** and/or **_Publish alarm events_** on the _HA/MQTT Settings_ page in the Config Portal. These options, however, have some implications for BTTFN-connected devices, see [below](#MQTT-vs-BTTFN).
 
 The timing for time travel is described [here](AddOns.md#synchronized-time-travel-through-hamqtt), in short:
 - ```PREPARE``` might be published ahead of the time travel to prepare; the timing is not specified.
