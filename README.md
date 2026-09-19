@@ -1312,9 +1312,17 @@ In a car, the TCD acts as WiFi access point, to which the other props are connec
 
 ![APmode](img/apmode-car.png)
 
-This configuration is achieved automatically by putting all props into [Car Mode](#car-mode). On the TCD, keypad commands ```990```/```991``` disable/enable Car Mode. Please refer to the other props' documentation, chapter "Car Setup", on how to put them into Car Mode: [Flux Capacitor](https://fc.out-a%2dti.me#car-setup), [SID](https://sid.out%2da%2dti.me#car-setup), [Dash Gauges](https://dg.out%2da-ti.me#car-setup), [VSR](https://vsr.out-a%2dti.me#car-setup), [Remote Control](https://remote.out-a%2dti%2eme#car-setup).
+This configuration is achieved automatically by putting all props into [Car Mode](#car-mode). 
 
-> If your car might come close to other cars with identical equipment, for instance on exhibitions, it is recommended to add your TCD's BSSID (a unique identifier of your TCD) in the other props' Car Mode settings. To find out your TCD's BSSID, check the TCD's Config Portal's _WiFi Configuration_ page, section _Access Point settings_. Copy the value next to **_TCD-AP BSSID_** (XX:XX:XX:XX:XX:XX) into the field "TCD-AP BSSID" under _Car Mode Settings_ on all the other props' _WiFi Configuration_ pages. **Firmwares released after September 2026 do not need this step, it is performed automatically upon the first successful connection to your TCD in Car Mode.**
+- TCD: Keypad commands ```990```/```991``` disable/enable Car Mode. 
+- FC and SID: IR command sequences ```*990ok```/```*991ok``` disable/enable Car Mode.
+- Dash Gauges: Holding "Button 1" for 6 seconds (until a triple beep is emitted) toggles Car Mode.
+- VSR: Holding ```9``` in Admin Button Mode toggles Car Mode.
+- Remote: Holding "Calibration" for 6 seconds (until a triple beep is emitted) toggles Car Mode.
+
+Please refer to the other props' documentation, chapter "Car Setup", for details: [Flux Capacitor](https://fc.out-a%2dti.me#car-setup), [SID](https://sid.out%2da%2dti.me#car-setup), [Dash Gauges](https://dg.out%2da-ti.me#car-setup), [VSR](https://vsr.out-a%2dti.me#car-setup), [Remote Control](https://remote.out-a%2dti%2eme#car-setup).
+
+> If your car might come close to other cars with identical equipment, for instance at meet-ups, it is recommended to add your TCD's BSSID (a unique identifier of your TCD) in the other props' Car Mode settings. To find out your TCD's BSSID, check the TCD's Config Portal's _WiFi Configuration_ page, section _Access Point settings_. Copy the value next to **_TCD-AP BSSID_** (XX:XX:XX:XX:XX:XX) into the field "TCD-AP BSSID" under _Car Mode Settings_ on all the other props' _WiFi Configuration_ pages. **Firmwares released after September 19, 2026, do this automatically upon the first successful connection to your TCD in Car Mode.**
 
 #### Accessing the Config Portal while in Car Mode
 
@@ -1329,7 +1337,7 @@ This configuration is achieved automatically by putting all props into [Car Mode
 
 - Other props (FC, SID, Dash Gauges, VSR, Remote):
   - Put TCD's hostname (usually _timecircuits_) in **_Hostname or IP address of TCD_**
-  - Uncheck **_TCD is connected by wire_**
+  - Uncheck **_TCD is connected by wire_** (Option not available on Remote)
 
 #### Performing Firmware Updates
 
