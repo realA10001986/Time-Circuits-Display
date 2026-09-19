@@ -1304,6 +1304,8 @@ For more information, see [here](https://remote.out-a-ti.me).
 
 ## Car Setup - Best Practice
 
+> In the following, default settings are assumed. If you, for instance, changed your TCD's hostname, this hostname is to be used instead of _timecircuits_ below.
+
 #### Network setup
 
 In a car, the TCD acts as WiFi access point, to which the other props are connected:
@@ -1312,16 +1314,30 @@ In a car, the TCD acts as WiFi access point, to which the other props are connec
 
 This configuration is achieved automatically by putting all props into [Car Mode](#car-mode). On the TCD, keypad commands ```990```/```991``` disable/enable Car Mode. Please refer to the other props' documentation, chapter "Car Setup", on how to put them into Car Mode: [Flux Capacitor](https://fc.out-a%2dti.me#car-setup), [SID](https://sid.out%2da%2dti.me#car-setup), [Dash Gauges](https://dg.out%2da-ti.me#car-setup), [VSR](https://vsr.out-a%2dti.me#car-setup), [Remote Control](https://remote.out-a%2dti%2eme#car-setup).
 
+> If your car might come close to other cars with identical equipment, for instance on exhibitions, it is recommended to add your TCD's BSSID (a unique identifier of your TCD) in the other props' Car Mode settings. To find out your TCD's BSSID, check the TCD's Config Portal's _WiFi Configuration_ page, section _Access Point settings_. Copy the value next to **_TCD-AP BSSID_** (XX:XX:XX:XX:XX:XX) into the field "TCD-AP BSSID" under _Car Mode Settings_ on all the other props' _WiFi Configuration_ pages.
+
 #### Accessing the Config Portal while in Car Mode
 
 1. Connect your notebook/handheld to WiFi network "TCD-AP".
-2. Navigate your browser to the prop's Config Portal. By default the domains are http//timecircuits.local, http//flux.local, http//sid.local, http//gauges.local, http//vsr.local, http//dtmremote.local.
+2. Navigate your browser to the prop's Config Portal. By default the domains are http://timecircuits.local, http://flux.local, http://sid.local, http://gauges.local, http://vsr.local, http://dtmremote.local.
+
+#### Option setting
+
+##### TCD
+
+Check **_Display GPS Speed_**.
+Check **_Provide GPS speed to BTTFN clients_**
+
+##### Other props (FC, SID, Dash Gauges, VSR)
+
+Put TCD's hostname (usually _timecircuits_) in **_Hostname or IP address of TCD_**
+Uncheck **_TCD is connected by wire_**
 
 #### Performing Firmware Updates
 
 1. Download the firmware binaries and sound-packs for all props to be updated to your notebook/handheld.
 2. Connect said notebook/handheld to WiFi network "TCD-AP".
-3. Navigate your browser to the prop's Config Portal. By default the domains are http//timecircuits.local, http//flux.local, http//sid.local, http//gauges.local, http//vsr.local, http//dtmremote.local.
+3. Navigate your browser to the prop's Config Portal. By default the domains are http://timecircuits.local, http://flux.local, http://sid.local, http://gauges.local, http://vsr.local, http://dtmremote.local.
 4. Perform firmware update procedure. Repeat steps 2-4 for installing the sound-pack, if a new version is available.
 
 #### Time Synchonization
@@ -1330,7 +1346,7 @@ The TCD has no internet access while in Car Mode; this means that, unless a GPS 
 
 For the first alternative, it is recommended to pre-configure the TCD to connect to a WiFi network (eg. your iPhone's WiFi hotspot) when *not* in Car mode. In order to do so, 
 - quit Car Mode (```990```),
-- enter the TCD's Config Portal by connecting to "TCD-AP" and navigating to http//timecircuits.local, enter "WiFi Settings", and [connect](#connecting-to-an-existing-wifi-network) the TCD to your WiFi network.
+- enter the TCD's Config Portal by connecting to "TCD-AP" and navigating to http://timecircuits.local, enter "WiFi Settings", and [connect](#connecting-to-an-existing-wifi-network) the TCD to your WiFi network.
 - After saving the new settings and thereby rebooting, re-enable Car Mode (```991```).
 
 In order to sync time, have your WiFi network ready (eg, by enabling the iPhone hotspot), and
