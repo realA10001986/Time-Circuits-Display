@@ -1332,7 +1332,7 @@ Please refer to the other props' documentation, chapter "Car Setup", for details
 #### Option setting
 
 - TCD:
-  - Check **_Display GPS Speed_**.
+  - Check **_Display GPS Speed_**
   - Check **_Provide GPS speed to BTTFN clients_**
 
 - Other props (FC, SID, Dash Gauges, VSR, Remote):
