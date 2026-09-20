@@ -1336,7 +1336,7 @@ Please refer to the other props' documentation, chapter "Car Setup", for details
   - Check **_Provide GPS speed to BTTFN clients_**
 
 - Other props (FC, SID, Dash Gauges, VSR, Remote):
-  - Put TCD's hostname (usually _timecircuits_) in **_Hostname or IP address of TCD_**
+  - Put TCD's hostname (usually _timecircuits_) in **_Hostname of TCD_**
   - Uncheck **_TCD is connected by wire_** (Option not available on Remote)
 
 #### Performing Firmware Updates
