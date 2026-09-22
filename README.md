@@ -1306,6 +1306,11 @@ For more information, see [here](https://remote.out-a-ti.me).
 
 > In the following, default settings are assumed. If you, for instance, changed your TCD's hostname, this hostname is to be used instead of _timecircuits_ below.
 
+#### General
+
+- Do not connect the props to your car's electrical system. Use a separate power supply, such as a lithium battery, with constant power output (no peaks, no degrading voltage on depletion).
+- Put good-quality ("endurance") SD cards into all the props.
+  
 #### Network setup
 
 In a car, the TCD acts as WiFi access point, to which the other props are connected:
