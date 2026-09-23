@@ -710,7 +710,7 @@ The firmware supports some additional, user-provided sound effects, which it wil
 
 - "ttaccel.mp3": Will be played immediately upon triggering a time travel when a speedo is connected, during the acceleration phase (ie while the speedo counts up to 88). This sound is then interrupted by the usual time travel sound. You can use, for instance, the sound of a car accelerating for this. This sound is played through [line-out](#audio-output), if enabled.
 - "ttcancel.mp3": Will be played when a time travel acceleration phase is canceled by hitting the brake on the [Remote](#futaba-remote-control). This sound is played through [line-out](#audio-output), if enabled.
-- "hour.mp3": Will be played every hour, on the hour. If this file is present, it will be played instead of the default. This feature is disabled in night mode.
+- "hour.mp3": Will be played every hour, on the hour. If this file is present, it will be played [instead of the default](#-play-default-sound-on-the-hour). This feature is disabled in night mode.
 - "hour-xx.mp3", xx being 00 through 23: Sounds-on-the-hour for specific hours that will be played instead of "hour.mp3". If a sound for a specific hour is not present, "hour.mp3" will be played, if that one exists, otherwise the default (if enabled in the Config Portal). This feature is disabled in night mode.
 - "key1.mp3" - "key9.mp3": Will be played on a ```50x``` keypad command (x=1-9); additionally, "key3.mp3"/"key6.mp3" will be played when holding the ```3```/```6``` key for 2 seconds. Those sounds are played through [line-out](#audio-output), if enabled.
 - "ha-alert.mp3"/"ha-alart-p.mp3"/"ha-alart-l.mp3": Will be played when a [HA/MQTT message](#display-messages) is received.
