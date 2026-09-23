@@ -744,7 +744,7 @@ The names of the audio files must only consist of three-digit numbers, starting 
 
 Since manually renaming mp3 files is somewhat cumbersome, the firmware can do this for you: Just copy your files with their original filenames to a music folder of your choice; when selecting that folder, the files will be sorted alphabetically and renamed according to the 3-digit name scheme. (If you want your tracks in a specific order, you must rename them, for instance by inserting a letter or number at the start.) The renaming process can take a while (11 minutes for 1000 files in bad cases). Mac users are advised to delete the ._ files from the SD before putting it back into the TCD as this speeds up the process. While the renaming is in progress, the TCD's display shows the number of files yet to be processed.
 
-To add files to a music folder later, just copy them to the music folder, and delete the cache file "musicXc" (X being the folder number) located in the top-most folder. That way that the firmware knows that something has changed and will examine the folder. 
+To add files to a music folder later, just copy them to the music folder, and delete the cache file "musicXc" (X being the folder number) located in the top-most folder. That way that the firmware knows that something has changed and will re-examine the folder. 
 
 To start and stop music playback, hold ```5```. Holding ```2``` jumps to the previous track, holding ```8``` to the next one.
 
