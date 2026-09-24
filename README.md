@@ -83,7 +83,7 @@ Setting actual time:
 
 If your factory-fresh TCD came with firmware version 3.23 or later, but no SD card, and you have an SD card at hand, the next step is to re-install the sound-pack. The reason for this is that the sound-pack does not entirely fit into the device's flash memory and parts of it need to be installed on your SD card. Please see [here](#sound-pack-installation) for instructions.
 
-#### Connecting to a WiFi network
+#### WiFi Setup
 
 The TCD knows two ways of WiFi operation: Either it creates its own WiFi network or it connects to a pre-existing WiFi network.
 
@@ -91,7 +91,7 @@ As long as the device is unconfigured, it creates a WiFi network of its own name
 
 ![APmode](img/apmode.png)
 
-It is ok to leave the TCD in this mode if there is no WiFi network available, such as in a car. 
+It is ok to leave the TCD in this mode if there is no WiFi network available.
 
 <details>
 <summary>More...</summary>
@@ -102,7 +102,7 @@ It is ok to leave the TCD in this mode if there is no WiFi network available, su
 
 </details>
 
-In a typical home setup, however, you might want to connect the TCD to your local WiFi network. This allows for for time synchronization (NTP) and [HA/MQTT](#home-assistant--mqtt):
+In a typical **home setup**, however, you might want to connect the TCD to your local WiFi network. This allows for for time synchronization (NTP) and [HA/MQTT](#home-assistant--mqtt):
 
 ![STAmode](img/stamode.png)
 
@@ -118,9 +118,9 @@ To connect your TCD to your WiFi network, navigate to the Config Portal and clic
 
 After saving the WiFi configuration settings, the TCD reboots and tries to connect to your selected WiFi network. If that fails, it will again start in access point mode.
 
-After completing these steps, your TCD is ready for use; you can also continue configuring it to your personal preferences through the Config Portal.
+If your TCD is **mounted in a car**, there is a special Car Mode that allows having a WiFi network configured (for administrative purposes and NTP time synchronization) and switching between AP-Mode and WiFi-connection through keypad commands. See [here](#car-mode) and [here](#car-setup---best-practice). So, despite using your TCD in a car without WiFi, you can at this point configure a WiFi Connection, eg. to your cell phone's hotspot, and then put the TCD into Car Mode which reboots it into Access-Point mode. 
 
-> If your TCD is mounted in a car, there is a special Car Mode that allows having a WiFi network configured (for administrative purposes and NTP time synchronization) and switching between AP-Mode and WiFi-connection through keypad commands. See [here](#car-mode) and [here](#car-setup---best-practice). So, despite using your TCD in a car without WiFi, you can at this point configure a WiFi Connection, eg. to your cell phone's hotspot, and then put the TCD into Car Mode which reboots it into Access-Point mode. 
+After completing these steps, your TCD is ready for use; you can also continue configuring it to your personal preferences through the Config Portal.
 
 ## The Config Portal
 
@@ -1120,7 +1120,7 @@ To see which BTTFN clients are currently known to the TCD, either check at the C
 
 #### Car Mode
 
-As [discussed](#connecting-to-a-wifi-network), in a car or other places without a WiFi network, the TCD can act as WiFi access point for other props. The recommended network configuration for this use case is as follows:
+As [discussed](#wifi-setup), in a car or other places without a WiFi network, the TCD can act as WiFi access point for other props. The recommended network configuration for this use case is as follows:
 
 ![APmode](img/apmode-car.png)
 
@@ -1477,7 +1477,7 @@ If there are several APs with identical SSID nearby, the TCD will connect to the
 
 ##### &#9193; Forget Saved WiFi Network
 
-Checking this box (and clicking SAVE) deletes the currently saved WiFi network (SSID and password) and reboots the device; it will restart in "access point" (AP) mode. See [here](#connecting-to-a-wifi-network).
+Checking this box (and clicking SAVE) deletes the currently saved WiFi network (SSID and password) and reboots the device; it will restart in "access point" (AP) mode. See [here](#wifi-setup).
 
 ##### &#9193; Hostname
 
@@ -1489,7 +1489,7 @@ _This setting applies to both AP-mode and when your TCD is connected to a WiFi n
 
 ##### &#9193; WiFi connection attempts
 
-Number of times the firmware tries to connect to a WiFi network, before falling back to AP-mode. See [here](#connecting-to-a-wifi-network)
+Number of times the firmware tries to connect to a WiFi network, before falling back to AP-mode. See [here](#wifi-setup)
 
 ##### &#9193; Periodic reconnection attempts
 
