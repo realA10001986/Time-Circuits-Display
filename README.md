@@ -1334,14 +1334,14 @@ Please refer to the other props' documentation, chapter "Car Setup", for details
 1. Connect your notebook/handheld to WiFi network "TCD-AP".
 2. Navigate your browser to the prop's Config Portal. By default the domains are http://timecircuits.local, http://flux.local, http://sid.local, http://gauges.local, http://vsr.local, http://dtmremote.local.
 
-#### Option setting
+#### Typical Option setting for in-car operation
 
 - TCD:
   - Check **_Display GPS Speed_**
   - Check **_Provide GPS speed to BTTFN clients_**
 
 - Other props (FC, SID, Dash Gauges, VSR, Remote):
-  - Put TCD's hostname (usually _timecircuits_) in **_Hostname of TCD_**
+  - Put TCD's hostname (usually _timecircuits_) in **_Hostname of TCD_**. (The other options under "Wireless connection (BTTFN)" can be set/unset based on your personal preferences.)
   - Uncheck **_TCD is connected by wire_** (Option not available on Remote)
 
 #### Performing Firmware Updates
