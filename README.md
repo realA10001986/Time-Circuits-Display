@@ -312,6 +312,12 @@ In the following, "pressing" means briefly pressing a key, "holding" means keepi
     <tr>
      <td align="center" colspan="2">Keypad commands<br>(&#9166; = <code>ENTER</code> key)</td>
     </tr>
+  <!--
+    <tr>
+     <td align="left">Toggle <a href="#gps-for-speed">GPS speed</a> display</a></td>
+     <td align="left"><code>8</code>&#9166;</td>
+    </tr>
+  -->
    <tr>
      <td align="left">Reset display mode (disable 111-117)</a></td>
      <td align="left"><code>110</code>&#9166;</td>
@@ -1048,6 +1054,12 @@ One nice feature of GPS is that the receiver can deliver current speed of moveme
 |:--:|
 | Click to watch the video |
 
+<!--
+To have GPS speed displayed on your speedo, first select an [Update Rate](#-gps-speed) in the Config Portal. Keypad command 8 then allows switching between
+- GPS speed and 
+- [rotary encoder](#rotary-encoder) output, displaying temperature, displaying 0 or switching the speedo off, depending on other option settings and your hardware configuration. 
+-->
+
 To have GPS speed displayed on your speedo, check **_Display GPS speed_** in the Config Portal. 
 
 To let other props connected through [BTTF-Network](#connecting-props-wirelessly-bttf-network-bttfn) know about current GPS speed, check the option **_Provide GPS speed to wireless props_**.
@@ -1072,6 +1084,13 @@ A rotary encoder for speed allows manually selecting speed to be displayed on th
 | [![Watch the video](https://img.youtube.com/vi/Y6uu1SU6YJA/0.jpg)](https://youtu.be/Y6uu1SU6YJA) |
 |:--:|
 | Click to watch the video |
+
+<!--
+Remarks:
+- The speedo displays "0" as long as the encoder is not moved; if the encoder is turned counter-clockwise a couple of notches, the speedo will be switched off or [display temperature]((#-display-temperature) (if so configured and a [sensor](#room-condition-mode-temperaturehumidity-sensor) is present).
+- The encoder is also evaluated if no speedo is connected; it can be operated "blindly" to trigger time travels and its movement is sent to BTTFN clients like GPS speed.
+- If a GPS receiver is present and GPS speed isn't [disabled](#-gps-speed), keypad command 8 switches between GPS speed and rotary encoder speed.
+-->
 
 Remarks:
 - The encoder is only evaluated if no GPS receiver is connected or if the **_Display GPS speed_** is unchecked (as this option gives GPS speed priority over the encoder).
@@ -1339,6 +1358,9 @@ Please refer to the other props' documentation, chapter "Car Setup", for details
 - TCD:
   - Check **_Display GPS Speed_**
   - Check **_Provide GPS speed to BTTFN clients_**
+  <!--
+  - Select your preferred update rate under **_GPS speed_**
+  -->
 
 - Other props (FC, SID, Dash Gauges, VSR, Remote):
   - Put TCD's hostname (usually _timecircuits_) in **_Hostname of TCD_**. (The other options under "Wireless connection (BTTFN)" can be set/unset based on your personal preferences.)
@@ -1733,7 +1755,7 @@ Brightness of speedo display when displaying speed.
 
 ##### &#9193; Switch speedo off when idle
 
-If this is checked, the Speedo is switched off when idle, i.e. when no time travel takes place, no speed from GPS or a rotary encoder and no temperature are available. If checked, the speedo shows a speed of zero in those situations. Having this checked will wear the LEDs of your speedo in the long run.
+If this is checked, the Speedo is switched off when idle, i.e. when no time travel takes place, no speed from GPS or a rotary encoder and no temperature are available. If unchecked, the speedo shows a speed of zero in those situations. 
 
 ##### &#9193; Real-life acceleration figures
 
@@ -1804,6 +1826,18 @@ Selects between Fahrenheit and Celsius for temperature display. See [here](#room
 ##### &#9193; Temperature offset
 
 This offset, which can range from -3.0 to 3.0, is added to the sensor measurement, in order to compensate sensor inaccuracy or suboptimal sensor placement.
+
+<!--
+#### <ins>GPS speed settings</ins>
+
+##### &#9193; GPS speed
+
+If your TCD is installed in a car, you have a [GPS receiver](#gps-receiver) and want GPS speed is to be shown on your speedo, you can select an update rate here. The choices are once, twice, four times or five times per second. It appears that the GPS receiver calculates speed on every satellite position update, and the higher the update rate, the shorter the travelled distance, and the higher the error rate. The recommendation is therefore 2Hz (twice per second) as it provides the (IMHO) best combination of quickness and accuracy.
+
+To switch between GPS speed and other display options (rotary encoder, "0", temperature, speedo off), issue keypad command 8.
+
+If your TCD is permanently stationary, such as in a home setup, choose "Disabled". 
+-->
 
 #### <ins>External switches/buttons</ins>
 
