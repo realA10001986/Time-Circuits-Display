@@ -1410,6 +1410,8 @@ To reduce the number of write operations and thereby prolong the life of your TC
 
 ## Firmware Installation / Firmware Update
 
+_Updating the firmware requires an [SD card](#sd-card), if the firmware comes with an updated the sound-pack._
+
 To update the firmware of your TCD, enter the [Config Portal](#the-config-portal), click on "Update & Upload", select the pre-compiled binary file ("**timecircuits-A10001986-Vx.xxx-XXXX.bin**" for A10001986 releases, "**Time_Circuits_Display_vX.YY.bin**" for CircuitSetup releases) provided in the [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases), and click on *Update*. 
 
 > [!IMPORTANT]
