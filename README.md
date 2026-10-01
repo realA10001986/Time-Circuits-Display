@@ -57,7 +57,7 @@ Features include
   - Multi-purpose output for signaling/controlling other props [connected by wire](#connecting-props-by-wire) (for example flux lights, third party props)
 - &#128007; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370;
 
->[This repository](https://tcd.out-a%2dti.me) is the upstream source for CircuitSetup's releases. The differences are that both code and documentation [here](https://tcd.out%2da-ti.me) might be ahead in development, and in the sound-packs.
+>[This repository](https://tcd.out-a%2dti.me) is the upstream source for CircuitSetup's releases. The [A10001986 edition](https://tcd.out%2da-ti.me) might be ahead in development and documentation, and uses a slightly different sound-pack compared to the CircuitSetup edition.
 
 For information on updating the firmware of your TCD, see [here](#firmware-installation--firmware-update).
 
@@ -1430,7 +1430,10 @@ _Installing the sound-pack requires an [SD card](#sd-card)._
 
 >If your factory-fresh TCD came without an SD card, you need to re-install the sound-pack to be able to enjoy all of the provided sounds. Parts of the sound-pack are installed to your SD card.
 
->A10001986 and CircuitSetup use different sound-packs. If you switch from one version to the other, the matching sound-pack must be re-installed. [A10001986-releases](https://github.com/realA10001986/Time-Circuits-Display/releases) use "sound-pack-**tw**XX", while [CircuitSetup's](https://github.com/CircuitSetup/Time-Circuits-Display/releases) are named "sound-pack-**cs**XX". The Config Portal will tell you which version is required to be installed.
+<details>
+<summary>A10001986 vs CircuitSetup</summary>
+The A10001986 and CircuitSetup editions differ slightly in the sound-packs. If you switch from one edition to the other, the matching sound-pack must be re-installed. [A10001986-releases](https://github.com/realA10001986/Time-Circuits-Display/releases) use "sound-pack-**tw**XX", while [CircuitSetup's](https://github.com/CircuitSetup/Time-Circuits-Display/releases) are named "sound-pack-**cs**XX". The Config Portal will tell you which version is required to be installed.
+</details>
 
 The first step is to extract the zipped sound-pack (which is included in every [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases)). It contains one file named "TCDA.bin".
 
