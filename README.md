@@ -1466,9 +1466,11 @@ This leads to the [HomeAssistant/MQTT Settings page](#hamqtt-settings).
 
 This leads to the firmware update and audio upload page.
 
-See [here](#) for firmware update instructions.
+See [here](#firmware-installation--firmware-update) for firmware update instructions.
 
-Finally, this page is also for uploading [custom or replacement sound files](#installing-custom--replacement-audio-files) to the SD card. Select one or more mp3 file in the _bottom_ file selector and click *Upload*. (Maximum 16 files at a time.)
+This page is also for uploading [custom or replacement sound files](#installing-custom--replacement-audio-files) to the SD card:
+- Select one or more mp3 file(s) in the _bottom_ file selector (max 16 files at a time) and
+- click *Upload*.
 
 ---
 
