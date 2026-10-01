@@ -651,7 +651,7 @@ A [substitution](#sound-substitution) alarm sound file will be played once. If i
 
 ### Other means
 
-An alarm can also be signalled through the [TT-OUT pin](-signals-alarm) to third party props, as well as wirelessly through [BTTFN](#connecting-props-wirelessly-bttf-network-bttfn) and [Home Assistant](#home-assistant--mqtt). Only the original alarm is transmitted, not repeated alarms resulting from Snooze.
+An alarm can also be signaled through the [TT-OUT pin](-signals-alarm) to third party props, as well as wirelessly through [BTTFN](#connecting-props-wirelessly-bttf-network-bttfn) and [Home Assistant](#home-assistant--mqtt). Only the original alarm is transmitted, not repeated alarms resulting from Snooze.
 
 ## Count-down timer
 
