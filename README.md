@@ -680,9 +680,11 @@ Keypad command ```77``` displays the programmed reminder, ```770``` deletes it, 
 
 At the time the reminder is due, the TCD plays a sound. If a file named "reminder.mp3" is on your SD card, this will be played instead of the default sound.
 
+## Sound Customization
+
 ### Sound substitution
 
-The TCD's built-in sound effects can be substituted by your own sound files stored on the SD card. These files will be played back directly from the SD card during operation, so the SD card has to remain in the slot.
+The TCD's built-in sound effects can be substituted by your own sound files stored on the SD card.
 
 Your replacements need to be put in the root (top-most) directory of the SD card, be in mp3 format (128kbps max) and named as follows:
 - "alarm.mp3": Played when the alarm sounds.
@@ -1403,7 +1405,7 @@ To reduce the number of write operations and thereby prolong the life of your TC
 
 ## Firmware Installation / Firmware Update
 
-_Updating the firmware requires an [SD card](#sd-card), if the firmware comes with an updated the sound-pack._
+_Updating the firmware requires an [SD card](#initial-configuration), if the firmware comes with an updated the sound-pack._
 
 To update the firmware of your TCD, enter the [Config Portal](#the-config-portal), click on "Update & Upload", select the pre-compiled binary file ("**timecircuits-A10001986-Vx.xxx-XXXX.bin**" for A10001986 releases, "**Time_Circuits_Display_vX.YY.bin**" for CircuitSetup releases) provided in the [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases), and click on *Update*. 
 
@@ -1419,7 +1421,7 @@ If you are using a fresh ESP32, please go <a href="https://install.out-a-ti.me">
 
 The firmware comes with a sound-pack which needs to be installed separately. The sound-pack is not updated as often as the firmware itself. There will be a message in the Config Portal and the TCD will display "PLEASE INSTALL SOUND PACK" during boot when/if the sound-pack needs to be updated.
 
-_Installing the sound-pack requires an [SD card](#sd-card)._
+_Installing the sound-pack requires an [SD card](#initial-configuration)._
 
 >If your factory-fresh TCD came without an SD card, you need to re-install the sound-pack to be able to enjoy all of the provided sounds. Parts of the sound-pack are installed to your SD card.
 
