@@ -56,7 +56,7 @@ Features include
   - Multi-purpose output for signaling/controlling other props [connected by wire](#connecting-props-by-wire) (for example flux lights, third party props)
 - &#128007; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370;
 
->[This repository](https://tcd.out-a%2dti.me) is the upstream source for CircuitSetup's releases. The [A10001986 edition](https://tcd.out%2da-ti.me) might be ahead in development and documentation, and uses a slightly different sound-pack compared to the CircuitSetup edition.
+>[The A10001986 repository](https://tcd.out-a%2dti.me) is the upstream source for CircuitSetup's firmware releases. The [A10001986 edition](https://tcd.out%2da-ti.me) might be ahead in development and documentation, and uses a slightly different sound-pack compared to the CircuitSetup edition.
 
 For information on updating the firmware of your TCD, see [here](#firmware-installation--firmware-update).
 
@@ -74,9 +74,13 @@ The second step is to establish access to the TCD's configuration website ("Conf
 
 #### Time zone and Time
 
-The next step is to set the TCD's time zone. If the time zone isn't properly configured, the TCD will show a wrong time and DST (daylight saving) will not be switched on/off correctly.
+The next step is to set the time zone. If the time zone isn't properly configured, the TCD will show a wrong time and DST (daylight saving) will not be switched on/off correctly.
 
-Click on "Settings" on the Config Portal's main page, and specify your [time zone](#-time-zone). Then click "SAVE"; the TCD will reboot.
+- Click on "Settings" on the Config Portal's main page,
+- specify your [time zone](#-time-zone), and
+- click "SAVE".
+
+The TCD will reboot. Afterwards, please re-connect your computer/handheld to "TCD-AP" and re-enter the Config Portal as described above.
 
 Setting actual time:
 - If the TCD is going to be connected to a WiFi network with internet access as described below, it will receive time information through NTP (network time protocol). No user interaction is required.
