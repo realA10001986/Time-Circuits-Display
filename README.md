@@ -1323,7 +1323,20 @@ For more information, see [here](https://remote.out-a-ti.me).
 #### General
 
 - Do not connect the props to your car's electrical system. Use a separate power supply, such as a lithium battery, with constant power output (no peaks, no degrading voltage on depletion).
-- Put good-quality ("endurance") SD cards into all the props.
+- Put good-quality ("industrial", "endurance") [microSD cards into all the props](#initial-configuration).
+
+#### Typical Option setting for in-car operation
+
+- TCD:
+  - Check **_Display GPS Speed_**
+  - Check **_Provide GPS speed to BTTFN clients_**
+  <!--
+  - Select your preferred update rate under **_GPS speed_**
+  -->
+
+- Other props (FC, SID, Dash Gauges, VSR, Remote):
+  - Put TCD's hostname (usually _timecircuits_) in **_Hostname of TCD_**. (The other options under "Wireless connection (BTTFN)" can be set/unset based on your personal preferences.)
+  - Uncheck **_TCD is connected by wire_** (Option not available on Remote)
   
 #### Network setup
 
@@ -1331,7 +1344,7 @@ In a car, the TCD acts as WiFi access point, to which the other props are connec
 
 ![APmode](img/apmode-car.png)
 
-This configuration is achieved automatically by putting all props into [Car Mode](#car-mode). Start with the TCD, and all other afterwards.
+This configuration is achieved automatically by putting all props into [Car Mode](#car-mode). Start with the TCD, and do all others afterwards.
 
 - TCD: Keypad commands ```990```/```991``` disable/enable Car Mode. 
 - FC and SID: IR command sequences ```*990ok```/```*991ok``` disable/enable Car Mode.
@@ -1346,19 +1359,6 @@ Please refer to the other props' documentation, chapter "Car Setup", for details
 1. Connect your notebook/handheld to WiFi network "TCD-AP".
 2. Navigate your browser to the prop's Config Portal. By default the domains are http://timecircuits.local, http://flux.local, http://sid.local, http://gauges.local, http://vsr.local, http://dtmremote.local.
 
-#### Typical Option setting for in-car operation
-
-- TCD:
-  - Check **_Display GPS Speed_**
-  - Check **_Provide GPS speed to BTTFN clients_**
-  <!--
-  - Select your preferred update rate under **_GPS speed_**
-  -->
-
-- Other props (FC, SID, Dash Gauges, VSR, Remote):
-  - Put TCD's hostname (usually _timecircuits_) in **_Hostname of TCD_**. (The other options under "Wireless connection (BTTFN)" can be set/unset based on your personal preferences.)
-  - Uncheck **_TCD is connected by wire_** (Option not available on Remote)
-
 #### Performing Firmware Updates
 
 1. Download the firmware binaries and sound-packs for all props to be updated to your notebook/handheld.
@@ -1368,7 +1368,9 @@ Please refer to the other props' documentation, chapter "Car Setup", for details
 
 #### Time Synchonization
 
-The TCD has no internet access while in Car Mode; this means that, unless a GPS receiver is present, it cannot update its clock automatically. If the clock runs off over time (which usually is something like 1 minute in 6-8 months), you either quit Car Mode once in a while and allow the TCD connect to a internet-connected WiFi network or re-adjust time using the [keypad menu](#how-to-set-the-real-time-clock-rtc). 
+If a CircuitSetup speedo or a third-party GPS receiver is connected to the TCD, you can skip this chapter.
+
+Otherwise: The TCD has no internet access while in Car Mode; this means that, lacking both internet access and GPS, it cannot update its clock automatically. If the clock runs off over time (which usually is something like 1 minute in 6-8 months), you either quit Car Mode once in a while and allow the TCD connect to a internet-connected WiFi network or re-adjust time using the [keypad menu](#how-to-set-the-real-time-clock-rtc). 
 
 For the first alternative, it is recommended to pre-configure the TCD to connect to a WiFi network (eg. your iPhone's WiFi hotspot) when *not* in Car mode. In order to do so, 
 - quit Car Mode (```990```),
