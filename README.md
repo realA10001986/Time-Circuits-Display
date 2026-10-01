@@ -1765,7 +1765,7 @@ If this option is checked, real-life figures are used. If unchecked, movie-like 
 
 If you are using your TCD together with a Futaba Remote Control prop, leave this unchecked.
 
-"Movie-like" was created by measuring the times between each mph on the Remote Control shown in the very first time travel scene in part 1. For steps not shown, interpolation (based on the real-life acceleration curve) was used. The duration of the entire scene was not taken into account as it would result in a 0-88mph time of either 11 seconds (counting from releasing the brake) or 36 seconds (counting from pushing up the throttle stick on the remote), which both do not match the mph-increment-timings at all.
+"Movie-like" was created by measuring the times between each mph on the Remote Control shown in the very first time travel scene in part 1. Steps not shown were interpolated based on the real-life acceleration curve. The duration of the entire scene was not taken into account as it would result in a 0-88mph time of either 11 seconds (counting from releasing the brake) or 36 seconds (counting from pushing up the throttle stick on the remote), which both do not match the mph-increment-timings at all.
 
 ##### &#9193; Factor for Real-life figures
 
