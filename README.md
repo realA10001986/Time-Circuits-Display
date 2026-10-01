@@ -183,7 +183,7 @@ If "REPLACE BATTERY" is shown upon boot, the onboard CR2032 battery is depleted 
 
 The TCD sometimes writes data to either the internal flash memory or the SD card. These write operations should not be interrupted by a power loss.
 
-In general, it is safe to power-down the TCD when it has been idle for 15 seconds or after it has been fake-powered-down. Try to avoid powering down the TCD
+In general, it is safe to power-down the TCD after it has been [fake-powered-down](#fake-power-switch) or when it has been idle for 15 seconds. Try to avoid powering down the TCD
 - when it is clearly busy (such as when copying or renaming audio files);
 - within 15 seconds after changing the display mode (World Clock, Room condition, geolocation, …) or audio volume through a Rotary Encoder, 
 - if [**_Make time travel persistent_**](#persistent--non-persistent-time-travels) is checked: in the first few seconds after a timetravel.
