@@ -43,7 +43,6 @@ Features include
   - [Home Assistant](#home-assistant--mqtt) (MQTT) support for sending and displaying messages, remote controlling and more.
   - Easy [firmware updates](#firmware-installation--firmware-update) over-the-air. No need to send in stuff for firmware updates, it's the 2020s after all.
 - [Night mode](#night-mode): Dim or switch off displays on schedule, manually or sensor-controlled. So you won't be blinded during night drives.
-- Support for [SD cards](#sd-card) up to 32GB. SD card required for firmware updates.
 - Audio output through [line-out](#audio-output) for time travel sound, music and [user-added](#additional-custom-sounds) sound. Connect your TCD to your (car) stereo for high-quality stereo-sound. No more "time traveling" through a 2" speaker. (Requires Control Board 1.4.5 or later)
 - [Music player](#the-music-player): Play your mp3 files located on SD card, through your (car) stereo if available. 
 - [Keypad-controlled menu](#the-keypad-menu) for adjusting various settings and viewing status through the three displays
@@ -63,7 +62,9 @@ For information on updating the firmware of your TCD, see [here](#firmware-insta
 
 ## Initial Configuration
 
-The first step is to put a **good-quality** ("endurance", "industrial", "long life", ...) **and empty microSD card into the card slot** on the back of the keypad. The maximum size is 32GB and the card must be FAT32 formatted. [More information](#sd-card)
+Some functions of your TCD require an SD card. The first step is therefore to put a **good-quality** ("endurance", "industrial", "long life", ...) **and empty microSD card into the card slot** on the back of the keypad. The SD card must be inserted before powering up the TCD. It is not recognized if inserted while the TCD is running. Furthermore, do not remove the SD card while the TCD is powered.
+
+>SD/SDHC/SDXC cards up to 32GB are supported. Card needs to be FAT32-formatted (not exFAT). Transcend, Sandisk Ultra and Industrial, Verbatim Premium and Samsung Pro Endurance SDHC cards usually work fine. Some SD cards might not be recognized due to off-specs initialization quirks. SDUC cards are not supported.
 
 The second step is to establish access to the TCD's configuration website ("Config Portal") in order to configure your TCD:
 
@@ -678,14 +679,6 @@ _All fields consist of two digits, and hours are entered in 24-hour notation._
 Keypad command ```77``` displays the programmed reminder, ```770``` deletes it, and ```777``` displays the days/hours/minutes until the next reminder.
 
 At the time the reminder is due, the TCD plays a sound. If a file named "reminder.mp3" is on your SD card, this will be played instead of the default sound.
-
-## SD card
-
->Only SD/SDHC/SDXC cards up to 32GB are supported. Card needs to be FAT32-formatted (not exFAT). Transcend, Sandisk Ultra (as of firmware version 3.25) and Industrial, Verbatim Premium and Samsung Pro Endurance SDHC cards usually work fine. Some SD cards might not be recognized due to off-specs initialization quirks. SDUC cards are not supported.
-
-The SD card, apart from being required for [installing](#sound-pack-installation) and partly hosting the sound-pack, can be used for substituting built-in sound effects, some additional custom sound effects, and for music played back by the [Music player](#the-music-player). Also, it is _strongly recommended_ to store [secondary settings](#-save-secondary-settings-on-sd) on the SD card to minimize [Flash Wear](#flash-wear).
-
-The SD card must be inserted before powering up the TCD. It is not recognized if inserted while the TCD is running. Furthermore, do not remove the SD card while the TCD is powered.
 
 ### Sound substitution
 
