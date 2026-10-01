@@ -84,7 +84,7 @@ Setting actual time:
 
 #### Sound-pack re-installation (Firmware 3.23 an onwards)
 
-If your factory-fresh TCD came with firmware version 3.23 or later, but no SD card, and you have an SD card at hand, the next step is to re-install the sound-pack. The reason for this is that the sound-pack does not entirely fit into the device's flash memory and parts of it need to be installed on your SD card. Please see [here](#sound-pack-installation) for instructions.
+If your factory-fresh TCD came with firmware version 3.23 or later, but no SD card, the next step is to re-install the sound-pack. The reason for this is that the sound-pack does not entirely fit into the device's flash memory and parts of it need to be installed on your SD card. Please see [here](#sound-pack-installation) for instructions.
 
 #### WiFi Setup
 
@@ -216,7 +216,7 @@ In World Clock (WC) mode, the red and yellow displays show not some stale times,
 |:--:|
 | *World Clock mode* |
 
-WC mode is toggled through keypad command ```112```. If an SD card is present, WC mode is persistent across reboots. To return to the default display mode, enter keypad command ```110```.
+WC mode is toggled through keypad command ```112```. To return to the default display mode, enter keypad command ```110```.
 
 For logical reasons, WC mode will be automatically disabled in some situations:
 
@@ -235,7 +235,7 @@ To toggle WC/RC hybrid mode, enter keypad command ```113```. To return to the de
 
 ### Minimal mode
 
-In "Minimal" mode, the *Present Time* display shows the weekday instead of the year, the other displays are switched off. To enable this mode, enter keypad command ```117```. If an SD card is present, Minimal mode is persistent across reboots. To return to the default display mode, enter keypad command ```110```.
+In "Minimal" mode, the *Present Time* display shows the weekday instead of the year, the other displays are switched off. To enable this mode, enter keypad command ```117```. To return to the default display mode, enter keypad command ```110```.
 
 Minimal mode is disabled automatically under the same conditions as World Clock mode.
 
@@ -548,8 +548,6 @@ To travel back to actual present time, hold ```9``` for 2 seconds.
 ### Persistent / Non-persistent time travels
 
 On the Config Portal's "Settings" page, there is an option item named **_Make time travel persistent_**. The default is off. 
-
->For using this feature, an SD card is required and the option **_Save secondary settings on SD_** must be checked as well.
 
 If time travels are persistent
 - any *destination time* entered (by typing ```mmddyyyyhhMM```/```mmddyyyy```/```hhMM```) is immediately saved and retrieved upon power-up/reboot.
@@ -1041,7 +1039,7 @@ Three different notations are supported:
 - DMS: Degrees, minutes, seconds;
 - DMD: Degrees, decimal minutes. This is the most precise one of the three.
 
-To toggle geolocation mode, enter keypad commands ```114``` (DD), ```115``` (DMS) or ```116``` (DMD). Geolocation mode is mutually exclusive to World Clock, Room Condition and Minimal mode, and disabled when a Time Travel is initiated. If an SD card is present, Geolocation mode is persistent across reboots.
+To toggle geolocation mode, enter keypad commands ```114``` (DD), ```115``` (DMS) or ```116``` (DMD). Geolocation mode is mutually exclusive to World Clock, Room Condition and Minimal mode, and disabled when a Time Travel is initiated.
 
 ### GPS for speed
 
@@ -1100,7 +1098,7 @@ A rotary encoder for volume replaces the volume knob on back of the TCD's keypad
 
 ## Room Condition Mode, Temperature/humidity sensor
 
-The firmware supports various [temperature/humidity sensors](AddOns.md#temperaturehumidity-sensor) for "Room Condition mode"; in this mode, *destination* and *last departed* times are replaced by temperature and humidity, respectively. To toggle between normal and Room Condition mode, enter keypad command ```111```. If an SD card is present, Room Condition mode is persistent across reboots.
+The firmware supports various [temperature/humidity sensors](AddOns.md#temperaturehumidity-sensor) for "Room Condition mode"; in this mode, *destination* and *last departed* times are replaced by temperature and humidity, respectively. To toggle between normal and Room Condition mode, enter keypad command ```111```.
 
 ![rcmode](img/rcmode.jpg)
 
@@ -1397,17 +1395,13 @@ After WiFi has been switched off due to timer expiration, it can be re-enabled b
 
 If your configured WiFi network was not available when the TCD was trying to connect, it will end up in AP-mode. Holding ```7``` in that case will trigger another attempt to connect to your WiFi network.
 
-## Flash Wear
-
-Flash memory has a somewhat limited lifetime. It can be written to only between 10.000 and 100.000 times before becoming unreliable. The firmware writes to the internal flash memory when saving settings and other data. Every time you change settings through the keypad menu or the Config Portal, data is written to flash memory.
-
-To reduce the number of write operations and thereby prolong the life of your TCD, it is recommended to use a good-quality SD card and to check **_[Save secondary settings on SD](#-save-secondary-settings-on-sd)_** in the Config Portal; secondary settings (volume, alarm, reminder, car-mode state, exhibition mode data and state, time travel data and state) are then stored on the SD card (which also suffers from wear but is easy to replace). See [here](#-save-secondary-settings-on-sd) for more information.
-
 ## Firmware Installation / Firmware Update
 
-_Updating the firmware requires an [SD card](#initial-configuration), if the firmware comes with an updated the sound-pack._
-
-To update the firmware of your TCD, enter the [Config Portal](#the-config-portal), click on "Update & Upload", select the pre-compiled binary file ("**timecircuits-A10001986-Vx.xxx-XXXX.bin**" for A10001986 releases, "**Time_Circuits_Display_vX.YY.bin**" for CircuitSetup releases) provided in the [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases), and click on *Update*. 
+To update the firmware of your TCD, 
+- enter the [Config Portal](#the-config-portal),
+- click on "Update & Upload",
+- select the firmware file provided in the [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases) ("**timecircuits-A10001986-Vx.xxx-XXXX.bin**" for A10001986 releases, "**Time_Circuits_Display_vX.YY.bin**" for CircuitSetup releases), and
+- click on *Update*. 
 
 > [!IMPORTANT]
 > Do not install "A-Car" and/or "GTE" labeled versions on standard versions of the TCD, those are for modified/different hardware! Unless you know for a fact that you have "A-Car" displays or a "GTE" keypad, you need the "standard" firmware file.
@@ -1423,11 +1417,9 @@ The firmware comes with a sound-pack which needs to be installed separately. The
 
 _Installing the sound-pack requires an [SD card](#initial-configuration)._
 
->If your factory-fresh TCD came without an SD card, you need to re-install the sound-pack to be able to enjoy all of the provided sounds. Parts of the sound-pack are installed to your SD card.
-
 <details>
 <summary>A10001986 vs CircuitSetup</summary>
-The A10001986 and CircuitSetup editions differ slightly in the sound-packs. If you switch from one edition to the other, the matching sound-pack must be re-installed. [A10001986-releases](https://github.com/realA10001986/Time-Circuits-Display/releases) use "sound-pack-**tw**XX", while [CircuitSetup's](https://github.com/CircuitSetup/Time-Circuits-Display/releases) are named "sound-pack-**cs**XX". The Config Portal will tell you which version is required to be installed.
+The A10001986 and CircuitSetup editions of the TCD firmware differ slightly in the sound-packs. If you switch from one edition to the other, the matching sound-pack must be re-installed. [A10001986-releases](https://github.com/realA10001986/Time-Circuits-Display/releases) use "sound-pack-**tw**XX", while [CircuitSetup's](https://github.com/CircuitSetup/Time-Circuits-Display/releases) are named "sound-pack-**cs**XX". The Config Portal will tell you which version is required to be installed.
 </details>
 
 The first step is to extract the zipped sound-pack (which is included in every [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases)). It contains one file named "TCDA.bin".
@@ -1474,14 +1466,7 @@ This leads to the [HomeAssistant/MQTT Settings page](#hamqtt-settings).
 
 This leads to the firmware update and audio upload page.
 
-To upload a new firmware, such as published in the [Release packages](https://github.com/realA10001986/Time-Circuits-Display/releases), select the "**timecircuits-A10001986-Vx.xxx-XXXX.bin**" or "**Time_Circuits_Display_vX.YY.bin**" file as contained in the Release package in the _top_ file selector and click *Update*. 
-
-> [!IMPORTANT]
-> Do not install "A-Car" and/or "GTE" labeled versions on standard versions of the TCD, those are for modified/different hardware! Unless you know for a fact that you have "A-Car" displays or a "GTE" keypad, you need the "standard" firmware file.
-
-You can also install the TCD's sound-pack on this page; download the sound-pack (which is included in every [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases)), extract it and select the resulting TCDA.bin file in the _bottom_ file selector. Finally, click *Upload*. An SD card is required for this operation.
-
-See also [here](#firmware-installation--firmware-update).
+See [here](#) for firmware update instructions.
 
 Finally, this page is also for uploading [custom or replacement sound files](#installing-custom--replacement-audio-files) to the SD card. Select one or more mp3 file in the _bottom_ file selector and click *Upload*. (Maximum 16 files at a time.)
 
@@ -1710,22 +1695,18 @@ If the light sensor reports a number of lux below or equal to this value, night-
 
 ##### &#9193; Save secondary settings on SD
 
-If this is checked, secondary settings (brightness, time cycling interval, volume, alarm, reminder, car mode state, exhibition mode data and state, time travel state and data) are stored on the SD card (if one is present). This helps to minimize write operations to the internal flash memory and to prolong the lifetime of your TCD. See [Flash Wear](#flash-wear).
+_Please leave this option checked. It is safe to have this option checked even with no SD card present._
 
-Apart from Flash Wear, there is another reason for using an SD card for settings: Writing data to internal flash memory can cause delays of up to 1.5 seconds, which interrupt sound playback and have other undesired effects. The TCD needs to save data from time to time, so for a smooth experience without unexpected and unwanted delays, please use an SD card and check this option.
+If this is checked, some settings are stored on the SD card. This helps to minimize write operations to the internal flash memory and to prolong the lifetime of your TCD. Apart from Flash Wear, there is another reason for using an SD card for settings: Writing data to internal flash memory can cause delays of up to 1.5 seconds, which interrupt sound playback and have other undesired effects. The TCD needs to save data from time to time, so for a smooth experience without unexpected and unwanted delays, please use an SD card and check this option.
 
-It is safe to have this option checked even with no SD card present.
-
-If you want copy settings from one SD card to another, do as follows:
+To copy settings from one SD card to another, do as follows:
 - With the old SD card still in the slot, enter the Config Portal, turn off _Save secondary settings on SD_, and click "SAVE".
 - After the TCD has rebooted, power it down, and swap the SD card for your new one.
 - Power-up the TCD, enter the Config Portal, re-enable _Save secondary settings on SD_, and click "SAVE".
 
-This procedure ensures that all your settings are copied from the old to the new SD card.
-
 ##### &#9193; Make time travel persistent
 
-See [here](#persistent--non-persistent-time-travels). For this option to take effect, it is required that the _Save secondary settings on SD_ is checked as well, and an SD card is present. Time travel data is only ever stored on SD, never in internal flash memory.
+See [here](#persistent--non-persistent-time-travels). For this option to take effect, it is required that the _Save secondary settings on SD_ is checked as well, and an SD card is present.
 
 #### <ins>Hardware settings</ins>
 
