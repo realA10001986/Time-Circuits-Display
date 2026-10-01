@@ -1398,9 +1398,10 @@ If your configured WiFi network was not available when the TCD was trying to con
 ## Firmware Installation / Firmware Update
 
 To update the firmware of your TCD, 
+- download the firmware file provided in the [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases) ("**timecircuits-A10001986-Vx.xxx-XXXX.bin**" for A10001986 releases, "**Time_Circuits_Display_vX.YY.bin**" for CircuitSetup releases)
 - enter the [Config Portal](#the-config-portal),
 - click on "Update & Upload",
-- select the firmware file provided in the [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases) ("**timecircuits-A10001986-Vx.xxx-XXXX.bin**" for A10001986 releases, "**Time_Circuits_Display_vX.YY.bin**" for CircuitSetup releases), and
+- select the downloaded firmware file in the _top_ file selector, and
 - click on *Update*. 
 
 > [!IMPORTANT]
@@ -1417,14 +1418,13 @@ The firmware comes with a sound-pack which needs to be installed separately. The
 
 _Installing the sound-pack requires an [SD card](#initial-configuration)._
 
-<details>
-<summary>A10001986 vs CircuitSetup</summary>
-The A10001986 and CircuitSetup editions of the TCD firmware differ slightly in the sound-packs. If you switch from one edition to the other, the matching sound-pack must be re-installed. [A10001986-releases](https://github.com/realA10001986/Time-Circuits-Display/releases) use "sound-pack-**tw**XX", while [CircuitSetup's](https://github.com/CircuitSetup/Time-Circuits-Display/releases) are named "sound-pack-**cs**XX". The Config Portal will tell you which version is required to be installed.
-</details>
-
-The first step is to extract the zipped sound-pack (which is included in every [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases)). It contains one file named "TCDA.bin".
-
-Next, head to the [Config Portal](#the-config-portal), click on "Update & Upload", select the "TCDA.bin" file in the _bottom_ file selector and click on *Upload*.
+To update the sound-pack of your TCD, 
+- download the sound-pack file provided in the [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases) ("**sound-pack-twXX**" for A10001986 releases, "**TCDA.bin**" for CircuitSetup releases),
+- (if the sound-pack is a zip file, extract it. It contains one file named TCDA.bin)
+- enter the [Config Portal](#the-config-portal),
+- click on "Update & Upload",
+- select the TCDA.bin file in the _bottom_ file selector, and
+- click on *Upload*. 
 
 <details>
 <summary>Alternative way</summary>
@@ -1438,6 +1438,11 @@ Alternatively, you can install the sound-pack the following way:
 </ul>
   
 *Since version 3.23, a considerable part of the sound-pack is installed on the SD card itself. As a result, to enjoy all provided sound effects, the SD card has to remain in the slot.*
+</details>
+
+<details>
+<summary>A10001986 vs CircuitSetup</summary>
+The A10001986 and CircuitSetup editions of the TCD firmware differ slightly in the sound-packs. If you switch from one edition to the other, the matching sound-pack must be re-installed. [A10001986-releases](https://github.com/realA10001986/Time-Circuits-Display/releases) use "sound-pack-**tw**XX", while [CircuitSetup's](https://github.com/CircuitSetup/Time-Circuits-Display/releases) are named "sound-pack-**cs**XX". The Config Portal will tell you which version is required to be installed.
 </details>
 
 ---
