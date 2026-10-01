@@ -43,7 +43,7 @@ Features include
   - [Home Assistant](#home-assistant--mqtt) (MQTT) support for sending and displaying messages, remote controlling and more.
   - Easy [firmware updates](#firmware-installation--firmware-update) over-the-air. No need to send in stuff for firmware updates, it's the 2020s after all.
 - [Night mode](#night-mode): Dim or switch off displays on schedule, manually or sensor-controlled. So you won't be blinded during night drives.
-- Support for [SD cards](#sd-card) up to 32GB
+- Support for [SD cards](#sd-card) up to 32GB. SD card required for firmware updates.
 - Audio output through [line-out](#audio-output) for time travel sound, music and [user-added](#additional-custom-sounds) sound. Connect your TCD to your (car) stereo for high-quality stereo-sound. No more "time traveling" through a 2" speaker. (Requires Control Board 1.4.5 or later)
 - [Music player](#the-music-player): Play your mp3 files located on SD card, through your (car) stereo if available. 
 - [Keypad-controlled menu](#the-keypad-menu) for adjusting various settings and viewing status through the three displays
