@@ -63,7 +63,7 @@ For information on updating the firmware of your TCD, see [here](#firmware-insta
 
 ## Initial Configuration
 
-The first step is to put a good-quality ("endurance", "long life", ...) microSD card into the card slot on the back of the keypad. The maximum size is 32GB and the card must be FAT32 formatted. [More information](#sd-card)
+The first step is to put a **good-quality** ("endurance", "long life", ...) **microSD card into the card slot** on the back of the keypad. The maximum size is 32GB and the card must be FAT32 formatted. [More information](#sd-card)
 
 The second step is to establish access to the TCD's configuration website ("Config Portal") in order to configure your TCD:
 
