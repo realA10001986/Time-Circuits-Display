@@ -56,7 +56,7 @@ Features include
   - Multi-purpose output for signaling/controlling other props [connected by wire](#connecting-props-by-wire) (for example flux lights, third party props)
 - &#128007; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370;
 
->[The A10001986 repository](https://tcd.out-a%2dti.me) is the upstream source for CircuitSetup's firmware releases. The [A10001986 edition](https://tcd.out%2da-ti.me) uses a slightly different sound-pack compared to the CircuitSetup edition, otherwise the two editions are identical.
+>[The A10001986 repository](https://tcd.out-a%2dti.me) is the upstream source for CircuitSetup's firmware releases. The [A10001986 edition](https://tcd.out%2da-ti.me) uses a slightly different sound-pack compared to the CircuitSetup edition, otherwise there are no differences between A10001986 and CircuitSetup releases of the same version.
 
 For information on updating the firmware of your TCD, see [here](#firmware-installation--firmware-update).
 
