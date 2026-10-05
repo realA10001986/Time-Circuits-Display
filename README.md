@@ -56,13 +56,13 @@ Features include
   - Multi-purpose output for signaling/controlling other props [connected by wire](#connecting-props-by-wire) (for example flux lights, third party props)
 - &#128007; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370;
 
->[The A10001986 repository](https://tcd.out-a%2dti.me) is the upstream source for CircuitSetup's firmware releases. The [A10001986 edition](https://tcd.out%2da-ti.me) might be ahead in development and documentation, and uses a slightly different sound-pack compared to the CircuitSetup edition.
+>[The A10001986 repository](https://tcd.out-a%2dti.me) is the upstream source for CircuitSetup's firmware releases. The [A10001986 edition](https://tcd.out%2da-ti.me) uses a slightly different sound-pack compared to the CircuitSetup edition, otherwise the two editions are identical.
 
 For information on updating the firmware of your TCD, see [here](#firmware-installation--firmware-update).
 
 ## Initial Configuration
 
-**Some functions of your TCD require an SD card.** The first step is therefore to put a **good-quality** ("endurance", "industrial", "long life", ...) **and empty microSD card into the card slot** on the back of the keypad. The SD card must be inserted before powering up the TCD. It is not recognized if inserted while the TCD is running. Furthermore, do not remove the SD card while the TCD is powered.
+**Some features of your TCD require an SD card.** The first step is therefore to put a **good-quality** ("endurance", "industrial", "long life", ...) **and empty microSD card into the card slot** on the back of the keypad. The SD card must be inserted before powering up the TCD. It is not recognized if inserted while the TCD is running. Furthermore, do not remove the SD card while the TCD is powered.
 
 >SD/SDHC/SDXC cards up to 32GB are supported. The card needs to be FAT32-formatted (not exFAT). Transcend, Sandisk Ultra and Industrial, Verbatim Premium and Samsung Pro Endurance SDHC cards usually work fine. Some SD cards might not be recognized due to off-specs initialization quirks. SDUC cards are not supported.
 
