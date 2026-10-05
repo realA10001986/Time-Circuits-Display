@@ -1446,7 +1446,7 @@ Alternatively, you can install the sound-pack the following way:
 
 <details>
 <summary>A10001986 vs CircuitSetup</summary>
-The A10001986 and CircuitSetup editions of the TCD firmware differ slightly in the sound-packs. If you switch from one edition to the other, the matching sound-pack must be re-installed. [A10001986-releases](https://github.com/realA10001986/Time-Circuits-Display/releases) use "sound-pack-**tw**XX", while [CircuitSetup's](https://github.com/CircuitSetup/Time-Circuits-Display/releases) are named "sound-pack-**cs**XX". The Config Portal will tell you which version is required to be installed.
+The A10001986 and CircuitSetup editions of the TCD firmware differ slightly in the sound-packs. If you switch from one edition to the other, the matching sound-pack must be re-installed. <a href="https://github.com/realA10001986/Time-Circuits-Display/releases">A10001986-releases</a> use "sound-pack-**tw**XX", while <a href="https://github.com/CircuitSetup/Time-Circuits-Display/releases">CircuitSetup's</a> are named "sound-pack-**cs**XX". The Config Portal will tell you which version needs to be installed.
 </details>
 
 ---
