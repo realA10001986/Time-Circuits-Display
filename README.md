@@ -1403,7 +1403,7 @@ If your configured WiFi network was not available when the TCD was trying to con
 
 The firmware consists of two parts: The main firmware, and a sound-pack.
 
-First, download main firmware and sound-pack. Both files are in every [Release package](releases), and named
+First, download main firmware and sound-pack. Both files are in every [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases), and named
 - "**timecircuits-A10001986-Vx.xxx-XXXX.bin**" for A10001986 releases, "**Time_Circuits_Display_vX.YY.bin**" for CircuitSetup releases,
 - "**sound-pack-twXX.zip**" for A10001986 releases, "**TCDA.bin**" for CircuitSetup releases.
 
@@ -1452,6 +1452,7 @@ Alternatively, you can install the sound-pack the following way:
 
 <details>
 <summary>A10001986 vs CircuitSetup</summary>
+<br>
 The A10001986 and CircuitSetup editions of the TCD firmware differ slightly in the sound-packs. To switch from one edition to the other, both main firmware and sound-pack must be (re-)installed.
 </details>
 
