@@ -1456,6 +1456,13 @@ Alternatively, you can install the sound-pack the following way:
 The A10001986 and CircuitSetup editions of the TCD firmware differ slightly in the sound-packs. To switch from one edition to the other, both main firmware and sound-pack must be (re-)installed.
 </details>
 
+<!--
+## Factory Reset
+
+To reset your TCD to factory default settings, enter keypad command ```1971159357``` twice in a row. The TCD will reboot in AP-mode.
+
+-->
+
 ---
 
 ## Appendix A: The Config Portal
