@@ -951,7 +951,7 @@ You probably noticed that the device takes longer to boot than would be required
 
 If the **_Use fake power switch_** option is checked in the Config Portal, the device will power-up, initialize everything, but stay quiet and dark. Only when the fake "power switch" is activated, the device will visually "power up". Likewise, you can also fake "power off" the device using this switch. Fake "off" disables the displays, all audio (except alarm, reminder and timer) and the keypad. Just like in the movie.
 
-On Control Boards V1.3 and later, there is a dedicated header labeled "Fake PWR" to connect the switch to. The pins to be connected by the switch are labeled "GND" and "PWR Trigger":
+On Control Boards V1.3 and later, there is a dedicated header labeled "PWR Trigger". The pins to be connected by the switch are "GND" and "PWR Trigger":
 
 ![pwr_trigger](img/fakepwr.jpg)
 
