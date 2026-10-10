@@ -945,13 +945,13 @@ Press ```9``` in the main menu.
 - [Light Sensor](#sensor-controlled-night-mode)
 - [Other Props](#controlling-other-props) (Flux Capacitor, SID, Dash Gauges, VSR, Flux lights, ...)
 
-## Fake power Switch 
+## Fake Power Switch 
 
-You probably noticed that the device takes longer to boot than would be required to re-create the movie experience where Doc turns the knob and the Time Circuits immediately turn on. As a remedy, the firmware supports a fake "power switch": 
+In the movie, Doc turns the knob on his TFC drive switch and the Time Circuits immediately turn on. Your TCD, due to its extended capabilities, takes a bit longer to boot. In re-create the "immediacy" of the movie scene, the TCD supports a fake power switch. 
 
-If the **_Use fake power switch_** option is checked in the Config Portal, the device will power-up, initialize everything, but stay quiet and dark. Only when the fake "power switch" is activated, the device will visually "power up". Likewise, you can also fake "power off" the device using this switch. Fake "off" disables the displays, all audio (except alarm, reminder and timer) and the keypad. Just like in the movie.
+If the **_Use fake power switch_** option is checked in the Config Portal, your TCD will, when connected to power, start up and initialize everything, but stay quiet and dark. Only when the fake power switch is activated, the device will visually "power up". Likewise, you can also fake "power off" the device using this switch. Fake "off" disables the displays, all audio (except alarm, reminder and timer) and the keypad. Just like in the movie.
 
-On Control Boards V1.3 and later, there is a dedicated header labeled "PWR Trigger". The pins to be connected by the switch are "GND" and "PWR Trigger":
+On Control Boards V1.3 and later, the pins to be connected by the switch are "GND" and "PWR Trigger":
 
 ![pwr_trigger](img/fakepwr.jpg)
 
@@ -963,7 +963,7 @@ The switch needs to be a switch with a maintained contact; the pins need to rema
 
 To use the Fake Power Switch, check **_Use fake power switch_** in the Config Portal.
 
-[Here](https://tfc.out-a-ti.me) are some hints for building a TFC Switch like this one:
+[Here](https://tfc.out-a-ti.me) are some hints for building a TFC Drive Switch like this one:
 
 ![TFC Switch](img/tfcswitch.jpg)
 
@@ -971,19 +971,19 @@ Fake-Power can also be controlled through [HomeAssistant/MQTT](#home-assistant--
 
 ## External Time Travel Trigger
 
-As mentioned above, a time travel can be triggered by holding ```0``` on the keypad. Since this doesn't really allow for an authentic movie-like experience, the firmware also supports an external trigger, such as a button switch or even another prop to trigger a time travel. Unlike the [Fake Power Switch](#fake-power-switch), this trigger must be a momentary toggle.
+As already mentioned, a time travel can be triggered by holding ```0``` on the keypad. Additionally, an external trigger, such as a button switch or even another prop, can be used. Unlike the [Fake Power Switch](#fake-power-switch), this trigger must be a momentary toggle.
 
-On Control Boards V1.3 and later, there is a dedicated header for the button labeled "Time Travel". The button needs to connect pins "TT IN" and "GND".
+On Control Boards V1.3 and later, the button needs to connect pins "TT IN" and "GND".
 
 | ![ttin](img/ttin.jpg) |
 |:--:|
-| TT_IN/GND on TCB 1.3 |
+| TT_IN/GND on TCD 1.3 |
 
-Unfortunately, there is no header for "TT_IN" on TC control boards V1.2 and below. There is, however, a row of solder pads right next to the socket on the control board, where a pin header or cable can easily be soldered on:
+Unfortunately, there is no "TT_IN" pin on Control Boards V1.2 and below. There is, however, a row of solder pads on the Control Board, where a pin header or cable can easily be soldered on:
 
 | ![tcboard_io27](img/ttin12.jpg) |
 |:--:|
-| TT_IN/GND on TCB 1.2 |
+| TT_IN/GND on TCD 1.2 |
 
 To trigger a time-travel sequence on the Time Circuits, "TT IN" and GND must be connected for at least 200ms and then opened; the time travel is triggered upon release of the button. If the button is pressed for 3000ms (3 seconds), a ["Return from Time Travel"](#time-travel) is triggered.
 
