@@ -90,6 +90,8 @@ Setting actual time:
 
 If your factory-fresh TCD came with firmware version 3.23 or later, but no SD card, the next step is to re-install the sound-pack. The reason for this is that the sound-pack does not entirely fit into the device's flash memory and parts of it need to be installed on your SD card. Please see [here](#sound-pack-installation) for instructions.
 
+The firmware version is displayed in the footer of the Config Portal's main menu page.
+
 #### WiFi Setup
 
 The TCD knows two ways of WiFi operation: Either it creates its own WiFi network or it connects to a pre-existing WiFi network.
