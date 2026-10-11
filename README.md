@@ -1555,9 +1555,9 @@ By default, when your TCD creates a WiFi network of its own ("AP-mode"), this ne
 
 ##### &#9193; Password
 
-By default, and if this field is empty, the TCD's own WiFi network ("TCD-AP") will be unprotected. If you want to protect your TCD access point, enter your password here. It needs to be 8 characters in length and only characters A-Z, a-z, 0-9 and - are allowed.
+By default, and if this field is empty, the TCD's own WiFi network ("TCD-AP") will be unprotected. If you want to protect your TCD access point, enter your password here. It needs to be exactly 8 characters in length and only characters A-Z, a-z, 0-9 and - are allowed.
 
-If you forget this password and are thereby locked out of your TCD, power-down, hold the ```ENTER``` key, power-up and wait until the white LED flashes, then release the ```ENTER``` key. The TCD will boot and start the access point - this once - without a password, thereby giving you an opportunity to connect to your TCD, without a password, to either look up or change your AP WiFi password. When you reboot or re-power the TCD, the AP will be password protected again.
+If you forget this password and are thereby locked out of your TCD, power-down, hold the ```ENTER``` key, power-up and wait until the white LED lights up, then release the ```ENTER``` key. The TCD will boot and start the access point - this once - without a password, thereby giving you an opportunity to connect to your TCD, without a password, to either look up or change said password. When you reboot or power-cycle the TCD, the AP will be password protected again.
 
 ##### &#9193; WiFi channel
 
