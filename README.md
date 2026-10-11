@@ -247,11 +247,9 @@ Minimal mode is disabled automatically under the same conditions as World Clock 
 
 ### Exhibition mode
 
-In this mode, the TCD shows a fixed, pre-programmed time in the *Present Time* display. Also after a time travel, the *Present Time* display will stay fixed at the time you travelled to. This is useful for exhibitions or for filming.
+In this mode, the TCD shows a fixed, pre-programmed time in the *Present Time* display. Also, after a time travel, the *Present Time* display will stay fixed at the time you travelled to. This is useful for exhibitions or for filming.
 
-To enable this mode, enter keypad command ```999```. The default fixed time will be displayed. To change this time, type ```99mmddyyyyhhMM``` followed by ```ENTER```. Keypad command ```999``` takes you back to normal mode.
-
-Exhibition mode is persistent; the pre-programmed time will be stored and retrieved after a reboot/power-down.
+To enable this mode, enter keypad command ```999```. A default fixed date/time will be displayed. To change this date/time, type ```99mmddyyyyhhMM``` followed by ```ENTER```. Keypad command ```999``` takes you back to normal mode.
 
 Not strictly part of Exhibition mode, but related: If you want your TCD to display specific times in the *Destination Time* and/or *Last Time Departed* displays, you can program those times through the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays). To quickly reset the displays to your pre-programmed times (such as after a time travel, during which they were replaced by other dates/times), enter keypad command ```998```.
 
@@ -498,7 +496,13 @@ In the following, "pressing" means briefly pressing a key, "holding" means keepi
     <tr>
      <td align="left">Program and save time for <a href="#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays"><i>Last Time Departed</i> display</a></td>
      <td align="left"><code>92mmddyyyyhhMM</code>&#9166;</td>
-    </tr>    
+    </tr>
+  <!--
+   <tr>
+     <td align="left">Disable/enable <a href="#gps-receiver">GPS fix indicator</a></td>
+     <td align="left"><code>950</code>&#9166; / <code>951</code>&#9166;</td>
+    </tr>
+  -->
     <tr>
      <td align="left">Toggle firmware update message at power-up</td>
      <td align="left"><code>53281</code>&#9166;</td>
@@ -1028,7 +1032,7 @@ For using GPS effectively as a long-term source of accurate time, it is therefor
 - the Time Circuit's RTC (real time clock) is initially [set to correct local time](#how-to-set-the-real-time-clock-rtc), 
 - and the GPS receiver has been receiving data for 15-20 mins at least once a month.
 
-If/as long as the GPS receiver has a fix and receives data from satellites, the dot in the *present time*'s year field is lit.
+If/as long as the GPS receiver has a fix and receives data from satellites, the dot in the *present time*'s year field is lit. <!-- This indicator can be disabled/enabled through keypad commands ```950```/```951```.-->
 
 To use the GPS receiver as a source of time, the option [**_Use GPS time_**](#-use-gps-time) must be checked in the Config Portal (which it is by default).
 
