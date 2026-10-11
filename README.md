@@ -353,7 +353,7 @@ In the following, "pressing" means briefly pressing a key, "holding" means keepi
      <td align="left">Display weekday of currently displayed <i>present time</i> date</td>
      <td align="left"><code>39</code>&#9166;</td>
     </tr>
-  <tr>
+   <tr>
      <td align="left">Disable <a href="#beep-on-the-second">beep</a> sound</td>
      <td align="left"><code>20</code>&#9166;</td>
    </tr>
