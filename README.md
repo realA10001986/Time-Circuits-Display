@@ -1078,7 +1078,7 @@ Up to two rotary encoders can be connected, one for speed, one for volume.
 
 ### Rotary Encoder for Speed 
 
-A rotary encoder for speed allows manually selecting speed to be displayed on the speedo, as well as to be sent to [BTTFN](#connecting-props-wirelessly-bttf-network-bttfn) clients in place of actual (GPS) speed.
+A rotary encoder for speed allows manually selecting the speed to be displayed on the speedo.
 
 | [![Watch the video](https://img.youtube.com/vi/Y6uu1SU6YJA/0.jpg)](https://youtu.be/Y6uu1SU6YJA) |
 |:--:|
@@ -1098,19 +1098,23 @@ Remarks:
 
 ### Rotary Encoder for Audio Volume
 
-A rotary encoder for volume replaces the volume knob on back of the TCD's keypad. The advantages of the rotary encoder are that it is more precise, especially at lower volume levels, and it can be physically relocated. To use a rotary encoder for volume, the TCD's own volume knob must be disabled; this is done by pre-selecting an audio level in the keypad menu or by entering keypad commands ```3xx``` (xx being 00-20).
+A rotary encoder for volume replaces the volume knob on back of the TCD's keypad. The advantages of the rotary encoder are that it is more precise, especially at lower volume levels, and it can be physically relocated. 
+
+To use a rotary encoder for volume, the TCD's own volume knob must be disabled; this is done by pre-selecting an audio level in the keypad menu or by entering keypad commands ```3xx``` (xx being 00-20).
 
 ## Room Condition Mode, Temperature/humidity sensor
 
-The firmware supports various [temperature/humidity sensors](AddOns.md#temperaturehumidity-sensor) for "Room Condition mode"; in this mode, *destination* and *last departed* times are replaced by temperature and humidity, respectively. To toggle between normal and Room Condition mode, enter keypad command ```111```.
+The firmware supports various [temperature/humidity sensors](AddOns.md#temperaturehumidity-sensor) for "Room Condition mode"; in this mode, *destination* and *last departed* times are replaced by temperature and humidity, respectively. 
+
+A connected sensor is auto-detected, no configuration is required. For information on supported sensor models and wiring, see [here](AddOns.md#temperaturehumidity-sensor).
+
+To toggle between normal and Room Condition mode, enter keypad command ```111```.
 
 ![rcmode](img/rcmode.jpg)
 
 "WC/RC hybrid mode", which is Room condition mode combined with [World Clock mode](#world-clock-mode), is described [here](#wcrc-hybrid-mode).
 
 Temperature on speedometer display: Unless you do time traveling on a regular basis, the [speedo](#speedometer) is idle most of the time in a typical home setup. To give it more of a purpose, the firmware can display ambient [temperature on the speedo](#-display-temperature) while idle. 
-
-A connected sensor is auto-detected, no configuration is required. For information on supported sensor models and wiring, see [here](AddOns.md#temperaturehumidity-sensor).
 
 ## Controlling other props
 
