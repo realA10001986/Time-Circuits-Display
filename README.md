@@ -122,12 +122,12 @@ To connect your TCD to your WiFi network, navigate to the Config Portal and clic
   
 >If there are several access points (AP) with identical SSID nearby, the TCD will connect to the first one found which might not be the nearest/strongest. It is therefore recommended to select a specific AP by its BSSID (AP's MAC address). You can either manually find out your AP's BSSID and enter it or have it filled out automatically: Click "Scan for networks", then "Show all". If you click on an AP in the list, its BSSID will be copied into BSSID field in the form below. To see which AP is which, hover over the name to see its BSSID as a tooltip.
 
->The TCD requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). If the device is inaccessible as a result of incorrect static IPs, hold ```ENTER``` while powering it up until the white LED lights up; static IP data will be deleted and the device will return to DHCP.<!-- The TCD will continue booting, but - this once - use DHCP and ignore static IP data. This gives your an opportunity to correct or clear that data, otherwise it will be effective again after the next reboot.-->
+>The TCD requests an IP address via DHCP, unless you entered valid data in the fields for static IP addresses (IP, gateway, netmask, DNS). If the device is inaccessible as a result of incorrect static IPs, hold ```ENTER``` while powering it up until the white LED lights up; static IP data will be deleted and the device will return to using DHCP.
 </details>
 
 After saving the WiFi configuration settings, the TCD reboots and tries to connect to your selected WiFi network. If that fails, it will again start in access point mode.
 
-If your TCD is **mounted in a car**, there is a special Car Mode that allows having a WiFi network configured (for administrative purposes and NTP time synchronization) and switching between AP-Mode and WiFi-connection through keypad commands. See [here](#car-mode) and [here](#car-setup---best-practice). So, despite using your TCD in a car, you can at this point configure a WiFi Connection, eg. to your cell phone's hotspot, and then put the TCD into Car Mode which reboots it into Access-Point mode. 
+If your TCD is **mounted in a car**, there is a special Car Mode that allows having a WiFi network configured (for administrative purposes and NTP time synchronization) and switching between AP-Mode and WiFi-connection through keypad commands. See [here](#car-mode) and [here](#car-setup---best-practice). So, despite using your TCD in a car, you can at this point configure a WiFi Connection, eg. to your cell phone's hotspot, and then put the TCD into Car Mode which reboots it into Access-Point mode.
 
 After completing these steps, your TCD is ready for use; you can also continue configuring it to your personal preferences through the Config Portal.
 
@@ -1850,9 +1850,9 @@ This offset, which can range from -3.0 to 3.0, is added to the sensor measuremen
 
 ##### &#9193; GPS speed
 
-If your TCD is installed in a car, you have a [GPS receiver](#gps-receiver) and want GPS speed is to be shown on your speedo, you can select an update rate here. The choices are once, twice, four times or five times per second. It appears that the GPS receiver calculates speed on every satellite position update, and the higher the update rate, the shorter the travelled distance, and the higher the error rate. The recommendation is therefore 2Hz (twice per second) as it provides the (IMHO) best combination of quickness and accuracy.
+If your TCD is installed in a car, you have a [GPS receiver](#gps-receiver) and want GPS speed is to be shown on your speedo, you can select an update rate here. The choices are once, twice, four times or five times per second. It appears that the GPS receiver calculates speed on every satellite position update, and the higher the update rate, the shorter the travelled distance, and the higher the error rate. The recommendation is therefore 2Hz (twice per second) as it provides the best combination of quickness and accuracy.
 
-To switch between GPS speed and other display options (rotary encoder, "0", temperature, speedo off), issue keypad command 8.
+To switch between GPS speed and other display options (rotary encoder, "0", temperature, speedo off), issue keypad command ```8```.
 
 If your TCD is permanently stationary, such as in a home setup, choose "Disabled". 
 -->
