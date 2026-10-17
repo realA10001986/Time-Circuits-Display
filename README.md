@@ -319,12 +319,10 @@ In the following, "pressing" means briefly pressing a key, "holding" means keepi
     <tr>
      <td align="center" colspan="2">Keypad commands<br>(&#9166; = <code>ENTER</code> key)</td>
     </tr>
-  <!--
     <tr>
      <td align="left">Toggle <a href="#gps-for-speed">GPS speed</a> display</a></td>
      <td align="left"><code>8</code>&#9166;</td>
     </tr>
-  -->
    <tr>
      <td align="left">Reset display mode (disable 111-117)</a></td>
      <td align="left"><code>110</code>&#9166;</td>
@@ -497,12 +495,10 @@ In the following, "pressing" means briefly pressing a key, "holding" means keepi
      <td align="left">Program and save time for <a href="#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays"><i>Last Time Departed</i> display</a></td>
      <td align="left"><code>92mmddyyyyhhMM</code>&#9166;</td>
     </tr>
-  <!--
-   <tr>
+    <tr>
      <td align="left">Disable/enable <a href="#gps-receiver">GPS fix indicator</a></td>
      <td align="left"><code>950</code>&#9166; / <code>951</code>&#9166;</td>
     </tr>
-  -->
     <tr>
      <td align="left">Toggle firmware update message at power-up</td>
      <td align="left"><code>53281</code>&#9166;</td>
@@ -1032,7 +1028,7 @@ For using GPS effectively as a long-term source of accurate time, it is therefor
 - the Time Circuit's RTC (real time clock) is initially [set to correct local time](#how-to-set-the-real-time-clock-rtc), 
 - and the GPS receiver has been receiving data for 15-20 mins at least once a month.
 
-If/as long as the GPS receiver has a fix and receives data from satellites, the dot in the *present time*'s year field is lit. <!-- This indicator can be disabled/enabled through keypad commands ```950```/```951```.-->
+If/as long as the GPS receiver has a fix and receives data from satellites, the dot in the *present time*'s year field is lit. This indicator can be disabled/enabled through keypad commands ```950```/```951```.
 
 To use the GPS receiver as a source of time, the option [**_Use GPS time_**](#-use-gps-time) must be checked in the Config Portal (which it is by default).
 
@@ -1059,20 +1055,9 @@ One nice feature of GPS is that the receiver can deliver current speed of moveme
 |:--:|
 | Click to watch the video |
 
-<!--
 To have GPS speed displayed on your speedo, first select an [Update Rate](#-gps-speed) in the Config Portal. Keypad command 8 then allows switching between
 - GPS speed and 
 - [rotary encoder](#rotary-encoder) output, displaying temperature, displaying 0 or switching the speedo off, depending on other option settings and your hardware configuration. 
--->
-
-To have GPS speed displayed on your speedo, check **_Display GPS speed_** in the Config Portal. 
-
-To let other props connected through [BTTF-Network](#connecting-props-wirelessly-bttf-network-bttfn) know about current GPS speed, check the option **_Provide GPS speed to wireless props_**.
-
-Setting these options gives GPS speed priority over speed from a [rotary encoder](#rotary-encoder), and, as regards the speedo display, over other purposes (such as displaying temperature). Checking them really does not make sense when your props are permanently stationary.
-
-> [!NOTE]
-> The only indicator for a fix is the dot in the *present time*'s year field. The speedo will show "0" when the receiver has no fix. If there was a fix, and speed was greater than 3mph when the signal was lost, the speedo will display "-" for 60 seconds and then switch to "0". 
 
 ## Rotary Encoder
 
@@ -1090,17 +1075,10 @@ A rotary encoder for speed allows manually selecting the speed to be displayed o
 |:--:|
 | Click to watch the video |
 
-<!--
 Remarks:
 - The speedo displays "0" as long as the encoder is not moved; if the encoder is turned counter-clockwise a couple of notches, the speedo will be switched off or [display temperature]((#-display-temperature) (if so configured and a [sensor](#room-condition-mode-temperaturehumidity-sensor) is present).
 - The encoder is also evaluated if no speedo is connected; it can be operated "blindly" to trigger time travels and its movement is sent to BTTFN clients like GPS speed.
 - If a GPS receiver is present and GPS speed isn't [disabled](#-gps-speed), keypad command 8 switches between GPS speed and rotary encoder speed.
--->
-
-Remarks:
-- The encoder is only evaluated if no GPS receiver is connected or if the **_Display GPS speed_** is unchecked (as this option gives GPS speed priority over the encoder).
-- The encoder is also evaluated if no speedo is connected; it can be operated "blindly" to trigger time travels and its movement is sent to BTTFN clients like GPS speed (if no GPS receiver is connected or the option **_Provide GPS speed to wireless props_** is unchecked)
-- The speedo displays "0" as long as the encoder is not moved; if the encoder is turned counter-clockwise a couple of notches, the speedo will be switched off.
 
 ### Rotary Encoder for Audio Volume
 
@@ -1342,11 +1320,7 @@ For more information, see [here](https://remote.out-a-ti.me).
 #### Typical Option setting for in-car operation
 
 - TCD:
-  - Check **_Display GPS Speed_**
-  - Check **_Provide GPS speed to BTTFN clients_**
-  <!--
   - Select your preferred update rate under **_GPS speed_**
-  -->
 
 - Other props (FC, SID, Dash Gauges, VSR, Remote):
   - Put TCD's hostname (usually _timecircuits_) in **_Hostname of TCD_**. (The other options under "Wireless connection (BTTFN)" can be set/unset based on your personal preferences.)
@@ -1466,12 +1440,9 @@ Alternatively, you can install the sound-pack the following way:
 The A10001986 and CircuitSetup editions of the TCD firmware differ slightly in the sound-packs. To switch from one edition to the other, both main firmware and sound-pack must be (re-)installed.
 </details>
 
-<!--
 ## Factory Reset
 
 To reset your TCD to factory default settings, enter keypad command ```1971159357``` twice in a row. The TCD will reboot in AP-mode.
-
--->
 
 ---
 
@@ -1811,18 +1782,6 @@ The CircuitSetup speedo features a third digit behind the gaffer tape. This digi
 
 The A-Car, shown very briefly in part 1 of the series when Doc sends Einstein a minute into the future, had a speedo displaying "0.0". Check this option to display a "0" after the dot using the hidden digit. Please note that only "0" is ever displayed, fractions are not supported.
 
-##### &#9193; Display GPS speed
-
-If a GPS receiver is connected, this selects whether to display GPS speed on the speedo. This only makes sense if the Time Circuits are mounted in a car. See [here](#gps-receiver).
-
-If your TCD/speedo are stationary, such as in a home setup, leave this option unchecked. Also, it _must_ remain unchecked if you want to use a [rotary encoder](#rotary-encoder) for speed.
-
-##### &#9193; Update rate
-
-If GPS speed is to be shown on a speedo (see option immediately above), you can select in what rate the speed should be updated. The choices are once, twice, four times or five times per second.
-
-It appears that the GPS receiver calculates speed on every satellite position update, and the higher the update rate, the shorter the travelled distance, and the higher the error rate. The default is therefore 2Hz (twice per second) as it provides the (IMHO) best combination of quickness and accuracy.
-
 ##### &#9193; Display temperature
 
 Selects whether temperature as received from a suitable sensor is displayed on the speedo, when it is idle (i.e. no time travel is in progress, and no speed from GPS or rotary encoder is to be displayed).
@@ -1845,7 +1804,6 @@ Selects between Fahrenheit and Celsius for temperature display. See [here](#room
 
 This offset, which can range from -3.0 to 3.0, is added to the sensor measurement, in order to compensate sensor inaccuracy or suboptimal sensor placement.
 
-<!--
 #### <ins>GPS speed settings</ins>
 
 ##### &#9193; GPS speed
@@ -1855,7 +1813,6 @@ If your TCD is installed in a car, you have a [GPS receiver](#gps-receiver) and 
 To switch between GPS speed and other display options (rotary encoder, "0", temperature, speedo off), issue keypad command ```8```.
 
 If your TCD is permanently stationary, such as in a home setup, choose "Disabled". 
--->
 
 #### <ins>External switches/buttons</ins>
 
@@ -1886,16 +1843,6 @@ For detailed timing information, see [here](https://tcd.out-a-ti.me/AddOns.md#ti
 ##### &#9193; signals alarm
 
 If this option is checked, the TT OUT pin will go HIGH when an [alarm](#alarm) occurs. The duration can be configured to be between 3 and 99 seconds.
-
-#### <ins>Settings for BTTFN communication</ins>
-
-##### &#9193; Provide GPS speed to wireless props
-
-Many [BTTF-Network](#connecting-props-wirelessly-bttf-network-bttfn) clients can query the TCD for speed. "Speed" can come from various sources: GPS, [rotary encoder](#rotary-encoder), Remote Control.
-
-This option selects whether actual GPS speed is to be transmitted to BTTFN clients. If this option is checked, speed from GPS (if available) takes precedence over speed from a rotary encoder.
-
-If your TCD/speedo are stationary, such as in a home setup, leave this option unchecked.
 
 ---
 
