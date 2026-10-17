@@ -1323,8 +1323,8 @@ For more information, see [here](https://remote.out-a-ti.me).
   - Select your preferred update rate under **_GPS speed_**
 
 - Other props (FC, SID, Dash Gauges, VSR, Remote):
-  - Put TCD's hostname (usually _timecircuits_) in **_Hostname of TCD_**. (The other options under "Wireless connection (BTTFN)" can be set/unset based on your personal preferences.)
-  - Uncheck **_TCD is connected by wire_** (Option not available on Remote)
+  - Make sure that the TCD's hostname (usually _timecircuits_) in **_Hostname of TCD_**. (The other options under "Wireless connection (BTTFN)" can be set/unset based on your personal preferences.)
+  - Make sure that the option **_TCD is connected by wire_** is unchecked. (Option not available on Remote)
   
 #### Network setup
 
@@ -1389,7 +1389,7 @@ The firmware consists of two parts: The main firmware, and a sound-pack.
 
 First, download main firmware and sound-pack. Both files are in every [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases/latest), and named
 - "**timecircuits-A10001986-Vx.xxx-XXXX.bin**" for A10001986 releases, "**Time_Circuits_Display_vX.YY.bin**" for CircuitSetup releases,
-- "**sound-pack-twXX.zip**" for A10001986 releases, "**TCDA.bin**" for CircuitSetup releases.
+- "**TCDA-TWxx.bin**" for A10001986 releases, "**TCDA.bin**" for CircuitSetup releases.
 
 > [!IMPORTANT]
 > Do not install "A-Car" and/or "GTE" labeled versions on standard versions of the TCD, those are for modified/different hardware! Unless you know for a fact that you have "A-Car" displays or a "GTE" keypad, you need the "standard" firmware file.
@@ -1414,10 +1414,9 @@ After updating the main firmware, there will be a notification on the Config Por
 _Installing/updating the sound-pack requires an [SD card](#initial-configuration)._
 
 To update the sound-pack of your TCD, 
-- (if the sound-pack is a zip file, extract it. It contains one file named TCDA.bin)
 - enter the [Config Portal](#the-config-portal),
 - click on "Update & Upload",
-- select the TCDA.bin file in the _bottom_ file selector, and
+- select the TCDA-xxxx.bin file in the _top_ file selector, and
 - click on *Upload*. 
 
 <details>
