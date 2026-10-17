@@ -1055,7 +1055,7 @@ One nice feature of GPS is that the receiver can deliver current speed of moveme
 |:--:|
 | Click to watch the video |
 
-To have GPS speed displayed on your speedo, first select an [Update Rate](#-gps-speed) in the Config Portal. Keypad command 8 then allows switching between
+To have GPS speed displayed on your speedo, first select an [Update Rate](#-gps-speed) in the Config Portal. Keypad command ```8``` then allows switching between
 - GPS speed and 
 - [rotary encoder](#rotary-encoder) output, displaying temperature, displaying 0 or switching the speedo off, depending on other option settings and your hardware configuration. 
 
