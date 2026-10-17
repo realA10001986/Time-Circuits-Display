@@ -1078,7 +1078,7 @@ A rotary encoder for speed allows manually selecting the speed to be displayed o
 Remarks:
 - The speedo displays "0" as long as the encoder is not moved; if the encoder is turned counter-clockwise a couple of notches, the speedo will be switched off or [display temperature]((#-display-temperature) (if so configured and a [sensor](#room-condition-mode-temperaturehumidity-sensor) is present).
 - The encoder is also evaluated if no speedo is connected; it can be operated "blindly" to trigger time travels and its movement is sent to BTTFN clients like GPS speed.
-- If a GPS receiver is present and GPS speed isn't [disabled](#-gps-speed), keypad command 8 switches between GPS speed and rotary encoder speed.
+- If a GPS receiver is present and GPS speed isn't [disabled](#-gps-speed), keypad command ```8``` switches between GPS speed and rotary encoder speed.
 
 ### Rotary Encoder for Audio Volume
 
