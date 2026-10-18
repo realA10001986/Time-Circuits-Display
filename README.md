@@ -1499,21 +1499,15 @@ Through this page you can either connect your TCD to your local WiFi network or 
 
 To connect your TCD to your WiFi network, all you need to do is either to click on one of the networks listed at the top or to enter a __WiFi network name (SSID)__, and optionally a __password__ (WPAx). If there is no list of networks displayed, click on "Scan for Networks".
 
->By default, the TCD requests an IP address via DHCP. However, you can also configure a static IP for the TCD by entering the IP, netmask, gateway and DNS server. All four fields must be filled for a valid static IP configuration. If you want to stick to DHCP, leave those four fields empty.
-
-If there are several APs with identical SSID nearby, the TCD will connect to the first one it finds, which might not be the one with the strongest signal. It is therefore recommended to select the nearest/strongest AP by its BSSID (AP's MAC address). You can either manually find out your AP's BSSID and enter it, or have it filled out automatically: Click "Scan for networks", then "Show all". If you click on an AP, its BSSID will be copied into BSSID field in the form below. To see which AP is which, hover over the name to see its BSSID as a tooltip.
+If there are several APs with identical SSID nearby, the TCD will connect to the first one it finds, which might not be the one with the strongest signal. It is therefore recommended to select the nearest/strongest AP by its BSSID (AP's MAC address). You can either manually find out your AP's BSSID and enter it, or have it filled out automatically: Click "Scan for networks", then "Show all APs". If you click on an AP, its BSSID will be copied into BSSID field in the form below. To see which AP is which, hover over the name to see its BSSID as a tooltip.
 
 ##### &#9193; Forget Saved WiFi Network
 
 Checking this box (and clicking SAVE) deletes the currently saved WiFi network (SSID and password) and reboots the device; it will restart in "access point" (AP) mode. See [here](#wifi-setup).
 
-##### &#9193; Hostname
+##### &#9193; Static IP
 
-The device's hostname in the WiFi network. Defaults to 'timecircuits'. This also is the domain name at which the Config Portal is accessible from a browser in the same local network. The URL of the Config Portal then is http://<i>hostname</i>.local (the default is http://timecircuits.local)
-
-If you have more than one TCD in your local network, please give them unique hostnames.
-
-_This setting applies to both AP-mode and when your TCD is connected to a WiFi network._ 
+By default, the TCD requests an IP address via DHCP. However, you can also configure a static IP for the TCD by entering the IP, netmask, gateway and DNS server. All four fields must be filled for a valid static IP configuration. If you want to stick to DHCP, leave those four fields empty.
 
 ##### &#9193; WiFi connection attempts
 
@@ -1530,6 +1524,14 @@ This option has no effect if the TCD is in [Car Mode](#car-mode).
 ##### &#9193; WiFi power save timer
 
 See [here](#wifi-power-saving-features)
+
+##### &#9193; Hostname
+
+The device's hostname in the WiFi network. Defaults to 'timecircuits'. This also is the domain name at which the Config Portal is accessible from a browser in the same local network. The URL of the Config Portal then is http://<i>hostname</i>.local (the default is http://timecircuits.local)
+
+If you have more than one TCD in your local network, please give them unique hostnames.
+
+_This setting applies to both AP-mode and when your TCD is connected to a WiFi network._ 
 
 #### <ins>Settings for AP-mode</ins>
 
