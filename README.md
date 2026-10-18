@@ -62,16 +62,17 @@ For information on updating the firmware of your TCD, see [here](#firmware-insta
 
 #### What's new in version 4.00?
 
-- GPS speed logic change: "Display GPS speed" and "Provide GPS speed to BTTFN clients" Config Portal options are gone. User can now switch between [Evaluate GPS speed] and [Do not evaluate GPS Speed] on-the-fly through keypad command 8. This toggles between (a) displaying GPS speed on speedo as well as sending it to BTTFN clients, and (b) using a rotary encoder, displaying "0", temperature, or switching the speedo off, depending on hardware configuration and other option settings.
-- If GPS does not have a fix, the speedo will display "-" permanently (and no longer switch to "0" after a while). To avoid this, issue keypad command 8 to switch away from GPS speed.
+- GPS speed logic change: "Display GPS speed" and "Provide GPS speed to BTTFN clients" Config Portal options are gone. User can now switch between _Evaluate GPS speed_ and _Do not evaluate GPS Speed_ on-the-fly through keypad command ```8```. This toggles between (a) displaying GPS speed on speedo as well as sending it to BTTFN clients, and (b) using a rotary encoder, displaying "0", temperature, or switching the speedo off, depending on hardware configuration and other option settings.
+- If GPS does not have a fix, the speedo will display "-" permanently (and no longer switch to "0" after a while). To avoid this, issue keypad command ```8``` to switch away from GPS speed.
 - The former GPS speed "Update rate" selector is now labeled "GPS speed" and got a "disabled" option item which allows categorically disable GPS speed (which should be done in case of a permanently stationary installation to avoid polling the GPS receiver unnecessarily frequently).
-- GPS: Keypad commands 950/951 disable/enable the GPS fix indicator in the present time's year field. Defaults to on.
+- GPS: Keypad commands ```950```/```951``` disable/enable the GPS fix indicator in the present time's year field. Defaults to on.
 - GPS: Keypad menu now has an item that shows if a GPS receiver has been detected during boot.
 - Fix for undetected GPS receivers on very long cables.
 - Re-arrange WiFi Configuration page for a better user experience
-- Remap "show weekday of current present time's date" keypad command to more handy 3 (instead of rather unintuitive 39).
-- Keypad command 1971159357, when entered twice, resets all settings to factory defaults.
-- Future firmware updates may only consist of one single file instead of "main firmware" plus "sound-pack". Firmware updates will require an SD card. Future sound-pack uploads, if any, are done through the top file selector, and no longer through the bottom one. The bottom one is for custom mp3 file upload only.
+- Remap "show weekday of current present time's date" keypad command to more handy ```3``` (instead of rather unintuitive 39).
+- Keypad command ```1971159357```, when entered twice, resets all settings to factory defaults.
+- Future sound-pack uploads, if any, are done through the _top_ file selector, and no longer through the bottom one. The bottom one is for custom mp3 file upload only.
+- **Future firmware updates may only consist of one single file instead of "main firmware" plus "sound-pack". Firmware updates will require an SD card. In order to update to versions beyond 4.00, version 4.00 must be installed first.**
 
 ## Initial Configuration
 
