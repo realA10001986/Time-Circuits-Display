@@ -1438,7 +1438,7 @@ To update the sound-pack of your TCD,
 <br>
 Alternatively, you can install the sound-pack the following way:
 <ul>
-<li>Using a computer, copy "TCDA.bin" to the root directory of a FAT32 formatted SD card;</li>
+<li>Using a computer, copy "TCDA-TWxx.bin" to a FAT32 formatted SD card and rename it to "TCDA.bin"</li>
 <li>power down the TCD,</li>
 <li>insert this SD card into the slot and</li>
 <li>power up the TCD; the sound-pack will be installed automatically.</li>
