@@ -71,7 +71,7 @@ For information on updating the firmware of your TCD, see [here](#firmware-insta
 - Re-arrange WiFi Configuration page for a better user experience
 - Remap "show weekday of current present time's date" keypad command to more handy ```3``` (instead of rather unintuitive 39).
 - Keypad command ```1971159357```, when entered twice, resets all settings to factory defaults.
-- Future sound-pack uploads, if any, are done through the _top_ file selector, and no longer through the bottom one. The bottom one is for custom mp3 file upload only.
+- Sound-pack uploads are done through the _top_ file selector on the "Update & Upload" page, and no longer through the bottom one. The bottom one is for custom mp3 file upload only.
 - **Future firmware updates may only consist of one single file instead of "main firmware" plus "sound-pack". Firmware updates will require an SD card. In order to update to versions beyond 4.00, version 4.00 must be installed first.**
 
 ## Initial Configuration
