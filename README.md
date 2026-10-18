@@ -60,7 +60,7 @@ Features include
 
 For information on updating the firmware of your TCD, see [here](#firmware-installation--firmware-update).
 
-### What's new in 4.00?
+#### What's new in version 4.00?
 
 - GPS speed logic change: "Display GPS speed" and "Provide GPS speed to BTTFN clients" Config Portal options are gone. User can now switch between [Evaluate GPS speed] and [Do not evaluate GPS Speed] on-the-fly through keypad command 8. This toggles between (a) displaying GPS speed on speedo as well as sending it to BTTFN clients, and (b) using a rotary encoder, displaying "0", temperature, or switching the speedo off, depending on hardware configuration and other option settings.
 - If GPS does not have a fix, the speedo will display "-" permanently (and no longer switch to "0" after a while). To avoid this, issue keypad command 8 to switch away from GPS speed.
