@@ -995,11 +995,14 @@ On Control Boards V1.3 and later, the button needs to connect pins "TT IN" and "
 |:--:|
 | TT_IN/GND on TCD 1.3 |
 
-Unfortunately, there is no "TT_IN" pin on Control Boards V1.2 and below. There is, however, a row of solder pads on the Control Board, where a pin header or cable can easily be soldered on:
-
+<details>
+<summary>Using a Control Board? V1.2?</summary>
+Unfortunately, there is no "TT_IN" pin on Control Boards V1.2 and below. There is, however, a row of solder pads on the Control Board, where a pin header or cable can easily be soldered on:<br><br>
+<img href="img/ttin12.jpg">
 | ![tcboard_io27](img/ttin12.jpg) |
 |:--:|
 | TT_IN/GND on TCD 1.2 |
+</details>
 
 To trigger a time-travel sequence on the Time Circuits, "TT IN" and GND must be connected for at least 200ms and then opened; the time travel is triggered upon release of the button. If the button is pressed for 3000ms (3 seconds), a ["Return from Time Travel"](#time-travel) is triggered.
 
