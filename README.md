@@ -1862,7 +1862,7 @@ If you have a GPS receiver, a rotary encoder or a Futaba remote control and use 
 
 For detailed timing information, see [here](https://tcd.out-a-ti.me/AddOns.md#timing).
 
-On this DTM, the TCD controls the flux bands:
+On this Delorean Time Machine, the TCD controls the flux bands through TT_OUT: (Video courtesy of James Castellano)
 
 | [![Watch the video](https://img.youtube.com/vi/0b93KjO41Jc/0.jpg)](https://youtube.com/shorts/0b93KjO41Jc?si=H3LI-A_uDEmtss48) |
 |:--:|
