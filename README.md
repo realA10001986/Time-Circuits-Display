@@ -1862,6 +1862,12 @@ If you have a GPS receiver, a rotary encoder or a Futaba remote control and use 
 
 For detailed timing information, see [here](https://tcd.out-a-ti.me/AddOns.md#timing).
 
+On this DTM, the TCD controls the flux bands:
+
+| [![Watch the video](https://img.youtube.com/vi/0b93KjO41Jc/0.jpg)](https://youtube.com/shorts/0b93KjO41Jc?si=H3LI-A_uDEmtss48) |
+|:--:|
+| Click to watch the video |
+
 ##### &#9193; signals alarm
 
 If this option is checked, the TT OUT pin will go HIGH when an [alarm](#alarm) occurs. The duration can be configured to be between 3 and 99 seconds.
