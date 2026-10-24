@@ -220,7 +220,9 @@ The TCD has a TT-OUT pin (marked "TT OUT (IO14)" or "IO14") which can be used to
 
 Signaling is done by setting this pin HIGH (2.7-3.3V).
 
-For connecting CircuitSetup/A10001986 props, see the prop's documentation ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [Dash Gauges](https://github.com/realA10001986/Dash-Gauges/blob/main/hardware/README.md#connecting-a-tcd-to-the-dash-gauges-by-wire), [VSR](https://github.com/realA10001986/VSR#connecting-a-tcd-by-wire)).
+Flux bands, lights and the likes need to be connected through a relay. When using a standard "Arduino Relay Module", connect GND to GND, 5V to 5V and "S" (or "IN") to TT OUT. 
+
+![RelayModule](img/relaymodule.png)
 
 In order to connect props that can sense HIGH/LOW levels (and don't use the TT OUT pin for power supply), you need two wires for connecting the TCD: TT-OUT and GND, which need to be connected to the prop:
 
@@ -232,9 +234,7 @@ In order to connect props that can sense HIGH/LOW levels (and don't use the TT O
 |:--:|
 | IO14 on board version 1.2 |
 
-Flux bands, lights and the likes need to be connected through a relay. When using a standard "Arduino Relay Module", connect GND to GND, 5V to 5V and "S" (or "IN") to TT OUT. 
-
-![RelayModule](img/relaymodule.png)
+For connecting CircuitSetup/A10001986 props, see the prop's documentation ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [Dash Gauges](https://github.com/realA10001986/Dash-Gauges/blob/main/hardware/README.md#connecting-a-tcd-to-the-dash-gauges-by-wire), [VSR](https://github.com/realA10001986/VSR#connecting-a-tcd-by-wire)).
 
 ### Timing
 
