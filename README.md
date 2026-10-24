@@ -1172,13 +1172,15 @@ The TCD has a TT-OUT pin (marked "TT OUT (IO14)" or "IO14") which can be used to
 - signal alarm,
 - or manually switching on/off connected props.
 
+TT_OUT can be used to control flux bands, lights or other DIY props. 
+
+>CircuitSetup/A10001986 original props also support a wired connection, if for whatever reason BTTFN is not an option. For detailed wiring instructions, please see the documentation for the prop ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [Dash Gauges](https://github.com/realA10001986/Dash-Gauges/blob/main/Hardware.md#connecting-a-tcd-to-the-dash-gauges-by-wire), [VSR](https://github.com/realA10001986/VSR#connecting-a-tcd-by-wire)).
+
 #### Signal a Time Travel
 
 If the option [TT-OUT (IO14) pin] **_signals Time Travel_** is checked in the Config Portal, the TCD sets this pin to HIGH either 5 seconds ahead of the temporal displacement sequence or - if the option **_Signal without 5s lead_** is checked - right at the start of the temporal displacement sequence. This allows third-party props to take part in time travel sequences. For more information, see [here](AddOns.md#other-props).
 
-CircuitSetup/A10001986 original props also support a wired connection, if for whatever reason BTTFN is not an option. For detailed wiring instructions, please see the documentation for the prop ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [Dash Gauges](https://github.com/realA10001986/Dash-Gauges/blob/main/Hardware.md#connecting-a-tcd-to-the-dash-gauges-by-wire), [VSR](https://github.com/realA10001986/VSR#connecting-a-tcd-by-wire)); 
-
-In case CircuitSetup/A10001986 original props are connected by wire, the option **_Signal without 5s lead_** should _not_ be set since it deletes the props’ "acceleration phase"; however, if that option is set on the TCD (for instance, because third-party props, unaware of the 5 second lead, are connected by wire as well), the corresponding option must be set in the CircuitSetup/A10001986 prop's Config Portal, too. This option has no effect for wirelessly connected props.
+>In case CircuitSetup/A10001986 original props are connected by wire, the option **_Signal without 5s lead_** should _not_ be set since it deletes the props’ "acceleration phase"; however, if that option is set on the TCD (for instance, because third-party props, unaware of the 5 second lead, are connected by wire as well), the corresponding option must be set in the CircuitSetup/A10001986 prop's Config Portal, too. This option has no effect for wirelessly connected props.
 
 #### Signal Alarm
 
@@ -1190,7 +1192,7 @@ If the option [TT-OUT (IO14) pin] **_is controlled by commands 900/901_** is che
 
 #### Limitations
 
-Although the options can be set freely and are not mutually exclusive, be advised that CircuitSetup/A10001986 original props connected by wire always interpret the TT-OUT signal as a trigger for a time travel sequence. It can make sense to set more than one option if your connect, for instance, flux bands or lights.
+>Although the options can be set freely and are not mutually exclusive, be advised that CircuitSetup/A10001986 original props connected by wire always interpret the TT-OUT signal as a trigger for a time travel sequence. It can make sense to set more than one option if your connect, for instance, flux bands or lights.
 
 Hardware considerations: TT OUT cannot be used to supply power for third party props; please us a relay. In case of a standard "Arduino relay module", connect "-"/"GND" to GND, "+"/"VCC"/"5V" to 5V, and "S"/"IN" to TT OUT.
 
