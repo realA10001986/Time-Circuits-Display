@@ -171,7 +171,7 @@ It can be accessed as follows:
 
   >Accessing the Config Portal through this address requires the operating system of your handheld/computer to support Bonjour/mDNS: Windows 10 version TH2     (1511) [other sources say 1703] and later, Android 13 and later; MacOS and iOS since the dawn of time.
 
-  >If connecting to http://timecircuits.local fails due to a name resolution error, you need to find out the TCD's IP address: Hold ```ENTER``` on the TCD's keypad for 2 seconds, then repeatedly  press 8 until "NETWORK" is shown, then press ```5```. The TCD will show its current IP address. Then, on your handheld or computer, navigate to http://a.b.c.d (a.b.c.d being the IP address as shown on the display) in order to enter the Config Portal.
+  >If connecting to http://timecircuits.local fails due to a name resolution error, you need to find out the TCD's IP address: Hold ```ENTER``` on the TCD's keypad for 2 seconds, then repeatedly  press ```8``` until "NETWORK" is shown, then press ```5```. The TCD will show its current IP address. Then, on your handheld or computer, navigate to http://a.b.c.d (a.b.c.d being the IP address as shown on the display) in order to enter the Config Portal.
 </details>
 
 In the main menu, click on "Settings" or "Peripherals" to configure your TCD. 
