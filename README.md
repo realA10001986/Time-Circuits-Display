@@ -265,7 +265,7 @@ In this mode, the TCD shows a fixed, pre-programmed time in the *Present Time* d
 
 To enable this mode, enter keypad command ```999```. A default fixed date/time will be displayed. To change this date/time, type ```99mmddyyyyhhMM``` followed by ```ENTER```. Keypad command ```999``` takes you back to normal mode.
 
-Not strictly part of Exhibition mode, but related: If you want your TCD to display specific times in the *Destination Time* and/or *Last Time Departed* displays, you can program those times through the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays). To quickly reset the displays to your pre-programmed times (such as after a time travel, during which they were replaced by other dates/times), enter keypad command ```998```.
+Not strictly part of Exhibition mode, but related: If you want your TCD to display specific times in the *Destination Time* and/or *Last Time Departed* displays, you can program those times through keypad commands ```91mmddyyyyhhMM``` / ```92mmddyyyyhhMM``` or the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays). To quickly reset the displays to your pre-programmed times (such as after a time travel, during which they were replaced by other dates/times), enter keypad command ```998```.
 
 ### Audio Output
 
