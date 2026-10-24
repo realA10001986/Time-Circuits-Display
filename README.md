@@ -287,28 +287,6 @@ Keypad command ```350``` disables line-out output.
 
 The chosen line-out setting is persistent over reboots.
 
-### Common usage scenarios
-
-####  &#9193; I want my TCD to work like in the movie
-
-In this case, head to the Config Portal and set the **_Time Cycling Interval_** to OFF.
-
->Note that *actual* time travel is not supported.
-
-#### 	&#9193; I want my TCD to always show my favorite *Destination* and *last time departed* times
-
-In this case,
-- head to the Config Portal and set the **_Time Cycling Interval_** to OFF, and
-- then, using the [keypad menu](#how-to-program-datestimes-for-the-destination-and-last-time-departed-displays), program your favorite *Destination* and *Last time departed* times.
-
-Time-traveling will naturally lead to the displays showing other times. To bring your favorite times back without rebooting, enter keypad command ```998```.
-
-#### 	&#9193; I want my TCD to show/cycle movie times
-
-In this case, head to the Config Portal and set the **_Time Cycling Interval_** to the desired interval.
-
-Time-traveling will interrupt the cycling of movie times for 30 minutes.
-
 ### Keypad reference
 
 In the following, "pressing" means briefly pressing a key, "holding" means keeping the key pressed for 2 seconds or longer.
