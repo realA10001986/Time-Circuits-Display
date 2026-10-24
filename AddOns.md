@@ -228,7 +228,7 @@ In order to connect props that can sense HIGH/LOW levels (and don't use the TT O
 |:--:|
 | IO14 on board version 1.2 |
 
-Although CircuitSetup/A10001986 props like Flux Capacitor, SID, Dash Gauges and VSR normally are connected wirelessly, those also support a wired connection for special cases where wireless is not an option. For more information, see the prop's documentation ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [Dash Gauges](https://github.com/realA10001986/Dash-Gauges/blob/main/hardware/README.md#connecting-a-tcd-to-the-dash-gauges-by-wire), [VSR](https://github.com/realA10001986/VSR#connecting-a-tcd-by-wire)).
+>Although CircuitSetup/A10001986 props like Flux Capacitor, SID, Dash Gauges and VSR normally are connected wirelessly, those also support a wired connection for special cases where wireless is not an option. For more information, see the prop's documentation ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [Dash Gauges](https://github.com/realA10001986/Dash-Gauges/blob/main/hardware/README.md#connecting-a-tcd-to-the-dash-gauges-by-wire), [VSR](https://github.com/realA10001986/VSR#connecting-a-tcd-by-wire)).
 
 ### Timing
 
