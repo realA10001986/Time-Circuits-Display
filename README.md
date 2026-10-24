@@ -1350,8 +1350,8 @@ For more information, see [here](https://remote.out-a-ti.me).
   - Select your preferred update rate under **_GPS speed_**
 
 - Other props (FC, SID, Dash Gauges, VSR, Remote):
-  - Make sure that the TCD's hostname (usually _timecircuits_) is present in **_Hostname of TCD_**. (The other options under "Wireless connection (BTTFN)" can be set/unset based on your personal preferences.)
-  - Make sure that the option **_TCD is connected by wire_** is unchecked. (Option not available on Remote)
+  - Make sure that the TCD's hostname (usually _timecircuits_) is present in **_Hostname of TCD_**.
+  - Make sure that the option **_TCD is connected by wire_** is **unchecked**. (Option not available on Remote)
   
 #### Network setup
 
