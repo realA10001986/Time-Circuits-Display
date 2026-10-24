@@ -300,7 +300,7 @@ If you are not planning on using GPS speed, a Rotary Encoder for speed or a Futa
 
 Checking **_Signal without 5s lead_** is required if you are using GPS speed, a Rotary Encoder for speed or a Futaba remote to control speed on your TCD, in order to avoid a "stall" when hitting 88mph. The downside is that other props do not get time to play any kind of "acceleration" sequence.
 
-If you connect original CircuitSetup/A10001986 props (Flux Capacitor, SID, Dash Gauges, VSR) by wire, make sure you check/uncheck the option _TCD signals Time Travel without 5s lead_ in the prop's Config Portal accordingly.
+>If you connect original CircuitSetup/A10001986 props (Flux Capacitor, SID, Dash Gauges, VSR) by wire, make sure you check/uncheck the option _TCD signals Time Travel without 5s lead_ in the prop's Config Portal accordingly.
 
 ## Synchronized time travel through HA/MQTT
 
