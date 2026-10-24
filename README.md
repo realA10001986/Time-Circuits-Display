@@ -273,6 +273,10 @@ Control boards 1.4.5 and later have two ways of audio output:
 - built-in speaker or
 - line-out (at line-level, for connecting the TCD to a stereo's line-in)
 
+| ![audio_out](img/audio_out.png) |
+|:--:|
+| Line-out on CB 1.4.5+ |
+
 By default, all audio is played over the speaker.
 
 Keypad command ```351``` enables playback over line-out for music, time travel sound, user-added sound as well as some other sound effects.
