@@ -234,7 +234,7 @@ In order to connect props that can sense HIGH/LOW levels (and don't use the TT O
 |:--:|
 | IO14 on board version 1.2 |
 
-For connecting CircuitSetup/A10001986 props, see the prop's documentation ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [Dash Gauges](https://github.com/realA10001986/Dash-Gauges/blob/main/hardware/README.md#connecting-a-tcd-to-the-dash-gauges-by-wire), [VSR](https://github.com/realA10001986/VSR#connecting-a-tcd-by-wire)).
+Although CircuitSetup/A10001986 props like Flux Capacitor, SID, Dash Gauges and VSR normally are connected wirelessly, those also support a wired connection for special cases where wireless is not an option. For more information, see the prop's documentation ([Flux capacitor](https://github.com/realA10001986/Flux-Capacitor/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [SID](https://github.com/realA10001986/SID/tree/main?tab=readme-ov-file#connecting-a-tcd-by-wire), [Dash Gauges](https://github.com/realA10001986/Dash-Gauges/blob/main/hardware/README.md#connecting-a-tcd-to-the-dash-gauges-by-wire), [VSR](https://github.com/realA10001986/VSR#connecting-a-tcd-by-wire)).
 
 ### Timing
 
@@ -298,11 +298,15 @@ In this case, there is no lead. TT-OUT goes high when the temporal displacement 
 
 Conclusion: 
 
+When using this signal to control flux bands, check the option **_Signal without 5s lead_**.
+
+Otherwise:
+
 If you are not planning on using GPS speed, a Rotary Encoder for speed or a Futaba remote to control speed on your TCD, you can use the normal 5-second-lead technique if your prop is designed to play some kind of pre-time-travel sequence (acceleration, warm-up, etc). 
 
 Checking **_Signal without 5s lead_** is required if you are using GPS speed, a Rotary Encoder for speed or a Futaba remote to control speed on your TCD, in order to avoid a "stall" when hitting 88mph. The downside is that other props do not get time to play any kind of "acceleration" sequence.
 
-If you connect original CircuitSetup/A10001986 props by wire, make sure you check/uncheck the option _TCD signals Time Travel without 5s lead_ in the prop's Config Portal accordingly.
+If you connect original CircuitSetup/A10001986 props (Flux Capacitor, SID, Dash Gauges, VSR) by wire, make sure you check/uncheck the option _TCD signals Time Travel without 5s lead_ in the prop's Config Portal accordingly.
 
 ## Synchronized time travel through HA/MQTT
 
