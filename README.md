@@ -1860,7 +1860,7 @@ Since a wired connection is mainly meant for third-party or DIY props, it is up 
 
 If you have a GPS receiver, a rotary encoder or a Futaba remote control and use either of those as a source for, or control of speed, a time travel is automatically triggered by the TCD when hitting 88mph. In this case, the TCD cannot know in advance if or when a speed of 88mph is actually reached and therefore not inform other props 5 seconds _ahead_. If *__Signal without 5s lead__* is unchecked, as a result, there will be a delay of 5 seconds from when the TCD's GPS/Rotary Encoder/Futaba Remote-induced speed hits 88mph until the temporal displacement sequence actually starts. As this certainly is undesirable, this option should be checked and your wired devices should be configured to immediately start a temporal displacement sequence when TT OUT becomes HIGH.
 
-For detailed timing information, see [here](https://tcd.out-a-ti.me/AddOns.md#timing).
+For detailed timing information, see [here](AddOns.md#timing).
 
 On this Delorean Time Machine, the TCD controls the flux bands through TT_OUT: (Video courtesy of James Castellano)
 
