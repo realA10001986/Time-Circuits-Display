@@ -55,6 +55,7 @@ Features include
   - [Temperature/humidity sensor](#room-condition-mode-temperaturehumidity-sensor) for [Room Condition mode](#room-condition-mode-temperaturehumidity-sensor) [display temperature and humidity in *destination time* and *last time departed* displays] and for displaying temperature on speedo while idle
   - Multi-purpose output for signaling/controlling other props [connected by wire](#connecting-props-by-wire) (for example flux lights, third party props)
 - &#128007; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370; &#129370;
+- _Note: Actual time travel not yet supported._
 
 >[The A10001986 repository](https://tcd.out-a%2dti.me) is the upstream source for CircuitSetup's firmware releases. The [A10001986 edition](https://tcd.out%2da-ti.me) uses a slightly different sound-pack compared to the CircuitSetup edition, otherwise there are no differences between A10001986 and CircuitSetup releases of the same version.
 
