@@ -1400,7 +1400,8 @@ First, download main firmware and sound-pack. Both files are in every [Release p
 > [!IMPORTANT]
 > Do not install "A-Car" and/or "GTE" labeled versions on standard versions of the TCD, those are for modified/different hardware! Unless you know for a fact that you have "A-Car" displays or a "GTE" keypad, you need the "standard" firmware file.
 
-&#127381; If you want to update several props at a time, you can download all current files from one place: https://all.out-a-ti.me
+> [!TIP]
+> &#127381; If you want to update several props at a time, you can download all current files from one place: https://all.out-a-ti.me
 
 ### Main firmware
 
