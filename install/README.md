@@ -1,5 +1,7 @@
 __Users of mobile devices__: You can easily download the update file(s) from the [Release](https://tcdr.out-a-ti.me) page, under "Assets".
 
+___
+
 This folder holds all files necessary for immediate installation on your Time Circuits Display. Here you'll find
 - a binary of the current firmware, ready for upload to the device ("timecircuits-A10001986-x.xx-xxx.bin");
 - the latest matching sound-pack ("TCDA-TWxx.bin")
