@@ -1,6 +1,6 @@
 __Users of mobile devices__: You can easily download the update file(s) from the [Release](https://tcdr.out-a-ti.me) page, under "Assets". 
 
-If you want to update several props at a time, download the files for all props from [one place](https://all.out-a-ti.me).
+If you want to update __several props at a time__, download the files for all props from [one place](https://all.out-a-ti.me).
 
 ___
 
