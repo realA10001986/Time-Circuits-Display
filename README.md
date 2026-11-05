@@ -1355,7 +1355,7 @@ Please refer to the other props' documentation, chapter "Car Setup", for details
 
 #### Performing Firmware Updates
 
-1. Download the firmware binaries and sound-packs for all props to be updated to your notebook/handheld.
+1. Download the firmware binaries and sound-packs for all props to be updated to your notebook/handheld. Since github's mobile pages apparently don't have a link the Releases page, please bookmark these links for direct access (under "Assets"): http://tcdr.out-a-ti.me, http://fcr.out-a-ti.me, http://sidr.out-a-ti.me, http://dgr.out-a-ti.me, http://vsrr.out-a-ti.me, http://remoter.out-a-ti.me
 2. Connect said notebook/handheld to WiFi network "TCD-AP".
 3. Navigate your browser to the prop's Config Portal. By default the domains are http://timecircuits.local, http://flux.local, http://sid.local, http://gauges.local, http://vsr.local, http://dtmremote.local.
 4. Perform firmware update procedure. Repeat steps 2-4 for installing the sound-pack, if a new version is available.
