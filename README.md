@@ -1391,7 +1391,7 @@ If your configured WiFi network was not available when the TCD was trying to con
 
 ## Firmware Installation / Firmware Update
 
-The firmware consists of two parts: The main firmware, and a sound-pack.
+The firmware consists of two parts: The main firmware and a sound-pack.
 
 First, download main firmware and sound-pack. Both files are in every [Release package](https://github.com/realA10001986/Time-Circuits-Display/releases/latest), and named
 - "**timecircuits-A10001986-Vx.xxx-XXXX.bin**" for A10001986 releases, "**Time_Circuits_Display_vX.YY.bin**" for CircuitSetup releases,
@@ -1401,7 +1401,7 @@ First, download main firmware and sound-pack. Both files are in every [Release p
 > Do not install "A-Car" and/or "GTE" labeled versions on standard versions of the TCD, those are for modified/different hardware! Unless you know for a fact that you have "A-Car" displays or a "GTE" keypad, you need the "standard" firmware file.
 
 > [!TIP]
-> &#127381; If you want to update several props at a time, you can download all current files from one place: https://all.out-a-ti.me
+> &#127381; If you want to update several props at a time, you can download all current firmwares from one place: https://all.out-a-ti.me
 
 ### Main firmware
 
