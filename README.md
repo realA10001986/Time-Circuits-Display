@@ -101,9 +101,9 @@ Setting actual time:
 - If the TCD is going to be connected to a WiFi network with internet access as described below, it will receive time information through NTP (network time protocol). No user interaction is required.
 - Otherwise please set your local time through the [keypad menu](#how-to-set-the-real-time-clock-rtc).
 
-#### Sound-pack re-installation (Firmware 3.23 an onwards)
+#### Sound-pack re-installation
 
-If your factory-fresh TCD came with firmware version 3.23 or later, but no SD card, the next step is to re-install the sound-pack. The reason for this is that the sound-pack does not entirely fit into the device's flash memory and parts of it need to be installed on your SD card. Please see [here](#sound-pack-installation) for instructions.
+If your factory-fresh TCD came without an SD card, the next step is to re-install the sound-pack. The reason for this is that the sound-pack does not entirely fit into the device's flash memory and parts of it need to be installed on your SD card. Please see [here](#sound-pack-installation) for instructions.
 
 The firmware version is displayed in the footer of the Config Portal's main menu page.
 
@@ -584,9 +584,9 @@ For technical reasons, the beep is suppressed whenever other sounds are played-b
 
 ## Marty's time announcement
 
-As of version 3.23, the TCD, or rather "Marty McFly", will tell you the time out loud on pressing ```ENTER``` (without a command).
+When you press ```ENTER``` without a command, the TCD, or rather "Marty McFly", will tell you the time out loud.
 
-Furthermore, since version 3.27, a default "sound on the hour" can be enabled in the Config Portal, which consists of the Clock Tower Bell and a time announcement from "Marty McFly".
+Furthermore, a default "sound on the hour" can be enabled in the Config Portal, which consists of the clock tower bell and a time announcement from "Marty McFly".
 
 ## Night mode
 
