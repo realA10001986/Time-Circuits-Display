@@ -631,7 +631,7 @@ The alarm function works like any common alarm clock: An alarm sounds at a pre-p
 
 The alarm can be programmed through the [keypad menu](#how-to-set-up-the-alarm) or quickly through keypad command ```11hhMM``` (hh=hour, 00-23; MM=minute, 00-59). Weekday selection must be done through the [keypad menu](#how-to-set-up-the-alarm).
 
-Holding ```1``` enables and disables the alarm; the state is shown by the dot in the present time's minute field. Keypad command ```11``` shows the currently programmed alarm time and the weekdays.
+Holding ```1``` enables and disables the alarm; the state is shown by the dot in the present time's minute field. Keypad command ```11``` shows the currently programmed alarm time and weekdays.
 
 As regards the alarm event itself, the alarm function knows two modes of operation: Legacy and Extended.
 
