@@ -816,7 +816,7 @@ The alarm is recurring, i.e. it rings daily at the programmed time, unless disab
 
 The alarm time is, by default, based on your actual local time, not the time displayed (eg after a time travel). It can, however, be configured to be based on the time displayed, in the Config Portal.
 
-*Important: The alarm will not sound when the keypad menu is active at the programmed alarm time.*
+*The alarm will not sound when the keypad menu is active at the programmed alarm time.*
 
 #### How to set the audio volume:
 
